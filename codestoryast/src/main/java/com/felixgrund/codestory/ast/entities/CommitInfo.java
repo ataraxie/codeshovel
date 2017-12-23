@@ -8,6 +8,8 @@ import java.util.List;
 public class CommitInfo {
 
 	private RevCommit commit;
+	private RevCommit prevCommit;
+	private RevCommit nextCommit;
 
 	private List<String> functionNameOccurrences;
 	private FunctionNode matchedFunctionNode;
@@ -58,5 +60,21 @@ public class CommitInfo {
 
 	public boolean isFileFound() {
 		return this.fileContent != null;
+	}
+
+	public RevCommit getPrevCommit() {
+		return prevCommit;
+	}
+
+	public void setPrevCommit(RevCommit prevCommit) {
+		this.prevCommit = prevCommit;
+	}
+
+	public RevCommit getNextCommit() {
+		return nextCommit;
+	}
+
+	public void setNextCommit(RevCommit nextCommit) {
+		this.nextCommit = nextCommit;
 	}
 }

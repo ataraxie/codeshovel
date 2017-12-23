@@ -36,7 +36,18 @@ public class Main {
 		task.run();
 
 		for (CommitInfo commitInfo : task.getResult()) {
-			System.out.println((commitInfo.getMatchedFunctionNode() != null) + " " + commitInfo.getCommit().getName());
+			String current = commitInfo.getCommit().getName();
+			String next = "";
+			String prev = "";
+			if (commitInfo.getPrevCommit() != null) {
+				prev = commitInfo.getPrevCommit().getName();
+			}
+			if (commitInfo.getNextCommit() != null) {
+				next = commitInfo.getNextCommit().getName();
+			}
+
+
+			System.out.println("CURR:"+current+"|PREV:"+prev+"|NEXT:"+next);
 		}
 
 	}

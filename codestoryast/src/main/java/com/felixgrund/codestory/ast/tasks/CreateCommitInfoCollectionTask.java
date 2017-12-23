@@ -5,14 +5,17 @@ import com.felixgrund.codestory.ast.parser.JsParser;
 import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class CreateCommitInfoCollectionTask {
@@ -33,6 +36,11 @@ public class CreateCommitInfoCollectionTask {
 	private CommitInfo headCommitInfo;
 	private List<CommitInfo> allCommitInfo;
 
+	public void run() throws Exception {
+		this.buildAndValidate();
+		this.createCommitCollection();
+	}
+
 	private void buildAndValidate() throws Exception {
 		Utl.checkNotNull("repository", this.repository);
 		Utl.checkNotNull("startCommitName", this.startCommitName);
@@ -52,22 +60,29 @@ public class CreateCommitInfoCollectionTask {
 		Utl.checkNotNull("startFunctionNode", this.startFunctionNode);
 	}
 
-	public void run() throws Exception {
-		this.buildAndValidate();
-
-		List<RevCommit> allCommitsInBranch = Utl.findCommitsForBranch(this.repository, this.branchName);
-		RevCommit headCommit = allCommitsInBranch.get(0);
+	public void createCommitCollection() throws IOException {
+		Ref masterRef = repository.findRef(branchName);
+		ObjectId masterId = masterRef.getObjectId();
+		RevWalk walk = new RevWalk(repository);
+		RevCommit headCommit = walk.parseCommit(masterId);
+		walk.markStart(headCommit);
+		Iterator<RevCommit> iterator = walk.iterator();
+		iterator.next(); // skip head
 
 		this.allCommitInfo = new ArrayList<>();
 		this.headCommitInfo = this.createCommitInfoHead(headCommit);
-
 		this.allCommitInfo.add(this.headCommitInfo);
-		allCommitsInBranch.remove(0);
 
-		for (RevCommit commit : allCommitsInBranch) {
-			CommitInfo commitInfo = createCommitInfoNonHead(commit);
-			this.allCommitInfo.add(commitInfo);
+		CommitInfo commitInfoAfter = this.headCommitInfo;
+		while (iterator.hasNext()) {
+			RevCommit currentCommit = iterator.next();
+			CommitInfo currentCommitInfo = createCommitInfoNonHead(currentCommit);
+			currentCommitInfo.setNextCommit(commitInfoAfter.getCommit());
+			commitInfoAfter.setPrevCommit(currentCommit);
+			this.allCommitInfo.add(currentCommitInfo);
+			commitInfoAfter = currentCommitInfo;
 		}
+
 	}
 
 	private CommitInfo createCommitInfoNonHead(RevCommit commit) throws IOException {
