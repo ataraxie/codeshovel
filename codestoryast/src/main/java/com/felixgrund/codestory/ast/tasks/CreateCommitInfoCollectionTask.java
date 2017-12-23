@@ -112,8 +112,6 @@ public class CreateCommitInfoCollectionTask {
 
 	}
 
-
-
 	public List<CommitInfo> getResult() {
 		return allCommitInfo;
 	}

@@ -1,5 +1,6 @@
 package com.felixgrund.codestory.ast;
 
+import com.felixgrund.codestory.ast.entities.CommitInfo;
 import com.felixgrund.codestory.ast.tasks.CreateCommitInfoCollectionTask;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -34,14 +35,11 @@ public class Main {
 
 		task.run();
 
-//		System.out.println(task.getHeadCommitInfo().getMatchedFunctionNode());
+		for (CommitInfo commitInfo : task.getResult()) {
+			System.out.println((commitInfo.getMatchedFunctionNode() != null) + " " + commitInfo.getCommit().getName());
+		}
 
 	}
-
-
-
-
-
 
 
 }

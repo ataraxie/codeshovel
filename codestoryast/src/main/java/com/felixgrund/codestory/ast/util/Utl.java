@@ -23,10 +23,12 @@ public class Utl {
 		OutputStream output = new OutputStream()
 		{
 			private StringBuilder string = new StringBuilder();
-
 			@Override
 			public void write(int b) throws IOException {
 				this.string.append((char) b);
+			}
+			public String toString(){
+				return this.string.toString();
 			}
 		};
 		loader.copyTo(output);
@@ -38,6 +40,13 @@ public class Utl {
 		RevWalk revWalk = new RevWalk(repository);
 		RevCommit revCommit = revWalk.parseCommit(revWalk.lookupCommit(objectId));
 		return revCommit;
+	}
+
+	public static RevCommit findHeadCommit(Repository repository, String branchName) throws IOException {
+		Ref masterRef = repository.findRef(branchName);
+		ObjectId masterId = masterRef.getObjectId();
+		RevWalk walk = new RevWalk(repository);
+		return walk.parseCommit(masterId);
 	}
 
 	public static List<RevCommit> findCommitsForBranch(Repository repository, String branchName) throws IOException {
