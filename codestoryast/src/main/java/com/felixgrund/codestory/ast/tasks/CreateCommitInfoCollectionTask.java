@@ -5,7 +5,11 @@ import com.felixgrund.codestory.ast.entities.CommitInfoCollection;
 import com.felixgrund.codestory.ast.parser.JsParser;
 import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -17,11 +21,13 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 public class CreateCommitInfoCollectionTask {
 
+	private Git git;
 	private Repository repository;
 	private String filePath;
 	private String fileName;
@@ -38,9 +44,17 @@ public class CreateCommitInfoCollectionTask {
 	private CommitInfo headCommitInfo;
 	private CommitInfoCollection allCommitInfo;
 
+	public CreateCommitInfoCollectionTask(Repository repository) {
+		this.repository = repository;
+		this.git = new Git(repository);
+	}
+
 	public void run() throws Exception {
+		long start = new Date().getTime();
 		this.buildAndValidate();
 		this.createCommitCollection();
+		long timeTakenSeconds = (new Date().getTime() - start) / 1000;
+		System.out.println(timeTakenSeconds);
 	}
 
 	private void buildAndValidate() throws Exception {
@@ -62,7 +76,7 @@ public class CreateCommitInfoCollectionTask {
 		Utl.checkNotNull("startFunctionNode", this.startFunctionNode);
 	}
 
-	public void createCommitCollection() throws IOException {
+	public void createCommitCollection() throws IOException, GitAPIException {
 		Ref masterRef = repository.findRef(branchName);
 		ObjectId masterId = masterRef.getObjectId();
 		RevWalk walk = new RevWalk(repository);
@@ -81,10 +95,13 @@ public class CreateCommitInfoCollectionTask {
 			CommitInfo currentCommitInfo = createCommitInfoNonHead(currentCommit);
 			currentCommitInfo.setNext(commitInfoAfter);
 			commitInfoAfter.setPrev(currentCommitInfo);
+			commitInfoAfter.setDiff(createDiff(commitInfoAfter.getCommit(), currentCommit));
 			this.allCommitInfo.add(currentCommitInfo);
 			commitInfoAfter = currentCommitInfo;
 		}
 	}
+
+
 
 	private CommitInfo createCommitInfoNonHead(RevCommit commit) throws IOException {
 		CommitInfo commitInfo = createBaseCommitInfo(commit);
@@ -117,10 +134,6 @@ public class CreateCommitInfoCollectionTask {
 		treeWalk.setRecursive(true);
 		treeWalk.setFilter(PathFilter.create(this.filePath));
 
-		CanonicalTreeParser treeParser = new CanonicalTreeParser();
-		treeParser.reset(this.repository.newObjectReader(), tree);
-		ret.setTreeParser(treeParser);
-
 		if (treeWalk.next()) {
 			ObjectId objectId = treeWalk.getObjectId(0);
 			String fileContent = Utl.getFileContentByObjectId(repository, objectId);
@@ -128,6 +141,19 @@ public class CreateCommitInfoCollectionTask {
 		}
 
 		return ret;
+
+	}
+
+	private List<DiffEntry> createDiff(RevCommit commit, RevCommit prevCommit) throws IOException, GitAPIException {
+		ObjectReader objectReader = repository.newObjectReader();
+		CanonicalTreeParser treeParserNew = new CanonicalTreeParser();
+		treeParserNew.reset(objectReader, commit.getTree());
+		CanonicalTreeParser treeParserOld = new CanonicalTreeParser();
+		treeParserOld.reset(objectReader, prevCommit.getTree());
+		return git.diff()
+				.setOldTree(treeParserOld)
+				.setNewTree(treeParserNew)
+				.call();
 
 	}
 
@@ -142,10 +168,6 @@ public class CreateCommitInfoCollectionTask {
 
 	public CommitInfo getHeadCommitInfo() {
 		return headCommitInfo;
-	}
-
-	public void setRepository(Repository repository) {
-		this.repository = repository;
 	}
 
 	public void setFilePath(String filePath) {
@@ -167,4 +189,5 @@ public class CreateCommitInfoCollectionTask {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
+
 }

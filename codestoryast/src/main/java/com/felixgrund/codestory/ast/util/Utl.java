@@ -2,6 +2,8 @@ package com.felixgrund.codestory.ast.util;
 
 import com.felixgrund.codestory.ast.entities.CommitInfo;
 import com.google.common.collect.Lists;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Ref;
@@ -9,6 +11,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
@@ -88,5 +91,7 @@ public class Utl {
 	public static String projectDir() {
 		return System.getProperty("user.dir");
 	}
+
+
 
 }

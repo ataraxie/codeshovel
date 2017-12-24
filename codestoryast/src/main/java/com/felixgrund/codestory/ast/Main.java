@@ -36,8 +36,7 @@ public class Main {
 				.build();
 		Git git = new Git(repository);
 
-		CreateCommitInfoCollectionTask task = new CreateCommitInfoCollectionTask();
-		task.setRepository(repository);
+		CreateCommitInfoCollectionTask task = new CreateCommitInfoCollectionTask(repository);
 		task.setBranchName("master");
 		task.setFilePath("src/main/resources/pocketquery/js/pocketquery-admin.js");
 		task.setFileName("pocketquery-admin.js");
@@ -86,7 +85,7 @@ public class Main {
 //				for (DiffEntry entry : diff) {
 //					System.out.println("Entry: " + entry);
 //				}
-//			}
+////			}
 
 		}
 
