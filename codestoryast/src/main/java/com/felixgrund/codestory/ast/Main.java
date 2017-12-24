@@ -1,13 +1,23 @@
 package com.felixgrund.codestory.ast;
 
 import com.felixgrund.codestory.ast.entities.CommitInfo;
+import com.felixgrund.codestory.ast.entities.CommitInfoCollection;
+import com.felixgrund.codestory.ast.interpreters.Interpreter;
 import com.felixgrund.codestory.ast.tasks.CreateCommitInfoCollectionTask;
+import com.felixgrund.codestory.ast.util.Utl;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 
 import java.io.File;
+import java.util.List;
+import java.util.Properties;
 
 public class Main {
+
+	private static final String PROJECT_DIR = System.getProperty("user.dir");
 
 	public static void main(String[] args) {
 		try {
@@ -18,11 +28,13 @@ public class Main {
 	}
 
 	private static void execute() throws Exception {
+
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
 		Repository repository = builder.setGitDir(new File("/Users/felix/dev/projects_scandio/pocketquery/.git"))
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
 				.build();
+		Git git = new Git(repository);
 
 		CreateCommitInfoCollectionTask task = new CreateCommitInfoCollectionTask();
 		task.setRepository(repository);
@@ -35,19 +47,47 @@ public class Main {
 
 		task.run();
 
+		CommitInfoCollection commitInfos = task.getResult();
+
 		for (CommitInfo commitInfo : task.getResult()) {
-			String current = commitInfo.getCommit().getName();
-			String next = "";
-			String prev = "";
-			if (commitInfo.getPrevCommit() != null) {
-				prev = commitInfo.getPrevCommit().getName();
-			}
-			if (commitInfo.getNextCommit() != null) {
-				next = commitInfo.getNextCommit().getName();
+			Interpreter interpreter = new Interpreter(commitInfo);
+			interpreter.interpret();
+
+			if (!interpreter.getFindings().isEmpty()) {
+				System.out.println("\n"+commitInfo);
+				System.out.println(interpreter.getFindings());
 			}
 
+//
+//			String current = commitInfo.getCommit().getName();
 
-			System.out.println("CURR:"+current+"|PREV:"+prev+"|NEXT:"+next);
+
+
+//			String next = "";
+//			String prev = "";
+//			if (commitInfo.getPrev() != null && commitInfo.getPrev().getCommit() != null) {
+//				prev = commitInfo.getPrev().getCommit().getName();
+//			}
+//			if (commitInfo.getNext() != null && commitInfo.getNext().getCommit() != null) {
+//				next = commitInfo.getNext().getCommit().getName();
+//			}
+//
+//			if (commitInfo.getMatchedFunctionNode() == null
+//					&& commitInfo.getPrev() != null
+//					&& commitInfo.getPrev().getMatchedFunctionNode() != null) {
+//				System.out.println("CURR:"+current+"|PREV:"+prev+"|NEXT:"+next);
+//				System.out.println(commitInfo.getTreeParser());
+//
+//
+//				List<DiffEntry> diff = git.diff()
+//						.setOldTree(commitInfo.getPrev().getTreeParser())
+//						.setNewTree(commitInfo.getTreeParser())
+//						.call();
+//				for (DiffEntry entry : diff) {
+//					System.out.println("Entry: " + entry);
+//				}
+//			}
+
 		}
 
 	}

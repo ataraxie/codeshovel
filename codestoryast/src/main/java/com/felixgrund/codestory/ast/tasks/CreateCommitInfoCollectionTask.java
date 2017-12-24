@@ -1,6 +1,7 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.entities.CommitInfo;
+import com.felixgrund.codestory.ast.entities.CommitInfoCollection;
 import com.felixgrund.codestory.ast.parser.JsParser;
 import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
@@ -10,6 +11,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
@@ -34,7 +36,7 @@ public class CreateCommitInfoCollectionTask {
 	private RevCommit startCommit;
 
 	private CommitInfo headCommitInfo;
-	private List<CommitInfo> allCommitInfo;
+	private CommitInfoCollection allCommitInfo;
 
 	public void run() throws Exception {
 		this.buildAndValidate();
@@ -69,7 +71,7 @@ public class CreateCommitInfoCollectionTask {
 		Iterator<RevCommit> iterator = walk.iterator();
 		iterator.next(); // skip head
 
-		this.allCommitInfo = new ArrayList<>();
+		this.allCommitInfo = new CommitInfoCollection();
 		this.headCommitInfo = this.createCommitInfoHead(headCommit);
 		this.allCommitInfo.add(this.headCommitInfo);
 
@@ -77,12 +79,11 @@ public class CreateCommitInfoCollectionTask {
 		while (iterator.hasNext()) {
 			RevCommit currentCommit = iterator.next();
 			CommitInfo currentCommitInfo = createCommitInfoNonHead(currentCommit);
-			currentCommitInfo.setNextCommit(commitInfoAfter.getCommit());
-			commitInfoAfter.setPrevCommit(currentCommit);
+			currentCommitInfo.setNext(commitInfoAfter);
+			commitInfoAfter.setPrev(currentCommitInfo);
 			this.allCommitInfo.add(currentCommitInfo);
 			commitInfoAfter = currentCommitInfo;
 		}
-
 	}
 
 	private CommitInfo createCommitInfoNonHead(RevCommit commit) throws IOException {
@@ -107,15 +108,18 @@ public class CreateCommitInfoCollectionTask {
 	}
 
 	private CommitInfo createBaseCommitInfo(RevCommit commit) throws IOException {
-		CommitInfo ret = new CommitInfo();
+		CommitInfo ret = new CommitInfo(commit);
+		ret.setFileName(this.fileName);
+
 		RevTree tree = commit.getTree();
 		TreeWalk treeWalk = new TreeWalk(this.repository);
 		treeWalk.addTree(tree);
 		treeWalk.setRecursive(true);
 		treeWalk.setFilter(PathFilter.create(this.filePath));
 
-		ret.setCommit(commit);
-		ret.setFileName(this.fileName);
+		CanonicalTreeParser treeParser = new CanonicalTreeParser();
+		treeParser.reset(this.repository.newObjectReader(), tree);
+		ret.setTreeParser(treeParser);
 
 		if (treeWalk.next()) {
 			ObjectId objectId = treeWalk.getObjectId(0);
@@ -127,7 +131,7 @@ public class CreateCommitInfoCollectionTask {
 
 	}
 
-	public List<CommitInfo> getResult() {
+	public CommitInfoCollection getResult() {
 		return allCommitInfo;
 	}
 

@@ -1,5 +1,6 @@
 package com.felixgrund.codestory.ast.util;
 
+import com.felixgrund.codestory.ast.entities.CommitInfo;
 import com.google.common.collect.Lists;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -82,6 +83,10 @@ public class Utl {
 			String msg = String.format("Field '%s' was not set", field);
 			throw new Exception(msg);
 		}
+	}
+
+	public static String projectDir() {
+		return System.getProperty("user.dir");
 	}
 
 }

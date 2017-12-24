@@ -1,28 +1,43 @@
 package com.felixgrund.codestory.ast.entities;
 
 import jdk.nashorn.internal.ir.FunctionNode;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class CommitInfo {
 
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy:HH:mm");
+
+	private String hash;
+	private Date date;
+
 	private RevCommit commit;
-	private RevCommit prevCommit;
-	private RevCommit nextCommit;
+	private CommitInfo prev;
+	private CommitInfo next;
+
+	private CanonicalTreeParser treeParser;
 
 	private List<String> functionNameOccurrences;
 	private FunctionNode matchedFunctionNode;
 
+	private boolean firstFunctionOccurrence = false;
+
 	private String fileName;
 	private String fileContent;
 
-	public RevCommit getCommit() {
-		return commit;
+	public CommitInfo(RevCommit commit) {
+		this.commit = commit;
+		this.hash = commit.getName();
+		this.date = commit.getAuthorIdent().getWhen();
 	}
 
-	public void setCommit(RevCommit commit) {
-		this.commit = commit;
+	public RevCommit getCommit() {
+		return commit;
 	}
 
 	public FunctionNode getMatchedFunctionNode() {
@@ -42,7 +57,6 @@ public class CommitInfo {
 	}
 
 	public List<String> getFunctionNameOccurrences() {
-
 		return functionNameOccurrences;
 	}
 
@@ -61,20 +75,51 @@ public class CommitInfo {
 	public boolean isFileFound() {
 		return this.fileContent != null;
 	}
-
-	public RevCommit getPrevCommit() {
-		return prevCommit;
+	public boolean isFunctionFound() {
+		return this.matchedFunctionNode != null;
 	}
 
-	public void setPrevCommit(RevCommit prevCommit) {
-		this.prevCommit = prevCommit;
+	public CommitInfo getPrev() {
+		return prev;
 	}
 
-	public RevCommit getNextCommit() {
-		return nextCommit;
+	public void setPrev(CommitInfo prev) {
+		this.prev = prev;
 	}
 
-	public void setNextCommit(RevCommit nextCommit) {
-		this.nextCommit = nextCommit;
+	public CommitInfo getNext() {
+		return next;
+	}
+
+	public void setNext(CommitInfo next) {
+		this.next = next;
+	}
+
+	public CanonicalTreeParser getTreeParser() {
+		return treeParser;
+	}
+
+	public void setTreeParser(CanonicalTreeParser treeParser) {
+		this.treeParser = treeParser;
+	}
+
+	public boolean isFirstFunctionOccurrence() {
+		return firstFunctionOccurrence;
+	}
+
+	public void setFirstFunctionOccurrence(boolean firstFunctionOccurrence) {
+		this.firstFunctionOccurrence = firstFunctionOccurrence;
+	}
+
+	public String getHash() {
+		return hash;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public String toString() {
+		return DATE_FORMAT.format(date) + " " + hash;
 	}
 }
