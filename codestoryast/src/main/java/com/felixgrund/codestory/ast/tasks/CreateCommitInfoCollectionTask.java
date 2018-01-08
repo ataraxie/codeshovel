@@ -54,7 +54,7 @@ public class CreateCommitInfoCollectionTask {
 		this.buildAndValidate();
 		this.createCommitCollection();
 		long timeTakenSeconds = (new Date().getTime() - start) / 1000;
-		System.out.println(timeTakenSeconds);
+		System.out.println("MEASURE CreateCommitInfoCollectionTask in seconds: " + timeTakenSeconds);
 	}
 
 	private void buildAndValidate() throws Exception {
