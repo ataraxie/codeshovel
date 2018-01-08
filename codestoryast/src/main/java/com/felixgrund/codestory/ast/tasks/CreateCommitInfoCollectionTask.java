@@ -17,6 +17,7 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,8 +40,11 @@ public class CreateCommitInfoCollectionTask {
 	private CommitInfoCollection allCommitInfo;
 
 	public void run() throws Exception {
+		long start = new Date().getTime();
 		this.buildAndValidate();
 		this.createCommitCollection();
+		long timeTakenSeconds = (new Date().getTime() - start) / 1000;
+		System.out.println("MEASURE CreateCommitInfoCollectionTask in seconds: " + timeTakenSeconds);
 	}
 
 	private void buildAndValidate() throws Exception {
