@@ -1,6 +1,11 @@
 package com.felixgrund.codestory.ast.util;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
 import com.felixgrund.codestory.ast.entities.CommitInfo;
+import com.felixgrund.codestory.ast.entities.CommitInfoCollection;
 import com.google.common.collect.Lists;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -15,8 +20,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 
@@ -91,6 +95,34 @@ public class Utl {
 	public static String projectDir() {
 		return System.getProperty("user.dir");
 	}
+
+	private static String cacheFilePath(String hash) {
+		return projectDir() + "/cache/" + hash + ".codestory";
+	}
+
+	public static CommitInfoCollection loadFromCache(String hash) {
+		CommitInfoCollection ret = null;
+		Kryo kryo = new Kryo();
+		kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
+		Input input = null;
+		try {
+			input = new Input(new FileInputStream(cacheFilePath(hash)));
+			ret = kryo.readObject(input, CommitInfoCollection.class);
+			input.close();
+		} catch (FileNotFoundException e) {
+			// return null
+		}
+		return ret;
+	}
+
+	public static void saveToCache(String hash, CommitInfoCollection collection) throws FileNotFoundException {
+		Kryo kryo = new Kryo();
+		kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
+		Output output = new Output(new FileOutputStream(cacheFilePath(hash)));
+		kryo.writeObject(output, collection);
+		output.close();
+	}
+
 
 
 

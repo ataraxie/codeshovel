@@ -5,6 +5,7 @@ import com.felixgrund.codestory.ast.entities.CommitInfoCollection;
 import com.felixgrund.codestory.ast.parser.JsParser;
 import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -20,7 +21,6 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +42,7 @@ public class CreateCommitInfoCollectionTask {
 	private RevCommit startCommit;
 
 	private CommitInfo headCommitInfo;
-	private CommitInfoCollection allCommitInfo;
+	private CommitInfoCollection result;
 
 	public CreateCommitInfoCollectionTask(Repository repository) {
 		this.repository = repository;
@@ -52,7 +52,16 @@ public class CreateCommitInfoCollectionTask {
 	public void run() throws Exception {
 		long start = new Date().getTime();
 		this.buildAndValidate();
-		this.createCommitCollection();
+		String hash = this.createUuidHash();
+		this.result = Utl.loadFromCache(hash);
+		if (this.result == null) {
+			System.out.println("NOT FOUND IN CACHE");
+			this.createCommitCollection();
+			Utl.saveToCache(hash, this.result);
+		} else {
+			System.out.println("FOUND IN CACHE");
+		}
+
 		long timeTakenSeconds = (new Date().getTime() - start) / 1000;
 		System.out.println("MEASURE CreateCommitInfoCollectionTask in seconds: " + timeTakenSeconds);
 	}
@@ -85,9 +94,9 @@ public class CreateCommitInfoCollectionTask {
 		Iterator<RevCommit> iterator = walk.iterator();
 		iterator.next(); // skip head
 
-		this.allCommitInfo = new CommitInfoCollection();
+		this.result = new CommitInfoCollection();
 		this.headCommitInfo = this.createCommitInfoHead(headCommit);
-		this.allCommitInfo.add(this.headCommitInfo);
+		this.result.add(this.headCommitInfo);
 
 		CommitInfo commitInfoAfter = this.headCommitInfo;
 		while (iterator.hasNext()) {
@@ -96,7 +105,7 @@ public class CreateCommitInfoCollectionTask {
 			currentCommitInfo.setNext(commitInfoAfter);
 			commitInfoAfter.setPrev(currentCommitInfo);
 			commitInfoAfter.setDiff(createDiff(commitInfoAfter.getCommit(), currentCommit));
-			this.allCommitInfo.add(currentCommitInfo);
+			this.result.add(currentCommitInfo);
 			commitInfoAfter = currentCommitInfo;
 		}
 	}
@@ -158,7 +167,7 @@ public class CreateCommitInfoCollectionTask {
 	}
 
 	public CommitInfoCollection getResult() {
-		return allCommitInfo;
+		return result;
 	}
 
 	public void setStartCommitName(String startCommitName) {
@@ -188,6 +197,17 @@ public class CreateCommitInfoCollectionTask {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public String createUuidHash() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(branchName)
+				.append(filePath)
+				.append(fileName)
+				.append(functionName)
+				.append(functionStartLine)
+				.append(startCommitName);
+		return DigestUtils.md5Hex(builder.toString());
 	}
 
 }

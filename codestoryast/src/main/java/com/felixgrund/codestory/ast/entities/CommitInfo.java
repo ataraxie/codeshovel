@@ -31,6 +31,9 @@ public class CommitInfo {
 	private String fileName;
 	private String fileContent;
 
+	// Only for serialization
+	public CommitInfo() {}
+
 	public CommitInfo(RevCommit commit) {
 		this.commit = commit;
 		this.hash = commit.getName();
@@ -114,6 +117,10 @@ public class CommitInfo {
 
 	public void setDiff(List<DiffEntry> diff) {
 		this.diff = diff;
+	}
+
+	public List<DiffEntry> getDiff() {
+		return diff;
 	}
 
 	public String toString() {
