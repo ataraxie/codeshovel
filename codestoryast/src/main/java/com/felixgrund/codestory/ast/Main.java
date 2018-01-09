@@ -1,10 +1,15 @@
 package com.felixgrund.codestory.ast;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
 import com.felixgrund.codestory.ast.entities.CommitInfo;
 import com.felixgrund.codestory.ast.entities.CommitInfoCollection;
 import com.felixgrund.codestory.ast.interpreters.Interpreter;
 import com.felixgrund.codestory.ast.tasks.CreateCommitInfoCollectionTask;
 import com.felixgrund.codestory.ast.util.Utl;
+import com.thoughtworks.xstream.XStream;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.Repository;
@@ -12,6 +17,8 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Properties;
 
@@ -36,8 +43,7 @@ public class Main {
 				.build();
 		Git git = new Git(repository);
 
-		CreateCommitInfoCollectionTask task = new CreateCommitInfoCollectionTask();
-		task.setRepository(repository);
+		CreateCommitInfoCollectionTask task = new CreateCommitInfoCollectionTask(repository);
 		task.setBranchName("master");
 		task.setFilePath("src/main/resources/pocketquery/js/pocketquery-admin.js");
 		task.setFileName("pocketquery-admin.js");
@@ -47,8 +53,6 @@ public class Main {
 
 		task.run();
 
-		CommitInfoCollection commitInfos = task.getResult();
-
 		for (CommitInfo commitInfo : task.getResult()) {
 			Interpreter interpreter = new Interpreter(commitInfo);
 			interpreter.interpret();
@@ -57,36 +61,6 @@ public class Main {
 				System.out.println("\n"+commitInfo);
 				System.out.println(interpreter.getFindings());
 			}
-
-//
-//			String current = commitInfo.getCommit().getName();
-
-
-
-//			String next = "";
-//			String prev = "";
-//			if (commitInfo.getPrev() != null && commitInfo.getPrev().getCommit() != null) {
-//				prev = commitInfo.getPrev().getCommit().getName();
-//			}
-//			if (commitInfo.getNext() != null && commitInfo.getNext().getCommit() != null) {
-//				next = commitInfo.getNext().getCommit().getName();
-//			}
-//
-//			if (commitInfo.getMatchedFunctionNode() == null
-//					&& commitInfo.getPrev() != null
-//					&& commitInfo.getPrev().getMatchedFunctionNode() != null) {
-//				System.out.println("CURR:"+current+"|PREV:"+prev+"|NEXT:"+next);
-//				System.out.println(commitInfo.getTreeParser());
-//
-//
-//				List<DiffEntry> diff = git.diff()
-//						.setOldTree(commitInfo.getPrev().getTreeParser())
-//						.setNewTree(commitInfo.getTreeParser())
-//						.call();
-//				for (DiffEntry entry : diff) {
-//					System.out.println("Entry: " + entry);
-//				}
-//			}
 
 		}
 

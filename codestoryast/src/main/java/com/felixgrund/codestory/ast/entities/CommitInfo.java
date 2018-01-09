@@ -1,6 +1,7 @@
 package com.felixgrund.codestory.ast.entities;
 
 import jdk.nashorn.internal.ir.FunctionNode;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
@@ -20,15 +21,18 @@ public class CommitInfo {
 	private CommitInfo prev;
 	private CommitInfo next;
 
-	private CanonicalTreeParser treeParser;
-
 	private List<String> functionNameOccurrences;
 	private FunctionNode matchedFunctionNode;
+
+	private List<DiffEntry> diff;
 
 	private boolean firstFunctionOccurrence = false;
 
 	private String fileName;
 	private String fileContent;
+
+	// Only for serialization
+	public CommitInfo() {}
 
 	public CommitInfo(RevCommit commit) {
 		this.commit = commit;
@@ -95,14 +99,6 @@ public class CommitInfo {
 		this.next = next;
 	}
 
-	public CanonicalTreeParser getTreeParser() {
-		return treeParser;
-	}
-
-	public void setTreeParser(CanonicalTreeParser treeParser) {
-		this.treeParser = treeParser;
-	}
-
 	public boolean isFirstFunctionOccurrence() {
 		return firstFunctionOccurrence;
 	}
@@ -117,6 +113,14 @@ public class CommitInfo {
 
 	public Date getDate() {
 		return date;
+	}
+
+	public void setDiff(List<DiffEntry> diff) {
+		this.diff = diff;
+	}
+
+	public List<DiffEntry> getDiff() {
+		return diff;
 	}
 
 	public String toString() {
