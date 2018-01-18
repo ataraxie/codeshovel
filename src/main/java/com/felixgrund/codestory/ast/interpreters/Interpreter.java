@@ -1,6 +1,7 @@
 package com.felixgrund.codestory.ast.interpreters;
 
 import com.felixgrund.codestory.ast.entities.CommitInfo;
+import jdk.nashorn.internal.ir.FunctionNode;
 import org.eclipse.jgit.lib.PersonIdent;
 
 import java.text.DateFormat;

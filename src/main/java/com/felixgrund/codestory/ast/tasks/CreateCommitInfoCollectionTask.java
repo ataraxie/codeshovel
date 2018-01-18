@@ -106,6 +106,7 @@ public class CreateCommitInfoCollectionTask {
 		Iterable<RevCommit> commits = logCommand.call();
 
 		for (RevCommit commit : commits) {
+			System.out.println(commit.getName());
 			if (commit != headCommit) {
 				CommitInfo currentCommitInfo = createCommitInfoNonHead(commit);
 				currentCommitInfo.setNext(commitInfoAfter);
