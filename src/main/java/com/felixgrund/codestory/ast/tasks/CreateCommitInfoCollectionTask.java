@@ -2,6 +2,8 @@ package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.entities.CommitInfo;
 import com.felixgrund.codestory.ast.entities.CommitInfoCollection;
+import com.felixgrund.codestory.ast.entities.DiffInfo;
+import com.felixgrund.codestory.ast.entities.FunctionInfo;
 import com.felixgrund.codestory.ast.parser.JsParser;
 import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
@@ -10,22 +12,29 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 
-import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 public class CreateCommitInfoCollectionTask {
+
+	private static boolean CACHE_ENABLED = false;
 
 	private Git git;
 	private Repository repository;
@@ -53,12 +62,16 @@ public class CreateCommitInfoCollectionTask {
 		long start = new Date().getTime();
 		this.buildAndValidate();
 		String hash = this.createUuidHash();
-		this.result = Utl.loadFromCache(hash);
+		if (CACHE_ENABLED) {
+			this.result = Utl.loadFromCache(hash);
+		}
 		if (this.result == null) {
-			System.out.println("NOT FOUND IN CACHE");
 			this.createCommitCollection();
-			Utl.saveToCache(hash, this.result);
-		} else {
+			if (CACHE_ENABLED) {
+				System.out.println("NOT FOUND IN CACHE");
+				Utl.saveToCache(hash, this.result);
+			}
+		} else if (CACHE_ENABLED) {
 			System.out.println("FOUND IN CACHE");
 		}
 
@@ -85,7 +98,7 @@ public class CreateCommitInfoCollectionTask {
 		Utl.checkNotNull("startFunctionNode", this.startFunctionNode);
 	}
 
-	public void createCommitCollection() throws IOException, GitAPIException {
+	private void createCommitCollection() throws IOException, GitAPIException {
 		Ref masterRef = repository.findRef(branchName);
 		ObjectId masterId = masterRef.getObjectId();
 		RevWalk walk = new RevWalk(repository);
@@ -98,9 +111,9 @@ public class CreateCommitInfoCollectionTask {
 		this.headCommitInfo = this.createCommitInfoHead(headCommit);
 		this.result.add(this.headCommitInfo);
 
-		LogCommand logCommand = git.log().all()
-				.add(git.getRepository().resolve(Constants.HEAD))
-				.addPath("src/main/resources/pocketquery/js/pocketquery-admin.js");
+		LogCommand logCommand = git.log()
+				.add(git.getRepository().resolve(startCommit.getName()))
+				.addPath(filePath);
 
 		CommitInfo commitInfoAfter = this.headCommitInfo;
 		Iterable<RevCommit> commits = logCommand.call();
@@ -111,22 +124,22 @@ public class CreateCommitInfoCollectionTask {
 				CommitInfo currentCommitInfo = createCommitInfoNonHead(commit);
 				currentCommitInfo.setNext(commitInfoAfter);
 				commitInfoAfter.setPrev(currentCommitInfo);
-				commitInfoAfter.setDiff(createDiff(commitInfoAfter.getCommit(), commit));
+				commitInfoAfter.setDiffInfo(createDiffInfo(commitInfoAfter.getCommit(), commit));
 				this.result.add(currentCommitInfo);
 				commitInfoAfter = currentCommitInfo;
 			}
 		}
 	}
 
-
-
 	private CommitInfo createCommitInfoNonHead(RevCommit commit) throws IOException {
 		CommitInfo commitInfo = createBaseCommitInfo(commit);
-		if (commitInfo.isFileFound() && this.headCommitInfo.getMatchedFunctionNode() != null) {
+		if (commitInfo.isFileFound() && this.headCommitInfo.isFunctionFound()) {
 			JsParser parser = new JsParser(commitInfo.getFileName(), commitInfo.getFileContent());
-			String functionPath = this.headCommitInfo.getMatchedFunctionNode().getName();
+			String functionPath = this.headCommitInfo.getMatchedFunctionInfo().getFunctionNode().getName();
 			FunctionNode matchedNode = parser.findFunctionByFunctionPath(functionPath);
-			commitInfo.setMatchedFunctionNode(matchedNode);
+			if (matchedNode != null) {
+				commitInfo.setMatchedFunctionInfo(new FunctionInfo(matchedNode, commitInfo.getFileContent()));
+			}
 		}
 		return commitInfo;
 	}
@@ -136,7 +149,9 @@ public class CreateCommitInfoCollectionTask {
 		if (commitInfo.isFileFound()) {
 			JsParser parser = new JsParser(commitInfo.getFileName(), commitInfo.getFileContent());
 			FunctionNode matchedNode = parser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
-			commitInfo.setMatchedFunctionNode(matchedNode);
+			if (matchedNode != null) {
+				commitInfo.setMatchedFunctionInfo(new FunctionInfo(matchedNode, commitInfo.getFileContent()));
+			}
 		}
 		return commitInfo;
 	}
@@ -144,6 +159,7 @@ public class CreateCommitInfoCollectionTask {
 	private CommitInfo createBaseCommitInfo(RevCommit commit) throws IOException {
 		CommitInfo ret = new CommitInfo(commit);
 		ret.setFileName(this.fileName);
+		ret.setFilePath(this.filePath);
 
 		RevTree tree = commit.getTree();
 		TreeWalk treeWalk = new TreeWalk(this.repository);
@@ -161,17 +177,37 @@ public class CreateCommitInfoCollectionTask {
 
 	}
 
-	private List<DiffEntry> createDiff(RevCommit commit, RevCommit prevCommit) throws IOException, GitAPIException {
+	private DiffInfo createDiffInfo(RevCommit commit, RevCommit prevCommit) throws IOException, GitAPIException {
+		DiffInfo ret = null;
 		ObjectReader objectReader = repository.newObjectReader();
 		CanonicalTreeParser treeParserNew = new CanonicalTreeParser();
+		OutputStream outputStream = System.out;
+		DiffFormatter formatter = new DiffFormatter(outputStream);
+		formatter.setRepository(repository);
+		formatter.setDiffComparator(RawTextComparator.DEFAULT);
 		treeParserNew.reset(objectReader, commit.getTree());
 		CanonicalTreeParser treeParserOld = new CanonicalTreeParser();
 		treeParserOld.reset(objectReader, prevCommit.getTree());
-		return git.diff()
-				.setOldTree(treeParserOld)
-				.setNewTree(treeParserNew)
-				.call();
+		List<DiffEntry> diff = formatter.scan(treeParserOld, treeParserNew);
+		for (DiffEntry entry : diff) {
+			if (entry.getOldPath().equals(filePath)) {
+				FileHeader fileHeader = formatter.toFileHeader(entry);
+				ret = new DiffInfo(entry, fileHeader.toEditList(), formatter);
+				break;
+			}
+		}
+		return ret;
+	}
 
+	private String createUuidHash() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(branchName)
+				.append(filePath)
+				.append(fileName)
+				.append(functionName)
+				.append(functionStartLine)
+				.append(startCommitName);
+		return DigestUtils.md5Hex(builder.toString());
 	}
 
 	public CommitInfoCollection getResult() {
@@ -207,15 +243,6 @@ public class CreateCommitInfoCollectionTask {
 		this.fileName = fileName;
 	}
 
-	public String createUuidHash() {
-		StringBuilder builder = new StringBuilder();
-		builder.append(branchName)
-				.append(filePath)
-				.append(fileName)
-				.append(functionName)
-				.append(functionStartLine)
-				.append(startCommitName);
-		return DigestUtils.md5Hex(builder.toString());
-	}
+
 
 }

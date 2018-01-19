@@ -1,10 +1,6 @@
 package com.felixgrund.codestory.ast.entities;
 
-import jdk.nashorn.internal.ir.FunctionNode;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,14 +18,15 @@ public class CommitInfo {
 	private CommitInfo next;
 
 	private List<String> functionNameOccurrences;
-	private FunctionNode matchedFunctionNode;
+	private FunctionInfo matchedFunctionInfo;
 
-	private List<DiffEntry> diff;
+	private DiffInfo diffInfo;
 
 	private boolean firstFunctionOccurrence = false;
 
 	private String fileName;
 	private String fileContent;
+	private String filePath;
 
 	// Only for serialization
 	public CommitInfo() {}
@@ -44,12 +41,12 @@ public class CommitInfo {
 		return commit;
 	}
 
-	public FunctionNode getMatchedFunctionNode() {
-		return matchedFunctionNode;
+	public FunctionInfo getMatchedFunctionInfo() {
+		return matchedFunctionInfo;
 	}
 
-	public void setMatchedFunctionNode(FunctionNode matchedFunctionNode) {
-		this.matchedFunctionNode = matchedFunctionNode;
+	public void setMatchedFunctionInfo(FunctionInfo matchedFunctionInfo) {
+		this.matchedFunctionInfo = matchedFunctionInfo;
 	}
 
 	public String getFileContent() {
@@ -80,7 +77,7 @@ public class CommitInfo {
 		return this.fileContent != null;
 	}
 	public boolean isFunctionFound() {
-		return this.matchedFunctionNode != null;
+		return this.matchedFunctionInfo != null;
 	}
 
 	public CommitInfo getPrev() {
@@ -115,12 +112,20 @@ public class CommitInfo {
 		return date;
 	}
 
-	public void setDiff(List<DiffEntry> diff) {
-		this.diff = diff;
+	public DiffInfo getDiffInfo() {
+		return diffInfo;
 	}
 
-	public List<DiffEntry> getDiff() {
-		return diff;
+	public void setDiffInfo(DiffInfo diffInfo) {
+		this.diffInfo = diffInfo;
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
 	public String toString() {

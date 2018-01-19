@@ -6,19 +6,27 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
 import com.felixgrund.codestory.ast.entities.CommitInfo;
 import com.felixgrund.codestory.ast.entities.CommitInfoCollection;
+import com.felixgrund.codestory.ast.entities.DiffInfo;
 import com.felixgrund.codestory.ast.interpreters.Interpreter;
 import com.felixgrund.codestory.ast.tasks.CreateCommitInfoCollectionTask;
 import com.felixgrund.codestory.ast.util.Utl;
 import com.thoughtworks.xstream.XStream;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.*;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.patch.FileHeader;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 
