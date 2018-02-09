@@ -2,17 +2,13 @@ package com.felixgrund.codestory.ast.interpreters;
 
 import com.felixgrund.codestory.ast.entities.CommitInfo;
 import com.felixgrund.codestory.ast.entities.DiffInfo;
+import com.felixgrund.codestory.ast.entities.FunctionInfo;
 import jdk.nashorn.internal.ir.FunctionNode;
 import org.eclipse.jgit.diff.Edit;
-import org.eclipse.jgit.diff.HistogramDiff;
 import org.eclipse.jgit.diff.RawText;
-import org.eclipse.jgit.lib.PersonIdent;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Interpreter {
@@ -66,6 +62,17 @@ public class Interpreter {
 	}
 
 	private boolean isFunctionNotFoundAnymore() {
+		boolean isNotFoundAnymore = false;
+		if (isFunctionNotFoundAnymoreUsingFunctionName()) {
+			isNotFoundAnymore = true;
+			FunctionInfo prev = commitInfo.getPrev().getMatchedFunctionInfo();
+			FunctionNode function = commitInfo.getParser().findFunctionByNameAndBody("data", prev.getBodyString());
+			int a = 1;
+		}
+		return isNotFoundAnymore;
+	}
+
+	private boolean isFunctionNotFoundAnymoreUsingFunctionName() {
 		return !commitInfo.isFunctionFound()
 				&& commitInfo.getPrev() != null
 				&& commitInfo.getPrev().isFunctionFound();

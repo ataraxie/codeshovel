@@ -1,5 +1,6 @@
 package com.felixgrund.codestory.ast.entities;
 
+import com.felixgrund.codestory.ast.parser.JsParser;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.text.SimpleDateFormat;
@@ -27,6 +28,8 @@ public class CommitInfo {
 	private String fileName;
 	private String fileContent;
 	private String filePath;
+
+	private JsParser parser;
 
 	// Only for serialization
 	public CommitInfo() {}
@@ -126,6 +129,14 @@ public class CommitInfo {
 
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
+	}
+
+	public JsParser getParser() {
+		return parser;
+	}
+
+	public void setParser(JsParser parser) {
+		this.parser = parser;
 	}
 
 	public String toString() {

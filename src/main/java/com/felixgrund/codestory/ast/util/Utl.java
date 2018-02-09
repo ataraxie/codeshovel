@@ -7,6 +7,7 @@ import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrateg
 import com.felixgrund.codestory.ast.entities.CommitInfo;
 import com.felixgrund.codestory.ast.entities.CommitInfoCollection;
 import com.google.common.collect.Lists;
+import jdk.nashorn.internal.ir.FunctionNode;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
@@ -123,7 +124,9 @@ public class Utl {
 		output.close();
 	}
 
-
-
+	public static String getFunctionBody(FunctionNode functionNode) {
+		String fileSource = functionNode.getSource().getString();
+		return fileSource.substring(functionNode.getStart(), functionNode.getFinish());
+	}
 
 }

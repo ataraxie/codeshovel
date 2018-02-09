@@ -135,10 +135,11 @@ public class CreateCommitInfoCollectionTask {
 		CommitInfo commitInfo = createBaseCommitInfo(commit);
 		if (commitInfo.isFileFound() && this.headCommitInfo.isFunctionFound()) {
 			JsParser parser = new JsParser(commitInfo.getFileName(), commitInfo.getFileContent());
+			commitInfo.setParser(parser);
 			String functionPath = this.headCommitInfo.getMatchedFunctionInfo().getFunctionNode().getName();
 			FunctionNode matchedNode = parser.findFunctionByFunctionPath(functionPath);
 			if (matchedNode != null) {
-				commitInfo.setMatchedFunctionInfo(new FunctionInfo(matchedNode, commitInfo.getFileContent()));
+				commitInfo.setMatchedFunctionInfo(new FunctionInfo(matchedNode));
 			}
 		}
 		return commitInfo;
@@ -148,9 +149,10 @@ public class CreateCommitInfoCollectionTask {
 		CommitInfo commitInfo = createBaseCommitInfo(commit);
 		if (commitInfo.isFileFound()) {
 			JsParser parser = new JsParser(commitInfo.getFileName(), commitInfo.getFileContent());
+			commitInfo.setParser(parser);
 			FunctionNode matchedNode = parser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
 			if (matchedNode != null) {
-				commitInfo.setMatchedFunctionInfo(new FunctionInfo(matchedNode, commitInfo.getFileContent()));
+				commitInfo.setMatchedFunctionInfo(new FunctionInfo(matchedNode));
 			}
 		}
 		return commitInfo;

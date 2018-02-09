@@ -1,31 +1,22 @@
 package com.felixgrund.codestory.ast.entities;
 
+import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
 
 public class FunctionInfo {
 
 	private FunctionNode functionNode;
-	private String fileContent;
-	private String bodyString;
 
-	public FunctionInfo(FunctionNode functionNode, String fileContent) {
+	public FunctionInfo(FunctionNode functionNode) {
 		this.functionNode = functionNode;
-		this.fileContent = fileContent;
-		if (functionNode != null) {
-			setBodyString();
-		}
 	}
 
-	private void setBodyString() {
-		// TODO: use functionNode.getSource?
-		bodyString = fileContent.substring(functionNode.getStart(), functionNode.getFinish());
+	public String getBodyString() {
+		return Utl.getFunctionBody(functionNode);
 	}
 
 	public FunctionNode getFunctionNode() {
 		return functionNode;
 	}
 
-	public String getBodyString() {
-		return bodyString;
-	}
 }
