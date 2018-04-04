@@ -4,7 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
-import com.felixgrund.codestory.ast.entities.YCollection;
+import com.felixgrund.codestory.ast.entities.Yhistory;
 import com.google.common.collect.Lists;
 import jdk.nashorn.internal.ir.FunctionNode;
 import org.eclipse.jgit.lib.ObjectId;
@@ -97,14 +97,14 @@ public class Utl {
 		return projectDir() + "/cache/" + hash + ".codestory";
 	}
 
-	public static YCollection loadFromCache(String hash) {
-		YCollection ret = null;
+	public static Yhistory loadFromCache(String hash) {
+		Yhistory ret = null;
 		Kryo kryo = new Kryo();
 		kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
 		Input input = null;
 		try {
 			input = new Input(new FileInputStream(cacheFilePath(hash)));
-			ret = kryo.readObject(input, YCollection.class);
+			ret = kryo.readObject(input, Yhistory.class);
 			input.close();
 		} catch (FileNotFoundException e) {
 			// return null
@@ -112,7 +112,7 @@ public class Utl {
 		return ret;
 	}
 
-	public static void saveToCache(String hash, YCollection collection) throws FileNotFoundException {
+	public static void saveToCache(String hash, Yhistory collection) throws FileNotFoundException {
 		Kryo kryo = new Kryo();
 		kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
 		Output output = new Output(new FileOutputStream(cacheFilePath(hash)));

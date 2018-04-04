@@ -1,11 +1,10 @@
 package com.felixgrund.codestory.ast.tasks;
 
-import com.felixgrund.codestory.ast.entities.YCommit;
-import com.felixgrund.codestory.ast.entities.YCollection;
-import com.felixgrund.codestory.ast.entities.YDiff;
-import com.felixgrund.codestory.ast.entities.YFunction;
+import com.felixgrund.codestory.ast.entities.*;
+import com.felixgrund.codestory.ast.interpreters.Interpreter;
 import com.felixgrund.codestory.ast.parser.JsParser;
 import com.felixgrund.codestory.ast.util.Utl;
+import com.google.common.collect.Lists;
 import jdk.nashorn.internal.ir.FunctionNode;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
@@ -18,6 +17,7 @@ import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -27,9 +27,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class YAnalysisTask {
+public class AnalysisLevel1Task {
 
 	private static boolean CACHE_ENABLED = false;
 
@@ -42,34 +43,50 @@ public class YAnalysisTask {
 	private String functionName;
 	private int functionStartLine;
 
+	private List<RevCommit> history;
+
 	private String functionPath;
 
 	private String startFileContent;
 	private FunctionNode startFunctionNode;
 	private RevCommit startCommit;
 
-	private YCommit startCommitInfo;
-	private YCollection result;
+	private Ycommit startCommitInfo;
+	private Ycommit headCommitInfo;
+	private Yhistory yhistory;
+	private Yresult yresult;
+
 
 	public void run() throws Exception {
 		long start = new Date().getTime();
 		this.buildAndValidate();
 		String hash = this.createUuidHash();
 		if (CACHE_ENABLED) {
-			this.result = Utl.loadFromCache(hash);
+			this.yhistory = Utl.loadFromCache(hash);
 		}
-		if (this.result == null) {
+		if (this.yhistory == null) {
 			this.createCommitCollection();
 			if (CACHE_ENABLED) {
 				System.out.println("NOT FOUND IN CACHE");
-				Utl.saveToCache(hash, this.result);
+				Utl.saveToCache(hash, this.yhistory);
 			}
 		} else if (CACHE_ENABLED) {
 			System.out.println("FOUND IN CACHE");
 		}
 
+		this.createResult();
+
 		long timeTakenSeconds = (new Date().getTime() - start) / 1000;
-		System.out.println("MEASURE YAnalysisTask in seconds: " + timeTakenSeconds);
+		System.out.println("MEASURE AnalysisLevel1Task in seconds: " + timeTakenSeconds);
+	}
+
+	private void createResult() throws IOException {
+		this.yresult = new Yresult();
+		for (Ycommit ycommit : this.getYhistory()) {
+			Interpreter interpreter = new Interpreter(ycommit);
+			interpreter.interpret();
+			this.yresult.putAll(interpreter.getFindings());
+		}
 	}
 
 	private void buildAndValidate() throws Exception {
@@ -95,49 +112,57 @@ public class YAnalysisTask {
 
 		this.startCommitInfo = createCommitInfo(this.startCommit);
 		Utl.checkNotNull("startCommitInfo", this.startCommitInfo);
+
+		Ref masterRef = this.repository.findRef(this.branchName);
+		ObjectId masterId = masterRef.getObjectId();
+		RevWalk walk = new RevWalk(this.repository);
+		RevCommit headCommit = walk.parseCommit(masterId);
+		this.headCommitInfo = createCommitInfo(headCommit);
+		Utl.checkNotNull("headCommitInfo", this.startCommitInfo);
 	}
 
 	private void createCommitCollection() throws IOException, GitAPIException {
-		this.result = new YCollection();
-		this.result.add(this.startCommitInfo);
 
-		LogCommand logCommand = git.log().addPath(filePath);
+		this.yhistory = new Yhistory();
+		this.yhistory.add(this.headCommitInfo);
 
-		YCommit yCommitAfter = this.startCommitInfo;
-		Iterable<RevCommit> commits = logCommand.call();
+		LogCommand logCommand = this.git.log().addPath(this.filePath);
 
-		for (RevCommit commit : commits) {
-			if (commit.getCommitTime() < startCommit.getCommitTime()) { // start commit for log command doesn't work
-				System.out.println(commit.getName());
-				YCommit currentCommitInfo = createCommitInfo(commit);
-				currentCommitInfo.setNext(yCommitAfter);
-				yCommitAfter.setPrev(currentCommitInfo);
-				yCommitAfter.setYDiff(createDiffInfo(yCommitAfter.getCommit(), commit));
-				this.result.add(currentCommitInfo);
-				yCommitAfter = currentCommitInfo;
+		Ycommit ycommitAfter = this.headCommitInfo;
+		Iterable<RevCommit> revisions = logCommand.call();
+		this.history = Lists.newArrayList(revisions);
+
+		for (RevCommit commit : this.history) {
+			if (commit != this.headCommitInfo.getCommit()) { // start commit for log command doesn't work
+				Ycommit currentCommitInfo = createCommitInfo(commit);
+				currentCommitInfo.setNext(ycommitAfter);
+				ycommitAfter.setPrev(currentCommitInfo);
+				ycommitAfter.setYdiff(createDiffInfo(ycommitAfter.getCommit(), commit));
+				this.yhistory.add(currentCommitInfo);
+				ycommitAfter = currentCommitInfo;
 			}
 		}
 	}
 
-	private YCommit createCommitInfo(RevCommit commit) throws IOException {
-		YCommit yCommit = createBaseCommitInfo(commit);
-		if (yCommit.isFileFound()) {
-			JsParser parser = new JsParser(yCommit.getFileName(), yCommit.getFileContent());
-			yCommit.setParser(parser);
+	private Ycommit createCommitInfo(RevCommit commit) throws IOException {
+		Ycommit ycommit = createBaseCommitInfo(commit);
+		if (ycommit.isFileFound()) {
+			JsParser parser = new JsParser(ycommit.getFileName(), ycommit.getFileContent());
+			ycommit.setParser(parser);
 			List<FunctionNode> matchedNodes = parser.findFunctionByNode(this.startFunctionNode);
 			int numMatchedNodes = matchedNodes.size();
 			if (numMatchedNodes >= 1) {
-				yCommit.setMatchedFunctionInfo(new YFunction(matchedNodes.get(0)));
+				ycommit.setMatchedFunctionInfo(new Yfunction(matchedNodes.get(0)));
 				if (numMatchedNodes > 1) {
 					System.err.println("More than one matching function found. Taking first.");
 				}
 			}
 		}
-		return yCommit;
+		return ycommit;
 	}
 
-	private YCommit createBaseCommitInfo(RevCommit commit) throws IOException {
-		YCommit ret = new YCommit(commit);
+	private Ycommit createBaseCommitInfo(RevCommit commit) throws IOException {
+		Ycommit ret = new Ycommit(commit);
 		ret.setFileName(this.fileName);
 		ret.setFilePath(this.filePath);
 
@@ -157,8 +182,8 @@ public class YAnalysisTask {
 
 	}
 
-	private YDiff createDiffInfo(RevCommit commit, RevCommit prevCommit) throws IOException, GitAPIException {
-		YDiff ret = null;
+	private Ydiff createDiffInfo(RevCommit commit, RevCommit prevCommit) throws IOException, GitAPIException {
+		Ydiff ret = null;
 		ObjectReader objectReader = this.repository.newObjectReader();
 		CanonicalTreeParser treeParserNew = new CanonicalTreeParser();
 		OutputStream outputStream = System.out;
@@ -172,7 +197,7 @@ public class YAnalysisTask {
 		for (DiffEntry entry : diff) {
 			if (entry.getOldPath().equals(this.filePath)) {
 				FileHeader fileHeader = formatter.toFileHeader(entry);
-				ret = new YDiff(entry, fileHeader.toEditList(), formatter);
+				ret = new Ydiff(entry, fileHeader.toEditList(), formatter);
 				break;
 			}
 		}
@@ -190,8 +215,8 @@ public class YAnalysisTask {
 		return DigestUtils.md5Hex(builder.toString());
 	}
 
-	public YCollection getResult() {
-		return result;
+	public Yhistory getYhistory() {
+		return yhistory;
 	}
 
 	public void setRepository(String repositoryPath) throws IOException {
@@ -227,6 +252,11 @@ public class YAnalysisTask {
 		this.fileName = fileName;
 	}
 
+	public List<RevCommit> getHistory() {
+		return history;
+	}
 
-
+	public Yresult getYresult() {
+		return yresult;
+	}
 }

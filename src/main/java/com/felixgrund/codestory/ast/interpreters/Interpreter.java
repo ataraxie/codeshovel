@@ -1,57 +1,59 @@
 package com.felixgrund.codestory.ast.interpreters;
 
-import com.felixgrund.codestory.ast.entities.YCommit;
-import com.felixgrund.codestory.ast.entities.YDiff;
-import com.felixgrund.codestory.ast.entities.YFunction;
+import com.felixgrund.codestory.ast.changes.*;
+import com.felixgrund.codestory.ast.entities.Ycommit;
+import com.felixgrund.codestory.ast.entities.Ydiff;
+import com.felixgrund.codestory.ast.entities.Yfunction;
 import jdk.nashorn.internal.ir.FunctionNode;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.RawText;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Interpreter {
 
-	private List<String> findings;
+	private LinkedHashMap<Ycommit, Ychange> findings;
 
-	private YCommit yCommit;
+	private Ycommit ycommit;
 
-	public Interpreter(YCommit yCommit) {
-		this.findings = new ArrayList<>();
-		this.yCommit = yCommit;
+	public Interpreter(Ycommit ycommit) {
+		this.findings = new LinkedHashMap<>();
+		this.ycommit = ycommit;
 	}
 
 	public void interpret() throws IOException {
-		if (yCommit.isFirstFunctionOccurrence()) {
-			findings.add("Function was first introduced");
+		if (ycommit.isFirstFunctionOccurrence()) {
+			findings.put(ycommit, new Yintroduced());
 		}
 		if (isFunctionNotFoundAnymore()) {
-			findings.add("Function was removed");
+			findings.put(ycommit, new Yremoved());
 		}
 		if (isFunctionFoundAgain()) {
-			findings.add("Function was added");
+			findings.put(ycommit, new Yadded());
 		}
-		if (isFunctionModified()) {
-			findings.add("Function was modified");
-			findEdits();
+		if (isFunctionBodyModified()) {
+			findings.put(ycommit, new Ymodbody());
+//			findEdits();
 		}
 	}
 
 	private List<Edit> findEdits() throws IOException {
 		List<Edit> ret = new ArrayList<>();
-		YDiff YDiff = yCommit.getYDiff();
-		RawText aSource = new RawText(yCommit.getPrev().getFileContent().getBytes());
-		RawText bSource = new RawText(yCommit.getFileContent().getBytes());
-//		YDiff.getFormatter().format(YDiff.getEditList(), aSource, bSource);
+		Ydiff Ydiff = ycommit.getYdiff();
+		RawText aSource = new RawText(ycommit.getPrev().getFileContent().getBytes());
+		RawText bSource = new RawText(ycommit.getFileContent().getBytes());
+//		Ydiff.getFormatter().format(Ydiff.getEditList(), aSource, bSource);
 		return ret;
 	}
 
-	private boolean isFunctionModified() {
+	private boolean isFunctionBodyModified() {
 		boolean ret = false;
-		if (yCommit.isFunctionFound() && yCommit.getPrev() != null && yCommit.getPrev().isFunctionFound()) {
-			String bodyCurrent = yCommit.getMatchedFunctionInfo().getBodyString();
-			String bodyPrev = yCommit.getPrev().getMatchedFunctionInfo().getBodyString();
+		if (ycommit.isFunctionFound() && ycommit.getPrev() != null && ycommit.getPrev().isFunctionFound()) {
+			String bodyCurrent = ycommit.getMatchedFunctionInfo().getBodyString();
+			String bodyPrev = ycommit.getPrev().getMatchedFunctionInfo().getBodyString();
 			if (!bodyCurrent.equals(bodyPrev)) {
 				ret = true;
 			} else {
@@ -65,28 +67,27 @@ public class Interpreter {
 		boolean isNotFoundAnymore = false;
 		if (isFunctionNotFoundAnymoreUsingFunctionName()) {
 			isNotFoundAnymore = true;
-			YFunction prev = yCommit.getPrev().getMatchedFunctionInfo();
-			FunctionNode function = yCommit.getParser().findFunctionByNameAndBody("data", prev.getBodyString());
+			Yfunction prev = ycommit.getPrev().getMatchedFunctionInfo();
+			FunctionNode function = ycommit.getParser().findFunctionByNameAndBody("data", prev.getBodyString());
 			int a = 1;
 		}
 		return isNotFoundAnymore;
 	}
 
 	private boolean isFunctionNotFoundAnymoreUsingFunctionName() {
-		return !yCommit.isFunctionFound()
-				&& yCommit.getPrev() != null
-				&& yCommit.getPrev().isFunctionFound();
+		return !ycommit.isFunctionFound()
+				&& ycommit.getPrev() != null
+				&& ycommit.getPrev().isFunctionFound();
 	}
 
 	private boolean isFunctionFoundAgain() {
-		return !yCommit.isFirstFunctionOccurrence()
-				&& yCommit.isFunctionFound()
-				&& yCommit.getPrev() != null
-				&& !yCommit.getPrev().isFunctionFound();
+		return !ycommit.isFirstFunctionOccurrence()
+				&& ycommit.isFunctionFound()
+				&& ycommit.getPrev() != null
+				&& !ycommit.getPrev().isFunctionFound();
 	}
 
-	public List<String> getFindings() {
+	public LinkedHashMap<Ycommit, Ychange> getFindings() {
 		return findings;
 	}
-
 }

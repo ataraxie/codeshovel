@@ -1,8 +1,8 @@
 package com.felixgrund.codestory.ast;
 
-import com.felixgrund.codestory.ast.entities.YCommit;
+import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.interpreters.Interpreter;
-import com.felixgrund.codestory.ast.tasks.YAnalysisTask;
+import com.felixgrund.codestory.ast.tasks.AnalysisLevel1Task;
 
 public class MainPqOnFormSubmit {
 
@@ -18,7 +18,7 @@ public class MainPqOnFormSubmit {
 
 	private static void execute() throws Exception {
 
-		YAnalysisTask task = new YAnalysisTask();
+		AnalysisLevel1Task task = new AnalysisLevel1Task();
 		task.setRepository("/Users/felix/dev/projects_scandio/pocketquery/.git");
 		task.setBranchName("master");
 		task.setFilePath("src/main/resources/pocketquery/js/pocketquery-admin.js");
@@ -29,12 +29,12 @@ public class MainPqOnFormSubmit {
 
 		task.run();
 
-		for (YCommit YCommit : task.getResult()) {
-			Interpreter interpreter = new Interpreter(YCommit);
+		for (Ycommit ycommit : task.getYhistory()) {
+			Interpreter interpreter = new Interpreter(ycommit);
 			interpreter.interpret();
 
 			if (!interpreter.getFindings().isEmpty()) {
-				System.out.println("\n"+ YCommit);
+				System.out.println("\n"+ ycommit);
 				System.out.println(interpreter.getFindings());
 			}
 

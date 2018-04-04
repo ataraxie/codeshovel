@@ -4,7 +4,7 @@ import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.tasks.AnalysisLevel1Task;
 
-public class MainPqEditEntity {
+public class MainPqHandleHistory {
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
@@ -21,11 +21,11 @@ public class MainPqEditEntity {
 		AnalysisLevel1Task task = new AnalysisLevel1Task();
 		task.setRepository(CODESTORY_REPO_DIR + "/pocketquery/.git");
 		task.setBranchName("master");
-		task.setFilePath("src/main/resources/pocketquery/js/pocketquery-admin.js");
-		task.setFileName("pocketquery-admin.js");
-		task.setFunctionName("editEntity");
-		task.setFunctionStartLine(246);
-		task.setStartCommitName("15c0c5ca8b14ad8ddc09e8c2c44c9265352e43cc");
+		task.setFilePath("src/main/resources/pocketquery/js/pocketquery-dynamicload.js");
+		task.setFileName("pocketquery-dynamicload.js");
+		task.setFunctionName("handleHistory");
+		task.setFunctionStartLine(14);
+		task.setStartCommitName("e0ac6f3aaa8342ba6a60394c7dde2dd04c627d24");
 
 		task.run();
 
