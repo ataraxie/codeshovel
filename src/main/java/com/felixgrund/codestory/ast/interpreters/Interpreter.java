@@ -1,8 +1,8 @@
 package com.felixgrund.codestory.ast.interpreters;
 
-import com.felixgrund.codestory.ast.entities.CommitInfo;
-import com.felixgrund.codestory.ast.entities.DiffInfo;
-import com.felixgrund.codestory.ast.entities.FunctionInfo;
+import com.felixgrund.codestory.ast.entities.YCommit;
+import com.felixgrund.codestory.ast.entities.YDiff;
+import com.felixgrund.codestory.ast.entities.YFunction;
 import jdk.nashorn.internal.ir.FunctionNode;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.RawText;
@@ -15,15 +15,15 @@ public class Interpreter {
 
 	private List<String> findings;
 
-	private CommitInfo commitInfo;
+	private YCommit yCommit;
 
-	public Interpreter(CommitInfo commitInfo) {
+	public Interpreter(YCommit yCommit) {
 		this.findings = new ArrayList<>();
-		this.commitInfo = commitInfo;
+		this.yCommit = yCommit;
 	}
 
 	public void interpret() throws IOException {
-		if (commitInfo.isFirstFunctionOccurrence()) {
+		if (yCommit.isFirstFunctionOccurrence()) {
 			findings.add("Function was first introduced");
 		}
 		if (isFunctionNotFoundAnymore()) {
@@ -33,25 +33,25 @@ public class Interpreter {
 			findings.add("Function was added");
 		}
 		if (isFunctionModified()) {
-			findings.add("function.modified");
+			findings.add("Function was modified");
 			findEdits();
 		}
 	}
 
 	private List<Edit> findEdits() throws IOException {
 		List<Edit> ret = new ArrayList<>();
-		DiffInfo diffInfo = commitInfo.getDiffInfo();
-		RawText aSource = new RawText(commitInfo.getPrev().getFileContent().getBytes());
-		RawText bSource = new RawText(commitInfo.getFileContent().getBytes());
-//		diffInfo.getFormatter().format(diffInfo.getEditList(), aSource, bSource);
+		YDiff YDiff = yCommit.getYDiff();
+		RawText aSource = new RawText(yCommit.getPrev().getFileContent().getBytes());
+		RawText bSource = new RawText(yCommit.getFileContent().getBytes());
+//		YDiff.getFormatter().format(YDiff.getEditList(), aSource, bSource);
 		return ret;
 	}
 
 	private boolean isFunctionModified() {
 		boolean ret = false;
-		if (commitInfo.isFunctionFound() && commitInfo.getPrev() != null && commitInfo.getPrev().isFunctionFound()) {
-			String bodyCurrent = commitInfo.getMatchedFunctionInfo().getBodyString();
-			String bodyPrev = commitInfo.getPrev().getMatchedFunctionInfo().getBodyString();
+		if (yCommit.isFunctionFound() && yCommit.getPrev() != null && yCommit.getPrev().isFunctionFound()) {
+			String bodyCurrent = yCommit.getMatchedFunctionInfo().getBodyString();
+			String bodyPrev = yCommit.getPrev().getMatchedFunctionInfo().getBodyString();
 			if (!bodyCurrent.equals(bodyPrev)) {
 				ret = true;
 			} else {
@@ -65,24 +65,24 @@ public class Interpreter {
 		boolean isNotFoundAnymore = false;
 		if (isFunctionNotFoundAnymoreUsingFunctionName()) {
 			isNotFoundAnymore = true;
-			FunctionInfo prev = commitInfo.getPrev().getMatchedFunctionInfo();
-			FunctionNode function = commitInfo.getParser().findFunctionByNameAndBody("data", prev.getBodyString());
+			YFunction prev = yCommit.getPrev().getMatchedFunctionInfo();
+			FunctionNode function = yCommit.getParser().findFunctionByNameAndBody("data", prev.getBodyString());
 			int a = 1;
 		}
 		return isNotFoundAnymore;
 	}
 
 	private boolean isFunctionNotFoundAnymoreUsingFunctionName() {
-		return !commitInfo.isFunctionFound()
-				&& commitInfo.getPrev() != null
-				&& commitInfo.getPrev().isFunctionFound();
+		return !yCommit.isFunctionFound()
+				&& yCommit.getPrev() != null
+				&& yCommit.getPrev().isFunctionFound();
 	}
 
 	private boolean isFunctionFoundAgain() {
-		return !commitInfo.isFirstFunctionOccurrence()
-				&& commitInfo.isFunctionFound()
-				&& commitInfo.getPrev() != null
-				&& !commitInfo.getPrev().isFunctionFound();
+		return !yCommit.isFirstFunctionOccurrence()
+				&& yCommit.isFunctionFound()
+				&& yCommit.getPrev() != null
+				&& !yCommit.getPrev().isFunctionFound();
 	}
 
 	public List<String> getFindings() {

@@ -3,11 +3,11 @@ package com.felixgrund.codestory.ast.entities;
 import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
 
-public class FunctionInfo {
+public class YFunction {
 
 	private FunctionNode functionNode;
 
-	public FunctionInfo(FunctionNode functionNode) {
+	public YFunction(FunctionNode functionNode) {
 		this.functionNode = functionNode;
 	}
 

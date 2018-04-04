@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class CommitInfo {
+public class YCommit {
 
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy:HH:mm");
 
@@ -15,13 +15,13 @@ public class CommitInfo {
 	private Date date;
 
 	private RevCommit commit;
-	private CommitInfo prev;
-	private CommitInfo next;
+	private YCommit prev;
+	private YCommit next;
 
 	private List<String> functionNameOccurrences;
-	private FunctionInfo matchedFunctionInfo;
+	private YFunction matchedFunctionInfo;
 
-	private DiffInfo diffInfo;
+	private YDiff YDiff;
 
 	private boolean firstFunctionOccurrence = false;
 
@@ -32,9 +32,9 @@ public class CommitInfo {
 	private JsParser parser;
 
 	// Only for serialization
-	public CommitInfo() {}
+	public YCommit() {}
 
-	public CommitInfo(RevCommit commit) {
+	public YCommit(RevCommit commit) {
 		this.commit = commit;
 		this.hash = commit.getName();
 		this.date = commit.getAuthorIdent().getWhen();
@@ -44,11 +44,11 @@ public class CommitInfo {
 		return commit;
 	}
 
-	public FunctionInfo getMatchedFunctionInfo() {
+	public YFunction getMatchedFunctionInfo() {
 		return matchedFunctionInfo;
 	}
 
-	public void setMatchedFunctionInfo(FunctionInfo matchedFunctionInfo) {
+	public void setMatchedFunctionInfo(YFunction matchedFunctionInfo) {
 		this.matchedFunctionInfo = matchedFunctionInfo;
 	}
 
@@ -83,19 +83,19 @@ public class CommitInfo {
 		return this.matchedFunctionInfo != null;
 	}
 
-	public CommitInfo getPrev() {
+	public YCommit getPrev() {
 		return prev;
 	}
 
-	public void setPrev(CommitInfo prev) {
+	public void setPrev(YCommit prev) {
 		this.prev = prev;
 	}
 
-	public CommitInfo getNext() {
+	public YCommit getNext() {
 		return next;
 	}
 
-	public void setNext(CommitInfo next) {
+	public void setNext(YCommit next) {
 		this.next = next;
 	}
 
@@ -115,12 +115,12 @@ public class CommitInfo {
 		return date;
 	}
 
-	public DiffInfo getDiffInfo() {
-		return diffInfo;
+	public YDiff getYDiff() {
+		return YDiff;
 	}
 
-	public void setDiffInfo(DiffInfo diffInfo) {
-		this.diffInfo = diffInfo;
+	public void setYDiff(YDiff YDiff) {
+		this.YDiff = YDiff;
 	}
 
 	public String getFilePath() {
