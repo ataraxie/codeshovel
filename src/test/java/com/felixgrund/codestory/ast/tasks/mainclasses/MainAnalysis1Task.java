@@ -11,7 +11,7 @@ import java.io.File;
 
 public class MainAnalysis1Task {
 
-	private static final String TEST_CONFIG = "pocketquery-admin-onFormSubmit";
+	private static final String TEST_CONFIG = "pocketquery-admin-updateQueryInUsageListItems";
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 

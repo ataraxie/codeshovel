@@ -115,38 +115,26 @@ public class AnalysisLevel1Task {
 
 		this.startCommitInfo = getOrCreateYcommit(this.startCommit);
 		Utl.checkNotNull("startCommitInfo", this.startCommitInfo);
-
-		Ref masterRef = this.repository.findRef(this.branchName);
-		ObjectId masterId = masterRef.getObjectId();
-		RevWalk walk = new RevWalk(this.repository);
-		RevCommit headCommit = walk.parseCommit(masterId);
-		this.headCommitInfo = getOrCreateYcommit(headCommit);
-		Utl.checkNotNull("headCommitInfo", this.startCommitInfo);
 	}
 
 	private void createCommitCollection() throws IOException, GitAPIException {
 
 		this.yhistory = new Yhistory();
-		this.yhistory.add(this.headCommitInfo);
 
 		LogCommand logCommand = this.git.log().addPath(this.filePath);
 
-		Ycommit ycommitAfter = this.headCommitInfo;
 		Iterable<RevCommit> revisions = logCommand.call();
 		this.history = Lists.newArrayList(revisions);
 
 		for (RevCommit commit : this.history) {
-			if (commit != this.headCommitInfo.getCommit()) { // start commit for log command doesn't work
-				Ycommit ycommit = getOrCreateYcommit(commit);
-				if (commit.getParentCount() > 0) {
-					RevCommit parentCommit = commit.getParent(0);
-					Ycommit parentYcommit = getOrCreateYcommit(parentCommit);
-					ycommit.setParent(parentYcommit);
-					ycommit.setYdiff(createDiffInfo(commit, parentCommit));
-				}
-				this.yhistory.add(ycommit);
-				ycommitAfter = ycommit;
+			Ycommit ycommit = getOrCreateYcommit(commit);
+			if (commit.getParentCount() > 0) {
+				RevCommit parentCommit = commit.getParent(0);
+				Ycommit parentYcommit = getOrCreateYcommit(parentCommit);
+				ycommit.setParent(parentYcommit);
+				ycommit.setYdiff(createDiffInfo(commit, parentCommit));
 			}
+			this.yhistory.add(ycommit);
 		}
 	}
 
