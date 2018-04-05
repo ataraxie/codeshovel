@@ -1,10 +1,10 @@
-package com.felixgrund.codestory.ast;
+package com.felixgrund.codestory.ast.tasks.mainclasses;
 
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.tasks.AnalysisLevel1Task;
 
-public class MainPqExecuteLoad {
+public class MainPqEntityToForm {
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
@@ -21,11 +21,11 @@ public class MainPqExecuteLoad {
 		AnalysisLevel1Task task = new AnalysisLevel1Task();
 		task.setRepository(CODESTORY_REPO_DIR + "/pocketquery/.git");
 		task.setBranchName("master");
-		task.setFilePath("src/main/resources/pocketquery/js/pocketquery-dynamicload.js");
-		task.setFileName("pocketquery-dynamicload.js");
-		task.setFunctionName("executeLoad");
-		task.setFunctionStartLine(53);
-		task.setStartCommitName("e0ac6f3aaa8342ba6a60394c7dde2dd04c627d24");
+		task.setFilePath("src/main/resources/pocketquery/js/pocketquery-admin.js");
+		task.setFileName("pocketquery-admin.js");
+		task.setFunctionName("entityToForm");
+		task.setFunctionStartLine(213);
+		task.setStartCommitName("2835f9f6ec7dd37ada593f162027408e0f350dd7");
 
 		task.run();
 

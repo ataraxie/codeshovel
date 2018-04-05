@@ -15,8 +15,7 @@ public class Ycommit {
 	private Date date;
 
 	private RevCommit commit;
-	private Ycommit prev;
-	private Ycommit next;
+	private Ycommit parent;
 
 	private List<String> functionNameOccurrences;
 	private Yfunction matchedFunctionInfo;
@@ -83,20 +82,13 @@ public class Ycommit {
 		return this.matchedFunctionInfo != null;
 	}
 
-	public Ycommit getPrev() {
-		return prev;
+
+	public Ycommit getParent() {
+		return parent;
 	}
 
-	public void setPrev(Ycommit prev) {
-		this.prev = prev;
-	}
-
-	public Ycommit getNext() {
-		return next;
-	}
-
-	public void setNext(Ycommit next) {
-		this.next = next;
+	public void setParent(Ycommit parent) {
+		this.parent = parent;
 	}
 
 	public boolean isFirstFunctionOccurrence() {

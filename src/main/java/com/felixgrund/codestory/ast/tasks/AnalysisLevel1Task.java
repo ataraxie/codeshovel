@@ -27,7 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 
 public class AnalysisLevel1Task {
@@ -56,8 +56,11 @@ public class AnalysisLevel1Task {
 	private Yhistory yhistory;
 	private Yresult yresult;
 
+	private HashMap<String, Ycommit> yCommitCache;
+
 
 	public void run() throws Exception {
+		this.yCommitCache = new HashMap<>();
 		long start = new Date().getTime();
 		this.buildAndValidate();
 		String hash = this.createUuidHash();
@@ -110,14 +113,14 @@ public class AnalysisLevel1Task {
 		this.functionPath = this.startFunctionNode.getName();
 		Utl.checkNotNull("functionPath", this.functionPath);
 
-		this.startCommitInfo = createCommitInfo(this.startCommit);
+		this.startCommitInfo = getOrCreateYcommit(this.startCommit);
 		Utl.checkNotNull("startCommitInfo", this.startCommitInfo);
 
 		Ref masterRef = this.repository.findRef(this.branchName);
 		ObjectId masterId = masterRef.getObjectId();
 		RevWalk walk = new RevWalk(this.repository);
 		RevCommit headCommit = walk.parseCommit(masterId);
-		this.headCommitInfo = createCommitInfo(headCommit);
+		this.headCommitInfo = getOrCreateYcommit(headCommit);
 		Utl.checkNotNull("headCommitInfo", this.startCommitInfo);
 	}
 
@@ -134,18 +137,27 @@ public class AnalysisLevel1Task {
 
 		for (RevCommit commit : this.history) {
 			if (commit != this.headCommitInfo.getCommit()) { // start commit for log command doesn't work
-				Ycommit currentCommitInfo = createCommitInfo(commit);
-				currentCommitInfo.setNext(ycommitAfter);
-				ycommitAfter.setPrev(currentCommitInfo);
-				ycommitAfter.setYdiff(createDiffInfo(ycommitAfter.getCommit(), commit));
-				this.yhistory.add(currentCommitInfo);
-				ycommitAfter = currentCommitInfo;
+				Ycommit ycommit = getOrCreateYcommit(commit);
+				if (commit.getParentCount() > 0) {
+					RevCommit parentCommit = commit.getParent(0);
+					Ycommit parentYcommit = getOrCreateYcommit(parentCommit);
+					ycommit.setParent(parentYcommit);
+					ycommit.setYdiff(createDiffInfo(commit, parentCommit));
+				}
+				this.yhistory.add(ycommit);
+				ycommitAfter = ycommit;
 			}
 		}
 	}
 
-	private Ycommit createCommitInfo(RevCommit commit) throws IOException {
-		Ycommit ycommit = createBaseCommitInfo(commit);
+	private Ycommit getOrCreateYcommit(RevCommit commit) throws IOException {
+		String commitName = commit.getName();
+		Ycommit ycommit = yCommitCache.get(commitName);
+		if (ycommit != null) {
+			return ycommit;
+		}
+
+		ycommit = createBaseYcommit(commit);
 		if (ycommit.isFileFound()) {
 			JsParser parser = new JsParser(ycommit.getFileName(), ycommit.getFileContent());
 			ycommit.setParser(parser);
@@ -158,10 +170,11 @@ public class AnalysisLevel1Task {
 				}
 			}
 		}
+		yCommitCache.put(commitName, ycommit);
 		return ycommit;
 	}
 
-	private Ycommit createBaseCommitInfo(RevCommit commit) throws IOException {
+	private Ycommit createBaseYcommit(RevCommit commit) throws IOException {
 		Ycommit ret = new Ycommit(commit);
 		ret.setFileName(this.fileName);
 		ret.setFilePath(this.filePath);

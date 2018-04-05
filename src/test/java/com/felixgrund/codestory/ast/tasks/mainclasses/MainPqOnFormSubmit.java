@@ -1,4 +1,4 @@
-package com.felixgrund.codestory.ast;
+package com.felixgrund.codestory.ast.tasks.mainclasses;
 
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.interpreters.Interpreter;

@@ -6,6 +6,7 @@ import com.felixgrund.codestory.ast.entities.Yresult;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
@@ -33,11 +34,13 @@ public class AnalysisLevel1TaskTest {
 			String json = FileUtils.readFileToString(file, "utf-8");
 			Gson gson = new Gson();
 			RunConfig runConfig = gson.fromJson(json, RunConfig.class);
+			runConfig.configName = file.getName().replace(".json", "");
 			runConfigs.add(runConfig);
 		}
 	}
 
 	@TestFactory
+	@DisplayName("Dynamic test stubs from JSON files")
 	public Collection<DynamicTest> createDynamicTests() throws Exception {
 
 		Collection<DynamicTest> dynamicTests = new ArrayList<>();

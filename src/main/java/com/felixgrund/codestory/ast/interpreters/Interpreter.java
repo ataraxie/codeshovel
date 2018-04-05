@@ -7,6 +7,7 @@ import com.felixgrund.codestory.ast.entities.Yfunction;
 import jdk.nashorn.internal.ir.FunctionNode;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.RawText;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +44,8 @@ public class Interpreter {
 	private List<Edit> findEdits() throws IOException {
 		List<Edit> ret = new ArrayList<>();
 		Ydiff Ydiff = ycommit.getYdiff();
-		RawText aSource = new RawText(ycommit.getPrev().getFileContent().getBytes());
+		RevCommit prev = ycommit.getCommit().getParent(0);
+		RawText aSource = new RawText(ycommit.getParent().getFileContent().getBytes());
 		RawText bSource = new RawText(ycommit.getFileContent().getBytes());
 //		Ydiff.getFormatter().format(Ydiff.getEditList(), aSource, bSource);
 		return ret;
@@ -51,9 +53,9 @@ public class Interpreter {
 
 	private boolean isFunctionBodyModified() {
 		boolean ret = false;
-		if (ycommit.isFunctionFound() && ycommit.getPrev() != null && ycommit.getPrev().isFunctionFound()) {
+		if (ycommit.isFunctionFound() && ycommit.getParent() != null && ycommit.getParent().isFunctionFound()) {
 			String bodyCurrent = ycommit.getMatchedFunctionInfo().getBodyString();
-			String bodyPrev = ycommit.getPrev().getMatchedFunctionInfo().getBodyString();
+			String bodyPrev = ycommit.getParent().getMatchedFunctionInfo().getBodyString();
 			if (!bodyCurrent.equals(bodyPrev)) {
 				ret = true;
 			} else {
@@ -67,8 +69,8 @@ public class Interpreter {
 		boolean isNotFoundAnymore = false;
 		if (isFunctionNotFoundAnymoreUsingFunctionName()) {
 			isNotFoundAnymore = true;
-			Yfunction prev = ycommit.getPrev().getMatchedFunctionInfo();
-			FunctionNode function = ycommit.getParser().findFunctionByNameAndBody("data", prev.getBodyString());
+			Yfunction parent = ycommit.getParent().getMatchedFunctionInfo();
+			FunctionNode function = ycommit.getParser().findFunctionByNameAndBody("data", parent.getBodyString());
 			int a = 1;
 		}
 		return isNotFoundAnymore;
@@ -76,15 +78,15 @@ public class Interpreter {
 
 	private boolean isFunctionNotFoundAnymoreUsingFunctionName() {
 		return !ycommit.isFunctionFound()
-				&& ycommit.getPrev() != null
-				&& ycommit.getPrev().isFunctionFound();
+				&& ycommit.getParent() != null
+				&& ycommit.getParent().isFunctionFound();
 	}
 
 	private boolean isFunctionFoundAgain() {
 		return !ycommit.isFirstFunctionOccurrence()
 				&& ycommit.isFunctionFound()
-				&& ycommit.getPrev() != null
-				&& !ycommit.getPrev().isFunctionFound();
+				&& ycommit.getParent() != null
+				&& !ycommit.getParent().isFunctionFound();
 	}
 
 	public LinkedHashMap<Ycommit, Ychange> getFindings() {

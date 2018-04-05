@@ -1,10 +1,10 @@
-package com.felixgrund.codestory.ast;
+package com.felixgrund.codestory.ast.tasks.mainclasses;
 
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.interpreters.Interpreter;
 import com.felixgrund.codestory.ast.tasks.AnalysisLevel1Task;
 
-public class Main {
+public class MainPqNiceClean {
 
 	private static final String PROJECT_DIR = System.getProperty("user.dir");
 
@@ -19,13 +19,13 @@ public class Main {
 	private static void execute() throws Exception {
 
 		AnalysisLevel1Task task = new AnalysisLevel1Task();
-		task.setRepository("/Users/felix/dev/projects/jquery/.git");
+		task.setRepository("/Users/felix/dev/projects_scandio/pocketquery/.git");
 		task.setBranchName("master");
-		task.setFilePath("src/data.js");
-		task.setFileName("data.js");
-		task.setFunctionName("data");
-		task.setFunctionStartLine(97);
-		task.setStartCommitName("294a3698811d6aaeabc67d2a77a5ef5fac94165a");
+		task.setFilePath("src/main/resources/pocketquery/js/pocketquery-admin.js");
+		task.setFileName("pocketquery-admin.js");
+		task.setFunctionName("niceClean");
+		task.setFunctionStartLine(70);
+		task.setStartCommitName("1c39e6ff5622755e179b07f6dfc47eb043ef4a54");
 
 		task.run();
 
