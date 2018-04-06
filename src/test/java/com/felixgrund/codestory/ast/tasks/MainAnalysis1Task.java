@@ -1,17 +1,18 @@
-package com.felixgrund.codestory.ast.tasks.mainclasses;
+package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yresult;
-import com.felixgrund.codestory.ast.tasks.AnalysisLevel1Task;
-import com.felixgrund.codestory.ast.tasks.RunConfig;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.util.*;
 
 public class MainAnalysis1Task {
 
-	private static final String TEST_CONFIG = "pocketquery-admin-updateQueryInUsageListItems";
+	private static final String TEST_CONFIG = "jquery-core-each-2";
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
@@ -30,7 +31,7 @@ public class MainAnalysis1Task {
 		task.setRepository(CODESTORY_REPO_DIR + "/" + runConfig.getRepoName() + "/.git");
 		task.setBranchName(runConfig.getBranchName());
 		task.setFilePath(runConfig.getFilePath());
-		task.setFileName(runConfig.getFileName());
+		task.setFileName(configName + ".json");
 		task.setFunctionName(runConfig.getFunctionName());
 		task.setFunctionStartLine(runConfig.getFunctionStartLine());
 		task.setStartCommitName(runConfig.getStartCommitName());
@@ -43,10 +44,36 @@ public class MainAnalysis1Task {
 			System.out.println(ycommit.getCommit().getName());
 		}
 
-		System.out.println("\nMethod history...");
+
+		List<String> shortNamesMessages = new ArrayList<>();
+		List<String> jsonMessages = new ArrayList<>();
 		for (Ycommit ycommit : yresult.keySet()) {
-			System.out.println("\"" + ycommit.getCommit().getName() + "\" : \"" + yresult.get(ycommit) + "\",");
+			String message = "\"" + ycommit.getCommit().getName() + "\"";
+			shortNamesMessages.add(message);
+			message = "\"" + ycommit.getCommit().getName() + "\" : \"" + yresult.get(ycommit) + "\"";
+			jsonMessages.add(message);
 		}
+
+		System.out.println("\nMethod history...");
+		System.out.println(StringUtils.join(shortNamesMessages, ",\n"));
+
+		System.out.println("\nMethod history JSON...");
+		System.out.println(StringUtils.join(jsonMessages, ",\n"));
+
+		Set<String> intellijLog = runConfig.getIntellijLog();
+		Set<String> codestoryLog = runConfig.getCodestoryLog();
+		if (intellijLog != null && codestoryLog != null) {
+			Set<String> onlyIntellijLog = new LinkedHashSet<>(intellijLog);
+			onlyIntellijLog.removeAll(codestoryLog);
+			Set<String> onlyCodestoryLog = new LinkedHashSet<>(codestoryLog);
+			onlyCodestoryLog.removeAll(intellijLog);
+
+			System.out.println("\nOnly found in IntelliJ log...");
+			System.out.println(StringUtils.join(onlyIntellijLog, "\n"));
+			System.out.println("\nOnly found in CodeStory log...");
+			System.out.println(StringUtils.join(onlyCodestoryLog, "\n"));
+		}
+
 	}
 
 }

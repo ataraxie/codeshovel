@@ -24,6 +24,8 @@ public class AnalysisLevel1TaskTest {
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
+	private static final String RUN_ONLY_TEST = "pocketquery-dynamicload-onDynamicParametersSubmit";
+
 	private static List<RunConfig> runConfigs = new ArrayList<>();
 
 	@BeforeAll
@@ -34,8 +36,11 @@ public class AnalysisLevel1TaskTest {
 			String json = FileUtils.readFileToString(file, "utf-8");
 			Gson gson = new Gson();
 			RunConfig runConfig = gson.fromJson(json, RunConfig.class);
-			runConfig.configName = file.getName().replace(".json", "");
-			runConfigs.add(runConfig);
+			runConfig.setFileName(file.getName());
+			runConfig.setConfigName(file.getName().replace(".json", ""));
+			if (RUN_ONLY_TEST == null || runConfig.configName.equals(RUN_ONLY_TEST)) {
+				runConfigs.add(runConfig);
+			}
 		}
 	}
 
@@ -62,17 +67,8 @@ public class AnalysisLevel1TaskTest {
 
 			DynamicTest test = createDynamicTest(runConfig, yresult);
 			dynamicTests.add(test);
-
-
-//			// create an test execution
-//			Executable exec = () -> assertEquals("", "");
-//			// create a test display name
-//			String testName = runConfig.testName;
-//			// create dynamic test
-//			DynamicTest dTest = DynamicTest.dynamicTest(testName, exec);
-//			// add the dynamic test to collection
-//			dynamicTests.add(dTest);
 		}
+
 		return dynamicTests;
 	}
 

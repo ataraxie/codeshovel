@@ -1,6 +1,8 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 public class RunConfig {
 
@@ -14,6 +16,9 @@ public class RunConfig {
 	int functionStartLine;
 
 	LinkedHashMap<String, String> expectedResult;
+
+	LinkedHashSet<String> codestoryLog;
+	LinkedHashSet<String> intellijLog;
 
 	public String getConfigName() {
 		return configName;
@@ -85,5 +90,21 @@ public class RunConfig {
 
 	public void setExpectedResult(LinkedHashMap<String, String> expectedResult) {
 		this.expectedResult = expectedResult;
+	}
+
+	public LinkedHashSet<String> getCodestoryLog() {
+		return codestoryLog;
+	}
+
+	public void setCodestoryLog(LinkedHashSet<String> codestoryLog) {
+		this.codestoryLog = codestoryLog;
+	}
+
+	public LinkedHashSet<String> getIntellijLog() {
+		return intellijLog;
+	}
+
+	public void setIntellijLog(LinkedHashSet<String> intellijLog) {
+		this.intellijLog = intellijLog;
 	}
 }
