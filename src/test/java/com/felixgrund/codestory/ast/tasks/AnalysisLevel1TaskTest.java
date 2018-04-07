@@ -5,6 +5,7 @@ import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yresult;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
@@ -12,10 +13,7 @@ import org.junit.jupiter.api.TestFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,7 +22,7 @@ public class AnalysisLevel1TaskTest {
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
-	private static final String RUN_ONLY_TEST = "pocketquery-dynamicload-onDynamicParametersSubmit";
+	private static final String RUN_ONLY_TEST = "pocketquery-admin-entityToForm-2";
 
 	private static List<RunConfig> runConfigs = new ArrayList<>();
 
@@ -83,9 +81,22 @@ public class AnalysisLevel1TaskTest {
 	}
 
 	private static boolean compareResults(LinkedHashMap<String, String> expectedResult, Yresult actualResult) {
+		boolean ret = true;
 		if (expectedResult.size() != actualResult.size()) {
 			System.err.println(String.format("Result size did not match. Expected: %s, actual: %s",
 					expectedResult.size(), actualResult.size()));
+
+			Set<String> expectedKeys = expectedResult.keySet();
+			Set<String> actualKeys = new HashSet<>();
+			for (Ycommit ycommit : actualResult.keySet()) {
+				actualKeys.add(ycommit.getCommit().getName());
+			}
+			Set<String> onlyInExpected = new HashSet<>(expectedKeys);
+			onlyInExpected.removeAll(actualKeys);
+			Set<String> onlyInActual = new HashSet<>(actualKeys);
+			onlyInActual.removeAll(expectedKeys);
+			System.err.println("Only in expected: " + StringUtils.join(onlyInExpected, ","));
+			System.err.println("Only in actual: " + StringUtils.join(onlyInActual, ","));
 			return false;
 		}
 		for (Ycommit ycommit : actualResult.keySet()) {

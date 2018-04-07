@@ -12,7 +12,7 @@ import java.util.*;
 
 public class MainAnalysis1Task {
 
-	private static final String TEST_CONFIG = "jquery-core-each-2";
+	private static final String TEST_CONFIG = "pocketquery-admin-onRemoveItemClick";
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 

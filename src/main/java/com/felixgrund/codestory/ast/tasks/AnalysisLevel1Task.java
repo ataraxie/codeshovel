@@ -18,6 +18,7 @@ import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -121,7 +122,7 @@ public class AnalysisLevel1Task {
 
 		this.yhistory = new Yhistory();
 
-		LogCommand logCommand = this.git.log().addPath(this.filePath);
+		LogCommand logCommand = this.git.log().addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
 
 		Iterable<RevCommit> revisions = logCommand.call();
 		this.history = Lists.newArrayList(revisions);

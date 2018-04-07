@@ -36,7 +36,7 @@ public class Ycommit {
 	public Ycommit(RevCommit commit) {
 		this.commit = commit;
 		this.hash = commit.getName();
-		this.date = commit.getAuthorIdent().getWhen();
+		this.date = new Date(commit.getCommitTime());
 	}
 
 	public RevCommit getCommit() {
