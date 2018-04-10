@@ -12,7 +12,7 @@ import java.util.*;
 
 public class MainAnalysis1Task {
 
-	private static final String TEST_CONFIG = "pocketquery-admin-onRemoveItemClick";
+	private static final String TEST_CONFIG = "jquery-ajax-getScript";
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
@@ -25,13 +25,16 @@ public class MainAnalysis1Task {
 		RunConfig runConfig = gson.fromJson(json, RunConfig.class);
 		runConfig.setConfigName(file.getName().replace(".json", ""));
 
+		String[] pathSplit = runConfig.getFilePath().split("/");
+		String filename = pathSplit[pathSplit.length-1];
+
 		System.out.println("Running dynamic test for config: " + configName);
 
 		AnalysisLevel1Task task = new AnalysisLevel1Task();
 		task.setRepository(CODESTORY_REPO_DIR + "/" + runConfig.getRepoName() + "/.git");
 		task.setBranchName(runConfig.getBranchName());
 		task.setFilePath(runConfig.getFilePath());
-		task.setFileName(configName + ".json");
+		task.setFileName(filename);
 		task.setFunctionName(runConfig.getFunctionName());
 		task.setFunctionStartLine(runConfig.getFunctionStartLine());
 		task.setStartCommitName(runConfig.getStartCommitName());

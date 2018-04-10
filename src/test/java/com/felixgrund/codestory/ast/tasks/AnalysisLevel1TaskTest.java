@@ -22,7 +22,7 @@ public class AnalysisLevel1TaskTest {
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
-	private static final String RUN_ONLY_TEST = "pocketquery-admin-entityToForm-2";
+	private static final String RUN_ONLY_TEST = null;//"pocketquery-admin-entityToForm-2";
 
 	private static List<RunConfig> runConfigs = new ArrayList<>();
 
