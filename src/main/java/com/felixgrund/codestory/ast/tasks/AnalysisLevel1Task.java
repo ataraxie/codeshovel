@@ -1,6 +1,7 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.entities.*;
+import com.felixgrund.codestory.ast.exceptions.ParseException;
 import com.felixgrund.codestory.ast.interpreters.Interpreter;
 import com.felixgrund.codestory.ast.parser.JsParser;
 import com.felixgrund.codestory.ast.util.Utl;
@@ -108,6 +109,7 @@ public class AnalysisLevel1Task {
 		Utl.checkNotNull("startFileContent", this.startFileContent);
 
 		JsParser startParser = new JsParser(this.fileName, this.startFileContent);
+		startParser.parse();
 		this.startFunctionNode = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
 		Utl.checkNotNull("startFunctionNode", this.startFunctionNode);
 
@@ -128,18 +130,22 @@ public class AnalysisLevel1Task {
 		this.history = Lists.newArrayList(revisions);
 
 		for (RevCommit commit : this.history) {
-			Ycommit ycommit = getOrCreateYcommit(commit);
-			if (commit.getParentCount() > 0) {
-				RevCommit parentCommit = commit.getParent(0);
-				Ycommit parentYcommit = getOrCreateYcommit(parentCommit);
-				ycommit.setParent(parentYcommit);
-				ycommit.setYdiff(createDiffInfo(commit, parentCommit));
+			try {
+				Ycommit ycommit = getOrCreateYcommit(commit);
+				if (commit.getParentCount() > 0) {
+					RevCommit parentCommit = commit.getParent(0);
+					Ycommit parentYcommit = getOrCreateYcommit(parentCommit);
+					ycommit.setParent(parentYcommit);
+					ycommit.setYdiff(createDiffInfo(commit, parentCommit));
+				}
+				this.yhistory.add(ycommit);
+			} catch (ParseException e) {
+				System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getName());
 			}
-			this.yhistory.add(ycommit);
 		}
 	}
 
-	private Ycommit getOrCreateYcommit(RevCommit commit) throws IOException {
+	private Ycommit getOrCreateYcommit(RevCommit commit) throws ParseException, IOException {
 		String commitName = commit.getName();
 		Ycommit ycommit = yCommitCache.get(commitName);
 		if (ycommit != null) {
@@ -149,6 +155,7 @@ public class AnalysisLevel1Task {
 		ycommit = createBaseYcommit(commit);
 		if (ycommit.isFileFound()) {
 			JsParser parser = new JsParser(ycommit.getFileName(), ycommit.getFileContent());
+			parser.parse();
 			ycommit.setParser(parser);
 			List<FunctionNode> matchedNodes = parser.findFunctionByNode(this.startFunctionNode);
 			int numMatchedNodes = matchedNodes.size();

@@ -12,7 +12,7 @@ import java.util.*;
 
 public class MainAnalysis1Task {
 
-	private static final String TEST_CONFIG = "jquery-ajax-getScript";
+	private static final String TEST_CONFIG = "jquery-css-css-4";
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
@@ -23,7 +23,7 @@ public class MainAnalysis1Task {
 		String json = FileUtils.readFileToString(file, "utf-8");
 		Gson gson = new Gson();
 		RunConfig runConfig = gson.fromJson(json, RunConfig.class);
-		runConfig.setConfigName(file.getName().replace(".json", ""));
+		runConfig.setConfigName(configName);
 
 		String[] pathSplit = runConfig.getFilePath().split("/");
 		String filename = pathSplit[pathSplit.length-1];
