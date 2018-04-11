@@ -3,8 +3,6 @@ package com.felixgrund.codestory.ast.interpreters;
 import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Ydiff;
-import com.felixgrund.codestory.ast.entities.Yfunction;
-import jdk.nashorn.internal.ir.FunctionNode;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -54,8 +52,8 @@ public class Interpreter {
 	private boolean isFunctionBodyModified() {
 		boolean ret = false;
 		if (ycommit.isFunctionFound() && ycommit.getParent() != null && ycommit.getParent().isFunctionFound()) {
-			String bodyCurrent = ycommit.getMatchedFunctionInfo().getBodyString();
-			String bodyPrev = ycommit.getParent().getMatchedFunctionInfo().getBodyString();
+			String bodyCurrent = ycommit.getMatchedFunction().getBody();
+			String bodyPrev = ycommit.getParent().getMatchedFunction().getBody();
 			if (!bodyCurrent.equals(bodyPrev)) {
 				ret = true;
 			} else {
@@ -66,17 +64,14 @@ public class Interpreter {
 	}
 
 	private boolean isFunctionNotFoundAnymore() {
-		boolean isNotFoundAnymore = false;
-		if (isFunctionNotFoundAnymoreUsingFunctionName()) {
-			isNotFoundAnymore = true;
-			Yfunction parent = ycommit.getParent().getMatchedFunctionInfo();
-			FunctionNode function = ycommit.getParser().findFunctionByNameAndBody("data", parent.getBodyString());
-			int a = 1;
-		}
-		return isNotFoundAnymore;
-	}
-
-	private boolean isFunctionNotFoundAnymoreUsingFunctionName() {
+//		boolean isNotFoundAnymore = false;
+//		if (isFunctionNotFoundAnymoreUsingFunctionName()) {
+//			isNotFoundAnymore = true;
+//			Yfunction parent = ycommit.getParent().getMatchedFunction();
+//			FunctionNode function = ycommit.getParser().findFunctionByNameAndBody("data", parent.getBodyString());
+//			int a = 1;
+//		}
+//		return isNotFoundAnymore;
 		return !ycommit.isFunctionFound()
 				&& ycommit.getParent() != null
 				&& ycommit.getParent().isFunctionFound();

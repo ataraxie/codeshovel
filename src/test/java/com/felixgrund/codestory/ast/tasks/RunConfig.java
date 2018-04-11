@@ -6,19 +6,19 @@ import java.util.List;
 
 public class RunConfig {
 
-	String configName;
-	String repoName;
-	String filePath;
-	String fileName;
-	String branchName;
-	String startCommitName;
-	String functionName;
-	int functionStartLine;
+	private String configName;
+	private String repoName;
+	private String filePath;
+	private String fileName;
+	private String branchName;
+	private String startCommitName;
+	private String functionName;
+	private int functionStartLine;
 
-	LinkedHashMap<String, String> expectedResult;
+	private LinkedHashMap<String, String> expectedResult;
 
-	LinkedHashSet<String> codestoryLog;
-	LinkedHashSet<String> intellijLog;
+	private LinkedHashSet<String> codestoryLog;
+	private LinkedHashSet<String> intellijLog;
 
 	public String getConfigName() {
 		return configName;
@@ -44,12 +44,12 @@ public class RunConfig {
 		this.filePath = filePath;
 	}
 
-	public String getFileName() {
-		return fileName;
-	}
-
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public String getFileName() {
+		return fileName;
 	}
 
 	public String getBranchName() {

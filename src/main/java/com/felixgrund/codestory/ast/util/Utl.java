@@ -120,9 +120,4 @@ public class Utl {
 		output.close();
 	}
 
-	public static String getFunctionBody(FunctionNode functionNode) {
-		String fileSource = functionNode.getSource().getString();
-		return fileSource.substring(functionNode.getStart(), functionNode.getFinish());
-	}
-
 }

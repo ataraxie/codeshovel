@@ -1,22 +1,29 @@
 package com.felixgrund.codestory.ast.entities;
 
-import com.felixgrund.codestory.ast.util.Utl;
-import jdk.nashorn.internal.ir.FunctionNode;
+import java.util.List;
 
 public class Yfunction {
 
-	private FunctionNode functionNode;
+	private String body;
+	private String name;
 
-	public Yfunction(FunctionNode functionNode) {
-		this.functionNode = functionNode;
+	private List<String> parameterNames;
+
+	public Yfunction(String name, String body, List<String> parameterNames) {
+		this.name = name;
+		this.body = body;
+		this.parameterNames = parameterNames;
 	}
 
-	public String getBodyString() {
-		return Utl.getFunctionBody(functionNode);
+	public String getBody() {
+		return body;
 	}
 
-	public FunctionNode getFunctionNode() {
-		return functionNode;
+	public String getName() {
+		return name;
 	}
 
+	public List<String> getParameterNames() {
+		return parameterNames;
+	}
 }

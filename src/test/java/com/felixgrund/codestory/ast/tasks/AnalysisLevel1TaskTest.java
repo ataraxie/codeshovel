@@ -34,9 +34,11 @@ public class AnalysisLevel1TaskTest {
 			String json = FileUtils.readFileToString(file, "utf-8");
 			Gson gson = new Gson();
 			RunConfig runConfig = gson.fromJson(json, RunConfig.class);
-			runConfig.setFileName(file.getName());
+			String[] pathSplit = runConfig.getFilePath().split("/");
+			String filename = pathSplit[pathSplit.length-1];
 			runConfig.setConfigName(file.getName().replace(".json", ""));
-			if (RUN_ONLY_TEST == null || runConfig.configName.equals(RUN_ONLY_TEST)) {
+			runConfig.setFileName(filename);
+			if (RUN_ONLY_TEST == null || runConfig.getConfigName().equals(RUN_ONLY_TEST)) {
 				runConfigs.add(runConfig);
 			}
 		}
@@ -48,16 +50,16 @@ public class AnalysisLevel1TaskTest {
 
 		Collection<DynamicTest> dynamicTests = new ArrayList<>();
 		for (RunConfig runConfig : runConfigs) {
-			System.out.println("Running dynamic test for config :" + runConfig.configName);
+			System.out.println("Running dynamic test for config :" + runConfig.getConfigName());
 
 			AnalysisLevel1Task task = new AnalysisLevel1Task();
-			task.setRepository(CODESTORY_REPO_DIR + "/" + runConfig.repoName + "/.git");
-			task.setBranchName(runConfig.branchName);
-			task.setFilePath(runConfig.filePath);
-			task.setFileName(runConfig.fileName);
-			task.setFunctionName(runConfig.functionName);
-			task.setFunctionStartLine(runConfig.functionStartLine);
-			task.setStartCommitName(runConfig.startCommitName);
+			task.setRepository(CODESTORY_REPO_DIR + "/" + runConfig.getRepoName() + "/.git");
+			task.setBranchName(runConfig.getBranchName());
+			task.setFilePath(runConfig.getFilePath());
+			task.setFileName(runConfig.getFileName());
+			task.setFunctionName(runConfig.getFunctionName());
+			task.setFunctionStartLine(runConfig.getFunctionStartLine());
+			task.setStartCommitName(runConfig.getStartCommitName());
 
 			task.run();
 
@@ -71,11 +73,11 @@ public class AnalysisLevel1TaskTest {
 	}
 
 	private DynamicTest createDynamicTest(RunConfig runConfig, Yresult yresult) {
-		String message = String.format("%s - expecting %s changes", runConfig.configName, runConfig.expectedResult.size());
+		String message = String.format("%s - expecting %s changes", runConfig.getConfigName(), runConfig.getExpectedResult().size());
 		return DynamicTest.dynamicTest(
 				message,
 				() -> {
-					assertTrue(compareResults(runConfig.expectedResult, yresult), "results should be the same");
+					assertTrue(compareResults(runConfig.getExpectedResult(), yresult), "results should be the same");
 				}
 		);
 	}

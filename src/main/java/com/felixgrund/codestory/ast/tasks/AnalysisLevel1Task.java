@@ -1,12 +1,13 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.entities.*;
+import com.felixgrund.codestory.ast.exceptions.NoParserFoundException;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
 import com.felixgrund.codestory.ast.interpreters.Interpreter;
-import com.felixgrund.codestory.ast.parser.JsParser;
+import com.felixgrund.codestory.ast.parser.Yparser;
+import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
 import com.google.common.collect.Lists;
-import jdk.nashorn.internal.ir.FunctionNode;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
@@ -18,7 +19,6 @@ import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
@@ -50,11 +50,10 @@ public class AnalysisLevel1Task {
 	private String functionPath;
 
 	private String startFileContent;
-	private FunctionNode startFunctionNode;
+	private Yfunction startFunction;
 	private RevCommit startCommit;
 
 	private Ycommit startCommitInfo;
-	private Ycommit headCommitInfo;
 	private Yhistory yhistory;
 	private Yresult yresult;
 
@@ -108,19 +107,19 @@ public class AnalysisLevel1Task {
 		this.startFileContent = Utl.findFileContent(this.repository, this.startCommit, this.filePath);
 		Utl.checkNotNull("startFileContent", this.startFileContent);
 
-		JsParser startParser = new JsParser(this.fileName, this.startFileContent);
+		Yparser startParser = ParserFactory.getParser(this.fileName, this.startFileContent);
 		startParser.parse();
-		this.startFunctionNode = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
-		Utl.checkNotNull("startFunctionNode", this.startFunctionNode);
+		this.startFunction = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
+		Utl.checkNotNull("startFunctionNode", this.startFunction);
 
-		this.functionPath = this.startFunctionNode.getName();
+		this.functionPath = this.startFunction.getName();
 		Utl.checkNotNull("functionPath", this.functionPath);
 
 		this.startCommitInfo = getOrCreateYcommit(this.startCommit);
 		Utl.checkNotNull("startCommitInfo", this.startCommitInfo);
 	}
 
-	private void createCommitCollection() throws IOException, GitAPIException {
+	private void createCommitCollection() throws IOException, GitAPIException, NoParserFoundException {
 
 		this.yhistory = new Yhistory();
 
@@ -145,7 +144,7 @@ public class AnalysisLevel1Task {
 		}
 	}
 
-	private Ycommit getOrCreateYcommit(RevCommit commit) throws ParseException, IOException {
+	private Ycommit getOrCreateYcommit(RevCommit commit) throws ParseException, IOException, NoParserFoundException {
 		String commitName = commit.getName();
 		Ycommit ycommit = yCommitCache.get(commitName);
 		if (ycommit != null) {
@@ -154,13 +153,13 @@ public class AnalysisLevel1Task {
 
 		ycommit = createBaseYcommit(commit);
 		if (ycommit.isFileFound()) {
-			JsParser parser = new JsParser(ycommit.getFileName(), ycommit.getFileContent());
+			Yparser parser = ParserFactory.getParser(ycommit.getFileName(), ycommit.getFileContent());
 			parser.parse();
 			ycommit.setParser(parser);
-			List<FunctionNode> matchedNodes = parser.findFunctionByNode(this.startFunctionNode);
-			int numMatchedNodes = matchedNodes.size();
+			List<Yfunction> matchedFunctions = parser.findFunctionByOtherFunction(this.startFunction);
+			int numMatchedNodes = matchedFunctions.size();
 			if (numMatchedNodes >= 1) {
-				ycommit.setMatchedFunctionInfo(new Yfunction(matchedNodes.get(0)));
+				ycommit.setMatchedFunction(matchedFunctions.get(0));
 				if (numMatchedNodes > 1) {
 					System.err.println("More than one matching function found. Taking first.");
 				}

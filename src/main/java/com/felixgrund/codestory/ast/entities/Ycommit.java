@@ -1,6 +1,7 @@
 package com.felixgrund.codestory.ast.entities;
 
-import com.felixgrund.codestory.ast.parser.JsParser;
+import com.felixgrund.codestory.ast.parser.Yparser;
+import com.felixgrund.codestory.ast.parser.impl.JsParser;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.text.SimpleDateFormat;
@@ -18,7 +19,7 @@ public class Ycommit {
 	private Ycommit parent;
 
 	private List<String> functionNameOccurrences;
-	private Yfunction matchedFunctionInfo;
+	private Yfunction matchedFunction;
 
 	private Ydiff Ydiff;
 
@@ -28,7 +29,7 @@ public class Ycommit {
 	private String fileContent;
 	private String filePath;
 
-	private JsParser parser;
+	private Yparser parser;
 
 	// Only for serialization
 	public Ycommit() {}
@@ -43,12 +44,12 @@ public class Ycommit {
 		return commit;
 	}
 
-	public Yfunction getMatchedFunctionInfo() {
-		return matchedFunctionInfo;
+	public Yfunction getMatchedFunction() {
+		return matchedFunction;
 	}
 
-	public void setMatchedFunctionInfo(Yfunction matchedFunctionInfo) {
-		this.matchedFunctionInfo = matchedFunctionInfo;
+	public void setMatchedFunction(Yfunction matchedFunction) {
+		this.matchedFunction = matchedFunction;
 	}
 
 	public String getFileContent() {
@@ -79,7 +80,7 @@ public class Ycommit {
 		return this.fileContent != null;
 	}
 	public boolean isFunctionFound() {
-		return this.matchedFunctionInfo != null;
+		return this.matchedFunction != null;
 	}
 
 
@@ -123,11 +124,11 @@ public class Ycommit {
 		this.filePath = filePath;
 	}
 
-	public JsParser getParser() {
+	public Yparser getParser() {
 		return parser;
 	}
 
-	public void setParser(JsParser parser) {
+	public void setParser(Yparser parser) {
 		this.parser = parser;
 	}
 

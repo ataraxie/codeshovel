@@ -12,7 +12,7 @@ import java.util.*;
 
 public class MainAnalysis1Task {
 
-	private static final String TEST_CONFIG = "jquery-css-css-4";
+	private static final String TEST_CONFIG = "jquery-ajax-inspectPrefiltersOrTransports-5";
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
