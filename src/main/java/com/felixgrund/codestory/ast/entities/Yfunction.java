@@ -7,12 +7,14 @@ public class Yfunction {
 	private String body;
 	private String name;
 
-	private List<String> parameterNames;
+	private List<Yparameter> parameters;
+	private Yreturn returnStmt;
 
-	public Yfunction(String name, String body, List<String> parameterNames) {
+	public Yfunction(String name, String body, List<Yparameter> parameters, Yreturn returnStmt) {
 		this.name = name;
 		this.body = body;
-		this.parameterNames = parameterNames;
+		this.parameters = parameters;
+		this.returnStmt = returnStmt;
 	}
 
 	public String getBody() {
@@ -23,7 +25,11 @@ public class Yfunction {
 		return name;
 	}
 
-	public List<String> getParameterNames() {
-		return parameterNames;
+	public List<Yparameter> getParameters() {
+		return parameters;
+	}
+
+	public Yreturn getReturnStmt() {
+		return returnStmt;
 	}
 }

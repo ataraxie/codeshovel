@@ -12,14 +12,16 @@ import java.util.*;
 
 public class MainAnalysis1Task {
 
-	private static final String TEST_CONFIG = "jquery-ajax-inspectPrefiltersOrTransports-5";
+	private static final String LANG = "js";
+//	private static final String TEST_CONFIG = "checkstyle-WhitespaceAroundCheck-shouldCheckSeparationFromNextToken";
+	private static final String TEST_CONFIG = "pocketquery-admin-entityToForm";
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
 	public static void main(String[] args) throws Exception {
 		String configName = TEST_CONFIG;
 		ClassLoader classLoader = MainAnalysis1Task.class.getClassLoader();
-		File file = new File(classLoader.getResource("stubs/" + configName + ".json").getFile());
+		File file = new File(classLoader.getResource("stubs/" + LANG + "/" + configName + ".json").getFile());
 		String json = FileUtils.readFileToString(file, "utf-8");
 		Gson gson = new Gson();
 		RunConfig runConfig = gson.fromJson(json, RunConfig.class);

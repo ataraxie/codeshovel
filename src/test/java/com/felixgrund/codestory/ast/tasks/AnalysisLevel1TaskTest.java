@@ -29,7 +29,7 @@ public class AnalysisLevel1TaskTest {
 	@BeforeAll
 	public static void loadStubs() throws IOException {
 		ClassLoader classLoader = AnalysisLevel1TaskTest.class.getClassLoader();
-		File directory = new File(classLoader.getResource("stubs").getFile());
+		File directory = new File(classLoader.getResource("stubs/js").getFile());
 		for (File file : directory.listFiles()) {
 			String json = FileUtils.readFileToString(file, "utf-8");
 			Gson gson = new Gson();
