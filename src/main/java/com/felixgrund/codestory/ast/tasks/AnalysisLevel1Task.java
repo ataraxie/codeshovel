@@ -59,7 +59,6 @@ public class AnalysisLevel1Task {
 
 	private HashMap<String, Ycommit> yCommitCache;
 
-
 	public void run() throws Exception {
 		this.yCommitCache = new HashMap<>();
 		long start = new Date().getTime();
@@ -156,7 +155,7 @@ public class AnalysisLevel1Task {
 			Yparser parser = ParserFactory.getParser(ycommit.getFileName(), ycommit.getFileContent());
 			parser.parse();
 			ycommit.setParser(parser);
-			List<Yfunction> matchedFunctions = parser.findFunctionByOtherFunction(this.startFunction);
+			List<Yfunction> matchedFunctions = parser.findFunctionsByOtherFunction(this.startFunction);
 			int numMatchedNodes = matchedFunctions.size();
 			if (numMatchedNodes >= 1) {
 				ycommit.setMatchedFunction(matchedFunctions.get(0));

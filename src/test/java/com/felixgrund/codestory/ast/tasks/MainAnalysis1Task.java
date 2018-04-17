@@ -12,9 +12,10 @@ import java.util.*;
 
 public class MainAnalysis1Task {
 
-	private static final String LANG = "js";
-//	private static final String TEST_CONFIG = "checkstyle-WhitespaceAroundCheck-shouldCheckSeparationFromNextToken";
-	private static final String TEST_CONFIG = "pocketquery-admin-entityToForm";
+	private static final String LANG = "java";
+//	private static final String LANG = "js";
+	private static final String TEST_CONFIG = "checkstyle-WhitespaceAroundCheck-getAcceptableTokens";
+//	private static final String TEST_CONFIG = "pocketquery-admin-entityToForm";
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
