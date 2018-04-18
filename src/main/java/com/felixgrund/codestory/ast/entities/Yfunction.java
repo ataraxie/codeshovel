@@ -6,15 +6,17 @@ public class Yfunction {
 
 	private String body;
 	private String name;
+	private int nameLineNumber;
 
 	private List<Yparameter> parameters;
 	private Yreturn returnStmt;
 
-	public Yfunction(String name, String body, List<Yparameter> parameters, Yreturn returnStmt) {
+	public Yfunction(String name, String body, List<Yparameter> parameters, Yreturn returnStmt, int nameLineNumber) {
 		this.name = name;
 		this.body = body;
 		this.parameters = parameters;
 		this.returnStmt = returnStmt;
+		this.nameLineNumber = nameLineNumber;
 	}
 
 	public String getBody() {
@@ -31,5 +33,9 @@ public class Yfunction {
 
 	public Yreturn getReturnStmt() {
 		return returnStmt;
+	}
+
+	public int getNameLineNumber() {
+		return nameLineNumber;
 	}
 }

@@ -1,9 +1,11 @@
 package com.felixgrund.codestory.ast.tasks;
 
+import com.felixgrund.codestory.ast.changes.Ychange;
+import com.felixgrund.codestory.ast.changes.Ynochange;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.exceptions.NoParserFoundException;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
-import com.felixgrund.codestory.ast.interpreters.Interpreter;
+import com.felixgrund.codestory.ast.interpreters.InterpreterLevel1;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
@@ -86,9 +88,12 @@ public class AnalysisLevel1Task {
 	private void createResult() throws IOException {
 		this.yresult = new Yresult();
 		for (Ycommit ycommit : this.getYhistory()) {
-			Interpreter interpreter = new Interpreter(ycommit);
+			InterpreterLevel1 interpreter = new InterpreterLevel1(ycommit);
 			interpreter.interpret();
-			this.yresult.putAll(interpreter.getFindings());
+			Ychange ychange = interpreter.getInterpretation();
+			if (!(ychange instanceof Ynochange)) {
+				this.yresult.put(ycommit, interpreter.getInterpretation());
+			}
 		}
 	}
 

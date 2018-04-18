@@ -2,24 +2,32 @@ package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yresult;
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class MainAnalysis1Task {
 
-	private static final String LANG = "java";
-//	private static final String LANG = "js";
-	private static final String TEST_CONFIG = "checkstyle-WhitespaceAroundCheck-getAcceptableTokens";
-//	private static final String TEST_CONFIG = "pocketquery-admin-entityToForm";
+	private static final boolean PRINT_RESULT = true;
+
+//	private static final String LANG = "java";
+	private static final String LANG = "js";
+//	private static final String TEST_CONFIG = "checkstyle-Checker-fireErrors";
+	private static final String TEST_CONFIG = "jquery-ajax-inspectPrefiltersOrTransports";
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
 	public static void main(String[] args) throws Exception {
+		execute();
+	}
+
+	public static AnalysisLevel1Task execute() throws Exception {
 		String configName = TEST_CONFIG;
 		ClassLoader classLoader = MainAnalysis1Task.class.getClassLoader();
 		File file = new File(classLoader.getResource("stubs/" + LANG + "/" + configName + ".json").getFile());
@@ -44,6 +52,14 @@ public class MainAnalysis1Task {
 
 		task.run();
 
+		if (PRINT_RESULT) {
+			printResult(task, runConfig);
+		}
+
+		return task;
+	}
+
+	private static void printResult(AnalysisLevel1Task task, RunConfig runConfig) {
 		Yresult yresult = task.getYresult();
 		System.out.println("File history...");
 		for (Ycommit ycommit : task.getYhistory()) {
@@ -79,7 +95,6 @@ public class MainAnalysis1Task {
 			System.out.println("\nOnly found in CodeStory log...");
 			System.out.println(StringUtils.join(onlyCodestoryLog, "\n"));
 		}
-
 	}
 
 }
