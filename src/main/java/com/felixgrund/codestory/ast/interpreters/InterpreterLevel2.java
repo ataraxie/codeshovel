@@ -1,27 +1,25 @@
 package com.felixgrund.codestory.ast.interpreters;
 
 import com.felixgrund.codestory.ast.changes.*;
-import com.felixgrund.codestory.ast.entities.Ycommit;
-import com.felixgrund.codestory.ast.entities.Ydiff;
-import org.eclipse.jgit.diff.DiffFormatter;
+import com.felixgrund.codestory.ast.entities.*;
+import com.felixgrund.codestory.ast.parser.Yparser;
+import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.diff.RawText;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class InterpreterLevel2 implements Interpreter {
-
-	private LinkedHashMap<Ycommit, Ychange> findings;
 
 	private Ycommit ycommit;
 	private Ychange level1Change;
 	private Ychange level2Change;
 
+	private Yfunction matchedFunction;
+	private Yfunction compareFunction;
+
 	public InterpreterLevel2(Ycommit ycommit, Ychange level1Change) {
-		this.findings = new LinkedHashMap<>();
 		this.ycommit = ycommit;
 		this.level1Change = level1Change;
 	}
@@ -29,14 +27,22 @@ public class InterpreterLevel2 implements Interpreter {
 	@Override
 	public void interpret() throws IOException {
 		List<Ychange> changes = new ArrayList<>();
-		if (isFunctionRename()) {
-			changes.add(new Yinfilerename());
+
+		this.matchedFunction = this.ycommit.getMatchedFunction();
+		this.compareFunction = getCompareFunction();
+
+		Yparameterchange yparameterchange = getParametersChange();
+		Yreturntypechange yreturntypechange = getReturnTypeChange();
+		Yinfilerename yinfilerename = getFunctionRename();
+
+		if (yinfilerename != null) {
+			changes.add(yinfilerename);
 		}
-		if (isReturnTypeChange()) {
-			changes.add(new Yreturntypechange());
+		if (yparameterchange != null) {
+			changes.add(yparameterchange);
 		}
-		if (isParametersChange()) {
-			changes.add(new Yparameterchange());
+		if (yreturntypechange != null) {
+			changes.add(yreturntypechange);
 		}
 
 		int numChanges = changes.size();
@@ -54,29 +60,66 @@ public class InterpreterLevel2 implements Interpreter {
 		return level2Change;
 	}
 
-	private boolean isReturnTypeChange() {
-		return false;
-	}
-
-	private boolean isFunctionRename() {
-		return false;
-	}
-
-	private boolean isParametersChange() throws IOException {
-		if (this.level1Change instanceof Yintroduced) {
-			Ycommit parentCommit = ycommit.getParent();
-			if (parentCommit != null) {
-				Ydiff ydiff = ycommit.getYdiff();
-				EditList editList = ydiff.getEditList();
-				DiffFormatter formatter = ydiff.getFormatter();
-				RawText aSource = new RawText(ycommit.getParent().getFileContent().getBytes());
-				RawText bSource = new RawText(ycommit.getFileContent().getBytes());
-				formatter.format(ydiff.getEditList(), aSource, bSource);
+	private Yreturntypechange getReturnTypeChange() {
+		Yreturntypechange ret = null;
+		if (this.compareFunction != null) {
+			Yreturn returnA = this.compareFunction.getReturnStmt();
+			Yreturn returnB = this.matchedFunction.getReturnStmt();
+			if (!returnA.equals(returnB)) {
+				ret = new Yreturntypechange(returnA.getType(), returnB.getType());
 			}
 		}
-
-
-		return false;
+		return ret;
 	}
+
+	private Yinfilerename getFunctionRename() {
+		Yinfilerename ret = null;
+		if (this.compareFunction != null) {
+			String nameA = this.compareFunction.getName();
+			String nameB = this.matchedFunction.getName();
+			if (!nameA.equals(nameB)) {
+				ret = new Yinfilerename(nameA, nameB);
+			}
+		}
+		return ret;
+	}
+
+	private Yfunction getCompareFunction() {
+		Yfunction ret = null;
+		Ycommit parentCommit = ycommit.getParent();
+		if (parentCommit != null) {
+			Ydiff ydiff = ycommit.getYdiff();
+			Yfunction yfunctionB = ycommit.getMatchedFunction();
+			int lineNumberB = yfunctionB.getNameLineNumber();
+			EditList editList = ydiff.getEditList();
+			for (Edit edit : editList) {
+				int beginA = edit.getBeginA();
+				int endA = edit.getEndA();
+				int beginB = edit.getBeginB();
+				int endB = edit.getEndB();
+				if (beginB <= lineNumberB && endB >= lineNumberB) {
+					Yparser parser = parentCommit.getParser();
+					List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
+					if (functionsInRange.size() > 0) {
+						ret = functionsInRange.get(0);
+					}
+				}
+			}
+		}
+		return ret;
+	}
+
+	private Yparameterchange getParametersChange() throws IOException {
+		Yparameterchange ret = null;
+		if (this.compareFunction != null) {
+			List<Yparameter> parametersA = this.compareFunction.getParameters();
+			List<Yparameter> parametersB = this.matchedFunction.getParameters();
+			if (!parametersA.equals(parametersB)) {
+				ret = new Yparameterchange(parametersA, parametersB);
+			}
+		}
+		return ret;
+	}
+
 
 }

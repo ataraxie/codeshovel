@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class MainAnalysis1Task {
 
-	private static final boolean PRINT_RESULT = true;
+	public static final boolean PRINT_RESULT = true;
 
 //	private static final String LANG = "java";
 	private static final String LANG = "js";
@@ -50,6 +50,7 @@ public class MainAnalysis1Task {
 		task.setFunctionStartLine(runConfig.getFunctionStartLine());
 		task.setStartCommitName(runConfig.getStartCommitName());
 
+		System.out.println("\n\n========================== \nRunning Level 1 Analysis\n==========================");
 		task.run();
 
 		if (PRINT_RESULT) {
