@@ -1,20 +1,11 @@
 package com.felixgrund.codestory.ast.changes;
 
-public class Yreturntypechange extends Ychange {
+import com.felixgrund.codestory.ast.entities.Ycommit;
+import com.felixgrund.codestory.ast.entities.Yfunction;
 
-	private String oldReturnType;
-	private String newReturnType;
+public class Yreturntypechange extends Ymetachange {
 
-	public Yreturntypechange(String oldReturnType, String newReturnType) {
-		this.oldReturnType = oldReturnType;
-		this.newReturnType = newReturnType;
-	}
-
-	public String getOldReturnType() {
-		return oldReturnType;
-	}
-
-	public String getNewReturnType() {
-		return newReturnType;
+	public Yreturntypechange(Ycommit commit, Ycommit compareCommit, Yfunction matchedFunction, Yfunction compareFunction) {
+		super(commit, compareCommit, matchedFunction, compareFunction);
 	}
 }

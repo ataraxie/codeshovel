@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class MainAnalysis1Task {
 
-	public static final boolean PRINT_RESULT = true;
+	public static final boolean PRINT_RESULT = false;
 
 //	private static final String LANG = "java";
 	private static final String LANG = "js";
@@ -50,7 +50,6 @@ public class MainAnalysis1Task {
 		task.setFunctionStartLine(runConfig.getFunctionStartLine());
 		task.setStartCommitName(runConfig.getStartCommitName());
 
-		System.out.println("\n\n========================== \nRunning Level 1 Analysis\n==========================");
 		task.run();
 
 		if (PRINT_RESULT) {
@@ -61,25 +60,15 @@ public class MainAnalysis1Task {
 	}
 
 	private static void printResult(AnalysisLevel1Task task, RunConfig runConfig) {
-		Yresult yresult = task.getYresult();
-		System.out.println("File history...");
-		for (Ycommit ycommit : task.getYhistory()) {
-			System.out.println(ycommit.getCommit().getName());
-		}
 
+		Yresult yresult = task.getCurrentResult();
 
-		List<String> shortNamesMessages = new ArrayList<>();
 		List<String> jsonMessages = new ArrayList<>();
 		for (Ycommit ycommit : yresult.keySet()) {
 			String message = "\"" + ycommit.getCommit().getName() + "\"";
-			shortNamesMessages.add(message);
 			message = "\"" + ycommit.getCommit().getName() + "\" : \"" + yresult.get(ycommit) + "\"";
 			jsonMessages.add(message);
 		}
-
-		System.out.println("\nMethod history...");
-		System.out.println(StringUtils.join(shortNamesMessages, ",\n"));
-
 		System.out.println("\nMethod history JSON...");
 		System.out.println(StringUtils.join(jsonMessages, ",\n"));
 

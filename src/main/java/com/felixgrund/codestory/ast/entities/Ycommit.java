@@ -135,4 +135,8 @@ public class Ycommit {
 	public String toString() {
 		return DATE_FORMAT.format(date) + " " + hash;
 	}
+
+	public String getName() {
+		return this.commit.getName();
+	}
 }

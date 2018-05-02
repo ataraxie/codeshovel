@@ -1,9 +1,10 @@
 package com.felixgrund.codestory.ast.interpreters;
 
 import com.felixgrund.codestory.ast.changes.*;
-import com.felixgrund.codestory.ast.entities.Ycommit;
-import com.felixgrund.codestory.ast.entities.Ydiff;
+import com.felixgrund.codestory.ast.entities.*;
+import com.felixgrund.codestory.ast.parser.Yparser;
 import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -16,36 +17,58 @@ public class InterpreterLevel1 implements Interpreter {
 
 	private Ychange interpretation;
 	private Ycommit ycommit;
+	private String commitName;
 
 	public InterpreterLevel1(Ycommit ycommit) {
 		this.interpretation = null;
 		this.ycommit = ycommit;
+		this.commitName = ycommit.getName();
 	}
 
 	@Override
 	public void interpret() throws IOException {
+		Yfunction matchedFunction = this.ycommit.getMatchedFunction();
+		Yfunction compareFunction = null;
+		if (matchedFunction != null) {
+			compareFunction = this.getCompareFunction(this.ycommit);
+		}
+
 		List<Ychange> changes = new ArrayList<>();
 		if (ycommit.isFirstFunctionOccurrence()) {
-			changes.add(new Yintroduced());
-		}
-		if (isFunctionNotFoundAnymore()) {
-			changes.add(new Yremoved());
-		}
-		if (isFunctionFoundAgain()) {
-			changes.add(new Yadded());
-		}
-		if (isFunctionBodyModified()) {
-			changes.add(new Ymodbody());
+			if (compareFunction != null) {
+				Yparameterchange yparameterchange = getParametersChange(matchedFunction, compareFunction);
+				Yreturntypechange yreturntypechange = getReturnTypeChange(matchedFunction, compareFunction);
+				Yinfilerename yinfilerename = getFunctionRename(matchedFunction, compareFunction);
+				if (yinfilerename != null) {
+					changes.add(yinfilerename);
+				}
+				if (yparameterchange != null) {
+					changes.add(yparameterchange);
+				}
+				if (yreturntypechange != null) {
+					changes.add(yreturntypechange);
+				}
+			}
+
+			if (changes.isEmpty()) {
+				changes.add(new Yintroduced(ycommit));
+			}
+		} else if (isFunctionNotFoundAnymore()) {
+			changes.add(new Yremoved(ycommit));
+		} else if (isFunctionFoundAgain()) {
+			changes.add(new Yadded(ycommit));
+		} else if (isFunctionBodyModified()) {
+			changes.add(new Ymodbody(ycommit));
 //			findEdits();
 		}
 
 		int numChanges = changes.size();
 		if (numChanges > 1) {
-			this.interpretation = new Ymultichange(changes);
+			this.interpretation = new Ymultichange(ycommit, changes);
 		} else if (numChanges == 1) {
 			this.interpretation = changes.get(0);
 		} else {
-			this.interpretation = new Ynochange();
+			this.interpretation = new Ynochange(ycommit);
 		}
 	}
 
@@ -97,6 +120,63 @@ public class InterpreterLevel1 implements Interpreter {
 				&& ycommit.isFunctionFound()
 				&& ycommit.getParent() != null
 				&& !ycommit.getParent().isFunctionFound();
+	}
+
+	private Yreturntypechange getReturnTypeChange(Yfunction matchedFunction, Yfunction compareFunction) {
+		Yreturntypechange ret = null;
+		Yreturn returnA = compareFunction.getReturnStmt();
+		Yreturn returnB = matchedFunction.getReturnStmt();
+		if (!returnA.equals(returnB)) {
+			ret = new Yreturntypechange(ycommit, ycommit.getParent(), matchedFunction, compareFunction);
+		}
+		return ret;
+	}
+
+	private Yinfilerename getFunctionRename(Yfunction matchedFunction, Yfunction compareFunction) {
+		Yinfilerename ret = null;
+		if (compareFunction != null) {
+			String nameA = compareFunction.getName();
+			String nameB = matchedFunction.getName();
+			if (!nameA.equals(nameB)) {
+				ret = new Yinfilerename(ycommit, ycommit.getParent(), matchedFunction, compareFunction);
+			}
+		}
+		return ret;
+	}
+
+	private Yfunction getCompareFunction(Ycommit ycommit) {
+		Yfunction ret = null;
+		Ycommit parentCommit = ycommit.getParent();
+		if (parentCommit != null) {
+			Ydiff ydiff = ycommit.getYdiff();
+			Yfunction yfunctionB = ycommit.getMatchedFunction();
+			int lineNumberB = yfunctionB.getNameLineNumber();
+			EditList editList = ydiff.getEditList();
+			for (Edit edit : editList) {
+				int beginA = edit.getBeginA();
+				int endA = edit.getEndA();
+				int beginB = edit.getBeginB();
+				int endB = edit.getEndB();
+				if (beginB <= lineNumberB && endB >= lineNumberB) {
+					Yparser parser = parentCommit.getParser();
+					List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
+					if (functionsInRange.size() > 0) {
+						ret = functionsInRange.get(0);
+					}
+				}
+			}
+		}
+		return ret;
+	}
+
+	private Yparameterchange getParametersChange(Yfunction matchedFunction, Yfunction compareFunction) throws IOException {
+		Yparameterchange ret = null;
+		List<Yparameter> parametersA = compareFunction.getParameters();
+		List<Yparameter> parametersB = matchedFunction.getParameters();
+		if (!parametersA.equals(parametersB)) {
+			ret = new Yparameterchange(ycommit, ycommit.getParent(), matchedFunction, compareFunction);
+		}
+		return ret;
 	}
 
 

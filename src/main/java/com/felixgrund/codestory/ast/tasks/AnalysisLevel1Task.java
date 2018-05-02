@@ -1,6 +1,7 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.changes.Ychange;
+import com.felixgrund.codestory.ast.changes.Ymetachange;
 import com.felixgrund.codestory.ast.changes.Ynochange;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.exceptions.NoParserFoundException;
@@ -30,9 +31,7 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class AnalysisLevel1Task {
 
@@ -47,54 +46,81 @@ public class AnalysisLevel1Task {
 	private String functionName;
 	private int functionStartLine;
 
-	private List<RevCommit> history;
+	private List<RevCommit> fileHistory;
 
-	private String functionPath;
-
-	private String startFileContent;
 	private Yfunction startFunction;
-	private RevCommit startCommit;
+	private Ycommit startCommit;
 
-	private Ycommit startCommitInfo;
-	private Yhistory yhistory;
-	private Yresult yresult;
+	private Yhistory currentHistory;
+	private Yresult currentResult;
 
-	private HashMap<String, Ycommit> yCommitCache;
+	private List<Yresult> allResults;
+
+	private Ymetachange lastMetaChange;
+
+	private HashMap<String, Ycommit> currentCommitCache;
+
+	public AnalysisLevel1Task() {
+		this.allResults = new ArrayList<>();
+	}
 
 	public void run() throws Exception {
-		this.yCommitCache = new HashMap<>();
+		this.currentHistory = new Yhistory();
+		this.currentCommitCache = new HashMap<>();
+		this.lastMetaChange = null;
+		this.printAnalysisRun();
 		long start = new Date().getTime();
 		this.buildAndValidate();
-		String hash = this.createUuidHash();
-		if (CACHE_ENABLED) {
-			this.yhistory = Utl.loadFromCache(hash);
-		}
-		if (this.yhistory == null) {
-			this.createCommitCollection();
-			if (CACHE_ENABLED) {
-				System.out.println("NOT FOUND IN CACHE");
-				Utl.saveToCache(hash, this.yhistory);
-			}
-		} else if (CACHE_ENABLED) {
-			System.out.println("FOUND IN CACHE");
-		}
 
+		this.createCommitCollection();
 		this.createResult();
+		this.printMethodHistory();
 
 		long timeTakenSeconds = (new Date().getTime() - start) / 1000;
-		System.out.println("MEASURE AnalysisLevel1Task in seconds: " + timeTakenSeconds);
+//		System.out.println("MEASURE AnalysisLevel1Task in seconds: " + timeTakenSeconds);
+
+
+		if (this.lastMetaChange != null) {
+			Yfunction compareFunction = this.lastMetaChange.getCompareFunction();
+			if (compareFunction != null) {
+				this.setFunctionName(compareFunction.getName());
+				this.setFunctionStartLine(compareFunction.getNameLineNumber());
+				this.setStartCommitName(this.lastMetaChange.getCompareCommit().getName());
+				this.run();
+			}
+		}
+	}
+
+	public void printMethodHistory() {
+		System.out.println("\nMethod history...");
+		for (Ycommit ycommit : currentResult.keySet()) {
+			System.out.println(ycommit.getCommit().getName() + ": " + currentResult.get(ycommit));
+		}
+	}
+
+	private void printAnalysisRun() {
+		System.out.println("\n====================================================");
+		System.out.println(String.format("Running Level 1 Analysis\nCommit: %s\nMethod: %s\nLine: %s",
+				this.startCommitName, this.functionName, this.functionStartLine));
+		System.out.println("====================================================");
 	}
 
 	private void createResult() throws IOException {
-		this.yresult = new Yresult();
-		for (Ycommit ycommit : this.getYhistory()) {
-			InterpreterLevel1 interpreter = new InterpreterLevel1(ycommit);
-			interpreter.interpret();
-			Ychange ychange = interpreter.getInterpretation();
-			if (!(ychange instanceof Ynochange)) {
-				this.yresult.put(ycommit, interpreter.getInterpretation());
+		this.currentResult = new Yresult(this.startCommitName, this.functionName, this.functionStartLine);
+		for (Ycommit ycommit : this.getCurrentHistory()) {
+			if (ycommit.getDate().before(this.startCommit.getDate())) {
+				InterpreterLevel1 interpreter = new InterpreterLevel1(ycommit);
+				interpreter.interpret();
+				Ychange ychange = interpreter.getInterpretation();
+				if (!(ychange instanceof Ynochange)) {
+					this.currentResult.put(ycommit, interpreter.getInterpretation());
+				}
+				if (ychange instanceof Ymetachange) {
+					this.lastMetaChange = (Ymetachange) ychange;
+				}
 			}
 		}
+		this.allResults.add(this.currentResult);
 	}
 
 	private void buildAndValidate() throws Exception {
@@ -105,34 +131,33 @@ public class AnalysisLevel1Task {
 		Utl.checkNotNull("functionName", this.functionName);
 		Utl.checkNotNull("functionStartLine", this.functionStartLine);
 
-		this.startCommit = Utl.findCommitByName(this.repository, this.startCommitName);
-		Utl.checkNotNull("startCommit", this.startCommit);
+		RevCommit startCommitRaw = Utl.findCommitByName(this.repository, this.startCommitName);
+		Utl.checkNotNull("startCommit", startCommitRaw);
 
-		this.startFileContent = Utl.findFileContent(this.repository, this.startCommit, this.filePath);
-		Utl.checkNotNull("startFileContent", this.startFileContent);
+		String startFileContent = Utl.findFileContent(this.repository, startCommitRaw, this.filePath);
+		Utl.checkNotNull("startFileContent", startFileContent);
 
-		Yparser startParser = ParserFactory.getParser(this.fileName, this.startFileContent);
+		Yparser startParser = ParserFactory.getParser(this.fileName, startFileContent);
 		startParser.parse();
 		this.startFunction = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
 		Utl.checkNotNull("startFunctionNode", this.startFunction);
 
-		this.functionPath = this.startFunction.getName();
-		Utl.checkNotNull("functionPath", this.functionPath);
+		String functionPath = this.startFunction.getName();
+		Utl.checkNotNull("functionPath", functionPath);
 
-		this.startCommitInfo = getOrCreateYcommit(this.startCommit);
-		Utl.checkNotNull("startCommitInfo", this.startCommitInfo);
+		this.startCommit = getOrCreateYcommit(startCommitRaw);
+		Utl.checkNotNull("startCommit", startCommit);
 	}
 
 	private void createCommitCollection() throws IOException, GitAPIException, NoParserFoundException {
 
-		this.yhistory = new Yhistory();
+		if (this.fileHistory == null) {
+			LogCommand logCommand = this.git.log().addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
+			Iterable<RevCommit> revisions = logCommand.call();
+			this.fileHistory = Lists.newArrayList(revisions);
+		}
 
-		LogCommand logCommand = this.git.log().addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
-
-		Iterable<RevCommit> revisions = logCommand.call();
-		this.history = Lists.newArrayList(revisions);
-
-		for (RevCommit commit : this.history) {
+		for (RevCommit commit : this.fileHistory) {
 			try {
 				Ycommit ycommit = getOrCreateYcommit(commit);
 				if (commit.getParentCount() > 0) {
@@ -141,16 +166,17 @@ public class AnalysisLevel1Task {
 					ycommit.setParent(parentYcommit);
 					ycommit.setYdiff(createDiffInfo(commit, parentCommit));
 				}
-				this.yhistory.add(ycommit);
+				this.currentHistory.add(ycommit);
 			} catch (ParseException e) {
 				System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getName());
 			}
 		}
+
 	}
 
 	private Ycommit getOrCreateYcommit(RevCommit commit) throws ParseException, IOException, NoParserFoundException {
 		String commitName = commit.getName();
-		Ycommit ycommit = yCommitCache.get(commitName);
+		Ycommit ycommit = currentCommitCache.get(commitName);
 		if (ycommit != null) {
 			return ycommit;
 		}
@@ -169,7 +195,7 @@ public class AnalysisLevel1Task {
 				}
 			}
 		}
-		yCommitCache.put(commitName, ycommit);
+		currentCommitCache.put(commitName, ycommit);
 		return ycommit;
 	}
 
@@ -227,8 +253,8 @@ public class AnalysisLevel1Task {
 		return DigestUtils.md5Hex(builder.toString());
 	}
 
-	public Yhistory getYhistory() {
-		return yhistory;
+	public Yhistory getCurrentHistory() {
+		return currentHistory;
 	}
 
 	public void setRepository(String repositoryPath) throws IOException {
@@ -238,6 +264,25 @@ public class AnalysisLevel1Task {
 				.findGitDir() // scan up the file system tree
 				.build();
 		this.git = new Git(repository);
+	}
+
+	public void setRepository(Repository repository) throws IOException {
+		this.repository = repository;
+		this.git = new Git(repository);
+	}
+
+	public AnalysisLevel1Task cloneTask() throws IOException {
+		AnalysisLevel1Task task = new AnalysisLevel1Task();
+		task.setRepository(this.repository);
+		task.setBranchName(this.branchName);
+		task.setFilePath(this.filePath);
+		task.setFileName(this.fileName);
+		task.setFunctionName(this.functionName);
+		task.setFunctionStartLine(this.functionStartLine);
+		task.setStartCommitName(this.startCommitName);
+		task.setFileHistory(this.fileHistory);
+		task.setCurrentHistory(this.currentHistory);
+		return task;
 	}
 
 	public void setStartCommitName(String startCommitName) {
@@ -264,11 +309,28 @@ public class AnalysisLevel1Task {
 		this.fileName = fileName;
 	}
 
-	public List<RevCommit> getHistory() {
-		return history;
+	public List<RevCommit> getFileHistory() {
+		return fileHistory;
 	}
 
-	public Yresult getYresult() {
-		return yresult;
+	public Yresult getCurrentResult() {
+		return currentResult;
 	}
+
+	public static boolean isCacheEnabled() {
+		return CACHE_ENABLED;
+	}
+
+	public static void setCacheEnabled(boolean cacheEnabled) {
+		CACHE_ENABLED = cacheEnabled;
+	}
+
+	public void setFileHistory(List<RevCommit> fileHistory) {
+		this.fileHistory = fileHistory;
+	}
+
+	public void setCurrentHistory(Yhistory currentHistory) {
+		this.currentHistory = currentHistory;
+	}
+
 }
