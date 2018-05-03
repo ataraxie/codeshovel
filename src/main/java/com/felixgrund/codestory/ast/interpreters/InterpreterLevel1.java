@@ -53,11 +53,17 @@ public class InterpreterLevel1 implements Interpreter {
 			if (changes.isEmpty()) {
 				changes.add(new Yintroduced(ycommit));
 			}
-		} else if (isFunctionNotFoundAnymore()) {
+		}
+
+		if (isFunctionNotFoundAnymore()) {
 			changes.add(new Yremoved(ycommit));
-		} else if (isFunctionFoundAgain()) {
+		}
+
+		if (isFunctionFoundAgain()) {
 			changes.add(new Yadded(ycommit));
-		} else if (isFunctionBodyModified()) {
+		}
+
+		if (isFunctionBodyModified()) {
 			changes.add(new Ymodbody(ycommit));
 //			findEdits();
 		}

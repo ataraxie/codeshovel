@@ -63,7 +63,7 @@ public class AnalysisLevel1TaskTest {
 
 			task.run();
 
-			Yresult yresult = task.getCurrentResult();
+			Yresult yresult = task.getYresult();
 
 			DynamicTest test = createDynamicTest(runConfig, yresult);
 			dynamicTests.add(test);

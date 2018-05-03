@@ -1,7 +1,6 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.changes.Ychange;
-import com.felixgrund.codestory.ast.changes.Ymetachange;
 import com.felixgrund.codestory.ast.changes.Ynochange;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.exceptions.NoParserFoundException;
@@ -51,50 +50,30 @@ public class AnalysisLevel1Task {
 	private Yfunction startFunction;
 	private Ycommit startCommit;
 
-	private Yhistory currentHistory;
-	private Yresult currentResult;
-
-	private List<Yresult> allResults;
-
-	private Ymetachange lastMetaChange;
+	private Yhistory yhistory;
+	private Yresult yresult;
 
 	private HashMap<String, Ycommit> currentCommitCache;
 
 	public AnalysisLevel1Task() {
-		this.allResults = new ArrayList<>();
+		this.currentCommitCache = new HashMap<>();
+		this.yhistory = new Yhistory();
 	}
 
 	public void run() throws Exception {
-		this.currentHistory = new Yhistory();
-		this.currentCommitCache = new HashMap<>();
-		this.lastMetaChange = null;
 		this.printAnalysisRun();
-		long start = new Date().getTime();
 		this.buildAndValidate();
 
 		this.createCommitCollection();
 		this.createResult();
 		this.printMethodHistory();
 
-		long timeTakenSeconds = (new Date().getTime() - start) / 1000;
-//		System.out.println("MEASURE AnalysisLevel1Task in seconds: " + timeTakenSeconds);
-
-
-		if (this.lastMetaChange != null) {
-			Yfunction compareFunction = this.lastMetaChange.getCompareFunction();
-			if (compareFunction != null) {
-				this.setFunctionName(compareFunction.getName());
-				this.setFunctionStartLine(compareFunction.getNameLineNumber());
-				this.setStartCommitName(this.lastMetaChange.getCompareCommit().getName());
-				this.run();
-			}
-		}
 	}
 
 	public void printMethodHistory() {
 		System.out.println("\nMethod history...");
-		for (Ycommit ycommit : currentResult.keySet()) {
-			System.out.println(ycommit.getCommit().getName() + ": " + currentResult.get(ycommit));
+		for (Ycommit ycommit : yresult.keySet()) {
+			System.out.println(ycommit.getCommit().getName() + ": " + yresult.get(ycommit));
 		}
 	}
 
@@ -106,21 +85,15 @@ public class AnalysisLevel1Task {
 	}
 
 	private void createResult() throws IOException {
-		this.currentResult = new Yresult(this.startCommitName, this.functionName, this.functionStartLine);
-		for (Ycommit ycommit : this.getCurrentHistory()) {
-			if (ycommit.getDate().before(this.startCommit.getDate())) {
-				InterpreterLevel1 interpreter = new InterpreterLevel1(ycommit);
-				interpreter.interpret();
-				Ychange ychange = interpreter.getInterpretation();
-				if (!(ychange instanceof Ynochange)) {
-					this.currentResult.put(ycommit, interpreter.getInterpretation());
-				}
-				if (ychange instanceof Ymetachange) {
-					this.lastMetaChange = (Ymetachange) ychange;
-				}
+		this.yresult = new Yresult(this.startCommitName, this.functionName, this.functionStartLine);
+		for (Ycommit ycommit : this.getYhistory()) {
+			InterpreterLevel1 interpreter = new InterpreterLevel1(ycommit);
+			interpreter.interpret();
+			Ychange ychange = interpreter.getInterpretation();
+			if (!(ychange instanceof Ynochange)) {
+				this.yresult.put(ycommit, interpreter.getInterpretation());
 			}
 		}
-		this.allResults.add(this.currentResult);
 	}
 
 	private void buildAndValidate() throws Exception {
@@ -166,7 +139,7 @@ public class AnalysisLevel1Task {
 					ycommit.setParent(parentYcommit);
 					ycommit.setYdiff(createDiffInfo(commit, parentCommit));
 				}
-				this.currentHistory.add(ycommit);
+				this.yhistory.add(ycommit);
 			} catch (ParseException e) {
 				System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getName());
 			}
@@ -253,8 +226,8 @@ public class AnalysisLevel1Task {
 		return DigestUtils.md5Hex(builder.toString());
 	}
 
-	public Yhistory getCurrentHistory() {
-		return currentHistory;
+	public Yhistory getYhistory() {
+		return yhistory;
 	}
 
 	public void setRepository(String repositoryPath) throws IOException {
@@ -281,7 +254,7 @@ public class AnalysisLevel1Task {
 		task.setFunctionStartLine(this.functionStartLine);
 		task.setStartCommitName(this.startCommitName);
 		task.setFileHistory(this.fileHistory);
-		task.setCurrentHistory(this.currentHistory);
+		task.setYhistory(this.yhistory);
 		return task;
 	}
 
@@ -313,8 +286,8 @@ public class AnalysisLevel1Task {
 		return fileHistory;
 	}
 
-	public Yresult getCurrentResult() {
-		return currentResult;
+	public Yresult getYresult() {
+		return yresult;
 	}
 
 	public static boolean isCacheEnabled() {
@@ -329,8 +302,8 @@ public class AnalysisLevel1Task {
 		this.fileHistory = fileHistory;
 	}
 
-	public void setCurrentHistory(Yhistory currentHistory) {
-		this.currentHistory = currentHistory;
+	public void setYhistory(Yhistory yhistory) {
+		this.yhistory = yhistory;
 	}
 
 }

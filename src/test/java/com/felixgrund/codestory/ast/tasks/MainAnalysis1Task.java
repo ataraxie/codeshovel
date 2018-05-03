@@ -61,7 +61,7 @@ public class MainAnalysis1Task {
 
 	private static void printResult(AnalysisLevel1Task task, RunConfig runConfig) {
 
-		Yresult yresult = task.getCurrentResult();
+		Yresult yresult = task.getYresult();
 
 		List<String> jsonMessages = new ArrayList<>();
 		for (Ycommit ycommit : yresult.keySet()) {

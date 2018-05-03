@@ -139,4 +139,8 @@ public class Ycommit {
 	public String getName() {
 		return this.commit.getName();
 	}
+
+	public String getShortName() {
+		return this.commit.getName().substring(0, 6);
+	}
 }
