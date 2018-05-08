@@ -4,9 +4,11 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
+import com.felixgrund.codestory.ast.entities.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yhistory;
 import com.google.common.collect.Lists;
 import jdk.nashorn.internal.ir.FunctionNode;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Ref;
@@ -118,6 +120,13 @@ public class Utl {
 		Output output = new Output(new FileOutputStream(cacheFilePath(hash)));
 		kryo.writeObject(output, collection);
 		output.close();
+	}
+
+	public static boolean isFunctionBodySimilar(Yfunction aFunction, Yfunction bFunction) {
+		String aBody = aFunction.getBody();
+		String bBody = bFunction.getBody();
+		double similarity = new JaroWinklerDistance().apply(aBody, bBody);
+		return similarity > 0.7;
 	}
 
 }

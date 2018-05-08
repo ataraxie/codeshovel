@@ -18,7 +18,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AnalysisLevel1TaskTest {
+public class AnalysisTaskTest {
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
@@ -28,7 +28,7 @@ public class AnalysisLevel1TaskTest {
 
 	@BeforeAll
 	public static void loadStubs() throws IOException {
-		ClassLoader classLoader = AnalysisLevel1TaskTest.class.getClassLoader();
+		ClassLoader classLoader = AnalysisTaskTest.class.getClassLoader();
 		File directory = new File(classLoader.getResource("stubs/js").getFile());
 		for (File file : directory.listFiles()) {
 			String json = FileUtils.readFileToString(file, "utf-8");
@@ -52,11 +52,9 @@ public class AnalysisLevel1TaskTest {
 		for (RunConfig runConfig : runConfigs) {
 			System.out.println("Running dynamic test for config :" + runConfig.getConfigName());
 
-			AnalysisLevel1Task task = new AnalysisLevel1Task();
+			AnalysisTask task = new AnalysisTask();
 			task.setRepository(CODESTORY_REPO_DIR + "/" + runConfig.getRepoName() + "/.git");
-			task.setBranchName(runConfig.getBranchName());
 			task.setFilePath(runConfig.getFilePath());
-			task.setFileName(runConfig.getFileName());
 			task.setFunctionName(runConfig.getFunctionName());
 			task.setFunctionStartLine(runConfig.getFunctionStartLine());
 			task.setStartCommitName(runConfig.getStartCommitName());

@@ -1,6 +1,8 @@
 package com.felixgrund.codestory.ast.tasks;
 
+import com.felixgrund.codestory.ast.changes.Ymetachange;
 import com.felixgrund.codestory.ast.entities.Ycommit;
+import com.felixgrund.codestory.ast.entities.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yresult;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
@@ -12,14 +14,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class MainAnalysis1Task {
+public class MainAnalysisTask {
 
 	public static final boolean PRINT_RESULT = false;
 
 //	private static final String LANG = "java";
 	private static final String LANG = "js";
 //	private static final String TEST_CONFIG = "checkstyle-Checker-fireErrors";
-	private static final String TEST_CONFIG = "jquery-ajax-inspectPrefiltersOrTransports";
+	private static final String TEST_CONFIG = "pocketquery-admin-onFormSubmit";
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 
@@ -27,9 +29,9 @@ public class MainAnalysis1Task {
 		execute();
 	}
 
-	public static AnalysisLevel1Task execute() throws Exception {
+	public static void execute() throws Exception {
 		String configName = TEST_CONFIG;
-		ClassLoader classLoader = MainAnalysis1Task.class.getClassLoader();
+		ClassLoader classLoader = MainAnalysisTask.class.getClassLoader();
 		File file = new File(classLoader.getResource("stubs/" + LANG + "/" + configName + ".json").getFile());
 		String json = FileUtils.readFileToString(file, "utf-8");
 		Gson gson = new Gson();
@@ -41,25 +43,18 @@ public class MainAnalysis1Task {
 
 		System.out.println("Running dynamic test for config: " + configName);
 
-		AnalysisLevel1Task task = new AnalysisLevel1Task();
+		AnalysisTask task = new AnalysisTask();
 		task.setRepository(CODESTORY_REPO_DIR + "/" + runConfig.getRepoName() + "/.git");
-		task.setBranchName(runConfig.getBranchName());
 		task.setFilePath(runConfig.getFilePath());
-		task.setFileName(filename);
 		task.setFunctionName(runConfig.getFunctionName());
 		task.setFunctionStartLine(runConfig.getFunctionStartLine());
 		task.setStartCommitName(runConfig.getStartCommitName());
 
-		task.run();
+		task.runRecursively();
 
-		if (PRINT_RESULT) {
-			printResult(task, runConfig);
-		}
-
-		return task;
 	}
 
-	private static void printResult(AnalysisLevel1Task task, RunConfig runConfig) {
+	private static void printResult(AnalysisTask task, RunConfig runConfig) {
 
 		Yresult yresult = task.getYresult();
 
