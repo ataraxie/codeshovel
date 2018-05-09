@@ -9,8 +9,4 @@ public class Yparameterchange extends Ymetachange {
 		super(commit, compareCommit, matchedFunction, compareFunction);
 	}
 
-	@Override
-	public String toString() {
-		return "Yparameterchange(" + commit.getShortName() + ":" + compareFunction.getName() + ":" + compareFunction.getNameLineNumber() + ")";
-	}
 }

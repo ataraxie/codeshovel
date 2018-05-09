@@ -60,14 +60,6 @@ public class Ycommit {
 		this.fileContent = fileContent;
 	}
 
-	public List<String> getFunctionNameOccurrences() {
-		return functionNameOccurrences;
-	}
-
-	public void setFunctionNameOccurrences(List<String> functionNameOccurrences) {
-		this.functionNameOccurrences = functionNameOccurrences;
-	}
-
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}

@@ -50,18 +50,17 @@ public class Interpreter {
 
 			if (changes.isEmpty()) {
 				changes.add(new Yintroduced(ycommit));
+			} else {
+				Ymetachange firstMetaChange = (Ymetachange) changes.get(0);
+				if (isFunctionBodyModified(firstMetaChange.getMatchedFunction(), firstMetaChange.getCompareFunction())) {
+					changes.add(new Ymodbody(ycommit));
+				}
 			}
-		}
-
-		if (isFunctionNotFoundAnymore()) {
+		} else if (isFunctionNotFoundAnymore()) {
 			changes.add(new Yremoved(ycommit));
-		}
-
-		if (isFunctionFoundAgain()) {
+		} else if (isFunctionFoundAgain()) {
 			changes.add(new Yadded(ycommit));
-		}
-
-		if (isFunctionBodyModified()) {
+		} else if (isFunctionBodyModified()) {
 			changes.add(new Ymodbody(ycommit));
 //			findEdits();
 		}
@@ -89,17 +88,12 @@ public class Interpreter {
 	}
 
 	private boolean isFunctionBodyModified() {
-		boolean ret = false;
-		if (ycommit.isFunctionFound() && ycommit.getParent() != null && ycommit.getParent().isFunctionFound()) {
-			String bodyCurrent = ycommit.getMatchedFunction().getBody();
-			String bodyPrev = ycommit.getParent().getMatchedFunction().getBody();
-			if (!bodyCurrent.equals(bodyPrev)) {
-				ret = true;
-			} else {
-				ret = false; // debugger
-			}
-		}
-		return ret;
+		return ycommit.getParent() != null
+				&& isFunctionBodyModified(ycommit.getMatchedFunction(), ycommit.getParent().getMatchedFunction());
+	}
+
+	private boolean isFunctionBodyModified(Yfunction aFunction, Yfunction bFunction) {
+		return aFunction != null && bFunction != null && !aFunction.getBody().equals(bFunction.getBody());
 	}
 
 	private boolean isFunctionNotFoundAnymore() {
@@ -136,9 +130,7 @@ public class Interpreter {
 	private Yinfilerename getFunctionRename(Yfunction matchedFunction, Yfunction compareFunction) {
 		Yinfilerename ret = null;
 		if (compareFunction != null) {
-			String nameA = compareFunction.getName();
-			String nameB = matchedFunction.getName();
-			if (!nameA.equals(nameB)) {
+			if (!ycommit.getParser().functionNamesConsideredEqual(matchedFunction.getName(), compareFunction.getName())) {
 				ret = new Yinfilerename(ycommit, ycommit.getParent(), matchedFunction, compareFunction);
 			}
 		}
@@ -166,6 +158,9 @@ public class Interpreter {
 							ret = functionA;
 							break;
 						}
+					}
+					if (functionsInRange.size() > 0) {
+						ret = functionsInRange.get(0);
 					}
 				}
 			}

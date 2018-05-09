@@ -2,6 +2,7 @@ package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.changes.Ychange;
 import com.felixgrund.codestory.ast.changes.Ymetachange;
+import com.felixgrund.codestory.ast.changes.Ymultichange;
 import com.felixgrund.codestory.ast.changes.Ynochange;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.exceptions.NoParserFoundException;
@@ -53,7 +54,7 @@ public class AnalysisTask {
 	private Yhistory yhistory;
 	private Yresult yresult;
 
-	private Ymetachange lastMetaChange;
+	private Ychange lastMajorChange;
 
 	private HashMap<String, Ycommit> currentCommitCache;
 
@@ -77,14 +78,30 @@ public class AnalysisTask {
 		AnalysisTask task = this;
 		task.run();
 
-		while (task.getLastMetaChange() != null) {
-			Ymetachange ymetachange = task.getLastMetaChange();
-			task = task.cloneTask();
-			Yfunction compareFunction = ymetachange.getCompareFunction();
-			task.setStartCommitName(ymetachange.getCompareCommit().getName());
-			task.setFunctionName(compareFunction.getName());
-			task.setFunctionStartLine(compareFunction.getNameLineNumber());
-			task.run();
+		while (task.getLastMajorChange() != null) {
+			Ychange majorChange = task.getLastMajorChange();
+			List<Ychange> changesToConsider = new ArrayList<>();
+			if (majorChange instanceof Ymetachange) {
+				changesToConsider.add(majorChange);
+			} else if (majorChange instanceof Ymultichange) {
+				Ymultichange multiChange = (Ymultichange) majorChange;
+				changesToConsider.addAll(multiChange.getChanges());
+			}
+
+			for (Ychange ychange : changesToConsider) {
+				if (ychange instanceof Ymetachange) {
+					Ymetachange metaChange = (Ymetachange) ychange;
+					Yfunction compareFunction = metaChange.getCompareFunction();
+					task = new AnalysisTask();
+					task.setRepository(this.repository);
+					task.setFilePath(this.filePath);
+					task.setFileHistory(this.fileHistory);
+					task.setStartCommitName(metaChange.getCompareCommit().getName());
+					task.setFunctionName(compareFunction.getName());
+					task.setFunctionStartLine(compareFunction.getNameLineNumber());
+					task.run();
+				}
+			}
 		}
 	}
 
@@ -109,8 +126,8 @@ public class AnalysisTask {
 			if (!(ychange instanceof Ynochange)) {
 				this.yresult.put(ycommit, ychange);
 			}
-			if (ychange instanceof Ymetachange) {
-				this.lastMetaChange = (Ymetachange) ychange;
+			if (ychange instanceof Ymetachange || ychange instanceof Ymultichange) {
+				this.lastMajorChange = ychange;
 			}
 		}
 	}
@@ -153,6 +170,9 @@ public class AnalysisTask {
 			if (commit.getCommitTime() <= this.startCommit.getCommit().getCommitTime()) {
 				try {
 					Ycommit ycommit = getOrCreateYcommit(commit);
+					if (!ycommit.isFunctionFound()) {
+						break;
+					}
 					if (commit.getParentCount() > 0) {
 						RevCommit parentCommit = commit.getParent(0);
 						Ycommit parentYcommit = getOrCreateYcommit(parentCommit);
@@ -264,9 +284,6 @@ public class AnalysisTask {
 		AnalysisTask task = new AnalysisTask();
 		task.setRepository(this.repository);
 		task.setFilePath(this.filePath);
-		task.setFunctionName(this.functionName);
-		task.setFunctionStartLine(this.functionStartLine);
-		task.setStartCommitName(this.startCommitName);
 		task.setFileHistory(this.fileHistory);
 		return task;
 	}
@@ -301,7 +318,7 @@ public class AnalysisTask {
 		this.yhistory = yhistory;
 	}
 
-	public Ymetachange getLastMetaChange() {
-		return lastMetaChange;
+	public Ychange getLastMajorChange() {
+		return lastMajorChange;
 	}
 }

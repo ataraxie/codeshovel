@@ -27,4 +27,9 @@ public class Ymetachange extends Ychange {
 	public Ycommit getCompareCommit() {
 		return compareCommit;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "(" + commit.getShortName() + ":" + compareFunction.getName() + ":" + compareFunction.getNameLineNumber() + ")";
+	}
 }

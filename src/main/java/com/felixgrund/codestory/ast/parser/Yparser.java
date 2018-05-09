@@ -11,6 +11,7 @@ public interface Yparser {
 	Yfunction findFunctionByNameAndLine(String name, int line);
 	List<Yfunction> findFunctionsByLineRange(int beginLine, int endLine);
 	List<Yfunction> findFunctionsByOtherFunction(Yfunction otherFunction);
-	void parse() throws ParseException;
+	Object parse() throws ParseException;
+	boolean functionNamesConsideredEqual(String aName, String bName);
 
 }

@@ -8,4 +8,5 @@ public class Yreturntypechange extends Ymetachange {
 	public Yreturntypechange(Ycommit commit, Ycommit compareCommit, Yfunction matchedFunction, Yfunction compareFunction) {
 		super(commit, compareCommit, matchedFunction, compareFunction);
 	}
+
 }
