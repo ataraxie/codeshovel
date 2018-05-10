@@ -50,7 +50,7 @@ public class MainAnalysisTask {
 		task.setFunctionStartLine(runConfig.getFunctionStartLine());
 		task.setStartCommitName(runConfig.getStartCommitName());
 
-		task.runRecursively();
+		new RecursiveAnalysisTask(task).run();
 
 	}
 

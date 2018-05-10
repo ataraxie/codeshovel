@@ -18,12 +18,9 @@ public class Ycommit {
 	private RevCommit commit;
 	private Ycommit parent;
 
-	private List<String> functionNameOccurrences;
 	private Yfunction matchedFunction;
 
 	private Ydiff Ydiff;
-
-	private boolean firstFunctionOccurrence = false;
 
 	private String fileName;
 	private String fileContent;
@@ -68,36 +65,12 @@ public class Ycommit {
 		return fileName;
 	}
 
-	public boolean isFileFound() {
-		return this.fileContent != null;
-	}
-	public boolean isFunctionFound() {
-		return this.matchedFunction != null;
-	}
-
-
 	public Ycommit getParent() {
 		return parent;
 	}
 
 	public void setParent(Ycommit parent) {
 		this.parent = parent;
-	}
-
-	public boolean isFirstFunctionOccurrence() {
-		return firstFunctionOccurrence;
-	}
-
-	public void setFirstFunctionOccurrence(boolean firstFunctionOccurrence) {
-		this.firstFunctionOccurrence = firstFunctionOccurrence;
-	}
-
-	public String getHash() {
-		return hash;
-	}
-
-	public Date getDate() {
-		return date;
 	}
 
 	public Ydiff getYdiff() {

@@ -11,7 +11,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Interpreter {
@@ -28,7 +27,8 @@ public class Interpreter {
 		Yfunction matchedFunction = this.ycommit.getMatchedFunction();
 
 		List<Ychange> changes = new ArrayList<>();
-		if (ycommit.isFirstFunctionOccurrence()) {
+
+		if (isFirstFunctionOccurrence()) {
 			Yfunction compareFunction = null;
 			if (matchedFunction != null) {
 				compareFunction = this.getCompareFunction(this.ycommit);
@@ -56,10 +56,6 @@ public class Interpreter {
 					changes.add(new Ymodbody(ycommit));
 				}
 			}
-		} else if (isFunctionNotFoundAnymore()) {
-			changes.add(new Yremoved(ycommit));
-		} else if (isFunctionFoundAgain()) {
-			changes.add(new Yadded(ycommit));
 		} else if (isFunctionBodyModified()) {
 			changes.add(new Ymodbody(ycommit));
 //			findEdits();
@@ -94,27 +90,6 @@ public class Interpreter {
 
 	private boolean isFunctionBodyModified(Yfunction aFunction, Yfunction bFunction) {
 		return aFunction != null && bFunction != null && !aFunction.getBody().equals(bFunction.getBody());
-	}
-
-	private boolean isFunctionNotFoundAnymore() {
-//		boolean isNotFoundAnymore = false;
-//		if (isFunctionNotFoundAnymoreUsingFunctionName()) {
-//			isNotFoundAnymore = true;
-//			Yfunction parent = ycommit.getParent().getMatchedFunction();
-//			FunctionNode function = ycommit.getParser().findFunctionByNameAndBody("data", parent.getBodyString());
-//			int a = 1;
-//		}
-//		return isNotFoundAnymore;
-		return !ycommit.isFunctionFound()
-				&& ycommit.getParent() != null
-				&& ycommit.getParent().isFunctionFound();
-	}
-
-	private boolean isFunctionFoundAgain() {
-		return !ycommit.isFirstFunctionOccurrence()
-				&& ycommit.isFunctionFound()
-				&& ycommit.getParent() != null
-				&& !ycommit.getParent().isFunctionFound();
 	}
 
 	private Yreturntypechange getReturnTypeChange(Yfunction matchedFunction, Yfunction compareFunction) {
@@ -176,6 +151,10 @@ public class Interpreter {
 			ret = new Yparameterchange(ycommit, ycommit.getParent(), matchedFunction, compareFunction);
 		}
 		return ret;
+	}
+
+	private boolean isFirstFunctionOccurrence() {
+		return this.ycommit.getParent() == null || this.ycommit.getParent().getMatchedFunction() == null;
 	}
 
 

@@ -4,8 +4,10 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
+import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yhistory;
+import com.felixgrund.codestory.ast.entities.Yresult;
 import com.google.common.collect.Lists;
 import jdk.nashorn.internal.ir.FunctionNode;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
@@ -127,6 +129,20 @@ public class Utl {
 		String bBody = bFunction.getBody();
 		double similarity = new JaroWinklerDistance().apply(aBody, bBody);
 		return similarity > 0.7;
+	}
+
+	public static void printMethodHistory(Yresult yresult) {
+		System.out.println("\nMethod history...");
+		for (Ycommit ycommit : yresult.keySet()) {
+			System.out.println(ycommit.getCommit().getName() + ": " + yresult.get(ycommit));
+		}
+	}
+
+	public static void printAnalysisRun(String startCommitName, String functionName, int functionStartLine) {
+		System.out.println("\n====================================================");
+		System.out.println(String.format("Running Level 1 Analysis\nCommit: %s\nMethod: %s\nLine: %s",
+				startCommitName, functionName, functionStartLine));
+		System.out.println("====================================================");
 	}
 
 }

@@ -64,59 +64,9 @@ public class AnalysisTask {
 	}
 
 	public void run() throws Exception {
-		this.printAnalysisRun();
 		this.buildAndValidate();
-
 		this.createCommitCollection();
 		this.createResult();
-		this.printMethodHistory();
-
-	}
-
-	// TODO: is this weird?? Should this be outside of this class??
-	public void runRecursively() throws Exception {
-		AnalysisTask task = this;
-		task.run();
-
-		while (task.getLastMajorChange() != null) {
-			Ychange majorChange = task.getLastMajorChange();
-			List<Ychange> changesToConsider = new ArrayList<>();
-			if (majorChange instanceof Ymetachange) {
-				changesToConsider.add(majorChange);
-			} else if (majorChange instanceof Ymultichange) {
-				Ymultichange multiChange = (Ymultichange) majorChange;
-				changesToConsider.addAll(multiChange.getChanges());
-			}
-
-			for (Ychange ychange : changesToConsider) {
-				if (ychange instanceof Ymetachange) {
-					Ymetachange metaChange = (Ymetachange) ychange;
-					Yfunction compareFunction = metaChange.getCompareFunction();
-					task = new AnalysisTask();
-					task.setRepository(this.repository);
-					task.setFilePath(this.filePath);
-					task.setFileHistory(this.fileHistory);
-					task.setStartCommitName(metaChange.getCompareCommit().getName());
-					task.setFunctionName(compareFunction.getName());
-					task.setFunctionStartLine(compareFunction.getNameLineNumber());
-					task.run();
-				}
-			}
-		}
-	}
-
-	private void printMethodHistory() {
-		System.out.println("\nMethod history...");
-		for (Ycommit ycommit : yresult.keySet()) {
-			System.out.println(ycommit.getCommit().getName() + ": " + yresult.get(ycommit));
-		}
-	}
-
-	private void printAnalysisRun() {
-		System.out.println("\n====================================================");
-		System.out.println(String.format("Running Level 1 Analysis\nCommit: %s\nMethod: %s\nLine: %s",
-				this.startCommitName, this.functionName, this.functionStartLine));
-		System.out.println("====================================================");
 	}
 
 	private void createResult() throws IOException {
@@ -170,7 +120,7 @@ public class AnalysisTask {
 			if (commit.getCommitTime() <= this.startCommit.getCommit().getCommitTime()) {
 				try {
 					Ycommit ycommit = getOrCreateYcommit(commit);
-					if (!ycommit.isFunctionFound()) {
+					if (ycommit.getMatchedFunction() == null) {
 						break;
 					}
 					if (commit.getParentCount() > 0) {
@@ -196,7 +146,7 @@ public class AnalysisTask {
 		}
 
 		ycommit = createBaseYcommit(commit);
-		if (ycommit.isFileFound()) {
+		if (ycommit.getFileContent() != null) {
 			Yparser parser = ParserFactory.getParser(ycommit.getFileName(), ycommit.getFileContent());
 			parser.parse();
 			ycommit.setParser(parser);
@@ -320,5 +270,33 @@ public class AnalysisTask {
 
 	public Ychange getLastMajorChange() {
 		return lastMajorChange;
+	}
+
+	public Repository getRepository() {
+		return repository;
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public String getStartCommitName() {
+		return startCommitName;
+	}
+
+	public List<RevCommit> getFileHistory() {
+		return fileHistory;
+	}
+
+	public String getFunctionName() {
+		return functionName;
+	}
+
+	public int getFunctionStartLine() {
+		return functionStartLine;
 	}
 }
