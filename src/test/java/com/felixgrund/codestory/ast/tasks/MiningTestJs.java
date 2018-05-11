@@ -19,7 +19,7 @@ public class MiningTestJs {
 		execution.setFileName(FILENAME);
 		execution.setFilePath(FILE_PATH);
 		execution.setStartCommit(START_COMMIT);
-//		execution.setFunctionName("inspectPrefiltersOrTransports");
+		execution.setFunctionName("inspectPrefiltersOrTransports");
 
 		execution.execute();
 

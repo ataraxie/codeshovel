@@ -11,6 +11,7 @@ import java.util.List;
 
 public class JsonResult {
 
+	private String origin;
 	private String repositoryName;
 	private String startCommitName;
 	private String sourceFileName;
@@ -18,19 +19,18 @@ public class JsonResult {
 	private int functionStartLine;
 	private int functionEndLine;
 	private List<String> changeHistory;
+	private List<String> changeHistoryDetails;
 
-	public JsonResult(AnalysisTask startTask, Yresult recursiveResult) {
+	public JsonResult(String origin, AnalysisTask startTask, List<String> changeHistory, List<String> changeHistoryDetails) {
+		this.origin = origin;
 		this.repositoryName = startTask.getRepositoryName();
 		this.startCommitName = startTask.getStartCommitName();
 		this.sourceFileName = startTask.getFileName();
 		this.functionName = startTask.getFunctionName();
 		this.functionStartLine = startTask.getFunctionStartLine();
 		this.functionEndLine = startTask.getFunctionEndLine();
-
-		this.changeHistory = new ArrayList<>();
-		for (Ycommit ycommit : recursiveResult.keySet()) {
-			this.changeHistory.add(ycommit.getName());
-		}
+		this.changeHistory = changeHistory;
+		this.changeHistoryDetails = changeHistoryDetails;
 	}
 
 	public String getStartCommitName() {
@@ -64,5 +64,9 @@ public class JsonResult {
 
 	public String getRepositoryName() {
 		return repositoryName;
+	}
+
+	public String getOrigin() {
+		return origin;
 	}
 }

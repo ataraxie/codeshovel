@@ -162,7 +162,7 @@ public class Utl {
 	}
 
 	public static void writeJsonResultToFile(JsonResult jsonResult) throws IOException {
-		String dir = System.getProperty("user.dir") + "/output";
+		String dir = System.getProperty("user.dir") + "/output/" + jsonResult.getOrigin();
 		String commitNameShort = jsonResult.getStartCommitName().substring(0, 5);
 		String sourceFileName = jsonResult.getSourceFileName();
 		String functionName = jsonResult.getFunctionName();

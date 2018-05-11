@@ -1,9 +1,13 @@
 package com.felixgrund.codestory.ast.execution;
 
+import com.felixgrund.codestory.ast.entities.Ycommit;
+import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
+import com.felixgrund.codestory.ast.tasks.GitRangeLogTask;
 import com.felixgrund.codestory.ast.tasks.RecursiveAnalysisTask;
+import com.felixgrund.codestory.ast.util.JsonResult;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.api.Git;
@@ -12,6 +16,8 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MiningExecution {
 
@@ -21,7 +27,6 @@ public class MiningExecution {
 	private String fileName;
 	private String startCommit;
 	private String functionName;
-
 
 	public void execute() throws Exception {
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
@@ -51,8 +56,26 @@ public class MiningExecution {
 			task.setStartCommitName(this.startCommit);
 
 			RecursiveAnalysisTask recursiveAnalysisTask = new RecursiveAnalysisTask(task);
-//			recursiveAnalysisTask.setPrintOutput(false);
 			recursiveAnalysisTask.run();
+
+			Yresult yresult = recursiveAnalysisTask.getResult();
+			List<String> changeHistory = new ArrayList<>();
+			List<String> changeHistoryDetails = new ArrayList<>();
+			for (Ycommit ycommit : yresult.keySet()) {
+				changeHistory.add(ycommit.getName());
+				changeHistoryDetails.add(ycommit.getName() + ":" + yresult.get(ycommit));
+			}
+			JsonResult jsonResult = new JsonResult("codestory", task, changeHistory, changeHistoryDetails);
+			Utl.writeJsonResultToFile(jsonResult);
+
+
+			GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task);
+			gitRangeLogTask.run();
+			jsonResult = new JsonResult("logcommand", task, gitRangeLogTask.getResult(), null);
+			Utl.writeJsonResultToFile(jsonResult);
+
+//			jsonResult = new JsonResult("logcommand", task, gitRangeLogTask.getResult());
+//			Utl.writeJsonResultToFile(jsonResult);
 		}
 	}
 

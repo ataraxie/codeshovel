@@ -48,9 +48,6 @@ public class RecursiveAnalysisTask {
 			}
 		}
 
-		JsonResult jsonResult = new JsonResult(this.startTask, this.recursiveResult);
-		Utl.writeJsonResultToFile(jsonResult);
-
 	}
 
 	private void runAndPrintOptionally(AnalysisTask task) throws Exception {
@@ -68,7 +65,7 @@ public class RecursiveAnalysisTask {
 		this.printOutput = printOutput;
 	}
 
-	public Yresult getRecursiveResult() {
+	public Yresult getResult() {
 		return recursiveResult;
 	}
 }
