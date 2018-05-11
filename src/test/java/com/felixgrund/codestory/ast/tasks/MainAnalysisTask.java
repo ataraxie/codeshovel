@@ -1,8 +1,6 @@
 package com.felixgrund.codestory.ast.tasks;
 
-import com.felixgrund.codestory.ast.changes.Ymetachange;
 import com.felixgrund.codestory.ast.entities.Ycommit;
-import com.felixgrund.codestory.ast.entities.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yresult;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;

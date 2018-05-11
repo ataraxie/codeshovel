@@ -1,12 +1,11 @@
 package com.felixgrund.codestory.ast.entities;
 
+import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
-import com.felixgrund.codestory.ast.parser.impl.JsParser;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 public class Ycommit {
 

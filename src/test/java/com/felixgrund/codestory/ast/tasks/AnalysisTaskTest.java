@@ -59,6 +59,7 @@ public class AnalysisTaskTest {
 			task.setFunctionStartLine(runConfig.getFunctionStartLine());
 			task.setStartCommitName(runConfig.getStartCommitName());
 
+			task.build();
 			task.run();
 
 			Yresult yresult = task.getYresult();

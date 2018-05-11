@@ -19,6 +19,7 @@ public class MiningTestJava {
 	public static void main(String[] args) throws Exception {
 		String repositoryPath = CODESTORY_REPO_DIR + "/" + REPO + "/.git";
 		MiningExecution execution = new MiningExecution();
+		execution.setRepositoryName(REPO);
 		execution.setRepositoryPath(repositoryPath);
 		execution.setFileName(FILENAME);
 		execution.setFilePath(FILE_PATH);

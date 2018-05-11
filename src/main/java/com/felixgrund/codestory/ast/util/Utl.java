@@ -5,11 +5,12 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
 import com.felixgrund.codestory.ast.entities.Ycommit;
-import com.felixgrund.codestory.ast.entities.Yfunction;
+import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yhistory;
 import com.felixgrund.codestory.ast.entities.Yresult;
+import com.felixgrund.codestory.ast.tasks.AnalysisTask;
 import com.google.common.collect.Lists;
-import jdk.nashorn.internal.ir.FunctionNode;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -24,6 +25,7 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class Utl {
 
@@ -93,6 +95,19 @@ public class Utl {
 		}
 	}
 
+	public static void checkPositiveInt(String field, Object object) throws Exception {
+		checkNotNull(field, object);
+		try {
+			int number = Integer.parseInt(Objects.toString(object));
+			if (number <= 0) {
+				throw new Exception("Value was an integer but was not positive");
+			}
+		} catch (NumberFormatException e) {
+			throw new Exception("Value was not an integer");
+		}
+
+	}
+
 	public static String projectDir() {
 		return System.getProperty("user.dir");
 	}
@@ -131,18 +146,29 @@ public class Utl {
 		return similarity > 0.7;
 	}
 
-	public static void printMethodHistory(Yresult yresult) {
+	public static void printMethodHistory(AnalysisTask task) {
+		Yresult yresult = task.getYresult();
 		System.out.println("\nMethod history...");
 		for (Ycommit ycommit : yresult.keySet()) {
 			System.out.println(ycommit.getCommit().getName() + ": " + yresult.get(ycommit));
 		}
 	}
 
-	public static void printAnalysisRun(String startCommitName, String functionName, int functionStartLine) {
+	public static void printAnalysisRun(AnalysisTask task) {
 		System.out.println("\n====================================================");
-		System.out.println(String.format("Running Level 1 Analysis\nCommit: %s\nMethod: %s\nLine: %s",
-				startCommitName, functionName, functionStartLine));
+		System.out.println(String.format("Running Level 1 Analysis\nCommit: %s\nMethod: %s\nLines: %s-%s",
+				task.getStartCommitName(), task.getFunctionName(), task.getFunctionStartLine(), task.getFunctionEndLine()));
 		System.out.println("====================================================");
+	}
+
+	public static void writeJsonResultToFile(JsonResult jsonResult) throws IOException {
+		String dir = System.getProperty("user.dir") + "/output";
+		String commitNameShort = jsonResult.getStartCommitName().substring(0, 5);
+		String sourceFileName = jsonResult.getSourceFileName();
+		String functionName = jsonResult.getFunctionName();
+		String repoName = jsonResult.getRepositoryName();
+		File file = new File(dir + "/" + repoName + "-" + commitNameShort + "-" + sourceFileName + "-" + functionName);
+		FileUtils.writeStringToFile(file, jsonResult.toJsonString(), "utf-8");
 	}
 
 }

@@ -1,9 +1,6 @@
 package com.felixgrund.codestory.ast.execution;
 
-import com.felixgrund.codestory.ast.changes.Ychange;
-import com.felixgrund.codestory.ast.changes.Ymetachange;
-import com.felixgrund.codestory.ast.changes.Ymultichange;
-import com.felixgrund.codestory.ast.entities.Yfunction;
+import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
 import com.felixgrund.codestory.ast.tasks.RecursiveAnalysisTask;
@@ -15,11 +12,10 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MiningExecution {
 
+	private String repositoryName;
 	private String repositoryPath;
 	private String filePath;
 	private String fileName;
@@ -47,6 +43,7 @@ public class MiningExecution {
 			String name = method.getName();
 			int lineNumber = method.getNameLineNumber();
 			AnalysisTask task = new AnalysisTask();
+			task.setRepositoryName(this.repositoryName);
 			task.setRepository(repository);
 			task.setFilePath(this.filePath);
 			task.setFunctionName(name);
@@ -54,7 +51,7 @@ public class MiningExecution {
 			task.setStartCommitName(this.startCommit);
 
 			RecursiveAnalysisTask recursiveAnalysisTask = new RecursiveAnalysisTask(task);
-			recursiveAnalysisTask.setPrintOutput(false);
+//			recursiveAnalysisTask.setPrintOutput(false);
 			recursiveAnalysisTask.run();
 		}
 	}
@@ -77,5 +74,13 @@ public class MiningExecution {
 
 	public void setFunctionName(String functionName) {
 		this.functionName = functionName;
+	}
+
+	public String getRepositoryName() {
+		return repositoryName;
+	}
+
+	public void setRepositoryName(String repositoryName) {
+		this.repositoryName = repositoryName;
 	}
 }

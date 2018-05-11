@@ -3,8 +3,9 @@ package com.felixgrund.codestory.ast.tasks;
 import com.felixgrund.codestory.ast.changes.Ychange;
 import com.felixgrund.codestory.ast.changes.Ymetachange;
 import com.felixgrund.codestory.ast.changes.Ymultichange;
-import com.felixgrund.codestory.ast.entities.Yfunction;
+import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yresult;
+import com.felixgrund.codestory.ast.util.JsonResult;
 import com.felixgrund.codestory.ast.util.Utl;
 
 import java.util.ArrayList;
@@ -40,29 +41,26 @@ public class RecursiveAnalysisTask {
 				if (ychange instanceof Ymetachange) {
 					Ymetachange metaChange = (Ymetachange) ychange;
 					Yfunction compareFunction = metaChange.getCompareFunction();
-					task = new AnalysisTask();
-					task.setRepository(this.startTask.getRepository());
-					task.setFilePath(this.startTask.getFilePath());
-					task.setFileHistory(this.startTask.getFileHistory());
-					task.setStartCommitName(metaChange.getCompareCommit().getName());
-					task.setFunctionName(compareFunction.getName());
-					task.setFunctionStartLine(compareFunction.getNameLineNumber());
-
+					task = new AnalysisTask(task, metaChange.getCompareCommit(), compareFunction);
 					runAndPrintOptionally(task);
 					this.recursiveResult.putAll(task.getYresult());
 				}
 			}
 		}
 
+		JsonResult jsonResult = new JsonResult(this.startTask, this.recursiveResult);
+		Utl.writeJsonResultToFile(jsonResult);
+
 	}
 
 	private void runAndPrintOptionally(AnalysisTask task) throws Exception {
+		task.build();
 		if (this.printOutput) {
-			Utl.printAnalysisRun(task.getStartCommitName(), task.getFunctionName(), task.getFunctionStartLine());
+			Utl.printAnalysisRun(task);
 		}
 		task.run();
 		if (this.printOutput) {
-			Utl.printMethodHistory(task.getYresult());
+			Utl.printMethodHistory(task);
 		}
 	}
 

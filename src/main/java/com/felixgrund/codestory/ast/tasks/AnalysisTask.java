@@ -8,6 +8,7 @@ import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.exceptions.NoParserFoundException;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
 import com.felixgrund.codestory.ast.interpreters.Interpreter;
+import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
@@ -39,12 +40,16 @@ public class AnalysisTask {
 	private static boolean CACHE_ENABLED = false;
 
 	private Git git;
+	private String repositoryName;
 	private Repository repository;
 	private String filePath;
 	private String fileName;
 	private String startCommitName;
 	private String functionName;
 	private int functionStartLine;
+	private int functionEndLine;
+
+	private boolean wasBuilt;
 
 	private List<RevCommit> fileHistory;
 
@@ -63,14 +68,34 @@ public class AnalysisTask {
 		this.yhistory = new Yhistory();
 	}
 
-	public void run() throws Exception {
+	public AnalysisTask(AnalysisTask baseAnalysisTask, Ycommit compareCommit, Yfunction compareFunction) throws Exception {
+		this();
+		this.setRepositoryName(baseAnalysisTask.getRepositoryName());
+		this.setRepository(baseAnalysisTask.getRepository());
+		this.setFilePath(baseAnalysisTask.getFilePath());
+		this.setFileHistory(baseAnalysisTask.getFileHistory());
+		this.setStartCommitName(compareCommit.getName());
+		this.setFunctionName(compareFunction.getName());
+		this.setFunctionStartLine(compareFunction.getNameLineNumber());
+		this.setFunctionEndLine(compareFunction.getEndLineNumber());
 		this.buildAndValidate();
+	}
+
+	public void build() throws Exception {
+		this.buildAndValidate();
+		this.wasBuilt = true;
+	}
+
+	public void run() throws Exception {
+		if (!wasBuilt) {
+			throw new Exception("Task was not built yet. Make sure build() is called before run()");
+		}
 		this.createCommitCollection();
 		this.createResult();
 	}
 
 	private void createResult() throws IOException {
-		this.yresult = new Yresult(this.startCommitName, this.functionName, this.functionStartLine);
+		this.yresult = new Yresult();
 		for (Ycommit ycommit : this.yhistory) {
 			Ychange ychange = new Interpreter(ycommit).interpret();
 			if (!(ychange instanceof Ynochange)) {
@@ -100,6 +125,9 @@ public class AnalysisTask {
 		startParser.parse();
 		this.startFunction = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
 		Utl.checkNotNull("startFunctionNode", this.startFunction);
+
+		this.functionEndLine = this.startFunction.getEndLineNumber();
+		Utl.checkPositiveInt("functionEndLine", this.functionEndLine);
 
 		String functionPath = this.startFunction.getName();
 		Utl.checkNotNull("functionPath", functionPath);
@@ -298,5 +326,21 @@ public class AnalysisTask {
 
 	public int getFunctionStartLine() {
 		return functionStartLine;
+	}
+
+	public int getFunctionEndLine() {
+		return functionEndLine;
+	}
+
+	public void setFunctionEndLine(int functionEndLine) {
+		this.functionEndLine = functionEndLine;
+	}
+
+	public String getRepositoryName() {
+		return repositoryName;
+	}
+
+	public void setRepositoryName(String repositoryName) {
+		this.repositoryName = repositoryName;
 	}
 }

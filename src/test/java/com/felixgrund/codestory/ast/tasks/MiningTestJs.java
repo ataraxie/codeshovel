@@ -14,11 +14,12 @@ public class MiningTestJs {
 	public static void main(String[] args) throws Exception {
 		String repositoryPath = CODESTORY_REPO_DIR + "/" + REPO + "/.git";
 		MiningExecution execution = new MiningExecution();
+		execution.setRepositoryName(REPO);
 		execution.setRepositoryPath(repositoryPath);
 		execution.setFileName(FILENAME);
 		execution.setFilePath(FILE_PATH);
 		execution.setStartCommit(START_COMMIT);
-		execution.setFunctionName("inspectPrefiltersOrTransports");
+//		execution.setFunctionName("inspectPrefiltersOrTransports");
 
 		execution.execute();
 
