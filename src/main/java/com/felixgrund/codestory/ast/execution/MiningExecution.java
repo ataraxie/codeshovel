@@ -23,80 +23,96 @@ public class MiningExecution {
 
 	private String repositoryName;
 	private String repositoryPath;
-	private String filePath;
-	private String fileName;
-	private String startCommit;
-	private String functionName;
+	private String startCommitName;
+	private String onlyMethodName;
+	private String onlyFilePath;
+
+	private Repository repository;
+	private RevCommit startCommit;
 
 	public void execute() throws Exception {
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
-		Repository repository = builder.setGitDir(new File(this.repositoryPath))
+		this.repository = builder.setGitDir(new File(this.repositoryPath))
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
 				.build();
 		Git git = new Git(repository);
-		RevCommit startCommit = Utl.findCommitByName(repository, this.startCommit);
-		String startFileContent = Utl.findFileContent(repository, startCommit, this.filePath);
+		this.startCommit = Utl.findCommitByName(repository, this.startCommitName);
 
-		Yparser parser = ParserFactory.getParser(this.fileName, startFileContent);
-		parser.parse();
-
-		for (Yfunction method : parser.getAllFunctions()) {
-			if (this.functionName != null && !functionName.equals(method.getName())) {
-				continue;
+		if (this.onlyFilePath != null) {
+			runForFile(this.onlyFilePath);
+		} else {
+			List<String> filePaths = Utl.findFilesByExtension(repository, startCommit, ".js");
+			for (String filePath : filePaths) {
+				runForFile(filePath);
 			}
-			String name = method.getName();
-			int lineNumber = method.getNameLineNumber();
-			AnalysisTask task = new AnalysisTask();
-			task.setRepositoryName(this.repositoryName);
-			task.setRepository(repository);
-			task.setFilePath(this.filePath);
-			task.setFunctionName(name);
-			task.setFunctionStartLine(lineNumber);
-			task.setStartCommitName(this.startCommit);
-
-			RecursiveAnalysisTask recursiveAnalysisTask = new RecursiveAnalysisTask(task);
-			recursiveAnalysisTask.run();
-
-			Yresult yresult = recursiveAnalysisTask.getResult();
-			List<String> changeHistory = new ArrayList<>();
-			List<String> changeHistoryDetails = new ArrayList<>();
-			for (Ycommit ycommit : yresult.keySet()) {
-				changeHistory.add(ycommit.getName());
-				changeHistoryDetails.add(ycommit.getName() + ":" + yresult.get(ycommit));
-			}
-			JsonResult jsonResult = new JsonResult("codestory", task, changeHistory, changeHistoryDetails);
-			Utl.writeJsonResultToFile(jsonResult);
-
-
-			GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task);
-			gitRangeLogTask.run();
-			jsonResult = new JsonResult("logcommand", task, gitRangeLogTask.getResult(), null);
-			Utl.writeJsonResultToFile(jsonResult);
-
-//			jsonResult = new JsonResult("logcommand", task, gitRangeLogTask.getResult());
-//			Utl.writeJsonResultToFile(jsonResult);
 		}
+	}
+
+	private void runForFile(String filePath) throws Exception {
+		printFileStart(filePath);
+		String startFileContent = Utl.findFileContent(this.repository, this.startCommit, filePath);
+		Yparser parser = ParserFactory.getParser(filePath, startFileContent);
+		parser.parse();
+		for (Yfunction method : parser.getAllFunctions()) {
+			if (this.onlyMethodName == null || this.onlyMethodName.equals(method.getName())) {
+				runForMethod(filePath, method);
+			}
+		}
+		printFileEnd(filePath);
+	}
+
+	private void runForMethod(String filePath, Yfunction method) throws Exception {
+		printMethodStart(method);
+
+		String name = method.getName();
+		int lineNumber = method.getNameLineNumber();
+		AnalysisTask task = new AnalysisTask();
+		task.setRepositoryName(this.repositoryName);
+		task.setRepository(this.repository);
+		task.setFilePath(filePath);
+		task.setFunctionName(name);
+		task.setFunctionStartLine(lineNumber);
+		task.setStartCommitName(this.startCommitName);
+
+		RecursiveAnalysisTask recursiveAnalysisTask = new RecursiveAnalysisTask(task);
+		recursiveAnalysisTask.run();
+
+		Yresult yresult = recursiveAnalysisTask.getResult();
+		List<String> changeHistory = new ArrayList<>();
+		List<String> changeHistoryDetails = new ArrayList<>();
+		for (Ycommit ycommit : yresult.keySet()) {
+			changeHistory.add(ycommit.getName());
+			changeHistoryDetails.add(ycommit.getName() + ":" + yresult.get(ycommit));
+		}
+		JsonResult jsonResult = new JsonResult("codestory", task, changeHistory, changeHistoryDetails);
+		Utl.writeJsonResultToFile(jsonResult);
+
+
+		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task);
+		gitRangeLogTask.run();
+		changeHistory = gitRangeLogTask.getResult();
+		jsonResult = new JsonResult("logcommand", task, changeHistory, null);
+		Utl.printMethodHistory(changeHistory);
+		Utl.writeJsonResultToFile(jsonResult);
+
+		printMethodEnd(method);
 	}
 
 	public void setRepositoryPath(String repositoryPath) {
 		this.repositoryPath = repositoryPath;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setOnlyFilePath(String onlyFilePath) {
+		this.onlyFilePath = onlyFilePath;
 	}
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+	public void setStartCommitName(String startCommitName) {
+		this.startCommitName = startCommitName;
 	}
 
-	public void setStartCommit(String startCommit) {
-		this.startCommit = startCommit;
-	}
-
-	public void setFunctionName(String functionName) {
-		this.functionName = functionName;
+	public void setOnlyMethodName(String onlyMethodName) {
+		this.onlyMethodName = onlyMethodName;
 	}
 
 	public String getRepositoryName() {
@@ -105,5 +121,25 @@ public class MiningExecution {
 
 	public void setRepositoryName(String repositoryName) {
 		this.repositoryName = repositoryName;
+	}
+
+	private void printFileStart(String filePath) {
+		System.out.println("#########################################################################");
+		System.out.println("STARTING ANALYSIS FOR FILE " + filePath);
+	}
+
+	private void printFileEnd(String filePath) {
+		System.out.println("FINISHED ANALYSIS FOR FILE " + filePath);
+		System.out.println("#########################################################################");
+	}
+
+	private void printMethodStart(Yfunction method) {
+		System.out.println("-------------------------------------------------------------------------");
+		System.out.println("STARTING ANALYSIS FOR METHOD " + method.getName());
+	}
+
+	private void printMethodEnd(Yfunction method) {
+		System.out.println("FINISHED ANALYSIS FOR METHOD " + method.getName());
+		System.out.println("-------------------------------------------------------------------------");
 	}
 }

@@ -9,13 +9,11 @@ import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yhistory;
 import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
+import com.felixgrund.codestory.ast.tasks.GitRangeLogTask;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -23,6 +21,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -71,6 +70,21 @@ public class Utl {
 		Iterator<RevCommit> iterator = walk.iterator();
 		List<RevCommit> commits = Lists.newArrayList(iterator);
 		return commits;
+	}
+
+	public static List<String> findFilesByExtension(Repository repository, RevCommit commit, String fileExtension) throws Exception {
+		List<String> ret = new ArrayList<>();
+		RevTree tree = commit.getTree();
+		TreeWalk treeWalk = new TreeWalk(repository);
+		treeWalk.addTree(tree);
+		treeWalk.setRecursive(true);
+		while (treeWalk.next()) {
+			String pathString = treeWalk.getPathString();
+			if (treeWalk.getPathString().endsWith(fileExtension)) {
+				ret.add(pathString);
+			}
+		}
+		return ret;
 	}
 
 	public static String findFileContent(Repository repository, RevCommit commit, String filePath) throws IOException {
@@ -148,15 +162,22 @@ public class Utl {
 
 	public static void printMethodHistory(AnalysisTask task) {
 		Yresult yresult = task.getYresult();
-		System.out.println("\nMethod history...");
+		System.out.println("\nCodeStory Change History:");
 		for (Ycommit ycommit : yresult.keySet()) {
 			System.out.println(ycommit.getCommit().getName() + ": " + yresult.get(ycommit));
 		}
 	}
 
+	public static void printMethodHistory(List<String> commitNames) {
+		System.out.println("\nGit Log Change History:");
+		for (String commitName : commitNames) {
+			System.out.println(commitName);
+		}
+	}
+
 	public static void printAnalysisRun(AnalysisTask task) {
-		System.out.println("\n====================================================");
-		System.out.println(String.format("Running Level 1 Analysis\nCommit: %s\nMethod: %s\nLines: %s-%s",
+		System.out.println("====================================================");
+		System.out.println(String.format("Running Analysis\nCommit: %s\nMethod: %s\nLines: %s-%s",
 				task.getStartCommitName(), task.getFunctionName(), task.getFunctionStartLine(), task.getFunctionEndLine()));
 		System.out.println("====================================================");
 	}
@@ -164,10 +185,14 @@ public class Utl {
 	public static void writeJsonResultToFile(JsonResult jsonResult) throws IOException {
 		String dir = System.getProperty("user.dir") + "/output/" + jsonResult.getOrigin();
 		String commitNameShort = jsonResult.getStartCommitName().substring(0, 5);
-		String sourceFileName = jsonResult.getSourceFileName();
+		String sourceFilePath = jsonResult.getSourceFilePath();
 		String functionName = jsonResult.getFunctionName();
 		String repoName = jsonResult.getRepositoryName();
-		File file = new File(dir + "/" + repoName + "-" + commitNameShort + "-" + sourceFileName + "-" + functionName);
+		String targetDirPath = dir + "/" + repoName + "/" + commitNameShort + "/" + sourceFilePath;
+		File targetDir = new File(targetDirPath);
+		targetDir.mkdirs();
+		String sanitizedFunctionName = functionName.replaceAll(":", "_COLON_");
+		File file = new File(targetDirPath + "/" + sanitizedFunctionName + ".json");
 		FileUtils.writeStringToFile(file, jsonResult.toJsonString(), "utf-8");
 	}
 

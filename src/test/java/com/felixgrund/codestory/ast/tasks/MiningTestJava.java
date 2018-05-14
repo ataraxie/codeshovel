@@ -21,10 +21,10 @@ public class MiningTestJava {
 		MiningExecution execution = new MiningExecution();
 		execution.setRepositoryName(REPO);
 		execution.setRepositoryPath(repositoryPath);
-		execution.setFileName(FILENAME);
-		execution.setFilePath(FILE_PATH);
-		execution.setStartCommit(START_COMMIT);
-//		execution.setFunctionName("inspectPrefiltersOrTransports");
+		execution.setStartCommitName(START_COMMIT);
+
+		execution.setOnlyFilePath(FILE_PATH);
+//		execution.setOnlyMethodName("inspectPrefiltersOrTransports");
 
 		execution.execute();
 	}

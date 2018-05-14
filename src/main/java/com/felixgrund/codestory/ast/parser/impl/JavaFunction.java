@@ -54,4 +54,9 @@ public class JavaFunction implements Yfunction {
 		return 0;
 	}
 
+	@Override
+	public Object getRawFunction() {
+		return this.node;
+	}
+
 }

@@ -13,5 +13,6 @@ public interface Yfunction {
 	Yreturn getReturnStmt();
 	int getNameLineNumber();
 	int getEndLineNumber();
+	Object getRawFunction();
 
 }

@@ -16,13 +16,18 @@ public class MiningTestJs {
 		MiningExecution execution = new MiningExecution();
 		execution.setRepositoryName(REPO);
 		execution.setRepositoryPath(repositoryPath);
-		execution.setFileName(FILENAME);
-		execution.setFilePath(FILE_PATH);
-		execution.setStartCommit(START_COMMIT);
-		execution.setFunctionName("inspectPrefiltersOrTransports");
+		execution.setStartCommitName(START_COMMIT);
+
+//		execution.setOnlyFilePath(FILE_PATH);
+//		execution.setOnlyMethodName("inspectPrefiltersOrTransports");
 
 		execution.execute();
 
+//		Runtime runtime = Runtime.getRuntime();
+////		String logCommand = String.format("git log --no-merges -L %s,%s:%s", rangeStart, rangeEnd, filePath);
+//		Process process = runtime.exec("git log --no-merges -L 10,808:src/ajax.js | grep 'commit\\s' | sed 's/commit//'", null, new File(CODESTORY_REPO_DIR + "/" + REPO));
+//		process.waitFor();
+//		int a = 1;
 	}
 
 }

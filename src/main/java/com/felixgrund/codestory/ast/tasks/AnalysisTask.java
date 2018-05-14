@@ -51,7 +51,7 @@ public class AnalysisTask {
 
 	private boolean wasBuilt;
 
-	private List<RevCommit> fileHistory;
+	private Map<String, RevCommit> fileHistory;
 
 	private Yfunction startFunction;
 	private Ycommit startCommit;
@@ -141,10 +141,13 @@ public class AnalysisTask {
 		if (this.fileHistory == null) {
 			LogCommand logCommand = this.git.log().addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
 			Iterable<RevCommit> revisions = logCommand.call();
-			this.fileHistory = Lists.newArrayList(revisions);
+			this.fileHistory = new LinkedHashMap<>();
+			for (RevCommit commit : revisions) {
+				this.fileHistory.put(commit.getName(), commit);
+			}
 		}
 
-		for (RevCommit commit : this.fileHistory) {
+		for (RevCommit commit : this.fileHistory.values()) {
 			if (commit.getCommitTime() <= this.startCommit.getCommit().getCommitTime()) {
 				try {
 					Ycommit ycommit = getOrCreateYcommit(commit);
@@ -288,10 +291,6 @@ public class AnalysisTask {
 		return yresult;
 	}
 
-	public void setFileHistory(List<RevCommit> fileHistory) {
-		this.fileHistory = fileHistory;
-	}
-
 	public void setYhistory(Yhistory yhistory) {
 		this.yhistory = yhistory;
 	}
@@ -316,8 +315,8 @@ public class AnalysisTask {
 		return startCommitName;
 	}
 
-	public List<RevCommit> getFileHistory() {
-		return fileHistory;
+	public Ycommit getStartCommit() {
+		return startCommit;
 	}
 
 	public String getFunctionName() {
@@ -342,5 +341,13 @@ public class AnalysisTask {
 
 	public void setRepositoryName(String repositoryName) {
 		this.repositoryName = repositoryName;
+	}
+
+	public Map<String, RevCommit> getFileHistory() {
+		return fileHistory;
+	}
+
+	public void setFileHistory(Map<String, RevCommit> fileHistory) {
+		this.fileHistory = fileHistory;
 	}
 }

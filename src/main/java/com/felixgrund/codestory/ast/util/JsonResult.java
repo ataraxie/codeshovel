@@ -1,12 +1,9 @@
 package com.felixgrund.codestory.ast.util;
 
-import com.felixgrund.codestory.ast.entities.Ycommit;
-import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class JsonResult {
@@ -16,6 +13,7 @@ public class JsonResult {
 	private String startCommitName;
 	private String sourceFileName;
 	private String functionName;
+	private String sourceFilePath;
 	private int functionStartLine;
 	private int functionEndLine;
 	private List<String> changeHistory;
@@ -28,6 +26,7 @@ public class JsonResult {
 		this.sourceFileName = startTask.getFileName();
 		this.functionName = startTask.getFunctionName();
 		this.functionStartLine = startTask.getFunctionStartLine();
+		this.sourceFilePath = startTask.getFilePath();
 		this.functionEndLine = startTask.getFunctionEndLine();
 		this.changeHistory = changeHistory;
 		this.changeHistoryDetails = changeHistoryDetails;
@@ -68,5 +67,9 @@ public class JsonResult {
 
 	public String getOrigin() {
 		return origin;
+	}
+
+	public String getSourceFilePath() {
+		return sourceFilePath;
 	}
 }

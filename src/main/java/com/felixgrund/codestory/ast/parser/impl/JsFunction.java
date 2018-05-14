@@ -41,6 +41,11 @@ public class JsFunction implements Yfunction {
 	}
 
 	@Override
+	public Object getRawFunction() {
+		return this.node;
+	}
+
+	@Override
 	public String getBody() {
 		String fileSource = this.node.getSource().getString();
 		return fileSource.substring(this.node.getStart(), this.node.getFinish());
