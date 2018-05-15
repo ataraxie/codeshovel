@@ -181,14 +181,8 @@ public class AnalysisTask {
 			Yparser parser = ParserFactory.getParser(ycommit.getFileName(), ycommit.getFileContent());
 			parser.parse();
 			ycommit.setParser(parser);
-			List<Yfunction> matchedFunctions = parser.findFunctionsByOtherFunction(this.startFunction);
-			int numMatchedNodes = matchedFunctions.size();
-			if (numMatchedNodes >= 1) {
-				ycommit.setMatchedFunction(matchedFunctions.get(0));
-				if (numMatchedNodes > 1) {
-					System.err.println("More than one matching function found. Taking first.");
-				}
-			}
+			Yfunction matchedFunction = parser.findFunctionByOtherFunction(this.startFunction);
+			ycommit.setMatchedFunction(matchedFunction);
 		}
 		currentCommitCache.put(commitName, ycommit);
 		return ycommit;

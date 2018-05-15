@@ -9,7 +9,7 @@ public interface Yparser {
 	Yfunction findFunctionByNameAndLine(String name, int line);
 	List<Yfunction> findFunctionsByLineRange(int beginLine, int endLine);
 	List<Yfunction> getAllFunctions();
-	List<Yfunction> findFunctionsByOtherFunction(Yfunction otherFunction);
+	Yfunction findFunctionByOtherFunction(Yfunction otherFunction);
 	Object parse() throws ParseException;
 	boolean functionNamesConsideredEqual(String aName, String bName);
 

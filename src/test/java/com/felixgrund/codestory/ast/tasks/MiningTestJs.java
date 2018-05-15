@@ -7,8 +7,6 @@ public class MiningTestJs {
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 	private static final String REPO = "jquery";
-	private static final String FILE_PATH = "src/ajax.js";
-	private static final String FILENAME = "ajax.js";
 	private static final String START_COMMIT = "46ea7a3f0e8893a420e4c3321dc3aca40d96f754";
 
 	public static void main(String[] args) throws Exception {
@@ -18,7 +16,7 @@ public class MiningTestJs {
 		execution.setRepositoryPath(repositoryPath);
 		execution.setStartCommitName(START_COMMIT);
 
-//		execution.setOnlyFilePath(FILE_PATH);
+		execution.setOnlyFilePath("build/tasks/build.js");
 //		execution.setOnlyMethodName("inspectPrefiltersOrTransports");
 
 		execution.execute();

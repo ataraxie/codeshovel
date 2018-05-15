@@ -154,10 +154,12 @@ public class Utl {
 	}
 
 	public static boolean isFunctionBodySimilar(Yfunction aFunction, Yfunction bFunction) {
-		String aBody = aFunction.getBody();
-		String bBody = bFunction.getBody();
-		double similarity = new JaroWinklerDistance().apply(aBody, bBody);
+		double similarity = getBodySimilarity(aFunction, bFunction);
 		return similarity > 0.7;
+	}
+
+	public static double getBodySimilarity(Yfunction aFunction, Yfunction bFunction) {
+		return new JaroWinklerDistance().apply(aFunction.getBody(), bFunction.getBody());
 	}
 
 	public static void printMethodHistory(AnalysisTask task) {
