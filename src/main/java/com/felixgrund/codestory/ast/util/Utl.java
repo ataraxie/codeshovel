@@ -198,4 +198,8 @@ public class Utl {
 		FileUtils.writeStringToFile(file, jsonResult.toJsonString(), "utf-8");
 	}
 
+	public static int countLineNumbers(String string) {
+		return string.split("\r\n|\r|\n").length;
+	}
+
 }

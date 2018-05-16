@@ -39,11 +39,9 @@ public class MiningExecution {
 		Git git = new Git(repository);
 		this.startCommit = Utl.findCommitByName(repository, this.startCommitName);
 
-		if (this.onlyFilePath != null) {
-			runForFile(this.onlyFilePath);
-		} else {
-			List<String> filePaths = Utl.findFilesByExtension(repository, startCommit, ".js");
-			for (String filePath : filePaths) {
+		List<String> filePaths = Utl.findFilesByExtension(repository, startCommit, ".js");
+		for (String filePath : filePaths) {
+			if (this.onlyFilePath == null || filePath.contains(this.onlyFilePath)) {
 				runForFile(filePath);
 			}
 		}

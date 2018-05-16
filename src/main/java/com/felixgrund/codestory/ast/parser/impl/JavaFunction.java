@@ -1,5 +1,6 @@
 package com.felixgrund.codestory.ast.parser.impl;
 
+import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yparameter;
 import com.felixgrund.codestory.ast.entities.Yreturn;
 import com.felixgrund.codestory.ast.parser.Yfunction;
@@ -12,6 +13,16 @@ import java.util.List;
 public class JavaFunction implements Yfunction {
 
 	private MethodDeclaration node;
+
+	// temp
+	private Ycommit commit;
+	public void setCommit(Ycommit commit) {
+		this.commit = commit;
+	}
+	@Override
+	public Ycommit getCommit() {
+		return commit;
+	}
 
 	public JavaFunction(MethodDeclaration node) {
 		this.node = node;

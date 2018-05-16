@@ -1,5 +1,6 @@
 package com.felixgrund.codestory.ast.parser;
 
+import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yparameter;
 import com.felixgrund.codestory.ast.entities.Yreturn;
 
@@ -14,5 +15,9 @@ public interface Yfunction {
 	int getNameLineNumber();
 	int getEndLineNumber();
 	Object getRawFunction();
+
+	// temp
+	void setCommit(Ycommit commit);
+	Ycommit getCommit();
 
 }

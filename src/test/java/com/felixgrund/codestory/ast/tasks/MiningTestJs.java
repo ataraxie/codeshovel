@@ -16,7 +16,7 @@ public class MiningTestJs {
 		execution.setRepositoryPath(repositoryPath);
 		execution.setStartCommitName(START_COMMIT);
 
-		execution.setOnlyFilePath("build/tasks/build.js");
+		execution.setOnlyFilePath("src/");
 //		execution.setOnlyMethodName("inspectPrefiltersOrTransports");
 
 		execution.execute();

@@ -1,8 +1,10 @@
 package com.felixgrund.codestory.ast.parser.impl;
 
+import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yparameter;
 import com.felixgrund.codestory.ast.entities.Yreturn;
 import com.felixgrund.codestory.ast.parser.Yfunction;
+import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
 import jdk.nashorn.internal.ir.IdentNode;
 
@@ -12,6 +14,17 @@ import java.util.List;
 public class JsFunction implements Yfunction {
 
 	private FunctionNode node;
+
+	// temp
+	private Ycommit commit;
+	@Override
+	public void setCommit(Ycommit commit) {
+		this.commit = commit;
+	}
+	@Override
+	public Ycommit getCommit() {
+		return commit;
+	}
 
 	public JsFunction(FunctionNode node) {
 		this.node = node;
@@ -36,8 +49,7 @@ public class JsFunction implements Yfunction {
 	public int getEndLineNumber() {
 		String fileSource = this.node.getSource().getString();
 		String sourceTillEndOfNode = fileSource.substring(0, this.node.getFinish());
-		String[] lines = sourceTillEndOfNode.split("\r\n|\r|\n");
-		return lines.length;
+		return Utl.countLineNumbers(sourceTillEndOfNode);
 	}
 
 	@Override

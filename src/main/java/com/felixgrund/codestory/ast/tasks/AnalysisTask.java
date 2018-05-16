@@ -132,7 +132,7 @@ public class AnalysisTask {
 		String functionPath = this.startFunction.getName();
 		Utl.checkNotNull("functionPath", functionPath);
 
-		this.startCommit = getOrCreateYcommit(startCommitRaw);
+		this.startCommit = getOrCreateYcommit(startCommitRaw, null);
 		Utl.checkNotNull("startCommit", startCommit);
 	}
 
@@ -150,13 +150,13 @@ public class AnalysisTask {
 		for (RevCommit commit : this.fileHistory.values()) {
 			if (commit.getCommitTime() <= this.startCommit.getCommit().getCommitTime()) {
 				try {
-					Ycommit ycommit = getOrCreateYcommit(commit);
+					Ycommit ycommit = getOrCreateYcommit(commit, null);
 					if (ycommit.getMatchedFunction() == null) {
 						break;
 					}
 					if (commit.getParentCount() > 0) {
 						RevCommit parentCommit = commit.getParent(0);
-						Ycommit parentYcommit = getOrCreateYcommit(parentCommit);
+						Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
 						ycommit.setParent(parentYcommit);
 						ycommit.setYdiff(createDiffInfo(commit, parentCommit));
 					}
@@ -169,11 +169,19 @@ public class AnalysisTask {
 
 	}
 
-	private Ycommit getOrCreateYcommit(RevCommit commit) throws ParseException, IOException, NoParserFoundException {
+	private Ycommit getOrCreateYcommit(RevCommit commit, Ycommit fromChildCommit)
+			throws ParseException, IOException, NoParserFoundException {
+
 		String commitName = commit.getName();
 		Ycommit ycommit = currentCommitCache.get(commitName);
 		if (ycommit != null) {
 			return ycommit;
+		}
+
+
+		Yfunction compareFunction = this.startFunction;
+		if (fromChildCommit != null && fromChildCommit.getMatchedFunction() != null) {
+			compareFunction = fromChildCommit.getMatchedFunction();
 		}
 
 		ycommit = createBaseYcommit(commit);
@@ -181,7 +189,8 @@ public class AnalysisTask {
 			Yparser parser = ParserFactory.getParser(ycommit.getFileName(), ycommit.getFileContent());
 			parser.parse();
 			ycommit.setParser(parser);
-			Yfunction matchedFunction = parser.findFunctionByOtherFunction(this.startFunction);
+			Yfunction matchedFunction = parser.findFunctionByOtherFunction(compareFunction);
+
 			ycommit.setMatchedFunction(matchedFunction);
 		}
 		currentCommitCache.put(commitName, ycommit);
