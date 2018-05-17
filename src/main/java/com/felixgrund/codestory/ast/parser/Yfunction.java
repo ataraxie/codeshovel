@@ -16,8 +16,7 @@ public interface Yfunction {
 	int getEndLineNumber();
 	Object getRawFunction();
 
-	// temp
-	void setCommit(Ycommit commit);
-	Ycommit getCommit();
+	String getCommitName();
+	void setCommitName(String commitName);
 
 }

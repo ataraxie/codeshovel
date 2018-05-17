@@ -37,6 +37,6 @@ public class FunctionSimilarity {
 	@Override
 	public String toString() {
 		return "BodySimilarity: " + bodySimilarity + "; ScopeSimilarity: " + scopeSimilarity +
-				"; LineNumberSimilarity: " + lineNumberSimilarity;
+				"; LineNumberSimilarity: " + lineNumberSimilarity + " --- Overall: " + getOverallSimilarity();
 	}
 }

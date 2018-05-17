@@ -121,10 +121,14 @@ public class AnalysisTask {
 		String startFileContent = Utl.findFileContent(this.repository, startCommitRaw, this.filePath);
 		Utl.checkNotNull("startFileContent", startFileContent);
 
-		Yparser startParser = ParserFactory.getParser(this.fileName, startFileContent);
+		Yparser startParser = ParserFactory.getParser(this.repositoryName, this.fileName, startFileContent, this.startCommitName);
 		startParser.parse();
+
 		this.startFunction = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
 		Utl.checkNotNull("startFunctionNode", this.startFunction);
+
+		this.startCommit = getOrCreateYcommit(startCommitRaw, null);
+		Utl.checkNotNull("startCommit", this.startCommit);
 
 		this.functionEndLine = this.startFunction.getEndLineNumber();
 		Utl.checkPositiveInt("functionEndLine", this.functionEndLine);
@@ -132,8 +136,6 @@ public class AnalysisTask {
 		String functionPath = this.startFunction.getName();
 		Utl.checkNotNull("functionPath", functionPath);
 
-		this.startCommit = getOrCreateYcommit(startCommitRaw, null);
-		Utl.checkNotNull("startCommit", startCommit);
 	}
 
 	private void createCommitCollection() throws IOException, GitAPIException, NoParserFoundException {
@@ -147,10 +149,11 @@ public class AnalysisTask {
 			}
 		}
 
+		Ycommit lastConsideredCommit = null;
 		for (RevCommit commit : this.fileHistory.values()) {
 			if (commit.getCommitTime() <= this.startCommit.getCommit().getCommitTime()) {
 				try {
-					Ycommit ycommit = getOrCreateYcommit(commit, null);
+					Ycommit ycommit = getOrCreateYcommit(commit, lastConsideredCommit);
 					if (ycommit.getMatchedFunction() == null) {
 						break;
 					}
@@ -160,6 +163,7 @@ public class AnalysisTask {
 						ycommit.setParent(parentYcommit);
 						ycommit.setYdiff(createDiffInfo(commit, parentCommit));
 					}
+					lastConsideredCommit = ycommit;
 					this.yhistory.add(ycommit);
 				} catch (ParseException e) {
 					System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getName());
@@ -186,7 +190,7 @@ public class AnalysisTask {
 
 		ycommit = createBaseYcommit(commit);
 		if (ycommit.getFileContent() != null) {
-			Yparser parser = ParserFactory.getParser(ycommit.getFileName(), ycommit.getFileContent());
+			Yparser parser = ParserFactory.getParser(this.repositoryName, ycommit.getFileName(), ycommit.getFileContent(), ycommit.getName());
 			parser.parse();
 			ycommit.setParser(parser);
 			Yfunction matchedFunction = parser.findFunctionByOtherFunction(compareFunction);

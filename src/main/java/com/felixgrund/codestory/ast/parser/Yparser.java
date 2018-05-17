@@ -1,5 +1,6 @@
 package com.felixgrund.codestory.ast.parser;
 
+import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
 
 import java.util.List;

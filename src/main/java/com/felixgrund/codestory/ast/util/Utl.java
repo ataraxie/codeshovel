@@ -184,18 +184,45 @@ public class Utl {
 		System.out.println("====================================================");
 	}
 
-	public static void writeJsonResultToFile(JsonResult jsonResult) throws IOException {
-		String dir = System.getProperty("user.dir") + "/output/" + jsonResult.getOrigin();
-		String commitNameShort = jsonResult.getStartCommitName().substring(0, 5);
-		String sourceFilePath = jsonResult.getSourceFilePath();
-		String functionName = jsonResult.getFunctionName();
-		String repoName = jsonResult.getRepositoryName();
-		String targetDirPath = dir + "/" + repoName + "/" + commitNameShort + "/" + sourceFilePath;
+	public static void writeToFile(String fileExtension, String subdir, String commitName, String filePath,
+		   		String functionName, String repoName, String content) throws IOException {
+		String baseDir = System.getProperty("user.dir") + "/output/" + subdir;
+		String commitNameShort = commitName.substring(0, 5);
+		String targetDirPath = baseDir + "/" + repoName + "/" + commitNameShort + "/" + filePath;
 		File targetDir = new File(targetDirPath);
 		targetDir.mkdirs();
 		String sanitizedFunctionName = functionName.replaceAll(":", "_COLON_");
-		File file = new File(targetDirPath + "/" + sanitizedFunctionName + ".json");
-		FileUtils.writeStringToFile(file, jsonResult.toJsonString(), "utf-8");
+		File file = new File(targetDirPath + "/" + sanitizedFunctionName + fileExtension);
+		FileUtils.writeStringToFile(file, content, "utf-8");
+	}
+
+	public static void writeJsonResultToFile(JsonResult jsonResult) throws IOException {
+		writeToFile(
+				".json", jsonResult.getOrigin(), jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
+				jsonResult.getFunctionName(), jsonResult.getRepositoryName(), jsonResult.toJsonString()
+		);
+	}
+
+	public static void writeSimilarityToFile(
+			Yfunction functionMostSimilar,
+			Yfunction compareFunction,
+			FunctionSimilarity similarity,
+			String functionPath,
+			String repoName,
+			String filePath) throws IOException {
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("=== COMPARE FUNCTION ===\n\n");
+		builder.append(compareFunction);
+		builder.append("\n\n=== MOST SIMILAR FUNCTION ===\n\n");
+		builder.append(functionMostSimilar);
+		builder.append("\n\n=== SIMILARITY ===\n");
+		builder.append(similarity);
+
+		writeToFile(
+				".out", "similarity", compareFunction.getCommitName(), filePath, functionPath,
+				repoName, builder.toString()
+		);
 	}
 
 	public static int countLineNumbers(String string) {

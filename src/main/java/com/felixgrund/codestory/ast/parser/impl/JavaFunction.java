@@ -13,19 +13,21 @@ import java.util.List;
 public class JavaFunction implements Yfunction {
 
 	private MethodDeclaration node;
+	private String commitName;
 
-	// temp
-	private Ycommit commit;
-	public void setCommit(Ycommit commit) {
-		this.commit = commit;
-	}
-	@Override
-	public Ycommit getCommit() {
-		return commit;
-	}
-
-	public JavaFunction(MethodDeclaration node) {
+	public JavaFunction(MethodDeclaration node, String commitName) {
 		this.node = node;
+		this.commitName = commitName;
+	}
+
+	@Override
+	public String getCommitName() {
+		return commitName;
+	}
+
+	@Override
+	public void setCommitName(String commitName) {
+		this.commitName = commitName;
 	}
 
 	@Override

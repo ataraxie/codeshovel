@@ -16,18 +16,21 @@ public class JsFunction implements Yfunction {
 	private FunctionNode node;
 
 	// temp
-	private Ycommit commit;
+	private String commitName;
+
 	@Override
-	public void setCommit(Ycommit commit) {
-		this.commit = commit;
-	}
-	@Override
-	public Ycommit getCommit() {
-		return commit;
+	public String getCommitName() {
+		return commitName;
 	}
 
-	public JsFunction(FunctionNode node) {
+	@Override
+	public void setCommitName(String commitName) {
+		this.commitName = commitName;
+	}
+
+	public JsFunction(FunctionNode node, String commitName) {
 		this.node = node;
+		this.commitName = commitName;
 	}
 
 	@Override
@@ -71,5 +74,13 @@ public class JsFunction implements Yfunction {
 			parameters.add(new Yparameter(node.getName(), Yparameter.TYPE_NONE));
 		}
 		return parameters;
+	}
+
+
+	@Override
+	public String toString() {
+		String template = "COMMIT: %s\nNAME: %s\nPATH: %s\nBODY:\n%s\n";
+		String commitName = this.commitName == null ? "" : this.getCommitName();
+		return String.format(template, commitName, this.getName(), this.node.getName(), this.getBody());
 	}
 }
