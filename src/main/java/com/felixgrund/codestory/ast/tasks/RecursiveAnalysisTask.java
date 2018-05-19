@@ -5,7 +5,6 @@ import com.felixgrund.codestory.ast.changes.Ymetachange;
 import com.felixgrund.codestory.ast.changes.Ymultichange;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yresult;
-import com.felixgrund.codestory.ast.util.JsonResult;
 import com.felixgrund.codestory.ast.util.Utl;
 
 import java.util.ArrayList;

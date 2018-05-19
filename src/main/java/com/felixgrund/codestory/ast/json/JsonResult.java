@@ -1,12 +1,17 @@
-package com.felixgrund.codestory.ast.util;
+package com.felixgrund.codestory.ast.json;
 
+import com.felixgrund.codestory.ast.changes.Ychange;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.List;
+import java.util.Map;
 
 public class JsonResult {
+
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().
+			registerTypeAdapter(Ychange.class, new ChangeSerializer()).create();
 
 	private String origin;
 	private String repositoryName;
@@ -17,9 +22,10 @@ public class JsonResult {
 	private int functionStartLine;
 	private int functionEndLine;
 	private List<String> changeHistory;
-	private List<String> changeHistoryDetails;
+	private Map<String, Ychange> changeHistoryDetails;
 
-	public JsonResult(String origin, AnalysisTask startTask, List<String> changeHistory, List<String> changeHistoryDetails) {
+	public JsonResult(String origin, AnalysisTask startTask, List<String> changeHistory,
+					  Map<String, Ychange> changeHistoryDetails) {
 		this.origin = origin;
 		this.repositoryName = startTask.getRepositoryName();
 		this.startCommitName = startTask.getStartCommitName();
@@ -56,9 +62,8 @@ public class JsonResult {
 		return changeHistory;
 	}
 
-	public String toJsonString() {
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		return gson.toJson(this);
+	public String toJson() {
+		return GSON.toJson(this);
 	}
 
 	public String getRepositoryName() {

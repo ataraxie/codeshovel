@@ -2,9 +2,10 @@ package com.felixgrund.codestory.ast.util;
 
 public class FunctionSimilarity {
 
-	private double scopeSimilarity;
-	private double bodySimilarity;
-	private double lineNumberSimilarity;
+	private double scopeSimilarity = 0;
+	private double bodySimilarity = 0;
+	private double lineNumberSimilarity = 0;
+	private double overallSimilarity = 0;
 
 	public double getScopeSimilarity() {
 		return scopeSimilarity;
@@ -18,20 +19,28 @@ public class FunctionSimilarity {
 		return lineNumberSimilarity;
 	}
 
+
 	public void setScopeSimilarity(double scopeSimilarity) {
 		this.scopeSimilarity = scopeSimilarity;
+		computeOverallSimilarity();
 	}
 
 	public void setBodySimilarity(double bodySimilarity) {
 		this.bodySimilarity = bodySimilarity;
+		computeOverallSimilarity();
 	}
 
 	public void setLineNumberSimilarity(double lineNumberSimilarity) {
 		this.lineNumberSimilarity = lineNumberSimilarity;
+		computeOverallSimilarity();
 	}
 
 	public double getOverallSimilarity() {
-		return (bodySimilarity + scopeSimilarity + lineNumberSimilarity) / 3;
+		return overallSimilarity;
+	}
+
+	private void computeOverallSimilarity() {
+		this.overallSimilarity = (bodySimilarity + scopeSimilarity + lineNumberSimilarity) / 3;
 	}
 
 	@Override

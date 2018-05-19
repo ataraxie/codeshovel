@@ -1,5 +1,6 @@
 package com.felixgrund.codestory.ast.execution;
 
+import com.felixgrund.codestory.ast.changes.Ychange;
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.parser.Yfunction;
@@ -7,19 +8,26 @@ import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
 import com.felixgrund.codestory.ast.tasks.GitRangeLogTask;
 import com.felixgrund.codestory.ast.tasks.RecursiveAnalysisTask;
-import com.felixgrund.codestory.ast.util.JsonResult;
+import com.felixgrund.codestory.ast.json.JsonChangeHistoryDiff;
+import com.felixgrund.codestory.ast.json.JsonResult;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MiningExecution {
+
+	private static final Logger log = LoggerFactory.getLogger(MiningExecution.class);
 
 	private String repositoryName;
 	private String repositoryPath;
@@ -30,6 +38,12 @@ public class MiningExecution {
 	private Repository repository;
 	private RevCommit startCommit;
 
+	private String targetFileExtension;
+
+	public MiningExecution(String targetFileExtension) {
+		this.targetFileExtension = targetFileExtension;
+	}
+
 	public void execute() throws Exception {
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
 		this.repository = builder.setGitDir(new File(this.repositoryPath))
@@ -39,7 +53,7 @@ public class MiningExecution {
 		Git git = new Git(repository);
 		this.startCommit = Utl.findCommitByName(repository, this.startCommitName);
 
-		List<String> filePaths = Utl.findFilesByExtension(repository, startCommit, ".js");
+		List<String> filePaths = Utl.findFilesByExtension(repository, startCommit, this.targetFileExtension);
 		for (String filePath : filePaths) {
 			if (this.onlyFilePath == null || filePath.contains(this.onlyFilePath)) {
 				runForFile(filePath);
@@ -77,22 +91,34 @@ public class MiningExecution {
 		recursiveAnalysisTask.run();
 
 		Yresult yresult = recursiveAnalysisTask.getResult();
-		List<String> changeHistory = new ArrayList<>();
-		List<String> changeHistoryDetails = new ArrayList<>();
+		List<String> codestoryChangeHistory = new ArrayList<>();
+		Map<String, Ychange> changeHistoryDetails = new LinkedHashMap<>();
 		for (Ycommit ycommit : yresult.keySet()) {
-			changeHistory.add(ycommit.getName());
-			changeHistoryDetails.add(ycommit.getName() + ":" + yresult.get(ycommit));
+			codestoryChangeHistory.add(ycommit.getName());
+			changeHistoryDetails.put(ycommit.getName(), yresult.get(ycommit));
 		}
-		JsonResult jsonResult = new JsonResult("codestory", task, changeHistory, changeHistoryDetails);
+		JsonResult jsonResult = new JsonResult("codestory", task, codestoryChangeHistory, changeHistoryDetails);
 		Utl.writeJsonResultToFile(jsonResult);
-
 
 		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task);
 		gitRangeLogTask.run();
-		changeHistory = gitRangeLogTask.getResult();
-		jsonResult = new JsonResult("logcommand", task, changeHistory, null);
-		Utl.printMethodHistory(changeHistory);
+		List<String> gitRangeLogChangeHistory = gitRangeLogTask.getResult();
+		jsonResult = new JsonResult("logcommand", task, gitRangeLogChangeHistory, null);
+		Utl.printMethodHistory(gitRangeLogChangeHistory);
 		Utl.writeJsonResultToFile(jsonResult);
+
+		List<String> onlyInCodestory = new ArrayList<>(codestoryChangeHistory);
+		onlyInCodestory.removeAll(gitRangeLogChangeHistory);
+
+		List<String> onlyInGitRangeLog = new ArrayList<>(gitRangeLogChangeHistory);
+		onlyInGitRangeLog.removeAll(codestoryChangeHistory);
+
+		if (onlyInCodestory.size() > 0 || onlyInGitRangeLog.size() > 0) {
+			log.info("Found difference in change history. Writing file.");
+			JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(jsonResult, gitRangeLogChangeHistory,
+					onlyInCodestory, onlyInGitRangeLog);
+			Utl.writeChangeHistoryDiff(diff);
+		}
 
 		printMethodEnd(method);
 	}

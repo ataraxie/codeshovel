@@ -64,7 +64,7 @@ public class JavaFunction implements Yfunction {
 
 	@Override
 	public int getEndLineNumber() {
-		return 0;
+		return this.node.getEnd().get().line;
 	}
 
 	@Override

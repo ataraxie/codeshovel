@@ -4,8 +4,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 
-import java.util.List;
-
 public class Ydiff {
 
 	private DiffEntry diffEntry;
@@ -29,5 +27,6 @@ public class Ydiff {
 	public EditList getEditList() {
 		return editList;
 	}
+
 
 }

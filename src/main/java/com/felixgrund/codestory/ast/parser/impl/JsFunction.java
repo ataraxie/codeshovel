@@ -76,11 +76,4 @@ public class JsFunction implements Yfunction {
 		return parameters;
 	}
 
-
-	@Override
-	public String toString() {
-		String template = "COMMIT: %s\nNAME: %s\nPATH: %s\nBODY:\n%s\n";
-		String commitName = this.commitName == null ? "" : this.getCommitName();
-		return String.format(template, commitName, this.getName(), this.node.getName(), this.getBody());
-	}
 }

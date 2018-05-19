@@ -9,7 +9,9 @@ import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yhistory;
 import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
-import com.felixgrund.codestory.ast.tasks.GitRangeLogTask;
+import com.felixgrund.codestory.ast.json.JsonChangeHistoryDiff;
+import com.felixgrund.codestory.ast.json.JsonResult;
+import com.felixgrund.codestory.ast.json.JsonSimilarity;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
@@ -184,44 +186,59 @@ public class Utl {
 		System.out.println("====================================================");
 	}
 
-	public static void writeToFile(String fileExtension, String subdir, String commitName, String filePath,
-		   		String functionName, String repoName, String content) throws IOException {
+	public static void writeOutputFile(String subdir, String commitName, String filePath,
+									   String functionName, String repoName, String content, String fileExtension) {
 		String baseDir = System.getProperty("user.dir") + "/output/" + subdir;
 		String commitNameShort = commitName.substring(0, 5);
 		String targetDirPath = baseDir + "/" + repoName + "/" + commitNameShort + "/" + filePath;
 		File targetDir = new File(targetDirPath);
 		targetDir.mkdirs();
-		String sanitizedFunctionName = functionName.replaceAll(":", "_COLON_");
+		String sanitizedFunctionName = functionName.replaceAll(":", "_CLN_").replaceAll("#", "_HSH_");
 		File file = new File(targetDirPath + "/" + sanitizedFunctionName + fileExtension);
-		FileUtils.writeStringToFile(file, content, "utf-8");
+		try {
+			FileUtils.writeStringToFile(file, content, "utf-8");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public static void writeJsonResultToFile(JsonResult jsonResult) throws IOException {
-		writeToFile(
-				".json", jsonResult.getOrigin(), jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
-				jsonResult.getFunctionName(), jsonResult.getRepositoryName(), jsonResult.toJsonString()
+	public static void writeJsonResultToFile(JsonResult jsonResult) {
+		writeOutputFile(
+				jsonResult.getOrigin(), jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
+				jsonResult.getFunctionName(), jsonResult.getRepositoryName(), jsonResult.toJson(), ".json"
 		);
 	}
 
 	public static void writeSimilarityToFile(
-			Yfunction functionMostSimilar,
-			Yfunction compareFunction,
-			FunctionSimilarity similarity,
+			JsonSimilarity jsonSimilarity,
 			String functionPath,
 			String repoName,
-			String filePath) throws IOException {
+			String filePath) {
+
+		writeOutputFile(
+				"similarity", jsonSimilarity.getCommitName(), filePath, functionPath,
+				repoName, jsonSimilarity.toJson(), ".json"
+		);
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("=== COMPARE FUNCTION ===\n\n");
-		builder.append(compareFunction);
+		builder.append(jsonSimilarity.getFunction());
 		builder.append("\n\n=== MOST SIMILAR FUNCTION ===\n\n");
-		builder.append(functionMostSimilar);
+		builder.append(jsonSimilarity.getMostSimilarFunction());
 		builder.append("\n\n=== SIMILARITY ===\n");
-		builder.append(similarity);
+		builder.append(jsonSimilarity.getSimilarity());
 
-		writeToFile(
-				".out", "similarity", compareFunction.getCommitName(), filePath, functionPath,
-				repoName, builder.toString()
+		writeOutputFile(
+				"similarity_plain", jsonSimilarity.getCommitName(), filePath, functionPath,
+				repoName, builder.toString(), ".out"
+		);
+	}
+
+	public static void writeChangeHistoryDiff(JsonChangeHistoryDiff diff) {
+		JsonResult jsonResult = diff.getJsonResult();
+		writeOutputFile(
+				"history_diff", jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
+				jsonResult.getFunctionName(), jsonResult.getRepositoryName(), diff.toJson(), ".json"
 		);
 	}
 

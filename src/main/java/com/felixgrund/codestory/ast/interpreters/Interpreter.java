@@ -59,7 +59,6 @@ public class Interpreter {
 			}
 		} else if (isFunctionBodyModified()) {
 			changes.add(new Ymodbody(ycommit));
-//			findEdits();
 		}
 
 		int numChanges = changes.size();
@@ -72,16 +71,6 @@ public class Interpreter {
 		}
 
 		return interpretation;
-	}
-
-	private List<Edit> findEdits() throws IOException {
-		List<Edit> ret = new ArrayList<>();
-		Ydiff Ydiff = ycommit.getYdiff();
-		RevCommit prev = ycommit.getCommit().getParent(0);
-		RawText aSource = new RawText(ycommit.getParent().getFileContent().getBytes());
-		RawText bSource = new RawText(ycommit.getFileContent().getBytes());
-//		Ydiff.getFormatter().format(Ydiff.getEditList(), aSource, bSource);
-		return ret;
 	}
 
 	private boolean isFunctionBodyModified() {
@@ -118,25 +107,27 @@ public class Interpreter {
 		Ycommit parentCommit = ycommit.getParent();
 		if (parentCommit != null) {
 			Ydiff ydiff = ycommit.getYdiff();
-			Yfunction functionB = ycommit.getMatchedFunction();
-			int lineNumberB = functionB.getNameLineNumber();
-			EditList editList = ydiff.getEditList();
-			for (Edit edit : editList) {
-				int beginA = edit.getBeginA();
-				int endA = edit.getEndA();
-				int beginB = edit.getBeginB();
-				int endB = edit.getEndB();
-				if (beginB <= lineNumberB && endB >= lineNumberB) {
-					Yparser parser = parentCommit.getParser();
-					List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
-					for (Yfunction functionA : functionsInRange) {
-						if (Utl.isFunctionBodySimilar(functionA, functionB)) {
-							ret = functionA;
-							break;
+			if (ydiff != null) {
+				Yfunction functionB = ycommit.getMatchedFunction();
+				int lineNumberB = functionB.getNameLineNumber();
+				EditList editList = ydiff.getEditList();
+				for (Edit edit : editList) {
+					int beginA = edit.getBeginA();
+					int endA = edit.getEndA();
+					int beginB = edit.getBeginB();
+					int endB = edit.getEndB();
+					if (beginB <= lineNumberB && endB >= lineNumberB) {
+						Yparser parser = parentCommit.getParser();
+						List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
+						for (Yfunction functionA : functionsInRange) {
+							if (Utl.isFunctionBodySimilar(functionA, functionB)) {
+								ret = functionA;
+								break;
+							}
 						}
-					}
-					if (functionsInRange.size() > 0) {
-						ret = functionsInRange.get(0);
+						if (functionsInRange.size() > 0) {
+							ret = functionsInRange.get(0);
+						}
 					}
 				}
 			}

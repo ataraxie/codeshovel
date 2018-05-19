@@ -121,7 +121,7 @@ public class AnalysisTask {
 		String startFileContent = Utl.findFileContent(this.repository, startCommitRaw, this.filePath);
 		Utl.checkNotNull("startFileContent", startFileContent);
 
-		Yparser startParser = ParserFactory.getParser(this.repositoryName, this.fileName, startFileContent, this.startCommitName);
+		Yparser startParser = ParserFactory.getParser(this.repositoryName, this.filePath, startFileContent, this.startCommitName);
 		startParser.parse();
 
 		this.startFunction = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
@@ -190,7 +190,7 @@ public class AnalysisTask {
 
 		ycommit = createBaseYcommit(commit);
 		if (ycommit.getFileContent() != null) {
-			Yparser parser = ParserFactory.getParser(this.repositoryName, ycommit.getFileName(), ycommit.getFileContent(), ycommit.getName());
+			Yparser parser = ParserFactory.getParser(this.repositoryName, ycommit.getFilePath(), ycommit.getFileContent(), ycommit.getName());
 			parser.parse();
 			ycommit.setParser(parser);
 			Yfunction matchedFunction = parser.findFunctionByOtherFunction(compareFunction);
