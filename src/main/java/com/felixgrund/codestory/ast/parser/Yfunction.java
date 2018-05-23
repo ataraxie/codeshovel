@@ -1,8 +1,6 @@
 package com.felixgrund.codestory.ast.parser;
 
-import com.felixgrund.codestory.ast.entities.Ycommit;
-import com.felixgrund.codestory.ast.entities.Yparameter;
-import com.felixgrund.codestory.ast.entities.Yreturn;
+import com.felixgrund.codestory.ast.entities.*;
 
 import java.util.List;
 
@@ -12,6 +10,8 @@ public interface Yfunction {
 	String getName();
 	List<Yparameter> getParameters();
 	Yreturn getReturnStmt();
+	Ymodifiers getModifiers();
+	Yexceptions getExceptions();
 	int getNameLineNumber();
 	int getEndLineNumber();
 	Object getRawFunction();

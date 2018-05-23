@@ -1,9 +1,6 @@
 package com.felixgrund.codestory.ast.tasks;
 
-import com.felixgrund.codestory.ast.changes.Ychange;
-import com.felixgrund.codestory.ast.changes.Ymetachange;
-import com.felixgrund.codestory.ast.changes.Ymultichange;
-import com.felixgrund.codestory.ast.changes.Ynochange;
+import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.exceptions.NoParserFoundException;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
@@ -12,7 +9,6 @@ import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
-import com.google.common.collect.Lists;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
@@ -94,17 +90,30 @@ public class AnalysisTask {
 		this.createResult();
 	}
 
-	private void createResult() throws IOException {
+	private void createResult() throws Exception {
 		this.yresult = new Yresult();
 		for (Ycommit ycommit : this.yhistory) {
 			Ychange ychange = new Interpreter(ycommit).interpret();
 			if (!(ychange instanceof Ynochange)) {
 				this.yresult.put(ycommit, ychange);
 			}
-			if (ychange instanceof Ymetachange || ychange instanceof Ymultichange) {
+			if (hasMajorChange(ychange)) {
 				this.lastMajorChange = ychange;
 			}
 		}
+	}
+
+	private boolean hasMajorChange(Ychange ychange) {
+		if (ychange instanceof Yparameterchange || ychange instanceof Yinfilerename) {
+			return true;
+		} else if (ychange instanceof Ymultichange) {
+			for (Ychange subChange : ((Ymultichange) ychange).getChanges()) {
+				if (subChange instanceof Yparameterchange || subChange instanceof Yinfilerename) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private void buildAndValidate() throws Exception {

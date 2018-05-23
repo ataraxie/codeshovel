@@ -2,9 +2,9 @@ package com.felixgrund.codestory.ast.changes;
 
 import com.felixgrund.codestory.ast.entities.Ycommit;
 
-public class Ymodbody extends Ychange {
+public class Ybodychange extends Ychange {
 
-	public Ymodbody(Ycommit commit) {
+	public Ybodychange(Ycommit commit) {
 		super(commit);
 	}
 }

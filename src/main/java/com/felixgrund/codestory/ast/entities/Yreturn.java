@@ -2,9 +2,9 @@ package com.felixgrund.codestory.ast.entities;
 
 public class Yreturn {
 
-	public static final String TYPE_NONE = "";
-
 	private String type;
+
+	public static final Yreturn NONE = new Yreturn("");
 
 	public Yreturn(String type) {
 		this.type = type;

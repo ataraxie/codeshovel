@@ -3,13 +3,13 @@ package com.felixgrund.codestory.ast.changes;
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 
-public class Ymetachange extends Ychange {
+public class Ysignaturechange extends Ychange {
 
 	protected Yfunction matchedFunction;
 	protected Yfunction compareFunction;
 	protected Ycommit compareCommit;
 
-	public Ymetachange(Ycommit commit, Ycommit compareCommit, Yfunction matchedFunction, Yfunction compareFunction) {
+	public Ysignaturechange(Ycommit commit, Ycommit compareCommit, Yfunction matchedFunction, Yfunction compareFunction) {
 		super(commit);
 		this.matchedFunction = matchedFunction;
 		this.compareFunction = compareFunction;

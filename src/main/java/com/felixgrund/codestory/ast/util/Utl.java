@@ -234,11 +234,10 @@ public class Utl {
 		);
 	}
 
-	public static void writeChangeHistoryDiff(JsonChangeHistoryDiff diff) {
-		JsonResult jsonResult = diff.getJsonResult();
+	public static void writeChangeHistoryDiff(JsonResult originalJsonResult, JsonChangeHistoryDiff diff) {
 		writeOutputFile(
-				"history_diff", jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
-				jsonResult.getFunctionName(), jsonResult.getRepositoryName(), diff.toJson(), ".json"
+				"history_diff", originalJsonResult.getStartCommitName(), originalJsonResult.getSourceFilePath(),
+				originalJsonResult.getFunctionName(), originalJsonResult.getRepositoryName(), diff.toJson(), ".json"
 		);
 	}
 

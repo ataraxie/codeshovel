@@ -9,15 +9,19 @@ public class JsonChangeHistoryDiff {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-	private JsonResult jsonResult;
+	private List<String> codestoryChangeHistory;
 	private List<String> gitRangeLogHistory;
 	private List<String> onlyInCodestory;
 	private List<String> onlyInGitRangeLog;
 
 
-	public JsonChangeHistoryDiff(JsonResult jsonResult, List<String> gitRangeLogHistory,
-								 List<String> onlyInCodestory, List<String> onlyInGitRangeLog) {
-		this.jsonResult = jsonResult;
+	public JsonChangeHistoryDiff(
+			List<String> codestoryChangeHistory,
+			List<String> gitRangeLogHistory,
+			List<String> onlyInCodestory,
+			List<String> onlyInGitRangeLog) {
+
+		this.codestoryChangeHistory = codestoryChangeHistory;
 		this.onlyInCodestory = onlyInCodestory;
 		this.onlyInGitRangeLog = onlyInGitRangeLog;
 		this.gitRangeLogHistory = gitRangeLogHistory;
@@ -31,13 +35,6 @@ public class JsonChangeHistoryDiff {
 		return onlyInGitRangeLog;
 	}
 
-	public JsonResult getJsonResult() {
-		return jsonResult;
-	}
-
-	public List<String> getGitRangeLogHistory() {
-		return gitRangeLogHistory;
-	}
 
 	public String toJson() {
 		return GSON.toJson(this);

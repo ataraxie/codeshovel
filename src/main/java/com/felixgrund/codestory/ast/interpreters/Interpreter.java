@@ -7,10 +7,7 @@ import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.diff.RawText;
-import org.eclipse.jgit.revwalk.RevCommit;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,43 +19,33 @@ public class Interpreter {
 		this.ycommit = ycommit;
 	}
 
-	public Ychange interpret() throws IOException {
+	public Ychange interpret() throws Exception {
 		Ychange interpretation;
 
 		Yfunction matchedFunction = this.ycommit.getMatchedFunction();
-
+		Yparser parser = this.ycommit.getParser();
 		List<Ychange> changes = new ArrayList<>();
 
 		if (isFirstFunctionOccurrence()) {
 			Yfunction compareFunction = null;
 			if (matchedFunction != null) {
 				compareFunction = this.getCompareFunction(this.ycommit);
-				if (compareFunction != null) {
-					Yparameterchange yparameterchange = getParametersChange(matchedFunction, compareFunction);
-					Yreturntypechange yreturntypechange = getReturnTypeChange(matchedFunction, compareFunction);
-					Yinfilerename yinfilerename = getFunctionRename(matchedFunction, compareFunction);
-					if (yinfilerename != null) {
-						changes.add(yinfilerename);
-					}
-					if (yparameterchange != null) {
-						changes.add(yparameterchange);
-					}
-					if (yreturntypechange != null) {
-						changes.add(yreturntypechange);
-					}
-				}
 			}
-
+			if (compareFunction != null) {
+				List<Ysignaturechange> majorChanges = parser.getMajorChanges(this.ycommit, compareFunction);
+				changes.addAll(majorChanges);
+			}
 			if (changes.isEmpty()) {
 				changes.add(new Yintroduced(ycommit));
 			} else {
-				Ymetachange firstMetaChange = (Ymetachange) changes.get(0);
-				if (isFunctionBodyModified(firstMetaChange.getMatchedFunction(), firstMetaChange.getCompareFunction())) {
-					changes.add(new Ymodbody(ycommit));
-				}
+				Ysignaturechange firstMajorChange = (Ysignaturechange) changes.get(0);
+				List<Ychange> minorChanges = parser.getMinorChanges(ycommit, firstMajorChange.getCompareFunction());
+				changes.addAll(minorChanges);
 			}
-		} else if (isFunctionBodyModified()) {
-			changes.add(new Ymodbody(ycommit));
+		} else {
+			if (ycommit.getParent() != null && ycommit.getParent().getMatchedFunction() != null) {
+				changes.addAll(parser.getMinorChanges(ycommit, ycommit.getParent().getMatchedFunction()));
+			}
 		}
 
 		int numChanges = changes.size();
@@ -71,35 +58,6 @@ public class Interpreter {
 		}
 
 		return interpretation;
-	}
-
-	private boolean isFunctionBodyModified() {
-		return ycommit.getParent() != null
-				&& isFunctionBodyModified(ycommit.getMatchedFunction(), ycommit.getParent().getMatchedFunction());
-	}
-
-	private boolean isFunctionBodyModified(Yfunction aFunction, Yfunction bFunction) {
-		return aFunction != null && bFunction != null && !aFunction.getBody().equals(bFunction.getBody());
-	}
-
-	private Yreturntypechange getReturnTypeChange(Yfunction matchedFunction, Yfunction compareFunction) {
-		Yreturntypechange ret = null;
-		Yreturn returnA = compareFunction.getReturnStmt();
-		Yreturn returnB = matchedFunction.getReturnStmt();
-		if (!returnA.equals(returnB)) {
-			ret = new Yreturntypechange(ycommit, ycommit.getParent(), matchedFunction, compareFunction);
-		}
-		return ret;
-	}
-
-	private Yinfilerename getFunctionRename(Yfunction matchedFunction, Yfunction compareFunction) {
-		Yinfilerename ret = null;
-		if (compareFunction != null) {
-			if (!ycommit.getParser().functionNamesConsideredEqual(matchedFunction.getName(), compareFunction.getName())) {
-				ret = new Yinfilerename(ycommit, ycommit.getParent(), matchedFunction, compareFunction);
-			}
-		}
-		return ret;
 	}
 
 	private Yfunction getCompareFunction(Ycommit ycommit) {
@@ -135,15 +93,6 @@ public class Interpreter {
 		return ret;
 	}
 
-	private Yparameterchange getParametersChange(Yfunction matchedFunction, Yfunction compareFunction) throws IOException {
-		Yparameterchange ret = null;
-		List<Yparameter> parametersA = compareFunction.getParameters();
-		List<Yparameter> parametersB = matchedFunction.getParameters();
-		if (!parametersA.equals(parametersB)) {
-			ret = new Yparameterchange(ycommit, ycommit.getParent(), matchedFunction, compareFunction);
-		}
-		return ret;
-	}
 
 	private boolean isFirstFunctionOccurrence() {
 		return this.ycommit.getParent() == null || this.ycommit.getParent().getMatchedFunction() == null;

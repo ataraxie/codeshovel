@@ -1,11 +1,11 @@
 package com.felixgrund.codestory.ast.parser.impl;
 
-import com.felixgrund.codestory.ast.entities.Ycommit;
-import com.felixgrund.codestory.ast.entities.Yparameter;
-import com.felixgrund.codestory.ast.entities.Yreturn;
+import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.parser.Yfunction;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.type.ReferenceType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +38,24 @@ public class JavaFunction implements Yfunction {
 	@Override
 	public Yreturn getReturnStmt() {
 		return new Yreturn(this.node.getTypeAsString());
+	}
+
+	@Override
+	public Ymodifiers getModifiers() {
+		List<String> modifiers = new ArrayList<>();
+		for (Modifier modifier : this.node.getModifiers()) {
+			modifiers.add(modifier.asString());
+		}
+		return new Ymodifiers(modifiers);
+	}
+
+	@Override
+	public Yexceptions getExceptions() {
+		List<String> exceptions = new ArrayList<>();
+		for (ReferenceType type : this.node.getThrownExceptions()) {
+			exceptions.add(type.asString());
+		}
+		return new Yexceptions(exceptions);
 	}
 
 	@Override

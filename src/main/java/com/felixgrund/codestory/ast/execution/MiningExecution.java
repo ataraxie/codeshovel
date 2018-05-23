@@ -97,15 +97,15 @@ public class MiningExecution {
 			codestoryChangeHistory.add(ycommit.getName());
 			changeHistoryDetails.put(ycommit.getName(), yresult.get(ycommit));
 		}
-		JsonResult jsonResult = new JsonResult("codestory", task, codestoryChangeHistory, changeHistoryDetails);
-		Utl.writeJsonResultToFile(jsonResult);
+		JsonResult jsonResultCodestory = new JsonResult("codestory", task, codestoryChangeHistory, changeHistoryDetails);
+		Utl.writeJsonResultToFile(jsonResultCodestory);
 
 		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task);
 		gitRangeLogTask.run();
 		List<String> gitRangeLogChangeHistory = gitRangeLogTask.getResult();
-		jsonResult = new JsonResult("logcommand", task, gitRangeLogChangeHistory, null);
+		JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, gitRangeLogChangeHistory, null);
 		Utl.printMethodHistory(gitRangeLogChangeHistory);
-		Utl.writeJsonResultToFile(jsonResult);
+		Utl.writeJsonResultToFile(jsonResultLogCommand);
 
 		List<String> onlyInCodestory = new ArrayList<>(codestoryChangeHistory);
 		onlyInCodestory.removeAll(gitRangeLogChangeHistory);
@@ -115,9 +115,9 @@ public class MiningExecution {
 
 		if (onlyInCodestory.size() > 0 || onlyInGitRangeLog.size() > 0) {
 			log.info("Found difference in change history. Writing file.");
-			JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(jsonResult, gitRangeLogChangeHistory,
+			JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codestoryChangeHistory, gitRangeLogChangeHistory,
 					onlyInCodestory, onlyInGitRangeLog);
-			Utl.writeChangeHistoryDiff(diff);
+			Utl.writeChangeHistoryDiff(jsonResultCodestory, diff);
 		}
 
 		printMethodEnd(method);

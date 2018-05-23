@@ -1,5 +1,7 @@
 package com.felixgrund.codestory.ast.parser;
 
+import com.felixgrund.codestory.ast.changes.Ychange;
+import com.felixgrund.codestory.ast.changes.Ysignaturechange;
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
 
@@ -14,4 +16,6 @@ public interface Yparser {
 	Object parse() throws ParseException;
 	boolean functionNamesConsideredEqual(String aName, String bName);
 
+	List<Ysignaturechange> getMajorChanges(Ycommit commit, Yfunction compareFunction) throws Exception;
+	List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) throws Exception;
 }

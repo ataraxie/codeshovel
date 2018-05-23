@@ -1,8 +1,6 @@
 package com.felixgrund.codestory.ast.parser.impl;
 
-import com.felixgrund.codestory.ast.entities.Ycommit;
-import com.felixgrund.codestory.ast.entities.Yparameter;
-import com.felixgrund.codestory.ast.entities.Yreturn;
+import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
@@ -40,7 +38,17 @@ public class JsFunction implements Yfunction {
 
 	@Override
 	public Yreturn getReturnStmt() {
-		return new Yreturn(Yreturn.TYPE_NONE);
+		return Yreturn.NONE;
+	}
+
+	@Override
+	public Ymodifiers getModifiers() {
+		return Ymodifiers.NONE;
+	}
+
+	@Override
+	public Yexceptions getExceptions() {
+		return Yexceptions.NONE;
 	}
 
 	@Override
