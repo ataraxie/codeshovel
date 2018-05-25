@@ -43,8 +43,10 @@ public class Interpreter {
 				changes.addAll(minorChanges);
 			}
 		} else {
-			if (ycommit.getParent() != null && ycommit.getParent().getMatchedFunction() != null) {
-				changes.addAll(parser.getMinorChanges(ycommit, ycommit.getParent().getMatchedFunction()));
+			Yfunction parentMatchedFunction = ycommit.getParent().getMatchedFunction();
+			if (ycommit.getParent() != null && parentMatchedFunction != null) {
+				List<Ychange> minorChanges = parser.getMinorChanges(ycommit, parentMatchedFunction);
+				changes.addAll(minorChanges);
 			}
 		}
 

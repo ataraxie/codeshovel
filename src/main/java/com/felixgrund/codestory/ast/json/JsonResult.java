@@ -18,6 +18,7 @@ public class JsonResult {
 	private String startCommitName;
 	private String sourceFileName;
 	private String functionName;
+	private String functionId;
 	private String sourceFilePath;
 	private int functionStartLine;
 	private int functionEndLine;
@@ -31,6 +32,7 @@ public class JsonResult {
 		this.startCommitName = startTask.getStartCommitName();
 		this.sourceFileName = startTask.getFileName();
 		this.functionName = startTask.getFunctionName();
+		this.functionId = startTask.getStartFunction().getId();
 		this.functionStartLine = startTask.getFunctionStartLine();
 		this.sourceFilePath = startTask.getFilePath();
 		this.functionEndLine = startTask.getFunctionEndLine();
@@ -76,5 +78,9 @@ public class JsonResult {
 
 	public String getSourceFilePath() {
 		return sourceFilePath;
+	}
+
+	public String getFunctionId() {
+		return functionId;
 	}
 }

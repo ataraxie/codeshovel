@@ -31,6 +31,11 @@ public class JavaFunction implements Yfunction {
 	}
 
 	@Override
+	public String getId() {
+		return this.getName() + "__" + this.getNameLineNumber();
+	}
+
+	@Override
 	public String getName() {
 		return this.node.getNameAsString();
 	}

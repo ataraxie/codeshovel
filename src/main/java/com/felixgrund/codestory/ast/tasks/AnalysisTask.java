@@ -366,4 +366,8 @@ public class AnalysisTask {
 	public void setFileHistory(Map<String, RevCommit> fileHistory) {
 		this.fileHistory = fileHistory;
 	}
+
+	public Yfunction getStartFunction() {
+		return startFunction;
+	}
 }

@@ -11,7 +11,7 @@ import java.util.List;
 public class MiningTestJava {
 
 	private static final String TARGET_FILE_EXTENSION = ".java";
-	private static final String TARGET_FILE_PATH = "src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation";
+	private static final String TARGET_FILE_PATH = "src/main/java/com/puppycrawl/tools/checkstyle/DefaultLogger.java";
 	private static final String TARGET_METHOD = "closeStreams";
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 	private static final String REPO = "checkstyle";

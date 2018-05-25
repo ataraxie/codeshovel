@@ -187,14 +187,13 @@ public class Utl {
 	}
 
 	public static void writeOutputFile(String subdir, String commitName, String filePath,
-									   String functionName, String repoName, String content, String fileExtension) {
+									   String functionId, String repoName, String content, String fileExtension) {
 		String baseDir = System.getProperty("user.dir") + "/output/" + subdir;
 		String commitNameShort = commitName.substring(0, 5);
 		String targetDirPath = baseDir + "/" + repoName + "/" + commitNameShort + "/" + filePath;
 		File targetDir = new File(targetDirPath);
 		targetDir.mkdirs();
-		String sanitizedFunctionName = functionName.replaceAll(":", "_CLN_").replaceAll("#", "_HSH_");
-		File file = new File(targetDirPath + "/" + sanitizedFunctionName + fileExtension);
+		File file = new File(targetDirPath + "/" + functionId + fileExtension);
 		try {
 			FileUtils.writeStringToFile(file, content, "utf-8");
 		} catch (IOException e) {
@@ -205,18 +204,18 @@ public class Utl {
 	public static void writeJsonResultToFile(JsonResult jsonResult) {
 		writeOutputFile(
 				jsonResult.getOrigin(), jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
-				jsonResult.getFunctionName(), jsonResult.getRepositoryName(), jsonResult.toJson(), ".json"
+				jsonResult.getFunctionId(), jsonResult.getRepositoryName(), jsonResult.toJson(), ".json"
 		);
 	}
 
 	public static void writeSimilarityToFile(
 			JsonSimilarity jsonSimilarity,
-			String functionPath,
+			String functionId,
 			String repoName,
 			String filePath) {
 
 		writeOutputFile(
-				"similarity", jsonSimilarity.getCommitName(), filePath, functionPath,
+				"similarity", jsonSimilarity.getCommitName(), filePath, functionId,
 				repoName, jsonSimilarity.toJson(), ".json"
 		);
 
@@ -229,7 +228,7 @@ public class Utl {
 		builder.append(jsonSimilarity.getSimilarity());
 
 		writeOutputFile(
-				"similarity_plain", jsonSimilarity.getCommitName(), filePath, functionPath,
+				"similarity_plain", jsonSimilarity.getCommitName(), filePath, functionId,
 				repoName, builder.toString(), ".out"
 		);
 	}
@@ -237,7 +236,7 @@ public class Utl {
 	public static void writeChangeHistoryDiff(JsonResult originalJsonResult, JsonChangeHistoryDiff diff) {
 		writeOutputFile(
 				"history_diff", originalJsonResult.getStartCommitName(), originalJsonResult.getSourceFilePath(),
-				originalJsonResult.getFunctionName(), originalJsonResult.getRepositoryName(), diff.toJson(), ".json"
+				originalJsonResult.getFunctionId(), originalJsonResult.getRepositoryName(), diff.toJson(), ".json"
 		);
 	}
 

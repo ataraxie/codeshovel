@@ -26,6 +26,11 @@ public class JsFunction implements Yfunction {
 		this.commitName = commitName;
 	}
 
+	@Override
+	public String getId() {
+		return this.node.getName().replaceAll(":", "__").replaceAll("#", "__");
+	}
+
 	public JsFunction(FunctionNode node, String commitName) {
 		this.node = node;
 		this.commitName = commitName;

@@ -19,4 +19,6 @@ public interface Yfunction {
 	String getCommitName();
 	void setCommitName(String commitName);
 
+	String getId();
+
 }
