@@ -1,15 +1,17 @@
 package com.felixgrund.codestory.ast.parser.impl;
 
 import com.felixgrund.codestory.ast.entities.*;
+import com.felixgrund.codestory.ast.parser.AbstractFunction;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
 import jdk.nashorn.internal.ir.IdentNode;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class JsFunction implements Yfunction {
+public class JsFunction extends AbstractFunction implements Yfunction {
 
 	private FunctionNode node;
 
@@ -28,7 +30,17 @@ public class JsFunction implements Yfunction {
 
 	@Override
 	public String getId() {
-		return this.node.getName().replaceAll(":", "__").replaceAll("#", "__");
+		String ident = this.node.getName().replaceAll(":", "__").replaceAll("#", "__");
+		String idParameterString = this.getIdParameterString();
+		if (StringUtils.isNotBlank(idParameterString)) {
+			ident += "___" + idParameterString;
+		}
+		return ident;
+	}
+
+	@Override
+	public String getSourceFileContent() {
+		return this.node.getSource().getString();
 	}
 
 	public JsFunction(FunctionNode node, String commitName) {

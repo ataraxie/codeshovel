@@ -27,9 +27,10 @@ public class GitRangeLogTask {
 		int rangeStart = this.startTask.getFunctionStartLine();
 		int rangeEnd = this.startTask.getFunctionEndLine();
 		String filePath = this.startTask.getFilePath();
+		String startCommitName = this.startTask.getStartCommitName();
 
 		Runtime runtime = Runtime.getRuntime();
-		String logCommand = String.format("git log --no-merges -L %s,%s:%s", rangeStart, rangeEnd, filePath);
+		String logCommand = String.format("git log %s --no-merges -L %s,%s:%s", startCommitName, rangeStart, rangeEnd, filePath);
 		logCommand += " | grep 'commit\\s' | sed 's/commit//'";
 		String[] cmd = {
 			"/bin/sh",

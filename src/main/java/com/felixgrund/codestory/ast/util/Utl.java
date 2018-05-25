@@ -12,7 +12,9 @@ import com.felixgrund.codestory.ast.tasks.AnalysisTask;
 import com.felixgrund.codestory.ast.json.JsonChangeHistoryDiff;
 import com.felixgrund.codestory.ast.json.JsonResult;
 import com.felixgrund.codestory.ast.json.JsonSimilarity;
+import com.felixgrund.codestory.ast.wrappers.FunctionSimilarity;
 import com.google.common.collect.Lists;
+import jdk.nashorn.internal.ir.FunctionNode;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.jgit.lib.*;
@@ -238,6 +240,25 @@ public class Utl {
 				"history_diff", originalJsonResult.getStartCommitName(), originalJsonResult.getSourceFilePath(),
 				originalJsonResult.getFunctionId(), originalJsonResult.getRepositoryName(), diff.toJson(), ".json"
 		);
+	}
+
+	public static void writeJsonSimilarity(String repoName, String filePath, Yfunction compareFunction,
+										   Yfunction mostSimilarFunction, FunctionSimilarity similarity) {
+
+		JsonSimilarity.FunctionEntry compareEntry = new JsonSimilarity.FunctionEntry(
+				compareFunction.getCommitName(),
+				compareFunction.getName(),
+				compareFunction.getId(),
+				compareFunction.getBody());
+		JsonSimilarity.FunctionEntry mostSimilarEntry = new JsonSimilarity.FunctionEntry(
+				mostSimilarFunction.getCommitName(),
+				mostSimilarFunction.getName(),
+				mostSimilarFunction.getId(),
+				mostSimilarFunction.getBody());
+
+
+		JsonSimilarity jsonSimilarity = new JsonSimilarity(compareEntry, mostSimilarEntry, similarity);
+		Utl.writeSimilarityToFile(jsonSimilarity, compareFunction.getId(), repoName, filePath);
 	}
 
 	public static int countLineNumbers(String string) {

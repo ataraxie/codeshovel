@@ -16,6 +16,12 @@ public interface Yparser {
 	Object parse() throws ParseException;
 	boolean functionNamesConsideredEqual(String aName, String bName);
 
+	Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean writeOutputFile);
+	double getScopeSimilarity(Yfunction function, Yfunction compareFunction);
+
 	List<Ysignaturechange> getMajorChanges(Ycommit commit, Yfunction compareFunction) throws Exception;
 	List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) throws Exception;
+
+	List<Ychange> getCrossFileChanges(Ycommit ycommit);
+
 }

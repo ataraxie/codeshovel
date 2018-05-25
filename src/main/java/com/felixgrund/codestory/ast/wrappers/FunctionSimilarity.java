@@ -1,14 +1,23 @@
-package com.felixgrund.codestory.ast.util;
+package com.felixgrund.codestory.ast.wrappers;
 
 public class FunctionSimilarity {
 
-	private double scopeSimilarity = 0;
-	private double bodySimilarity = 0;
-	private double lineNumberSimilarity = 0;
-	private double overallSimilarity = 0;
+	protected double bodySimilarity = 0;
+	protected double lineNumberSimilarity = 0;
+	protected double scopeSimilarity = 0;
+	protected double overallSimilarity = 0;
+
+	public void computeOverallSimilarity() {
+		this.overallSimilarity = (bodySimilarity + scopeSimilarity + lineNumberSimilarity) / 3;
+	}
 
 	public double getScopeSimilarity() {
 		return scopeSimilarity;
+	}
+
+	public void setScopeSimilarity(double scopeSimilarity) {
+		this.scopeSimilarity = scopeSimilarity;
+		computeOverallSimilarity();
 	}
 
 	public double getBodySimilarity() {
@@ -17,12 +26,6 @@ public class FunctionSimilarity {
 
 	public double getLineNumberSimilarity() {
 		return lineNumberSimilarity;
-	}
-
-
-	public void setScopeSimilarity(double scopeSimilarity) {
-		this.scopeSimilarity = scopeSimilarity;
-		computeOverallSimilarity();
 	}
 
 	public void setBodySimilarity(double bodySimilarity) {
@@ -39,13 +42,10 @@ public class FunctionSimilarity {
 		return overallSimilarity;
 	}
 
-	private void computeOverallSimilarity() {
-		this.overallSimilarity = (bodySimilarity + scopeSimilarity + lineNumberSimilarity) / 3;
-	}
-
 	@Override
 	public String toString() {
 		return "BodySimilarity: " + bodySimilarity + "; ScopeSimilarity: " + scopeSimilarity +
 				"; LineNumberSimilarity: " + lineNumberSimilarity + " --- Overall: " + getOverallSimilarity();
 	}
+
 }

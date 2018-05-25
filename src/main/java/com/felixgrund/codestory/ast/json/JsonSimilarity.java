@@ -1,6 +1,6 @@
 package com.felixgrund.codestory.ast.json;
 
-import com.felixgrund.codestory.ast.util.FunctionSimilarity;
+import com.felixgrund.codestory.ast.wrappers.FunctionSimilarity;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

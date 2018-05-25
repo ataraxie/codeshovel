@@ -1,23 +1,27 @@
 package com.felixgrund.codestory.ast.parser.impl;
 
 import com.felixgrund.codestory.ast.entities.*;
+import com.felixgrund.codestory.ast.parser.AbstractFunction;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.type.ReferenceType;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaFunction implements Yfunction {
+public class JavaFunction extends AbstractFunction implements Yfunction {
 
+	private final String sourceFileContent;
 	private MethodDeclaration node;
 	private String commitName;
 
-	public JavaFunction(MethodDeclaration node, String commitName) {
+	public JavaFunction(MethodDeclaration node, String commitName, String sourceFileContent) {
 		this.node = node;
 		this.commitName = commitName;
+		this.sourceFileContent = sourceFileContent;
 	}
 
 	@Override
@@ -32,7 +36,17 @@ public class JavaFunction implements Yfunction {
 
 	@Override
 	public String getId() {
-		return this.getName() + "__" + this.getNameLineNumber();
+		String ident = this.getName();
+		String idParameterString = this.getIdParameterString();
+		if (StringUtils.isNotBlank(idParameterString)) {
+			ident += "___" + idParameterString;
+		}
+		return ident;
+	}
+
+	@Override
+	public String getSourceFileContent() {
+		return sourceFileContent;
 	}
 
 	@Override

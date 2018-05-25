@@ -35,8 +35,15 @@ public class Interpreter {
 				List<Ysignaturechange> majorChanges = parser.getMajorChanges(this.ycommit, compareFunction);
 				changes.addAll(majorChanges);
 			}
+
 			if (changes.isEmpty()) {
-				changes.add(new Yintroduced(ycommit));
+//				List<Ychange> crossFileChanges = parser.getCrossFileChanges(this.ycommit);
+//				if (!crossFileChanges.isEmpty()) {
+//					changes.addAll(crossFileChanges);
+//				} else {
+					changes.add(new Yintroduced(ycommit));
+//				}
+
 			} else {
 				Ysignaturechange firstMajorChange = (Ysignaturechange) changes.get(0);
 				List<Ychange> minorChanges = parser.getMinorChanges(ycommit, firstMajorChange.getCompareFunction());
@@ -79,14 +86,10 @@ public class Interpreter {
 					if (beginB <= lineNumberB && endB >= lineNumberB) {
 						Yparser parser = parentCommit.getParser();
 						List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
-						for (Yfunction functionA : functionsInRange) {
-							if (Utl.isFunctionBodySimilar(functionA, functionB)) {
-								ret = functionA;
-								break;
-							}
-						}
-						if (functionsInRange.size() > 0) {
+						if (functionsInRange.size() == 1) {
 							ret = functionsInRange.get(0);
+						} else if (functionsInRange.size() > 1) {
+							ret = parser.getMostSimilarFunction(functionsInRange, functionB, true);
 						}
 					}
 				}
