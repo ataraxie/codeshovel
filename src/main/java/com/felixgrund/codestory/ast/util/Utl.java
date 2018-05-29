@@ -16,6 +16,7 @@ import com.felixgrund.codestory.ast.wrappers.FunctionSimilarity;
 import com.google.common.collect.Lists;
 import jdk.nashorn.internal.ir.FunctionNode;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -25,10 +26,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Utl {
 
@@ -189,13 +187,27 @@ public class Utl {
 	}
 
 	public static void writeOutputFile(String subdir, String commitName, String filePath,
-									   String functionId, String repoName, String content, String fileExtension) {
+				String functionId, String repoName, String content, String fileExtension) {
+
 		String baseDir = System.getProperty("user.dir") + "/output/" + subdir;
 		String commitNameShort = commitName.substring(0, 5);
-		String targetDirPath = baseDir + "/" + repoName + "/" + commitNameShort + "/" + filePath;
+		String targetDirPath = baseDir + "/" + repoName;
+		if (functionId != null) {
+			targetDirPath +=  "/" + commitNameShort + "/" + filePath;
+		} else {
+			targetDirPath +=  "/" + filePath;
+		}
+
 		File targetDir = new File(targetDirPath);
 		targetDir.mkdirs();
-		File file = new File(targetDirPath + "/" + functionId + fileExtension);
+
+		File file;
+		if (functionId != null) {
+			file = new File(targetDirPath + "/" + functionId + fileExtension);
+		} else {
+			file = new File(targetDirPath + "/" + commitName + fileExtension);
+		}
+
 		try {
 			FileUtils.writeStringToFile(file, content, "utf-8");
 		} catch (IOException e) {
@@ -235,11 +247,18 @@ public class Utl {
 		);
 	}
 
-	public static void writeChangeHistoryDiff(JsonResult originalJsonResult, JsonChangeHistoryDiff diff) {
+	public static void writeSemanticDiff(JsonResult originalJsonResult, JsonChangeHistoryDiff diff) {
 		writeOutputFile(
-				"history_diff", originalJsonResult.getStartCommitName(), originalJsonResult.getSourceFilePath(),
+				"diff_semantic", originalJsonResult.getStartCommitName(), originalJsonResult.getSourceFilePath(),
 				originalJsonResult.getFunctionId(), originalJsonResult.getRepositoryName(), diff.toJson(), ".json"
 		);
+	}
+
+	public static void writeGitDiff(String commitName, String filePath, Repository repository,
+									String repositoryName) throws Exception {
+
+		String diff = CmdUtil.gitDiffParent(commitName, filePath, repository.getDirectory().getParentFile());
+		writeOutputFile("diff_git", commitName, filePath, null, repositoryName , diff, ".diff");
 	}
 
 	public static void writeJsonSimilarity(String repoName, String filePath, Yfunction compareFunction,

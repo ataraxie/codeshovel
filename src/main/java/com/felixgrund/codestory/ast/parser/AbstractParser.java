@@ -8,6 +8,7 @@ import com.felixgrund.codestory.ast.wrappers.FunctionSimilarity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,7 @@ public abstract class AbstractParser implements Yparser {
 	public Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean writeOutputFile) {
 		log.info("Trying to find most similar function");
 		Map<Yfunction, FunctionSimilarity> similarities = new HashMap<>();
+		List<Yfunction> candidatesWithSameName = new ArrayList<>();
 		for (Yfunction candidate : candidates) {
 			if (candidate.getId().equals(compareFunction.getId())) {
 				log.info("Found function with same ID. Done.");
@@ -112,6 +114,10 @@ public abstract class AbstractParser implements Yparser {
 			if (bodySimilarity > 0.9 && lineNumberDistance < 10 && scopeSimilarity == 1) {
 				log.info("Found function with body similarity > 0.9 and line distance < 10 and scope similarity of 1. Done.");
 				return candidate;
+			}
+
+			if (candidate.getName().equals(compareFunction.getName())) {
+				candidatesWithSameName.add(candidate);
 			}
 
 			FunctionSimilarity similarity = new FunctionSimilarity();
@@ -143,9 +149,14 @@ public abstract class AbstractParser implements Yparser {
 		if (mostSimilarFunctionSimilarity > 0.85) {
 			log.info("Highest similarity is > 0.85. Accepting function.");
 			return mostSimilarFunction;
-		} else {
-			log.info("Highest similarity is < 0.85. Rejecting function.");
-			return null;
 		}
+
+		if (candidatesWithSameName.size() == 1) {
+			log.info("Highest similarity was < 0.85. But found single candidate with same function name. Done.");
+			return candidatesWithSameName.get(0);
+		}
+
+		log.info("Highest similarity was < 0.85 and did not find single candidate with same name. Unable to find matching candidate.");
+		return null;
 	}
 }

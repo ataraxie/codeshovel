@@ -20,10 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MiningExecution {
 
@@ -40,6 +37,8 @@ public class MiningExecution {
 
 	private String targetFileExtension;
 
+	private Set<String> commitDiffsWrittenCache = new HashSet<>();
+
 	public MiningExecution(String targetFileExtension) {
 		this.targetFileExtension = targetFileExtension;
 	}
@@ -50,10 +49,10 @@ public class MiningExecution {
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
 				.build();
-		Git git = new Git(repository);
-		this.startCommit = Utl.findCommitByName(repository, this.startCommitName);
+		new Git(this.repository);
+		this.startCommit = Utl.findCommitByName(this.repository, this.startCommitName);
 
-		List<String> filePaths = Utl.findFilesByExtension(repository, startCommit, this.targetFileExtension);
+		List<String> filePaths = Utl.findFilesByExtension(this.repository, this.startCommit, this.targetFileExtension);
 		for (String filePath : filePaths) {
 			if (this.onlyFilePath == null || filePath.contains(this.onlyFilePath)) {
 				runForFile(filePath);
@@ -94,8 +93,13 @@ public class MiningExecution {
 		List<String> codestoryChangeHistory = new ArrayList<>();
 		Map<String, Ychange> changeHistoryDetails = new LinkedHashMap<>();
 		for (Ycommit ycommit : yresult.keySet()) {
-			codestoryChangeHistory.add(ycommit.getName());
-			changeHistoryDetails.put(ycommit.getName(), yresult.get(ycommit));
+			String commitName = ycommit.getName();
+			codestoryChangeHistory.add(commitName);
+			changeHistoryDetails.put(commitName, yresult.get(ycommit));
+			if (!this.commitDiffsWrittenCache.contains(commitName)) {
+				Utl.writeGitDiff(commitName, filePath, this.repository, this.repositoryName);
+				this.commitDiffsWrittenCache.add(commitName);
+			}
 		}
 		JsonResult jsonResultCodestory = new JsonResult("codestory", task, codestoryChangeHistory, changeHistoryDetails);
 		Utl.writeJsonResultToFile(jsonResultCodestory);
@@ -114,10 +118,14 @@ public class MiningExecution {
 		onlyInGitRangeLog.removeAll(codestoryChangeHistory);
 
 		if (onlyInCodestory.size() > 0 || onlyInGitRangeLog.size() > 0) {
-			log.info("Found difference in change history. Writing file.");
+			log.info("Found difference in change history. Writing files.");
 			JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codestoryChangeHistory, gitRangeLogChangeHistory,
 					onlyInCodestory, onlyInGitRangeLog);
-			Utl.writeChangeHistoryDiff(jsonResultCodestory, diff);
+			Utl.writeSemanticDiff(jsonResultCodestory, diff);
+
+			Set<String> commitsForDiff = new HashSet<>();
+			commitsForDiff.addAll(onlyInCodestory);
+			commitsForDiff.addAll(onlyInGitRangeLog);
 		}
 
 		printMethodEnd(method);
