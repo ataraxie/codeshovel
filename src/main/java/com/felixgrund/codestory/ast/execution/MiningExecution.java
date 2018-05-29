@@ -37,7 +37,7 @@ public class MiningExecution {
 
 	private String targetFileExtension;
 
-	private Set<String> commitDiffsWrittenCache = new HashSet<>();
+	private Set<String> fileHistoryCommits;
 
 	public MiningExecution(String targetFileExtension) {
 		this.targetFileExtension = targetFileExtension;
@@ -56,6 +56,11 @@ public class MiningExecution {
 		for (String filePath : filePaths) {
 			if (this.onlyFilePath == null || filePath.contains(this.onlyFilePath)) {
 				runForFile(filePath);
+
+				log.info("Writing git diffs for file history...");
+				for (String commitName : this.fileHistoryCommits) {
+					Utl.writeGitDiff(commitName, filePath, this.repository, this.repositoryName);
+				}
 			}
 		}
 	}
@@ -89,6 +94,10 @@ public class MiningExecution {
 		RecursiveAnalysisTask recursiveAnalysisTask = new RecursiveAnalysisTask(task);
 		recursiveAnalysisTask.run();
 
+		if (this.fileHistoryCommits == null) {
+			this.fileHistoryCommits = task.getFileHistory().keySet();
+		}
+
 		Yresult yresult = recursiveAnalysisTask.getResult();
 		List<String> codestoryChangeHistory = new ArrayList<>();
 		Map<String, Ychange> changeHistoryDetails = new LinkedHashMap<>();
@@ -96,10 +105,6 @@ public class MiningExecution {
 			String commitName = ycommit.getName();
 			codestoryChangeHistory.add(commitName);
 			changeHistoryDetails.put(commitName, yresult.get(ycommit));
-			if (!this.commitDiffsWrittenCache.contains(commitName)) {
-				Utl.writeGitDiff(commitName, filePath, this.repository, this.repositoryName);
-				this.commitDiffsWrittenCache.add(commitName);
-			}
 		}
 		JsonResult jsonResultCodestory = new JsonResult("codestory", task, codestoryChangeHistory, changeHistoryDetails);
 		Utl.writeJsonResultToFile(jsonResultCodestory);

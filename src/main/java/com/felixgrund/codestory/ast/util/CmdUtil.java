@@ -18,9 +18,6 @@ public class CmdUtil {
 				diffCommand
 		};
 
-		System.out.println("\n==================================");
-		System.out.println("DiffCommand: " + diffCommand);
-
 		Process process = runtime.exec(cmd, null, repositoryDir);
 		process.waitFor();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
