@@ -14,6 +14,7 @@ import java.util.List;
 public class JsFunction extends AbstractFunction implements Yfunction {
 
 	private FunctionNode node;
+	private String sourceFilePath;
 
 	// temp
 	private String commitName;
@@ -38,12 +39,8 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 		return ident;
 	}
 
-	@Override
-	public String getSourceFileContent() {
-		return this.node.getSource().getString();
-	}
-
-	public JsFunction(FunctionNode node, String commitName) {
+	public JsFunction(FunctionNode node, String commitName, String sourceFilePath, String sourceFileContent) {
+		super(sourceFilePath, sourceFileContent);
 		this.node = node;
 		this.commitName = commitName;
 	}

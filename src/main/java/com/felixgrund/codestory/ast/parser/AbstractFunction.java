@@ -8,6 +8,14 @@ import java.util.List;
 
 public abstract class AbstractFunction implements Yfunction {
 
+	private String sourceFilePath;
+	private String sourceFileContent;
+
+	public AbstractFunction(String sourceFilePath, String sourceFileContent) {
+		this.sourceFilePath = sourceFilePath;
+		this.sourceFileContent = sourceFileContent;
+	}
+
 	public String getIdParameterString() {
 		List<String> parts = new ArrayList<>();
 		for (Yparameter parameter : getParameters()) {
@@ -20,4 +28,13 @@ public abstract class AbstractFunction implements Yfunction {
 		return StringUtils.join(parts, "__");
 	}
 
+	@Override
+	public String getSourceFilePath() {
+		return sourceFilePath;
+	}
+
+	@Override
+	public String getSourceFileContent() {
+		return sourceFileContent;
+	}
 }

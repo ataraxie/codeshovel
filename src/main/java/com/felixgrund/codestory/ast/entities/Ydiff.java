@@ -1,32 +1,24 @@
 package com.felixgrund.codestory.ast.entities;
 
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
+
+import java.util.Map;
 
 public class Ydiff {
 
-	private DiffEntry diffEntry;
-	private EditList editList;
-	private DiffFormatter formatter;
+	private EditList inFileEdits;
+	private Map<String, EditList> otherFileEdits;
 
-	public Ydiff(DiffEntry diffEntry, EditList editList, DiffFormatter formatter) {
-		this.diffEntry = diffEntry;
-		this.editList = editList;
-		this.formatter = formatter;
+	public Ydiff(EditList inFileEdits, Map<String,EditList> otherFileEdits) {
+		this.inFileEdits = inFileEdits;
+		this.otherFileEdits = otherFileEdits;
 	}
 
-	public DiffFormatter getFormatter() {
-		return formatter;
+	public EditList getInFileEdits() {
+		return inFileEdits;
 	}
 
-	public DiffEntry getDiffEntry() {
-		return diffEntry;
+	public Map<String, EditList> getOtherFileEdits() {
+		return otherFileEdits;
 	}
-
-	public EditList getEditList() {
-		return editList;
-	}
-
-
 }

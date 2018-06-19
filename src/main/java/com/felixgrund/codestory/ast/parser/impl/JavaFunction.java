@@ -14,14 +14,13 @@ import java.util.List;
 
 public class JavaFunction extends AbstractFunction implements Yfunction {
 
-	private final String sourceFileContent;
 	private MethodDeclaration node;
 	private String commitName;
 
-	public JavaFunction(MethodDeclaration node, String commitName, String sourceFileContent) {
+	public JavaFunction(MethodDeclaration node, String commitName, String sourceFilePath, String sourceFileContent) {
+		super(sourceFilePath, sourceFileContent);
 		this.node = node;
 		this.commitName = commitName;
-		this.sourceFileContent = sourceFileContent;
 	}
 
 	@Override
@@ -42,11 +41,6 @@ public class JavaFunction extends AbstractFunction implements Yfunction {
 			ident += "___" + idParameterString;
 		}
 		return ident;
-	}
-
-	@Override
-	public String getSourceFileContent() {
-		return sourceFileContent;
 	}
 
 	@Override

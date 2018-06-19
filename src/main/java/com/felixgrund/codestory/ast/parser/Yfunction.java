@@ -22,5 +22,6 @@ public interface Yfunction {
 	String getId();
 
 	String getSourceFileContent();
+	String getSourceFilePath();
 
 }

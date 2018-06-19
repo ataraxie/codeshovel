@@ -15,6 +15,7 @@ import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.patch.FileHeader;
@@ -170,7 +171,7 @@ public class AnalysisTask {
 						RevCommit parentCommit = commit.getParent(0);
 						Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
 						ycommit.setParent(parentYcommit);
-						ycommit.setYdiff(createDiffInfo(commit, parentCommit));
+						ycommit.setYdiff(createYdiff(commit, parentCommit));
 					}
 					lastConsideredCommit = ycommit;
 					this.yhistory.add(ycommit);
@@ -231,8 +232,7 @@ public class AnalysisTask {
 
 	}
 
-	private Ydiff createDiffInfo(RevCommit commit, RevCommit prevCommit) throws IOException, GitAPIException {
-		Ydiff ret = null;
+	private Ydiff createYdiff(RevCommit commit, RevCommit prevCommit) throws IOException, GitAPIException {
 		ObjectReader objectReader = this.repository.newObjectReader();
 		CanonicalTreeParser treeParserNew = new CanonicalTreeParser();
 		OutputStream outputStream = System.out;
@@ -243,14 +243,24 @@ public class AnalysisTask {
 		CanonicalTreeParser treeParserOld = new CanonicalTreeParser();
 		treeParserOld.reset(objectReader, prevCommit.getTree());
 		List<DiffEntry> diff = formatter.scan(treeParserOld, treeParserNew);
+		EditList inFileEdits = null;
+		Map<String, EditList> otherFileEdits = new HashMap<>();
 		for (DiffEntry entry : diff) {
+			FileHeader fileHeader = formatter.toFileHeader(entry);
 			if (entry.getOldPath().equals(this.filePath)) {
-				FileHeader fileHeader = formatter.toFileHeader(entry);
-				ret = new Ydiff(entry, fileHeader.toEditList(), formatter);
-				break;
+				inFileEdits = fileHeader.toEditList();
+			} else {
+				String oldPath = entry.getOldPath();
+				String[] oldFileExtensionSplit = oldPath.split("\\.");
+				String oldFileExtension = oldFileExtensionSplit[oldFileExtensionSplit.length-1];
+				String[] newFileExtensionSplit = this.filePath.split("\\.");
+				String newFileExtension = newFileExtensionSplit[newFileExtensionSplit.length-1];
+				if (oldFileExtension.equals(newFileExtension)) {
+					otherFileEdits.put(entry.getOldPath(), fileHeader.toEditList());
+				}
 			}
 		}
-		return ret;
+		return new Ydiff(inFileEdits, otherFileEdits);
 	}
 
 	private String createUuidHash() {
