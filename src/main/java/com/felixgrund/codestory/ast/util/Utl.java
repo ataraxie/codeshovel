@@ -209,7 +209,9 @@ public class Utl {
 		}
 
 		try {
-			FileUtils.writeStringToFile(file, content, "utf-8");
+			if (!file.exists()) {
+				FileUtils.writeStringToFile(file, content, "utf-8");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

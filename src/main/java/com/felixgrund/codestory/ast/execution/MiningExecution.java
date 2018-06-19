@@ -57,9 +57,11 @@ public class MiningExecution {
 			if (this.onlyFilePath == null || filePath.contains(this.onlyFilePath)) {
 				runForFile(filePath);
 
-				log.info("Writing git diffs for file history...");
-				for (String commitName : this.fileHistoryCommits) {
-					Utl.writeGitDiff(commitName, filePath, this.repository, this.repositoryName);
+				if (this.fileHistoryCommits != null) {
+					log.info("Writing git diffs for file history...");
+					for (String commitName : this.fileHistoryCommits) {
+						Utl.writeGitDiff(commitName, filePath, this.repository, this.repositoryName);
+					}
 				}
 			}
 		}

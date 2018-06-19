@@ -11,8 +11,8 @@ public class MiningTestJs {
 //	private static final String TARGET_METHOD = "cloneCopyEvent";
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 	private static final String REPO = "jquery";
-	private static final String START_COMMIT = "46ea7a3f0e8893a420e4c3321dc3aca40d96f754";
-//	private static final String START_COMMIT = "ab3ba4a81252c4357a7aab5f24d765d41d47986e";
+//	private static final String START_COMMIT = "46ea7a3f0e8893a420e4c3321dc3aca40d96f754";
+	private static final String START_COMMIT = "ab3ba4a81252c4357a7aab5f24d765d41d47986e";
 	public static void main(String[] args) throws Exception {
 		String repositoryPath = CODESTORY_REPO_DIR + "/" + REPO + "/.git";
 		MiningExecution execution = new MiningExecution(TARGET_FILE_EXTENSION);

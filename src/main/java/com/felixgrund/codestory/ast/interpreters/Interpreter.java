@@ -37,12 +37,12 @@ public class Interpreter {
 			}
 
 			if (changes.isEmpty()) {
-//				List<Ychange> crossFileChanges = parser.getCrossFileChanges(this.ycommit);
-//				if (!crossFileChanges.isEmpty()) {
-//					changes.addAll(crossFileChanges);
-//				} else {
+				List<Ychange> crossFileChanges = parser.getCrossFileChanges(this.ycommit, compareFunction);
+				if (!crossFileChanges.isEmpty()) {
+					changes.addAll(crossFileChanges);
+				} else {
 					changes.add(new Yintroduced(ycommit));
-//				}
+				}
 
 			} else {
 				Ysignaturechange firstMajorChange = (Ysignaturechange) changes.get(0);
