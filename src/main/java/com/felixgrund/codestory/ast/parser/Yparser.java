@@ -22,4 +22,6 @@ public interface Yparser {
 	List<Ysignaturechange> getMajorChanges(Ycommit commit, Yfunction compareFunction) throws Exception;
 	List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) throws Exception;
 
+	String getAcceptedFileExtension();
+
 }

@@ -24,6 +24,7 @@ public abstract class AbstractParser implements Yparser {
 
 	public abstract boolean functionNamesConsideredEqual(String aName, String bName);
 	public abstract double getScopeSimilarity(Yfunction function, Yfunction compareFunction);
+	public abstract String getAcceptedFileExtension();
 
 	public AbstractParser(String repoName, String filePath, String fileContent, String commitName) {
 		this.repoName = repoName;
@@ -37,7 +38,7 @@ public abstract class AbstractParser implements Yparser {
 		Yreturn returnA = compareFunction.getReturnStmt();
 		Yreturn returnB = commit.getMatchedFunction().getReturnStmt();
 		if (returnA != null && !returnA.equals(returnB)) {
-			ret = new Yreturntypechange(commit, commit.getParent(), commit.getMatchedFunction(), compareFunction);
+			ret = new Yreturntypechange(commit, commit.getPrev(), commit.getMatchedFunction(), compareFunction);
 		}
 		return ret;
 	}
@@ -46,7 +47,7 @@ public abstract class AbstractParser implements Yparser {
 		Yinfilerename ret = null;
 		if (compareFunction != null) {
 			if (!functionNamesConsideredEqual(commit.getMatchedFunction().getName(), compareFunction.getName())) {
-				ret = new Yinfilerename(commit, commit.getParent(), commit.getMatchedFunction(), compareFunction);
+				ret = new Yinfilerename(commit, commit.getPrev(), commit.getMatchedFunction(), compareFunction);
 			}
 		}
 		return ret;
@@ -57,7 +58,7 @@ public abstract class AbstractParser implements Yparser {
 		List<Yparameter> parametersA = compareFunction.getParameters();
 		List<Yparameter> parametersB = commit.getMatchedFunction().getParameters();
 		if (!parametersA.equals(parametersB)) {
-			ret = new Yparameterchange(commit, commit.getParent(), commit.getMatchedFunction(), compareFunction);
+			ret = new Yparameterchange(commit, commit.getPrev(), commit.getMatchedFunction(), compareFunction);
 		}
 		return ret;
 	}
@@ -67,7 +68,7 @@ public abstract class AbstractParser implements Yparser {
 		Yexceptions exceptionsA = compareFunction.getExceptions();
 		Yexceptions exceptionsB = commit.getMatchedFunction().getExceptions();
 		if (exceptionsA != null && !exceptionsA.equals(exceptionsB)) {
-			ret = new Yexceptionschange(commit, commit.getParent(), commit.getMatchedFunction(), compareFunction);
+			ret = new Yexceptionschange(commit, commit.getPrev(), commit.getMatchedFunction(), compareFunction);
 		}
 		return ret;
 	}
@@ -77,7 +78,7 @@ public abstract class AbstractParser implements Yparser {
 		Ymodifiers modifiersA = compareFunction.getModifiers();
 		Ymodifiers modifiersB = commit.getMatchedFunction().getModifiers();
 		if (modifiersA != null && !modifiersA.equals(modifiersB)) {
-			ret = new Ymodifierchange(commit, commit.getParent(), commit.getMatchedFunction(), compareFunction);
+			ret = new Ymodifierchange(commit, commit.getPrev(), commit.getMatchedFunction(), compareFunction);
 		}
 		return ret;
 	}

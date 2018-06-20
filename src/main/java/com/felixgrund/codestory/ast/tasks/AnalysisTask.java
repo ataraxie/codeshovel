@@ -4,7 +4,8 @@ import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.exceptions.NoParserFoundException;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
-import com.felixgrund.codestory.ast.interpreters.Interpreter;
+import com.felixgrund.codestory.ast.interpreters.CrossFileInterpreter;
+import com.felixgrund.codestory.ast.interpreters.InFileInterpreter;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.util.ParserFactory;
@@ -13,23 +14,17 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.*;
-import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.*;
 
 public class AnalysisTask {
@@ -94,8 +89,14 @@ public class AnalysisTask {
 	private void createResult() throws Exception {
 		this.yresult = new Yresult();
 		for (Ycommit ycommit : this.yhistory) {
-			Ychange ychange = new Interpreter(ycommit).interpret();
+			Ychange ychange = new InFileInterpreter(ycommit).interpret();
 			if (!(ychange instanceof Ynochange)) {
+				if (ychange instanceof Yintroduced) {
+					Ychange crossFileChange = new CrossFileInterpreter(this.repository, ycommit).interpret();
+					if (crossFileChange != null) {
+						ychange = crossFileChange;
+					}
+				}
 				this.yresult.put(ycommit, ychange);
 			}
 			if (hasMajorChange(ychange)) {
@@ -151,10 +152,10 @@ public class AnalysisTask {
 	private void createCommitCollection() throws IOException, GitAPIException, NoParserFoundException {
 
 		if (this.fileHistory == null) {
-			LogCommand logCommand = this.git.log().addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
-			Iterable<RevCommit> revisions = logCommand.call();
+			LogCommand logCommandFile = this.git.log().addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
+			Iterable<RevCommit> fileRevisions = logCommandFile.call();
 			this.fileHistory = new LinkedHashMap<>();
-			for (RevCommit commit : revisions) {
+			for (RevCommit commit : fileRevisions) {
 				this.fileHistory.put(commit.getName(), commit);
 			}
 		}
@@ -170,8 +171,8 @@ public class AnalysisTask {
 					if (commit.getParentCount() > 0) {
 						RevCommit parentCommit = commit.getParent(0);
 						Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
-						ycommit.setParent(parentYcommit);
-						ycommit.setYdiff(createYdiff(commit, parentCommit));
+						ycommit.setPrev(parentYcommit);
+						ycommit.setEditList(Utl.getSingleEditList(this.repository, commit, parentCommit, this.filePath));
 					}
 					lastConsideredCommit = ycommit;
 					this.yhistory.add(ycommit);
@@ -230,37 +231,6 @@ public class AnalysisTask {
 
 		return ret;
 
-	}
-
-	private Ydiff createYdiff(RevCommit commit, RevCommit prevCommit) throws IOException, GitAPIException {
-		ObjectReader objectReader = this.repository.newObjectReader();
-		CanonicalTreeParser treeParserNew = new CanonicalTreeParser();
-		OutputStream outputStream = System.out;
-		DiffFormatter formatter = new DiffFormatter(outputStream);
-		formatter.setRepository(this.repository);
-		formatter.setDiffComparator(RawTextComparator.DEFAULT);
-		treeParserNew.reset(objectReader, commit.getTree());
-		CanonicalTreeParser treeParserOld = new CanonicalTreeParser();
-		treeParserOld.reset(objectReader, prevCommit.getTree());
-		List<DiffEntry> diff = formatter.scan(treeParserOld, treeParserNew);
-		EditList inFileEdits = null;
-		Map<String, EditList> otherFileEdits = new HashMap<>();
-		for (DiffEntry entry : diff) {
-			FileHeader fileHeader = formatter.toFileHeader(entry);
-			if (entry.getOldPath().equals(this.filePath)) {
-				inFileEdits = fileHeader.toEditList();
-			} else {
-				String oldPath = entry.getOldPath();
-				String[] oldFileExtensionSplit = oldPath.split("\\.");
-				String oldFileExtension = oldFileExtensionSplit[oldFileExtensionSplit.length-1];
-				String[] newFileExtensionSplit = this.filePath.split("\\.");
-				String newFileExtension = newFileExtensionSplit[newFileExtensionSplit.length-1];
-				if (oldFileExtension.equals(newFileExtension)) {
-					otherFileEdits.put(entry.getOldPath(), fileHeader.toEditList());
-				}
-			}
-		}
-		return new Ydiff(inFileEdits, otherFileEdits);
 	}
 
 	private String createUuidHash() {

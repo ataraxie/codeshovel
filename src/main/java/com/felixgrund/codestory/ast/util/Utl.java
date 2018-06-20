@@ -18,10 +18,16 @@ import jdk.nashorn.internal.ir.FunctionNode;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
@@ -284,6 +290,36 @@ public class Utl {
 
 	public static int countLineNumbers(String string) {
 		return string.split("\r\n|\r|\n").length;
+	}
+
+	public static Map<String, EditList> getEditLists(Repository repository, RevCommit commit, RevCommit prevCommit,
+			String onlyFilePathEndsWith, boolean onlyFirst) throws IOException {
+		Map<String, EditList> editLists = new HashMap<>();
+		ObjectReader objectReader = repository.newObjectReader();
+		CanonicalTreeParser treeParserNew = new CanonicalTreeParser();
+		OutputStream outputStream = System.out;
+		DiffFormatter formatter = new DiffFormatter(outputStream);
+		formatter.setRepository(repository);
+		formatter.setDiffComparator(RawTextComparator.DEFAULT);
+		treeParserNew.reset(objectReader, commit.getTree());
+		CanonicalTreeParser treeParserOld = new CanonicalTreeParser();
+		treeParserOld.reset(objectReader, prevCommit.getTree());
+		List<DiffEntry> diff = formatter.scan(treeParserOld, treeParserNew);
+		for (DiffEntry entry : diff) {
+			FileHeader fileHeader = formatter.toFileHeader(entry);
+			if (entry.getOldPath().endsWith(onlyFilePathEndsWith)) {
+				editLists.put(entry.getOldPath(), fileHeader.toEditList());
+				if (onlyFirst) {
+					break;
+				}
+			}
+		}
+		return editLists;
+	}
+
+	public static EditList getSingleEditList(Repository repository, RevCommit commit,
+			RevCommit prevCommit, String onlyFilePathEndsWith) throws IOException {
+		return getEditLists(repository, commit, prevCommit, onlyFilePathEndsWith, true).get(onlyFilePathEndsWith);
 	}
 
 }

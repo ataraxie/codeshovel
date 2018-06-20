@@ -2,6 +2,7 @@ package com.felixgrund.codestory.ast.entities;
 
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
+import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.text.SimpleDateFormat;
@@ -15,11 +16,11 @@ public class Ycommit {
 	private Date date;
 
 	private RevCommit commit;
-	private Ycommit parent;
+	private Ycommit prev;
 
 	private Yfunction matchedFunction;
 
-	private Ydiff Ydiff;
+	private EditList editList;
 
 	private String fileName;
 	private String fileContent;
@@ -64,20 +65,12 @@ public class Ycommit {
 		return fileName;
 	}
 
-	public Ycommit getParent() {
-		return parent;
+	public Ycommit getPrev() {
+		return prev;
 	}
 
-	public void setParent(Ycommit parent) {
-		this.parent = parent;
-	}
-
-	public Ydiff getYdiff() {
-		return Ydiff;
-	}
-
-	public void setYdiff(Ydiff ydiff) {
-		this.Ydiff = ydiff;
+	public void setPrev(Ycommit prev) {
+		this.prev = prev;
 	}
 
 	public String getFilePath() {
@@ -106,5 +99,13 @@ public class Ycommit {
 
 	public String getShortName() {
 		return this.commit.getName().substring(0, 6);
+	}
+
+	public EditList getEditList() {
+		return editList;
+	}
+
+	public void setEditList(EditList editList) {
+		this.editList = editList;
 	}
 }

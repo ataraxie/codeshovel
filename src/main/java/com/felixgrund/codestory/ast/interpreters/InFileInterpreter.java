@@ -9,13 +9,12 @@ import org.eclipse.jgit.diff.EditList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-public class Interpreter {
+public class InFileInterpreter {
 
 	private Ycommit ycommit;
 
-	public Interpreter(Ycommit ycommit) {
+	public InFileInterpreter(Ycommit ycommit) {
 		this.ycommit = ycommit;
 	}
 
@@ -44,8 +43,8 @@ public class Interpreter {
 				changes.addAll(minorChanges);
 			}
 		} else {
-			Yfunction parentMatchedFunction = ycommit.getParent().getMatchedFunction();
-			if (ycommit.getParent() != null && parentMatchedFunction != null) {
+			Yfunction parentMatchedFunction = ycommit.getPrev().getMatchedFunction();
+			if (ycommit.getPrev() != null && parentMatchedFunction != null) {
 				List<Ychange> minorChanges = parser.getMinorChanges(ycommit, parentMatchedFunction);
 				changes.addAll(minorChanges);
 			}
@@ -64,50 +63,34 @@ public class Interpreter {
 	}
 
 	private Yfunction getCompareFunction(Ycommit ycommit) {
-		Yfunction compareFunction = null;
-		Ycommit parentCommit = ycommit.getParent();
-		if (parentCommit != null) {
-			Ydiff ydiff = ycommit.getYdiff();
-			if (ydiff != null) {
-				compareFunction = findCompareFunctionInFile(ycommit, parentCommit, ydiff);
-				if (compareFunction == null) {
-					compareFunction = findCompareFunctionCrossFile(ycommit, parentCommit, ydiff);
-				}
-			}
-		}
-		return compareFunction;
-	}
-
-	private Yfunction findCompareFunctionCrossFile(Ycommit commit, Ycommit parentCommit, Ydiff ydiff) {
-		int a = 1;
-		return null;
-	}
-
-	private Yfunction findCompareFunctionInFile(Ycommit commit, Ycommit parentCommit, Ydiff ydiff) {
 		Yfunction ret = null;
-		Yfunction functionB = commit.getMatchedFunction();
-		int lineNumberB = functionB.getNameLineNumber();
-		EditList editList = ydiff.getInFileEdits();
-		for (Edit edit : editList) {
-			int beginA = edit.getBeginA();
-			int endA = edit.getEndA();
-			int beginB = edit.getBeginB();
-			int endB = edit.getEndB();
-			if (beginB <= lineNumberB && endB >= lineNumberB) {
-				Yparser parser = parentCommit.getParser();
-				List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
-				if (functionsInRange.size() == 1) {
-					ret = functionsInRange.get(0);
-				} else if (functionsInRange.size() > 1) {
-					ret = parser.getMostSimilarFunction(functionsInRange, functionB, true);
+		Ycommit parentCommit = ycommit.getPrev();
+		if (parentCommit != null) {
+			Yfunction functionB = ycommit.getMatchedFunction();
+			int lineNumberB = functionB.getNameLineNumber();
+			EditList editList = ycommit.getEditList();
+			for (Edit edit : editList) {
+				int beginA = edit.getBeginA();
+				int endA = edit.getEndA();
+				int beginB = edit.getBeginB();
+				int endB = edit.getEndB();
+				if (beginB <= lineNumberB && endB >= lineNumberB) {
+					Yparser parser = parentCommit.getParser();
+					List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
+					if (functionsInRange.size() == 1) {
+						ret = functionsInRange.get(0);
+					} else if (functionsInRange.size() > 1) {
+						ret = parser.getMostSimilarFunction(functionsInRange, functionB, true);
+					}
 				}
 			}
 		}
 		return ret;
 	}
 
+
 	private boolean isFirstFunctionOccurrence() {
-		return this.ycommit.getParent() == null || this.ycommit.getParent().getMatchedFunction() == null;
+		return this.ycommit.getPrev() == null || this.ycommit.getPrev().getMatchedFunction() == null;
 	}
 
 
