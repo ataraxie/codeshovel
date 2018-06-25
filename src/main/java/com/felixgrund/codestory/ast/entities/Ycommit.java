@@ -20,7 +20,7 @@ public class Ycommit {
 
 	private Yfunction matchedFunction;
 
-	private EditList editList;
+	private Ydiff ydiff;
 
 	private String fileName;
 	private String fileContent;
@@ -101,11 +101,11 @@ public class Ycommit {
 		return this.commit.getName().substring(0, 6);
 	}
 
-	public EditList getEditList() {
-		return editList;
+	public Ydiff getYdiff() {
+		return ydiff;
 	}
 
-	public void setEditList(EditList editList) {
-		this.editList = editList;
+	public void setYdiff(Ydiff ydiff) {
+		this.ydiff = ydiff;
 	}
 }

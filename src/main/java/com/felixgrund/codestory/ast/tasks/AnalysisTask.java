@@ -172,7 +172,8 @@ public class AnalysisTask {
 						RevCommit parentCommit = commit.getParent(0);
 						Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
 						ycommit.setPrev(parentYcommit);
-						ycommit.setEditList(Utl.getSingleEditList(this.repository, commit, parentCommit, this.filePath));
+						Ydiff ydiff = new Ydiff(this.repository, commit, parentCommit, false);
+						ycommit.setYdiff(ydiff);
 					}
 					lastConsideredCommit = ycommit;
 					this.yhistory.add(ycommit);

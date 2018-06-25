@@ -10,7 +10,7 @@ import org.eclipse.jgit.diff.EditList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InFileInterpreter {
+public class InFileInterpreter extends AbstractInterpreter {
 
 	private Ycommit ycommit;
 
@@ -68,7 +68,7 @@ public class InFileInterpreter {
 		if (parentCommit != null) {
 			Yfunction functionB = ycommit.getMatchedFunction();
 			int lineNumberB = functionB.getNameLineNumber();
-			EditList editList = ycommit.getEditList();
+			EditList editList = ycommit.getYdiff().getSingleEditList(ycommit.getFilePath());
 			for (Edit edit : editList) {
 				int beginA = edit.getBeginA();
 				int endA = edit.getEndA();
@@ -87,7 +87,6 @@ public class InFileInterpreter {
 		}
 		return ret;
 	}
-
 
 	private boolean isFirstFunctionOccurrence() {
 		return this.ycommit.getPrev() == null || this.ycommit.getPrev().getMatchedFunction() == null;
