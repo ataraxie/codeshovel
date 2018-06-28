@@ -64,8 +64,7 @@ public class AnalysisTask {
 		this();
 		this.setRepositoryName(baseAnalysisTask.getRepositoryName());
 		this.setRepository(baseAnalysisTask.getRepository());
-		this.setFilePath(baseAnalysisTask.getFilePath());
-		this.setFileHistory(baseAnalysisTask.getFileHistory());
+		this.setFilePath(compareFunction.getSourceFilePath());
 		this.setStartCommitName(compareCommitName);
 		this.setFunctionName(compareFunction.getName());
 		this.setFunctionStartLine(compareFunction.getNameLineNumber());
@@ -157,18 +156,16 @@ public class AnalysisTask {
 
 	private void createCommitCollection() throws IOException, GitAPIException, NoParserFoundException {
 
-		if (this.fileHistory == null) {
-			LogCommand logCommandFile = this.git.log().addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
-			Iterable<RevCommit> fileRevisions = logCommandFile.call();
-			this.fileHistory = new LinkedHashMap<>();
-			for (RevCommit commit : fileRevisions) {
-				this.fileHistory.put(commit.getName(), commit);
-			}
+		LogCommand logCommandFile = this.git.log().add(this.startCommit.getCommit()).addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
+		Iterable<RevCommit> fileRevisions = logCommandFile.call();
+		this.fileHistory = new LinkedHashMap<>();
+		for (RevCommit commit : fileRevisions) {
+			this.fileHistory.put(commit.getName(), commit);
 		}
 
 		Ycommit lastConsideredCommit = null;
 		for (RevCommit commit : this.fileHistory.values()) {
-			if (commit.getCommitTime() <= this.startCommit.getCommit().getCommitTime()) {
+//			if (commit.getCommitTime() <= this.startCommit.getCommit().getCommitTime()) {
 				try {
 					Ycommit ycommit = getOrCreateYcommit(commit, lastConsideredCommit);
 					if (ycommit.getMatchedFunction() == null) {
@@ -186,7 +183,7 @@ public class AnalysisTask {
 				} catch (ParseException e) {
 					System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getName());
 				}
-			}
+//			}
 		}
 
 	}

@@ -12,7 +12,8 @@ public class MiningTestJava {
 
 	private static final String TARGET_FILE_EXTENSION = ".java";
 	private static final String TARGET_FILE_PATH = "src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java";
-	private static final String TARGET_METHOD = "hasWhitespaceBefore";
+	private static final String TARGET_METHOD = "createPattern";
+	private static final int TARGET_METHOD_STARTLINE = 104;
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 	private static final String REPO = "checkstyle";
 	private static final String START_COMMIT = "119fd4fb33bef9f5c66fc950396669af842c21a3";
@@ -26,6 +27,7 @@ public class MiningTestJava {
 
 		execution.setOnlyFilePath(TARGET_FILE_PATH);
 		execution.setOnlyMethodName(TARGET_METHOD);
+		execution.setOnlyStartLine(TARGET_METHOD_STARTLINE);
 
 		execution.execute();
 	}

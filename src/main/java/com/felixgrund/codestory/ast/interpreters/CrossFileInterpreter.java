@@ -44,7 +44,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 				if (diffEntry.getChangeType() == DiffEntry.ChangeType.RENAME) {
 					compareFunction = getCompareFunctionFromFile(oldFilePath, prevCommit);
 					ret = new Yfilerename(startFunction, compareFunction);
-				} else if (diffEntry.getChangeType() == DiffEntry.ChangeType.ADD) {
+				} else {
 					compareFunction = getCompareFunctionFromMultipleFiles(ydiff, prevCommit);
 					ret = new Ymovefromfile(startFunction, compareFunction);
 				}
@@ -56,8 +56,10 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 	private Yfunction getCompareFunctionFromMultipleFiles(Ydiff ydiff, RevCommit prevCommit) throws Exception {
 		List<Yfunction> allFunctions = new ArrayList<>();
 		for (String path : ydiff.getOldPaths()) {
-			Yparser parser = createCompareParser(prevCommit, path);
-			allFunctions.addAll(parser.getAllFunctions());
+			if (path.endsWith(this.startParser.getAcceptedFileExtension())) {
+				Yparser parser = createCompareParser(prevCommit, path);
+				allFunctions.addAll(parser.getAllFunctions());
+			}
 		}
 		Yfunction ret = this.startParser.getMostSimilarFunction(allFunctions, this.startFunction, true, false);
 		return ret;

@@ -31,6 +31,7 @@ public class MiningExecution {
 	private String startCommitName;
 	private String onlyMethodName;
 	private String onlyFilePath;
+	private int onlyMethodStartLine;
 
 	private Repository repository;
 	private RevCommit startCommit;
@@ -73,7 +74,9 @@ public class MiningExecution {
 		Yparser parser = ParserFactory.getParser(this.repositoryName, filePath, startFileContent, this.startCommitName);
 		for (Yfunction method : parser.getAllFunctions()) {
 			if (this.onlyMethodName == null || this.onlyMethodName.equals(method.getName())) {
-				runForMethod(filePath, method);
+				if (this.onlyMethodStartLine <= 0 || this.onlyMethodStartLine == method.getNameLineNumber()) {
+					runForMethod(filePath, method);
+				}
 			}
 		}
 		printFileEnd(filePath);
@@ -153,6 +156,10 @@ public class MiningExecution {
 		this.onlyMethodName = onlyMethodName;
 	}
 
+	public void setOnlyStartLine(int onlyMethodStartline) {
+		this.onlyMethodStartLine = onlyMethodStartline;
+	}
+
 	public String getRepositoryName() {
 		return repositoryName;
 	}
@@ -180,4 +187,5 @@ public class MiningExecution {
 		System.out.println("FINISHED ANALYSIS FOR METHOD " + method.getName());
 		System.out.println("-------------------------------------------------------------------------");
 	}
+
 }

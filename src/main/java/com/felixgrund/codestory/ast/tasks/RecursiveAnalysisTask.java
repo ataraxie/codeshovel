@@ -1,8 +1,6 @@
 package com.felixgrund.codestory.ast.tasks;
 
-import com.felixgrund.codestory.ast.changes.Ychange;
-import com.felixgrund.codestory.ast.changes.Ysignaturechange;
-import com.felixgrund.codestory.ast.changes.Ymultichange;
+import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.util.Utl;
@@ -30,7 +28,7 @@ public class RecursiveAnalysisTask {
 		while (task.getLastMajorChange() != null) {
 			Ychange majorChange = task.getLastMajorChange();
 			List<Ychange> changesToConsider = new ArrayList<>();
-			if (majorChange instanceof Ysignaturechange) {
+			if (majorChange instanceof Ycomparefunctionchange) {
 				changesToConsider.add(majorChange);
 			} else if (majorChange instanceof Ymultichange) {
 				Ymultichange multiChange = (Ymultichange) majorChange;
@@ -38,8 +36,8 @@ public class RecursiveAnalysisTask {
 			}
 
 			for (Ychange ychange : changesToConsider) {
-				if (ychange instanceof Ysignaturechange) {
-					Ysignaturechange metaChange = (Ysignaturechange) ychange;
+				if (ychange instanceof Ycomparefunctionchange) {
+					Ycomparefunctionchange metaChange = (Ycomparefunctionchange) ychange;
 					Yfunction compareFunction = metaChange.getCompareFunction();
 					task = new AnalysisTask(task, metaChange.getCompareCommitName(), compareFunction);
 					runAndPrintOptionally(task);
