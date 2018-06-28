@@ -4,7 +4,7 @@ import com.felixgrund.codestory.ast.entities.Ycommit;
 
 public class Ybodychange extends Ychange {
 
-	public Ybodychange(Ycommit commit) {
-		super(commit);
+	public Ybodychange(String commitName) {
+		super(commitName);
 	}
 }

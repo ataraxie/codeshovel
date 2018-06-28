@@ -26,6 +26,7 @@ public class RecursiveAnalysisTask {
 		runAndPrintOptionally(task);
 		this.recursiveResult = this.startTask.getYresult();
 
+		// TODO: CROSS FILE CHANGES!
 		while (task.getLastMajorChange() != null) {
 			Ychange majorChange = task.getLastMajorChange();
 			List<Ychange> changesToConsider = new ArrayList<>();
@@ -40,7 +41,7 @@ public class RecursiveAnalysisTask {
 				if (ychange instanceof Ysignaturechange) {
 					Ysignaturechange metaChange = (Ysignaturechange) ychange;
 					Yfunction compareFunction = metaChange.getCompareFunction();
-					task = new AnalysisTask(task, metaChange.getCompareCommit(), compareFunction);
+					task = new AnalysisTask(task, metaChange.getCompareCommitName(), compareFunction);
 					runAndPrintOptionally(task);
 					this.recursiveResult.putAll(task.getYresult());
 				}

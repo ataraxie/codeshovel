@@ -2,10 +2,9 @@ package com.felixgrund.codestory.ast.changes;
 
 import com.felixgrund.codestory.ast.parser.Yfunction;
 
-public class Ymovefromfile extends Ycrossfilechange {
+public class Ycrossfilechange extends Ycomparefunctionchange {
 
-	public Ymovefromfile(Yfunction matchedFunction, Yfunction compareFunction) {
+	public Ycrossfilechange(Yfunction matchedFunction, Yfunction compareFunction) {
 		super(matchedFunction, compareFunction);
 	}
-
 }

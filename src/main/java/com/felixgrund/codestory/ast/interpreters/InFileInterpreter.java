@@ -36,7 +36,7 @@ public class InFileInterpreter extends AbstractInterpreter {
 			}
 
 			if (changes.isEmpty()) {
-				changes.add(new Yintroduced(ycommit));
+				changes.add(new Yintroduced(ycommit.getName()));
 			} else {
 				Ysignaturechange firstMajorChange = (Ysignaturechange) changes.get(0);
 				List<Ychange> minorChanges = parser.getMinorChanges(ycommit, firstMajorChange.getCompareFunction());
@@ -52,11 +52,11 @@ public class InFileInterpreter extends AbstractInterpreter {
 
 		int numChanges = changes.size();
 		if (numChanges > 1) {
-			interpretation = new Ymultichange(ycommit, changes);
+			interpretation = new Ymultichange(ycommit.getName(), changes);
 		} else if (numChanges == 1) {
 			interpretation = changes.get(0);
 		} else {
-			interpretation = new Ynochange(ycommit);
+			interpretation = new Ynochange(ycommit.getName());
 		}
 
 		return interpretation;
@@ -80,7 +80,7 @@ public class InFileInterpreter extends AbstractInterpreter {
 					if (functionsInRange.size() == 1) {
 						ret = functionsInRange.get(0);
 					} else if (functionsInRange.size() > 1) {
-						ret = parser.getMostSimilarFunction(functionsInRange, functionB, true);
+						ret = parser.getMostSimilarFunction(functionsInRange, functionB, false, true);
 					}
 				}
 			}

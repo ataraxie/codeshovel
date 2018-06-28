@@ -4,7 +4,7 @@ import com.felixgrund.codestory.ast.entities.Ycommit;
 
 public class Yintroduced extends Ychange {
 
-	public Yintroduced(Ycommit commit) {
-		super(commit);
+	public Yintroduced(String commitName) {
+		super(commitName);
 	}
 }

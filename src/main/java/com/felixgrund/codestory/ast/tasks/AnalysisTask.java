@@ -60,13 +60,13 @@ public class AnalysisTask {
 		this.yhistory = new Yhistory();
 	}
 
-	public AnalysisTask(AnalysisTask baseAnalysisTask, Ycommit compareCommit, Yfunction compareFunction) throws Exception {
+	public AnalysisTask(AnalysisTask baseAnalysisTask, String compareCommitName, Yfunction compareFunction) throws Exception {
 		this();
 		this.setRepositoryName(baseAnalysisTask.getRepositoryName());
 		this.setRepository(baseAnalysisTask.getRepository());
 		this.setFilePath(baseAnalysisTask.getFilePath());
 		this.setFileHistory(baseAnalysisTask.getFileHistory());
-		this.setStartCommitName(compareCommit.getName());
+		this.setStartCommitName(compareCommitName);
 		this.setFunctionName(compareFunction.getName());
 		this.setFunctionStartLine(compareFunction.getNameLineNumber());
 		this.setFunctionEndLine(compareFunction.getEndLineNumber());
@@ -92,7 +92,9 @@ public class AnalysisTask {
 			Ychange ychange = new InFileInterpreter(ycommit).interpret();
 			if (!(ychange instanceof Ynochange)) {
 				if (ychange instanceof Yintroduced) {
-					Ychange crossFileChange = new CrossFileInterpreter(this.repository, ycommit).interpret();
+					CrossFileInterpreter cfi = new CrossFileInterpreter(
+							this.repository, this.repositoryName, ycommit.getMatchedFunction(), ycommit.getParser());
+					Ychange crossFileChange = cfi.interpret();
 					if (crossFileChange != null) {
 						ychange = crossFileChange;
 					}
@@ -106,16 +108,21 @@ public class AnalysisTask {
 	}
 
 	private boolean hasMajorChange(Ychange ychange) {
-		if (ychange instanceof Yparameterchange || ychange instanceof Yinfilerename) {
+		if (isMajorChange(ychange)) {
 			return true;
 		} else if (ychange instanceof Ymultichange) {
 			for (Ychange subChange : ((Ymultichange) ychange).getChanges()) {
-				if (subChange instanceof Yparameterchange || subChange instanceof Yinfilerename) {
+				if (isMajorChange(subChange)) {
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	private boolean isMajorChange(Ychange ychange) {
+		return ychange instanceof Yparameterchange || ychange instanceof Yinfilerename
+				|| ychange instanceof Ycrossfilechange;
 	}
 
 	private void buildAndValidate() throws Exception {
@@ -133,7 +140,6 @@ public class AnalysisTask {
 		Utl.checkNotNull("startFileContent", startFileContent);
 
 		Yparser startParser = ParserFactory.getParser(this.repositoryName, this.filePath, startFileContent, this.startCommitName);
-		startParser.parse();
 
 		this.startFunction = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
 		Utl.checkNotNull("startFunctionNode", this.startFunction);
@@ -203,7 +209,6 @@ public class AnalysisTask {
 		ycommit = createBaseYcommit(commit);
 		if (ycommit.getFileContent() != null) {
 			Yparser parser = ParserFactory.getParser(this.repositoryName, ycommit.getFilePath(), ycommit.getFileContent(), ycommit.getName());
-			parser.parse();
 			ycommit.setParser(parser);
 			Yfunction matchedFunction = parser.findFunctionByOtherFunction(compareFunction);
 

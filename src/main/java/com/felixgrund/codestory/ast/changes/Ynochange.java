@@ -4,7 +4,7 @@ import com.felixgrund.codestory.ast.entities.Ycommit;
 
 public class Ynochange extends Ychange {
 
-	public Ynochange(Ycommit commit) {
-		super(commit);
+	public Ynochange(String commitName) {
+		super(commitName);
 	}
 }

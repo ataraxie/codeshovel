@@ -5,7 +5,7 @@ import com.felixgrund.codestory.ast.parser.Yfunction;
 
 public class Ysignaturechange extends Ycomparefunctionchange {
 
-	public Ysignaturechange(Ycommit commit, Ycommit compareCommit, Yfunction matchedFunction, Yfunction compareFunction) {
-		super(commit, compareCommit, matchedFunction, compareFunction);
+	public Ysignaturechange(Yfunction matchedFunction, Yfunction compareFunction) {
+		super(matchedFunction, compareFunction);
 	}
 }

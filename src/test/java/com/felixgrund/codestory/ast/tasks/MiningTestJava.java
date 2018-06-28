@@ -30,9 +30,5 @@ public class MiningTestJava {
 		execution.execute();
 	}
 
-	private static List<MethodDeclaration> findAllMethods(CompilationUnit cu, JavaParser.MethodVisitor visitor) {
-		cu.accept(visitor, null);
-		return visitor.getMatchedNodes();
-	}
 
 }

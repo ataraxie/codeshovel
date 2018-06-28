@@ -3,10 +3,11 @@ package com.felixgrund.codestory.ast.changes;
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 
-public class Yfilerename extends Ycomparefunctionchange {
+public class Yfilerename extends Ycrossfilechange {
 
-	public Yfilerename(Ycommit commit, Ycommit compareCommit, Yfunction matchedFunction, Yfunction compareFunction) {
-		super(commit, compareCommit, matchedFunction, compareFunction);
+
+	public Yfilerename(Yfunction matchedFunction, Yfunction compareFunction) {
+		super(matchedFunction, compareFunction);
 	}
-	
+
 }

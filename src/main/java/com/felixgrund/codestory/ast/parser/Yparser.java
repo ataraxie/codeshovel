@@ -13,10 +13,9 @@ public interface Yparser {
 	List<Yfunction> findFunctionsByLineRange(int beginLine, int endLine);
 	List<Yfunction> getAllFunctions();
 	Yfunction findFunctionByOtherFunction(Yfunction otherFunction);
-	Object parse() throws ParseException;
 	boolean functionNamesConsideredEqual(String aName, String bName);
 
-	Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean writeOutputFile);
+	Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile, boolean writeOutputFile);
 	double getScopeSimilarity(Yfunction function, Yfunction compareFunction);
 
 	List<Ysignaturechange> getMajorChanges(Ycommit commit, Yfunction compareFunction) throws Exception;

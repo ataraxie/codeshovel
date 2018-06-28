@@ -1,5 +1,6 @@
 package com.felixgrund.codestory.ast.entities;
 
+import com.github.javaparser.printer.lexicalpreservation.Difference;
 import org.eclipse.jgit.diff.*;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -9,11 +10,14 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Ydiff {
+
+	private static final int RENAME_SCORE = 60;
 
 	private Repository repository;
 	private RevCommit commit;
@@ -22,6 +26,8 @@ public class Ydiff {
 	private List<DiffEntry> diffEntries;
 	private Map<String, DiffEntry> diff;
 	private DiffFormatter diffFormatter;
+
+	private List<String> oldPaths;
 
 	public Ydiff(Repository repository, RevCommit commit, RevCommit prevCommit, boolean detectRenames) throws IOException {
 		this.repository = repository;
@@ -44,7 +50,7 @@ public class Ydiff {
 		if (detectRenames) {
 			RenameDetector rd = new RenameDetector(repository);
 			rd.addAll(diffEntries);
-			rd.setRenameScore(45);
+			rd.setRenameScore(RENAME_SCORE);
 			diffEntries = rd.compute();
 		}
 
@@ -75,4 +81,18 @@ public class Ydiff {
 	public Map<String, DiffEntry> getDiff() {
 		return diff;
 	}
+
+	public List<String> getOldPaths() {
+		if (this.oldPaths == null) {
+			this.oldPaths = new ArrayList<>();
+			for (DiffEntry diffEntry : this.diffEntries) {
+				String oldPath = diffEntry.getOldPath();
+				if (!"/dev/null".equals(oldPath)) {
+					this.oldPaths.add(oldPath);
+				}
+			}
+		}
+		return this.oldPaths;
+	}
+
 }

@@ -1,17 +1,15 @@
 package com.felixgrund.codestory.ast.changes;
 
-import com.felixgrund.codestory.ast.entities.Ycommit;
-
 public abstract class Ychange {
 
-	protected Ycommit commit;
+	protected String commitName;
 
-	public Ychange(Ycommit commit) {
-		this.commit = commit;
+	public Ychange(String commitName) {
+		this.commitName = commitName;
 	}
 
-	public Ycommit getCommit() {
-		return commit;
+	public String getCommitName() {
+		return commitName;
 	}
 
 	@Override

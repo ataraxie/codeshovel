@@ -5,8 +5,8 @@ import com.felixgrund.codestory.ast.parser.Yfunction;
 
 public class Yreturntypechange extends Ysignaturechange {
 
-	public Yreturntypechange(Ycommit commit, Ycommit compareCommit, Yfunction matchedFunction, Yfunction compareFunction) {
-		super(commit, compareCommit, matchedFunction, compareFunction);
+	public Yreturntypechange(Yfunction matchedFunction, Yfunction compareFunction) {
+		super(matchedFunction, compareFunction);
 	}
 
 }

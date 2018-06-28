@@ -71,7 +71,6 @@ public class MiningExecution {
 		printFileStart(filePath);
 		String startFileContent = Utl.findFileContent(this.repository, this.startCommit, filePath);
 		Yparser parser = ParserFactory.getParser(this.repositoryName, filePath, startFileContent, this.startCommitName);
-		parser.parse();
 		for (Yfunction method : parser.getAllFunctions()) {
 			if (this.onlyMethodName == null || this.onlyMethodName.equals(method.getName())) {
 				runForMethod(filePath, method);

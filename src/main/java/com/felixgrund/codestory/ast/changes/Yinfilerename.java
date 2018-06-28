@@ -5,7 +5,7 @@ import com.felixgrund.codestory.ast.parser.Yfunction;
 
 public class Yinfilerename extends Ysignaturechange {
 
-	public Yinfilerename(Ycommit commit, Ycommit compareCommit, Yfunction matchedFunction, Yfunction compareFunction) {
-		super(commit, compareCommit, matchedFunction, compareFunction);
+	public Yinfilerename(Yfunction matchedFunction, Yfunction compareFunction) {
+		super(matchedFunction, compareFunction);
 	}
 }

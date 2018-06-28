@@ -5,8 +5,8 @@ import com.felixgrund.codestory.ast.parser.Yfunction;
 
 public class Yexceptionschange extends Ysignaturechange {
 
-	public Yexceptionschange(Ycommit commit, Ycommit compareCommit, Yfunction matchedFunction, Yfunction compareFunction) {
-		super(commit, compareCommit, matchedFunction, compareFunction);
+	public Yexceptionschange(Yfunction matchedFunction, Yfunction compareFunction) {
+		super(matchedFunction, compareFunction);
 	}
 
 }

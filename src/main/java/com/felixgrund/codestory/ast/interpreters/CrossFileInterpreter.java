@@ -1,68 +1,78 @@
 package com.felixgrund.codestory.ast.interpreters;
 
 import com.felixgrund.codestory.ast.changes.*;
-import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Ydiff;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
+import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
+import com.github.javaparser.printer.lexicalpreservation.Difference;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.Edit;
-import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class CrossFileInterpreter extends AbstractInterpreter {
 
-	private Ycommit ycommit;
 	private Repository repository;
+	private String repositoryName;
+	private Yfunction startFunction;
+	private Yparser startParser;
 
-	public CrossFileInterpreter(Repository repository, Ycommit ycommit) {
-		this.ycommit = ycommit;
+	public CrossFileInterpreter(Repository repository, String repositoryName, Yfunction startFunction, Yparser startParser) {
 		this.repository = repository;
+		this.repositoryName = repositoryName;
+		this.startFunction = startFunction;
+		this.startParser = startParser;
 	}
 
 	public Ychange interpret() throws Exception {
-		RevCommit commit = Utl.findCommitByName(repository, ycommit.getName());
+		Ychange ret = null;
+		RevCommit commit = Utl.findCommitByName(repository, startFunction.getCommitName());
 		if (commit.getParentCount() > 0) {
 			String prevCommitName = commit.getParent(0).getName();
 			RevCommit prevCommit = Utl.findCommitByName(repository, prevCommitName);
 			Ydiff ydiff = new Ydiff(this.repository, commit, prevCommit, true);
-			DiffEntry diffEntry = ydiff.getDiff().get(ycommit.getFilePath());
+			Map<String, DiffEntry> diffEntries = ydiff.getDiff();
+			DiffEntry diffEntry = diffEntries.get(startFunction.getSourceFilePath());
 			if (diffEntry != null) {
-				int a = 1;
+				String oldFilePath = diffEntry.getOldPath();
+				Yfunction compareFunction = null;
+				if (diffEntry.getChangeType() == DiffEntry.ChangeType.RENAME) {
+					compareFunction = getCompareFunctionFromFile(oldFilePath, prevCommit);
+					ret = new Yfilerename(startFunction, compareFunction);
+				} else if (diffEntry.getChangeType() == DiffEntry.ChangeType.ADD) {
+					compareFunction = getCompareFunctionFromMultipleFiles(ydiff, prevCommit);
+					ret = new Ymovefromfile(startFunction, compareFunction);
+				}
 			}
 		}
-		return null;
+		return ret;
 	}
 
-//	private Yfunction getCompareFunction() {
-//		Yfunction ret = null;
-//		Ycommit parentCommit = ycommit.getPrev();
-//		if (parentCommit != null) {
-//			Yfunction functionB = ycommit.getMatchedFunction();
-//			int lineNumberB = functionB.getNameLineNumber();
-//			EditList editList = ycommit.getYdiff().getSingleEditList(ycommit.getFilePath());
-//			for (Edit edit : editList) {
-//				int beginA = edit.getBeginA();
-//				int endA = edit.getEndA();
-//				int beginB = edit.getBeginB();
-//				int endB = edit.getEndB();
-//				if (beginB <= lineNumberB && endB >= lineNumberB) {
-//					Yparser parser = parentCommit.getParser();
-//					List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
-//					if (functionsInRange.size() == 1) {
-//						ret = functionsInRange.get(0);
-//					} else if (functionsInRange.size() > 1) {
-//						ret = parser.getMostSimilarFunction(functionsInRange, functionB, true);
-//					}
-//				}
-//			}
-//		}
-//		return ret;
-//	}
+	private Yfunction getCompareFunctionFromMultipleFiles(Ydiff ydiff, RevCommit prevCommit) throws Exception {
+		List<Yfunction> allFunctions = new ArrayList<>();
+		for (String path : ydiff.getOldPaths()) {
+			Yparser parser = createCompareParser(prevCommit, path);
+			allFunctions.addAll(parser.getAllFunctions());
+		}
+		Yfunction ret = this.startParser.getMostSimilarFunction(allFunctions, this.startFunction, true, false);
+		return ret;
+	}
+
+	private Yfunction getCompareFunctionFromFile(String filePath, RevCommit commit) throws Exception {
+		Yparser parser = createCompareParser(commit, filePath);
+		List<Yfunction> allFunctions = parser.getAllFunctions();
+		Yfunction ret = this.startParser.getMostSimilarFunction(allFunctions, this.startFunction, false, false);
+		return ret;
+	}
+
+	private Yparser createCompareParser(RevCommit commit, String filePath) throws Exception {
+		String fileContent = Utl.findFileContent(this.repository, commit, filePath);
+		return ParserFactory.getParser(this.repositoryName, filePath, fileContent, commit.getName());
+	}
 
 }

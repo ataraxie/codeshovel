@@ -11,8 +11,8 @@ public class Ymultichange extends Ychange {
 
 	private List<Ychange> changes;
 
-	public Ymultichange(Ycommit commit, List<Ychange> changes) {
-		super(commit);
+	public Ymultichange(String commitName, List<Ychange> changes) {
+		super(commitName);
 		this.changes = changes;
 	}
 

@@ -2,13 +2,23 @@ package com.felixgrund.codestory.ast.wrappers;
 
 public class FunctionSimilarity {
 
+	protected boolean crossFile;
+
 	protected double bodySimilarity = 0;
 	protected double lineNumberSimilarity = 0;
 	protected double scopeSimilarity = 0;
 	protected double overallSimilarity = 0;
 
+	public FunctionSimilarity(boolean crossFile) {
+		this.crossFile = crossFile;
+	}
+
 	public void computeOverallSimilarity() {
-		this.overallSimilarity = (bodySimilarity + scopeSimilarity + lineNumberSimilarity) / 3;
+		if (crossFile) {
+			this.overallSimilarity = bodySimilarity; // TODO: this is not enough!
+		} else {
+			this.overallSimilarity = (bodySimilarity + scopeSimilarity + lineNumberSimilarity) / 3;
+		}
 	}
 
 	public double getScopeSimilarity() {
