@@ -6,7 +6,9 @@ import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.util.Utl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RecursiveAnalysisTask {
 
@@ -24,7 +26,6 @@ public class RecursiveAnalysisTask {
 		runAndPrintOptionally(task);
 		this.recursiveResult = this.startTask.getYresult();
 
-		// TODO: CROSS FILE CHANGES!
 		while (task.getLastMajorChange() != null) {
 			Ychange majorChange = task.getLastMajorChange();
 			List<Ychange> changesToConsider = new ArrayList<>();
@@ -32,7 +33,7 @@ public class RecursiveAnalysisTask {
 				changesToConsider.add(majorChange);
 			} else if (majorChange instanceof Ymultichange) {
 				Ymultichange multiChange = (Ymultichange) majorChange;
-				changesToConsider.addAll(multiChange.getChanges());
+				changesToConsider.add(multiChange.getChanges().get(0));
 			}
 
 			for (Ychange ychange : changesToConsider) {

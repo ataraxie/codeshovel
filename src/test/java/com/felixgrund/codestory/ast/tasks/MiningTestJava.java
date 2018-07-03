@@ -10,6 +10,8 @@ import java.util.List;
 
 public class MiningTestJava {
 
+	private static final boolean METHOD_MODE = false;
+
 	private static final String TARGET_FILE_EXTENSION = ".java";
 	private static final String TARGET_FILE_PATH = "src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java";
 	private static final String TARGET_METHOD = "createPattern";
@@ -26,8 +28,11 @@ public class MiningTestJava {
 		execution.setStartCommitName(START_COMMIT);
 
 		execution.setOnlyFilePath(TARGET_FILE_PATH);
-		execution.setOnlyMethodName(TARGET_METHOD);
-		execution.setOnlyStartLine(TARGET_METHOD_STARTLINE);
+
+		if (METHOD_MODE) {
+			execution.setOnlyMethodName(TARGET_METHOD);
+			execution.setOnlyStartLine(TARGET_METHOD_STARTLINE);
+		}
 
 		execution.execute();
 	}

@@ -27,7 +27,7 @@ public class Ycomparefunctionchange extends Ychange {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(" + compareFunction.getCommitName() + ":" + compareFunction.getName() + ":" + compareFunction.getNameLineNumber() + ")";
+		return getClass().getSimpleName() + "(" + compareFunction.getCommitName() + ":" + compareFunction.getSourceFilePath() + ":" + compareFunction.getName() + ":" + compareFunction.getNameLineNumber() + ")";
 	}
 
 }

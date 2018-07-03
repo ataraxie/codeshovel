@@ -30,6 +30,7 @@ import java.util.*;
 public class AnalysisTask {
 
 	private static boolean CACHE_ENABLED = false;
+	private static boolean CROSS_FILE = true;
 
 	private Git git;
 	private String repositoryName;
@@ -90,7 +91,7 @@ public class AnalysisTask {
 		for (Ycommit ycommit : this.yhistory) {
 			Ychange ychange = new InFileInterpreter(ycommit).interpret();
 			if (!(ychange instanceof Ynochange)) {
-				if (ychange instanceof Yintroduced) {
+				if (CROSS_FILE && ychange instanceof Yintroduced) {
 					CrossFileInterpreter cfi = new CrossFileInterpreter(
 							this.repository, this.repositoryName, ycommit.getMatchedFunction(), ycommit.getParser());
 					Ychange crossFileChange = cfi.interpret();
@@ -165,25 +166,23 @@ public class AnalysisTask {
 
 		Ycommit lastConsideredCommit = null;
 		for (RevCommit commit : this.fileHistory.values()) {
-//			if (commit.getCommitTime() <= this.startCommit.getCommit().getCommitTime()) {
-				try {
-					Ycommit ycommit = getOrCreateYcommit(commit, lastConsideredCommit);
-					if (ycommit.getMatchedFunction() == null) {
-						break;
-					}
-					if (commit.getParentCount() > 0) {
-						RevCommit parentCommit = commit.getParent(0);
-						Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
-						ycommit.setPrev(parentYcommit);
-						Ydiff ydiff = new Ydiff(this.repository, commit, parentCommit, false);
-						ycommit.setYdiff(ydiff);
-					}
-					lastConsideredCommit = ycommit;
-					this.yhistory.add(ycommit);
-				} catch (ParseException e) {
-					System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getName());
+			try {
+				Ycommit ycommit = getOrCreateYcommit(commit, lastConsideredCommit);
+				if (ycommit.getMatchedFunction() == null) {
+					break;
 				}
-//			}
+				if (commit.getParentCount() > 0) {
+					RevCommit parentCommit = commit.getParent(0);
+					Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
+					ycommit.setPrev(parentYcommit);
+					Ydiff ydiff = new Ydiff(this.repository, commit, parentCommit, false);
+					ycommit.setYdiff(ydiff);
+				}
+				lastConsideredCommit = ycommit;
+				this.yhistory.add(ycommit);
+			} catch (ParseException e) {
+				System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getName());
+			}
 		}
 
 	}
@@ -258,14 +257,6 @@ public class AnalysisTask {
 	public void setRepository(Repository repository) throws IOException {
 		this.repository = repository;
 		this.git = new Git(repository);
-	}
-
-	public AnalysisTask cloneTask() throws IOException {
-		AnalysisTask task = new AnalysisTask();
-		task.setRepository(this.repository);
-		task.setFilePath(this.filePath);
-		task.setFileHistory(this.fileHistory);
-		return task;
 	}
 
 	public void setStartCommitName(String startCommitName) {

@@ -17,6 +17,8 @@ import java.util.Map;
 
 public class Ydiff {
 
+	private static final String NULL_PATH = "/dev/null";
+
 	private static final int RENAME_SCORE = 60;
 
 	private Repository repository;
@@ -87,7 +89,7 @@ public class Ydiff {
 			this.oldPaths = new ArrayList<>();
 			for (DiffEntry diffEntry : this.diffEntries) {
 				String oldPath = diffEntry.getOldPath();
-				if (!"/dev/null".equals(oldPath)) {
+				if (!NULL_PATH.equals(oldPath)) {
 					this.oldPaths.add(oldPath);
 				}
 			}
