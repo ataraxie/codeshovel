@@ -10,8 +10,10 @@ public abstract class AbstractFunction implements Yfunction {
 
 	private String sourceFilePath;
 	private String sourceFileContent;
+	private String commitName;
 
-	public AbstractFunction(String sourceFilePath, String sourceFileContent) {
+	public AbstractFunction(String commitName, String sourceFilePath, String sourceFileContent) {
+		this.commitName = commitName;
 		this.sourceFilePath = sourceFilePath;
 		this.sourceFileContent = sourceFileContent;
 	}
@@ -26,6 +28,16 @@ public abstract class AbstractFunction implements Yfunction {
 			parts.add(part);
 		}
 		return StringUtils.join(parts, "__");
+	}
+
+	@Override
+	public String getCommitName() {
+		return commitName;
+	}
+
+	@Override
+	public String getCommitNameShort() {
+		return commitName.substring(0, 6);
 	}
 
 	@Override

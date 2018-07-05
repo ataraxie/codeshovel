@@ -15,22 +15,10 @@ import java.util.List;
 public class JavaFunction extends AbstractFunction implements Yfunction {
 
 	private MethodDeclaration node;
-	private String commitName;
 
 	public JavaFunction(MethodDeclaration node, String commitName, String sourceFilePath, String sourceFileContent) {
-		super(sourceFilePath, sourceFileContent);
+		super(commitName, sourceFilePath, sourceFileContent);
 		this.node = node;
-		this.commitName = commitName;
-	}
-
-	@Override
-	public String getCommitName() {
-		return commitName;
-	}
-
-	@Override
-	public void setCommitName(String commitName) {
-		this.commitName = commitName;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.entities.Ycommit;
+import com.felixgrund.codestory.ast.util.CmdUtil;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.BufferedReader;
@@ -29,21 +30,7 @@ public class GitRangeLogTask {
 		String filePath = this.startTask.getFilePath();
 		String startCommitName = this.startTask.getStartCommitName();
 
-		Runtime runtime = Runtime.getRuntime();
-		String logCommand = String.format("git log %s --no-merges -L %s,%s:%s", startCommitName, rangeStart, rangeEnd, filePath);
-		logCommand += " | grep 'commit\\s' | sed 's/commit//'";
-		String[] cmd = {
-			"/bin/sh",
-			"-c",
-			logCommand
-		};
-
-		System.out.println("\n==================================");
-		System.out.println("LogCommand: " + logCommand);
-
-		Process process = runtime.exec(cmd, null, repositoryDir);
-		process.waitFor();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		BufferedReader reader = CmdUtil.gitLog(startCommitName, rangeStart, rangeEnd, filePath, repositoryDir);
 
 		this.result = new ArrayList<>();
 		String line = reader.readLine();

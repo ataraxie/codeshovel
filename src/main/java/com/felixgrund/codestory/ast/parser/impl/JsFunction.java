@@ -14,20 +14,6 @@ import java.util.List;
 public class JsFunction extends AbstractFunction implements Yfunction {
 
 	private FunctionNode node;
-	private String sourceFilePath;
-
-	// temp
-	private String commitName;
-
-	@Override
-	public String getCommitName() {
-		return commitName;
-	}
-
-	@Override
-	public void setCommitName(String commitName) {
-		this.commitName = commitName;
-	}
 
 	@Override
 	public String getId() {
@@ -40,9 +26,8 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 	}
 
 	public JsFunction(FunctionNode node, String commitName, String sourceFilePath, String sourceFileContent) {
-		super(sourceFilePath, sourceFileContent);
+		super(commitName, sourceFilePath, sourceFileContent);
 		this.node = node;
-		this.commitName = commitName;
 	}
 
 	@Override

@@ -46,11 +46,11 @@ public abstract class AbstractParser implements Yparser {
 		return ret;
 	}
 
-	protected Yinfilerename getFunctionRename(Ycommit commit, Yfunction compareFunction) {
-		Yinfilerename ret = null;
+	protected Yrename getFunctionRename(Ycommit commit, Yfunction compareFunction) {
+		Yrename ret = null;
 		if (compareFunction != null) {
 			if (!functionNamesConsideredEqual(commit.getMatchedFunction().getName(), compareFunction.getName())) {
-				ret = new Yinfilerename(commit.getMatchedFunction(), compareFunction);
+				ret = new Yrename(commit.getMatchedFunction(), compareFunction);
 			}
 		}
 		return ret;
@@ -176,8 +176,8 @@ public abstract class AbstractParser implements Yparser {
 			return mostSimilarFunction;
 		}
 
-		if (candidatesWithSameName.size() == 1) {
-			log.info("Highest similarity was < 0.85. But found single candidate with same function name. Done.");
+		if (candidatesWithSameName.size() == 1 && mostSimilarFunctionSimilarity > 0.7) {
+			log.info("Highest similarity was < 0.85. But found single candidate with same function name and similarity > 0.7. Done.");
 			return candidatesWithSameName.get(0);
 		}
 

@@ -57,13 +57,6 @@ public class MiningExecution {
 		for (String filePath : filePaths) {
 			if (this.onlyFilePath == null || filePath.contains(this.onlyFilePath)) {
 				runForFile(filePath);
-
-				if (this.fileHistoryCommits != null) {
-					log.info("Writing git diffs for file history...");
-					for (String commitName : this.fileHistoryCommits) {
-						Utl.writeGitDiff(commitName, filePath, this.repository, this.repositoryName);
-					}
-				}
 			}
 		}
 	}
@@ -105,10 +98,18 @@ public class MiningExecution {
 		Yresult yresult = recursiveAnalysisTask.getResult();
 		List<String> codestoryChangeHistory = new ArrayList<>();
 		Map<String, Ychange> changeHistoryDetails = new LinkedHashMap<>();
+
+		log.info("Creating method history and writing git diffs for result history...");
 		for (Ycommit ycommit : yresult.keySet()) {
 			String commitName = ycommit.getName();
 			codestoryChangeHistory.add(commitName);
 			changeHistoryDetails.put(commitName, yresult.get(ycommit));
+			Yfunction matchedFunction = ycommit.getMatchedFunction();
+			String diffFilepath = ycommit.getFilePath();
+			if (matchedFunction != null) {
+				diffFilepath = ycommit.getMatchedFunction().getSourceFilePath();
+			}
+			Utl.writeGitDiff(commitName, diffFilepath, this.repository, this.repositoryName);
 		}
 		JsonResult jsonResultCodestory = new JsonResult("codestory", task, codestoryChangeHistory, changeHistoryDetails);
 		Utl.writeJsonResultToFile(jsonResultCodestory);

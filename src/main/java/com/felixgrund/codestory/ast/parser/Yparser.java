@@ -6,12 +6,14 @@ import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface Yparser {
 
 	Yfunction findFunctionByNameAndLine(String name, int line);
 	List<Yfunction> findFunctionsByLineRange(int beginLine, int endLine);
 	List<Yfunction> getAllFunctions();
+	Map<String, Yfunction> getAllFunctionsAsMap();
 	Yfunction findFunctionByOtherFunction(Yfunction otherFunction);
 	boolean functionNamesConsideredEqual(String aName, String bName);
 

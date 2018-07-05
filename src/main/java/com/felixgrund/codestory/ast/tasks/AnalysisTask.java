@@ -14,7 +14,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
@@ -93,7 +92,7 @@ public class AnalysisTask {
 			if (!(ychange instanceof Ynochange)) {
 				if (CROSS_FILE && ychange instanceof Yintroduced) {
 					CrossFileInterpreter cfi = new CrossFileInterpreter(
-							this.repository, this.repositoryName, ycommit.getMatchedFunction(), ycommit.getParser());
+							this.repository, this.repositoryName, ycommit);
 					Ychange crossFileChange = cfi.interpret();
 					if (crossFileChange != null) {
 						ychange = crossFileChange;
@@ -121,7 +120,7 @@ public class AnalysisTask {
 	}
 
 	private boolean isMajorChange(Ychange ychange) {
-		return ychange instanceof Yparameterchange || ychange instanceof Yinfilerename
+		return ychange instanceof Yparameterchange || ychange instanceof Yrename
 				|| ychange instanceof Ycrossfilechange;
 	}
 
@@ -232,6 +231,10 @@ public class AnalysisTask {
 		}
 
 		return ret;
+
+	}
+
+	private void createOutputs() {
 
 	}
 

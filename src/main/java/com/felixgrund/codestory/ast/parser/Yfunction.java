@@ -17,7 +17,7 @@ public interface Yfunction {
 	Object getRawFunction();
 
 	String getCommitName();
-	void setCommitName(String commitName);
+	String getCommitNameShort();
 
 	String getId();
 

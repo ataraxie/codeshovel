@@ -69,18 +69,21 @@ public class InFileInterpreter extends AbstractInterpreter {
 			Yfunction functionB = ycommit.getMatchedFunction();
 			int lineNumberB = functionB.getNameLineNumber();
 			EditList editList = ycommit.getYdiff().getSingleEditList(ycommit.getFilePath());
-			for (Edit edit : editList) {
-				int beginA = edit.getBeginA();
-				int endA = edit.getEndA();
-				int beginB = edit.getBeginB();
-				int endB = edit.getEndB();
-				if (beginB <= lineNumberB && endB >= lineNumberB) {
-					Yparser parser = parentCommit.getParser();
-					List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
-					if (functionsInRange.size() == 1) {
-						ret = functionsInRange.get(0);
-					} else if (functionsInRange.size() > 1) {
-						ret = parser.getMostSimilarFunction(functionsInRange, functionB, false, true);
+			if (editList != null) {
+				for (Edit edit : editList) {
+					int beginA = edit.getBeginA();
+					int endA = edit.getEndA();
+					int beginB = edit.getBeginB();
+					int endB = edit.getEndB();
+					if (beginB <= lineNumberB && endB >= lineNumberB) {
+						Yparser parser = parentCommit.getParser();
+						List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
+						if (functionsInRange.size() == 1) {
+							ret = functionsInRange.get(0);
+						} else if (functionsInRange.size() > 1) {
+							ret = parser.getMostSimilarFunction(functionsInRange, functionB, false, true);
+						}
+						// TODO: else { check with all removed functions }
 					}
 				}
 			}
