@@ -1,5 +1,6 @@
 package com.felixgrund.codestory.ast.wrappers;
 
+// TODO: parameter similarity, return type similarity
 public class FunctionSimilarity {
 
 	protected boolean crossFile;
@@ -8,16 +9,18 @@ public class FunctionSimilarity {
 	protected double lineNumberSimilarity = 0;
 	protected double scopeSimilarity = 0;
 	protected double overallSimilarity = 0;
+	protected double nameSimilarity = 0;
 
 	public FunctionSimilarity(boolean crossFile) {
 		this.crossFile = crossFile;
 	}
 
 	public void computeOverallSimilarity() {
+		// TODO: this is just BETA BETA!
 		if (crossFile) {
-			this.overallSimilarity = bodySimilarity; // TODO: this is not enough!
+			this.overallSimilarity = (bodySimilarity + nameSimilarity) / 2;
 		} else {
-			this.overallSimilarity = (bodySimilarity + scopeSimilarity + lineNumberSimilarity) / 3;
+			this.overallSimilarity = (bodySimilarity + scopeSimilarity + lineNumberSimilarity + nameSimilarity) / 4;
 		}
 	}
 
@@ -43,9 +46,17 @@ public class FunctionSimilarity {
 		computeOverallSimilarity();
 	}
 
+	public void setNameSimilarity(double nameSimilarity) {
+		this.nameSimilarity = nameSimilarity;
+		computeOverallSimilarity();
+	}
+
+	public double getNameSimilarity() {
+		return nameSimilarity;
+	}
+
 	public void setLineNumberSimilarity(double lineNumberSimilarity) {
 		this.lineNumberSimilarity = lineNumberSimilarity;
-		computeOverallSimilarity();
 	}
 
 	public double getOverallSimilarity() {
@@ -54,8 +65,9 @@ public class FunctionSimilarity {
 
 	@Override
 	public String toString() {
-		return "BodySimilarity: " + bodySimilarity + "; ScopeSimilarity: " + scopeSimilarity +
-				"; LineNumberSimilarity: " + lineNumberSimilarity + " --- Overall: " + getOverallSimilarity();
+		return "BodySimilarity: " + bodySimilarity + "; ScopeSimilarity: " + scopeSimilarity
+				+ "; NameSimilarity: " + nameSimilarity + "; LineNumberSimilarity: " + lineNumberSimilarity
+				+ " --- Overall: " + getOverallSimilarity();
 	}
 
 }

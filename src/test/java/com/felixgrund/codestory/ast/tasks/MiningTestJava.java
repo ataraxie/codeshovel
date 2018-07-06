@@ -14,8 +14,8 @@ public class MiningTestJava {
 
 	private static final String TARGET_FILE_EXTENSION = ".java";
 //	private static final String TARGET_FILE_PATH = "src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java";
-	private static final String TARGET_FILE_PATH = "src/main/java/de/scandio/confluence/plugins/pocketquery/managers/impl/BandanaInternalDatabaseManager.java";
-	private static final String TARGET_METHOD = "getAllDatabases";
+	private static final String TARGET_FILE_PATH = "src/main/java/de/scandio/confluence/plugins/pocketquery/managers/impl/delegates/SqlExternalDatabaseManager.java";
+	private static final String TARGET_METHOD = "connectViaJdbc";
 //	private static final int TARGET_METHOD_STARTLINE = 288;
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 //	private static final String REPO = "checkstyle";

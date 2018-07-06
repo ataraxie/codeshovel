@@ -49,4 +49,9 @@ public abstract class AbstractFunction implements Yfunction {
 	public String getSourceFileContent() {
 		return sourceFileContent;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + ":" + getId();
+	}
 }

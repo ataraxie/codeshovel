@@ -142,9 +142,12 @@ public abstract class AbstractParser implements Yparser {
 				candidatesWithSameName.add(candidate);
 			}
 
+			double nameSimilarity = Utl.getNameSimilarity(compareFunction, candidate);
+
 			FunctionSimilarity similarity = new FunctionSimilarity(crossFile);
 			similarity.setBodySimilarity(bodySimilarity);
 			similarity.setScopeSimilarity(scopeSimilarity);
+			similarity.setNameSimilarity(nameSimilarity);
 			similarities.put(candidate, similarity);
 		}
 

@@ -6,16 +6,19 @@ import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
+import java.awt.image.ImagingOpException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InFileInterpreter extends AbstractInterpreter {
 
-	private Ycommit ycommit;
 
-	public InFileInterpreter(Ycommit ycommit) {
-		this.ycommit = ycommit;
+	public InFileInterpreter(Repository repository, String repositoryName, Ycommit ycommit) {
+		super(repository, repositoryName, ycommit);
 	}
 
 	public Ychange interpret() throws Exception {
@@ -62,7 +65,7 @@ public class InFileInterpreter extends AbstractInterpreter {
 		return interpretation;
 	}
 
-	private Yfunction getCompareFunction(Ycommit ycommit) {
+	private Yfunction getCompareFunction(Ycommit ycommit) throws Exception {
 		Yfunction ret = null;
 		Ycommit parentCommit = ycommit.getPrev();
 		if (parentCommit != null) {
@@ -82,6 +85,14 @@ public class InFileInterpreter extends AbstractInterpreter {
 							ret = functionsInRange.get(0);
 						} else if (functionsInRange.size() > 1) {
 							ret = parser.getMostSimilarFunction(functionsInRange, functionB, false, true);
+						} else {
+							Ycommit prevCommit = ycommit.getPrev();
+							if (prevCommit != null) {
+								RevCommit prev = prevCommit.getCommit();
+								List<Yfunction> removedFunctions = getRemovedFunctions(
+										this.ycommit.getCommit(), prev, ycommit.getFilePath());
+								ret = parser.getMostSimilarFunction(removedFunctions, functionB, false, false);
+							}
 						}
 						// TODO: else { check with all removed functions }
 					}

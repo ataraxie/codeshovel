@@ -88,7 +88,8 @@ public class AnalysisTask {
 	private void createResult() throws Exception {
 		this.yresult = new Yresult();
 		for (Ycommit ycommit : this.yhistory) {
-			Ychange ychange = new InFileInterpreter(ycommit).interpret();
+			InFileInterpreter ifi = new InFileInterpreter(this.repository, this.repositoryName, ycommit);
+			Ychange ychange = ifi.interpret();
 			if (!(ychange instanceof Ynochange)) {
 				if (CROSS_FILE && ychange instanceof Yintroduced) {
 					CrossFileInterpreter cfi = new CrossFileInterpreter(

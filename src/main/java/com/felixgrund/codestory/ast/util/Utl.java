@@ -150,6 +150,16 @@ public class Utl {
 		return ret;
 	}
 
+	public static RevCommit getPrevCommitNeglectingFile(Repository repository, RevCommit commit) throws IOException {
+		RevCommit ret = null;
+		if (commit.getParentCount() > 0) {
+			String prevCommitName = commit.getParent(0).getName();
+			ret = Utl.findCommitByName(repository, prevCommitName);
+		}
+
+		return ret;
+	}
+
 	public static void saveToCache(String hash, Yhistory collection) throws FileNotFoundException {
 		Kryo kryo = new Kryo();
 		kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
@@ -165,6 +175,10 @@ public class Utl {
 
 	public static double getBodySimilarity(Yfunction aFunction, Yfunction bFunction) {
 		return new JaroWinklerDistance().apply(aFunction.getBody(), bFunction.getBody());
+	}
+
+	public static double getNameSimilarity(Yfunction aFunction, Yfunction bFunction) {
+		return new JaroWinklerDistance().apply(aFunction.getName(), bFunction.getName());
 	}
 
 	public static void printMethodHistory(AnalysisTask task) {
@@ -288,6 +302,5 @@ public class Utl {
 	public static int countLineNumbers(String string) {
 		return string.split("\r\n|\r|\n").length;
 	}
-
 
 }

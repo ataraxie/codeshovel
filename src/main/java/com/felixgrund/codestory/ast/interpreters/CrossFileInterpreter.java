@@ -18,26 +18,20 @@ import java.util.Set;
 
 public class CrossFileInterpreter extends AbstractInterpreter {
 
-	private Repository repository;
-	private String repositoryName;
 	private Yfunction startFunction;
 	private Yparser startParser;
-	private Ycommit startCommit;
 
 	public CrossFileInterpreter(Repository repository, String repositoryName, Ycommit ycommit) {
-		this.repository = repository;
-		this.repositoryName = repositoryName;
+		super(repository, repositoryName, ycommit);
 		this.startFunction = ycommit.getMatchedFunction();
 		this.startParser = ycommit.getParser();
-		this.startCommit = ycommit;
 	}
 
 	public Ychange interpret() throws Exception {
 		Ychange ret = null;
 		RevCommit commit = Utl.findCommitByName(repository, startFunction.getCommitName());
-		if (commit.getParentCount() > 0) {
-			String prevCommitName = commit.getParent(0).getName();
-			RevCommit prevCommit = Utl.findCommitByName(repository, prevCommitName);
+		RevCommit prevCommit = Utl.getPrevCommitNeglectingFile(repository, commit);
+		if (prevCommit != null) {
 			Ydiff ydiff = new Ydiff(this.repository, commit, prevCommit, true);
 			Map<String, DiffEntry> diffEntries = ydiff.getDiff();
 			DiffEntry diffEntry = diffEntries.get(startFunction.getSourceFilePath());
@@ -60,8 +54,8 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 				if (crossFileChange != null) {
 					List<Ychange> allChanges = new ArrayList<>();
 					allChanges.add(crossFileChange);
-					List<Ychange> majorChanges = startParser.getMinorChanges(startCommit, compareFunction);
-					List<Ysignaturechange> minorChanges = startParser.getMajorChanges(startCommit, compareFunction);
+					List<Ychange> majorChanges = startParser.getMinorChanges(ycommit, compareFunction);
+					List<Ysignaturechange> minorChanges = startParser.getMajorChanges(ycommit, compareFunction);
 					allChanges.addAll(majorChanges);
 					allChanges.addAll(minorChanges);
 					if (allChanges.size() == 1) {
@@ -80,16 +74,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 		List<Yfunction> allFunctions = new ArrayList<>();
 		for (String path : ydiff.getOldPaths()) {
 			if (path.endsWith(this.startParser.getAcceptedFileExtension())) {
-				Yparser parserOld = createParser(prevCommit, path);
-				Yparser parserNew = createParser(this.startCommit.getCommit(), path);
-				List<Yfunction> removedFunctions;
-				if (parserNew == null) {
-					removedFunctions = parserOld.getAllFunctions();
-				} else {
-					Map<String, Yfunction> functionsNew = parserNew.getAllFunctionsAsMap();
-					Map<String, Yfunction> functionsOld = parserOld.getAllFunctionsAsMap();
-					removedFunctions = getRemovedFunctions(functionsNew, functionsOld);
-				}
+				List<Yfunction> removedFunctions = getRemovedFunctions(this.ycommit.getCommit(), prevCommit, path);
 				allFunctions.addAll(removedFunctions);
 			}
 		}
@@ -100,30 +85,10 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 		return ret;
 	}
 
-	private List<Yfunction> getRemovedFunctions(Map<String, Yfunction> functionsNew, Map<String, Yfunction> functionsOld) {
-		List<Yfunction> ret = new ArrayList<>();
-		Set<String> newFunctionIds = functionsNew.keySet();
-		for (String functionId : functionsOld.keySet()) {
-			if (!newFunctionIds.contains(functionId)) {
-				ret.add(functionsOld.get(functionId));
-			}
-		}
-		return ret;
-	}
-
 	private Yfunction getCompareFunctionFromFile(String filePath, RevCommit commit) throws Exception {
-		Yparser parser = createParser(commit, filePath);
+		Yparser parser = createParserForCommitAndFile(commit, filePath);
 		List<Yfunction> allFunctions = parser.getAllFunctions();
 		Yfunction ret = this.startParser.getMostSimilarFunction(allFunctions, this.startFunction, false, false);
-		return ret;
-	}
-
-	private Yparser createParser(RevCommit commit, String filePath) throws Exception {
-		Yparser ret = null;
-		String fileContent = Utl.findFileContent(this.repository, commit, filePath);
-		if (fileContent != null) {
-			ret = ParserFactory.getParser(this.repositoryName, filePath, fileContent, commit.getName());
-		}
 		return ret;
 	}
 
