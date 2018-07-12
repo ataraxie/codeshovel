@@ -1,8 +1,12 @@
 package com.felixgrund.codestory.ast.changes;
 
-public class Ybodychange extends Ychange {
+import com.felixgrund.codestory.ast.parser.Yfunction;
+import com.felixgrund.codestory.ast.util.Environment;
 
-	public Ybodychange(String commitName) {
-		super(commitName);
+public class Ybodychange extends Ycomparefunctionchange {
+
+	public Ybodychange(Environment startEnv, Yfunction matchedFunction, Yfunction compareFunction) {
+		super(startEnv, matchedFunction, compareFunction);
 	}
+
 }

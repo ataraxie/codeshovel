@@ -1,15 +1,9 @@
 package com.felixgrund.codestory.ast.tasks;
 
-import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.util.CmdUtil;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codestory.ast.util.Environment;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GitRangeLogTask {
@@ -24,30 +18,15 @@ public class GitRangeLogTask {
 	}
 
 	public void run() throws Exception {
-		File repositoryDir = this.startTask.getRepository().getDirectory().getParentFile();
+		Environment startEnv = this.startTask.getStartEnv();
+
 		int rangeStart = this.startTask.getFunctionStartLine();
 		int rangeEnd = this.startTask.getFunctionEndLine();
 		String filePath = this.startTask.getFilePath();
 		String startCommitName = this.startTask.getStartCommitName();
 
-		BufferedReader reader = CmdUtil.gitLog(startCommitName, rangeStart, rangeEnd, filePath, repositoryDir);
-
-		this.result = new ArrayList<>();
-		String line = reader.readLine();
-		while (line != null) {
-			Matcher matcher = COMMIT_NAME_PATTERN.matcher(line);
-			if (matcher.matches() && matcher.groupCount() > 0) {
-				String commitName = matcher.group(1);
-				RevCommit commit = this.startTask.getFileHistory().get(commitName);
-				RevCommit startCommit = startTask.getStartCommit().getCommit();
-				if (commit != null && commit.getCommitTime() <= startCommit.getCommitTime()) {
-					this.result.add(matcher.group(1));
-				}
-			}
-			line = reader.readLine();
-		}
-
-		reader.close();
+		this.result = CmdUtil.gitLog(startEnv.getGit(), startEnv.getRepository(),
+				startCommitName, rangeStart, rangeEnd, filePath);
 	}
 
 

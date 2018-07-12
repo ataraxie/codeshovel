@@ -1,16 +1,17 @@
 package com.felixgrund.codestory.ast.changes;
 
 import com.felixgrund.codestory.ast.parser.Yfunction;
+import com.felixgrund.codestory.ast.util.Environment;
 
-public class Ycrossfilechange extends Ycomparefunctionchange {
+public abstract class Ycrossfilechange extends Ycomparefunctionchange {
 
-	public Ycrossfilechange(Yfunction matchedFunction, Yfunction compareFunction) {
-		super(matchedFunction, compareFunction);
+	public Ycrossfilechange(Environment startEnv, Yfunction matchedFunction, Yfunction compareFunction) {
+		super(startEnv, matchedFunction, compareFunction);
 	}
 
 	@Override
 	public String toString() {
-		return super.toString() + "[" + compareFunction.getSourceFilePath() + "]";
+		return super.toString() + "[" + oldFunction.getSourceFilePath() + "]";
 	}
 
 }

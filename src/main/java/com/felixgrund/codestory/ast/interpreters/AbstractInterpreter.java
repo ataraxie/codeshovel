@@ -4,6 +4,7 @@ import com.felixgrund.codestory.ast.changes.Ychange;
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
+import com.felixgrund.codestory.ast.util.Environment;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.lib.Repository;
@@ -16,15 +17,17 @@ import java.util.Set;
 
 public abstract class AbstractInterpreter {
 
+	protected Environment startEnv;
 	protected Ycommit ycommit;
 	protected Repository repository;
 	protected String repositoryName;
 
 	protected abstract Ychange interpret() throws Exception;
 
-	public AbstractInterpreter(Repository repository, String repositoryName, Ycommit ycommit) {
-		this.repository = repository;
-		this.repositoryName = repositoryName;
+	public AbstractInterpreter(Environment startEnv, Ycommit ycommit) {
+		this.startEnv = startEnv;
+		this.repository = startEnv.getRepository();
+		this.repositoryName = startEnv.getRepositoryName();
 		this.ycommit = ycommit;
 	}
 
@@ -32,7 +35,7 @@ public abstract class AbstractInterpreter {
 		Yparser ret = null;
 		String fileContent = Utl.findFileContent(this.repository, commit, filePath);
 		if (fileContent != null) {
-			ret = ParserFactory.getParser(this.repositoryName, filePath, fileContent, commit.getName());
+			ret = ParserFactory.getParser(this.startEnv, filePath, fileContent, commit.getName());
 		}
 		return ret;
 	}

@@ -1,33 +1,88 @@
 package com.felixgrund.codestory.ast.changes;
 
 import com.felixgrund.codestory.ast.parser.Yfunction;
+import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.util.Utl;
+import com.felixgrund.codestory.ast.wrappers.CommitWrap;
+import org.eclipse.jgit.revwalk.RevCommit;
 
-public class Ycomparefunctionchange extends Ychange {
+import java.io.IOException;
+import java.util.List;
 
-	protected Yfunction matchedFunction;
-	protected Yfunction compareFunction;
+public abstract class Ycomparefunctionchange extends Ychange {
 
-	public Ycomparefunctionchange(Yfunction matchedFunction, Yfunction compareFunction) {
-		super(matchedFunction.getCommitName());
-		this.matchedFunction = matchedFunction;
-		this.compareFunction = compareFunction;
-	}
+	protected Yfunction newFunction;
+	protected Yfunction oldFunction;
 
-	public Yfunction getCompareFunction() {
-		return compareFunction;
-	}
+	private CommitWrap newCommit;
+	private CommitWrap oldCommit;
+	private long timeBetweenCommits;
+	private List<RevCommit> commitsBetweenForRepo;
+	private List<RevCommit> commitsBetweenForFile;
 
-	public Yfunction getMatchedFunction() {
-		return matchedFunction;
-	}
-
-	public String getCompareCommitName() {
-		return compareFunction.getCommitName();
+	public Ycomparefunctionchange(Environment startEnv, Yfunction newFunction, Yfunction oldFunction) {
+		super(startEnv, newFunction.getCommitName());
+		this.newFunction = newFunction;
+		this.oldFunction = oldFunction;
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(" + compareFunction.getCommitNameShort() + ":" + compareFunction.getName() + ":" + compareFunction.getNameLineNumber() + ")";
+		String template = "%s(%s:%s:%s => %s:%s:%s)";
+		String string = String.format(template,
+				getClass().getSimpleName(),
+				oldFunction.getCommitNameShort(),
+				oldFunction.getName(),
+				oldFunction.getNameLineNumber(),
+				oldFunction.getCommitNameShort(),
+				oldFunction.getName(),
+				oldFunction.getNameLineNumber()
+		);
+
+		return string;
+
+	}
+
+	private CommitWrap getNewCommit() throws IOException {
+		if (this.newCommit == null) {
+			RevCommit revCommit = Utl.findCommitByName(newFunction.getRepository(), newFunction.getCommitName());
+			this.newCommit = new CommitWrap(revCommit);
+		}
+		return newCommit;
+	}
+
+	private CommitWrap getOldCommit() throws Exception {
+		if (this.oldCommit == null) {
+			RevCommit revCommit = Utl.findCommitByName(newFunction.getRepository(), oldFunction.getCommitName());
+			this.oldCommit = new CommitWrap(revCommit);
+		}
+		return oldCommit;
+	}
+
+	public Yfunction getNewFunction() {
+		return newFunction;
+	}
+
+	public Yfunction getOldFunction() {
+		return oldFunction;
+	}
+
+	public long getTimeBetweenCommits() throws Exception {
+		return getNewCommit().getCommitDate().getTime() - getOldCommit().getCommitDate().getTime();
+	}
+
+	public List<RevCommit> getCommitsBetweenForRepo() throws Exception {
+		if (commitsBetweenForRepo == null) {
+
+		}
+		return commitsBetweenForRepo;
+	}
+
+	public List<RevCommit> getCommitsBetweenForFile() throws Exception {
+		if (commitsBetweenForFile == null) {
+
+		}
+		return commitsBetweenForFile;
 	}
 
 }

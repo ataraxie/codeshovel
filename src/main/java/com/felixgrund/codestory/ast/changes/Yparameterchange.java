@@ -1,12 +1,12 @@
 package com.felixgrund.codestory.ast.changes;
 
-import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.parser.Yfunction;
+import com.felixgrund.codestory.ast.util.Environment;
 
 public class Yparameterchange extends Ysignaturechange {
 
-	public Yparameterchange(Yfunction matchedFunction, Yfunction compareFunction) {
-		super(matchedFunction, compareFunction);
+	public Yparameterchange(Environment startEnv, Yfunction newFunction, Yfunction oldFunction) {
+		super(startEnv, newFunction, oldFunction);
 	}
 
 }

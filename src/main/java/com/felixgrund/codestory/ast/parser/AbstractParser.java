@@ -3,9 +3,11 @@ package com.felixgrund.codestory.ast.parser;
 import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
+import com.felixgrund.codestory.ast.util.Environment;
 import com.felixgrund.codestory.ast.util.SimilarityUtil;
 import com.felixgrund.codestory.ast.util.Utl;
 import com.felixgrund.codestory.ast.wrappers.FunctionSimilarity;
+import org.eclipse.jgit.lib.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,18 +20,24 @@ public abstract class AbstractParser implements Yparser {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractParser.class);
 
+	private Environment startEnv;
+
 	protected String filePath;
 	protected String fileContent;
 	protected String commitName;
-	protected String repoName;
+	protected String repositoryName;
+	protected Repository repository;
 
 	public abstract boolean functionNamesConsideredEqual(String aName, String bName);
 	public abstract double getScopeSimilarity(Yfunction function, Yfunction compareFunction);
 	public abstract String getAcceptedFileExtension();
 	protected abstract Object parse() throws ParseException;
 
-	public AbstractParser(String repoName, String filePath, String fileContent, String commitName) throws ParseException {
-		this.repoName = repoName;
+	public AbstractParser(Environment startEnv, String filePath, String fileContent, String commitName) throws ParseException {
+		this.startEnv = startEnv;
+
+		this.repository = startEnv.getRepository();
+		this.repositoryName = startEnv.getRepositoryName();
 		this.filePath = filePath;
 		this.fileContent = fileContent;
 		this.commitName = commitName;
@@ -41,7 +49,7 @@ public abstract class AbstractParser implements Yparser {
 		Yreturn returnA = compareFunction.getReturnStmt();
 		Yreturn returnB = commit.getMatchedFunction().getReturnStmt();
 		if (returnA != null && !returnA.equals(returnB)) {
-			ret = new Yreturntypechange(commit.getMatchedFunction(), compareFunction);
+			ret = new Yreturntypechange(this.startEnv, commit.getMatchedFunction(), compareFunction);
 		}
 		return ret;
 	}
@@ -50,7 +58,7 @@ public abstract class AbstractParser implements Yparser {
 		Yrename ret = null;
 		if (compareFunction != null) {
 			if (!functionNamesConsideredEqual(commit.getMatchedFunction().getName(), compareFunction.getName())) {
-				ret = new Yrename(commit.getMatchedFunction(), compareFunction);
+				ret = new Yrename(this.startEnv, commit.getMatchedFunction(), compareFunction);
 			}
 		}
 		return ret;
@@ -61,7 +69,7 @@ public abstract class AbstractParser implements Yparser {
 		List<Yparameter> parametersA = compareFunction.getParameters();
 		List<Yparameter> parametersB = commit.getMatchedFunction().getParameters();
 		if (!parametersA.equals(parametersB)) {
-			ret = new Yparameterchange(commit.getMatchedFunction(), compareFunction);
+			ret = new Yparameterchange(this.startEnv, commit.getMatchedFunction(), compareFunction);
 		}
 		return ret;
 	}
@@ -71,7 +79,7 @@ public abstract class AbstractParser implements Yparser {
 		Yexceptions exceptionsA = compareFunction.getExceptions();
 		Yexceptions exceptionsB = commit.getMatchedFunction().getExceptions();
 		if (exceptionsA != null && !exceptionsA.equals(exceptionsB)) {
-			ret = new Yexceptionschange(commit.getMatchedFunction(), compareFunction);
+			ret = new Yexceptionschange(this.startEnv, commit.getMatchedFunction(), compareFunction);
 		}
 		return ret;
 	}
@@ -81,7 +89,7 @@ public abstract class AbstractParser implements Yparser {
 		Ymodifiers modifiersA = compareFunction.getModifiers();
 		Ymodifiers modifiersB = commit.getMatchedFunction().getModifiers();
 		if (modifiersA != null && !modifiersA.equals(modifiersB)) {
-			ret = new Ymodifierchange(commit.getMatchedFunction(), compareFunction);
+			ret = new Ymodifierchange(this.startEnv, commit.getMatchedFunction(), compareFunction);
 		}
 		return ret;
 	}
@@ -90,7 +98,7 @@ public abstract class AbstractParser implements Yparser {
 		Ybodychange ret = null;
 		Yfunction function = commit.getMatchedFunction();
 		if (function != null && compareFunction != null && !function.getBody().equals(compareFunction.getBody())) {
-			ret = new Ybodychange(commit.getName());
+			ret = new Ybodychange(this.startEnv, commit.getMatchedFunction(), compareFunction);
 		}
 		return ret;
 	}
@@ -171,7 +179,7 @@ public abstract class AbstractParser implements Yparser {
 		log.info("Highest similarity with overall similarity of {}: {}", similarity);
 
 		if (writeOutputFile) {
-			Utl.writeJsonSimilarity(this.repoName, this.filePath, compareFunction, mostSimilarFunction, similarity);
+			Utl.writeJsonSimilarity(this.repositoryName, this.filePath, compareFunction, mostSimilarFunction, similarity);
 		}
 
 		if (mostSimilarFunctionSimilarity > 0.85) {

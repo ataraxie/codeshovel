@@ -2,6 +2,7 @@ package com.felixgrund.codestory.ast.json;
 
 import com.felixgrund.codestory.ast.changes.Ychange;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
+import com.felixgrund.codestory.ast.util.Environment;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -27,15 +28,20 @@ public class JsonResult {
 
 	public JsonResult(String origin, AnalysisTask startTask, List<String> changeHistory,
 					  Map<String, Ychange> changeHistoryDetails) {
+
+		Environment startEnv = startTask.getStartEnv();
+
 		this.origin = origin;
-		this.repositoryName = startTask.getRepositoryName();
-		this.startCommitName = startTask.getStartCommitName();
-		this.sourceFileName = startTask.getFileName();
-		this.functionName = startTask.getFunctionName();
-		this.functionId = startTask.getStartFunction().getId();
-		this.functionStartLine = startTask.getFunctionStartLine();
-		this.sourceFilePath = startTask.getFilePath();
+		this.repositoryName = startEnv.getRepositoryName();
+		this.startCommitName = startEnv.getStartCommitName();
+		this.sourceFileName = startEnv.getFileName();
+		this.functionName = startEnv.getMethodName();
+		this.functionStartLine = startEnv.getStartLine();
+		this.sourceFilePath = startEnv.getFilePath();
+
 		this.functionEndLine = startTask.getFunctionEndLine();
+		this.functionId = startTask.getStartFunction().getId();
+
 		this.changeHistory = changeHistory;
 		this.changeHistoryDetails = changeHistoryDetails;
 	}
@@ -82,5 +88,9 @@ public class JsonResult {
 
 	public String getFunctionId() {
 		return functionId;
+	}
+
+	public Map<String, Ychange> getChangeHistoryDetails() {
+		return changeHistoryDetails;
 	}
 }

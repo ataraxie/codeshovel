@@ -1,18 +1,17 @@
 package com.felixgrund.codestory.ast.changes;
 
-import com.felixgrund.codestory.ast.entities.Ycommit;
+import com.felixgrund.codestory.ast.util.Environment;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Ymultichange extends Ychange {
 
 	private List<Ychange> changes;
 
-	public Ymultichange(String commitName, List<Ychange> changes) {
-		super(commitName);
+	public Ymultichange(Environment startEnv, String commitName, List<Ychange> changes) {
+		super(startEnv, commitName);
 		this.changes = changes;
 	}
 

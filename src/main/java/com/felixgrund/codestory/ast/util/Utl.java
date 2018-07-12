@@ -24,6 +24,7 @@ import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
@@ -32,6 +33,14 @@ import java.io.*;
 import java.util.*;
 
 public class Utl {
+
+	public static Repository createRepository(String repositoryPath) throws IOException {
+		FileRepositoryBuilder builder = new FileRepositoryBuilder();
+		return builder.setGitDir(new File(repositoryPath))
+				.readEnvironment() // scan environment GIT_* variables
+				.findGitDir() // scan up the file system tree
+				.build();
+	}
 
 	public static String getFileContentByObjectId(Repository repository, ObjectId objectId) throws IOException {
 		ObjectLoader loader = repository.open(objectId);
@@ -303,4 +312,7 @@ public class Utl {
 		return string.split("\r\n|\r|\n").length;
 	}
 
+	public static Date getCommitDate(RevCommit revCommit) {
+		return new Date((long) 1000 * revCommit.getCommitTime());
+	}
 }

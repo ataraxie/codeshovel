@@ -3,6 +3,8 @@ package com.felixgrund.codestory.ast.tasks;
 import com.felixgrund.codestory.ast.changes.Ychange;
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yresult;
+import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.util.Utl;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,12 +54,14 @@ public class AnalysisTaskTest {
 		for (RunConfig runConfig : runConfigs) {
 			System.out.println("Running dynamic test for config :" + runConfig.getConfigName());
 
-			AnalysisTask task = new AnalysisTask();
-			task.setRepository(CODESTORY_REPO_DIR + "/" + runConfig.getRepoName() + "/.git");
+			Environment env = new Environment();
+			env.setStartCommitName(runConfig.getStartCommitName());
+			env.setRepository(Utl.createRepository(CODESTORY_REPO_DIR + "/" + runConfig.getRepoName() + "/.git"));
+
+			AnalysisTask task = new AnalysisTask(env);
 			task.setFilePath(runConfig.getFilePath());
 			task.setFunctionName(runConfig.getFunctionName());
 			task.setFunctionStartLine(runConfig.getFunctionStartLine());
-			task.setStartCommitName(runConfig.getStartCommitName());
 
 			task.build();
 			task.run();

@@ -3,59 +3,38 @@ package com.felixgrund.codestory.ast.execution;
 import com.felixgrund.codestory.ast.changes.Ychange;
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Yresult;
+import com.felixgrund.codestory.ast.json.JsonChangeHistoryDiff;
+import com.felixgrund.codestory.ast.json.JsonResult;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
 import com.felixgrund.codestory.ast.tasks.GitRangeLogTask;
 import com.felixgrund.codestory.ast.tasks.RecursiveAnalysisTask;
-import com.felixgrund.codestory.ast.json.JsonChangeHistoryDiff;
-import com.felixgrund.codestory.ast.json.JsonResult;
+import com.felixgrund.codestory.ast.util.Environment;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.*;
 
 public class MiningExecution {
 
 	private static final Logger log = LoggerFactory.getLogger(MiningExecution.class);
 
-	private String repositoryName;
-	private String repositoryPath;
-	private String startCommitName;
-	private String onlyMethodName;
-	private String onlyFilePath;
-	private int onlyMethodStartLine;
-
-	private Repository repository;
-	private RevCommit startCommit;
-
-	private String targetFileExtension;
+	private Environment startEnv;
 
 	private Set<String> fileHistoryCommits;
 
-	public MiningExecution(String targetFileExtension) {
-		this.targetFileExtension = targetFileExtension;
+	public MiningExecution(Environment startEnv) {
+		this.startEnv = startEnv;
 	}
 
 	public void execute() throws Exception {
-		FileRepositoryBuilder builder = new FileRepositoryBuilder();
-		this.repository = builder.setGitDir(new File(this.repositoryPath))
-				.readEnvironment() // scan environment GIT_* variables
-				.findGitDir() // scan up the file system tree
-				.build();
-		new Git(this.repository);
-		this.startCommit = Utl.findCommitByName(this.repository, this.startCommitName);
 
-		List<String> filePaths = Utl.findFilesByExtension(this.repository, this.startCommit, this.targetFileExtension);
+		List<String> filePaths = Utl.findFilesByExtension(startEnv.getRepository(), startEnv.getStartCommit(), startEnv.getFileExtension());
 		for (String filePath : filePaths) {
-			if (this.onlyFilePath == null || filePath.contains(this.onlyFilePath)) {
+			if (startEnv.getFilePath() == null || filePath.contains(startEnv.getFilePath())) {
 				runForFile(filePath);
 			}
 		}
@@ -63,11 +42,11 @@ public class MiningExecution {
 
 	private void runForFile(String filePath) throws Exception {
 		printFileStart(filePath);
-		String startFileContent = Utl.findFileContent(this.repository, this.startCommit, filePath);
-		Yparser parser = ParserFactory.getParser(this.repositoryName, filePath, startFileContent, this.startCommitName);
+		String startFileContent = Utl.findFileContent(this.startEnv.getRepository(), startEnv.getStartCommit(), filePath);
+		Yparser parser = ParserFactory.getParser(this.startEnv, filePath, startFileContent, startEnv.getStartCommitName());
 		for (Yfunction method : parser.getAllFunctions()) {
-			if (this.onlyMethodName == null || this.onlyMethodName.equals(method.getName())) {
-				if (this.onlyMethodStartLine <= 0 || this.onlyMethodStartLine == method.getNameLineNumber()) {
+			if (startEnv.getMethodName() == null || startEnv.getMethodName().equals(method.getName())) {
+				if (startEnv.getStartLine() <= 0 || startEnv.getStartLine() == method.getNameLineNumber()) {
 					runForMethod(filePath, method);
 				}
 			}
@@ -80,15 +59,12 @@ public class MiningExecution {
 
 		String name = method.getName();
 		int lineNumber = method.getNameLineNumber();
-		AnalysisTask task = new AnalysisTask();
-		task.setRepositoryName(this.repositoryName);
-		task.setRepository(this.repository);
+		AnalysisTask task = new AnalysisTask(startEnv);
 		task.setFilePath(filePath);
 		task.setFunctionName(name);
 		task.setFunctionStartLine(lineNumber);
-		task.setStartCommitName(this.startCommitName);
 
-		RecursiveAnalysisTask recursiveAnalysisTask = new RecursiveAnalysisTask(task);
+		RecursiveAnalysisTask recursiveAnalysisTask = new RecursiveAnalysisTask(startEnv, task);
 		recursiveAnalysisTask.run();
 
 		if (this.fileHistoryCommits == null) {
@@ -109,7 +85,7 @@ public class MiningExecution {
 			if (matchedFunction != null) {
 				diffFilepath = ycommit.getMatchedFunction().getSourceFilePath();
 			}
-			Utl.writeGitDiff(commitName, diffFilepath, this.repository, this.repositoryName);
+			Utl.writeGitDiff(commitName, diffFilepath, startEnv.getRepository(), startEnv.getRepositoryName());
 		}
 		JsonResult jsonResultCodestory = new JsonResult("codestory", task, codestoryChangeHistory, changeHistoryDetails);
 		Utl.writeJsonResultToFile(jsonResultCodestory);
@@ -140,35 +116,7 @@ public class MiningExecution {
 
 		printMethodEnd(method);
 	}
-
-	public void setRepositoryPath(String repositoryPath) {
-		this.repositoryPath = repositoryPath;
-	}
-
-	public void setOnlyFilePath(String onlyFilePath) {
-		this.onlyFilePath = onlyFilePath;
-	}
-
-	public void setStartCommitName(String startCommitName) {
-		this.startCommitName = startCommitName;
-	}
-
-	public void setOnlyMethodName(String onlyMethodName) {
-		this.onlyMethodName = onlyMethodName;
-	}
-
-	public void setOnlyStartLine(int onlyMethodStartline) {
-		this.onlyMethodStartLine = onlyMethodStartline;
-	}
-
-	public String getRepositoryName() {
-		return repositoryName;
-	}
-
-	public void setRepositoryName(String repositoryName) {
-		this.repositoryName = repositoryName;
-	}
-
+	
 	private void printFileStart(String filePath) {
 		System.out.println("#########################################################################");
 		System.out.println("STARTING ANALYSIS FOR FILE " + filePath);

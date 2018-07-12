@@ -4,21 +4,20 @@ import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
+import com.felixgrund.codestory.ast.util.Environment;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import java.awt.image.ImagingOpException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InFileInterpreter extends AbstractInterpreter {
 
 
-	public InFileInterpreter(Repository repository, String repositoryName, Ycommit ycommit) {
-		super(repository, repositoryName, ycommit);
+	public InFileInterpreter(Environment startEnv, Ycommit ycommit) {
+		super(startEnv, ycommit);
 	}
 
 	public Ychange interpret() throws Exception {
@@ -39,10 +38,10 @@ public class InFileInterpreter extends AbstractInterpreter {
 			}
 
 			if (changes.isEmpty()) {
-				changes.add(new Yintroduced(ycommit.getName()));
+				changes.add(new Yintroduced(this.startEnv, this.ycommit.getMatchedFunction()));
 			} else {
 				Ysignaturechange firstMajorChange = (Ysignaturechange) changes.get(0);
-				List<Ychange> minorChanges = parser.getMinorChanges(ycommit, firstMajorChange.getCompareFunction());
+				List<Ychange> minorChanges = parser.getMinorChanges(ycommit, firstMajorChange.getOldFunction());
 				changes.addAll(minorChanges);
 			}
 		} else {
@@ -55,11 +54,11 @@ public class InFileInterpreter extends AbstractInterpreter {
 
 		int numChanges = changes.size();
 		if (numChanges > 1) {
-			interpretation = new Ymultichange(ycommit.getName(), changes);
+			interpretation = new Ymultichange(this.startEnv, this.ycommit.getName(), changes);
 		} else if (numChanges == 1) {
 			interpretation = changes.get(0);
 		} else {
-			interpretation = new Ynochange(ycommit.getName());
+			interpretation = new Ynochange(this.startEnv, this.ycommit.getName());
 		}
 
 		return interpretation;

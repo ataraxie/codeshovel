@@ -2,6 +2,7 @@ package com.felixgrund.codestory.ast.entities;
 
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
+import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -34,7 +35,7 @@ public class Ycommit {
 	public Ycommit(RevCommit commit) {
 		this.commit = commit;
 		this.hash = commit.getName();
-		this.date = new Date((long) 1000 * commit.getCommitTime());
+		this.date = Utl.getCommitDate(commit);
 	}
 
 	public RevCommit getCommit() {

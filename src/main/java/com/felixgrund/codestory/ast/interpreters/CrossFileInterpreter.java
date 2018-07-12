@@ -5,6 +5,7 @@ import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Ydiff;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
+import com.felixgrund.codestory.ast.util.Environment;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -21,16 +22,16 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 	private Yfunction startFunction;
 	private Yparser startParser;
 
-	public CrossFileInterpreter(Repository repository, String repositoryName, Ycommit ycommit) {
-		super(repository, repositoryName, ycommit);
+	public CrossFileInterpreter(Environment startEnv, Ycommit ycommit) {
+		super(startEnv, ycommit);
 		this.startFunction = ycommit.getMatchedFunction();
 		this.startParser = ycommit.getParser();
 	}
 
 	public Ychange interpret() throws Exception {
 		Ychange ret = null;
-		RevCommit commit = Utl.findCommitByName(repository, startFunction.getCommitName());
-		RevCommit prevCommit = Utl.getPrevCommitNeglectingFile(repository, commit);
+		RevCommit commit = Utl.findCommitByName(this.repository, this.startFunction.getCommitName());
+		RevCommit prevCommit = Utl.getPrevCommitNeglectingFile(this.repository, commit);
 		if (prevCommit != null) {
 			Ydiff ydiff = new Ydiff(this.repository, commit, prevCommit, true);
 			Map<String, DiffEntry> diffEntries = ydiff.getDiff();
@@ -42,12 +43,12 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 				if (diffEntry.getChangeType() == DiffEntry.ChangeType.RENAME) {
 					compareFunction = getCompareFunctionFromFile(oldFilePath, prevCommit);
 					if (compareFunction != null) {
-						crossFileChange = new Yfilerename(startFunction, compareFunction);
+						crossFileChange = new Yfilerename(this.startEnv, this.startFunction, compareFunction);
 					}
 				} else {
 					compareFunction = getCompareFunctionFromMultipleFiles(ydiff, prevCommit);
 					if (compareFunction != null) {
-						crossFileChange = new Ymovefromfile(startFunction, compareFunction);
+						crossFileChange = new Ymovefromfile(this.startEnv, this.startFunction, compareFunction);
 					}
 				}
 
@@ -61,7 +62,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 					if (allChanges.size() == 1) {
 						ret = allChanges.get(0);
 					} else {
-						ret = new Ymultichange(startFunction.getCommitName(), allChanges);
+						ret = new Ymultichange(this.startEnv, this.startFunction.getCommitName(), allChanges);
 					}
 				}
 			}

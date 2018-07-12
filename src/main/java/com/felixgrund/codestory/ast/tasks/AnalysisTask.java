@@ -1,43 +1,46 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.changes.*;
-import com.felixgrund.codestory.ast.entities.*;
+import com.felixgrund.codestory.ast.entities.Ycommit;
+import com.felixgrund.codestory.ast.entities.Ydiff;
+import com.felixgrund.codestory.ast.entities.Yhistory;
+import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.exceptions.NoParserFoundException;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
 import com.felixgrund.codestory.ast.interpreters.CrossFileInterpreter;
 import com.felixgrund.codestory.ast.interpreters.InFileInterpreter;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
+import com.felixgrund.codestory.ast.util.Environment;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class AnalysisTask {
 
-	private static boolean CACHE_ENABLED = false;
 	private static boolean CROSS_FILE = true;
 
-	private Git git;
-	private String repositoryName;
+	private Environment startEnv;
+
 	private Repository repository;
+	private String repositoryName;
 	private String filePath;
 	private String fileName;
-	private String startCommitName;
 	private String functionName;
+	private String startCommitName;
 	private int functionStartLine;
 	private int functionEndLine;
 
@@ -55,20 +58,23 @@ public class AnalysisTask {
 
 	private HashMap<String, Ycommit> currentCommitCache;
 
-	public AnalysisTask() {
+	public AnalysisTask(Environment startEnv) {
+		this.startEnv = startEnv;
+		this.repository = startEnv.getRepository();
+		this.repositoryName = this.repositoryName;
+		this.startCommitName = startEnv.getStartCommitName();
 		this.currentCommitCache = new HashMap<>();
 		this.yhistory = new Yhistory();
 	}
 
-	public AnalysisTask(AnalysisTask baseAnalysisTask, String compareCommitName, Yfunction compareFunction) throws Exception {
-		this();
-		this.setRepositoryName(baseAnalysisTask.getRepositoryName());
-		this.setRepository(baseAnalysisTask.getRepository());
-		this.setFilePath(compareFunction.getSourceFilePath());
-		this.setStartCommitName(compareCommitName);
-		this.setFunctionName(compareFunction.getName());
-		this.setFunctionStartLine(compareFunction.getNameLineNumber());
-		this.setFunctionEndLine(compareFunction.getEndLineNumber());
+	public AnalysisTask(Environment startEnv, Yfunction oldFunction) throws Exception {
+		this(startEnv);
+		this.setStartCommitName(oldFunction.getCommitName());
+		this.setFilePath(oldFunction.getSourceFilePath());
+		this.setFunctionName(oldFunction.getName());
+		this.setFunctionStartLine(oldFunction.getNameLineNumber());
+		this.setFunctionEndLine(oldFunction.getEndLineNumber());
+
 		this.buildAndValidate();
 	}
 
@@ -88,12 +94,11 @@ public class AnalysisTask {
 	private void createResult() throws Exception {
 		this.yresult = new Yresult();
 		for (Ycommit ycommit : this.yhistory) {
-			InFileInterpreter ifi = new InFileInterpreter(this.repository, this.repositoryName, ycommit);
+			InFileInterpreter ifi = new InFileInterpreter(this.startEnv, ycommit);
 			Ychange ychange = ifi.interpret();
 			if (!(ychange instanceof Ynochange)) {
 				if (CROSS_FILE && ychange instanceof Yintroduced) {
-					CrossFileInterpreter cfi = new CrossFileInterpreter(
-							this.repository, this.repositoryName, ycommit);
+					CrossFileInterpreter cfi = new CrossFileInterpreter(this.startEnv, ycommit);
 					Ychange crossFileChange = cfi.interpret();
 					if (crossFileChange != null) {
 						ychange = crossFileChange;
@@ -126,20 +131,20 @@ public class AnalysisTask {
 	}
 
 	private void buildAndValidate() throws Exception {
-		Utl.checkNotNull("repository", this.repository);
-		Utl.checkNotNull("startCommitName", this.startCommitName);
+		Utl.checkNotNull("repository", startEnv.getRepository());
+		Utl.checkNotNull("startCommitName", this.getStartCommitName());
 		Utl.checkNotNull("filePath", this.filePath);
 		Utl.checkNotNull("fileName", this.fileName);
 		Utl.checkNotNull("functionName", this.functionName);
 		Utl.checkNotNull("functionStartLine", this.functionStartLine);
 
-		RevCommit startCommitRaw = Utl.findCommitByName(this.repository, this.startCommitName);
+		RevCommit startCommitRaw = Utl.findCommitByName(startEnv.getRepository(), this.startCommitName);
 		Utl.checkNotNull("startCommit", startCommitRaw);
 
-		String startFileContent = Utl.findFileContent(this.repository, startCommitRaw, this.filePath);
+		String startFileContent = Utl.findFileContent(startEnv.getRepository(), startCommitRaw, this.filePath);
 		Utl.checkNotNull("startFileContent", startFileContent);
 
-		Yparser startParser = ParserFactory.getParser(this.repositoryName, this.filePath, startFileContent, this.startCommitName);
+		Yparser startParser = ParserFactory.getParser(this.startEnv, this.filePath, startFileContent, this.getStartCommitName());
 
 		this.startFunction = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
 		Utl.checkNotNull("startFunctionNode", this.startFunction);
@@ -157,7 +162,7 @@ public class AnalysisTask {
 
 	private void createCommitCollection() throws IOException, GitAPIException, NoParserFoundException {
 
-		LogCommand logCommandFile = this.git.log().add(this.startCommit.getCommit()).addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
+		LogCommand logCommandFile = startEnv.getGit().log().add(this.startCommit.getCommit()).addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
 		Iterable<RevCommit> fileRevisions = logCommandFile.call();
 		this.fileHistory = new LinkedHashMap<>();
 		for (RevCommit commit : fileRevisions) {
@@ -175,7 +180,7 @@ public class AnalysisTask {
 					RevCommit parentCommit = commit.getParent(0);
 					Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
 					ycommit.setPrev(parentYcommit);
-					Ydiff ydiff = new Ydiff(this.repository, commit, parentCommit, false);
+					Ydiff ydiff = new Ydiff(startEnv.getRepository(), commit, parentCommit, false);
 					ycommit.setYdiff(ydiff);
 				}
 				lastConsideredCommit = ycommit;
@@ -204,7 +209,7 @@ public class AnalysisTask {
 
 		ycommit = createBaseYcommit(commit);
 		if (ycommit.getFileContent() != null) {
-			Yparser parser = ParserFactory.getParser(this.repositoryName, ycommit.getFilePath(), ycommit.getFileContent(), ycommit.getName());
+			Yparser parser = ParserFactory.getParser(this.startEnv, ycommit.getFilePath(), ycommit.getFileContent(), ycommit.getName());
 			ycommit.setParser(parser);
 			Yfunction matchedFunction = parser.findFunctionByOtherFunction(compareFunction);
 
@@ -235,38 +240,6 @@ public class AnalysisTask {
 
 	}
 
-	private void createOutputs() {
-
-	}
-
-	private String createUuidHash() {
-		StringBuilder builder = new StringBuilder();
-		builder.append(filePath)
-				.append(fileName)
-				.append(functionName)
-				.append(functionStartLine)
-				.append(startCommitName);
-		return DigestUtils.md5Hex(builder.toString());
-	}
-
-	public void setRepository(String repositoryPath) throws IOException {
-		FileRepositoryBuilder builder = new FileRepositoryBuilder();
-		this.repository = builder.setGitDir(new File(repositoryPath))
-				.readEnvironment() // scan environment GIT_* variables
-				.findGitDir() // scan up the file system tree
-				.build();
-		this.git = new Git(repository);
-	}
-
-	public void setRepository(Repository repository) throws IOException {
-		this.repository = repository;
-		this.git = new Git(repository);
-	}
-
-	public void setStartCommitName(String startCommitName) {
-		this.startCommitName = startCommitName;
-	}
-
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 		String[] pathSplit = filePath.split("/");
@@ -293,20 +266,12 @@ public class AnalysisTask {
 		return lastMajorChange;
 	}
 
-	public Repository getRepository() {
-		return repository;
-	}
-
 	public String getFilePath() {
 		return filePath;
 	}
 
 	public String getFileName() {
 		return fileName;
-	}
-
-	public String getStartCommitName() {
-		return startCommitName;
 	}
 
 	public Ycommit getStartCommit() {
@@ -329,14 +294,6 @@ public class AnalysisTask {
 		this.functionEndLine = functionEndLine;
 	}
 
-	public String getRepositoryName() {
-		return repositoryName;
-	}
-
-	public void setRepositoryName(String repositoryName) {
-		this.repositoryName = repositoryName;
-	}
-
 	public Map<String, RevCommit> getFileHistory() {
 		return fileHistory;
 	}
@@ -347,5 +304,17 @@ public class AnalysisTask {
 
 	public Yfunction getStartFunction() {
 		return startFunction;
+	}
+
+	public void setStartCommitName(String startCommitName) {
+		this.startCommitName = startCommitName;
+	}
+
+	public String getStartCommitName() {
+		return startCommitName;
+	}
+
+	public Environment getStartEnv() {
+		return startEnv;
 	}
 }

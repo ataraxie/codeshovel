@@ -7,6 +7,7 @@ import com.felixgrund.codestory.ast.util.Utl;
 import jdk.nashorn.internal.ir.FunctionNode;
 import jdk.nashorn.internal.ir.IdentNode;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jgit.lib.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +26,8 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 		return ident;
 	}
 
-	public JsFunction(FunctionNode node, String commitName, String sourceFilePath, String sourceFileContent) {
-		super(commitName, sourceFilePath, sourceFileContent);
+	public JsFunction(FunctionNode node, Repository repository, String commitName, String sourceFilePath, String sourceFileContent) {
+		super(repository, commitName, sourceFilePath, sourceFileContent);
 		this.node = node;
 	}
 

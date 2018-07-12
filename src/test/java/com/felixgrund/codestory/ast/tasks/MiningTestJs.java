@@ -1,6 +1,11 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.execution.MiningExecution;
+import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.util.Utl;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 public class MiningTestJs {
 
@@ -16,18 +21,24 @@ public class MiningTestJs {
 
 	public static void main(String[] args) throws Exception {
 		String repositoryPath = CODESTORY_REPO_DIR + "/" + REPO + "/.git";
-		MiningExecution execution = new MiningExecution(TARGET_FILE_EXTENSION);
-		execution.setRepositoryName(REPO);
-		execution.setRepositoryPath(repositoryPath);
-		execution.setStartCommitName(START_COMMIT);
+		Repository repository = Utl.createRepository(repositoryPath);
+		Git git = new Git(repository);
 
-		execution.setOnlyFilePath(TARGET_FILE_PATH);
+		RevCommit startCommit = Utl.findCommitByName(repository, START_COMMIT);
 
-		if (METHOD_MODE) {
-			execution.setOnlyMethodName(TARGET_METHOD);
-			execution.setOnlyStartLine(TARGET_METHOD_STARTLINE);
-		}
+		Environment env = new Environment();
+		env.setFilePath(TARGET_FILE_PATH);
+		env.setRepositoryPath(repositoryPath);
+		env.setStartCommitName(START_COMMIT);
+		env.setMethodName(TARGET_METHOD);
+		env.setStartLine(TARGET_METHOD_STARTLINE);
+		env.setRepositoryName(REPO);
+		env.setFileExtension(TARGET_FILE_EXTENSION);
+		env.setRepository(repository);
+		env.setGit(git);
+		env.setStartCommit(startCommit);
 
+		MiningExecution execution = new MiningExecution(env);
 		execution.execute();
 	}
 

@@ -2,17 +2,20 @@ package com.felixgrund.codestory.ast.parser;
 
 import com.felixgrund.codestory.ast.entities.Yparameter;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jgit.lib.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractFunction implements Yfunction {
 
+	private Repository repository;
 	private String sourceFilePath;
 	private String sourceFileContent;
 	private String commitName;
 
-	public AbstractFunction(String commitName, String sourceFilePath, String sourceFileContent) {
+	public AbstractFunction(Repository repository, String commitName, String sourceFilePath, String sourceFileContent) {
+		this.repository = repository;
 		this.commitName = commitName;
 		this.sourceFilePath = sourceFilePath;
 		this.sourceFileContent = sourceFileContent;
@@ -28,6 +31,11 @@ public abstract class AbstractFunction implements Yfunction {
 			parts.add(part);
 		}
 		return StringUtils.join(parts, "__");
+	}
+
+	@Override
+	public Repository getRepository() {
+		return repository;
 	}
 
 	@Override
