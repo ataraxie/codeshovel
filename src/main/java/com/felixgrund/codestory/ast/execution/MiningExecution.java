@@ -7,10 +7,11 @@ import com.felixgrund.codestory.ast.json.JsonChangeHistoryDiff;
 import com.felixgrund.codestory.ast.json.JsonResult;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
+import com.felixgrund.codestory.ast.services.RepositoryService;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
 import com.felixgrund.codestory.ast.tasks.GitRangeLogTask;
 import com.felixgrund.codestory.ast.tasks.RecursiveAnalysisTask;
-import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.wrappers.Environment;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.slf4j.Logger;
@@ -23,16 +24,18 @@ public class MiningExecution {
 	private static final Logger log = LoggerFactory.getLogger(MiningExecution.class);
 
 	private Environment startEnv;
+	private RepositoryService repositoryService;
 
 	private Set<String> fileHistoryCommits;
 
 	public MiningExecution(Environment startEnv) {
 		this.startEnv = startEnv;
+		this.repositoryService = startEnv.getRepositoryService();
 	}
 
 	public void execute() throws Exception {
 
-		List<String> filePaths = Utl.findFilesByExtension(startEnv.getRepository(), startEnv.getStartCommit(), startEnv.getFileExtension());
+		List<String> filePaths = repositoryService.findFilesByExtension(startEnv.getStartCommit(), startEnv.getFileExtension());
 		for (String filePath : filePaths) {
 			if (startEnv.getFilePath() == null || filePath.contains(startEnv.getFilePath())) {
 				runForFile(filePath);
@@ -42,8 +45,8 @@ public class MiningExecution {
 
 	private void runForFile(String filePath) throws Exception {
 		printFileStart(filePath);
-		String startFileContent = Utl.findFileContent(this.startEnv.getRepository(), startEnv.getStartCommit(), filePath);
-		Yparser parser = ParserFactory.getParser(this.startEnv, filePath, startFileContent, startEnv.getStartCommitName());
+		String startFileContent = repositoryService.findFileContent(startEnv.getStartCommit(), filePath);
+		Yparser parser = ParserFactory.getParser(this.startEnv, filePath, startFileContent, startEnv.getStartCommit());
 		for (Yfunction method : parser.getAllFunctions()) {
 			if (startEnv.getMethodName() == null || startEnv.getMethodName().equals(method.getName())) {
 				if (startEnv.getStartLine() <= 0 || startEnv.getStartLine() == method.getNameLineNumber()) {
@@ -90,7 +93,7 @@ public class MiningExecution {
 		JsonResult jsonResultCodestory = new JsonResult("codestory", task, codestoryChangeHistory, changeHistoryDetails);
 		Utl.writeJsonResultToFile(jsonResultCodestory);
 
-		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task);
+		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
 		gitRangeLogTask.run();
 		List<String> gitRangeLogChangeHistory = gitRangeLogTask.getResult();
 		JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, gitRangeLogChangeHistory, null);

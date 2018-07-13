@@ -5,17 +5,13 @@ import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Ydiff;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
-import com.felixgrund.codestory.ast.util.Environment;
-import com.felixgrund.codestory.ast.util.ParserFactory;
-import com.felixgrund.codestory.ast.util.Utl;
+import com.felixgrund.codestory.ast.wrappers.Environment;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class CrossFileInterpreter extends AbstractInterpreter {
 
@@ -30,8 +26,8 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 
 	public Ychange interpret() throws Exception {
 		Ychange ret = null;
-		RevCommit commit = Utl.findCommitByName(this.repository, this.startFunction.getCommitName());
-		RevCommit prevCommit = Utl.getPrevCommitNeglectingFile(this.repository, commit);
+		RevCommit commit = repositoryService.findCommitByName(this.startFunction.getCommitName());
+		RevCommit prevCommit = repositoryService.getPrevCommitNeglectingFile(commit);
 		if (prevCommit != null) {
 			Ydiff ydiff = new Ydiff(this.repository, commit, prevCommit, true);
 			Map<String, DiffEntry> diffEntries = ydiff.getDiff();

@@ -3,7 +3,6 @@ package com.felixgrund.codestory.ast.tasks;
 import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Ydiff;
-import com.felixgrund.codestory.ast.entities.Yhistory;
 import com.felixgrund.codestory.ast.entities.Yresult;
 import com.felixgrund.codestory.ast.exceptions.NoParserFoundException;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
@@ -11,22 +10,21 @@ import com.felixgrund.codestory.ast.interpreters.CrossFileInterpreter;
 import com.felixgrund.codestory.ast.interpreters.InFileInterpreter;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
-import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.services.RepositoryService;
+import com.felixgrund.codestory.ast.wrappers.Environment;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
-import org.eclipse.jgit.api.LogCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
-import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AnalysisTask {
@@ -34,6 +32,7 @@ public class AnalysisTask {
 	private static boolean CROSS_FILE = true;
 
 	private Environment startEnv;
+	private RepositoryService repositoryService;
 
 	private Repository repository;
 	private String repositoryName;
@@ -47,11 +46,11 @@ public class AnalysisTask {
 	private boolean wasBuilt;
 
 	private Map<String, RevCommit> fileHistory;
+	private List<Ycommit> taskSpecificHistory;
 
 	private Yfunction startFunction;
 	private Ycommit startCommit;
 
-	private Yhistory yhistory;
 	private Yresult yresult;
 
 	private Ychange lastMajorChange;
@@ -60,11 +59,12 @@ public class AnalysisTask {
 
 	public AnalysisTask(Environment startEnv) {
 		this.startEnv = startEnv;
-		this.repository = startEnv.getRepository();
-		this.repositoryName = this.repositoryName;
+		this.repositoryService = startEnv.getRepositoryService();
+		this.repository = this.repositoryService.getRepository();
+		this.repositoryName = this.repositoryService.getRepositoryName();
 		this.startCommitName = startEnv.getStartCommitName();
 		this.currentCommitCache = new HashMap<>();
-		this.yhistory = new Yhistory();
+		this.taskSpecificHistory = new ArrayList<>();
 	}
 
 	public AnalysisTask(Environment startEnv, Yfunction oldFunction) throws Exception {
@@ -93,7 +93,7 @@ public class AnalysisTask {
 
 	private void createResult() throws Exception {
 		this.yresult = new Yresult();
-		for (Ycommit ycommit : this.yhistory) {
+		for (Ycommit ycommit : this.taskSpecificHistory) {
 			InFileInterpreter ifi = new InFileInterpreter(this.startEnv, ycommit);
 			Ychange ychange = ifi.interpret();
 			if (!(ychange instanceof Ynochange)) {
@@ -138,13 +138,13 @@ public class AnalysisTask {
 		Utl.checkNotNull("functionName", this.functionName);
 		Utl.checkNotNull("functionStartLine", this.functionStartLine);
 
-		RevCommit startCommitRaw = Utl.findCommitByName(startEnv.getRepository(), this.startCommitName);
+		RevCommit startCommitRaw = repositoryService.findCommitByName(this.startCommitName);
 		Utl.checkNotNull("startCommit", startCommitRaw);
 
-		String startFileContent = Utl.findFileContent(startEnv.getRepository(), startCommitRaw, this.filePath);
+		String startFileContent = repositoryService.findFileContent(startCommitRaw, this.filePath);
 		Utl.checkNotNull("startFileContent", startFileContent);
 
-		Yparser startParser = ParserFactory.getParser(this.startEnv, this.filePath, startFileContent, this.getStartCommitName());
+		Yparser startParser = ParserFactory.getParser(this.startEnv, this.filePath, startFileContent, startCommitRaw);
 
 		this.startFunction = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
 		Utl.checkNotNull("startFunctionNode", this.startFunction);
@@ -160,14 +160,9 @@ public class AnalysisTask {
 
 	}
 
-	private void createCommitCollection() throws IOException, GitAPIException, NoParserFoundException {
+	private void createCommitCollection() throws IOException, NoParserFoundException {
 
-		LogCommand logCommandFile = startEnv.getGit().log().add(this.startCommit.getCommit()).addPath(this.filePath).setRevFilter(RevFilter.NO_MERGES);
-		Iterable<RevCommit> fileRevisions = logCommandFile.call();
-		this.fileHistory = new LinkedHashMap<>();
-		for (RevCommit commit : fileRevisions) {
-			this.fileHistory.put(commit.getName(), commit);
-		}
+		this.fileHistory = repositoryService.getHistory(this.startCommit.getCommit(), this.filePath);
 
 		Ycommit lastConsideredCommit = null;
 		for (RevCommit commit : this.fileHistory.values()) {
@@ -184,9 +179,9 @@ public class AnalysisTask {
 					ycommit.setYdiff(ydiff);
 				}
 				lastConsideredCommit = ycommit;
-				this.yhistory.add(ycommit);
+				this.taskSpecificHistory.add(ycommit);
 			} catch (ParseException e) {
-				System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getName());
+				System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + Utl.getCommitNameShort(commit));
 			}
 		}
 
@@ -209,7 +204,7 @@ public class AnalysisTask {
 
 		ycommit = createBaseYcommit(commit);
 		if (ycommit.getFileContent() != null) {
-			Yparser parser = ParserFactory.getParser(this.startEnv, ycommit.getFilePath(), ycommit.getFileContent(), ycommit.getName());
+			Yparser parser = ParserFactory.getParser(this.startEnv, ycommit.getFilePath(), ycommit.getFileContent(), ycommit.getCommit());
 			ycommit.setParser(parser);
 			Yfunction matchedFunction = parser.findFunctionByOtherFunction(compareFunction);
 
@@ -232,7 +227,7 @@ public class AnalysisTask {
 
 		if (treeWalk.next()) {
 			ObjectId objectId = treeWalk.getObjectId(0);
-			String fileContent = Utl.getFileContentByObjectId(this.repository, objectId);
+			String fileContent = repositoryService.getFileContentByObjectId(objectId);
 			ret.setFileContent(fileContent);
 		}
 
@@ -258,8 +253,8 @@ public class AnalysisTask {
 		return yresult;
 	}
 
-	public void setYhistory(Yhistory yhistory) {
-		this.yhistory = yhistory;
+	public void setTaskSpecificHistory(List<Ycommit> taskSpecificHistory) {
+		this.taskSpecificHistory = taskSpecificHistory;
 	}
 
 	public Ychange getLastMajorChange() {

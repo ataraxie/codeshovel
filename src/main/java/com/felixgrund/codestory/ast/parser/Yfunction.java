@@ -2,6 +2,7 @@ package com.felixgrund.codestory.ast.parser;
 
 import com.felixgrund.codestory.ast.entities.*;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ public interface Yfunction {
 
 	String getCommitName();
 	String getCommitNameShort();
+
+	RevCommit getCommit();
 
 	String getId();
 

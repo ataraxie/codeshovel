@@ -2,7 +2,6 @@ package com.felixgrund.codestory.ast.entities;
 
 public class Yparameter {
 
-	public static final String NAME_NONE = "";
 	public static final String TYPE_NONE = "";
 
 	private String name;

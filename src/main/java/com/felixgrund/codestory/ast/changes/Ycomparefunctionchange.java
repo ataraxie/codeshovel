@@ -1,22 +1,21 @@
 package com.felixgrund.codestory.ast.changes;
 
 import com.felixgrund.codestory.ast.parser.Yfunction;
-import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.wrappers.Environment;
 import com.felixgrund.codestory.ast.util.Utl;
-import com.felixgrund.codestory.ast.wrappers.CommitWrap;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Ycomparefunctionchange extends Ychange {
 
+	private static final boolean INCLUDE_META_DATA = true;
+
 	protected Yfunction newFunction;
 	protected Yfunction oldFunction;
 
-	private CommitWrap newCommit;
-	private CommitWrap oldCommit;
-	private long timeBetweenCommits;
+	private Double daysBetweenCommits;
 	private List<RevCommit> commitsBetweenForRepo;
 	private List<RevCommit> commitsBetweenForFile;
 
@@ -28,8 +27,8 @@ public abstract class Ycomparefunctionchange extends Ychange {
 
 	@Override
 	public String toString() {
-		String template = "%s(%s:%s:%s => %s:%s:%s)";
-		String string = String.format(template,
+		String baseTemplate = "%s(%s:%s:%s => %s:%s:%s)";
+		String baseString = String.format(baseTemplate,
 				getClass().getSimpleName(),
 				oldFunction.getCommitNameShort(),
 				oldFunction.getName(),
@@ -39,24 +38,17 @@ public abstract class Ycomparefunctionchange extends Ychange {
 				oldFunction.getNameLineNumber()
 		);
 
-		return string;
-
-	}
-
-	private CommitWrap getNewCommit() throws IOException {
-		if (this.newCommit == null) {
-			RevCommit revCommit = Utl.findCommitByName(newFunction.getRepository(), newFunction.getCommitName());
-			this.newCommit = new CommitWrap(revCommit);
+		if (INCLUDE_META_DATA) {
+			String metadataTemplate = "TimeBetweenCommits(%s) - NumCommitsBetween(ForRepo:%s,ForFile:%s)";
+			String metadataString = String.format(metadataTemplate,
+					getDaysBetweenCommits(),
+					getCommitsBetweenForRepo().size(),
+					getCommitsBetweenForFile().size());
+			baseString += "|" + metadataString;
 		}
-		return newCommit;
-	}
 
-	private CommitWrap getOldCommit() throws Exception {
-		if (this.oldCommit == null) {
-			RevCommit revCommit = Utl.findCommitByName(newFunction.getRepository(), oldFunction.getCommitName());
-			this.oldCommit = new CommitWrap(revCommit);
-		}
-		return oldCommit;
+		return baseString;
+
 	}
 
 	public Yfunction getNewFunction() {
@@ -67,20 +59,39 @@ public abstract class Ycomparefunctionchange extends Ychange {
 		return oldFunction;
 	}
 
-	public long getTimeBetweenCommits() throws Exception {
-		return getNewCommit().getCommitDate().getTime() - getOldCommit().getCommitDate().getTime();
+	public double getDaysBetweenCommits() {
+		if (this.daysBetweenCommits == null) {
+			this.daysBetweenCommits = Utl.getDaysBetweenCommits(oldFunction.getCommit(), newFunction.getCommit());
+		}
+		return daysBetweenCommits;
 	}
 
-	public List<RevCommit> getCommitsBetweenForRepo() throws Exception {
-		if (commitsBetweenForRepo == null) {
-
+	public List<RevCommit> getCommitsBetweenForRepo() {
+		if (this.commitsBetweenForRepo == null) {
+			this.commitsBetweenForRepo = new ArrayList<>();
+			try {
+				this.commitsBetweenForRepo = repositoryService.getCommitsBetween(
+						this.oldFunction.getCommit(),
+						this.newFunction.getCommit(),
+						null);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return commitsBetweenForRepo;
 	}
 
-	public List<RevCommit> getCommitsBetweenForFile() throws Exception {
-		if (commitsBetweenForFile == null) {
-
+	public List<RevCommit> getCommitsBetweenForFile() {
+		if (this.commitsBetweenForFile == null) {
+			this.commitsBetweenForFile = new ArrayList<>();
+			try {
+				this.commitsBetweenForFile = repositoryService.getCommitsBetween(
+						this.oldFunction.getCommit(),
+						this.newFunction.getCommit(),
+						this.newFunction.getSourceFilePath());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return commitsBetweenForFile;
 	}

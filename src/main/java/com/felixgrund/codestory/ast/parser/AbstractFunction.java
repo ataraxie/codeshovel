@@ -3,6 +3,7 @@ package com.felixgrund.codestory.ast.parser;
 import com.felixgrund.codestory.ast.entities.Yparameter;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +13,11 @@ public abstract class AbstractFunction implements Yfunction {
 	private Repository repository;
 	private String sourceFilePath;
 	private String sourceFileContent;
-	private String commitName;
+	private RevCommit commit;
 
-	public AbstractFunction(Repository repository, String commitName, String sourceFilePath, String sourceFileContent) {
+	public AbstractFunction(Repository repository, RevCommit commit, String sourceFilePath, String sourceFileContent) {
 		this.repository = repository;
-		this.commitName = commitName;
+		this.commit = commit;
 		this.sourceFilePath = sourceFilePath;
 		this.sourceFileContent = sourceFileContent;
 	}
@@ -40,12 +41,12 @@ public abstract class AbstractFunction implements Yfunction {
 
 	@Override
 	public String getCommitName() {
-		return commitName;
+		return this.commit.getName();
 	}
 
 	@Override
 	public String getCommitNameShort() {
-		return commitName.substring(0, 6);
+		return this.commit.getName().substring(0, 6);
 	}
 
 	@Override
@@ -61,5 +62,10 @@ public abstract class AbstractFunction implements Yfunction {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + ":" + getId();
+	}
+
+	@Override
+	public RevCommit getCommit() {
+		return commit;
 	}
 }

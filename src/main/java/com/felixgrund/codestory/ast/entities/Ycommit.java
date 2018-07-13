@@ -99,7 +99,7 @@ public class Ycommit {
 	}
 
 	public String getShortName() {
-		return this.commit.getName().substring(0, 6);
+		return Utl.getCommitNameShort(this.commit);
 	}
 
 	public Ydiff getYdiff() {

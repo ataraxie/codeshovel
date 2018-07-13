@@ -10,8 +10,6 @@ import java.util.List;
 
 public class ChangeSerializer implements JsonSerializer<Ychange> {
 
-	private static final Gson GSON = new Gson();
-
 	@Override
 	public JsonElement serialize(Ychange change,
 			 Type typeOfSrc, JsonSerializationContext context) {

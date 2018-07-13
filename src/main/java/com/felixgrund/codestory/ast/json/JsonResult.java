@@ -2,7 +2,7 @@ package com.felixgrund.codestory.ast.json;
 
 import com.felixgrund.codestory.ast.changes.Ychange;
 import com.felixgrund.codestory.ast.tasks.AnalysisTask;
-import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.wrappers.Environment;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -16,6 +16,7 @@ public class JsonResult {
 
 	private String origin;
 	private String repositoryName;
+	private String repositoryPath;
 	private String startCommitName;
 	private String sourceFileName;
 	private String functionName;
@@ -33,6 +34,7 @@ public class JsonResult {
 
 		this.origin = origin;
 		this.repositoryName = startEnv.getRepositoryName();
+		this.repositoryPath = startEnv.getRepositoryPath();
 		this.startCommitName = startEnv.getStartCommitName();
 		this.sourceFileName = startEnv.getFileName();
 		this.functionName = startEnv.getMethodName();
@@ -88,6 +90,10 @@ public class JsonResult {
 
 	public String getFunctionId() {
 		return functionId;
+	}
+
+	public String getRepositoryPath() {
+		return repositoryPath;
 	}
 
 	public Map<String, Ychange> getChangeHistoryDetails() {

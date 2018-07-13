@@ -1,6 +1,6 @@
 package com.felixgrund.codestory.ast.changes;
 
-import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.wrappers.Environment;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -25,6 +25,6 @@ public class Ymultichange extends Ychange {
 		for (Ychange change : changes) {
 			substrings.add(change.toString());
 		}
-		return "Ymultichange("+StringUtils.join(substrings, ",")+")";
+		return "Ymultichange(\n- "+StringUtils.join(substrings, "\n- ")+"\n)";
 	}
 }

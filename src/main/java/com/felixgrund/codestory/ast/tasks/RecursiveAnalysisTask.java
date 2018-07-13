@@ -3,7 +3,7 @@ package com.felixgrund.codestory.ast.tasks;
 import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yresult;
-import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.wrappers.Environment;
 import com.felixgrund.codestory.ast.util.Utl;
 
 import java.util.ArrayList;

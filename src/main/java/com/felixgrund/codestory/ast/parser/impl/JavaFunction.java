@@ -9,6 +9,7 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.type.ReferenceType;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +18,8 @@ public class JavaFunction extends AbstractFunction implements Yfunction {
 
 	private MethodDeclaration node;
 
-	public JavaFunction(MethodDeclaration node, Repository repository, String commitName, String sourceFilePath, String sourceFileContent) {
-		super(repository, commitName, sourceFilePath, sourceFileContent);
+	public JavaFunction(MethodDeclaration node, Repository repository, RevCommit commit, String sourceFilePath, String sourceFileContent) {
+		super(repository, commit, sourceFilePath, sourceFileContent);
 		this.node = node;
 	}
 

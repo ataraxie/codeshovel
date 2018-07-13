@@ -3,11 +3,11 @@ package com.felixgrund.codestory.ast.parser;
 import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
-import com.felixgrund.codestory.ast.util.Environment;
-import com.felixgrund.codestory.ast.util.SimilarityUtil;
+import com.felixgrund.codestory.ast.wrappers.Environment;
 import com.felixgrund.codestory.ast.util.Utl;
 import com.felixgrund.codestory.ast.wrappers.FunctionSimilarity;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public abstract class AbstractParser implements Yparser {
 
 	protected String filePath;
 	protected String fileContent;
-	protected String commitName;
+	protected RevCommit commit;
 	protected String repositoryName;
 	protected Repository repository;
 
@@ -33,14 +33,14 @@ public abstract class AbstractParser implements Yparser {
 	public abstract String getAcceptedFileExtension();
 	protected abstract Object parse() throws ParseException;
 
-	public AbstractParser(Environment startEnv, String filePath, String fileContent, String commitName) throws ParseException {
+	public AbstractParser(Environment startEnv, String filePath, String fileContent, RevCommit commit) throws ParseException {
 		this.startEnv = startEnv;
 
 		this.repository = startEnv.getRepository();
 		this.repositoryName = startEnv.getRepositoryName();
 		this.filePath = filePath;
 		this.fileContent = fileContent;
-		this.commitName = commitName;
+		this.commit = commit;
 		parse();
 	}
 
@@ -138,7 +138,7 @@ public abstract class AbstractParser implements Yparser {
 
 			if (bodySimilarity > 0.9 && scopeSimilarity == 1) {
 				if (!crossFile) {
-					lineNumberDistance = SimilarityUtil.getLineNumberDistance(candidate, compareFunction);
+					lineNumberDistance = Utl.getLineNumberDistance(candidate, compareFunction);
 				}
 				if (crossFile || lineNumberDistance < 10) {
 					log.info("Found function with body similarity > 0.9 and line distance < 10 and scope similarity of 1. Done.");
@@ -164,7 +164,7 @@ public abstract class AbstractParser implements Yparser {
 		for (Yfunction candidate : similarities.keySet()) {
 			FunctionSimilarity similarity = similarities.get(candidate);
 			if (!crossFile) {
-				double lineNumberSimilarity = SimilarityUtil.getLineNumberSimilarity(candidate, compareFunction);
+				double lineNumberSimilarity = Utl.getLineNumberSimilarity(candidate, compareFunction);
 				similarity.setLineNumberSimilarity(lineNumberSimilarity);
 			}
 

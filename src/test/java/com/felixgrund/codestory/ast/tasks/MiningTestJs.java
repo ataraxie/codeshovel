@@ -1,7 +1,9 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.execution.MiningExecution;
-import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.services.RepositoryService;
+import com.felixgrund.codestory.ast.services.impl.CachingRepositoryService;
+import com.felixgrund.codestory.ast.wrappers.Environment;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -24,18 +26,17 @@ public class MiningTestJs {
 		Repository repository = Utl.createRepository(repositoryPath);
 		Git git = new Git(repository);
 
-		RevCommit startCommit = Utl.findCommitByName(repository, START_COMMIT);
+		RepositoryService repositoryService = new CachingRepositoryService(git, repository, REPO, repositoryPath);
 
-		Environment env = new Environment();
+		RevCommit startCommit = repositoryService.findCommitByName(START_COMMIT);
+
+		Environment env = new Environment(repositoryService);
+
 		env.setFilePath(TARGET_FILE_PATH);
-		env.setRepositoryPath(repositoryPath);
 		env.setStartCommitName(START_COMMIT);
 		env.setMethodName(TARGET_METHOD);
 		env.setStartLine(TARGET_METHOD_STARTLINE);
-		env.setRepositoryName(REPO);
 		env.setFileExtension(TARGET_FILE_EXTENSION);
-		env.setRepository(repository);
-		env.setGit(git);
 		env.setStartCommit(startCommit);
 
 		MiningExecution execution = new MiningExecution(env);

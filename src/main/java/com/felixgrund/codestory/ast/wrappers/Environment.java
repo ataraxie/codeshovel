@@ -1,16 +1,15 @@
-package com.felixgrund.codestory.ast.util;
+package com.felixgrund.codestory.ast.wrappers;
 
+import com.felixgrund.codestory.ast.services.RepositoryService;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 public class Environment {
 
-	private String repositoryName;
-	private String repositoryPath;
+	private RepositoryService repositoryService;
+
 	private String fileName;
-	private Repository repository;
-	private Git git;
 	private String filePath;
 	private String startCommitName;
 	private String methodName;
@@ -18,28 +17,24 @@ public class Environment {
 	private String fileExtension;
 	private RevCommit startCommit;
 
-	public String getRepositoryName() {
-		return repositoryName;
+	public Environment(RepositoryService repositoryService) {
+		this.repositoryService = repositoryService;
 	}
 
-	public void setRepositoryName(String repositoryName) {
-		this.repositoryName = repositoryName;
+	public RepositoryService getRepositoryService() {
+		return repositoryService;
+	}
+
+	public String getRepositoryName() {
+		return repositoryService.getRepositoryName();
 	}
 
 	public Repository getRepository() {
-		return repository;
-	}
-
-	public void setRepository(Repository repository) {
-		this.repository = repository;
+		return repositoryService.getRepository();
 	}
 
 	public Git getGit() {
-		return git;
-	}
-
-	public void setGit(Git git) {
-		this.git = git;
+		return repositoryService.getGit();
 	}
 
 	public String getFilePath() {
@@ -77,11 +72,7 @@ public class Environment {
 	}
 
 	public String getRepositoryPath() {
-		return repositoryPath;
-	}
-
-	public void setRepositoryPath(String repositoryPath) {
-		this.repositoryPath = repositoryPath;
+		return repositoryService.getRepositoryPath();
 	}
 
 	public RevCommit getStartCommit() {

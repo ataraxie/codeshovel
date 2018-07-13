@@ -8,6 +8,7 @@ import jdk.nashorn.internal.ir.FunctionNode;
 import jdk.nashorn.internal.ir.IdentNode;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +27,8 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 		return ident;
 	}
 
-	public JsFunction(FunctionNode node, Repository repository, String commitName, String sourceFilePath, String sourceFileContent) {
-		super(repository, commitName, sourceFilePath, sourceFileContent);
+	public JsFunction(FunctionNode node, Repository repository, RevCommit commit, String sourceFilePath, String sourceFileContent) {
+		super(repository, commit, sourceFilePath, sourceFileContent);
 		this.node = node;
 	}
 

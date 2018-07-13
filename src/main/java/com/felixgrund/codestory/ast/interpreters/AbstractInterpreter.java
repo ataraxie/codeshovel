@@ -4,9 +4,9 @@ import com.felixgrund.codestory.ast.changes.Ychange;
 import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
-import com.felixgrund.codestory.ast.util.Environment;
+import com.felixgrund.codestory.ast.services.RepositoryService;
+import com.felixgrund.codestory.ast.wrappers.Environment;
 import com.felixgrund.codestory.ast.util.ParserFactory;
-import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class AbstractInterpreter {
+
+	protected RepositoryService repositoryService;
 
 	protected Environment startEnv;
 	protected Ycommit ycommit;
@@ -28,14 +30,15 @@ public abstract class AbstractInterpreter {
 		this.startEnv = startEnv;
 		this.repository = startEnv.getRepository();
 		this.repositoryName = startEnv.getRepositoryName();
+		this.repositoryService = startEnv.getRepositoryService();
 		this.ycommit = ycommit;
 	}
 
 	protected Yparser createParserForCommitAndFile(RevCommit commit, String filePath) throws Exception {
 		Yparser ret = null;
-		String fileContent = Utl.findFileContent(this.repository, commit, filePath);
+		String fileContent = repositoryService.findFileContent(commit, filePath);
 		if (fileContent != null) {
-			ret = ParserFactory.getParser(this.startEnv, filePath, fileContent, commit.getName());
+			ret = ParserFactory.getParser(this.startEnv, filePath, fileContent, commit);
 		}
 		return ret;
 	}
