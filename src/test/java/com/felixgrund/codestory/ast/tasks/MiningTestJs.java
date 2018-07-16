@@ -3,7 +3,7 @@ package com.felixgrund.codestory.ast.tasks;
 import com.felixgrund.codestory.ast.execution.MiningExecution;
 import com.felixgrund.codestory.ast.services.RepositoryService;
 import com.felixgrund.codestory.ast.services.impl.CachingRepositoryService;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -30,7 +30,7 @@ public class MiningTestJs {
 
 		RevCommit startCommit = repositoryService.findCommitByName(START_COMMIT);
 
-		Environment env = new Environment(repositoryService);
+		StartEnvironment env = new StartEnvironment(repositoryService);
 
 		env.setFilePath(TARGET_FILE_PATH);
 		env.setStartCommitName(START_COMMIT);

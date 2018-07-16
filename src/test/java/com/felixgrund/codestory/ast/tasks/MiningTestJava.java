@@ -3,7 +3,7 @@ package com.felixgrund.codestory.ast.tasks;
 import com.felixgrund.codestory.ast.execution.MiningExecution;
 import com.felixgrund.codestory.ast.services.RepositoryService;
 import com.felixgrund.codestory.ast.services.impl.CachingRepositoryService;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -13,9 +13,7 @@ public class MiningTestJava {
 
 	private static final String TARGET_FILE_EXTENSION = ".java";
 	private static final String TARGET_FILE_PATH = "src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java";
-//	private static final String TARGET_FILE_PATH = "src/main/java/de/scandio/confluence/plugins/pocketquery/managers/impl/delegates/SqlExternalDatabaseManager.java";
 	private static final String TARGET_METHOD = "createPattern";
-//	private static final String TARGET_METHOD = "connectViaJdbc";
 	private static final String CODESTORY_REPO_DIR = System.getenv("codestory.repo.dir");
 	private static final int TARGET_METHOD_STARTLINE = 104;
 //	private static final int TARGET_METHOD_STARTLINE = 288;
@@ -33,7 +31,7 @@ public class MiningTestJava {
 
 		RevCommit startCommit = repositoryService.findCommitByName(START_COMMIT);
 
-		Environment env = new Environment(repositoryService);
+		StartEnvironment env = new StartEnvironment(repositoryService);
 		env.setFilePath(TARGET_FILE_PATH);
 		env.setStartCommitName(START_COMMIT);
 		env.setMethodName(TARGET_METHOD);

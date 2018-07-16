@@ -2,23 +2,21 @@ package com.felixgrund.codestory.ast.tasks;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 public class RunConfig {
 
 	private String configName;
 	private String repoName;
 	private String filePath;
-	private String fileName;
 	private String branchName;
 	private String startCommitName;
-	private String functionName;
-	private int functionStartLine;
+	private String methodName;
+	private int methodStartLine;
 
 	private LinkedHashMap<String, String> expectedResult;
 
 	private LinkedHashSet<String> codestoryLog;
-	private LinkedHashSet<String> intellijLog;
+	private LinkedHashSet<String> gitLog;
 
 	public String getConfigName() {
 		return configName;
@@ -44,14 +42,6 @@ public class RunConfig {
 		this.filePath = filePath;
 	}
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-
-	public String getFileName() {
-		return fileName;
-	}
-
 	public String getBranchName() {
 		return branchName;
 	}
@@ -68,20 +58,20 @@ public class RunConfig {
 		this.startCommitName = startCommitName;
 	}
 
-	public String getFunctionName() {
-		return functionName;
+	public String getMethodName() {
+		return methodName;
 	}
 
-	public void setFunctionName(String functionName) {
-		this.functionName = functionName;
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
 	}
 
-	public int getFunctionStartLine() {
-		return functionStartLine;
+	public int getMethodStartLine() {
+		return methodStartLine;
 	}
 
-	public void setFunctionStartLine(int functionStartLine) {
-		this.functionStartLine = functionStartLine;
+	public void setMethodStartLine(int methodStartLine) {
+		this.methodStartLine = methodStartLine;
 	}
 
 	public LinkedHashMap<String, String> getExpectedResult() {
@@ -100,11 +90,11 @@ public class RunConfig {
 		this.codestoryLog = codestoryLog;
 	}
 
-	public LinkedHashSet<String> getIntellijLog() {
-		return intellijLog;
+	public LinkedHashSet<String> getGitLog() {
+		return gitLog;
 	}
 
-	public void setIntellijLog(LinkedHashSet<String> intellijLog) {
-		this.intellijLog = intellijLog;
+	public void setGitLog(LinkedHashSet<String> gitLog) {
+		this.gitLog = gitLog;
 	}
 }
