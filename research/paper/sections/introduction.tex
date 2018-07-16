@@ -1,0 +1,100 @@
+%!TEX root = ../paper.tex
+
+\section{Introduction}
+\label{sec:introduction}
+
+% =======================
+% What is the problem?
+% =======================
+
+Software systems continually evolve and a variety of tools have been created to enable developers to reason about this evolution (e.g.,~\cite{XXX,XXX,XXX}).
+For example, by reasoning about the past history of their system, developers can XXX~\cite{XXX}, or YYY~\cite{XXX}, or ZZZ~\cite{XXX}.
+While this data lives within version control systems which are widely used, little is known about how and to what extent developers use source code history for program understanding tasks and how well current tools support these tasks. 
+We postulate that current history tools, while providing rich file-based views on textual changes of source code, crucially lack support for more semantic views on specific code units like modules, classes and methods. 
+In the face of common code modification tasks like refactoring, we believe that common questions developers ask when analyzing source code history remain difficult to answer with the file-based views typically available for browsing source code history. 
+
+For instance, tracing the evolution of a particular method can become challenging with file-based views: within the context of the history of a file, the investigator might have to search for selected commits that changed this particular method among potentially many commits that changed other parts of the file. 
+This cumbersome searching is mitigated to some degree by line-range based history analysis that is widely adopted in version control tools. 
+But these \fg{I replaced ``file-oriented'' with just ``these'' here because it read a bit like the line-range based analysis that we just introduced is not a part of ``file-oriented''} approaches have shortcomings and can neither cope with extensive textual changes nor with more complex structural changes such as refactorings that, for example, move methods between files. 
+Given the maturity of semantic code analysis tools and abstract syntax trees today, our intuition is that these limits can be overcome and source code history can be leveraged much better for program understanding tasks.
+
+
+% ===============================
+% What do we do in this paper?
+% ===============================
+
+In this paper, we first analyze how developers use source code history with an extensive survey with XXX professional developers to build an understanding of the information they try to extract from source code history and the tools and views they use to find this information (Section~\ref{sec:survey}).
+Through this survey, we learned that developers frequently consult version history to understand ``how and why [source code] was changed'', ``what steps certain components take'' and to ``analyze code changes over a period of time''. We found a wide range of version control tools and views being used and that developers are often limited by these, having to ``walk through all files line by line to compare changes'', finding the ``reasoning of modules not reconstructible'' or finding it insufficient that ``there is only a history view without further search functionality''.
+
+Based on this feedback, we built \textit{CodeShovel}, a tool for building a semantic understanding of the historical evolution of Java and JavaScript systems (Section~\ref{sec:approach}).
+Specifically, we built CodeShovel to surface information about how \textit{methods} have evolved as our participants consistently ranked this as the most important level of abstraction for their reasoning tasks.
+CodeShovel is robust to the most common transformations that methods undergo including renaming, moving between files, and splitting methods into multiple methods--change types that were consistently ranked by our industrial survey as key obstacles to building an effective understanding of how their code has evolved with existing historical analysis techniques. % friction points with existing history analysis techniques.
+As additional benefit, CodeShovel is capable of showing much richer descriptions of modifications than file-based history tools due to its interpretation of methods and their evolution as semantical units.\fg{With our semantical understanding, we can tell a lot more information about changes, e.g. ``return type has changed from X to Y, parameters were changed from X to Y etc. file-based tools will always only show the textual diff. I wanted to get this in here somehow, but I'm not yet convinced about this sentence here.''}
+
+We evaluated CodeShovel's precision through an empirical study evaluating the tool with the most common historical navigation approach for XXX Java and JavaScript-based methods from XXX different systems across XXX revisions.
+CodeShovel revealed XXX\% of changes that were shown correctly by alternative approaches (true positives) while not including XXX\% that were shown incorrectly by these (false positives). 
+Furthermore, CodeShovel revealed an average of XXX\% of changes per change history that were not reported by alternative approaches due to the file-based approach not being capable of detecting a relationship between the change and the method of interest (false negatives). 
+Among these, XXX\% were in fact related to the method of interest (true positives).
+~\todo{two descriptive sentences that concretely enumerates CodeShovel being better. 1) at returning the right info without including extraneous info and 2) not missing info that might otherwise be lost.}\fg{Here is my first try. Not really convinced about it, but the direction should be good.}
+
+% ... is XXX\% more precise than the industrial state-of-the-art for these tasks for tracking changes to methods.\rth{do we want to talk about false positives / false negatives explicitly?} \fg{I don't like these two sentences with XXX\% very much in general. XXX\% more precise and XXX\% is not visible feels very abstract. Maybe we'll find a way to express what we want in an way that's easier to grasp. This could involve the false positives/negatives.}
+
+% We also show that XXX\% of change history is not visible with these prior tools (through either refactoring operations or other program transformations).
+
+Finally, we evaluated CodeShovel's ability to reason about industrial history understanding tasks with a small industrial field study to gather feedback about our semantic understanding approach compared to existing tooling (Section~\ref{sec:field}). 
+We asked each participant to use CodeShovel to investigate in the history of XXX Java or JavaScript methods that had recently been changed in pull requests they were assigned as reviewer. 
+The participants consistently regarded CodeShovel's results as highly accurate and beneficial for understanding the methods at hand, stating that ``this tool would have saved me an enormous amount of time'' and ``it's amazing how much information this tool can reveal that I would never have found otherwise''. \rth{this is a challenge because there will be obvious learning effects to doing the task again with our tool second. we should think about that.}\fg{Maybe it would make sense to find participants that didn't take part in the survey then?}\rth{no, i mean by having them do a task normally and then doing it again with code shovel. i don't think the survey is a problem, it is just doing the task twice. i think a case study where they just use codeshovel on their own task and report on their experience would be enough really, it doesn't need to be directly comparative.}\fg{I think you're right. I rewrote it a bit in that regard.}
+
+% ==============================
+% Research questions
+% ==============================
+
+\commentout{ % commented out because I don't think these should be in the introduction in the end
+
+\begin{enumerate}[label=\textbf{RQ\arabic*}, labelindent=\parindent, listparindent=\parindent]
+
+	\item Do developers use source code history when they are working with code? If so, how?
+% - When they try to understand some pieces of code, do they use the history at all?
+% - If they do, how do they use it? What tools? What views?
+
+	\item What are developers trying to learn when they examine source code history?
+% - What specific questions are they trying to answer?
+% - What information are they seeking? 
+% - What do they search for? 
+
+	\item In terms of their mental models and information needs, what level of temporal and structural granularity are most appropriate when using source code history?
+% - What is the temporal granularity (e.g., what are the timeframes they are interested in?)
+% - What is the structural granularity (e.g., what is the scope of code they are interested in?) 
+%   - Possibilities: [directory (and children)-level, package-level, file-level, class-level, field-level, method-level, block-level]
+
+	\item Does augmenting history with semantic data improve program comprehension? How effectively can a semantically-aware code history viewer support program comprehension?
+% - History tools and views are currently mainly based on the views of a file system and on the textual representation of code
+% - Could we support program comprehension better by providing a semantic view on the history of code units rather than such a simplistic textual/file system view?
+% - (Idea/Approach: step through Git history, build ASTs for each revision, match changes with semantic units, provide natural interpretation)
+
+\end{enumerate}
+
+}
+
+% ==============================
+% Contributions
+% ==============================
+
+The primary concrete contributions of this paper are:
+%\vspace{-0.5em}
+\begin{itemize}
+	\item An extensive survey with XXX professional developers to understand how they use source code history; this demonstrated a lack of tool support for the most frequently-performed historical understanding tasks.
+	\item CodeShovel, a novel source code history tool that provides a robust semantic-based tool for navigating method-based histories of Java and JavaScript systems.
+	\item \rth{we should add some numbers here or split this in two: one for the empirical study and one for the industrial session}\fg{I agree. I would keep it one item though. Feels like one unit compared to the other two.}
+	\item A quantitative analysis of XXX methods in XXX repositories performed by the authors, showing an average increase in accuracy of XXX\% over state-of-the-art practices.
+	\item A small field study with industrial developers using CodeShovel for methods being changed in pull requests, demonstrating a strong indication of application in practice.
+	\item \fg{I first had it this way as one bullet point: <<A mixed methods evaluation of this approach consisting of a quantitative analysis of XXX methods in XXX repositories and a small field study with XXX industrial developers using CodeShovel for pull requests; this demonstrated an average increase in accuracy of XXX\% over state-of-the-art practices and a strong indication of application in practice.>> I felt it became to big, so I decided to split it in the two items above. It still feels to me though that these two points are one logical unit and we have 3 major contributions: survey, tool, evaluation. But I also think it's ok showing the evaluation in two bullet points.}
+\end{itemize}
+%\vspace{-0.5em}
+
+
+% ==============================
+% Structure of this paper
+% ==============================
+
+% We describe the design and results of our developer survey in Section 2 and 3, design and implementation of CodeShovel in Section 4 and our evaluation in Section 5. Related work, discussion and conclusions follow in Sections 6-8.
