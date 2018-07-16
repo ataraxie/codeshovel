@@ -4,7 +4,7 @@ import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -15,7 +15,7 @@ import java.util.List;
 public class InFileInterpreter extends AbstractInterpreter {
 
 
-	public InFileInterpreter(Environment startEnv, Ycommit ycommit) {
+	public InFileInterpreter(StartEnvironment startEnv, Ycommit ycommit) {
 		super(startEnv, ycommit);
 	}
 

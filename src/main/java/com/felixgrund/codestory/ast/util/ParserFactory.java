@@ -5,12 +5,12 @@ import com.felixgrund.codestory.ast.exceptions.ParseException;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.parser.impl.JavaParser;
 import com.felixgrund.codestory.ast.parser.impl.JsParser;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 public class ParserFactory {
 
-	public static Yparser getParser(Environment startEnv, String filePath, String fileContent, RevCommit commit) throws NoParserFoundException, ParseException {
+	public static Yparser getParser(StartEnvironment startEnv, String filePath, String fileContent, RevCommit commit) throws NoParserFoundException, ParseException {
 		if (filePath.endsWith(JsParser.ACCEPTED_FILE_EXTENSION)) {
 			return new JsParser(startEnv, filePath, fileContent, commit);
 		} else if (filePath.endsWith(JavaParser.ACCEPTED_FILE_EXTENSION)) {

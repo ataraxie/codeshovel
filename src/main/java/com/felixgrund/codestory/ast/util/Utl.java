@@ -245,4 +245,18 @@ public class Utl {
 	public static String getCommitNameShort(RevCommit commit) {
 		return commit.getName().substring(0, 6);
 	}
+
+	public static String getFileExtensionWithoutDot(String filePath) {
+		String[] dotSplit = filePath.split("\\.");
+		return dotSplit[dotSplit.length - 1];
+	}
+
+	public static String getFileName(String filePath) {
+		String[] pathSplit = filePath.split("/");
+		return pathSplit[pathSplit.length-1];
+	}
+
+	public static String sanitizeFunctionId(String ident) {
+		return ident.replaceAll(":", "__").replaceAll("#", "__").replaceAll("<", "__").replaceAll(">", "__");
+	}
 }

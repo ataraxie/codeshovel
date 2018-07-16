@@ -11,7 +11,7 @@ import com.felixgrund.codestory.ast.interpreters.InFileInterpreter;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.services.RepositoryService;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.lib.ObjectId;
@@ -31,7 +31,7 @@ public class AnalysisTask {
 
 	private static boolean CROSS_FILE = true;
 
-	private Environment startEnv;
+	private StartEnvironment startEnv;
 	private RepositoryService repositoryService;
 
 	private Repository repository;
@@ -57,7 +57,7 @@ public class AnalysisTask {
 
 	private HashMap<String, Ycommit> currentCommitCache;
 
-	public AnalysisTask(Environment startEnv) {
+	public AnalysisTask(StartEnvironment startEnv) {
 		this.startEnv = startEnv;
 		this.repositoryService = startEnv.getRepositoryService();
 		this.repository = this.repositoryService.getRepository();
@@ -65,9 +65,15 @@ public class AnalysisTask {
 		this.startCommitName = startEnv.getStartCommitName();
 		this.currentCommitCache = new HashMap<>();
 		this.taskSpecificHistory = new ArrayList<>();
+
+		// These must be overwritten by setters if this is not the starting task:
+		this.filePath = startEnv.getFilePath();
+		this.fileName = startEnv.getFileName();
+		this.functionStartLine = startEnv.getFunctionStartLine();
+		this.functionName = startEnv.getFunctionName();
 	}
 
-	public AnalysisTask(Environment startEnv, Yfunction oldFunction) throws Exception {
+	public AnalysisTask(StartEnvironment startEnv, Yfunction oldFunction) throws Exception {
 		this(startEnv);
 		this.setStartCommitName(oldFunction.getCommitName());
 		this.setFilePath(oldFunction.getSourceFilePath());
@@ -309,7 +315,7 @@ public class AnalysisTask {
 		return startCommitName;
 	}
 
-	public Environment getStartEnv() {
+	public StartEnvironment getStartEnv() {
 		return startEnv;
 	}
 }

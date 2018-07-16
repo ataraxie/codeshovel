@@ -3,7 +3,7 @@ package com.felixgrund.codestory.ast.tasks;
 import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.entities.Yresult;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 import com.felixgrund.codestory.ast.util.Utl;
 
 import java.util.ArrayList;
@@ -11,13 +11,13 @@ import java.util.List;
 
 public class RecursiveAnalysisTask {
 
-	private Environment startEnv;
+	private StartEnvironment startEnv;
 	private AnalysisTask startTask;
 
 	private Yresult recursiveResult;
 	private boolean printOutput = true;
 
-	public RecursiveAnalysisTask(Environment startEnv, AnalysisTask startTask) {
+	public RecursiveAnalysisTask(StartEnvironment startEnv, AnalysisTask startTask) {
 		this.startEnv = startEnv;
 		this.startTask = startTask;
 	}

@@ -19,7 +19,7 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 
 	@Override
 	public String getId() {
-		String ident = this.node.getName().replaceAll(":", "__").replaceAll("#", "__");
+		String ident = Utl.sanitizeFunctionId(this.node.getName());
 		String idParameterString = this.getIdParameterString();
 		if (StringUtils.isNotBlank(idParameterString)) {
 			ident += "___" + idParameterString;

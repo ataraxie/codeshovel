@@ -1,6 +1,6 @@
 package com.felixgrund.codestory.ast.tasks;
 
-import com.felixgrund.codestory.ast.execution.MiningExecution;
+import com.felixgrund.codestory.ast.execution.ShovelExecution;
 import com.felixgrund.codestory.ast.services.RepositoryService;
 import com.felixgrund.codestory.ast.services.impl.CachingRepositoryService;
 import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
@@ -11,7 +11,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 public class MiningTestJs {
 
-	private static final boolean METHOD_MODE = true;
+	private static final boolean METHOD_MODE = false;
 
 	private static final String TARGET_FILE_EXTENSION = ".js";
 	private static final String TARGET_FILE_PATH = "src/css.js";
@@ -34,13 +34,14 @@ public class MiningTestJs {
 
 		env.setFilePath(TARGET_FILE_PATH);
 		env.setStartCommitName(START_COMMIT);
-		env.setMethodName(TARGET_METHOD);
-		env.setStartLine(TARGET_METHOD_STARTLINE);
-		env.setFileExtension(TARGET_FILE_EXTENSION);
 		env.setStartCommit(startCommit);
 
-		MiningExecution execution = new MiningExecution(env);
-		execution.execute();
+		if (METHOD_MODE) {
+			env.setFunctionName(TARGET_METHOD);
+			env.setFunctionStartLine(TARGET_METHOD_STARTLINE);
+		}
+
+		ShovelExecution.runMining(env, TARGET_FILE_EXTENSION);
 	}
 
 }

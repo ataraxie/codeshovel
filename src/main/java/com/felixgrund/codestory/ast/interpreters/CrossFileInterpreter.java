@@ -5,7 +5,7 @@ import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.entities.Ydiff;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -18,7 +18,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 	private Yfunction startFunction;
 	private Yparser startParser;
 
-	public CrossFileInterpreter(Environment startEnv, Ycommit ycommit) {
+	public CrossFileInterpreter(StartEnvironment startEnv, Ycommit ycommit) {
 		super(startEnv, ycommit);
 		this.startFunction = ycommit.getMatchedFunction();
 		this.startParser = ycommit.getParser();

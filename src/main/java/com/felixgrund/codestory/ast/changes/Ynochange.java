@@ -1,10 +1,10 @@
 package com.felixgrund.codestory.ast.changes;
 
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 
 public class Ynochange extends Ychange {
 
-	public Ynochange(Environment startEnv, String commitName) {
+	public Ynochange(StartEnvironment startEnv, String commitName) {
 		super(startEnv, commitName);
 	}
 

@@ -1,6 +1,6 @@
 package com.felixgrund.codestory.ast.tasks;
 
-import com.felixgrund.codestory.ast.execution.MiningExecution;
+import com.felixgrund.codestory.ast.execution.ShovelExecution;
 import com.felixgrund.codestory.ast.services.RepositoryService;
 import com.felixgrund.codestory.ast.services.impl.CachingRepositoryService;
 import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
@@ -33,14 +33,13 @@ public class MiningTestJava {
 
 		StartEnvironment env = new StartEnvironment(repositoryService);
 		env.setFilePath(TARGET_FILE_PATH);
+		env.setFileName(Utl.getFileName(TARGET_FILE_PATH));
 		env.setStartCommitName(START_COMMIT);
-		env.setMethodName(TARGET_METHOD);
-		env.setStartLine(TARGET_METHOD_STARTLINE);
-		env.setFileExtension(TARGET_FILE_EXTENSION);
+		env.setFunctionName(TARGET_METHOD);
+		env.setFunctionStartLine(TARGET_METHOD_STARTLINE);
 		env.setStartCommit(startCommit);
 
-		MiningExecution execution = new MiningExecution(env);
-		execution.execute();
+		ShovelExecution.runMining(env, TARGET_FILE_EXTENSION);
 	}
 
 

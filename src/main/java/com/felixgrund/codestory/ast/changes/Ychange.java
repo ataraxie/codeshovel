@@ -1,15 +1,15 @@
 package com.felixgrund.codestory.ast.changes;
 
 import com.felixgrund.codestory.ast.services.RepositoryService;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 
 public abstract class Ychange {
 
 	protected String commitName;
-	protected Environment startEnv;
+	protected StartEnvironment startEnv;
 	protected RepositoryService repositoryService;
 
-	public Ychange(Environment startEnv, String commitName) {
+	public Ychange(StartEnvironment startEnv, String commitName) {
 		this.startEnv = startEnv;
 		this.commitName = commitName;
 		this.repositoryService = startEnv.getRepositoryService();
@@ -22,6 +22,10 @@ public abstract class Ychange {
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName();
+	}
+
+	public String getTypeAsString() {
+		return getClass().getSimpleName();
 	}
 
 }

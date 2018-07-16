@@ -3,6 +3,7 @@ package com.felixgrund.codestory.ast.parser.impl;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.parser.AbstractFunction;
 import com.felixgrund.codestory.ast.parser.Yfunction;
+import com.felixgrund.codestory.ast.util.Utl;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -30,7 +31,7 @@ public class JavaFunction extends AbstractFunction implements Yfunction {
 		if (StringUtils.isNotBlank(idParameterString)) {
 			ident += "___" + idParameterString;
 		}
-		return ident;
+		return Utl.sanitizeFunctionId(ident);
 	}
 
 	@Override

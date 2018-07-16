@@ -1,7 +1,7 @@
 package com.felixgrund.codestory.ast.tasks;
 
 import com.felixgrund.codestory.ast.services.RepositoryService;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class GitRangeLogTask {
 
 	private RepositoryService repositoryService;
 
-	public GitRangeLogTask(AnalysisTask startTask, Environment startEnv) {
+	public GitRangeLogTask(AnalysisTask startTask, StartEnvironment startEnv) {
 		this.startTask = startTask;
 		this.repositoryService = startEnv.getRepositoryService();
 	}

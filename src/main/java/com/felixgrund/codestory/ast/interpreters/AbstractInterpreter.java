@@ -5,7 +5,7 @@ import com.felixgrund.codestory.ast.entities.Ycommit;
 import com.felixgrund.codestory.ast.parser.Yfunction;
 import com.felixgrund.codestory.ast.parser.Yparser;
 import com.felixgrund.codestory.ast.services.RepositoryService;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 import com.felixgrund.codestory.ast.util.ParserFactory;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -19,14 +19,14 @@ public abstract class AbstractInterpreter {
 
 	protected RepositoryService repositoryService;
 
-	protected Environment startEnv;
+	protected StartEnvironment startEnv;
 	protected Ycommit ycommit;
 	protected Repository repository;
 	protected String repositoryName;
 
 	protected abstract Ychange interpret() throws Exception;
 
-	public AbstractInterpreter(Environment startEnv, Ycommit ycommit) {
+	public AbstractInterpreter(StartEnvironment startEnv, Ycommit ycommit) {
 		this.startEnv = startEnv;
 		this.repository = startEnv.getRepository();
 		this.repositoryName = startEnv.getRepositoryName();

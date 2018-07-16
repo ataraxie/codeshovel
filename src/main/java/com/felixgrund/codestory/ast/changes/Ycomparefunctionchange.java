@@ -1,7 +1,7 @@
 package com.felixgrund.codestory.ast.changes;
 
 import com.felixgrund.codestory.ast.parser.Yfunction;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 import com.felixgrund.codestory.ast.util.Utl;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -19,7 +19,7 @@ public abstract class Ycomparefunctionchange extends Ychange {
 	private List<RevCommit> commitsBetweenForRepo;
 	private List<RevCommit> commitsBetweenForFile;
 
-	public Ycomparefunctionchange(Environment startEnv, Yfunction newFunction, Yfunction oldFunction) {
+	public Ycomparefunctionchange(StartEnvironment startEnv, Yfunction newFunction, Yfunction oldFunction) {
 		super(startEnv, newFunction.getCommitName());
 		this.newFunction = newFunction;
 		this.oldFunction = oldFunction;

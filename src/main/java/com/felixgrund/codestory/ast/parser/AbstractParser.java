@@ -3,7 +3,7 @@ package com.felixgrund.codestory.ast.parser;
 import com.felixgrund.codestory.ast.changes.*;
 import com.felixgrund.codestory.ast.entities.*;
 import com.felixgrund.codestory.ast.exceptions.ParseException;
-import com.felixgrund.codestory.ast.wrappers.Environment;
+import com.felixgrund.codestory.ast.wrappers.StartEnvironment;
 import com.felixgrund.codestory.ast.util.Utl;
 import com.felixgrund.codestory.ast.wrappers.FunctionSimilarity;
 import org.eclipse.jgit.lib.Repository;
@@ -15,12 +15,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 public abstract class AbstractParser implements Yparser {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractParser.class);
 
-	private Environment startEnv;
+	private StartEnvironment startEnv;
 
 	protected String filePath;
 	protected String fileContent;
@@ -33,7 +34,7 @@ public abstract class AbstractParser implements Yparser {
 	public abstract String getAcceptedFileExtension();
 	protected abstract Object parse() throws ParseException;
 
-	public AbstractParser(Environment startEnv, String filePath, String fileContent, RevCommit commit) throws ParseException {
+	public AbstractParser(StartEnvironment startEnv, String filePath, String fileContent, RevCommit commit) throws ParseException {
 		this.startEnv = startEnv;
 
 		this.repository = startEnv.getRepository();
@@ -105,7 +106,7 @@ public abstract class AbstractParser implements Yparser {
 
 	@Override
 	public Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile, boolean writeOutputFile) {
-		log.info("Trying to find most similar function");
+		log.trace("Trying to find most similar function");
 		Map<Yfunction, FunctionSimilarity> similarities = new HashMap<>();
 		List<Yfunction> candidatesWithSameName = new ArrayList<>();
 		for (Yfunction candidate : candidates) {
@@ -118,7 +119,7 @@ public abstract class AbstractParser implements Yparser {
 				// If we are in-file just return because the ID will exist only once.
 				// If we are cross-file, take bodySimilarity as an additional measure.
 				if (!crossFile || bodySimilarity > 0.8) {
-					log.info("Found function with same ID and bodySimilarity > 0.8. Done.");
+					log.trace("Found function with same ID and bodySimilarity > 0.8. Done.");
 					return candidate;
 				}
 			}
@@ -129,7 +130,7 @@ public abstract class AbstractParser implements Yparser {
 
 			// If the body is 100% equal we assume it's the correct candidate.
 			if (bodySimilarity == 1) {
-				log.info("Found function with body similarity of 1. Done.");
+				log.trace("Found function with body similarity of 1. Done.");
 				return candidate;
 			}
 
@@ -141,7 +142,7 @@ public abstract class AbstractParser implements Yparser {
 					lineNumberDistance = Utl.getLineNumberDistance(candidate, compareFunction);
 				}
 				if (crossFile || lineNumberDistance < 10) {
-					log.info("Found function with body similarity > 0.9 and line distance < 10 and scope similarity of 1. Done.");
+					log.trace("Found function with body similarity > 0.9 and line distance < 10 and scope similarity of 1. Done.");
 					return candidate;
 				}
 			}
@@ -176,23 +177,23 @@ public abstract class AbstractParser implements Yparser {
 		}
 
 		FunctionSimilarity similarity = similarities.get(mostSimilarFunction);
-		log.info("Highest similarity with overall similarity of {}: {}", similarity);
+		log.trace("Highest similarity with overall similarity of {}: {}", similarity);
 
 		if (writeOutputFile) {
 			Utl.writeJsonSimilarity(this.repositoryName, this.filePath, compareFunction, mostSimilarFunction, similarity);
 		}
 
 		if (mostSimilarFunctionSimilarity > 0.85) {
-			log.info("Highest similarity is > 0.85. Accepting function.");
+			log.trace("Highest similarity is > 0.85. Accepting function.");
 			return mostSimilarFunction;
 		}
 
 		if (candidatesWithSameName.size() == 1 && mostSimilarFunctionSimilarity > 0.7) {
-			log.info("Highest similarity was < 0.85. But found single candidate with same function name and similarity > 0.7. Done.");
+			log.trace("Highest similarity was < 0.85. But found single candidate with same function name and similarity > 0.7. Done.");
 			return candidatesWithSameName.get(0);
 		}
 
-		log.info("Highest similarity was < 0.85 and did not find single candidate with same name. Unable to find matching candidate.");
+		log.trace("Highest similarity was < 0.85 and did not find single candidate with same name. Unable to find matching candidate.");
 		return null;
 	}
 }
