@@ -13,6 +13,7 @@ import com.felixgrund.codeshovel.tasks.GitRangeLogTask;
 import com.felixgrund.codeshovel.tasks.RecursiveAnalysisTask;
 import com.felixgrund.codeshovel.util.ParserFactory;
 import com.felixgrund.codeshovel.util.Utl;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,8 +87,11 @@ public class ShovelExecution {
 
 			Utl.writeGitDiff(commitName, diffFilepath, startEnv.getRepository(), startEnv.getRepositoryName());
 		}
-		JsonResult jsonResultCodestory = new JsonResult("codeshovel", task, codeshovelHistory, changeHistoryDetails, changeHistoryShort);
-		Utl.writeJsonResultToFile(jsonResultCodestory);
+
+		printAsJson(changeHistoryShort);
+
+		JsonResult jsonResultCodeshovel = new JsonResult("codeshovel", task, codeshovelHistory, changeHistoryDetails, changeHistoryShort);
+		Utl.writeJsonResultToFile(jsonResultCodeshovel);
 
 		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
 		gitRangeLogTask.run();
@@ -97,11 +101,11 @@ public class ShovelExecution {
 		Utl.printMethodHistory(gitLogHistory);
 		Utl.writeJsonResultToFile(jsonResultLogCommand);
 
-		createAndWriteSemanticDiff("gitlog", jsonResultCodestory, codeshovelHistory, gitLogHistory);
+		createAndWriteSemanticDiff("gitlog", jsonResultCodeshovel, codeshovelHistory, gitLogHistory);
 
 		List<String> customBaselineHistory = startEnv.getBaseline();
 		if (customBaselineHistory != null) {
-			createAndWriteSemanticDiff("custom", jsonResultCodestory, codeshovelHistory, customBaselineHistory);
+			createAndWriteSemanticDiff("custom", jsonResultCodeshovel, codeshovelHistory, customBaselineHistory);
 		}
 
 		printMethodEnd(method);
@@ -111,17 +115,24 @@ public class ShovelExecution {
 
 	private static void createAndWriteSemanticDiff(String baselineName, JsonResult result,
 									   List<String> codeshovelHistory, List<String> baselineHistory) {
-		List<String> onlyInCodestory = new ArrayList<>(codeshovelHistory);
-		onlyInCodestory.removeAll(baselineHistory);
+		List<String> onlyInCodeshovel = new ArrayList<>(codeshovelHistory);
+		onlyInCodeshovel.removeAll(baselineHistory);
 
 		List<String> onlyInBaseline = new ArrayList<>(baselineHistory);
 		onlyInBaseline.removeAll(codeshovelHistory);
 
-		if (onlyInCodestory.size() > 0 || onlyInBaseline.size() > 0) {
+		if (onlyInCodeshovel.size() > 0 || onlyInBaseline.size() > 0) {
 			log.trace("Found difference in change history. Writing files.");
 			JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codeshovelHistory, baselineHistory,
-					onlyInCodestory, onlyInBaseline);
+					onlyInCodeshovel, onlyInBaseline);
 			Utl.writeSemanticDiff(baselineName, result, diff);
+		}
+	}
+
+	private static void printAsJson(Map<String, String> changeHistoryShort) {
+		System.out.println("");
+		for (String commitName : changeHistoryShort.keySet()) {
+			System.out.println("\""+ commitName +"\": " + "\""+ changeHistoryShort.get(commitName) +"\",");
 		}
 	}
 	

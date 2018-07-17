@@ -11,7 +11,7 @@ public class JsonChangeHistoryDiff {
 
 	private List<String> codeshovelHistory;
 	private List<String> baselineHistory;
-	private List<String> onlyInCodestory;
+	private List<String> onlyInCodeshovel;
 	private List<String> onlyInBaseline;
 
 	public JsonChangeHistoryDiff(
@@ -22,7 +22,7 @@ public class JsonChangeHistoryDiff {
 
 		this.codeshovelHistory = codeshovelHistory;
 		this.baselineHistory = baselineHistory;
-		this.onlyInCodestory = onlyInCodeshovel;
+		this.onlyInCodeshovel = onlyInCodeshovel;
 		this.onlyInBaseline = onlyInBaseline;
 	}
 
