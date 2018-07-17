@@ -1,4 +1,4 @@
-package com.felixgrund.codeshovel;
+package com.felixgrund.codeshovel.tasks;
 
 import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.changes.Ycomparefunctionchange;

@@ -2,7 +2,7 @@ package com.felixgrund.codeshovel.json;
 
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.changes.Ychange;
-import com.felixgrund.codeshovel.AnalysisTask;
+import com.felixgrund.codeshovel.tasks.AnalysisTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

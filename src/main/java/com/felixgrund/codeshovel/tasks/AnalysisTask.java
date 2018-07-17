@@ -1,4 +1,4 @@
-package com.felixgrund.codeshovel;
+package com.felixgrund.codeshovel.tasks;
 
 import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.Ycommit;

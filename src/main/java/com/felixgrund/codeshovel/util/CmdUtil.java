@@ -22,7 +22,7 @@ public class CmdUtil {
 
 	public static String gitDiffParent(String commitName, String filePath, File repositoryDir) throws Exception {
 		Runtime runtime = Runtime.getRuntime();
-		String diffCommand = String.format("git diff --unified=50 %s~1 %s %s", commitName, commitName, filePath);
+		String diffCommand = String.format("git diff --unified=50 %s~1:%s %s:%s", commitName, filePath, commitName, filePath);
 		String[] cmd = {
 				"/bin/sh",
 				"-c",

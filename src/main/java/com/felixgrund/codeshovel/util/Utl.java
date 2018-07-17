@@ -8,7 +8,7 @@ import com.felixgrund.codeshovel.wrappers.FunctionSimilarity;
 import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
 import com.felixgrund.codeshovel.json.JsonResult;
 import com.felixgrund.codeshovel.parser.Yfunction;
-import com.felixgrund.codeshovel.AnalysisTask;
+import com.felixgrund.codeshovel.tasks.AnalysisTask;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.jgit.lib.Repository;

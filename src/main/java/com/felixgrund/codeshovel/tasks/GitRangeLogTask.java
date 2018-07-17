@@ -1,4 +1,4 @@
-package com.felixgrund.codeshovel;
+package com.felixgrund.codeshovel.tasks;
 
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
