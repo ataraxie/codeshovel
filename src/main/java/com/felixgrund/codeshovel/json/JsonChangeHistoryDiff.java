@@ -9,32 +9,38 @@ public class JsonChangeHistoryDiff {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-	private List<String> codeshovelChangeHistory;
-	private List<String> gitRangeLogHistory;
+	private List<String> codeshovelHistory;
+	private List<String> baselineHistory;
 	private List<String> onlyInCodestory;
-	private List<String> onlyInGitRangeLog;
+	private List<String> onlyInBaseline;
+	private String baselineType;
 
 
 	public JsonChangeHistoryDiff(
-			List<String> codeshovelChangeHistory,
-			List<String> gitRangeLogHistory,
-			List<String> onlyInCodestory,
-			List<String> onlyInGitRangeLog) {
+			List<String> codeshovelHistory,
+			List<String> baselineHistory,
+			List<String> onlyInCodeshovel,
+			List<String> onlyInBaseline,
+			String baselineType) {
 
-		this.codeshovelChangeHistory = codeshovelChangeHistory;
-		this.onlyInCodestory = onlyInCodestory;
-		this.onlyInGitRangeLog = onlyInGitRangeLog;
-		this.gitRangeLogHistory = gitRangeLogHistory;
+		this.codeshovelHistory = codeshovelHistory;
+		this.baselineHistory = baselineHistory;
+		this.onlyInCodestory = onlyInCodeshovel;
+		this.onlyInBaseline = onlyInBaseline;
+		this.baselineType = baselineType;
 	}
 
 	public List<String> getOnlyInCodestory() {
 		return onlyInCodestory;
 	}
 
-	public List<String> getOnlyInGitRangeLog() {
-		return onlyInGitRangeLog;
+	public List<String> getOnlyInBaseline() {
+		return onlyInBaseline;
 	}
 
+	public String getBaselineType() {
+		return baselineType;
+	}
 
 	public String toJson() {
 		return GSON.toJson(this);

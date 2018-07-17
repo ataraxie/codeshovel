@@ -1,0 +1,14 @@
+## Create baseline from IntelliJ
+
+Either:
+* Select whole method > Right-click > Show history for selection
+* Right-click on method > Show history for method (only Java)
+
+Then in the history view: Select all (cmd+a) > Right-click > Copy revision number
+
+The clipboard will contain the revision numbers separated by spaces.
+
+I wrote a command that makes it content as we require it for our JSON object (right in the clipboard):
+pbpaste | tr " " "\n" | sed -n '1!G;h;$p' | sed -E "s/^(.*)$/\"\1\",/" | pbcopy
+
+Note that pbpaste and pbcopy are Mac-specific.

@@ -67,14 +67,14 @@ public class ShovelExecution {
 		recursiveAnalysisTask.run();
 
 		Yresult yresult = recursiveAnalysisTask.getResult();
-		List<String> codeshovelChangeHistory = new ArrayList<>();
+		List<String> codeshovelHistory = new ArrayList<>();
 		Map<String, Ychange> changeHistoryDetails = new LinkedHashMap<>();
 		Map<String, String> changeHistoryShort = new LinkedHashMap<>();
 
 		log.trace("Creating method history and writing git diffs for result history...");
 		for (Ycommit ycommit : yresult.keySet()) {
 			String commitName = ycommit.getName();
-			codeshovelChangeHistory.add(commitName);
+			codeshovelHistory.add(commitName);
 			Ychange change = yresult.get(ycommit);
 			changeHistoryDetails.put(commitName, change);
 			changeHistoryShort.put(commitName, change.getTypeAsString());
@@ -86,31 +86,33 @@ public class ShovelExecution {
 
 			Utl.writeGitDiff(commitName, diffFilepath, startEnv.getRepository(), startEnv.getRepositoryName());
 		}
-		JsonResult jsonResultCodestory = new JsonResult("codeshovel", task, codeshovelChangeHistory, changeHistoryDetails, changeHistoryShort);
+		JsonResult jsonResultCodestory = new JsonResult("codeshovel", task, codeshovelHistory, changeHistoryDetails, changeHistoryShort);
 		Utl.writeJsonResultToFile(jsonResultCodestory);
 
-		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
-		gitRangeLogTask.run();
-		List<String> gitRangeLogChangeHistory = gitRangeLogTask.getResult();
-		JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, gitRangeLogChangeHistory, null, null);
-		Utl.printMethodHistory(gitRangeLogChangeHistory);
+		List<String> baselineHistory = startEnv.getBaseline();
+		String baselineType = "Custom";
+		if (baselineHistory == null) {
+			GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
+			gitRangeLogTask.run();
+			baselineHistory = gitRangeLogTask.getResult();
+			baselineType = "GitRangeLogTask";
+		}
+
+		JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, baselineHistory, null, null);
+		Utl.printMethodHistory(baselineHistory);
 		Utl.writeJsonResultToFile(jsonResultLogCommand);
 
-		List<String> onlyInCodestory = new ArrayList<>(codeshovelChangeHistory);
-		onlyInCodestory.removeAll(gitRangeLogChangeHistory);
+		List<String> onlyInCodestory = new ArrayList<>(codeshovelHistory);
+		onlyInCodestory.removeAll(baselineHistory);
 
-		List<String> onlyInGitRangeLog = new ArrayList<>(gitRangeLogChangeHistory);
-		onlyInGitRangeLog.removeAll(codeshovelChangeHistory);
+		List<String> onlyInBaseline = new ArrayList<>(baselineHistory);
+		onlyInBaseline.removeAll(codeshovelHistory);
 
-		if (onlyInCodestory.size() > 0 || onlyInGitRangeLog.size() > 0) {
+		if (onlyInCodestory.size() > 0 || onlyInBaseline.size() > 0) {
 			log.trace("Found difference in change history. Writing files.");
-			JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codeshovelChangeHistory, gitRangeLogChangeHistory,
-					onlyInCodestory, onlyInGitRangeLog);
+			JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codeshovelHistory, baselineHistory,
+					onlyInCodestory, onlyInBaseline, baselineType);
 			Utl.writeSemanticDiff(jsonResultCodestory, diff);
-
-			Set<String> commitsForDiff = new HashSet<>();
-			commitsForDiff.addAll(onlyInCodestory);
-			commitsForDiff.addAll(onlyInGitRangeLog);
 		}
 
 		printMethodEnd(method);

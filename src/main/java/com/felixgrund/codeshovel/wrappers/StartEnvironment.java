@@ -6,6 +6,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class StartEnvironment {
 
@@ -24,6 +25,7 @@ public class StartEnvironment {
 	private RevCommit startCommit;
 
 	private LinkedHashMap<String, String> expectedResult;
+	private List<String> baseline;
 
 	public StartEnvironment(RepositoryService repositoryService) {
 		this.repositoryService = repositoryService;
@@ -125,5 +127,13 @@ public class StartEnvironment {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public void setBaseline(List<String> baseline) {
+		this.baseline = baseline;
+	}
+
+	public List<String> getBaseline() {
+		return baseline;
 	}
 }
