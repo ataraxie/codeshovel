@@ -175,9 +175,9 @@ public class Utl {
 		);
 	}
 
-	public static void writeSemanticDiff(JsonResult originalJsonResult, JsonChangeHistoryDiff diff) {
+	public static void writeSemanticDiff(String baselineName, JsonResult originalJsonResult, JsonChangeHistoryDiff diff) {
 		writeOutputFile(
-				"diff_semantic", originalJsonResult.getStartCommitName(), originalJsonResult.getSourceFilePath(),
+				"diff_semantic_" + baselineName, originalJsonResult.getStartCommitName(), originalJsonResult.getSourceFilePath(),
 				originalJsonResult.getFunctionId(), originalJsonResult.getRepositoryName(), diff.toJson(), ".json"
 		);
 	}

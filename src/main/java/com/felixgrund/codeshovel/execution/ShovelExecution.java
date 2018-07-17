@@ -89,19 +89,28 @@ public class ShovelExecution {
 		JsonResult jsonResultCodestory = new JsonResult("codeshovel", task, codeshovelHistory, changeHistoryDetails, changeHistoryShort);
 		Utl.writeJsonResultToFile(jsonResultCodestory);
 
-		List<String> baselineHistory = startEnv.getBaseline();
-		String baselineType = "Custom";
-		if (baselineHistory == null) {
-			GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
-			gitRangeLogTask.run();
-			baselineHistory = gitRangeLogTask.getResult();
-			baselineType = "GitRangeLogTask";
-		}
+		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
+		gitRangeLogTask.run();
+		List<String> gitLogHistory = gitRangeLogTask.getResult();
 
-		JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, baselineHistory, null, null);
-		Utl.printMethodHistory(baselineHistory);
+		JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, gitLogHistory, null, null);
+		Utl.printMethodHistory(gitLogHistory);
 		Utl.writeJsonResultToFile(jsonResultLogCommand);
 
+		createAndWriteSemanticDiff("gitlog", jsonResultCodestory, codeshovelHistory, gitLogHistory);
+
+		List<String> customBaselineHistory = startEnv.getBaseline();
+		if (customBaselineHistory != null) {
+			createAndWriteSemanticDiff("custom", jsonResultCodestory, codeshovelHistory, customBaselineHistory);
+		}
+
+		printMethodEnd(method);
+
+		return yresult;
+	}
+
+	private static void createAndWriteSemanticDiff(String baselineName, JsonResult result,
+									   List<String> codeshovelHistory, List<String> baselineHistory) {
 		List<String> onlyInCodestory = new ArrayList<>(codeshovelHistory);
 		onlyInCodestory.removeAll(baselineHistory);
 
@@ -111,13 +120,9 @@ public class ShovelExecution {
 		if (onlyInCodestory.size() > 0 || onlyInBaseline.size() > 0) {
 			log.trace("Found difference in change history. Writing files.");
 			JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codeshovelHistory, baselineHistory,
-					onlyInCodestory, onlyInBaseline, baselineType);
-			Utl.writeSemanticDiff(jsonResultCodestory, diff);
+					onlyInCodestory, onlyInBaseline);
+			Utl.writeSemanticDiff(baselineName, result, diff);
 		}
-
-		printMethodEnd(method);
-
-		return yresult;
 	}
 	
 	private static void printFileStart(String filePath) {
