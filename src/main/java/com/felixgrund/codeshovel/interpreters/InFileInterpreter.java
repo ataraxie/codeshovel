@@ -53,11 +53,11 @@ public class InFileInterpreter extends AbstractInterpreter {
 
 		int numChanges = changes.size();
 		if (numChanges > 1) {
-			interpretation = new Ymultichange(this.startEnv, this.ycommit.getName(), changes);
+			interpretation = new Ymultichange(this.startEnv, this.ycommit.getCommit(), changes);
 		} else if (numChanges == 1) {
 			interpretation = changes.get(0);
 		} else {
-			interpretation = new Ynochange(this.startEnv, this.ycommit.getName());
+			interpretation = new Ynochange(this.startEnv, this.ycommit.getCommit());
 		}
 
 		return interpretation;

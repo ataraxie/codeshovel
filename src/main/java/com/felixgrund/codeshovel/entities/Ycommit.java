@@ -10,8 +10,6 @@ import java.util.Date;
 
 public class Ycommit {
 
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy:HH:mm");
-
 	private String hash;
 	private Date date;
 
@@ -90,7 +88,7 @@ public class Ycommit {
 	}
 
 	public String toString() {
-		return DATE_FORMAT.format(date) + " " + hash;
+		return Utl.DATE_FORMAT.format(date) + " " + hash;
 	}
 
 	public String getName() {

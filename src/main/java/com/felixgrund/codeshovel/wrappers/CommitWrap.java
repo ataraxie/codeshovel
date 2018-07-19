@@ -9,37 +9,47 @@ import java.util.Date;
 public class CommitWrap {
 
 	private RevCommit revCommit;
-	private Date commitDate;
-	private String authorName;
-	private String authorEmail;
 
 	public CommitWrap(RevCommit revCommit) {
 		this.revCommit = revCommit;
-		this.commitDate = Utl.getCommitDate(revCommit);
-		try {
-			PersonIdent ident = revCommit.getAuthorIdent();
-			this.authorName = ident.getName();
-			this.authorEmail = ident.getEmailAddress();
-		} catch (Exception e) {
-			this.authorName = "";
-			this.authorEmail = "";
-			System.err.println("Could not parse author for commit " + Utl.getCommitNameShort(revCommit));
-		}
 	}
 
 	public Date getCommitDate() {
-		return commitDate;
+		return Utl.getCommitDate(revCommit);
 	}
 
 	public String getAuthorName() {
+		String authorName = "";
+		try {
+			PersonIdent ident = revCommit.getAuthorIdent();
+			authorName = ident.getName();
+		} catch (Exception e) {
+			System.err.println("Could not parse author for commit " + Utl.getCommitNameShort(revCommit));
+		}
 		return authorName;
 	}
 
 	public String getAuthorEmail() {
+		String authorEmail = "";
+		try {
+			PersonIdent ident = revCommit.getAuthorIdent();
+			authorEmail = ident.getEmailAddress();
+		} catch (Exception e) {
+			System.err.println("Could not parse author for commit " + Utl.getCommitNameShort(revCommit));
+		}
 		return authorEmail;
 	}
 
-	public RevCommit getRevCommit() {
-		return revCommit;
+	public String getCommitMessage() {
+		return revCommit.getFullMessage();
 	}
+
+	public String getCommitName() {
+		return revCommit.getName();
+	}
+
+	public String getCommitDateAsString() {
+		return Utl.DATE_FORMAT.format(getCommitDate());
+	}
+
 }

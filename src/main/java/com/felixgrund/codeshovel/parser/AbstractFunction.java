@@ -1,6 +1,7 @@
 package com.felixgrund.codeshovel.parser;
 
 import com.felixgrund.codeshovel.entities.Yparameter;
+import com.felixgrund.codeshovel.util.Utl;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -32,6 +33,14 @@ public abstract class AbstractFunction implements Yfunction {
 			parts.add(part);
 		}
 		return StringUtils.join(parts, "__");
+	}
+
+	@Override
+	public String getSourceFragment() {
+		int beginLine = getNameLineNumber();
+		int endLine = getEndLineNumber();
+		String source = getSourceFileContent();
+		return Utl.getTextFragment(source, beginLine, endLine);
 	}
 
 	@Override

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="codeshovel.css" />
+
+
+    <link rel="stylesheet" type="text/css" href="diff2html.min.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+
+    <script>
+
+        var templates = {};
+        templates['side-by-side-file-diff'] = `
+            <div id="{{fileHtmlId}}" class="d2h-file-wrapper" data-lang="{{file.language}}">
+                <div class="d2h-file-header">
+                  {{{filePath}}}
+                </div>
+                <div class="d2h-files-diff">
+                    <div class="d2h-file-side-diff">
+                        <div class="d2h-code-wrapper">
+                            <table class="d2h-diff-table">
+                                <tbody class="d2h-diff-tbody">
+                                {{{diffs.left}}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="d2h-file-side-diff">
+                        <div class="d2h-code-wrapper">
+                            <table class="d2h-diff-table">
+                                <tbody class="d2h-diff-tbody">
+                                {{{diffs.right}}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+
+        templates['generic-file-path'] = `
+            <span class="d2h-file-name-wrapper">
+                <span class="d2h-icon-wrapper">{{>fileIcon}}</span>
+                <span class="d2h-file-name">{{fileDiffName}}</span>
+                {{>fileTag}}
+            </span>
+        `;
+
+		$(document).ready(function() {
+			var ui = new Diff2HtmlUI({diff: "--- a/src/cmd/trace/goroutines.go\n" +
+				"+++ b/src/cmd/trace/goroutines.go\n" +
+				"@@ -1,8 +1,8 @@\n" +
+				"     public static Pattern createPattern(String pattern, int flags) {\n" +
+				"         try {\n" +
+				"             return Pattern.compile(pattern, flags);\n" +
+				"         }\n" +
+				"         catch (final PatternSyntaxException ex) {\n" +
+				"-            throw new ConversionException(\n" +
+				"+            throw new IllegalArgumentException(\n" +
+				"                 \"Failed to initialise regular expression \" + pattern, ex);\n" +
+				"         }\n" +
+				"}"});
+			ui.draw('#diff', {inputFormat: 'diff', outputFormat: "side-by-side", showFiles: false, matching: 'lines'
+                ,rawTemplates: {
+				    'side-by-side-file-diff': templates['side-by-side-file-diff'],
+					'generic-file-path': templates['generic-file-path']
+			    }
+			});
+		});
+    </script>
+</head>
+<body>
+
+<div id="diff"></div>
+
+<div id="wrapper">
+
+    <div class="row" id="row-diff">
+        <div class="column" id="col-diff-left">
+
+        </div>
+        <div class="column" id="col-diff-right">
+
+        </div>
+    </div>
+
+    <div class="row" id="row-data">
+        <table>
+            <thead>
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="row" id="row-description">
+        Test
+    </div>
+</div>
+
+
+
+</body>
+</html>

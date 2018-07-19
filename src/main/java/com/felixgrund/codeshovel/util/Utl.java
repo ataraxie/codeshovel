@@ -10,6 +10,7 @@ import com.felixgrund.codeshovel.json.JsonResult;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.tasks.AnalysisTask;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -17,11 +18,17 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 public class Utl {
+
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy, HH:mm");
 
 	public static Repository createRepository(String repositoryPath) throws IOException {
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
@@ -135,9 +142,7 @@ public class Utl {
 		}
 
 		try {
-			if (!file.exists()) {
-				FileUtils.writeStringToFile(file, content, "utf-8");
-			}
+			FileUtils.writeStringToFile(file, content, "utf-8");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -208,8 +213,18 @@ public class Utl {
 		Utl.writeSimilarityToFile(jsonSimilarity, compareFunction.getId(), repoName, filePath);
 	}
 
+	public static String getTextFragment(String text, int beginLine, int endLine) {
+		List<String> lines = getLines(text);
+		List<String> fragmentLines = lines.subList(beginLine - 1, endLine);
+		return StringUtils.join(fragmentLines, "\n");
+	}
+
+	public static List<String> getLines(String string) {
+		return Arrays.asList(string.split("\r\n|\r|\n"));
+	}
+
 	public static int countLineNumbers(String string) {
-		return string.split("\r\n|\r|\n").length;
+		return getLines(string).size();
 	}
 
 	public static Date getCommitDate(RevCommit revCommit) {
@@ -224,7 +239,10 @@ public class Utl {
 
 	public static double getDaysBetweenCommits(RevCommit oldCommit, RevCommit newCommit) {
 		long msBetweenCommits = getMsBetweenCommits(oldCommit, newCommit);
-		return (double) msBetweenCommits / (1000*60*60*24);
+		double daysBetweenNotRounded = (double) msBetweenCommits / (1000*60*60*24);
+		BigDecimal decimal = new BigDecimal(daysBetweenNotRounded);
+		decimal = decimal.setScale(2, RoundingMode.HALF_UP);
+		return decimal.doubleValue();
 	}
 
 	public static int getLineNumberDistance(Yfunction aFunction, Yfunction bFunction) {

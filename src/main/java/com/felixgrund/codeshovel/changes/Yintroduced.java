@@ -8,7 +8,7 @@ public class Yintroduced extends Ychange {
 	private Yfunction newFunction;
 
 	public Yintroduced(StartEnvironment startEnv, Yfunction newFunction) {
-		super(startEnv, newFunction.getCommitName());
+		super(startEnv, newFunction.getCommit());
 		this.newFunction = newFunction;
 	}
 

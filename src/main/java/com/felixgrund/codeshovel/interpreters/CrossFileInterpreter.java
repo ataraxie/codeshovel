@@ -59,7 +59,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 					if (allChanges.size() == 1) {
 						ret = allChanges.get(0);
 					} else {
-						ret = new Ymultichange(this.startEnv, this.startFunction.getCommitName(), allChanges);
+						ret = new Ymultichange(this.startEnv, this.startFunction.getCommit(), allChanges);
 					}
 				}
 			}

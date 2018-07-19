@@ -1,22 +1,28 @@
 package com.felixgrund.codeshovel.changes;
 
 import com.felixgrund.codeshovel.services.RepositoryService;
+import com.felixgrund.codeshovel.wrappers.CommitWrap;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
+import org.eclipse.jgit.revwalk.RevCommit;
+
+import java.util.Date;
 
 public abstract class Ychange {
 
-	protected String commitName;
+	protected RevCommit commit;
 	protected StartEnvironment startEnv;
 	protected RepositoryService repositoryService;
+	protected CommitWrap commitWrap;
 
-	public Ychange(StartEnvironment startEnv, String commitName) {
+	public Ychange(StartEnvironment startEnv, RevCommit commit) {
 		this.startEnv = startEnv;
-		this.commitName = commitName;
+		this.commit = commit;
+		this.commitWrap = new CommitWrap(commit);
 		this.repositoryService = startEnv.getRepositoryService();
 	}
 
-	public String getCommitName() {
-		return commitName;
+	public CommitWrap getCommitWrap() {
+		return commitWrap;
 	}
 
 	@Override
