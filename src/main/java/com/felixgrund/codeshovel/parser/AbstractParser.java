@@ -106,6 +106,20 @@ public abstract class AbstractParser implements Yparser {
 	}
 
 	@Override
+	public List<Ysignaturechange> getMajorChanges(Ycommit commit, Yfunction compareFunction) throws Exception {
+		List<Ysignaturechange> changes = new ArrayList<>();
+		Yparameterchange yparameterchange = getParametersChange(commit, compareFunction);
+		Yrename yinfilerename = getFunctionRename(commit, compareFunction);
+		if (yinfilerename != null) {
+			changes.add(yinfilerename);
+		}
+		if (yparameterchange != null) {
+			changes.add(yparameterchange);
+		}
+		return changes;
+	}
+
+	@Override
 	public Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile, boolean writeOutputFile) {
 		log.trace("Trying to find most similar function");
 		Map<Yfunction, FunctionSimilarity> similarities = new HashMap<>();

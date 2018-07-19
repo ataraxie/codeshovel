@@ -1,10 +1,15 @@
 package com.felixgrund.codeshovel.changes;
 
 import com.felixgrund.codeshovel.util.Utl;
+import com.felixgrund.codeshovel.wrappers.CommitWrap;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.parser.Yfunction;
+import org.eclipse.jgit.diff.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +20,17 @@ public abstract class Ycomparefunctionchange extends Ychange {
 	protected Yfunction newFunction;
 	protected Yfunction oldFunction;
 
+	protected CommitWrap oldCommitWrap;
+
+	protected String diffString;
+
 	private Double daysBetweenCommits;
 	private List<RevCommit> commitsBetweenForRepo;
 	private List<RevCommit> commitsBetweenForFile;
 
 	public Ycomparefunctionchange(StartEnvironment startEnv, Yfunction newFunction, Yfunction oldFunction) {
-		super(startEnv, newFunction.getCommitName());
+		super(startEnv, newFunction.getCommit());
+		this.oldCommitWrap = new CommitWrap(oldFunction.getCommit());
 		this.newFunction = newFunction;
 		this.oldFunction = oldFunction;
 	}
@@ -96,4 +106,32 @@ public abstract class Ycomparefunctionchange extends Ychange {
 		return commitsBetweenForFile;
 	}
 
+	public String getDiffAsString() {
+		if (this.diffString == null) {
+			String sourceOldString = oldFunction.getSourceFragment();
+			String sourceNewString = newFunction.getSourceFragment();
+			RawText sourceOld = new RawText(oldFunction.getSourceFragment().getBytes());
+			RawText sourceNew = new RawText(newFunction.getSourceFragment().getBytes());
+			DiffAlgorithm diffAlgorithm = new HistogramDiff();
+			RawTextComparator textComparator = RawTextComparator.DEFAULT;
+			EditList editList = diffAlgorithm.diff(textComparator, sourceOld, sourceNew);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			DiffFormatter formatter = new DiffFormatter(out);
+
+			try {
+				int numLinesOld = Utl.getLines(sourceOldString).size();
+				int numLinesNew = Utl.getLines(sourceNewString).size();
+				formatter.setContext(1000);
+				formatter.format(editList, sourceOld, sourceNew);
+				this.diffString = out.toString(StandardCharsets.UTF_8.name());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return diffString;
+	}
+
+	public CommitWrap getOldCommitWrap() {
+		return oldCommitWrap;
+	}
 }

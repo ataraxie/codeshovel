@@ -32,6 +32,8 @@ public interface Yfunction {
 	String getSourceFileContent();
 	String getSourceFilePath();
 
+	String getSourceFragment();
+
 	Repository getRepository();
 
 }
