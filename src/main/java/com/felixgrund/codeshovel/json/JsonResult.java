@@ -36,11 +36,12 @@ public class JsonResult {
 		this.origin = origin;
 		this.repositoryName = startEnv.getRepositoryName();
 		this.repositoryPath = startEnv.getRepositoryPath();
-		this.startCommitName = startEnv.getStartCommitName();
-		this.sourceFileName = startEnv.getFileName();
-		this.functionName = startEnv.getFunctionName();
-		this.functionStartLine = startEnv.getFunctionStartLine();
-		this.sourceFilePath = startEnv.getFilePath();
+
+		this.startCommitName = startTask.getStartCommitName();
+		this.sourceFileName = startTask.getFileName();
+		this.sourceFilePath = startTask.getFilePath();
+		this.functionName = startTask.getFunctionName();
+		this.functionStartLine = startTask.getFunctionStartLine();
 
 		this.functionEndLine = startTask.getFunctionEndLine();
 		this.functionId = startTask.getStartFunction().getId();
