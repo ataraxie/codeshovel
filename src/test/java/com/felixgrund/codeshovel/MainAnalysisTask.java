@@ -51,7 +51,7 @@ public class MainAnalysisTask {
 
 		System.out.println("Running dynamic test for config: " + configName);
 
-		ShovelExecution.runSingle(startEnv);
+		ShovelExecution.runSingle(startEnv, startEnv.getFilePath(), true);
 
 	}
 
