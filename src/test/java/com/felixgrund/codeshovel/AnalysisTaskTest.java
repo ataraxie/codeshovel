@@ -28,13 +28,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AnalysisTaskTest {
 
 	private static final String CODESTORY_REPO_DIR = System.getenv("codeshovel.repo.dir");
-	private static final String STUBS_DIR = "stubs/js";
+	private static final String STUBS_DIR = "stubs/java";
 
 	private static final Gson GSON = new Gson();
 
 	// Specify file name (without file extension) if you want to run only a single test.
 	// e.g. "checkstyle-Checker-fireErrors";
-	private static final String RUN_ONLY_TEST = "jquery-ajax-ajax-2";
+	private static final String RUN_ONLY_TEST = "okcurl-Main-protocols";
 
 	private static List<StartEnvironment> startEnvs = new ArrayList<>();
 
