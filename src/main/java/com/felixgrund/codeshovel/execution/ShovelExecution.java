@@ -24,12 +24,14 @@ public class ShovelExecution {
 	private static final Logger log = LoggerFactory.getLogger(ShovelExecution.class);
 
 	public static Yresult runMining(StartEnvironment startEnv, String acceptedFileExtension) throws Exception {
+		// We stopped gathering results for mining executions in heap space (which was crazy anyways).
+		// So this result will remain empty. The result files are written within the executions.
 		Yresult yresult = new Yresult();
 		printMiningStart(startEnv);
 		List<String> filePaths = startEnv.getRepositoryService().findFilesByExtension(startEnv.getStartCommit(), acceptedFileExtension);
 		for (String filePath : filePaths) {
 			if (startEnv.getFilePath() == null || filePath.contains(startEnv.getFilePath())) {
-				yresult.putAll(runSingle(startEnv));
+				runSingle(startEnv, filePath, false);
 			}
 		}
 		printMiningEnd(startEnv);
@@ -37,18 +39,27 @@ public class ShovelExecution {
 		return yresult;
 	}
 
-	public static Yresult runSingle(StartEnvironment startEnv) throws Exception {
+	public static Yresult runSingle(StartEnvironment startEnv, String filePath, boolean accumulateResults) throws Exception {
 		Yresult yresult = new Yresult();
-		String filePath = startEnv.getFilePath();
 		printFileStart(filePath);
 		String startFileContent = startEnv.getRepositoryService().findFileContent(startEnv.getStartCommit(), filePath);
 		Yparser parser = ParserFactory.getParser(startEnv, filePath, startFileContent, startEnv.getStartCommit());
 		for (Yfunction method : parser.getAllFunctions()) {
-			if (startEnv.getFunctionName() == null || startEnv.getFunctionName().equals(method.getName())) {
-				if (startEnv.getFunctionStartLine() <= 0 || startEnv.getFunctionStartLine() == method.getNameLineNumber()) {
-					yresult.putAll(runForMethod(startEnv, filePath, method));
+			try {
+				if (startEnv.getFunctionName() == null || startEnv.getFunctionName().equals(method.getName())) {
+					if (startEnv.getFunctionStartLine() <= 0 || startEnv.getFunctionStartLine() == method.getNameLineNumber()) {
+						if (accumulateResults) {
+							yresult.putAll(runForMethod(startEnv, filePath, method));
+						} else {
+							runForMethod(startEnv, filePath, method);
+						}
+					}
 				}
+			} catch (Exception e) {
+				log.error("Error occurred running mining for method {} in file {}. Skipping.", method.getName(), filePath);
+				e.printStackTrace();
 			}
+
 		}
 		printFileEnd(filePath);
 		return yresult;

@@ -10,13 +10,7 @@ global.SHOVEL = SHOVEL;
 let Handlebars = require('handlebars/runtime');
 
 const shovelTemplates = {
-	body: require('../templates/body.hbs'),
-	result: require('../templates/result.hbs'),
-	resultError: require('../templates/result-error.hbs'),
-	conditions: require('../templates/conditions.hbs'),
-	transformations: require('../templates/transformations.hbs'),
-	checkbox: require('../templates/checkbox.hbs'),
-	dropdownOption: require('../templates/dropdown-option.hbs')
+	commitTable: require('../templates/commit-table.hbs')
 };
 
 let templates = {};
@@ -59,6 +53,7 @@ templates["generic-file-path"] = `
 
 let history = SHOVEL.changeHistory;
 let changes = [];
+let columns = ["type", "commitMessage", "commitDate", "commitName", "commitAuthor", "commitDateOld", "commitNameOld", "commitAuthorOld", "daysBetweenCommits", "commitsBetweenForRepo", "commitsBetweenForFile"];
 
 for (let commitName of history) {
 	let change = SHOVEL.changeHistoryDetails[commitName];
@@ -66,6 +61,11 @@ for (let commitName of history) {
 }
 
 console.log(changes);
+
+console.log(shovelTemplates.commitTable({
+	columns: columns,
+	changes: changes
+}));
 
 let ui = new Diff2HtmlUI({diff: "--- a/src/cmd/trace/goroutines.go\n" +
 	"+++ b/src/cmd/trace/goroutines.go\n" +

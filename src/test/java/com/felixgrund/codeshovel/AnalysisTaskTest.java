@@ -75,7 +75,7 @@ public class AnalysisTaskTest {
 			startEnv.setStartCommit(startCommit);
 			startEnv.setFileName(Utl.getFileName(filePath));
 
-			Yresult yresult = ShovelExecution.runSingle(startEnv);
+			Yresult yresult = ShovelExecution.runSingle(startEnv, startEnv.getFilePath(), true);
 
 			DynamicTest test = createDynamicTest(startEnv, yresult);
 			dynamicTests.add(test);
