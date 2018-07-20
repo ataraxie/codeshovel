@@ -29,11 +29,22 @@ public class ShovelExecution {
 		Yresult yresult = new Yresult();
 		printMiningStart(startEnv);
 		List<String> filePaths = startEnv.getRepositoryService().findFilesByExtension(startEnv.getStartCommit(), acceptedFileExtension);
+		List<String> filePathsToConsider = new ArrayList<>();
 		for (String filePath : filePaths) {
 			if (startEnv.getFilePath() == null || filePath.contains(startEnv.getFilePath())) {
-				runSingle(startEnv, filePath, false);
+				filePathsToConsider.add(filePath);
 			}
 		}
+
+		int numFilePaths = filePathsToConsider.size();
+		System.err.println("Found " +numFilePaths+ " files to analyze");
+		int index = 1;
+		for (String filePath : filePathsToConsider) {
+			printProgress(index, numFilePaths);
+			runSingle(startEnv, filePath, false);
+			index++;
+		}
+
 		printMiningEnd(startEnv);
 
 		return yresult;
@@ -56,7 +67,7 @@ public class ShovelExecution {
 					}
 				}
 			} catch (Exception e) {
-				log.error("Error occurred running mining for method {} in file {}. Skipping.", method.getName(), filePath);
+				log.error("SHOVEL_ERR: Error occurred running mining for method {} in file {}. Skipping.", method.getName(), filePath);
 				e.printStackTrace();
 			}
 
@@ -141,9 +152,12 @@ public class ShovelExecution {
 	}
 
 	private static void printAsJson(Map<String, String> changeHistoryShort) {
-		System.out.println("");
+		System.err.println("");
+		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%% RESULT %%%%%%%%%%%%%%%%%%%%%%%%");
+		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 		for (String commitName : changeHistoryShort.keySet()) {
-			System.out.println("\""+ commitName +"\": " + "\""+ changeHistoryShort.get(commitName) +"\",");
+			System.err.println("\""+ commitName +"\": " + "\""+ changeHistoryShort.get(commitName) +"\",");
 		}
 	}
 	
@@ -175,6 +189,14 @@ public class ShovelExecution {
 	private static void printMiningStart(StartEnvironment startEnv) {
 		System.out.println("#########################################################################");
 		System.out.println("STARTING MINING ANALYSIS FOR REPO AND PATH: " + startEnv.getRepositoryName() + " - " + startEnv.getFilePath());
+	}
+
+	private static void printProgress(int index, int numFilePaths) {
+		System.err.println("");
+		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.err.println("%%%%%%%%%%%%%%%%%%%%%% FILE " + index + " / " + numFilePaths + " %%%%%%%%%%%%%%%%%%%%%");
+		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.err.println("");
 	}
 
 }

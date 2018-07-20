@@ -4,7 +4,7 @@ public class MiningTestJava extends MiningTest {
 
 	static {
 		TARGET_FILE_EXTENSION = ".java";
-		TARGET_FILE_PATH = "src/main/java/com/puppycrawl/tools/checkstyle/utils";
+		TARGET_FILE_PATH = "src/main/java";
 		CODESTORY_REPO_DIR = System.getenv("codeshovel.repo.dir");
 		REPO = "checkstyle";
 		START_COMMIT = "119fd4fb33bef9f5c66fc950396669af842c21a3";

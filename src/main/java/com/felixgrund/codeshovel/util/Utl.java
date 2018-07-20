@@ -15,6 +15,8 @@ import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +31,8 @@ import java.util.Objects;
 public class Utl {
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy, HH:mm");
+
+	private static final Logger log = LoggerFactory.getLogger(Utl.class);
 
 	public static Repository createRepository(String repositoryPath) throws IOException {
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
