@@ -3,21 +3,21 @@ package com.felixgrund.codeshovel.wrappers;
 import com.felixgrund.codeshovel.util.Utl;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.Date;
 
-public class RevCommit {
+public class Commit {
 
 	private String authorName;
 	private String authorEmail;
 	private String commitMessage;
 	private String name;
-	private String nameShort;
 	private Date commitDate;
 	private long commitTime;
 	private ObjectId id;
 
-	public RevCommit(org.eclipse.jgit.revwalk.RevCommit revCommit) {
+	public Commit(RevCommit revCommit) {
 		setName(revCommit); // this must be called first!
 		setAuthorName(revCommit);
 		setAuthorEmail(revCommit);
@@ -30,7 +30,7 @@ public class RevCommit {
 		return id;
 	}
 
-	public void setId(org.eclipse.jgit.revwalk.RevCommit revCommit) {
+	public void setId(RevCommit revCommit) {
 		this.id = revCommit.getId();
 	}
 
@@ -38,15 +38,15 @@ public class RevCommit {
 		return commitTime;
 	}
 
-	public void setCommitTime(org.eclipse.jgit.revwalk.RevCommit revCommit) {
+	public void setCommitTime(RevCommit revCommit) {
 		this.commitTime = revCommit.getCommitTime();
 	}
 
-	public void setCommitDate(org.eclipse.jgit.revwalk.RevCommit revCommit) {
+	public void setCommitDate(RevCommit revCommit) {
 		this.commitDate = new Date((long) 1000 * revCommit.getCommitTime());
 	}
 
-	public String setAuthorName(org.eclipse.jgit.revwalk.RevCommit revCommit) {
+	public String setAuthorName(RevCommit revCommit) {
 		this.authorName = "";
 		try {
 			PersonIdent ident = revCommit.getAuthorIdent();
@@ -57,7 +57,7 @@ public class RevCommit {
 		return authorName;
 	}
 
-	public String setAuthorEmail(org.eclipse.jgit.revwalk.RevCommit revCommit) {
+	public String setAuthorEmail(RevCommit revCommit) {
 		this.authorEmail = "";
 		try {
 			PersonIdent ident = revCommit.getAuthorIdent();
@@ -68,15 +68,15 @@ public class RevCommit {
 		return authorEmail;
 	}
 
-	public void setCommitMessage(org.eclipse.jgit.revwalk.RevCommit revCommit) {
+	public void setCommitMessage(RevCommit revCommit) {
 		this.commitMessage = revCommit.getFullMessage();
 	}
 
-	public void setName(org.eclipse.jgit.revwalk.RevCommit revCommit) {
+	public void setName(RevCommit revCommit) {
 		this.name = revCommit.getName();
 	}
 
-	public String getCommitDateAsString(RevCommit revCommit) {
+	public String getCommitDateAsString(Commit revCommit) {
 		return Utl.DATE_FORMAT.format(this.commitDate);
 	}
 

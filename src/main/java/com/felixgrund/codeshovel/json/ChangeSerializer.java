@@ -3,7 +3,7 @@ package com.felixgrund.codeshovel.json;
 import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.changes.Ycomparefunctionchange;
 import com.felixgrund.codeshovel.changes.Ymultichange;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
@@ -15,7 +15,7 @@ public class ChangeSerializer implements JsonSerializer<Ychange> {
 			 Type typeOfSrc, JsonSerializationContext context) {
 
 		JsonObject obj = new JsonObject();
-		RevCommit commitWrap = change.getCommit();
+		Commit commitWrap = change.getCommit();
 		obj.addProperty("type", change.getTypeAsString());
 		obj.addProperty("commitMessage", commitWrap.getCommitMessage());
 		obj.addProperty("commitDate", commitWrap.getCommitDate().getTime());
@@ -30,7 +30,7 @@ public class ChangeSerializer implements JsonSerializer<Ychange> {
 		}
 		if (change instanceof Ycomparefunctionchange) {
 			Ycomparefunctionchange ycomparefunctionchange = (Ycomparefunctionchange) change;
-			RevCommit oldCommitWrap = ycomparefunctionchange.getOldCommit();
+			Commit oldCommitWrap = ycomparefunctionchange.getOldCommit();
 			obj.addProperty("commitDateOld", oldCommitWrap.getCommitDate().getTime());
 			obj.addProperty("commitNameOld", oldCommitWrap.getName());
 			obj.addProperty("commitAuthorOld", oldCommitWrap.getAuthorName());

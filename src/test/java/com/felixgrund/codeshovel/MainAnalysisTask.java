@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.io.File;
 import java.util.Date;
@@ -45,7 +45,7 @@ public class MainAnalysisTask {
 		Repository repository = Utl.createRepository(repositoryPath);
 		Git git = new Git(repository);
 		RepositoryService repositoryService = new CachingRepositoryService(git, repository, repositoryName, repositoryPath);
-		RevCommit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
+		Commit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
 
 		startEnv.setRepositoryService(repositoryService);
 		startEnv.setStartCommit(startCommit);

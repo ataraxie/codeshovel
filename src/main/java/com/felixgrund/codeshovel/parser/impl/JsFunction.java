@@ -7,12 +7,11 @@ import com.felixgrund.codeshovel.entities.Yreturn;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.util.Utl;
-import com.felixgrund.codeshovel.entities.*;
 import jdk.nashorn.internal.ir.FunctionNode;
 import jdk.nashorn.internal.ir.IdentNode;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,7 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 		return ident;
 	}
 
-	public JsFunction(FunctionNode node, Repository repository, RevCommit commit, String sourceFilePath, String sourceFileContent) {
+	public JsFunction(FunctionNode node, Repository repository, Commit commit, String sourceFilePath, String sourceFileContent) {
 		super(repository, commit, sourceFilePath, sourceFileContent);
 		this.node = node;
 	}

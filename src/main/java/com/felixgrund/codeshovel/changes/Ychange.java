@@ -1,22 +1,22 @@
 package com.felixgrund.codeshovel.changes;
 
 import com.felixgrund.codeshovel.services.RepositoryService;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 
 public abstract class Ychange {
 
-	protected RevCommit commit;
+	protected Commit commit;
 	protected StartEnvironment startEnv;
 	protected RepositoryService repositoryService;
 
-	public Ychange(StartEnvironment startEnv, RevCommit commit) {
+	public Ychange(StartEnvironment startEnv, Commit commit) {
 		this.startEnv = startEnv;
 		this.commit = commit;
 		this.repositoryService = startEnv.getRepositoryService();
 	}
 
-	public RevCommit getCommit() {
+	public Commit getCommit() {
 		return commit;
 	}
 

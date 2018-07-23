@@ -56,7 +56,7 @@ public class ShovelExecution {
 		String startFileContent = startEnv.getRepositoryService().findFileContent(startEnv.getStartCommit(), filePath);
 		Yparser parser = ParserFactory.getParser(startEnv, filePath, startFileContent, startEnv.getStartCommit());
 		for (Yfunction method : parser.getAllFunctions()) {
-//			try {
+			try {
 				if (startEnv.getFunctionName() == null || startEnv.getFunctionName().equals(method.getName())) {
 					if (startEnv.getFunctionStartLine() <= 0 || startEnv.getFunctionStartLine() == method.getNameLineNumber()) {
 						if (accumulateResults) {
@@ -66,10 +66,10 @@ public class ShovelExecution {
 						}
 					}
 				}
-//			} catch (Exception e) {
-//				log.error("SHOVEL_ERR: Error occurred running mining for method {} in file {}. Skipping.", method.getName(), filePath);
-//				e.printStackTrace();
-//			}
+			} catch (Exception e) {
+				log.error("SHOVEL_ERR: Error occurred running mining for method {} in file {}. Skipping.", method.getName(), filePath);
+				e.printStackTrace();
+			}
 
 		}
 		printFileEnd(filePath);

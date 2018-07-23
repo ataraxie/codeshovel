@@ -5,7 +5,8 @@ import org.eclipse.jgit.diff.*;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.patch.FileHeader;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 import java.io.IOException;
@@ -30,21 +31,21 @@ public class Ydiff {
 
 	private List<String> oldPaths;
 
-	public Ydiff(RepositoryService repositoryService, RevCommit commit, RevCommit prevCommit, boolean detectRenames) throws IOException {
+	public Ydiff(RepositoryService repositoryService, Commit commit, Commit prevCommit, boolean detectRenames) throws IOException {
 		this.repositoryService = repositoryService;
 		this.repository = repositoryService.getRepository();
 		init(commit, prevCommit, detectRenames);
 	}
 
-	private void init(RevCommit commit, RevCommit prevCommit, boolean detectRenames) throws IOException {
+	private void init(Commit commit, Commit prevCommit, boolean detectRenames) throws IOException {
 		ObjectReader objectReader = this.repository.newObjectReader();
 		CanonicalTreeParser treeParserNew = new CanonicalTreeParser();
 		OutputStream outputStream = System.out;
 		this.diffFormatter = new DiffFormatter(outputStream);
 		this.diffFormatter.setRepository(this.repository);
 		this.diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
-		org.eclipse.jgit.revwalk.RevCommit revCommit = repositoryService.findRevCommitById(commit.getId());
-		org.eclipse.jgit.revwalk.RevCommit prevRevCommit = repositoryService.findRevCommitById(prevCommit.getId());
+		RevCommit revCommit = repositoryService.findRevCommitById(commit.getId());
+		RevCommit prevRevCommit = repositoryService.findRevCommitById(prevCommit.getId());
 		treeParserNew.reset(objectReader, revCommit.getTree());
 		CanonicalTreeParser treeParserOld = new CanonicalTreeParser();
 		treeParserOld.reset(objectReader, prevRevCommit.getTree());

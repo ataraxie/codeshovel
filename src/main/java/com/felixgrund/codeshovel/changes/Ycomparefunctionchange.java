@@ -1,7 +1,7 @@
 package com.felixgrund.codeshovel.changes;
 
 import com.felixgrund.codeshovel.util.Utl;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import org.eclipse.jgit.diff.*;
@@ -19,13 +19,13 @@ public abstract class Ycomparefunctionchange extends Ychange {
 	protected Yfunction newFunction;
 	protected Yfunction oldFunction;
 
-	protected RevCommit oldCommit;
+	protected Commit oldCommit;
 
 	protected String diffString;
 
 	private Double daysBetweenCommits;
-	private List<RevCommit> commitsBetweenForRepo;
-	private List<RevCommit> commitsBetweenForFile;
+	private List<Commit> commitsBetweenForRepo;
+	private List<Commit> commitsBetweenForFile;
 
 	public Ycomparefunctionchange(StartEnvironment startEnv, Yfunction newFunction, Yfunction oldFunction) {
 		super(startEnv, newFunction.getCommit());
@@ -75,7 +75,7 @@ public abstract class Ycomparefunctionchange extends Ychange {
 		return daysBetweenCommits;
 	}
 
-	public List<RevCommit> getCommitsBetweenForRepo() {
+	public List<Commit> getCommitsBetweenForRepo() {
 		if (this.commitsBetweenForRepo == null) {
 			this.commitsBetweenForRepo = new ArrayList<>();
 			try {
@@ -90,7 +90,7 @@ public abstract class Ycomparefunctionchange extends Ychange {
 		return commitsBetweenForRepo;
 	}
 
-	public List<RevCommit> getCommitsBetweenForFile() {
+	public List<Commit> getCommitsBetweenForFile() {
 		if (this.commitsBetweenForFile == null) {
 			this.commitsBetweenForFile = new ArrayList<>();
 			try {
@@ -130,7 +130,7 @@ public abstract class Ycomparefunctionchange extends Ychange {
 		return diffString;
 	}
 
-	public RevCommit getOldCommit() {
+	public Commit getOldCommit() {
 		return oldCommit;
 	}
 }

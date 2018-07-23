@@ -8,7 +8,7 @@ import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.util.ParserFactory;
 import org.eclipse.jgit.lib.Repository;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public abstract class AbstractInterpreter {
 		this.ycommit = ycommit;
 	}
 
-	protected Yparser createParserForCommitAndFile(RevCommit commit, String filePath) throws Exception {
+	protected Yparser createParserForCommitAndFile(Commit commit, String filePath) throws Exception {
 		Yparser ret = null;
 		String fileContent = repositoryService.findFileContent(commit, filePath);
 		if (fileContent != null) {
@@ -43,7 +43,7 @@ public abstract class AbstractInterpreter {
 		return ret;
 	}
 
-	protected List<Yfunction> getRemovedFunctions(RevCommit commitNew, RevCommit commitOld, String filePath) throws Exception {
+	protected List<Yfunction> getRemovedFunctions(Commit commitNew, Commit commitOld, String filePath) throws Exception {
 		List<Yfunction> ret = new ArrayList<>();
 		Yparser parserOld = createParserForCommitAndFile(commitOld, filePath);
 		Yparser parserNew = createParserForCommitAndFile(commitNew, filePath);

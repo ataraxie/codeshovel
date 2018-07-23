@@ -2,13 +2,13 @@ package com.felixgrund.codeshovel.entities;
 
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 public class Ycommit {
 
 	private String hash;
 
-	private RevCommit commit;
+	private Commit commit;
 	private Ycommit prev;
 
 	private Yfunction matchedFunction;
@@ -24,12 +24,12 @@ public class Ycommit {
 	// Only for serialization
 	public Ycommit() {}
 
-	public Ycommit(RevCommit commit) {
+	public Ycommit(Commit commit) {
 		this.commit = commit;
 		this.hash = commit.getName();
 	}
 
-	public RevCommit getCommit() {
+	public Commit getCommit() {
 		return commit;
 	}
 

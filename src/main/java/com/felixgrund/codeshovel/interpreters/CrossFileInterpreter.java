@@ -4,11 +4,10 @@ import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Ydiff;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
-import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
 import org.eclipse.jgit.diff.DiffEntry;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +26,8 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 
 	public Ychange interpret() throws Exception {
 		Ychange ret = null;
-		RevCommit commit = this.startFunction.getCommit();
-		RevCommit prevCommit = repositoryService.getPrevCommitNeglectingFile(commit);
+		Commit commit = this.startFunction.getCommit();
+		Commit prevCommit = repositoryService.getPrevCommitNeglectingFile(commit);
 		if (prevCommit != null) {
 			Ydiff ydiff = new Ydiff(repositoryService, commit, prevCommit, true);
 			Map<String, DiffEntry> diffEntries = ydiff.getDiff();
@@ -67,7 +66,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 		return ret;
 	}
 
-	private Yfunction getCompareFunctionFromMultipleFiles(Ydiff ydiff, RevCommit prevCommit) throws Exception {
+	private Yfunction getCompareFunctionFromMultipleFiles(Ydiff ydiff, Commit prevCommit) throws Exception {
 		Yfunction ret = null;
 		List<Yfunction> allFunctions = new ArrayList<>();
 		for (String path : ydiff.getOldPaths()) {
@@ -83,7 +82,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 		return ret;
 	}
 
-	private Yfunction getCompareFunctionFromFile(String filePath, RevCommit commit) throws Exception {
+	private Yfunction getCompareFunctionFromFile(String filePath, Commit commit) throws Exception {
 		Yparser parser = createParserForCommitAndFile(commit, filePath);
 		List<Yfunction> allFunctions = parser.getAllFunctions();
 		Yfunction ret = this.startParser.getMostSimilarFunction(allFunctions, this.startFunction, false, false);

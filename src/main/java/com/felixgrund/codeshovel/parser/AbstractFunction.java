@@ -4,7 +4,7 @@ import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.util.Utl;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +14,9 @@ public abstract class AbstractFunction implements Yfunction {
 	private Repository repository;
 	private String sourceFilePath;
 	private String sourceFileContent;
-	private RevCommit commit;
+	private Commit commit;
 
-	public AbstractFunction(Repository repository, RevCommit commit, String sourceFilePath, String sourceFileContent) {
+	public AbstractFunction(Repository repository, Commit commit, String sourceFilePath, String sourceFileContent) {
 		this.repository = repository;
 		this.commit = commit;
 		this.sourceFilePath = sourceFilePath;
@@ -74,7 +74,7 @@ public abstract class AbstractFunction implements Yfunction {
 	}
 
 	@Override
-	public RevCommit getCommit() {
+	public Commit getCommit() {
 		return commit;
 	}
 }

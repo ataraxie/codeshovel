@@ -3,7 +3,7 @@ package com.felixgrund.codeshovel.util;
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.json.JsonSimilarity;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.FunctionSimilarity;
 import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
 import com.felixgrund.codeshovel.json.JsonResult;
@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -230,13 +229,13 @@ public class Utl {
 		return getLines(string).size();
 	}
 
-	public static long getMsBetweenCommits(RevCommit oldCommit, RevCommit newCommit) {
+	public static long getMsBetweenCommits(Commit oldCommit, Commit newCommit) {
 		long newCommitTime = newCommit.getCommitDate().getTime();
 		long oldCommitTime = oldCommit.getCommitDate().getTime();
 		return newCommitTime - oldCommitTime;
 	}
 
-	public static double getDaysBetweenCommits(RevCommit oldCommit, RevCommit newCommit) {
+	public static double getDaysBetweenCommits(Commit oldCommit, Commit newCommit) {
 		long msBetweenCommits = getMsBetweenCommits(oldCommit, newCommit);
 		double daysBetweenNotRounded = (double) msBetweenCommits / (1000*60*60*24);
 		BigDecimal decimal = new BigDecimal(daysBetweenNotRounded);

@@ -6,10 +6,8 @@ import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.FunctionSimilarity;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
-import com.felixgrund.codeshovel.changes.*;
-import com.felixgrund.codeshovel.entities.*;
 import org.eclipse.jgit.lib.Repository;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +24,7 @@ public abstract class AbstractParser implements Yparser {
 
 	protected String filePath;
 	protected String fileContent;
-	protected RevCommit commit;
+	protected Commit commit;
 	protected String repositoryName;
 	protected Repository repository;
 
@@ -35,7 +33,7 @@ public abstract class AbstractParser implements Yparser {
 	public abstract String getAcceptedFileExtension();
 	protected abstract Object parse() throws ParseException;
 
-	public AbstractParser(StartEnvironment startEnv, String filePath, String fileContent, RevCommit commit) throws ParseException {
+	public AbstractParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
 		this.startEnv = startEnv;
 
 		this.repository = startEnv.getRepository();

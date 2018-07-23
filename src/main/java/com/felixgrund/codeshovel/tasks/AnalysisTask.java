@@ -16,7 +16,8 @@ import com.felixgrund.codeshovel.util.ParserFactory;
 import com.felixgrund.codeshovel.util.Utl;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
-import com.felixgrund.codeshovel.wrappers.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
@@ -25,11 +26,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AnalysisTask {
-
-	private static boolean CROSS_FILE = true;
 
 	private StartEnvironment startEnv;
 	private RepositoryService repositoryService;
@@ -100,7 +98,7 @@ public class AnalysisTask {
 			InFileInterpreter ifi = new InFileInterpreter(this.startEnv, ycommit);
 			Ychange ychange = ifi.interpret();
 			if (!(ychange instanceof Ynochange)) {
-				if (CROSS_FILE && ychange instanceof Yintroduced) {
+				if (ychange instanceof Yintroduced) {
 					CrossFileInterpreter cfi = new CrossFileInterpreter(this.startEnv, ycommit);
 					Ychange crossFileChange = cfi.interpret();
 					if (crossFileChange != null) {
@@ -141,7 +139,7 @@ public class AnalysisTask {
 		Utl.checkNotNull("functionName", this.functionName);
 		Utl.checkNotNull("functionStartLine", this.functionStartLine);
 
-		RevCommit commit = repositoryService.findCommitByName(this.startCommitName);
+		Commit commit = repositoryService.findCommitByName(this.startCommitName);
 		Utl.checkNotNull("startCommit", commit);
 
 		String startFileContent = repositoryService.findFileContent(commit, this.filePath);
@@ -169,16 +167,16 @@ public class AnalysisTask {
 
 		Ycommit lastConsideredCommit = null;
 		for (String commitName : yhistory.getCommits().keySet()) {
-			RevCommit commit = yhistory.getCommits().get(commitName);
+			Commit commit = yhistory.getCommits().get(commitName);
 			try {
-				org.eclipse.jgit.revwalk.RevCommit revCommit = yhistory.getRevCommits().get(commit.getName());
+				RevCommit revCommit = yhistory.getRevCommits().get(commit.getName());
 				Ycommit ycommit = getOrCreateYcommit(commit, lastConsideredCommit);
 				if (ycommit.getMatchedFunction() == null) {
 					break;
 				}
 				if (revCommit.getParentCount() > 0) {
-					org.eclipse.jgit.revwalk.RevCommit parentRevCommit = revCommit.getParent(0);
-					RevCommit parentCommit = new RevCommit(parentRevCommit);
+					RevCommit parentRevCommit = revCommit.getParent(0);
+					Commit parentCommit = new Commit(parentRevCommit);
 					Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
 					ycommit.setPrev(parentYcommit);
 					Ydiff ydiff = new Ydiff(repositoryService, commit, parentCommit, false);
@@ -192,7 +190,7 @@ public class AnalysisTask {
 		}
 	}
 
-	private Ycommit getOrCreateYcommit(RevCommit commit, Ycommit fromChildCommit)
+	private Ycommit getOrCreateYcommit(Commit commit, Ycommit fromChildCommit)
 			throws ParseException, IOException, NoParserFoundException {
 
 		String commitName = commit.getName();
@@ -218,7 +216,7 @@ public class AnalysisTask {
 		return ycommit;
 	}
 
-	private Ycommit createBaseYcommit(RevCommit commit) throws IOException {
+	private Ycommit createBaseYcommit(Commit commit) throws IOException {
 		Ycommit ret = new Ycommit(commit);
 		ret.setFileName(this.fileName);
 		ret.setFilePath(this.filePath);
