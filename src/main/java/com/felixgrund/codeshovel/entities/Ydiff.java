@@ -1,11 +1,11 @@
 package com.felixgrund.codeshovel.entities;
 
-import com.github.javaparser.printer.lexicalpreservation.Difference;
+import com.felixgrund.codeshovel.services.RepositoryService;
 import org.eclipse.jgit.diff.*;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.patch.FileHeader;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 import java.io.IOException;
@@ -21,9 +21,8 @@ public class Ydiff {
 
 	private static final int RENAME_SCORE = 60;
 
+	private RepositoryService repositoryService;
 	private Repository repository;
-	private RevCommit commit;
-	private RevCommit prevCommit;
 
 	private List<DiffEntry> diffEntries;
 	private Map<String, DiffEntry> diff;
@@ -31,23 +30,24 @@ public class Ydiff {
 
 	private List<String> oldPaths;
 
-	public Ydiff(Repository repository, RevCommit commit, RevCommit prevCommit, boolean detectRenames) throws IOException {
-		this.repository = repository;
-		this.commit = commit;
-		this.prevCommit = prevCommit;
-		init(detectRenames);
+	public Ydiff(RepositoryService repositoryService, RevCommit commit, RevCommit prevCommit, boolean detectRenames) throws IOException {
+		this.repositoryService = repositoryService;
+		this.repository = repositoryService.getRepository();
+		init(commit, prevCommit, detectRenames);
 	}
 
-	private void init(boolean detectRenames) throws IOException {
+	private void init(RevCommit commit, RevCommit prevCommit, boolean detectRenames) throws IOException {
 		ObjectReader objectReader = this.repository.newObjectReader();
 		CanonicalTreeParser treeParserNew = new CanonicalTreeParser();
 		OutputStream outputStream = System.out;
 		this.diffFormatter = new DiffFormatter(outputStream);
 		this.diffFormatter.setRepository(this.repository);
 		this.diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
-		treeParserNew.reset(objectReader, this.commit.getTree());
+		org.eclipse.jgit.revwalk.RevCommit revCommit = repositoryService.findRevCommitById(commit.getId());
+		org.eclipse.jgit.revwalk.RevCommit prevRevCommit = repositoryService.findRevCommitById(prevCommit.getId());
+		treeParserNew.reset(objectReader, revCommit.getTree());
 		CanonicalTreeParser treeParserOld = new CanonicalTreeParser();
-		treeParserOld.reset(objectReader, this.prevCommit.getTree());
+		treeParserOld.reset(objectReader, prevRevCommit.getTree());
 		this.diffEntries = this.diffFormatter.scan(treeParserOld, treeParserNew);
 		if (detectRenames) {
 			RenameDetector rd = new RenameDetector(repository);

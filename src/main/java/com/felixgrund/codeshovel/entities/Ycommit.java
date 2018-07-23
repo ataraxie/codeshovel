@@ -2,16 +2,11 @@ package com.felixgrund.codeshovel.entities;
 
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
-import com.felixgrund.codeshovel.util.Utl;
-import org.eclipse.jgit.revwalk.RevCommit;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 public class Ycommit {
 
 	private String hash;
-	private Date date;
 
 	private RevCommit commit;
 	private Ycommit prev;
@@ -32,7 +27,6 @@ public class Ycommit {
 	public Ycommit(RevCommit commit) {
 		this.commit = commit;
 		this.hash = commit.getName();
-		this.date = Utl.getCommitDate(commit);
 	}
 
 	public RevCommit getCommit() {
@@ -88,7 +82,7 @@ public class Ycommit {
 	}
 
 	public String toString() {
-		return Utl.DATE_FORMAT.format(date) + " " + hash;
+		return this.getCommit().getCommitDate() + " " + hash;
 	}
 
 	public String getName() {
@@ -96,7 +90,7 @@ public class Ycommit {
 	}
 
 	public String getShortName() {
-		return Utl.getCommitNameShort(this.commit);
+		return commit.getCommitNameShort();
 	}
 
 	public Ydiff getYdiff() {

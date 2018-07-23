@@ -2,17 +2,14 @@ package com.felixgrund.codeshovel.services.impl;
 
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.util.CmdUtil;
-import com.felixgrund.codeshovel.wrappers.CommitWrap;
-import com.google.common.collect.Lists;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 import com.sun.istack.internal.Nullable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
@@ -72,7 +69,7 @@ public class CachingRepositoryService implements RepositoryService {
 		for (RevCommit commit : history.values()) {
 			if (commit.getName().equals(oldCommit.getName())) {
 				break;
-			} else if (new CommitWrap(commit).getCommitDate().before(new CommitWrap(oldCommit).getCommitDate())) {
+			} else if (commit.getCommitDate().before(oldCommit.getCommitDate())) {
 				break;
 			}
 			commits.add(commit);
@@ -104,16 +101,16 @@ public class CachingRepositoryService implements RepositoryService {
 		if (history == null) {
 			history = new LinkedHashMap<>();
 			try {
-				LogCommand logCommand = git.log().add(startCommit);
+				LogCommand logCommand = git.log().add(startCommit.getId());
 				if (filePath != null) {
 					logCommand.addPath(filePath);
 				}
 
 				logCommand.setRevFilter(RevFilter.NO_MERGES);
 
-				Iterable<RevCommit> fileRevisions = logCommand.call();
-				for (RevCommit commit : fileRevisions) {
-					history.put(commit.getName(), commit);
+				Iterable<org.eclipse.jgit.revwalk.RevCommit> fileRevisions = logCommand.call();
+				for (org.eclipse.jgit.revwalk.RevCommit commit : fileRevisions) {
+					history.put(commit.getName(), new RevCommit(commit));
 				}
 
 				saveHistoryToCache(startCommit, filePath, history);
@@ -128,7 +125,8 @@ public class CachingRepositoryService implements RepositoryService {
 	@Override
 	public String findFileContent(RevCommit commit, String filePath) throws IOException {
 		String ret = null;
-		RevTree tree = commit.getTree();
+		org.eclipse.jgit.revwalk.RevCommit revCommit = findRevCommitById(commit.getId());
+		RevTree tree = revCommit.getTree();
 		TreeWalk treeWalk = new TreeWalk(this.repository);
 		treeWalk.addTree(tree);
 		treeWalk.setRecursive(true);
@@ -143,7 +141,7 @@ public class CachingRepositoryService implements RepositoryService {
 	@Override
 	public List<String> findFilesByExtension(RevCommit commit, String fileExtension) throws Exception {
 		List<String> ret = new ArrayList<>();
-		RevTree tree = commit.getTree();
+		RevTree tree = findRevCommitById(commit.getId()).getTree();
 		TreeWalk treeWalk = new TreeWalk(this.repository);
 		treeWalk.addTree(tree);
 		treeWalk.setRecursive(true);
@@ -175,39 +173,12 @@ public class CachingRepositoryService implements RepositoryService {
 	}
 
 	@Override
-	public RevCommit findCommitByName(String commitName) throws IOException {
-		ObjectId objectId = ObjectId.fromString(commitName);
-		RevWalk revWalk = new RevWalk(this.repository);
-		return revWalk.parseCommit(revWalk.lookupCommit(objectId));
-	}
-
-	@Override
-	public RevCommit findHeadCommit(String branchName) throws IOException {
-		Ref masterRef = this.repository.findRef(branchName);
-		ObjectId masterId = masterRef.getObjectId();
-		RevWalk walk = new RevWalk(this.repository);
-		return walk.parseCommit(masterId);
-	}
-
-	@Override
-	public List<RevCommit> findCommitsForBranch(String branchName) throws IOException {
-		Ref masterRef = this.repository.findRef(branchName);
-		ObjectId masterId = masterRef.getObjectId();
-
-		RevWalk walk = new RevWalk(this.repository);
-		RevCommit headCommit = walk.parseCommit(masterId);
-
-		walk.markStart(headCommit);
-		Iterator<RevCommit> iterator = walk.iterator();
-		return Lists.newArrayList(iterator);
-	}
-
-	@Override
 	public RevCommit getPrevCommitNeglectingFile(RevCommit commit) throws IOException {
 		RevCommit ret = null;
-		if (commit.getParentCount() > 0) {
-			String prevCommitName = commit.getParent(0).getName();
-			ret = this.findCommitByName(prevCommitName);
+		org.eclipse.jgit.revwalk.RevCommit revCommit = findRevCommitById(commit.getId());
+		if (revCommit.getParentCount() > 0) {
+			ObjectId prevCommitId = revCommit.getParent(0).getId();
+			ret = new RevCommit(this.findRevCommitById(prevCommitId));
 		}
 
 		return ret;
@@ -218,11 +189,11 @@ public class CachingRepositoryService implements RepositoryService {
 
 		RevCommit startCommit = this.findCommitByName(startCommitName);
 
-		LogCommand logCommandFile = git.log().add(startCommit).addPath(filePath).setRevFilter(RevFilter.NO_MERGES);
-		Iterable<RevCommit> fileRevisions = logCommandFile.call();
+		LogCommand logCommandFile = git.log().add(startCommit.getId()).addPath(filePath).setRevFilter(RevFilter.NO_MERGES);
+		Iterable<org.eclipse.jgit.revwalk.RevCommit> fileRevisions = logCommandFile.call();
 		Map<String, RevCommit> fileHistory = new LinkedHashMap<>();
-		for (RevCommit commit : fileRevisions) {
-			fileHistory.put(commit.getName(), commit);
+		for (org.eclipse.jgit.revwalk.RevCommit commit : fileRevisions) {
+			fileHistory.put(commit.getName(), new RevCommit(commit));
 		}
 
 		List<String> commitNames = new ArrayList<>();
@@ -248,6 +219,16 @@ public class CachingRepositoryService implements RepositoryService {
 		return commitNames;
 	}
 
+	@Override
+	public RevCommit findCommitByName(String commitName) throws IOException {
+		ObjectId objectId = ObjectId.fromString(commitName);
+		return new RevCommit(findRevCommitById(objectId));
+	}
 
+	@Override
+	public org.eclipse.jgit.revwalk.RevCommit findRevCommitById(ObjectId id) throws IOException {
+		RevWalk revWalk = new RevWalk(this.repository);
+		return revWalk.parseCommit(revWalk.lookupCommit(id));
+	}
 
 }

@@ -8,7 +8,7 @@ import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.util.ParserFactory;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;

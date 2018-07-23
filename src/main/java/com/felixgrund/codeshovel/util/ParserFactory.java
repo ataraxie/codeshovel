@@ -6,7 +6,7 @@ import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.parser.impl.JavaParser;
 import com.felixgrund.codeshovel.parser.impl.JsParser;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 public class ParserFactory {
 

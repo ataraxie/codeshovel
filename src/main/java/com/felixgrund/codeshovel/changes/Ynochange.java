@@ -1,7 +1,7 @@
 package com.felixgrund.codeshovel.changes;
 
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 public class Ynochange extends Ychange {
 

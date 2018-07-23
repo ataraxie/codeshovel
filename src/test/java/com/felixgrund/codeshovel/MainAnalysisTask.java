@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.io.File;
 

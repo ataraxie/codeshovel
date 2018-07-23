@@ -9,7 +9,7 @@ import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.*;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

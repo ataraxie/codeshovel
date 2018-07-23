@@ -14,7 +14,7 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.type.ReferenceType;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;

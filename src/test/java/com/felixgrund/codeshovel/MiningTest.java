@@ -7,7 +7,7 @@ import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 class MiningTest {
 

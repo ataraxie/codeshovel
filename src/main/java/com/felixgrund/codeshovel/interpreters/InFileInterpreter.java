@@ -7,7 +7,7 @@ import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;

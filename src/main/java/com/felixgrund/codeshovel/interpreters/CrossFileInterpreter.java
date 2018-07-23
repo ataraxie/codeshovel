@@ -8,7 +8,7 @@ import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +27,10 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 
 	public Ychange interpret() throws Exception {
 		Ychange ret = null;
-		RevCommit commit = repositoryService.findCommitByName(this.startFunction.getCommitName());
+		RevCommit commit = this.startFunction.getCommit();
 		RevCommit prevCommit = repositoryService.getPrevCommitNeglectingFile(commit);
 		if (prevCommit != null) {
-			Ydiff ydiff = new Ydiff(this.repository, commit, prevCommit, true);
+			Ydiff ydiff = new Ydiff(repositoryService, commit, prevCommit, true);
 			Map<String, DiffEntry> diffEntries = ydiff.getDiff();
 			DiffEntry diffEntry = diffEntries.get(startFunction.getSourceFilePath());
 			if (diffEntry != null) {

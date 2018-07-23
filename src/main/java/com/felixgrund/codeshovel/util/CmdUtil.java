@@ -4,7 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 
 import java.io.BufferedReader;

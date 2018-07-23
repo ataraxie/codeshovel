@@ -4,9 +4,8 @@ import com.felixgrund.codeshovel.entities.Yexceptions;
 import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.entities.Yreturn;
-import com.felixgrund.codeshovel.entities.*;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.List;
 

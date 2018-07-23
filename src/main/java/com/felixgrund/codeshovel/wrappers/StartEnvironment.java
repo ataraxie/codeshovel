@@ -3,7 +3,7 @@ package com.felixgrund.codeshovel.wrappers;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.util.LinkedHashMap;
 import java.util.List;

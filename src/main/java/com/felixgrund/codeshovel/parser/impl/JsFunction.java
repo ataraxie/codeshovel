@@ -12,7 +12,7 @@ import jdk.nashorn.internal.ir.FunctionNode;
 import jdk.nashorn.internal.ir.IdentNode;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;

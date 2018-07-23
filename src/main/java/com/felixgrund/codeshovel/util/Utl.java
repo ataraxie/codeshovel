@@ -3,7 +3,7 @@ package com.felixgrund.codeshovel.util;
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.json.JsonSimilarity;
-import com.felixgrund.codeshovel.wrappers.CommitWrap;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 import com.felixgrund.codeshovel.wrappers.FunctionSimilarity;
 import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
 import com.felixgrund.codeshovel.json.JsonResult;
@@ -13,7 +13,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -231,13 +230,9 @@ public class Utl {
 		return getLines(string).size();
 	}
 
-	public static Date getCommitDate(RevCommit revCommit) {
-		return new Date((long) 1000 * revCommit.getCommitTime());
-	}
-
 	public static long getMsBetweenCommits(RevCommit oldCommit, RevCommit newCommit) {
-		long newCommitTime = new CommitWrap(newCommit).getCommitDate().getTime();
-		long oldCommitTime = new CommitWrap(oldCommit).getCommitDate().getTime();
+		long newCommitTime = newCommit.getCommitDate().getTime();
+		long oldCommitTime = oldCommit.getCommitDate().getTime();
 		return newCommitTime - oldCommitTime;
 	}
 
@@ -262,10 +257,6 @@ public class Utl {
 		double lineNumberDistance = getLineNumberDistance(aFunction, bFunction);
 		double similarity = (maxLines - lineNumberDistance) / maxLines;
 		return similarity;
-	}
-
-	public static String getCommitNameShort(RevCommit commit) {
-		return commit.getName().substring(0, 6);
 	}
 
 	public static String getFileExtensionWithoutDot(String filePath) {

@@ -2,7 +2,7 @@ package com.felixgrund.codeshovel.changes;
 
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;

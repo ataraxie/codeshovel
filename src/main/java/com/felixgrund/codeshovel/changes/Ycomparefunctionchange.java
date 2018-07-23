@@ -1,11 +1,10 @@
 package com.felixgrund.codeshovel.changes;
 
 import com.felixgrund.codeshovel.util.Utl;
-import com.felixgrund.codeshovel.wrappers.CommitWrap;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import org.eclipse.jgit.diff.*;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,7 +19,7 @@ public abstract class Ycomparefunctionchange extends Ychange {
 	protected Yfunction newFunction;
 	protected Yfunction oldFunction;
 
-	protected CommitWrap oldCommitWrap;
+	protected RevCommit oldCommit;
 
 	protected String diffString;
 
@@ -30,7 +29,7 @@ public abstract class Ycomparefunctionchange extends Ychange {
 
 	public Ycomparefunctionchange(StartEnvironment startEnv, Yfunction newFunction, Yfunction oldFunction) {
 		super(startEnv, newFunction.getCommit());
-		this.oldCommitWrap = new CommitWrap(oldFunction.getCommit());
+		this.oldCommit = oldFunction.getCommit();
 		this.newFunction = newFunction;
 		this.oldFunction = oldFunction;
 	}
@@ -131,7 +130,7 @@ public abstract class Ycomparefunctionchange extends Ychange {
 		return diffString;
 	}
 
-	public CommitWrap getOldCommitWrap() {
-		return oldCommitWrap;
+	public RevCommit getOldCommit() {
+		return oldCommit;
 	}
 }

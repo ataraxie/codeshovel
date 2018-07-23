@@ -3,7 +3,7 @@ package com.felixgrund.codeshovel.services;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -28,11 +28,10 @@ public interface RepositoryService {
 
 	RevCommit findCommitByName(String commitName) throws IOException;
 
-	RevCommit findHeadCommit(String branchName) throws IOException;
-
-	List<RevCommit> findCommitsForBranch(String branchName) throws IOException;
-
 	RevCommit getPrevCommitNeglectingFile(RevCommit commit) throws IOException;
 
 	List<String> gitLogRange(String startCommitName, int rangeStart, int rangeEnd, String filePath) throws Exception;
+
+	org.eclipse.jgit.revwalk.RevCommit findRevCommitById(ObjectId id) throws IOException;
+
 }

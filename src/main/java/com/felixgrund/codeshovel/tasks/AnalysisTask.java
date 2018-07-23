@@ -16,7 +16,7 @@ import com.felixgrund.codeshovel.util.ParserFactory;
 import com.felixgrund.codeshovel.util.Utl;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
@@ -55,7 +55,8 @@ public class AnalysisTask {
 
 	private Ychange lastMajorChange;
 
-	private HashMap<String, Ycommit> currentCommitCache;
+	private HashMap<String, org.eclipse.jgit.revwalk.RevCommit> currentRevCommitCache;
+	private HashMap<String, Ycommit> currentYcommitCache;
 
 	public AnalysisTask(StartEnvironment startEnv) {
 		this.startEnv = startEnv;
@@ -63,7 +64,8 @@ public class AnalysisTask {
 		this.repository = this.repositoryService.getRepository();
 		this.repositoryName = this.repositoryService.getRepositoryName();
 		this.startCommitName = startEnv.getStartCommitName();
-		this.currentCommitCache = new HashMap<>();
+		this.currentYcommitCache = new HashMap<>();
+		this.currentRevCommitCache = new HashMap<>();
 		this.taskSpecificHistory = new ArrayList<>();
 
 		// These must be overwritten by setters if this is not the starting task:
@@ -144,18 +146,18 @@ public class AnalysisTask {
 		Utl.checkNotNull("functionName", this.functionName);
 		Utl.checkNotNull("functionStartLine", this.functionStartLine);
 
-		RevCommit startCommitRaw = repositoryService.findCommitByName(this.startCommitName);
-		Utl.checkNotNull("startCommit", startCommitRaw);
+		RevCommit commit = repositoryService.findCommitByName(this.startCommitName);
+		Utl.checkNotNull("startCommit", commit);
 
-		String startFileContent = repositoryService.findFileContent(startCommitRaw, this.filePath);
+		String startFileContent = repositoryService.findFileContent(commit, this.filePath);
 		Utl.checkNotNull("startFileContent", startFileContent);
 
-		Yparser startParser = ParserFactory.getParser(this.startEnv, this.filePath, startFileContent, startCommitRaw);
+		Yparser startParser = ParserFactory.getParser(this.startEnv, this.filePath, startFileContent, commit);
 
 		this.startFunction = startParser.findFunctionByNameAndLine(this.functionName, this.functionStartLine);
 		Utl.checkNotNull("startFunctionNode", this.startFunction);
 
-		this.startCommit = getOrCreateYcommit(startCommitRaw, null);
+		this.startCommit = getOrCreateYcommit(commit, null);
 		Utl.checkNotNull("startCommit", this.startCommit);
 
 		this.functionEndLine = this.startFunction.getEndLineNumber();
@@ -173,35 +175,35 @@ public class AnalysisTask {
 		Ycommit lastConsideredCommit = null;
 		for (RevCommit commit : this.fileHistory.values()) {
 			try {
+				org.eclipse.jgit.revwalk.RevCommit revCommit = repositoryService.findRevCommitById(commit.getId());
 				Ycommit ycommit = getOrCreateYcommit(commit, lastConsideredCommit);
 				if (ycommit.getMatchedFunction() == null) {
 					break;
 				}
-				if (commit.getParentCount() > 0) {
-					RevCommit parentCommit = commit.getParent(0);
-					Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
+				if (revCommit.getParentCount() > 0) {
+					org.eclipse.jgit.revwalk.RevCommit parentRevCommit = revCommit.getParent(0);
+					RevCommit parentCommit = new RevCommit(parentRevCommit);
+					Ycommit parentYcommit = getOrCreateYcommit(commit, ycommit);
 					ycommit.setPrev(parentYcommit);
-					Ydiff ydiff = new Ydiff(startEnv.getRepository(), commit, parentCommit, false);
+					Ydiff ydiff = new Ydiff(repositoryService, commit, parentCommit, false);
 					ycommit.setYdiff(ydiff);
 				}
 				lastConsideredCommit = ycommit;
 				this.taskSpecificHistory.add(ycommit);
 			} catch (ParseException e) {
-				System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + Utl.getCommitNameShort(commit));
+				System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getCommitNameShort());
 			}
 		}
-
 	}
 
 	private Ycommit getOrCreateYcommit(RevCommit commit, Ycommit fromChildCommit)
 			throws ParseException, IOException, NoParserFoundException {
 
 		String commitName = commit.getName();
-		Ycommit ycommit = currentCommitCache.get(commitName);
+		Ycommit ycommit = currentYcommitCache.get(commitName);
 		if (ycommit != null) {
 			return ycommit;
 		}
-
 
 		Yfunction compareFunction = this.startFunction;
 		if (fromChildCommit != null && fromChildCommit.getMatchedFunction() != null) {
@@ -216,7 +218,7 @@ public class AnalysisTask {
 
 			ycommit.setMatchedFunction(matchedFunction);
 		}
-		currentCommitCache.put(commitName, ycommit);
+		currentYcommitCache.put(commitName, ycommit);
 		return ycommit;
 	}
 
@@ -225,7 +227,7 @@ public class AnalysisTask {
 		ret.setFileName(this.fileName);
 		ret.setFilePath(this.filePath);
 
-		RevTree tree = commit.getTree();
+		RevTree tree = repositoryService.findRevCommitById(commit.getId()).getTree();
 		TreeWalk treeWalk = new TreeWalk(this.repository);
 		treeWalk.addTree(tree);
 		treeWalk.setRecursive(true);
@@ -293,14 +295,6 @@ public class AnalysisTask {
 
 	public void setFunctionEndLine(int functionEndLine) {
 		this.functionEndLine = functionEndLine;
-	}
-
-	public Map<String, RevCommit> getFileHistory() {
-		return fileHistory;
-	}
-
-	public void setFileHistory(Map<String, RevCommit> fileHistory) {
-		this.fileHistory = fileHistory;
 	}
 
 	public Yfunction getStartFunction() {
