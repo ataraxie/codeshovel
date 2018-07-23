@@ -12,6 +12,7 @@ import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.io.File;
+import java.util.Date;
 
 public class MainAnalysisTask {
 
@@ -23,7 +24,10 @@ public class MainAnalysisTask {
 	private static final String CODESTORY_REPO_DIR = System.getenv("codeshovel.repo.dir");
 
 	public static void main(String[] args) throws Exception {
+		long start = new Date().getTime();
 		execute();
+		long end = new Date().getTime();
+		System.out.println("Time taken: " + (end - start) / 1000 + "sec");
 	}
 
 	public static void execute() throws Exception {

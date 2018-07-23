@@ -1,12 +1,12 @@
 package com.felixgrund.codeshovel.services;
 
+import com.felixgrund.codeshovel.changes.Yhistory;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.RevCommit;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface RepositoryService {
@@ -18,7 +18,7 @@ public interface RepositoryService {
 
 	List<RevCommit> getCommitsBetween(RevCommit oldCommit, RevCommit newCommit, String filePath);
 
-	LinkedHashMap<String, RevCommit> getHistory(RevCommit startCommit, String filePath);
+	Yhistory getHistory(RevCommit startCommit, String filePath);
 
 	String findFileContent(RevCommit commit, String filePath) throws IOException;
 

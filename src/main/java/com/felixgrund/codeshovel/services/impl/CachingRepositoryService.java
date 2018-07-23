@@ -1,5 +1,6 @@
 package com.felixgrund.codeshovel.services.impl;
 
+import com.felixgrund.codeshovel.changes.Yhistory;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.util.CmdUtil;
 import com.felixgrund.codeshovel.wrappers.RevCommit;
@@ -30,15 +31,11 @@ public class CachingRepositoryService implements RepositoryService {
 	private String repositoryName;
 	private String repositoryPath;
 
-	private Map<String, LinkedHashMap<String, RevCommit>> historyCache;
-
 	public CachingRepositoryService(Git git, Repository repository, String repositoryName, String repositoryPath) {
 		this.git = git;
 		this.repository = repository;
 		this.repositoryName = repositoryName;
 		this.repositoryPath = repositoryPath;
-
-		this.historyCache = new LinkedHashMap<>();
 	}
 
 	@Override
@@ -64,9 +61,9 @@ public class CachingRepositoryService implements RepositoryService {
 	@Override
 	public List<RevCommit> getCommitsBetween(RevCommit oldCommit, RevCommit newCommit, String filePath) {
 
-		LinkedHashMap<String, RevCommit> history = getHistory(newCommit, filePath);
+		Yhistory yhistory = getHistory(newCommit, filePath);
 		List<RevCommit> commits = new ArrayList<>();
-		for (RevCommit commit : history.values()) {
+		for (RevCommit commit : yhistory.getCommits().values()) {
 			if (commit.getName().equals(oldCommit.getName())) {
 				break;
 			} else if (commit.getCommitDate().before(oldCommit.getCommitDate())) {
@@ -86,40 +83,31 @@ public class CachingRepositoryService implements RepositoryService {
 		return DigestUtils.md5Hex(cacheKeyInput);
 	}
 
-	private LinkedHashMap<String, RevCommit> getHistoryFromCache(RevCommit startCommit, @Nullable String filePath) {
-		return this.historyCache.get(getCacheKey(startCommit, filePath));
-	}
-
-	private void saveHistoryToCache(RevCommit startCommit, @Nullable String filePath, LinkedHashMap<String, RevCommit> history) {
-		this.historyCache.put(getCacheKey(startCommit, filePath), history);
-	}
-
 	@Override
-	public LinkedHashMap<String, RevCommit> getHistory(RevCommit startCommit, @Nullable String filePath) {
-		LinkedHashMap<String, RevCommit> history = getHistoryFromCache(startCommit, filePath);
+	public Yhistory getHistory(RevCommit startCommit, @Nullable String filePath) {
 
-		if (history == null) {
-			history = new LinkedHashMap<>();
-			try {
-				LogCommand logCommand = git.log().add(startCommit.getId());
-				if (filePath != null) {
-					logCommand.addPath(filePath);
-				}
+		LinkedHashMap<String, RevCommit> commits = new LinkedHashMap<>();
+		LinkedHashMap<String, org.eclipse.jgit.revwalk.RevCommit> revCommits = new LinkedHashMap<>();
 
-				logCommand.setRevFilter(RevFilter.NO_MERGES);
-
-				Iterable<org.eclipse.jgit.revwalk.RevCommit> fileRevisions = logCommand.call();
-				for (org.eclipse.jgit.revwalk.RevCommit commit : fileRevisions) {
-					history.put(commit.getName(), new RevCommit(commit));
-				}
-
-				saveHistoryToCache(startCommit, filePath, history);
-			} catch (Exception e) {
-				e.printStackTrace();
+		try {
+			LogCommand logCommand = git.log().add(startCommit.getId());
+			if (filePath != null) {
+				logCommand.addPath(filePath);
 			}
+
+			logCommand.setRevFilter(RevFilter.NO_MERGES);
+
+			Iterable<org.eclipse.jgit.revwalk.RevCommit> fileRevisions = logCommand.call();
+			for (org.eclipse.jgit.revwalk.RevCommit commit : fileRevisions) {
+				revCommits.put(commit.getName(), commit);
+				commits.put(commit.getName(), new RevCommit(commit));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
-		return history;
+		return new Yhistory(commits, revCommits);
 	}
 
 	@Override

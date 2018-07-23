@@ -35,7 +35,6 @@ public class AnalysisTask {
 	private RepositoryService repositoryService;
 
 	private Repository repository;
-	private String repositoryName;
 	private String filePath;
 	private String fileName;
 	private String functionName;
@@ -45,7 +44,6 @@ public class AnalysisTask {
 
 	private boolean wasBuilt;
 
-	private Map<String, RevCommit> fileHistory;
 	private List<Ycommit> taskSpecificHistory;
 
 	private Yfunction startFunction;
@@ -55,17 +53,14 @@ public class AnalysisTask {
 
 	private Ychange lastMajorChange;
 
-	private HashMap<String, org.eclipse.jgit.revwalk.RevCommit> currentRevCommitCache;
 	private HashMap<String, Ycommit> currentYcommitCache;
 
 	public AnalysisTask(StartEnvironment startEnv) {
 		this.startEnv = startEnv;
 		this.repositoryService = startEnv.getRepositoryService();
 		this.repository = this.repositoryService.getRepository();
-		this.repositoryName = this.repositoryService.getRepositoryName();
 		this.startCommitName = startEnv.getStartCommitName();
 		this.currentYcommitCache = new HashMap<>();
-		this.currentRevCommitCache = new HashMap<>();
 		this.taskSpecificHistory = new ArrayList<>();
 
 		// These must be overwritten by setters if this is not the starting task:
@@ -170,12 +165,13 @@ public class AnalysisTask {
 
 	private void createCommitCollection() throws IOException, NoParserFoundException {
 
-		this.fileHistory = repositoryService.getHistory(this.startCommit.getCommit(), this.filePath);
+		Yhistory yhistory = repositoryService.getHistory(this.startCommit.getCommit(), this.filePath);
 
 		Ycommit lastConsideredCommit = null;
-		for (RevCommit commit : this.fileHistory.values()) {
+		for (String commitName : yhistory.getCommits().keySet()) {
+			RevCommit commit = yhistory.getCommits().get(commitName);
 			try {
-				org.eclipse.jgit.revwalk.RevCommit revCommit = repositoryService.findRevCommitById(commit.getId());
+				org.eclipse.jgit.revwalk.RevCommit revCommit = yhistory.getRevCommits().get(commit.getName());
 				Ycommit ycommit = getOrCreateYcommit(commit, lastConsideredCommit);
 				if (ycommit.getMatchedFunction() == null) {
 					break;
@@ -183,7 +179,7 @@ public class AnalysisTask {
 				if (revCommit.getParentCount() > 0) {
 					org.eclipse.jgit.revwalk.RevCommit parentRevCommit = revCommit.getParent(0);
 					RevCommit parentCommit = new RevCommit(parentRevCommit);
-					Ycommit parentYcommit = getOrCreateYcommit(commit, ycommit);
+					Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
 					ycommit.setPrev(parentYcommit);
 					Ydiff ydiff = new Ydiff(repositoryService, commit, parentCommit, false);
 					ycommit.setYdiff(ydiff);
