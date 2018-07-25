@@ -12,3 +12,25 @@ I wrote a command that makes it content as we require it for our JSON object (ri
 pbpaste | tr " " "\n" | sed -n '1!G;h;$p' | sed -E "s/^(.*)$/\"\1\",/" | pbcopy
 
 Note that pbpaste and pbcopy are Mac-specific.
+
+
+### Docker Mining Container
+To help ensure consistent executions (i.e. fixed versions of git, etc.) and to make it easy to execute mining on different
+machines, I containerized the MiningTestJava task.
+
+From the project root:
+
+```
+docker build -t codeshovel .
+docker run --env TARGET_FILE_PATH= \
+           --env REPO= \
+           --env START_COMMIT= \
+           --volume "${HOME}/cs-output:/usr/codeshovel/output" \
+           --volume "${HOME}/cs-repos:/codeshovel-repos" \
+           codeshovel
+```
+
+Note: you may want to name the container (by specifying `--name NAME` in the run command) to make it easier to identify
+in case you need to get the log (`docker logs NAME`) or to see what env vars it was called with (`docker inspect NAME`).
+You can also run the container in the background by specifying (`--detach` in the run command) and then follow the
+progress with `docker logs --follow NAME`.
