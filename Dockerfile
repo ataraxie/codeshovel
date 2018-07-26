@@ -1,10 +1,14 @@
 FROM openjdk:8u171
 
 ARG REPO_DIR=/codeshovel-repos
+ARG OUTPUT_DIR=/usr/codeshovel/output
 
-VOLUME ["/usr/codeshovel/output", "${REPO_DIR}"]
+VOLUME ["${REPO_DIR}", "${OUTPUT_DIR}"]
 
-ENV REPO_DIR=/codeshovel-repos
+# Do NOT override these values
+# You can set where the files are stored on the host using --volume (-v) parameters
+ENV REPO_DIR "${REPO_DIR}"
+ENV OUTPUT_DIR "${OUTPUT_DIR}"
 
 RUN apt-get update && apt-get -y install maven
 
@@ -13,5 +17,3 @@ WORKDIR /usr/codeshovel
 RUN mvn verify
 WORKDIR /usr/codeshovel/target/
 CMD ["java", "-classpath", "*", "com.felixgrund.codeshovel.MiningTestJava"]
-#CMD ["java", "target/test-classes/com/felixgrund/codeshovel/MiningTestJava.class"]
-# /usr/codeshovel/target# java -classpath "*" com.felixgrund.codeshovel.MiningTestJava

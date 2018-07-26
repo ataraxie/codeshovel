@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Utl {
 
@@ -124,7 +125,7 @@ public class Utl {
 	public static void writeOutputFile(String subdir, String commitName, String filePath,
 				String functionId, String repoName, String content, String fileExtension) {
 
-		String baseDir = System.getProperty("user.dir") + "/output/" + subdir;
+		String baseDir = Optional.ofNullable( System.getenv("OUTPUT_DIR") ).orElse( System.getProperty("user.dir") + "/output/" + subdir );
 		String commitNameShort = commitName.substring(0, 5);
 		String targetDirPath = baseDir + "/" + repoName;
 		if (functionId != null) {
