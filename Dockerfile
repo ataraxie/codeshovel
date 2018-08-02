@@ -15,5 +15,8 @@ RUN apt-get update && apt-get -y install maven
 COPY . /usr/codeshovel
 WORKDIR /usr/codeshovel
 RUN mvn verify
-WORKDIR /usr/codeshovel/target/
-CMD ["java", "-classpath", "*", "com.felixgrund.codeshovel.MiningTestJava"]
+
+CMD cd "${REPO_DIR}/${REPO}" && find . -type f -name "*.java" -exec bash -c 'export TARGET_FILE_PATH="${1:2}" && java -classpath "/usr/codeshovel/target/*" com.felixgrund.codeshovel.MiningTestJava' - {} \;
+
+# WORKDIR /usr/codeshovel/target/
+# CMD ["java", "-classpath", "*", "com.felixgrund.codeshovel.MiningTestJava"]
