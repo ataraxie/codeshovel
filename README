@@ -25,13 +25,13 @@ From the project root:
 
 ```
 docker build -t codeshovel .
-docker run --env TARGET_FILE_PATH= \
-           --env REPO= \
+docker run --env REPO_NAME= \
            --env START_COMMIT= \
-           --volume "${HOME}/cs-output:/usr/codeshovel/output" \
-           --volume "${HOME}/cs-repos:/codeshovel-repos" \
+           --volume "${HOME}/cs-output:/var/opt/codeshovel/output" \
+           --volume "${HOME}/cs-repos:/repos" \
            codeshovel
 ```
+You can optionally specify `--env SERACH_PATHS` and `--env FILE_EXT` (see Dockerfile for description).
 
 Note: you may want to name the container (by specifying `--name NAME` in the run command) to make it easier to identify
 in case you need to get the log (`docker logs NAME`) or to see what env vars it was called with (`docker inspect NAME`).
