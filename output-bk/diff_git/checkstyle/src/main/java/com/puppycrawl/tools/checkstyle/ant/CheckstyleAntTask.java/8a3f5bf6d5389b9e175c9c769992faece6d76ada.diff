@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+index 75a9938e9..7a57d7239 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+@@ -290,101 +290,101 @@ public class CheckstyleAntTask extends Task {
+             final SeverityLevelCounter warningCounter =
+                 new SeverityLevelCounter(SeverityLevel.WARNING);
+             c.addListener(warningCounter);
+ 
+             // Process the files
+             long startTime = System.currentTimeMillis();
+             final List<File> files = scanFileSets();
+             long endTime = System.currentTimeMillis();
+             log("To locate the files took " + (endTime - startTime) + " ms.",
+                 Project.MSG_VERBOSE);
+ 
+             log("Running Checkstyle " + version + " on " + files.size()
+                     + " files", Project.MSG_INFO);
+             log("Using configuration " + configLocation, Project.MSG_VERBOSE);
+ 
+             startTime = System.currentTimeMillis();
+             final int numErrs = c.process(files);
+             endTime = System.currentTimeMillis();
+             log("To process the files took " + (endTime - startTime) + " ms.",
+                 Project.MSG_VERBOSE);
+             final int numWarnings = warningCounter.getCount();
+             final boolean ok = numErrs <= maxErrors
+                     && numWarnings <= maxWarnings;
+ 
+             // Handle the return status
+             if (!ok) {
+                 final String failureMsg =
+                         "Got " + numErrs + " errors and " + numWarnings
+                                 + " warnings.";
+                 if (failureProperty != null) {
+                     getProject().setProperty(failureProperty, failureMsg);
+                 }
+ 
+                 if (failOnViolation) {
+                     throw new BuildException(failureMsg, getLocation());
+                 }
+             }
+         }
+         finally {
+             if (c != null) {
+                 c.destroy();
+             }
+         }
+     }
+ 
+     /**
+      * Creates new instance of <code>Checker</code>.
+      * @return new instance of <code>Checker</code>
+      */
+     private Checker createChecker() {
+-        Checker c = null;
++        Checker c;
+         try {
+             final Properties props = createOverridingProperties();
+             final Configuration config =
+                 ConfigurationLoader.loadConfiguration(
+                     configLocation,
+                     new PropertiesExpander(props),
+                     omitIgnoredModules);
+ 
+             final DefaultContext context = new DefaultContext();
+             final ClassLoader loader = new AntClassLoader(getProject(),
+                     classpath);
+             context.add("classloader", loader);
+ 
+             final ClassLoader moduleClassLoader =
+                 Checker.class.getClassLoader();
+             context.add("moduleClassLoader", moduleClassLoader);
+ 
+             c = new Checker();
+ 
+             c.contextualize(context);
+             c.configure(config);
+ 
+             // setup the listeners
+             final AuditListener[] listeners = getListeners();
+             for (AuditListener element : listeners) {
+                 c.addListener(element);
+             }
+         }
+         catch (final Exception e) {
+             throw new BuildException("Unable to create a Checker: "
+                     + e.getMessage(), e);
+         }
+ 
+         return c;
+     }
+ 
+     /**
+      * Create the Properties object based on the arguments specified
+      * to the ANT task.
+      * @return the properties for property expansion expansion
+      * @throws BuildException if an error occurs
+      */
+     private Properties createOverridingProperties() {
+         final Properties retVal = new Properties();
+ 
+         // Load the properties file if specified
+         if (propertiesFile != null) {
+             FileInputStream inStream = null;
+             try {
+                 inStream = new FileInputStream(propertiesFile);

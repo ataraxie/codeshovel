@@ -1,0 +1,73 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/Comment.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/Comment.java
+index 48c187e0b..22e42dc2e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/Comment.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/Comment.java
+@@ -46,67 +46,67 @@ public class Comment implements TextBlock
+      * @param aFirstCol number of the first column of the comment.
+      * @param aLastLine number of the last line of the comment.
+      * @param aLastCol number of the last column of the comment.
+      */
+     public Comment(final String[] aText, final int aFirstCol,
+             final int aLastLine, final int aLastCol)
+     {
+         mText = new String[aText.length];
+         System.arraycopy(aText, 0, mText, 0, mText.length);
+         mFirstLine = aLastLine - mText.length + 1;
+         mLastLine = aLastLine;
+         mFirstCol = aFirstCol;
+         mLastCol = aLastCol;
+     }
+ 
+     /** {@inheritDoc} */
+     public final String[] getText()
+     {
+         return mText.clone();
+     }
+ 
+     /** {@inheritDoc} */
+     public final int getStartLineNo()
+     {
+         return mFirstLine;
+     }
+ 
+     /** {@inheritDoc} */
+     public final int getEndLineNo()
+     {
+         return mLastLine;
+     }
+ 
+     /** {@inheritDoc} */
+     public int getStartColNo()
+     {
+         return mFirstCol;
+     }
+ 
+     /** {@inheritDoc} */
+     public int getEndColNo()
+     {
+         return mLastCol;
+     }
+ 
+     /** {@inheritDoc} */
+     public boolean intersects(int aStartLineNo, int aStartColNo,
+                               int aEndLineNo, int aEndColNo)
+     {
+         // compute a single number for start and end
+-        // to simpify conditional logic
++        // to simplify conditional logic
+         final long multiplier = Integer.MAX_VALUE;
+         final long thisStart = mFirstLine * multiplier + mFirstCol;
+         final long thisEnd = mLastLine * multiplier + mLastCol;
+         final long inStart = aStartLineNo * multiplier + aStartColNo;
+         final long inEnd = aEndLineNo * multiplier + aEndColNo;
+ 
+         return !((thisEnd < inStart) || (inEnd < thisStart));
+     }
+ 
+     @Override
+     public String toString()
+     {
+         return "Comment[" + mFirstLine + ":" + mFirstCol + "-"
+             + mLastLine + ":" + mLastCol + "]";
+     }
+ }

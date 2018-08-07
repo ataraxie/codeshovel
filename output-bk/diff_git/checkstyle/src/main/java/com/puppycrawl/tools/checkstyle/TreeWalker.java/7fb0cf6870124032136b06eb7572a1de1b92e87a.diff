@@ -1,0 +1,134 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index af1344607..7fef3bac2 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -581,129 +581,127 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
+      *        first DetailAST node.
+      * @param ast2
+      *        second DetailAST node.
+      * @return true if position of ast1 is greater than position of ast2.
+      */
+     private static boolean isPositionGreater(DetailAST ast1, DetailAST ast2) {
+         final boolean isGreater;
+         if (ast1.getLineNo() == ast2.getLineNo()) {
+             isGreater = ast1.getColumnNo() > ast2.getColumnNo();
+         }
+         else {
+             isGreater = ast1.getLineNo() > ast2.getLineNo();
+         }
+         return isGreater;
+     }
+ 
+     /**
+      * Create comment AST from token. Depending on token type
+      * SINGLE_LINE_COMMENT or BLOCK_COMMENT_BEGIN is created.
+      * @param token
+      *        Token object.
+      * @return DetailAST of comment node.
+      */
+     private static DetailAST createCommentAstFromToken(Token token) {
+         final DetailAST commentAst;
+         if (token.getType() == TokenTypes.SINGLE_LINE_COMMENT) {
+             commentAst = createSlCommentNode(token);
+         }
+         else {
+             commentAst = createBlockCommentNode(token);
+         }
+         return commentAst;
+     }
+ 
+     /**
+      * Create single-line comment from token.
+      * @param token
+      *        Token object.
+      * @return DetailAST with SINGLE_LINE_COMMENT type.
+      */
+     private static DetailAST createSlCommentNode(Token token) {
+         final DetailAST slComment = new DetailAST();
+         slComment.setType(TokenTypes.SINGLE_LINE_COMMENT);
+         slComment.setText("//");
+ 
+         // column counting begins from 0
+         slComment.setColumnNo(token.getColumn() - 1);
+         slComment.setLineNo(token.getLine());
+ 
+         final DetailAST slCommentContent = new DetailAST();
+-        slCommentContent.initialize(token);
+         slCommentContent.setType(TokenTypes.COMMENT_CONTENT);
+ 
+         // column counting begins from 0
+         // plus length of '//'
+         slCommentContent.setColumnNo(token.getColumn() - 1 + 2);
+         slCommentContent.setLineNo(token.getLine());
+         slCommentContent.setText(token.getText());
+ 
+         slComment.addChild(slCommentContent);
+         return slComment;
+     }
+ 
+     /**
+      * Create block comment from token.
+      * @param token
+      *        Token object.
+      * @return DetailAST with BLOCK_COMMENT type.
+      */
+     private static DetailAST createBlockCommentNode(Token token) {
+         final DetailAST blockComment = new DetailAST();
+         blockComment.initialize(TokenTypes.BLOCK_COMMENT_BEGIN, "/*");
+ 
+         // column counting begins from 0
+         blockComment.setColumnNo(token.getColumn() - 1);
+         blockComment.setLineNo(token.getLine());
+ 
+         final DetailAST blockCommentContent = new DetailAST();
+-        blockCommentContent.initialize(token);
+         blockCommentContent.setType(TokenTypes.COMMENT_CONTENT);
+ 
+         // column counting begins from 0
+         // plus length of '/*'
+         blockCommentContent.setColumnNo(token.getColumn() - 1 + 2);
+         blockCommentContent.setLineNo(token.getLine());
+         blockCommentContent.setText(token.getText());
+ 
+         final DetailAST blockCommentClose = new DetailAST();
+         blockCommentClose.initialize(TokenTypes.BLOCK_COMMENT_END, "*/");
+ 
+         final Entry<Integer, Integer> linesColumns = countLinesColumns(
+                 token.getText(), token.getLine(), token.getColumn());
+         blockCommentClose.setLineNo(linesColumns.getKey());
+         blockCommentClose.setColumnNo(linesColumns.getValue());
+ 
+         blockComment.addChild(blockCommentContent);
+         blockComment.addChild(blockCommentClose);
+         return blockComment;
+     }
+ 
+     /**
+      * Count lines and columns (in last line) in text.
+      * @param text
+      *        String.
+      * @param initialLinesCnt
+      *        initial value of lines counter.
+      * @param initialColumnsCnt
+      *        initial value of columns counter.
+      * @return entry(pair), first element is lines counter, second - columns
+      *         counter.
+      */
+     private static Entry<Integer, Integer> countLinesColumns(
+             String text, int initialLinesCnt, int initialColumnsCnt) {
+         int lines = initialLinesCnt;
+         int columns = initialColumnsCnt;
+         boolean foundCr = false;
+         for (char c : text.toCharArray()) {
+             if (c == '\n') {
+                 foundCr = false;
+                 lines++;
+                 columns = 0;
+             }
+             else {
+                 if (foundCr) {
+                     foundCr = false;
+                     lines++;
+                     columns = 0;
+                 }
+                 if (c == '\r') {

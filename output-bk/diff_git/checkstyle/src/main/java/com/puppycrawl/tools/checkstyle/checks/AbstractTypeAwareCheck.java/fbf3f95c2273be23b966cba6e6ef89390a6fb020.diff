@@ -1,0 +1,212 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+index 11417009b..1630ac491 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+@@ -1,101 +1,101 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks;
+ 
+ import java.util.ArrayDeque;
+ import java.util.Deque;
++import java.util.HashMap;
++import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.Map;
+ import java.util.Set;
+ 
+-import com.google.common.collect.Maps;
+-import com.google.common.collect.Sets;
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Abstract class that endeavours to maintain type information for the Java
+  * file being checked. It provides helper methods for performing type
+  * information functions.
+  *
+  * @author Oliver Burn
+  * @deprecated Checkstyle is not type aware tool and all Checks derived from this
+  *     class are potentially unstable.
+  */
+ @Deprecated
+ public abstract class AbstractTypeAwareCheck extends AbstractCheck {
+     /** Stack of maps for type params. */
+     private final Deque<Map<String, AbstractClassInfo>> typeParams = new ArrayDeque<>();
+ 
+     /** Imports details. **/
+-    private final Set<String> imports = Sets.newHashSet();
++    private final Set<String> imports = new HashSet<>();
+ 
+     /** Full identifier for package of the method. **/
+     private FullIdent packageFullIdent;
+ 
+     /** Name of current class. */
+     private String currentClassName;
+ 
+     /** {@code ClassResolver} instance for current tree. */
+     private ClassResolver classResolver;
+ 
+     /**
+      * Whether to log class loading errors to the checkstyle report
+      * instead of throwing a RTE.
+      *
+      * <p>Logging errors will avoid stopping checkstyle completely
+      * because of a typo in javadoc. However, with modern IDEs that
+      * support automated refactoring and generate javadoc this will
+      * occur rarely, so by default we assume a configuration problem
+      * in the checkstyle classpath and throw an exception.
+      *
+      * <p>This configuration option was triggered by bug 1422462.
+      */
+     private boolean logLoadErrors = true;
+ 
+     /**
+      * Whether to show class loading errors in the checkstyle report.
+      * Request ID 1491630
+      */
+     private boolean suppressLoadErrors;
+ 
+     /**
+      * Called to process an AST when visiting it.
+      * @param ast the AST to process. Guaranteed to not be PACKAGE_DEF or
+      *             IMPORT tokens.
+      */
+     protected abstract void processAST(DetailAST ast);
+ 
+     /**
+      * Logs error if unable to load class information.
+      * Abstract, should be overridden in subclasses.
+      * @param ident class name for which we can no load class.
+      */
+     protected abstract void logLoadError(Token ident);
+ 
+     /**
+      * Controls whether to log class loading errors to the checkstyle report
+      * instead of throwing a RTE.
+      *
+      * @param logLoadErrors true if errors should be logged
+      */
+@@ -259,101 +259,101 @@ public abstract class AbstractTypeAwareCheck extends AbstractCheck {
+      * @param columnNo column number of the problem.
+      * @param msgKey message key to use.
+      * @param values values to fill the message out.
+      */
+     protected final void logLoadErrorImpl(int lineNo, int columnNo,
+                                           String msgKey, Object... values) {
+         if (!logLoadErrors) {
+             final LocalizedMessage msg = new LocalizedMessage(lineNo,
+                                                     columnNo,
+                                                     getMessageBundle(),
+                                                     msgKey,
+                                                     values,
+                                                     getSeverityLevel(),
+                                                     getId(),
+                                                     getClass(),
+                                                     null);
+             throw new IllegalStateException(msg.getMessage());
+         }
+ 
+         if (!suppressLoadErrors) {
+             log(lineNo, columnNo, msgKey, values);
+         }
+     }
+ 
+     /**
+      * Collects the details of a package.
+      * @param ast node containing the package details
+      */
+     private void processPackage(DetailAST ast) {
+         final DetailAST nameAST = ast.getLastChild().getPreviousSibling();
+         packageFullIdent = FullIdent.createFullIdent(nameAST);
+     }
+ 
+     /**
+      * Collects the details of imports.
+      * @param ast node containing the import details
+      */
+     private void processImport(DetailAST ast) {
+         final FullIdent name = FullIdent.createFullIdentBelow(ast);
+         imports.add(name.getText());
+     }
+ 
+     /**
+      * Process type params (if any) for given class, enum or method.
+      * @param ast class, enum or method to process.
+      */
+     private void processTypeParams(DetailAST ast) {
+         final DetailAST params =
+             ast.findFirstToken(TokenTypes.TYPE_PARAMETERS);
+ 
+-        final Map<String, AbstractClassInfo> paramsMap = Maps.newHashMap();
++        final Map<String, AbstractClassInfo> paramsMap = new HashMap<>();
+         typeParams.push(paramsMap);
+ 
+         if (params != null) {
+             for (DetailAST child = params.getFirstChild();
+                  child != null;
+                  child = child.getNextSibling()) {
+                 if (child.getType() == TokenTypes.TYPE_PARAMETER) {
+                     final String alias =
+                         child.findFirstToken(TokenTypes.IDENT).getText();
+                     final DetailAST bounds =
+                         child.findFirstToken(TokenTypes.TYPE_UPPER_BOUNDS);
+                     if (bounds != null) {
+                         final FullIdent name =
+                             FullIdent.createFullIdentBelow(bounds);
+                         final AbstractClassInfo classInfo =
+                             createClassInfo(new Token(name), currentClassName);
+                         paramsMap.put(alias, classInfo);
+                     }
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Processes class definition.
+      * @param ast class definition to process.
+      */
+     private void processClass(DetailAST ast) {
+         final DetailAST ident = ast.findFirstToken(TokenTypes.IDENT);
+         String innerClass = ident.getText();
+ 
+         if (!currentClassName.isEmpty()) {
+             innerClass = "$" + innerClass;
+         }
+         currentClassName += innerClass;
+         processTypeParams(ast);
+     }
+ 
+     /**
+      * Returns current class.
+      * @return name of current class.
+      */
+     protected final String getCurrentClassName() {
+         return currentClassName;
+     }
+ 
+     /**
+      * Creates class info for given name.
+      * @param name name of type.
+      * @param surroundingClass name of surrounding class.

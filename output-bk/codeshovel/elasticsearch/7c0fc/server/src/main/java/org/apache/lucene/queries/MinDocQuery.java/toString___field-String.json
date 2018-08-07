@@ -1,0 +1,121 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "MinDocQuery.java",
+  "functionName": "toString",
+  "functionId": "toString___field-String",
+  "sourceFilePath": "server/src/main/java/org/apache/lucene/queries/MinDocQuery.java",
+  "functionStartLine": 151,
+  "functionEndLine": 153,
+  "changeHistory": [
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+    "78c2f1063ac4a38943ea53fdd646cdb5646362f4",
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+    "22bba91a160d306b14588e897cf0c34423a58da3",
+    "30a4294a6a76fbef7840cac4c23b05d9de7786a5",
+    "a8fd2d48b8f3f17d68ed27c3104e2c9e2eb6cc9c",
+    "ef4c44577a78900210ba3ae957345f25bef6f59c"
+  ],
+  "changeHistoryShort": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": "Yfilerename",
+    "78c2f1063ac4a38943ea53fdd646cdb5646362f4": "Ymovefromfile",
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5": "Yfilerename",
+    "22bba91a160d306b14588e897cf0c34423a58da3": "Ybodychange",
+    "30a4294a6a76fbef7840cac4c23b05d9de7786a5": "Ymultichange(Ymovefromfile,Ybodychange,Yparameterchange)",
+    "a8fd2d48b8f3f17d68ed27c3104e2c9e2eb6cc9c": "Yfilerename",
+    "ef4c44577a78900210ba3ae957345f25bef6f59c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": {
+      "type": "Yfilerename",
+      "commitMessage": "Rename core module to server (#28180)\n\nThis is related to #27933. It renames the core module to server. This is\r\nthe first step towards introducing an elasticsearch-core jar.",
+      "commitDate": 1515695443000,
+      "commitName": "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+      "commitAuthor": "Tim Brooks",
+      "commitDateOld": 1515688270000,
+      "commitNameOld": "7d0eb3292b8f8ba27ef50dbbf38783dc68c70728",
+      "commitAuthorOld": "Martijn van Groningen",
+      "daysBetweenCommits": 0.08,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "78c2f1063ac4a38943ea53fdd646cdb5646362f4": {
+      "type": "Ymovefromfile",
+      "commitMessage": "Optimize sorted scroll when sorting by `_doc`.\n\nThis change means that we will be able to remove the `SCAN` search type in 3.0\nand recommend users to use sorted scrolls instead.\n",
+      "commitDate": 1440064319000,
+      "commitName": "78c2f1063ac4a38943ea53fdd646cdb5646362f4",
+      "commitAuthor": "Adrien Grand",
+      "commitDateOld": 1440056627000,
+      "commitNameOld": "449dfc8f5678369da63e5e0e048c89c3adfc0295",
+      "commitAuthorOld": "David Pilato",
+      "daysBetweenCommits": 0.09,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n-        public String toString(String field) {\n-            return \"MinDocQuery(minDoc\u003d\" + minDoc  + \")\";\n-        }\n\\ No newline at end of file\n+    public String toString(String field) {\n+        return \"MinDocQuery(minDoc\u003d\" + minDoc  + \")\";\n+    }\n\\ No newline at end of file\n"
+    },
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5": {
+      "type": "Yfilerename",
+      "commitMessage": "create core module\n",
+      "commitDate": 1433502723000,
+      "commitName": "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1433502668000,
+      "commitNameOld": "7ccc193a666e2ae888e7ac93d677a2143e5e07c3",
+      "commitAuthorOld": "Simon Willnauer",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "22bba91a160d306b14588e897cf0c34423a58da3": {
+      "type": "Ybodychange",
+      "commitMessage": "Search: Make SCAN faster.\n\nWhen scrolling, SCAN previously collected documents until it reached where it\nhad stopped on the previous iteration. This makes pagination slower and slower\nas you request deep pages. With this change, SCAN now directly jumps to the\ndoc ID where is had previously stopped.\n",
+      "commitDate": 1431706990000,
+      "commitName": "22bba91a160d306b14588e897cf0c34423a58da3",
+      "commitAuthor": "Adrien Grand",
+      "commitDateOld": 1424433523000,
+      "commitNameOld": "30a4294a6a76fbef7840cac4c23b05d9de7786a5",
+      "commitAuthorOld": "Robert Muir",
+      "daysBetweenCommits": 84.18,
+      "commitsBetweenForRepo": 983,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n         public String toString(String field) {\n-            return \"ScanFilter\";\n+            return \"MinDocQuery(minDoc\u003d\" + minDoc  + \")\";\n         }\n\\ No newline at end of file\n"
+    },
+    "30a4294a6a76fbef7840cac4c23b05d9de7786a5": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange,Yparameterchange)",
+      "commitMessage": "Upgrade to lucene r1660560\n\nSquashed commit of the following:\n\ncommit 07391388715ed1f737e8acc391cea0bce5d79db9\nMerge: a71cc45 b61b021\nAuthor: Robert Muir \u003crmuir@apache.org\u003e\nDate:   Fri Feb 20 06:58:11 2015 -0500\n\n    Git really sucks\n\n    Merge branch \u0027lucene_r1660560\u0027 of github.com:elasticsearch/elasticsearch into lucene_r1660560\n\ncommit b61b02163f62ad8ddd9906cedb3d57fed75eb52d\nAuthor: Adrien Grand \u003cjpountz@gmail.com\u003e\nDate:   Wed Feb 18 19:03:49 2015 +0100\n\n    Try to improve TopDocs.merge usage.\n\ncommit bf8e4ac46d7fdaf9ae128606d96328a59784f126\nAuthor: Ryan Ernst \u003cryan@iernst.net\u003e\nDate:   Wed Feb 18 07:43:37 2015 -0800\n\n    reenable scripting test for accessing postings pieces.  commented out\n    parts that fail because of bad assumptions\n\ncommit 6d4d635b1a23b33c437a6bae70beea70ad52d91c\nAuthor: Robert Muir \u003crmuir@apache.org\u003e\nDate:   Wed Feb 18 09:41:46 2015 -0500\n\n    add some protection against broken asserts, but, also disable crappy test\n\ncommit c735bbb11f38782dfea9c4200fcf732564126bf5\nAuthor: Robert Muir \u003crmuir@apache.org\u003e\nDate:   Wed Feb 18 02:21:30 2015 -0500\n\n    cutover remaining stuff from old postings api\n\ncommit 11c9c2bea3db3ff1cd2807bd43e77b500b167aed\nAuthor: Robert Muir \u003crmuir@apache.org\u003e\nDate:   Wed Feb 18 01:46:04 2015 -0500\n\n    cut over most DocsEnum usage\n\ncommit bc18017662f6abddf3f074078f74e582494c88e2\nAuthor: Robert Muir \u003crmuir@apache.org\u003e\nDate:   Wed Feb 18 01:19:35 2015 -0500\n\n    upgrade to lucene_r1660560, modulo one test fail\n",
+      "commitDate": 1424433523000,
+      "commitName": "30a4294a6a76fbef7840cac4c23b05d9de7786a5",
+      "commitAuthor": "Robert Muir",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange",
+        "Yparameterchange"
+      ]
+    },
+    "a8fd2d48b8f3f17d68ed27c3104e2c9e2eb6cc9c": {
+      "type": "Yfilerename",
+      "commitMessage": "first cleanup phase, move to single src\n",
+      "commitDate": 1323125963000,
+      "commitName": "a8fd2d48b8f3f17d68ed27c3104e2c9e2eb6cc9c",
+      "commitAuthor": "Shay Banon",
+      "commitDateOld": 1323111612000,
+      "commitNameOld": "473b0f4dff504690754acc0f00967c275bf322a8",
+      "commitAuthorOld": "Shay Banon",
+      "daysBetweenCommits": 0.17,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "ef4c44577a78900210ba3ae957345f25bef6f59c": {
+      "type": "Yintroduced",
+      "commitMessage": "add toString to match_all docs\n",
+      "commitDate": 1288686185000,
+      "commitName": "ef4c44577a78900210ba3ae957345f25bef6f59c",
+      "commitAuthor": "kimchy"
+    }
+  }
+}

@@ -1,0 +1,88 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/NoCloneCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/NoCloneCheck.java
+index 9b2bdec64..9ef5502a8 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/NoCloneCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/NoCloneCheck.java
+@@ -81,80 +81,80 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * flexible since they can take interface types rather than concrete classes.
+  *
+  * <p>Sometimes a copy constructor or static factory is not an acceptable
+  * alternative to the clone method.  The example below highlights the
+  * limitation of a copy constructor (or static factory). Assume
+  * Square is a subclass for Shape.
+  *
+  * <pre>
+  * Shape s1 = new Square();
+  * System.out.println(s1 instanceof Square); //true
+  * </pre>
+  * ...assume at this point the code knows nothing of s1 being a Square
+  *    that's the beauty of polymorphism but the code wants to copy
+  *    the Square which is declared as a Shape, its super type...
+  *
+  * <pre>
+  * Shape s2 = new Shape(s1); //using the copy constructor
+  * System.out.println(s2 instanceof Square); //false
+  * </pre>
+  * The working solution (without knowing about all subclasses and doing many
+  * casts) is to do the following (assuming correct clone implementation).
+  *
+  * <pre>
+  * Shape s2 = s1.clone();
+  * System.out.println(s2 instanceof Square); //true
+  * </pre>
+  * Just keep in mind if this type of polymorphic cloning is required
+  * then a properly implemented clone method may be the best choice.
+  *
+  * <p>Much of this information was taken from Effective Java:
+  * Programming Language Guide First Edition by Joshua Bloch
+  * pages 45-52.  Give Bloch credit for writing an excellent book.
+  * </p>
+  *
+  * <p>This check is almost exactly the same as the {@link NoFinalizerCheck}
+  *
+  * @author Travis Schneeberger
+  * @see Object#clone()
+  */
+ @StatelessCheck
+ public class NoCloneCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "avoid.clone.method";
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return getAcceptableTokens();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return new int[] {TokenTypes.METHOD_DEF};
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return getAcceptableTokens();
++        return new int[] {TokenTypes.METHOD_DEF};
+     }
+ 
+     @Override
+     public void visitToken(DetailAST aAST) {
+         final DetailAST mid = aAST.findFirstToken(TokenTypes.IDENT);
+         final String name = mid.getText();
+ 
+         if ("clone".equals(name)) {
+ 
+             final DetailAST params = aAST.findFirstToken(TokenTypes.PARAMETERS);
+             final boolean hasEmptyParamList =
+                 params.findFirstToken(TokenTypes.PARAMETER_DEF) == null;
+ 
+             if (hasEmptyParamList) {
+                 log(aAST.getLineNo(), MSG_KEY);
+             }
+         }
+     }
+ }

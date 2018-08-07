@@ -1,0 +1,100 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/FullIdent.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/FullIdent.java
+index 1a076c2fd..abbbbae57 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/FullIdent.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/FullIdent.java
+@@ -63,92 +63,92 @@ public final class FullIdent {
+      * Gets the line number.
+      * @return the line number
+      */
+     public int getLineNo() {
+         return lineNo;
+     }
+ 
+     /**
+      * Gets the column number.
+      * @return the column number
+      */
+     public int getColumnNo() {
+         return columnNo;
+     }
+ 
+     /**
+      * Append the specified text.
+      * @param text the text to append
+      */
+     private void append(String text) {
+         elements.add(text);
+     }
+ 
+     /**
+      * Append the specified token and also recalibrate the first line and
+      * column.
+      * @param ast the token to append
+      */
+     private void append(DetailAST ast) {
+         elements.add(ast.getText());
+         if (lineNo == 0) {
+             lineNo = ast.getLineNo();
+         }
+         else if (ast.getLineNo() > 0) {
+             lineNo = Math.min(lineNo, ast.getLineNo());
+         }
+         if (columnNo == 0) {
+             columnNo = ast.getColumnNo();
+         }
+         else if (ast.getColumnNo() > 0) {
+             columnNo = Math.min(columnNo, ast.getColumnNo());
+         }
+     }
+ 
+     /**
+      * Creates a new FullIdent starting from the specified node.
+      * @param ast the node to start from
+      * @return a {@code FullIdent} value
+      */
+     public static FullIdent createFullIdent(DetailAST ast) {
+-        final FullIdent fi = new FullIdent();
+-        extractFullIdent(fi, ast);
+-        return fi;
++        final FullIdent ident = new FullIdent();
++        extractFullIdent(ident, ast);
++        return ident;
+     }
+ 
+     /**
+      * Creates a new FullIdent starting from the child of the specified node.
+      * @param ast the parent node from where to start from
+      * @return a {@code FullIdent} value
+      */
+     public static FullIdent createFullIdentBelow(DetailAST ast) {
+         return createFullIdent(ast.getFirstChild());
+     }
+ 
+     /**
+      * Recursively extract a FullIdent.
+      *
+      * @param full the FullIdent to add to
+      * @param ast the node to recurse from
+      */
+     private static void extractFullIdent(FullIdent full, DetailAST ast) {
+         if (ast == null) {
+             return;
+         }
+ 
+         if (ast.getType() == TokenTypes.DOT) {
+             extractFullIdent(full, ast.getFirstChild());
+             full.append(".");
+             extractFullIdent(
+                 full, ast.getFirstChild().getNextSibling());
+         }
+         else {
+             full.append(ast);
+         }
+     }
+ 
+     @Override
+     public String toString() {
+         return getText() + "[" + lineNo + "x" + columnNo + "]";
+     }
+ 
+ }

@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ImportOrderCheck.java",
+  "functionName": "getGroupNumber",
+  "functionId": "getGroupNumber___name-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java",
+  "functionStartLine": 642,
+  "functionEndLine": 665,
+  "changeHistory": [
+    "7faa54908ee013e10a04676f91218ffb0d2d827a",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "8d800ef546e11c6d593154f4071e39cdc4f66f34",
+    "efccc132cea8ce1efad0e5318b8419cc603f8957",
+    "2a1705e70d334700734b3df3ebefea0be878127a"
+  ],
+  "changeHistoryShort": {
+    "7faa54908ee013e10a04676f91218ffb0d2d827a": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "8d800ef546e11c6d593154f4071e39cdc4f66f34": "Ybodychange",
+    "efccc132cea8ce1efad0e5318b8419cc603f8957": "Ybodychange",
+    "2a1705e70d334700734b3df3ebefea0be878127a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7faa54908ee013e10a04676f91218ffb0d2d827a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5176: increase pitest coverage of import order to 100%\n",
+      "commitDate": 1511495267000,
+      "commitName": "7faa54908ee013e10a04676f91218ffb0d2d827a",
+      "commitAuthor": "BBG",
+      "commitDateOld": 1511495267000,
+      "commitNameOld": "acfe3c0ad96616bee811de28528aaeac74a62319",
+      "commitAuthorOld": "BBG",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,22 +1,24 @@\n     private int getGroupNumber(String name) {\n         int bestIndex \u003d groups.length;\n-        int bestLength \u003d -1;\n-        int bestPos \u003d 0;\n+        int bestEnd \u003d -1;\n+        int bestPos \u003d Integer.MAX_VALUE;\n \n         // find out what group this belongs in\n         // loop over groups and get index\n         for (int i \u003d 0; i \u003c groups.length; i++) {\n             final Matcher matcher \u003d groups[i].matcher(name);\n-            while (matcher.find()) {\n-                final int length \u003d matcher.end() - matcher.start();\n-                if (length \u003e bestLength\n-                    || length \u003d\u003d bestLength \u0026\u0026 matcher.start() \u003c bestPos) {\n+            if (matcher.find()) {\n+                if (matcher.start() \u003c bestPos) {\n                     bestIndex \u003d i;\n-                    bestLength \u003d length;\n+                    bestEnd \u003d matcher.end();\n                     bestPos \u003d matcher.start();\n                 }\n+                else if (matcher.start() \u003d\u003d bestPos \u0026\u0026 matcher.end() \u003e bestEnd) {\n+                    bestIndex \u003d i;\n+                    bestEnd \u003d matcher.end();\n+                }\n             }\n         }\n \n         return bestIndex;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425998782000,
+      "commitNameOld": "89005ddf6d5d8b494e4451d16df9fd8996c735a9",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.28,
+      "commitsBetweenForRepo": 5,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,24 @@\n     private int getGroupNumber(String name)\n     {\n         int bestIndex \u003d groups.length;\n         int bestLength \u003d -1;\n         int bestPos \u003d 0;\n \n         // find out what group this belongs in\n         // loop over groups and get index\n         for (int i \u003d 0; i \u003c groups.length; i++) {\n             final Matcher matcher \u003d groups[i].matcher(name);\n             while (matcher.find()) {\n                 final int length \u003d matcher.end() - matcher.start();\n-                if ((length \u003e bestLength)\n-                    || ((length \u003d\u003d bestLength) \u0026\u0026 (matcher.start() \u003c bestPos)))\n+                if (length \u003e bestLength\n+                    || length \u003d\u003d bestLength \u0026\u0026 matcher.start() \u003c bestPos)\n                 {\n                     bestIndex \u003d i;\n                     bestLength \u003d length;\n                     bestPos \u003d matcher.start();\n                 }\n             }\n         }\n \n         return bestIndex;\n     }\n\\ No newline at end of file\n"
+    },
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, imports, #512\n",
+      "commitDate": 1421678111000,
+      "commitName": "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "8d800ef546e11c6d593154f4071e39cdc4f66f34": {
+      "type": "Ybodychange",
+      "commitMessage": "Enhanced ImportOrder  to support using regular expressions for defining groups. Thanks to Martin von Gagern for patch #2782118.\n",
+      "commitDate": 1284436185000,
+      "commitName": "8d800ef546e11c6d593154f4071e39cdc4f66f34",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1266491811000,
+      "commitNameOld": "139609ac5d073ecb04381466f075f174b0aec8c9",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 207.69,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,24 @@\n     private int getGroupNumber(String aName)\n     {\n+        int bestIndex \u003d mGroups.length;\n+        int bestLength \u003d -1;\n+        int bestPos \u003d 0;\n+\n         // find out what group this belongs in\n         // loop over mGroups and get index\n         for (int i \u003d 0; i \u003c mGroups.length; i++) {\n-            if (aName.startsWith(mGroups[i])) {\n-                return i;\n+            final Matcher matcher \u003d mGroups[i].matcher(aName);\n+            while (matcher.find()) {\n+                final int length \u003d matcher.end() - matcher.start();\n+                if ((length \u003e bestLength)\n+                    || ((length \u003d\u003d bestLength) \u0026\u0026 (matcher.start() \u003c bestPos)))\n+                {\n+                    bestIndex \u003d i;\n+                    bestLength \u003d length;\n+                    bestPos \u003d matcher.start();\n+                }\n             }\n         }\n \n-        // no match, so we return the wildcard group\n-        return mWildcardGroupIndex;\n+        return bestIndex;\n     }\n\\ No newline at end of file\n"
+    },
+    "efccc132cea8ce1efad0e5318b8419cc603f8957": {
+      "type": "Ybodychange",
+      "commitMessage": "Enhanced ImportOrder check to support wildcard (\u0027*\u0027) groups. Thanks to Steve McKay for patch #2891032.\n",
+      "commitDate": 1260596563000,
+      "commitName": "efccc132cea8ce1efad0e5318b8419cc603f8957",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1237695418000,
+      "commitNameOld": "216fcb79f9f5bbd05244364e926f261a90e697d1",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 265.06,
+      "commitsBetweenForRepo": 41,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,13 @@\n     private int getGroupNumber(String aName)\n     {\n-        int i \u003d 0;\n-\n         // find out what group this belongs in\n         // loop over mGroups and get index\n-        for (; i \u003c mGroups.length; i++) {\n+        for (int i \u003d 0; i \u003c mGroups.length; i++) {\n             if (aName.startsWith(mGroups[i])) {\n-                break;\n+                return i;\n             }\n         }\n \n-        return i;\n+        // no match, so we return the wildcard group\n+        return mWildcardGroupIndex;\n     }\n\\ No newline at end of file\n"
+    },
+    "2a1705e70d334700734b3df3ebefea0be878127a": {
+      "type": "Yintroduced",
+      "commitMessage": "ImportOrder check from Bill Schneider (request 745548)docs/releasenotes.html\n",
+      "commitDate": 1063737477000,
+      "commitName": "2a1705e70d334700734b3df3ebefea0be878127a",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

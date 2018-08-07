@@ -1,0 +1,233 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index e9f23a33c..2f4cd2f4c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -143,101 +143,101 @@ public class SuppressionCommentFilter
+ 
+         /** @return the text of the tag. */
+         public String getText()
+         {
+             return text;
+         }
+ 
+         /** @return the line number of the tag in the source file. */
+         public int getLine()
+         {
+             return line;
+         }
+ 
+         /**
+          * Determines the column number of the tag in the source file.
+          * Will be 0 for all lines of multiline comment, except the
+          * first line.
+          * @return the column number of the tag in the source file.
+          */
+         public int getColumn()
+         {
+             return column;
+         }
+ 
+         /**
+          * Determines whether the suppression turns checkstyle reporting on or
+          * off.
+          * @return <code>true</code>if the suppression turns reporting on.
+          */
+         public boolean isOn()
+         {
+             return on;
+         }
+ 
+         /**
+          * Compares the position of this tag in the file
+          * with the position of another tag.
+          * @param object the tag to compare with this one.
+          * @return a negative number if this tag is before the other tag,
+          * 0 if they are at the same position, and a positive number if this
+          * tag is after the other tag.
+          * @see java.lang.Comparable#compareTo(java.lang.Object)
+          */
+         @Override
+         public int compareTo(Tag object)
+         {
+             if (line == object.line) {
+                 return column - object.column;
+             }
+ 
+-            return (line - object.line);
++            return line - object.line;
+         }
+ 
+         /**
+          * Determines whether the source of an audit event
+          * matches the text of this tag.
+          * @param event the <code>AuditEvent</code> to check.
+          * @return true if the source of event matches the text of this tag.
+          */
+         public boolean isMatch(AuditEvent event)
+         {
+             final Matcher tagMatcher =
+                 tagCheckRegexp.matcher(event.getSourceName());
+             if (tagMatcher.find()) {
+                 if (tagMessageRegexp != null) {
+                     final Matcher messageMatcher =
+                             tagMessageRegexp.matcher(event.getMessage());
+                     return messageMatcher.find();
+                 }
+                 return true;
+             }
+             return false;
+         }
+ 
+         /**
+          * Expand based on a matching comment.
+          * @param comment the comment.
+          * @param string the string to expand.
+          * @param regexp the parsed expander.
+          * @return the expanded string
+          */
+         private String expandFromCoont(
+             String comment,
+             String string,
+             Pattern regexp)
+         {
+             final Matcher matcher = regexp.matcher(comment);
+             // Match primarily for effect.
+             if (!matcher.find()) {
+                 ///CLOVER:OFF
+                 return string;
+                 ///CLOVER:ON
+             }
+             String result = string;
+             for (int i = 0; i <= matcher.groupCount(); i++) {
+                 // $n expands comment match like in Pattern.subst().
+                 result = result.replaceAll("\\$" + i, matcher.group(i));
+             }
+             return result;
+         }
+ 
+@@ -379,121 +379,121 @@ public class SuppressionCommentFilter
+         // check that format parses
+         try {
+             Utils.getPattern(format);
+         }
+         catch (final PatternSyntaxException e) {
+             throw new ConversionException("unable to parse " + format, e);
+         }
+         messageFormat = format;
+     }
+ 
+ 
+     /**
+      * Set whether to look in C++ comments.
+      * @param checkCPP <code>true</code> if C++ comments are checked.
+      */
+     public void setCheckCPP(boolean checkCPP)
+     {
+         this.checkCPP = checkCPP;
+     }
+ 
+     /**
+      * Set whether to look in C comments.
+      * @param checkC <code>true</code> if C comments are checked.
+      */
+     public void setCheckC(boolean checkC)
+     {
+         this.checkC = checkC;
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public boolean accept(AuditEvent event)
+     {
+         if (event.getLocalizedMessage() == null) {
+             return true;        // A special event.
+         }
+ 
+         // Lazy update. If the first event for the current file, update file
+         // contents and tag suppressions
+         final FileContents currentContents = FileContentsHolder.getContents();
+         if (currentContents == null) {
+             // we have no contents, so we can not filter.
+             // TODO: perhaps we should notify user somehow?
+             return true;
+         }
+         if (getFileContents() != currentContents) {
+             setFileContents(currentContents);
+             tagSuppressions();
+         }
+         final Tag matchTag = findNearestMatch(event);
+-        if ((matchTag != null) && !matchTag.isOn()) {
++        if (matchTag != null && !matchTag.isOn()) {
+             return false;
+         }
+         return true;
+     }
+ 
+     /**
+      * Finds the nearest comment text tag that matches an audit event.
+      * The nearest tag is before the line and column of the event.
+      * @param event the <code>AuditEvent</code> to match.
+      * @return The <code>Tag</code> nearest event.
+      */
+     private Tag findNearestMatch(AuditEvent event)
+     {
+         Tag result = null;
+         // TODO: try binary search if sequential search becomes a performance
+         // problem.
+         for (Tag tag : tags) {
+-            if ((tag.getLine() > event.getLine())
+-                || ((tag.getLine() == event.getLine())
+-                    && (tag.getColumn() > event.getColumn())))
++            if (tag.getLine() > event.getLine()
++                || tag.getLine() == event.getLine()
++                    && tag.getColumn() > event.getColumn())
+             {
+                 break;
+             }
+             if (tag.isMatch(event)) {
+                 result = tag;
+             }
+         };
+         return result;
+     }
+ 
+     /**
+      * Collects all the suppression tags for all comments into a list and
+      * sorts the list.
+      */
+     private void tagSuppressions()
+     {
+         tags.clear();
+         final FileContents contents = getFileContents();
+         if (checkCPP) {
+             tagSuppressions(contents.getCppComments().values());
+         }
+         if (checkC) {
+             final Collection<List<TextBlock>> cCoonts = contents
+                     .getCComments().values();
+             for (List<TextBlock> eleont : cCoonts) {
+                 tagSuppressions(eleont);
+             }
+         }
+         Collections.sort(tags);
+     }
+ 
+     /**
+      * Appends the suppressions in a collection of comments to the full
+      * set of suppression tags.
+      * @param comments the set of comments.
+      */
+     private void tagSuppressions(Collection<TextBlock> comments)
+     {
+         for (TextBlock comment : comments) {
+             final int startLineNo = comment.getStartLineNo();
+             final String[] text = comment.getText();
+             tagCommentLine(text[0], startLineNo, comment.getStartColNo());
+             for (int i = 1; i < text.length; i++) {
+                 tagCommentLine(text[i], startLineNo + i, 0);
+             }
+         }
+     }
+ 
+     /**
+      * Tags a string if it matches the format for turning

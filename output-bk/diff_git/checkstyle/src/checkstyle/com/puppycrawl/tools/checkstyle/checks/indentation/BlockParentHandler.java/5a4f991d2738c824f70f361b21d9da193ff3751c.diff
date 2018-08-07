@@ -1,0 +1,80 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java
+index 798c44657..4b2293955 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java
+@@ -299,53 +299,75 @@ public class BlockParentHandler extends ExpressionHandler
+      * Check the indentation of the left parenthesis.
+      */
+     protected void checkLParen()
+     {
+         // the rcurly can either be at the correct indentation, or on the
+         // same line as the lcurly
+         DetailAST lparen = getLParen();
+         if (lparen == null
+             || getLevel().accept(expandedTabsColumnNo(lparen))
+             || !startsLine(lparen))
+         {
+             return;
+         }
+         logError(lparen, "lparen", expandedTabsColumnNo(lparen));
+     }
+ 
+     /**
+      * Check the indentation of the expression we are handling.
+      */
+     public void checkIndentation()
+     {
+         checkToplevelToken();
+         // seperate to allow for eventual configuration
+         checkLParen();
+         checkRParen();
+         if (hasCurlys()) {
+             checkLCurly();
+             checkRCurly();
+         }
+         DetailAST listChild = getListChild();
+         if (listChild != null) {
+             // NOTE: switch statements usually don't have curlys
+             if (!hasCurlys() || !areOnSameLine(getLCurly(), getRCurly())) {
+                 checkChildren(listChild,
+                               CHECKED_CHILDREN,
+                               getChildrenExpectedLevel(),
+                               true,
+                               childrenMayNest());
+             }
+         }
+         else {
+             checkNonlistChild();
+         }
+     }
+ 
+     /**
+      * @return indentation level expected for children
+      */
+     protected IndentLevel getChildrenExpectedLevel()
+     {
++        // if we have multileveled expected level then we should
++        // try to suggest single level to children using curlies'
++        // levels.
++        if (getLevel().isMultiLevel() && hasCurlys()
++            && !areOnSameLine(getLCurly(), getRCurly()))
++        {
++            if (startsLine(getLCurly())) {
++                return new IndentLevel(expandedTabsColumnNo(getLCurly())
++                                       + getBasicOffset());
++            }
++            else if (startsLine(getRCurly())) {
++                return new IndentLevel(expandedTabsColumnNo(getRCurly())
++                                       + getBasicOffset());
++            }
++        }
+         return new IndentLevel(getLevel(), getBasicOffset());
+     }
++
++    /** {@inheritDoc} */
++    public IndentLevel suggestedChildLevel(ExpressionHandler aChild)
++    {
++        return getChildrenExpectedLevel();
++    }
++
+ }

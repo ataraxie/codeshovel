@@ -1,0 +1,363 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+index fe671bb88..bc39110db 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+@@ -66,240 +66,247 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtils;
+  *   &lt;property name=&quot;checkFields&quot; value=&quot;false&quot;/&gt;
+  *   &lt;property name=&quot;checkMethods&quot; value=&quot;true&quot;/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * <p>Rationale:</p>
+  * <ol>
+  *   <li>
+  *     The same notation/habit for C++ and Java (C++ have global methods, so having
+  *     &quot;this.&quot; do make sense in it to distinguish call of method of class
+  *     instead of global).
+  *   </li>
+  *   <li>
+  *     Non-IDE development (ease of refactoring, some clearness to distinguish
+  *     static and non-static methods).
+  *   </li>
+  * </ol>
+  *
+  * <p>Limitations: Nothing is currently done about static variables
+  * or catch-blocks.  Static methods invoked on a class name seem to be OK;
+  * both the class name and the method name have a DOT parent.
+  * Non-static methods invoked on either this or a variable name seem to be
+  * OK, likewise.</p>
+  *
+  * @author Stephen Bloch
+  * @author o_sukhodolsky
+  * @author Andrei Selkin
+  */
+ @FileStatefulCheck
+ public class RequireThisCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_METHOD = "require.this.method";
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_VARIABLE = "require.this.variable";
+ 
+     /** Set of all declaration tokens. */
+     private static final Set<Integer> DECLARATION_TOKENS = Collections.unmodifiableSet(
+         Arrays.stream(new Integer[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
++            TokenTypes.ANNOTATION_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.TYPE_ARGUMENT,
+         }).collect(Collectors.toSet()));
+     /** Set of all assign tokens. */
+     private static final Set<Integer> ASSIGN_TOKENS = Collections.unmodifiableSet(
+         Arrays.stream(new Integer[] {
+             TokenTypes.ASSIGN,
+             TokenTypes.PLUS_ASSIGN,
+             TokenTypes.STAR_ASSIGN,
+             TokenTypes.DIV_ASSIGN,
+             TokenTypes.MOD_ASSIGN,
+             TokenTypes.SR_ASSIGN,
+             TokenTypes.BSR_ASSIGN,
+             TokenTypes.SL_ASSIGN,
+             TokenTypes.BAND_ASSIGN,
+             TokenTypes.BXOR_ASSIGN,
+         }).collect(Collectors.toSet()));
+     /** Set of all compound assign tokens. */
+     private static final Set<Integer> COMPOUND_ASSIGN_TOKENS = Collections.unmodifiableSet(
+         Arrays.stream(new Integer[] {
+             TokenTypes.PLUS_ASSIGN,
+             TokenTypes.STAR_ASSIGN,
+             TokenTypes.DIV_ASSIGN,
+             TokenTypes.MOD_ASSIGN,
+             TokenTypes.SR_ASSIGN,
+             TokenTypes.BSR_ASSIGN,
+             TokenTypes.SL_ASSIGN,
+             TokenTypes.BAND_ASSIGN,
+             TokenTypes.BXOR_ASSIGN,
+         }).collect(Collectors.toSet()));
+ 
+     /** Tree of all the parsed frames. */
+     private Map<DetailAST, AbstractFrame> frames;
+ 
+     /** Frame for the currently processed AST. */
+     private AbstractFrame current;
+ 
+     /** Whether we should check fields usage. */
+     private boolean checkFields = true;
+     /** Whether we should check methods usage. */
+     private boolean checkMethods = true;
+     /** Whether we should check only overlapping by variables or arguments. */
+     private boolean validateOnlyOverlapping = true;
+ 
+     /**
+      * Setter for checkFields property.
+      * @param checkFields should we check fields usage or not.
+      */
+     public void setCheckFields(boolean checkFields) {
+         this.checkFields = checkFields;
+     }
+ 
+     /**
+      * Setter for checkMethods property.
+      * @param checkMethods should we check methods usage or not.
+      */
+     public void setCheckMethods(boolean checkMethods) {
+         this.checkMethods = checkMethods;
+     }
+ 
+     /**
+      * Setter for validateOnlyOverlapping property.
+      * @param validateOnlyOverlapping should we check only overlapping by variables or arguments.
+      */
+     public void setValidateOnlyOverlapping(boolean validateOnlyOverlapping) {
+         this.validateOnlyOverlapping = validateOnlyOverlapping;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.ENUM_DEF,
++            TokenTypes.ANNOTATION_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.SLIST,
+             TokenTypes.IDENT,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return getRequiredTokens();
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         frames = new HashMap<>();
+         current = null;
+ 
+         final Deque<AbstractFrame> frameStack = new LinkedList<>();
+         DetailAST curNode = rootAST;
+         while (curNode != null) {
+             collectDeclarations(frameStack, curNode);
+             DetailAST toVisit = curNode.getFirstChild();
+             while (curNode != null && toVisit == null) {
+                 endCollectingDeclarations(frameStack, curNode);
+                 toVisit = curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.IDENT :
+                 processIdent(ast);
+                 break;
+             case TokenTypes.CLASS_DEF :
+             case TokenTypes.INTERFACE_DEF :
+             case TokenTypes.ENUM_DEF :
+             case TokenTypes.ANNOTATION_DEF :
+             case TokenTypes.SLIST :
+             case TokenTypes.METHOD_DEF :
+             case TokenTypes.CTOR_DEF :
+                 current = frames.get(ast);
+                 break;
+             default :
+                 // do nothing
+         }
+     }
+ 
+     /**
+      * Checks if a given IDENT is method call or field name which
+      * requires explicit {@code this} qualifier.
+      * @param ast IDENT to check.
+      */
+     private void processIdent(DetailAST ast) {
+-        final int parentType = ast.getParent().getType();
++        int parentType = ast.getParent().getType();
++        if (parentType == TokenTypes.EXPR
++                && ast.getParent().getParent().getParent().getType()
++                    == TokenTypes.ANNOTATION_FIELD_DEF) {
++            parentType = TokenTypes.ANNOTATION_FIELD_DEF;
++        }
+         switch (parentType) {
+             case TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR:
+             case TokenTypes.ANNOTATION:
+             case TokenTypes.ANNOTATION_FIELD_DEF:
+                 // no need to check annotations content
+                 break;
+             case TokenTypes.METHOD_CALL:
+                 if (checkMethods) {
+                     final AbstractFrame frame = getMethodWithoutThis(ast);
+                     if (frame != null) {
+                         logViolation(MSG_METHOD, ast, frame);
+                     }
+                 }
+                 break;
+             default:
+                 if (checkFields) {
+                     final AbstractFrame frame = getFieldWithoutThis(ast, parentType);
+                     if (frame != null) {
+                         logViolation(MSG_VARIABLE, ast, frame);
+                     }
+                 }
+                 break;
+         }
+     }
+ 
+     /**
+      * Helper method to log a LocalizedMessage.
+      * @param ast a node to get line id column numbers associated with the message.
+      * @param msgKey key to locale message format.
+      * @param frame the class frame where the violation is found.
+      */
+     private void logViolation(String msgKey, DetailAST ast, AbstractFrame frame) {
+         if (frame.getFrameName().equals(getNearestClassFrameName())) {
+             log(ast, msgKey, ast.getText(), "");
+         }
+         else if (!(frame instanceof AnonymousClassFrame)) {
+             log(ast, msgKey, ast.getText(), frame.getFrameName() + '.');
+         }
+     }
+ 
+     /**
+      * Returns the frame where the field is declared, if the given field is used without
+      * 'this', and null otherwise.
+      * @param ast field definition ast token.
+      * @param parentType type of the parent.
+      * @return the frame where the field is declared, if the given field is used without
+      *         'this' and null otherwise.
+      */
+     private AbstractFrame getFieldWithoutThis(DetailAST ast, int parentType) {
+         final boolean importOrPackage = ScopeUtils.getSurroundingScope(ast) == null;
+@@ -823,108 +830,101 @@ public class RequireThisCheck extends AbstractCheck {
+             if (frame != null
+                     && ((ClassFrame) frame).hasInstanceMethod(ast)
+                     && !((ClassFrame) frame).hasStaticMethod(ast)) {
+                 result = frame;
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Find the class frame containing declaration.
+      * @param name IDENT ast of the declaration to find.
+      * @param lookForMethod whether we are looking for a method name.
+      * @return AbstractFrame containing declaration or null.
+      */
+     private AbstractFrame findClassFrame(DetailAST name, boolean lookForMethod) {
+         AbstractFrame frame = current;
+ 
+         while (true) {
+             frame = findFrame(frame, name, lookForMethod);
+ 
+             if (frame == null || frame instanceof ClassFrame) {
+                 break;
+             }
+ 
+             frame = frame.getParent();
+         }
+ 
+         return frame;
+     }
+ 
+     /**
+      * Find frame containing declaration.
+      * @param name IDENT ast of the declaration to find.
+      * @param lookForMethod whether we are looking for a method name.
+      * @return AbstractFrame containing declaration or null.
+      */
+     private AbstractFrame findFrame(DetailAST name, boolean lookForMethod) {
+         return findFrame(current, name, lookForMethod);
+     }
+ 
+     /**
+      * Find frame containing declaration.
+      * @param frame The parent frame to searching in.
+      * @param name IDENT ast of the declaration to find.
+      * @param lookForMethod whether we are looking for a method name.
+      * @return AbstractFrame containing declaration or null.
+      */
+     private static AbstractFrame findFrame(AbstractFrame frame, DetailAST name,
+             boolean lookForMethod) {
+-        final AbstractFrame result;
+-        if (frame == null) {
+-            result = null;
+-        }
+-        else {
+-            result = frame.getIfContains(name, lookForMethod);
+-        }
+-        return result;
++        return frame.getIfContains(name, lookForMethod);
+     }
+ 
+     /**
+      * Check that token is related to Definition tokens.
+      * @param parentType token Type.
+      * @return true if token is related to Definition Tokens.
+      */
+     private static boolean isDeclarationToken(int parentType) {
+         return DECLARATION_TOKENS.contains(parentType);
+     }
+ 
+     /**
+      * Check that token is related to assign tokens.
+      * @param tokenType token type.
+      * @return true if token is related to assign tokens.
+      */
+     private static boolean isAssignToken(int tokenType) {
+         return ASSIGN_TOKENS.contains(tokenType);
+     }
+ 
+     /**
+      * Check that token is related to compound assign tokens.
+      * @param tokenType token type.
+      * @return true if token is related to compound assign tokens.
+      */
+     private static boolean isCompoundAssignToken(int tokenType) {
+         return COMPOUND_ASSIGN_TOKENS.contains(tokenType);
+     }
+ 
+     /**
+      * Gets the name of the nearest parent ClassFrame.
+      * @return the name of the nearest parent ClassFrame.
+      */
+     private String getNearestClassFrameName() {
+         AbstractFrame frame = current;
+         while (frame.getType() != FrameType.CLASS_FRAME) {
+             frame = frame.getParent();
+         }
+         return frame.getFrameName();
+     }
+ 
+     /**
+      * Checks if the token is a Lambda parameter.
+      * @param ast the {@code DetailAST} value of the token to be checked
+      * @return true if the token is a Lambda parameter
+      */
+     private static boolean isLambdaParameter(DetailAST ast) {
+         DetailAST parent;
+         for (parent = ast.getParent(); parent != null; parent = parent.getParent()) {
+             if (parent.getType() == TokenTypes.LAMBDA) {

@@ -1,0 +1,101 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "FilterSet.java",
+  "functionName": "accept",
+  "functionId": "accept___event-AuditEvent",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/api/FilterSet.java",
+  "functionStartLine": 86,
+  "functionEndLine": 95,
+  "changeHistory": [
+    "154f120d7b71c30ec64f3ef801fb080a24a21c4a",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "f1afaf83f39b83cc3bd07a2388448b262652a76b",
+    "8d242382f8bb77488b6da23bdd0d2d61583703fc",
+    "1e7d8eef0641edcf97316618c8fab40bd248133d"
+  ],
+  "changeHistoryShort": {
+    "154f120d7b71c30ec64f3ef801fb080a24a21c4a": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "f1afaf83f39b83cc3bd07a2388448b262652a76b": "Ybodychange",
+    "8d242382f8bb77488b6da23bdd0d2d61583703fc": "Ymultichange(Yparameterchange,Ybodychange)",
+    "1e7d8eef0641edcf97316618c8fab40bd248133d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "154f120d7b71c30ec64f3ef801fb080a24a21c4a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.api\n",
+      "commitDate": 1493349546000,
+      "commitName": "154f120d7b71c30ec64f3ef801fb080a24a21c4a",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 90.53,
+      "commitsBetweenForRepo": 336,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,10 @@\n     public boolean accept(AuditEvent event) {\n+        boolean result \u003d true;\n         for (Filter filter : filters) {\n             if (!filter.accept(event)) {\n-                return false;\n+                result \u003d false;\n+                break;\n             }\n         }\n-        return true;\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "f1afaf83f39b83cc3bd07a2388448b262652a76b": {
+      "type": "Ybodychange",
+      "commitMessage": "Finish of adding generics.\n",
+      "commitDate": 1197706480000,
+      "commitName": "f1afaf83f39b83cc3bd07a2388448b262652a76b",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1169909494000,
+      "commitNameOld": "1efc394250b8f1c79bd7f8344b738a7d13396ed3",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 321.72,
+      "commitsBetweenForRepo": 33,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,9 @@\n     public boolean accept(AuditEvent aEvent)\n     {\n-        final Iterator it \u003d mFilters.iterator();\n-        while (it.hasNext()) {\n-            final Filter filter \u003d (Filter) it.next();\n+        for (Filter filter : mFilters) {\n             if (!filter.accept(aEvent)) {\n                 return false;\n             }\n         }\n         return true;\n     }\n\\ No newline at end of file\n"
+    },
+    "8d242382f8bb77488b6da23bdd0d2d61583703fc": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Filter.accept() now takes AuditEvent, not an Object.\n",
+      "commitDate": 1068180594000,
+      "commitName": "8d242382f8bb77488b6da23bdd0d2d61583703fc",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "1e7d8eef0641edcf97316618c8fab40bd248133d": {
+      "type": "Yintroduced",
+      "commitMessage": "Refactored Filters to the way Checkstyle uses them;\ni.e. a Filter accepts or rejects an Object,\nand a FilterSet, not a FilterChain, aggregates Filters.\n",
+      "commitDate": 1058300282000,
+      "commitName": "1e7d8eef0641edcf97316618c8fab40bd248133d",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

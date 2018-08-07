@@ -1,0 +1,117 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ParenPadCheck.java",
+  "functionName": "isPrecedingEmptyForInit",
+  "functionId": "isPrecedingEmptyForInit___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/ParenPadCheck.java",
+  "functionStartLine": 307,
+  "functionEndLine": 317,
+  "changeHistory": [
+    "55c92042eb6986e905529de841d3d1c9a7b2b6dd",
+    "7f452f66c8ac18a9d0093c0cb05009ddae0b8ea9",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "d97a2df674716efb7deda50180ae933bdc46d68a",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "fee0ec8258a99bd81b36e109dd4c4cf73f0b7608",
+    "da2328d0f138c2d989056bc876f8698cc53bffe3"
+  ],
+  "changeHistoryShort": {
+    "55c92042eb6986e905529de841d3d1c9a7b2b6dd": "Yrename",
+    "7f452f66c8ac18a9d0093c0cb05009ddae0b8ea9": "Ymultichange(Ymodifierchange,Ybodychange)",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "d97a2df674716efb7deda50180ae933bdc46d68a": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "fee0ec8258a99bd81b36e109dd4c4cf73f0b7608": "Ybodychange",
+    "da2328d0f138c2d989056bc876f8698cc53bffe3": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "55c92042eb6986e905529de841d3d1c9a7b2b6dd": {
+      "type": "Yrename",
+      "commitMessage": "Fix various typos in Java code. #1555\n\nFixes some `SpellCheckingInspection` inspection violations.\n\nDescription:\n\u003eSpellchecker inspection helps locate typos and misspelling in your code, comments and literals, and fix them in one click.\n",
+      "commitDate": 1440679848000,
+      "commitName": "55c92042eb6986e905529de841d3d1c9a7b2b6dd",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439782863000,
+      "commitNameOld": "d56a2a366c6f9e3e8639d492d548ae562b75dc81",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 10.38,
+      "commitsBetweenForRepo": 202,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n-    private static boolean isPreceedsEmptyForInit(DetailAST ast) {\n+    private static boolean isPrecedingEmptyForInit(DetailAST ast) {\n         boolean result \u003d false;\n         final DetailAST parent \u003d ast.getParent();\n         //Only traditional for statements are examined, not for-each statements\n         if (parent.findFirstToken(TokenTypes.FOR_EACH_CLAUSE) \u003d\u003d null) {\n             final DetailAST forIterator \u003d\n                     parent.findFirstToken(TokenTypes.FOR_INIT);\n             result \u003d forIterator.getChildCount() \u003d\u003d 0;\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "7f452f66c8ac18a9d0093c0cb05009ddae0b8ea9": {
+      "type": "Ymultichange(Ymodifierchange,Ybodychange)",
+      "commitMessage": "Add possibility to configure targets for ParenPad check, #1189",
+      "commitDate": 1435252569000,
+      "commitName": "7f452f66c8ac18a9d0093c0cb05009ddae0b8ea9",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "subchanges": [
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425968782000,
+      "commitNameOld": "49a23751eb6bffdfba94d72454d7676c9f85adc5",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.63,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     private boolean isPreceedsEmptyForInit(DetailAST ast)\n     {\n         boolean preceedsEmptyForInintializer \u003d false;\n         final DetailAST parent \u003d ast.getParent();\n         //Only traditional for statements are examined, not for-each statements\n-        if ((parent !\u003d null)\n-            \u0026\u0026 (parent.getType() \u003d\u003d TokenTypes.LITERAL_FOR)\n-            \u0026\u0026 (parent.findFirstToken(TokenTypes.FOR_EACH_CLAUSE) \u003d\u003d null))\n+        if (parent !\u003d null\n+            \u0026\u0026 parent.getType() \u003d\u003d TokenTypes.LITERAL_FOR\n+            \u0026\u0026 parent.findFirstToken(TokenTypes.FOR_EACH_CLAUSE) \u003d\u003d null)\n         {\n             final DetailAST forIterator \u003d\n                     parent.findFirstToken(TokenTypes.FOR_INIT);\n-            preceedsEmptyForInintializer \u003d (forIterator.getChildCount() \u003d\u003d 0)\n-                    \u0026\u0026 (ast \u003d\u003d forIterator.getPreviousSibling());\n+            preceedsEmptyForInintializer \u003d forIterator.getChildCount() \u003d\u003d 0\n+                    \u0026\u0026 ast \u003d\u003d forIterator.getPreviousSibling();\n         }\n         return preceedsEmptyForInintializer;\n     }\n\\ No newline at end of file\n"
+    },
+    "d97a2df674716efb7deda50180ae933bdc46d68a": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, whitespace, #512\n",
+      "commitDate": 1421677248000,
+      "commitName": "d97a2df674716efb7deda50180ae933bdc46d68a",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "fee0ec8258a99bd81b36e109dd4c4cf73f0b7608": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed bug where for-each statements caused a NPE when checking special case for for statements with empty iterator clauses in ParenPadCheck.\n",
+      "commitDate": 1103499861000,
+      "commitName": "fee0ec8258a99bd81b36e109dd4c4cf73f0b7608",
+      "commitAuthor": "Michael Studman",
+      "commitDateOld": 1076844692000,
+      "commitNameOld": "da2328d0f138c2d989056bc876f8698cc53bffe3",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 308.51,
+      "commitsBetweenForRepo": 157,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,16 @@\n     private boolean isPreceedsEmptyForInit(DetailAST aAST)\n     {\n         boolean preceedsEmptyForInintializer \u003d false;\n         final DetailAST parent \u003d aAST.getParent();\n+        //Only traditional for statements are examined, not for-each statements\n         if ((parent !\u003d null)\n-                \u0026\u0026 (parent.getType() \u003d\u003d TokenTypes.LITERAL_FOR))\n+            \u0026\u0026 (parent.getType() \u003d\u003d TokenTypes.LITERAL_FOR)\n+            \u0026\u0026 (parent.findFirstToken(TokenTypes.FOR_EACH_CLAUSE) \u003d\u003d null))\n         {\n             final DetailAST forIterator \u003d\n                     parent.findFirstToken(TokenTypes.FOR_INIT);\n             preceedsEmptyForInintializer \u003d (forIterator.getChildCount() \u003d\u003d 0)\n                     \u0026\u0026 (aAST \u003d\u003d forIterator.getPreviousSibling());\n         }\n         return preceedsEmptyForInintializer;\n     }\n\\ No newline at end of file\n"
+    },
+    "da2328d0f138c2d989056bc876f8698cc53bffe3": {
+      "type": "Yintroduced",
+      "commitMessage": "added new check EmptyForInitializerPad and changed logic in NoWhiteSpaceBefore and ParenPad to fix bug #895072\n",
+      "commitDate": 1076844692000,
+      "commitName": "da2328d0f138c2d989056bc876f8698cc53bffe3",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

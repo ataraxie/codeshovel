@@ -1,0 +1,116 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java b/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
+index 6d7908c54..0a0095418 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
+@@ -232,101 +232,110 @@ public class XMLLogger
+             messages.addException(throwable);
+         }
+     }
+ 
+     /**
+      * Writes the exception event to the print writer.
+      * @param throwable The
+      */
+     private void writeException(Throwable throwable) {
+         final StringWriter stringWriter = new StringWriter();
+         final PrintWriter printer = new PrintWriter(stringWriter);
+         printer.println("<exception>");
+         printer.println("<![CDATA[");
+         throwable.printStackTrace(printer);
+         printer.println("]]>");
+         printer.println("</exception>");
+         writer.println(encode(stringWriter.toString()));
+     }
+ 
+     /**
+      * Escape &lt;, &gt; &amp; &#39; and &quot; as their entities.
+      * @param value the value to escape.
+      * @return the escaped value if necessary.
+      */
+     public static String encode(String value) {
+         final StringBuilder sb = new StringBuilder(256);
+         for (int i = 0; i < value.length(); i++) {
+             final char chr = value.charAt(i);
+             switch (chr) {
+                 case '<':
+                     sb.append("&lt;");
+                     break;
+                 case '>':
+                     sb.append("&gt;");
+                     break;
+                 case '\'':
+                     sb.append("&apos;");
+                     break;
+                 case '\"':
+                     sb.append("&quot;");
+                     break;
+                 case '&':
+                     sb.append("&amp;");
+                     break;
+                 case '\r':
+                     break;
+                 case '\n':
+                     sb.append("&#10;");
+                     break;
+                 default:
+-                    sb.append(chr);
++                    if (Character.isISOControl(chr)) {
++                        // true escape characters need '&' before but it also requires XML 1.1
++                        // until https://github.com/checkstyle/checkstyle/issues/5168
++                        sb.append("#x");
++                        sb.append(Integer.toHexString(chr));
++                        sb.append(';');
++                    }
++                    else {
++                        sb.append(chr);
++                    }
+                     break;
+             }
+         }
+         return sb.toString();
+     }
+ 
+     /**
+      * Finds whether the given argument is character or entity reference.
+      * @param ent the possible entity to look for.
+      * @return whether the given argument a character or entity reference
+      */
+     public static boolean isReference(String ent) {
+         boolean reference = false;
+ 
+         if (ent.charAt(0) != '&' || !CommonUtils.endsWithChar(ent, ';')) {
+             reference = false;
+         }
+         else if (ent.charAt(1) == '#') {
+             // prefix is "&#"
+             int prefixLength = 2;
+ 
+             int radix = BASE_10;
+             if (ent.charAt(2) == 'x') {
+                 prefixLength++;
+                 radix = BASE_16;
+             }
+             try {
+                 Integer.parseInt(
+                     ent.substring(prefixLength, ent.length() - 1), radix);
+                 reference = true;
+             }
+             catch (final NumberFormatException ignored) {
+                 reference = false;
+             }
+         }
+         else {
+             final String name = ent.substring(1, ent.length() - 1);
+             for (String element : ENTITIES) {
+                 if (name.equals(element)) {
+                     reference = true;
+                     break;
+                 }
+             }
+         }
+         return reference;
+     }
+ 
+     /**
+      * The registered file messages.
+      */

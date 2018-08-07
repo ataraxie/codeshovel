@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "LambdaHandler.java",
+  "functionName": "checkIndentation",
+  "functionId": "checkIndentation",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LambdaHandler.java",
+  "functionStartLine": 78,
+  "functionEndLine": 96,
+  "changeHistory": [
+    "8c891372187779376158becd95fcaf4e28b8bb8d",
+    "eeec3dc1d23916462560403a27a4ae94260d61f3"
+  ],
+  "changeHistoryShort": {
+    "8c891372187779376158becd95fcaf4e28b8bb8d": "Ybodychange",
+    "eeec3dc1d23916462560403a27a4ae94260d61f3": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "8c891372187779376158becd95fcaf4e28b8bb8d": {
+      "type": "Ybodychange",
+      "commitMessage": "minor: renaming indentation methods to more natural name",
+      "commitDate": 1450282560000,
+      "commitName": "8c891372187779376158becd95fcaf4e28b8bb8d",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1449255189000,
+      "commitNameOld": "ab74399c2d18b8881c4a0c13155b7afce869eebf",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 11.89,
+      "commitsBetweenForRepo": 74,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     public void checkIndentation() {\n         // If the argument list is the first element on the line\n         final DetailAST firstChild \u003d getMainAst().getFirstChild();\n         if (getLineStart(firstChild) \u003d\u003d firstChild.getColumnNo()) {\n-            final IndentLevel level \u003d getLevel();\n+            final IndentLevel level \u003d getIndent();\n             if (!level.isAcceptable(firstChild.getColumnNo())) {\n                 logError(firstChild, \"arguments\", firstChild.getColumnNo(), level);\n             }\n         }\n \n         // If the \"-\u003e\" is the first element on the line, assume line wrapping.\n         if (getLineStart(getMainAst()) \u003d\u003d getMainAst().getColumnNo()) {\n             final IndentLevel level \u003d\n-                new IndentLevel(getLevel(), getIndentCheck().getLineWrappingIndentation());\n+                new IndentLevel(getIndent(), getIndentCheck().getLineWrappingIndentation());\n             if (!level.isAcceptable(getMainAst().getColumnNo())) {\n                 logError(getMainAst(), \"\", getMainAst().getColumnNo(), level);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "eeec3dc1d23916462560403a27a4ae94260d61f3": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1548: Add lambda support to indentation check (see #281)\n",
+      "commitDate": 1443707601000,
+      "commitName": "eeec3dc1d23916462560403a27a4ae94260d61f3",
+      "commitAuthor": "Pieter Noordhuis"
+    }
+  }
+}

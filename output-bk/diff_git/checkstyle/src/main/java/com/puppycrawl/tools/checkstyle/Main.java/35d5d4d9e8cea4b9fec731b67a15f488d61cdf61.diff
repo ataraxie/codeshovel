@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+index 17f77c8a4..b29bf206c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+@@ -397,101 +397,101 @@ public final class Main {
+         final Properties props;
+ 
+         if (cliOptions.propertiesLocation == null) {
+             props = System.getProperties();
+         }
+         else {
+             props = loadProperties(new File(cliOptions.propertiesLocation));
+         }
+ 
+         // create a configuration
+         final Configuration config = ConfigurationLoader.loadConfiguration(
+                 cliOptions.configLocation, new PropertiesExpander(props));
+ 
+         // create a listener for output
+         final AuditListener listener = createListener(cliOptions.format, cliOptions.outputLocation);
+ 
+         // create RootModule object and run it
+         final int errorCounter;
+         final ClassLoader moduleClassLoader = Checker.class.getClassLoader();
+         final RootModule rootModule = getRootModule(config.getName(), moduleClassLoader);
+ 
+         try {
+ 
+             rootModule.setModuleClassLoader(moduleClassLoader);
+             rootModule.configure(config);
+             rootModule.addListener(listener);
+ 
+             // run RootModule
+             errorCounter = rootModule.process(cliOptions.files);
+ 
+         }
+         finally {
+             rootModule.destroy();
+         }
+ 
+         return errorCounter;
+     }
+ 
+     /**
+      * Creates a new instance of the root module that will control and run
+      * Checkstyle.
+      * @param name The name of the module. This will either be a short name that
+      *        will have to be found or the complete package name.
+      * @param moduleClassLoader Class loader used to load the root module.
+      * @return The new instance of the root module.
+      * @throws CheckstyleException if no module can be instantiated from name
+      */
+     private static RootModule getRootModule(String name, ClassLoader moduleClassLoader)
+             throws CheckstyleException {
+         final ModuleFactory factory = new PackageObjectFactory(
+-                Checker.class.getPackage().getName() + ".", moduleClassLoader);
++                Checker.class.getPackage().getName(), moduleClassLoader);
+ 
+         return (RootModule) factory.createModule(name);
+     }
+ 
+     /**
+      * Loads properties from a File.
+      * @param file
+      *        the properties file
+      * @return the properties in file
+      * @throws CheckstyleException
+      *         when could not load properties file
+      */
+     private static Properties loadProperties(File file)
+             throws CheckstyleException {
+         final Properties properties = new Properties();
+ 
+         FileInputStream fis = null;
+         try {
+             fis = new FileInputStream(file);
+             properties.load(fis);
+         }
+         catch (final IOException ex) {
+             throw new CheckstyleException(String.format(
+                     "Unable to load properties from file '%s'.", file.getAbsolutePath()), ex);
+         }
+         finally {
+             Closeables.closeQuietly(fis);
+         }
+ 
+         return properties;
+     }
+ 
+     /**
+      * Creates the audit listener.
+      *
+      * @param format format of the audit listener
+      * @param outputLocation the location of output
+      * @return a fresh new {@code AuditListener}
+      * @exception FileNotFoundException when provided output location is not found
+      */
+     private static AuditListener createListener(String format,
+                                                 String outputLocation)
+             throws FileNotFoundException {
+ 
+         // setup the output stream
+         final OutputStream out;
+         final boolean closeOutputStream;
+         if (outputLocation == null) {
+             out = System.out;
+             closeOutputStream = false;

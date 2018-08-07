@@ -1,0 +1,203 @@
+diff --git a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+index caf9fb8bf..fa83159ca 100644
+--- a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
++++ b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+@@ -171,184 +171,189 @@ public class BaseCheckTestSupport {
+             String messageFileName,
+             String[] expected,
+             Integer... warnsExpected)
+             throws Exception {
+         stream.flush();
+         final List<File> theFiles = new ArrayList<>();
+         Collections.addAll(theFiles, processedFiles);
+         final List<Integer> theWarnings = new ArrayList<>();
+         Collections.addAll(theWarnings, warnsExpected);
+         final int errs = checker.process(theFiles);
+ 
+         // process each of the lines
+         final ByteArrayInputStream inputStream =
+                 new ByteArrayInputStream(stream.toByteArray());
+         try (LineNumberReader lnr = new LineNumberReader(
+                 new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+ 
+             int previousLineNumber = 0;
+             for (int i = 0; i < expected.length; i++) {
+                 final String expectedResult = messageFileName + ":" + expected[i];
+                 final String actual = lnr.readLine();
+                 assertEquals("error message " + i, expectedResult, actual);
+ 
+                 String parseInt = removeDeviceFromPathOnWindows(actual);
+                 parseInt = parseInt.substring(parseInt.indexOf(':') + 1);
+                 parseInt = parseInt.substring(0, parseInt.indexOf(':'));
+                 final int lineNumber = Integer.parseInt(parseInt);
+                 assertTrue("input file is expected to have a warning comment on line number "
+                         + lineNumber, previousLineNumber == lineNumber
+                             || theWarnings.remove((Integer) lineNumber));
+                 previousLineNumber = lineNumber;
+             }
+ 
+             assertEquals("unexpected output: " + lnr.readLine(),
+                     expected.length, errs);
+             assertEquals("unexpected warnings " + theWarnings, 0, theWarnings.size());
+         }
+ 
+         checker.destroy();
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties'
+      * file.
+      *
+      * @param messageKey the key of message in 'messages.properties' file.
+      * @param arguments  the arguments of message in 'messages.properties' file.
+      */
+     protected String getCheckMessage(Class<? extends AbstractViolationReporter> aClass,
+             String messageKey, Object... arguments) {
+-        final Properties pr = new Properties();
++        String checkMessage;
+         try {
++            final Properties pr = new Properties();
+             pr.load(aClass.getResourceAsStream("messages.properties"));
++            final MessageFormat formatter = new MessageFormat(pr.getProperty(messageKey),
++                    Locale.ROOT);
++            checkMessage = formatter.format(arguments);
+         }
+         catch (IOException ex) {
+-            return null;
++            checkMessage = null;
+         }
+-        final MessageFormat formatter = new MessageFormat(pr.getProperty(messageKey),
+-                Locale.ROOT);
+-        return formatter.format(arguments);
++        return checkMessage;
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties' file.
+      * @param messageKey the key of message in 'messages.properties' file.
+      * @param arguments the arguments of message in 'messages.properties' file.
+      */
+     protected String getCheckMessage(Map<String, String> messages, String messageKey,
+             Object... arguments) {
++        String checkMessage = null;
+         for (Map.Entry<String, String> entry : messages.entrySet()) {
+             if (messageKey.equals(entry.getKey())) {
+                 final MessageFormat formatter = new MessageFormat(entry.getValue(), Locale.ROOT);
+-                return formatter.format(arguments);
++                checkMessage = formatter.format(arguments);
++                break;
+             }
+         }
+-        return null;
++        return checkMessage;
+     }
+ 
+     /**
+      * Returns {@link Configuration} instance for the given check name.
+      * This implementation uses {@link BaseCheckTestSupport#getConfiguration()} method inside.
+      * @param checkName check name.
+      * @return {@link Configuration} instance for the given check name.
+      * @throws CheckstyleException if exception occurs during configuration loading.
+      */
+     protected static Configuration getCheckConfig(String checkName) throws CheckstyleException {
+         final Configuration result;
+         final List<Configuration> configs = getCheckConfigs(checkName);
+         if (configs.size() == 1) {
+             result = configs.get(0);
+         }
+         else {
+             throw new IllegalStateException("multiple instances of the same Check are detected");
+         }
+         return result;
+     }
+ 
+     /**
+      * Returns {@link Configuration} instance for the given check name.
+      * This implementation uses {@link BaseCheckTestSupport#getConfiguration()} method inside.
+      * @param checkName check name.
+      * @return {@link Configuration} instance for the given check name.
+      * @throws CheckstyleException if exception occurs during configuration loading.
+      */
+     protected static Configuration getCheckConfig(String checkName, String checkId)
+             throws CheckstyleException {
+         final Configuration result;
+         final List<Configuration> configs = getCheckConfigs(checkName);
+         if (configs.size() == 1) {
+             result = configs.get(0);
+         }
+         else {
+             result = configs.stream().filter(conf -> {
+                 try {
+                     return conf.getAttribute("id").equals(checkId);
+                 }
+                 catch (CheckstyleException ex) {
+                     throw new IllegalStateException("problem to get ID attribute from " + conf, ex);
+                 }
+             })
+             .findFirst().orElseGet(null);
+         }
+         return result;
+     }
+ 
+     /**
+      * Returns a list of all {@link Configuration} instances for the given check name.
+      * This implementation uses {@link BaseCheckTestSupport#getConfiguration()} method inside.
+      * @param checkName check name.
+      * @return {@link Configuration} instance for the given check name.
+      * @throws CheckstyleException if exception occurs during configuration loading.
+      */
+     protected static List<Configuration> getCheckConfigs(String checkName)
+             throws CheckstyleException {
+         final List<Configuration> result = new ArrayList<>();
+         for (Configuration currentConfig : getConfiguration().getChildren()) {
+             if ("TreeWalker".equals(currentConfig.getName())) {
+                 for (Configuration checkConfig : currentConfig.getChildren()) {
+                     if (checkName.equals(checkConfig.getName())) {
+                         result.add(checkConfig);
+                     }
+                 }
+             }
+             else if (checkName.equals(currentConfig.getName())) {
+                 result.add(currentConfig);
+             }
+         }
+         return result;
+     }
+ 
+     private static String removeDeviceFromPathOnWindows(String path) {
++        String fixedPath = path;
+         final String os = System.getProperty("os.name", "Unix");
+         if (os.startsWith("Windows")) {
+-            return path.substring(path.indexOf(':') + 1);
++            fixedPath = path.substring(path.indexOf(':') + 1);
+         }
+-        return path;
++        return fixedPath;
+     }
+ 
+     /**
+      * Returns an array of integers which represents the warning line numbers in the file
+      * with the given file name.
+      * @param fileName file name.
+      * @return an array of integers which represents the warning line numbers.
+      * @throws IOException if I/O exception occurs while reading the file.
+      */
+     protected Integer[] getLinesWithWarn(String fileName) throws IOException {
+         final List<Integer> result = new ArrayList<>();
+         try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                 new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+             int lineNumber = 1;
+             while (true) {
+                 final String line = br.readLine();
+                 if (line == null) {
+                     break;
+                 }
+                 if (WARN_PATTERN.matcher(line).find()) {
+                     result.add(lineNumber);
+                 }
+                 lineNumber++;
+             }
+         }
+         return result.toArray(new Integer[result.size()]);
+     }
+ }

@@ -1,0 +1,123 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MemberDefHandler.java",
+  "functionName": "checkIndentation",
+  "functionId": "checkIndentation",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MemberDefHandler.java",
+  "functionStartLine": 46,
+  "functionEndLine": 60,
+  "changeHistory": [
+    "a0fed4c0e90c488101c4ecb27f3f6a412c8f9a4e",
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+    "24c13109a52b0b5085b5db2e8b0ae96655d9480c",
+    "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6",
+    "e3a48d1527341456a798c3f0c1986de6898a8c60",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "33b703a724ddd2090f771cb9834c85e0ccb569e1"
+  ],
+  "changeHistoryShort": {
+    "a0fed4c0e90c488101c4ecb27f3f6a412c8f9a4e": "Ybodychange",
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1": "Ybodychange",
+    "24c13109a52b0b5085b5db2e8b0ae96655d9480c": "Ybodychange",
+    "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6": "Ybodychange",
+    "e3a48d1527341456a798c3f0c1986de6898a8c60": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "33b703a724ddd2090f771cb9834c85e0ccb569e1": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "a0fed4c0e90c488101c4ecb27f3f6a412c8f9a4e": {
+      "type": "Ybodychange",
+      "commitMessage": "minor: refactored LineWrappingHandler",
+      "commitDate": 1456319336000,
+      "commitName": "a0fed4c0e90c488101c4ecb27f3f6a412c8f9a4e",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 50.53,
+      "commitsBetweenForRepo": 141,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     public void checkIndentation() {\n         final DetailAST modifiersNode \u003d getMainAst().findFirstToken(TokenTypes.MODIFIERS);\n         if (modifiersNode.getChildCount() \u003d\u003d 0) {\n             checkType();\n         }\n         else {\n             checkModifiers();\n         }\n-        final LineWrappingHandler lineWrap \u003d\n-            new LineWrappingHandler(getIndentCheck(), getMainAst(),\n-                getVarDefStatementSemicolon(getMainAst()));\n-        if (lineWrap.getLastNode() !\u003d null \u0026\u0026 !isArrayDeclaration(getMainAst())) {\n-            lineWrap.checkIndentation();\n+        final DetailAST firstNode \u003d getMainAst();\n+        final DetailAST lastNode \u003d getVarDefStatementSemicolon(firstNode);\n+\n+        if (lastNode !\u003d null \u0026\u0026 !isArrayDeclaration(firstNode)) {\n+            checkWrappingIndentation(firstNode, lastNode);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1": {
+      "type": "Ybodychange",
+      "commitMessage": "Invert if statements with negated conditions. #1555\n\nFixes `NegatedIfElse` inspection violations.\n\nDescription:\n\u003eReports if statements which contain else branches and whose conditions are negated. Flipping the order of the if and else branches will usually increase the clarity of such statements.\n",
+      "commitDate": 1439189206000,
+      "commitName": "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437195084000,
+      "commitNameOld": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 23.08,
+      "commitsBetweenForRepo": 292,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     public void checkIndentation() {\n         final DetailAST modifiersNode \u003d getMainAst().findFirstToken(TokenTypes.MODIFIERS);\n-        if (modifiersNode.getChildCount() !\u003d 0) {\n-            checkModifiers();\n+        if (modifiersNode.getChildCount() \u003d\u003d 0) {\n+            checkType();\n         }\n         else {\n-            checkType();\n+            checkModifiers();\n         }\n         final LineWrappingHandler lineWrap \u003d\n             new LineWrappingHandler(getIndentCheck(), getMainAst(),\n                 getVarDefStatementSemicolon(getMainAst()));\n         if (lineWrap.getLastNode() !\u003d null \u0026\u0026 !isArrayDeclaration(getMainAst())) {\n             lineWrap.checkIndentation();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "24c13109a52b0b5085b5db2e8b0ae96655d9480c": {
+      "type": "Ybodychange",
+      "commitMessage": "IndentationCheck. Refactoring: got rid of anonymous classes.\n",
+      "commitDate": 1424273493000,
+      "commitName": "24c13109a52b0b5085b5db2e8b0ae96655d9480c",
+      "commitAuthor": "Alexey",
+      "commitDateOld": 1421678099000,
+      "commitNameOld": "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 30.04,
+      "commitsBetweenForRepo": 72,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,16 @@\n     public void checkIndentation()\n     {\n         final DetailAST modifiersNode \u003d getMainAst().findFirstToken(TokenTypes.MODIFIERS);\n         if (modifiersNode.getChildCount() !\u003d 0) {\n             checkModifiers();\n         }\n         else {\n             checkType();\n         }\n         final LineWrappingHandler lineWrap \u003d\n-            new LineWrappingHandler(getIndentCheck(), getMainAst()) {\n-                @Override\n-                public DetailAST findLastNode(DetailAST firstNode)\n-                {\n-                    DetailAST lastNode \u003d getFirstNode().getLastChild();\n-                    if (lastNode.getType() !\u003d TokenTypes.SEMI) {\n-                        lastNode \u003d getFirstNode().getNextSibling();\n-                    }\n-                    return lastNode;\n-                }\n-            };\n+            new LineWrappingHandler(getIndentCheck(), getMainAst(),\n+                getVarDefStatementSemicolon(getMainAst()));\n         if (lineWrap.getLastNode() !\u003d null \u0026\u0026 !isArrayDeclaration(getMainAst())) {\n             lineWrap.checkIndentation();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6": {
+      "type": "Ybodychange",
+      "commitMessage": "Prefixes, indentation, #512\n",
+      "commitDate": 1421678099000,
+      "commitName": "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1413242511000,
+      "commitNameOld": "e3a48d1527341456a798c3f0c1986de6898a8c60",
+      "commitAuthorOld": "maxvetrenko",
+      "daysBetweenCommits": 97.63,
+      "commitsBetweenForRepo": 303,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,25 @@\n     public void checkIndentation()\n     {\n         final DetailAST modifiersNode \u003d getMainAst().findFirstToken(TokenTypes.MODIFIERS);\n         if (modifiersNode.getChildCount() !\u003d 0) {\n             checkModifiers();\n         }\n         else {\n             checkType();\n         }\n         final LineWrappingHandler lineWrap \u003d\n             new LineWrappingHandler(getIndentCheck(), getMainAst()) {\n                 @Override\n-                public DetailAST findLastNode(DetailAST aFirstNode)\n+                public DetailAST findLastNode(DetailAST firstNode)\n                 {\n                     DetailAST lastNode \u003d getFirstNode().getLastChild();\n                     if (lastNode.getType() !\u003d TokenTypes.SEMI) {\n                         lastNode \u003d getFirstNode().getNextSibling();\n                     }\n                     return lastNode;\n                 }\n             };\n         if (lineWrap.getLastNode() !\u003d null \u0026\u0026 !isArrayDeclaration(getMainAst())) {\n             lineWrap.checkIndentation();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "e3a48d1527341456a798c3f0c1986de6898a8c60": {
+      "type": "Ybodychange",
+      "commitMessage": "Update for IndentationCheck. #294\n",
+      "commitDate": 1413242511000,
+      "commitName": "e3a48d1527341456a798c3f0c1986de6898a8c60",
+      "commitAuthor": "maxvetrenko",
+      "commitDateOld": 1393953491000,
+      "commitNameOld": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthorOld": "Ivan Sopov",
+      "daysBetweenCommits": 223.25,
+      "commitsBetweenForRepo": 167,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,25 @@\n     public void checkIndentation()\n     {\n-        checkModifiers();\n-        checkType();\n-        checkIdent();\n+        final DetailAST modifiersNode \u003d getMainAst().findFirstToken(TokenTypes.MODIFIERS);\n+        if (modifiersNode.getChildCount() !\u003d 0) {\n+            checkModifiers();\n+        }\n+        else {\n+            checkType();\n+        }\n+        final LineWrappingHandler lineWrap \u003d\n+            new LineWrappingHandler(getIndentCheck(), getMainAst()) {\n+                @Override\n+                public DetailAST findLastNode(DetailAST aFirstNode)\n+                {\n+                    DetailAST lastNode \u003d getFirstNode().getLastChild();\n+                    if (lastNode.getType() !\u003d TokenTypes.SEMI) {\n+                        lastNode \u003d getFirstNode().getNextSibling();\n+                    }\n+                    return lastNode;\n+                }\n+            };\n+        if (lineWrap.getLastNode() !\u003d null \u0026\u0026 !isArrayDeclaration(getMainAst())) {\n+            lineWrap.checkIndentation();\n+        }\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "33b703a724ddd2090f771cb9834c85e0ccb569e1": {
+      "type": "Yintroduced",
+      "commitMessage": "Fixed 1193848, added handler for class fields.\n",
+      "commitDate": 1121670737000,
+      "commitName": "33b703a724ddd2090f771cb9834c85e0ccb569e1",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

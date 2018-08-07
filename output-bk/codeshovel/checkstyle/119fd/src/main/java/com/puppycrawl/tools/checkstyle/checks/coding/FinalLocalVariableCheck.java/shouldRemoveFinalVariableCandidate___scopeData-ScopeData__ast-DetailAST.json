@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "FinalLocalVariableCheck.java",
+  "functionName": "shouldRemoveFinalVariableCandidate",
+  "functionId": "shouldRemoveFinalVariableCandidate___scopeData-ScopeData__ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java",
+  "functionStartLine": 541,
+  "functionEndLine": 557,
+  "changeHistory": [
+    "ed76401d3bd039d684d6de21c4894d3ab62a3076",
+    "bf69cf167c9432daabc7b6e4a426fff33650a057",
+    "0a1a4c6e94c9b3b73b21b323f14ae7b7337b1b44",
+    "55aa50d8f09d28521f0d0004ce475fa09082faea",
+    "11210350f58660d96012cea051f0fbc3bc462cb1",
+    "1ef123bf60e8f4ba348f2e6399175dee62f016b2",
+    "36b91a59d62c9505b835717f00f470c499cf9b30"
+  ],
+  "changeHistoryShort": {
+    "ed76401d3bd039d684d6de21c4894d3ab62a3076": "Ybodychange",
+    "bf69cf167c9432daabc7b6e4a426fff33650a057": "Ymultichange(Yrename,Ybodychange)",
+    "0a1a4c6e94c9b3b73b21b323f14ae7b7337b1b44": "Ybodychange",
+    "55aa50d8f09d28521f0d0004ce475fa09082faea": "Ybodychange",
+    "11210350f58660d96012cea051f0fbc3bc462cb1": "Ybodychange",
+    "1ef123bf60e8f4ba348f2e6399175dee62f016b2": "Ymodifierchange",
+    "36b91a59d62c9505b835717f00f470c499cf9b30": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "ed76401d3bd039d684d6de21c4894d3ab62a3076": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3074: Fix FinalLocalVariable false positive when variable is assigned inside and outside switch-block (#3366)\n\n",
+      "commitDate": 1469250569000,
+      "commitName": "ed76401d3bd039d684d6de21c4894d3ab62a3076",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1469249360000,
+      "commitNameOld": "2bf2138d04ebbb969c6c26d27f01ef0a572a64c8",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,17 @@\n     private static boolean shouldRemoveFinalVariableCandidate(ScopeData scopeData, DetailAST ast) {\n         boolean shouldRemove \u003d true;\n         for (DetailAST variable : scopeData.uninitializedVariables) {\n             if (variable.getText().equals(ast.getText())) {\n                 // if the variable is declared outside the loop and initialized inside\n                 // the loop, then it cannot be declared final, as it can be initialized\n                 // more than once in this case\n                 if (isInTheSameLoop(variable, ast) || !isUseOfExternalVariableInsideLoop(ast)) {\n                     final FinalVariableCandidate candidate \u003d scopeData.scope.get(ast.getText());\n-                    shouldRemove \u003d candidate.assignInIfBlock\n-                        \u0026\u0026 candidate.assignOutsideConditionalBlock\n-                        \u0026\u0026 !candidate.assignInIfBlockWhichIsInsideCaseBlock;\n+                    shouldRemove \u003d candidate.alreadyAssigned;\n                 }\n                 scopeData.uninitializedVariables.remove(variable);\n                 break;\n             }\n         }\n         return shouldRemove;\n     }\n\\ No newline at end of file\n"
+    },
+    "bf69cf167c9432daabc7b6e4a426fff33650a057": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "Issue #3006: Refactoring of FinalLocalVariableCheck to increase readability\n",
+      "commitDate": 1459291652000,
+      "commitName": "bf69cf167c9432daabc7b6e4a426fff33650a057",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "0a1a4c6e94c9b3b73b21b323f14ae7b7337b1b44": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3006: Fix false positive when variable is assigned in if block which is inside catch block\n",
+      "commitDate": 1459291651000,
+      "commitName": "0a1a4c6e94c9b3b73b21b323f14ae7b7337b1b44",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1459291651000,
+      "commitNameOld": "55aa50d8f09d28521f0d0004ce475fa09082faea",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,29 @@\n     private static boolean shouldRemoveVariable(ScopeData scopeData, DetailAST ast) {\n         boolean shouldRemove \u003d true;\n         for (DetailAST variable : scopeData.uninitializedVariables) {\n             if (variable.getText().equals(ast.getText())) {\n \n                 // if the variable is declared outside the loop and initialized inside\n                 // the loop, then it cannot be declared final, as it can be initialized\n                 // more than once in this case\n                 if (isInTheSameLoop(variable, ast)\n                         || !isUseOfExternalVariableInsideLoop(ast)) {\n                     if (isAssignInIfBlock(scopeData, ast) \u0026\u0026 isAssignInElseBlock(scopeData, ast)) {\n                         shouldRemove \u003d true;\n                     }\n                     else if (isAssignInIfBlock(scopeData, ast)\n-                        \u0026\u0026 isAssignOutsideIfOrElseBlock(scopeData, ast)) {\n+                        \u0026\u0026 isAssignOutsideIfOrElseBlock(scopeData, ast)\n+                        \u0026\u0026 !isAssignInIfBlockWhichIsInsideCaseBlock(scopeData, ast)) {\n                         shouldRemove \u003d true;\n                     }\n                     else {\n                         shouldRemove \u003d false;\n                     }\n                 }\n \n                 scopeData.uninitializedVariables.remove(variable);\n                 break;\n             }\n         }\n         return shouldRemove;\n     }\n\\ No newline at end of file\n"
+    },
+    "55aa50d8f09d28521f0d0004ce475fa09082faea": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3006: Fix false positive when variable is assigned multiple times\n",
+      "commitDate": 1459291651000,
+      "commitName": "55aa50d8f09d28521f0d0004ce475fa09082faea",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1459291651000,
+      "commitNameOld": "11210350f58660d96012cea051f0fbc3bc462cb1",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,28 @@\n     private static boolean shouldRemoveVariable(ScopeData scopeData, DetailAST ast) {\n         boolean shouldRemove \u003d true;\n         for (DetailAST variable : scopeData.uninitializedVariables) {\n             if (variable.getText().equals(ast.getText())) {\n \n                 // if the variable is declared outside the loop and initialized inside\n                 // the loop, then it cannot be declared final, as it can be initialized\n                 // more than once in this case\n                 if (isInTheSameLoop(variable, ast)\n                         || !isUseOfExternalVariableInsideLoop(ast)) {\n-                    shouldRemove \u003d false;\n+                    if (isAssignInIfBlock(scopeData, ast) \u0026\u0026 isAssignInElseBlock(scopeData, ast)) {\n+                        shouldRemove \u003d true;\n+                    }\n+                    else if (isAssignInIfBlock(scopeData, ast)\n+                        \u0026\u0026 isAssignOutsideIfOrElseBlock(scopeData, ast)) {\n+                        shouldRemove \u003d true;\n+                    }\n+                    else {\n+                        shouldRemove \u003d false;\n+                    }\n                 }\n+\n                 scopeData.uninitializedVariables.remove(variable);\n                 break;\n             }\n         }\n         return shouldRemove;\n     }\n\\ No newline at end of file\n"
+    },
+    "11210350f58660d96012cea051f0fbc3bc462cb1": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3006: Fix false positive when external variables are assigned inside loop-block\n",
+      "commitDate": 1459291651000,
+      "commitName": "11210350f58660d96012cea051f0fbc3bc462cb1",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1459291651000,
+      "commitNameOld": "75499dce162dcf4df56d9327afe9a8c857472996",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,18 @@\n     private static boolean shouldRemoveVariable(ScopeData scopeData, DetailAST ast) {\n         boolean shouldRemove \u003d true;\n         for (DetailAST variable : scopeData.uninitializedVariables) {\n             if (variable.getText().equals(ast.getText())) {\n \n                 // if the variable is declared outside the loop and initialized inside\n                 // the loop, then it cannot be declared final, as it can be initialized\n                 // more than once in this case\n-                if (isInTheSameLoop(variable, ast)) {\n+                if (isInTheSameLoop(variable, ast)\n+                        || !isUseOfExternalVariableInsideLoop(ast)) {\n                     shouldRemove \u003d false;\n                 }\n                 scopeData.uninitializedVariables.remove(variable);\n                 break;\n             }\n         }\n         return shouldRemove;\n     }\n\\ No newline at end of file\n"
+    },
+    "1ef123bf60e8f4ba348f2e6399175dee62f016b2": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Issue #2661: Enforce StaticMethodCandidateCheck of sevntu-checkstyle over Checkstyle source code\n",
+      "commitDate": 1450142233000,
+      "commitName": "1ef123bf60e8f4ba348f2e6399175dee62f016b2",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1446385289000,
+      "commitNameOld": "36b91a59d62c9505b835717f00f470c499cf9b30",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 43.48,
+      "commitsBetweenForRepo": 188,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n-    private boolean shouldRemoveVariable(ScopeData scopeData, DetailAST ast) {\n+    private static boolean shouldRemoveVariable(ScopeData scopeData, DetailAST ast) {\n         boolean shouldRemove \u003d true;\n         for (DetailAST variable : scopeData.uninitializedVariables) {\n             if (variable.getText().equals(ast.getText())) {\n \n                 // if the variable is declared outside the loop and initialized inside\n                 // the loop, then it cannot be declared final, as it can be initialized\n                 // more than once in this case\n                 if (isInTheSameLoop(variable, ast)) {\n                     shouldRemove \u003d false;\n                 }\n                 scopeData.uninitializedVariables.remove(variable);\n                 break;\n             }\n         }\n         return shouldRemove;\n     }\n\\ No newline at end of file\n"
+    },
+    "36b91a59d62c9505b835717f00f470c499cf9b30": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1551: Fix FinalLocalVariable false-negative",
+      "commitDate": 1446385289000,
+      "commitName": "36b91a59d62c9505b835717f00f470c499cf9b30",
+      "commitAuthor": "Vladislav Lisetskiy"
+    }
+  }
+}

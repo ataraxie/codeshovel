@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationLocationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationLocationCheck.java
+index 73c1b3c1f..ea29cea4a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationLocationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationLocationCheck.java
+@@ -178,101 +178,101 @@ public class AnnotationLocationCheck extends AbstractCheck {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.TYPECAST,
+             TokenTypes.LITERAL_THROWS,
+             TokenTypes.IMPLEMENTS_CLAUSE,
+             TokenTypes.TYPE_ARGUMENT,
+             TokenTypes.LITERAL_NEW,
+             TokenTypes.DOT,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final DetailAST modifiersNode = ast.findFirstToken(TokenTypes.MODIFIERS);
+ 
+         if (hasAnnotations(modifiersNode)) {
+             checkAnnotations(modifiersNode, getAnnotationLevel(modifiersNode));
+         }
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param modifierNode Some javadoc.
+      * @return Some javadoc.
+      */
+     private static boolean hasAnnotations(DetailAST modifierNode) {
+-        return modifierNode.findFirstToken(TokenTypes.ANNOTATION) != null;
++        return modifierNode != null && modifierNode.findFirstToken(TokenTypes.ANNOTATION) != null;
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param modifierNode Some javadoc.
+      * @return Some javadoc.
+      */
+     private static int getAnnotationLevel(DetailAST modifierNode) {
+         return modifierNode.getParent().getColumnNo();
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param modifierNode Some javadoc.
+      * @param correctLevel Some javadoc.
+      */
+     private void checkAnnotations(DetailAST modifierNode, int correctLevel) {
+         DetailAST annotation = modifierNode.getFirstChild();
+ 
+         while (annotation != null && annotation.getType() == TokenTypes.ANNOTATION) {
+             final boolean hasParameters = isParameterized(annotation);
+ 
+             if (!isCorrectLocation(annotation, hasParameters)) {
+                 log(annotation.getLineNo(),
+                         MSG_KEY_ANNOTATION_LOCATION_ALONE, getAnnotationName(annotation));
+             }
+             else if (annotation.getColumnNo() != correctLevel && !hasNodeBefore(annotation)) {
+                 log(annotation.getLineNo(), MSG_KEY_ANNOTATION_LOCATION,
+                     getAnnotationName(annotation), annotation.getColumnNo(), correctLevel);
+             }
+             annotation = annotation.getNextSibling();
+         }
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param annotation Some javadoc.
+      * @return Some javadoc.
+      */
+     private static boolean isParameterized(DetailAST annotation) {
+         return annotation.findFirstToken(TokenTypes.EXPR) != null;
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param annotation Some javadoc.
+      * @return Some javadoc.
+      */
+     private static String getAnnotationName(DetailAST annotation) {
+         DetailAST identNode = annotation.findFirstToken(TokenTypes.IDENT);

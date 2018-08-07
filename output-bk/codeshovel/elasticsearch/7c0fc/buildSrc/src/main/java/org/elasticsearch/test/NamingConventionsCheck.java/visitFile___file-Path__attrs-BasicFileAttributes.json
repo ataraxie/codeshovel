@@ -1,0 +1,194 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "NamingConventionsCheck.java",
+  "functionName": "visitFile",
+  "functionId": "visitFile___file-Path__attrs-BasicFileAttributes",
+  "sourceFilePath": "buildSrc/src/main/java/org/elasticsearch/test/NamingConventionsCheck.java",
+  "functionStartLine": 288,
+  "functionEndLine": 302,
+  "changeHistory": [
+    "fc97e25b564011bdb1d272a15e5b6b1f22c0c633",
+    "8c6037428490f266b3a73133e37acd44949c192a",
+    "d0e4485d421360ff3967bc5fe20ca08086b742c8",
+    "95cc3e38fc3c4e7a415473140497fed40394dccc",
+    "2cc97a0d3ed2a9276378e2a6462942deab04a1fb",
+    "06d5e24548d1df0eae0559d4eefd344f17cae497",
+    "205675ad1913f1fc3802e9da04f5d1ca79aca845",
+    "51db6cc3580bfcf67fa17ab7743136b67932b27e",
+    "d7cf5cd6afcd18bb3acfa34a1a15d01c5060a6ad",
+    "d7dab0df7294a44c0539b1a3de8e6949532fa4f1",
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+    "df8206853bc34306fc70420a9146c00a637bc6db"
+  ],
+  "changeHistoryShort": {
+    "fc97e25b564011bdb1d272a15e5b6b1f22c0c633": "Ymultichange(Ymodifierchange,Ybodychange)",
+    "8c6037428490f266b3a73133e37acd44949c192a": "Ybodychange",
+    "d0e4485d421360ff3967bc5fe20ca08086b742c8": "Ymultichange(Yfilerename,Ybodychange)",
+    "95cc3e38fc3c4e7a415473140497fed40394dccc": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "2cc97a0d3ed2a9276378e2a6462942deab04a1fb": "Ybodychange",
+    "06d5e24548d1df0eae0559d4eefd344f17cae497": "Ybodychange",
+    "205675ad1913f1fc3802e9da04f5d1ca79aca845": "Ybodychange",
+    "51db6cc3580bfcf67fa17ab7743136b67932b27e": "Ybodychange",
+    "d7cf5cd6afcd18bb3acfa34a1a15d01c5060a6ad": "Ybodychange",
+    "d7dab0df7294a44c0539b1a3de8e6949532fa4f1": "Ybodychange",
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5": "Yfilerename",
+    "df8206853bc34306fc70420a9146c00a637bc6db": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "fc97e25b564011bdb1d272a15e5b6b1f22c0c633": {
+      "type": "Ymultichange(Ymodifierchange,Ybodychange)",
+      "commitMessage": "Add task to look for tests in src/main (#24298)\n\nCreates a new task `namingConventionsMain`, that runs on the\r\n`buildSrc` and `test:framework` projects and fails the build if\r\nany of the classes in the main artifacts are named like tests or\r\nare non-abstract subclasses of ESTestCase.\r\n\r\nIt also fixes the three tests that would cause it to fail.",
+      "commitDate": 1493169107000,
+      "commitName": "fc97e25b564011bdb1d272a15e5b6b1f22c0c633",
+      "commitAuthor": "Nik Everett",
+      "subchanges": [
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "8c6037428490f266b3a73133e37acd44949c192a": {
+      "type": "Ybodychange",
+      "commitMessage": "Build: do not load integ test class if --skip-integ-tests-in-disguise is specified in NamingConventionsCheck\n\nProjects that don\u0027t depend on elasticsearch-test fail otherwise because org.elasticsearch.test.EsIntegTestCase (default integ test class) is not in the classpath. They should provide their onw integ test base class, but having integration tests should not be mandatory. One can simply set skipIntegTestsInDisguise to true to prevent loading of integ test class.\n",
+      "commitDate": 1466163987000,
+      "commitName": "8c6037428490f266b3a73133e37acd44949c192a",
+      "commitAuthor": "javanna",
+      "commitDateOld": 1465943434000,
+      "commitNameOld": "d0e4485d421360ff3967bc5fe20ca08086b742c8",
+      "commitAuthorOld": "Nik Everett",
+      "daysBetweenCommits": 2.55,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,30 @@\n             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {\n                 String filename \u003d file.getFileName().toString();\n                 if (filename.endsWith(\".class\")) {\n                     String className \u003d filename.substring(0, filename.length() - \".class\".length());\n                     Class\u003c?\u003e clazz \u003d loadClassWithoutInitializing(packageName + className);\n                     if (clazz.getName().endsWith(\"Tests\")) {\n-                        if (integTestClass.isAssignableFrom(clazz)) {\n+                        if (skipTestsInDisguised \u003d\u003d false \u0026\u0026 integTestClass.isAssignableFrom(clazz)) {\n                             integTestsInDisguise.add(clazz);\n                         }\n                         if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {\n                             notRunnable.add(clazz);\n                         } else if (isTestCase(clazz) \u003d\u003d false) {\n                             notImplementing.add(clazz);\n                         } else if (Modifier.isStatic(clazz.getModifiers())) {\n                             innerClasses.add(clazz);\n                         }\n                     } else if (clazz.getName().endsWith(\"IT\")) {\n                         if (isTestCase(clazz) \u003d\u003d false) {\n                             notImplementing.add(clazz);\n                         }\n                     } else if (Modifier.isAbstract(clazz.getModifiers()) \u003d\u003d false \u0026\u0026 Modifier.isInterface(clazz.getModifiers()) \u003d\u003d false) {\n                         if (isTestCase(clazz)) {\n                             missingSuffix.add(clazz);\n                         } else if (junit.framework.Test.class.isAssignableFrom(clazz)) {\n                             pureUnitTest.add(clazz);\n                         }\n                     }\n                 }\n                 return FileVisitResult.CONTINUE;\n             }\n\\ No newline at end of file\n"
+    },
+    "d0e4485d421360ff3967bc5fe20ca08086b742c8": {
+      "type": "Ymultichange(Yfilerename,Ybodychange)",
+      "commitMessage": "Move NamingConventionsCheck into buildSrc\n\nThis will let things that don\u0027t depend on :test:framework like the\nclient use it.\n\nAlso skip initializing the classes we check because we don\u0027t care\nabout their initialization behavior because we\u0027re not executing them.\nThis makes the naming conventions check pretty close to instant\nfrom a \"human eye\" perspective.\n",
+      "commitDate": 1465943434000,
+      "commitName": "d0e4485d421360ff3967bc5fe20ca08086b742c8",
+      "commitAuthor": "Nik Everett",
+      "subchanges": [
+        "Yfilerename",
+        "Ybodychange"
+      ]
+    },
+    "95cc3e38fc3c4e7a415473140497fed40394dccc": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Check test naming conventions on all modules\n\nThe big win here is catching tests that are incorrectly named and will\nbe skipped by gradle, providing a false sense of security.\n\nThe whole thing takes about 10 seconds on my Macbook Air, not counting\ncompiling the test classes, which seems worth it. Because this runs as\na gradle task with propery UP-TO-DATE handling it can be skipped if the\ntests haven\u0027t been changed which should save some time.\n\nI chose to keep this in test:framework rather than a new subproject of\nbuildSrc because ESIntegTestCase and doesn\u0027t inroduce any additional\ndependencies.\n",
+      "commitDate": 1456781509000,
+      "commitName": "95cc3e38fc3c4e7a415473140497fed40394dccc",
+      "commitAuthor": "Nik Everett",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "2cc97a0d3ed2a9276378e2a6462942deab04a1fb": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove and ban @Test\n\nThere are three ways `@Test` was used. Way one:\n\n```java\n@Test\npublic void flubTheBlort() {\n```\n\nThis way was always replaced with:\n\n```java\npublic void testFlubTheBlort() {\n```\n\nOr, maybe with a better method name if I was feeling generous.\n\nWay two:\n\n```java\n@Test(throws\u003dIllegalArgumentException.class)\npublic void testFoo() {\n    methodThatThrows();\n}\n```\n\nThis way of using `@Test` is actually pretty OK, but to get the tools to ban\n`@Test` entirely it can\u0027t be used. Instead:\n\n```java\npublic void testFoo() {\n    try {\n        methodThatThrows();\n        fail(\"Expected IllegalArgumentException\");\n    } catch (IllegalArgumentException e ) {\n        assertThat(e.getMessage(), containsString(\"something\"));\n    }\n}\n```\n\nThis is longer but tests more than the old ways and is much more precise.\nCompare:\n\n```java\n@Test(throws\u003dIllegalArgumentException.class)\npublic void testFoo() {\n    some();\n    copy();\n    and();\n    pasted();\n    methodThatThrows();\n    code();  // \u003c---- This was left here by mistake and is never called\n}\n```\n\nto:\n\n```java\n@Test(throws\u003dIllegalArgumentException.class)\npublic void testFoo() {\n    some();\n    copy();\n    and();\n    pasted();\n    try {\n        methodThatThrows();\n        fail(\"Expected IllegalArgumentException\");\n    } catch (IllegalArgumentException e ) {\n        assertThat(e.getMessage(), containsString(\"something\"));\n    }\n}\n```\n\nThe final use of test is:\n\n```java\n@Test(timeout\u003d1000)\npublic void testFoo() {\n    methodThatWasSlow();\n}\n```\n\nThis is the most insidious use of `@Test` because its tempting but tragically\nflawed. Its flaws are:\n1. Hard and fast timeouts can look like they are asserting that something is\nfaster and even do an ok job of it when you compare the timings on the same\nmachine but as soon as you take them to another machine they start to be\ninvalid. On a slow VM both the new and old methods fail. On a super-fast\nmachine the slower and faster ways succeed.\n2. Tests often contain slow `assert` calls so the performance of tests isn\u0027t\nsure to predict the performance of non-test code.\n3. These timeouts are rude to debuggers because the test just drops out from\nunder it after the timeout.\n\nConfusingly, timeouts are useful in tests because it\u0027d be rude for a broken\ntest to cause CI to abort the whole build after it hits a global timeout. But\nthose timeouts should be very very long \"backstop\" timeouts and aren\u0027t useful\nassertions about speed.\n\nFor all its flaws `@Test(timeout\u003d1000)` doesn\u0027t have a good replacement __in__\n__tests__. Nightly benchmarks like http://benchmarks.elasticsearch.org/ are\nuseful here because they run on the same machine but they aren\u0027t quick to check\nand it takes lots of time to figure out the regressions. Sometimes its useful\nto compare dueling implementations but that requires keeping both\nimplementations around. All and all we don\u0027t have a satisfactory answer to the\nquestion \"what do you replace `@Test(timeout\u003d1000)`\" with. So we handle each\noccurrence on a case by case basis.\n\nFor files with `@Test` this also:\n1. Removes excess blank lines. They don\u0027t help anything.\n2. Removes underscores from method names. Those would fail any code style\nchecks we ever care to run and don\u0027t add to readability. Since I did this manually\nI didn\u0027t do it consistently.\n3. Make sure all test method names start with `test`. Some used to end in `Test` or start\nwith `verify` or `check` and they were picked up using the annotation. Without the\nannotation they always need to start with `test`.\n4. Organizes imports using the rules we generate for Eclipse. For the most part\nthis just removes `*` imports which is a win all on its own. It was \"required\"\nto quickly remove `@Test`.\n5. Removes unneeded casts. This is just a setting I have enabled in Eclipse and\nforgot to turn off before I did this work. It probably isn\u0027t hurting anything.\n6. Removes trailing whitespace. Again, another Eclipse setting I forgot to turn\noff that doesn\u0027t hurt anything. Hopefully.\n7. Swaps some tests override superclass tests to make them empty with\n`assumeTrue` so that the reasoning for the skips is logged in the test run and\nit doesn\u0027t \"look like\" that thing is being tested when it isn\u0027t.\n8. Adds an oxford comma to an error message.\n\nThe total test count doesn\u0027t change. I know. I counted.\n```bash\ngit checkout master \u0026\u0026 mvn clean \u0026\u0026 mvn install | tee with_test\ngit no_test_annotation master \u0026\u0026 mvn clean \u0026\u0026 mvn install | tee not_test\ngrep \u0027Tests summary\u0027 with_test \u003e with_test_summary\ngrep \u0027Tests summary\u0027 not_test \u003e not_test_summary\ndiff with_test_summary not_test_summary\n```\n\nThese differ somewhat because some tests are skipped based on the random seed.\nThe total shouldn\u0027t differ. But it does!\n```\n1c1\n\u003c [INFO] Tests summary: 564 suites (1 ignored), 3171 tests, 31 ignored (31 assumptions)\n---\n\u003e [INFO] Tests summary: 564 suites (1 ignored), 3167 tests, 17 ignored (17 assumptions)\n```\n\nThese are the core unit tests. So we dig further:\n```bash\ncat with_test | perl -pe \u0027s/\\n// if /^Suite/;s/.*\\n// if /IGNOR/;s/.*\\n// if /Assumption #/;s/.*\\n// if /HEARTBEAT/;s/Completed .+?,//\u0027 | grep Suite \u003e with_test_suites\ncat not_test | perl -pe \u0027s/\\n// if /^Suite/;s/.*\\n// if /IGNOR/;s/.*\\n// if /Assumption #/;s/.*\\n// if /HEARTBEAT/;s/Completed .+?,//\u0027 | grep Suite \u003e not_test_suites\ndiff \u003c(sort with_test_suites) \u003c(sort not_test_suites)\n```\n\nThe four tests with lower test numbers are all extend `AbstractQueryTestCase`\nand all have a method that looks like this:\n\n```java\n@Override\npublic void testToQuery() throws IOException {\n    assumeTrue(\"test runs only when at least a type is registered\", getCurrentTypes().length \u003e 0);\n    super.testToQuery();\n}\n```\n\nIt looks like this method was being double counted on master and isn\u0027t anymore.\n\nCloses #14028\n",
+      "commitDate": 1445377056000,
+      "commitName": "2cc97a0d3ed2a9276378e2a6462942deab04a1fb",
+      "commitAuthor": "Nik Everett",
+      "commitDateOld": 1442327442000,
+      "commitNameOld": "b3c6327caf8cba43db2f9f294713d58a56df55ec",
+      "commitAuthorOld": "Jason Tedor",
+      "daysBetweenCommits": 35.3,
+      "commitsBetweenForRepo": 625,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,35 +1,35 @@\n                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {\n                     try {\n                         String filename \u003d file.getFileName().toString();\n                         if (filename.endsWith(\".class\")) {\n                             Class\u003c?\u003e clazz \u003d loadClass(filename);\n                             if (clazz.getName().endsWith(\"Tests\")) { // don\u0027t worry about the ones that match the pattern\n \n                                 if (ESIntegTestCase.class.isAssignableFrom(clazz)) {\n                                     integTestsInDisguise.add(clazz);\n                                 }\n                                 if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {\n                                     notRunnable.add(clazz);\n                                 } else if (isTestCase(clazz) \u003d\u003d false) {\n                                     notImplementing.add(clazz);\n                                 } else if (Modifier.isStatic(clazz.getModifiers())) {\n                                     innerClasses.add(clazz);\n                                 }\n                             } else if (clazz.getName().endsWith(\"IT\")) {\n                                 if (isTestCase(clazz) \u003d\u003d false) {\n                                     notImplementing.add(clazz);\n                                 }\n                                 // otherwise fine\n                             } else if (Modifier.isAbstract(clazz.getModifiers()) \u003d\u003d false \u0026\u0026 Modifier.isInterface(clazz.getModifiers()) \u003d\u003d false) {\n                                 if (isTestCase(clazz)) {\n                                     missingSuffix.add(clazz);\n-                                } else if (junit.framework.Test.class.isAssignableFrom(clazz) || hasTestAnnotation(clazz)) {\n+                                } else if (junit.framework.Test.class.isAssignableFrom(clazz)) {\n                                     pureUnitTest.add(clazz);\n                                 }\n                             }\n                         }\n                     } catch (ClassNotFoundException e) {\n                         throw new RuntimeException(e);\n                     }\n                     return FileVisitResult.CONTINUE;\n                 }\n\\ No newline at end of file\n"
+    },
+    "06d5e24548d1df0eae0559d4eefd344f17cae497": {
+      "type": "Ybodychange",
+      "commitMessage": "Tests: Rename test suffix so we only use \"Tests\"\n\nWe currently have a small number of test classes with the suffix \"Test\",\nyet most use the suffix \"Tests\". This change renames all the \"Test\"\nclasses, so that we have a simple rule: \"Non-inner classes ending with\nTests\".\n",
+      "commitDate": 1441229923000,
+      "commitName": "06d5e24548d1df0eae0559d4eefd344f17cae497",
+      "commitAuthor": "Ryan Ernst",
+      "commitDateOld": 1441224435000,
+      "commitNameOld": "425e4c34927f88e154d809c76173b7cdc1eac519",
+      "commitAuthorOld": "Ryan Ernst",
+      "daysBetweenCommits": 0.06,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,36 +1,35 @@\n                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {\n                     try {\n                         String filename \u003d file.getFileName().toString();\n                         if (filename.endsWith(\".class\")) {\n                             Class\u003c?\u003e clazz \u003d loadClass(filename);\n-                            if (clazz.getName().endsWith(\"Tests\") ||\n-                                clazz.getName().endsWith(\"Test\")) { // don\u0027t worry about the ones that match the pattern\n+                            if (clazz.getName().endsWith(\"Tests\")) { // don\u0027t worry about the ones that match the pattern\n \n                                 if (ESIntegTestCase.class.isAssignableFrom(clazz)) {\n                                     integTestsInDisguise.add(clazz);\n                                 }\n                                 if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {\n                                     notRunnable.add(clazz);\n                                 } else if (isTestCase(clazz) \u003d\u003d false) {\n                                     notImplementing.add(clazz);\n                                 } else if (Modifier.isStatic(clazz.getModifiers())) {\n                                     innerClasses.add(clazz);\n                                 }\n                             } else if (clazz.getName().endsWith(\"IT\")) {\n                                 if (isTestCase(clazz) \u003d\u003d false) {\n                                     notImplementing.add(clazz);\n                                 }\n                                 // otherwise fine\n                             } else if (Modifier.isAbstract(clazz.getModifiers()) \u003d\u003d false \u0026\u0026 Modifier.isInterface(clazz.getModifiers()) \u003d\u003d false) {\n                                 if (isTestCase(clazz)) {\n                                     missingSuffix.add(clazz);\n                                 } else if (junit.framework.Test.class.isAssignableFrom(clazz) || hasTestAnnotation(clazz)) {\n                                     pureUnitTest.add(clazz);\n                                 }\n                             }\n                         }\n                     } catch (ClassNotFoundException e) {\n                         throw new RuntimeException(e);\n                     }\n                     return FileVisitResult.CONTINUE;\n                 }\n\\ No newline at end of file\n"
+    },
+    "205675ad1913f1fc3802e9da04f5d1ca79aca845": {
+      "type": "Ybodychange",
+      "commitMessage": "Addressed PR comments\n",
+      "commitDate": 1441217585000,
+      "commitName": "205675ad1913f1fc3802e9da04f5d1ca79aca845",
+      "commitAuthor": "Ryan Ernst",
+      "commitDateOld": 1441216817000,
+      "commitNameOld": "51db6cc3580bfcf67fa17ab7743136b67932b27e",
+      "commitAuthorOld": "Ryan Ernst",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,39 +1,36 @@\n                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {\n                     try {\n                         String filename \u003d file.getFileName().toString();\n                         if (filename.endsWith(\".class\")) {\n                             Class\u003c?\u003e clazz \u003d loadClass(filename);\n-                            //if (Modifier.isAbstract(clazz.getModifiers()) \u003d\u003d false \u0026\u0026 Modifier.isInterface(clazz.getModifiers()) \u003d\u003d false) {\n                             if (clazz.getName().endsWith(\"Tests\") ||\n                                 clazz.getName().endsWith(\"Test\")) { // don\u0027t worry about the ones that match the pattern\n \n                                 if (ESIntegTestCase.class.isAssignableFrom(clazz)) {\n                                     integTestsInDisguise.add(clazz);\n                                 }\n                                 if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {\n                                     notRunnable.add(clazz);\n                                 } else if (isTestCase(clazz) \u003d\u003d false) {\n                                     notImplementing.add(clazz);\n                                 } else if (Modifier.isStatic(clazz.getModifiers())) {\n                                     innerClasses.add(clazz);\n                                 }\n                             } else if (clazz.getName().endsWith(\"IT\")) {\n                                 if (isTestCase(clazz) \u003d\u003d false) {\n                                     notImplementing.add(clazz);\n                                 }\n                                 // otherwise fine\n                             } else if (Modifier.isAbstract(clazz.getModifiers()) \u003d\u003d false \u0026\u0026 Modifier.isInterface(clazz.getModifiers()) \u003d\u003d false) {\n                                 if (isTestCase(clazz)) {\n                                     missingSuffix.add(clazz);\n                                 } else if (junit.framework.Test.class.isAssignableFrom(clazz) || hasTestAnnotation(clazz)) {\n                                     pureUnitTest.add(clazz);\n                                 }\n                             }\n-                            //}\n-\n                         }\n                     } catch (ClassNotFoundException e) {\n                         throw new RuntimeException(e);\n                     }\n                     return FileVisitResult.CONTINUE;\n                 }\n\\ No newline at end of file\n"
+    },
+    "51db6cc3580bfcf67fa17ab7743136b67932b27e": {
+      "type": "Ybodychange",
+      "commitMessage": "Tests: Remove test class exclusion for Abstract prefix and rename classes accordingly\n\nWhile the list of having exclusions is small, it shouldn\u0027t be necessary\nat all. Base test cases should be suffixed with TestCase so they are not\npicked up by the test class name pattern. This same rule works for\nabstract classes as well.\n\nThis change renames abstract tests to use the TestCase suffix, adds a\ncheck in naming convention tests, and removes the exclusion from our\ntest runner configuration. It also excludes inner classes (the only\nexclude we should have IMO), so that we have no need to @Ignore the\ninner test classes for naming convention tests.\n",
+      "commitDate": 1441216817000,
+      "commitName": "51db6cc3580bfcf67fa17ab7743136b67932b27e",
+      "commitAuthor": "Ryan Ernst",
+      "commitDateOld": 1438652093000,
+      "commitNameOld": "d7cf5cd6afcd18bb3acfa34a1a15d01c5060a6ad",
+      "commitAuthorOld": "Robert Muir",
+      "daysBetweenCommits": 29.68,
+      "commitsBetweenForRepo": 513,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,33 +1,39 @@\n                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {\n                     try {\n                         String filename \u003d file.getFileName().toString();\n                         if (filename.endsWith(\".class\")) {\n                             Class\u003c?\u003e clazz \u003d loadClass(filename);\n-                            if (Modifier.isAbstract(clazz.getModifiers()) \u003d\u003d false \u0026\u0026 Modifier.isInterface(clazz.getModifiers()) \u003d\u003d false) {\n-                                if (clazz.getName().endsWith(\"Tests\") || \n-                                    clazz.getName().endsWith(\"Test\")) { // don\u0027t worry about the ones that match the pattern\n+                            //if (Modifier.isAbstract(clazz.getModifiers()) \u003d\u003d false \u0026\u0026 Modifier.isInterface(clazz.getModifiers()) \u003d\u003d false) {\n+                            if (clazz.getName().endsWith(\"Tests\") ||\n+                                clazz.getName().endsWith(\"Test\")) { // don\u0027t worry about the ones that match the pattern\n \n-                                    if (ESIntegTestCase.class.isAssignableFrom(clazz)) {\n-                                        integTestsInDisguise.add(clazz);\n-                                    }\n-                                    if (isTestCase(clazz) \u003d\u003d false) {\n-                                        notImplementing.add(clazz);\n-                                    }\n-                                } else if (clazz.getName().endsWith(\"IT\")) {\n-                                    if (isTestCase(clazz) \u003d\u003d false) {\n-                                        notImplementing.add(clazz);\n-                                    }\n-                                    // otherwise fine\n-                                } else if (isTestCase(clazz)) {\n+                                if (ESIntegTestCase.class.isAssignableFrom(clazz)) {\n+                                    integTestsInDisguise.add(clazz);\n+                                }\n+                                if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {\n+                                    notRunnable.add(clazz);\n+                                } else if (isTestCase(clazz) \u003d\u003d false) {\n+                                    notImplementing.add(clazz);\n+                                } else if (Modifier.isStatic(clazz.getModifiers())) {\n+                                    innerClasses.add(clazz);\n+                                }\n+                            } else if (clazz.getName().endsWith(\"IT\")) {\n+                                if (isTestCase(clazz) \u003d\u003d false) {\n+                                    notImplementing.add(clazz);\n+                                }\n+                                // otherwise fine\n+                            } else if (Modifier.isAbstract(clazz.getModifiers()) \u003d\u003d false \u0026\u0026 Modifier.isInterface(clazz.getModifiers()) \u003d\u003d false) {\n+                                if (isTestCase(clazz)) {\n                                     missingSuffix.add(clazz);\n                                 } else if (junit.framework.Test.class.isAssignableFrom(clazz) || hasTestAnnotation(clazz)) {\n                                     pureUnitTest.add(clazz);\n                                 }\n                             }\n+                            //}\n \n                         }\n                     } catch (ClassNotFoundException e) {\n                         throw new RuntimeException(e);\n                     }\n                     return FileVisitResult.CONTINUE;\n                 }\n\\ No newline at end of file\n"
+    },
+    "d7cf5cd6afcd18bb3acfa34a1a15d01c5060a6ad": {
+      "type": "Ybodychange",
+      "commitMessage": "NamingConventionTests should test subclasses of ESIntegTestCase end with IT\n\nThese are integration tests.\n",
+      "commitDate": 1438652093000,
+      "commitName": "d7cf5cd6afcd18bb3acfa34a1a15d01c5060a6ad",
+      "commitAuthor": "Robert Muir",
+      "commitDateOld": 1438648980000,
+      "commitNameOld": "1e12d03252590bb44ae0cc3771c82c63730de212",
+      "commitAuthorOld": "Ryan Ernst",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,33 @@\n                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {\n                     try {\n                         String filename \u003d file.getFileName().toString();\n                         if (filename.endsWith(\".class\")) {\n                             Class\u003c?\u003e clazz \u003d loadClass(filename);\n                             if (Modifier.isAbstract(clazz.getModifiers()) \u003d\u003d false \u0026\u0026 Modifier.isInterface(clazz.getModifiers()) \u003d\u003d false) {\n                                 if (clazz.getName().endsWith(\"Tests\") || \n-                                    clazz.getName().endsWith(\"IT\")    || \n                                     clazz.getName().endsWith(\"Test\")) { // don\u0027t worry about the ones that match the pattern\n \n+                                    if (ESIntegTestCase.class.isAssignableFrom(clazz)) {\n+                                        integTestsInDisguise.add(clazz);\n+                                    }\n                                     if (isTestCase(clazz) \u003d\u003d false) {\n                                         notImplementing.add(clazz);\n                                     }\n+                                } else if (clazz.getName().endsWith(\"IT\")) {\n+                                    if (isTestCase(clazz) \u003d\u003d false) {\n+                                        notImplementing.add(clazz);\n+                                    }\n+                                    // otherwise fine\n                                 } else if (isTestCase(clazz)) {\n                                     missingSuffix.add(clazz);\n                                 } else if (junit.framework.Test.class.isAssignableFrom(clazz) || hasTestAnnotation(clazz)) {\n                                     pureUnitTest.add(clazz);\n                                 }\n                             }\n \n                         }\n                     } catch (ClassNotFoundException e) {\n                         throw new RuntimeException(e);\n                     }\n                     return FileVisitResult.CONTINUE;\n                 }\n\\ No newline at end of file\n"
+    },
+    "d7dab0df7294a44c0539b1a3de8e6949532fa4f1": {
+      "type": "Ybodychange",
+      "commitMessage": "fix test to allow integration tests\n",
+      "commitDate": 1436196030000,
+      "commitName": "d7dab0df7294a44c0539b1a3de8e6949532fa4f1",
+      "commitAuthor": "Robert Muir",
+      "commitDateOld": 1433502723000,
+      "commitNameOld": "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+      "commitAuthorOld": "Simon Willnauer",
+      "daysBetweenCommits": 31.17,
+      "commitsBetweenForRepo": 365,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,26 @@\n                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {\n                     try {\n                         String filename \u003d file.getFileName().toString();\n                         if (filename.endsWith(\".class\")) {\n                             Class\u003c?\u003e clazz \u003d loadClass(filename);\n                             if (Modifier.isAbstract(clazz.getModifiers()) \u003d\u003d false \u0026\u0026 Modifier.isInterface(clazz.getModifiers()) \u003d\u003d false) {\n-                                if ((clazz.getName().endsWith(\"Tests\") || clazz.getName().endsWith(\"Test\"))) { // don\u0027t worry about the ones that match the pattern\n+                                if (clazz.getName().endsWith(\"Tests\") || \n+                                    clazz.getName().endsWith(\"IT\")    || \n+                                    clazz.getName().endsWith(\"Test\")) { // don\u0027t worry about the ones that match the pattern\n+\n                                     if (isTestCase(clazz) \u003d\u003d false) {\n                                         notImplementing.add(clazz);\n                                     }\n                                 } else if (isTestCase(clazz)) {\n                                     missingSuffix.add(clazz);\n                                 } else if (junit.framework.Test.class.isAssignableFrom(clazz) || hasTestAnnotation(clazz)) {\n                                     pureUnitTest.add(clazz);\n                                 }\n                             }\n \n                         }\n                     } catch (ClassNotFoundException e) {\n                         throw new RuntimeException(e);\n                     }\n                     return FileVisitResult.CONTINUE;\n                 }\n\\ No newline at end of file\n"
+    },
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5": {
+      "type": "Yfilerename",
+      "commitMessage": "create core module\n",
+      "commitDate": 1433502723000,
+      "commitName": "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1433502668000,
+      "commitNameOld": "7ccc193a666e2ae888e7ac93d677a2143e5e07c3",
+      "commitAuthorOld": "Simon Willnauer",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "df8206853bc34306fc70420a9146c00a637bc6db": {
+      "type": "Yintroduced",
+      "commitMessage": "[TESTS] Make sure test end with ..Tests\n\nThis commit adds a simple testcase that ensures all our tests end with the right naming.\n\nCloses #9945\n",
+      "commitDate": 1425313879000,
+      "commitName": "df8206853bc34306fc70420a9146c00a637bc6db",
+      "commitAuthor": "Simon Willnauer"
+    }
+  }
+}

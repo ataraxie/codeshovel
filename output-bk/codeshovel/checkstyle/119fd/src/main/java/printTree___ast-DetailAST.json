@@ -1,0 +1,74 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "printTree___ast-DetailAST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 151,
+  "changeHistory": [
+    "46fa8090954480eecdeb6e7367f0e30655853f42",
+    "1549ea4822139938296a58f59c38ae14f633c5aa",
+    "25621a3c3391ddf4bc0bb56535d23e73cd293657",
+    "c225479c7d3a7b82fec7d26131ac27496d336853"
+  ],
+  "changeHistoryShort": {
+    "46fa8090954480eecdeb6e7367f0e30655853f42": "Ybodychange",
+    "1549ea4822139938296a58f59c38ae14f633c5aa": "Ybodychange",
+    "25621a3c3391ddf4bc0bb56535d23e73cd293657": "Ybodychange",
+    "c225479c7d3a7b82fec7d26131ac27496d336853": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "46fa8090954480eecdeb6e7367f0e30655853f42": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4812: add report on StringBufferMustHaveInitialCapacity\n",
+      "commitDate": 1501186710000,
+      "commitName": "46fa8090954480eecdeb6e7367f0e30655853f42",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1491395871000,
+      "commitNameOld": "3bd3a52280388520c64ec813dd1e4ffb3a0063a2",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 113.32,
+      "commitsBetweenForRepo": 523,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private static String printTree(DetailAST ast) {\n-        final StringBuilder messageBuilder \u003d new StringBuilder();\n+        final StringBuilder messageBuilder \u003d new StringBuilder(1024);\n         DetailAST node \u003d ast;\n         while (node !\u003d null) {\n             messageBuilder.append(getIndentation(node))\n                     .append(getNodeInfo(node))\n                     .append(LINE_SEPARATOR)\n                     .append(printTree(node.getFirstChild()));\n             node \u003d node.getNextSibling();\n         }\n         return messageBuilder.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "1549ea4822139938296a58f59c38ae14f633c5aa": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3040: New CLI option to print full tree (java+comments+javadoc). (#3078)",
+      "commitDate": 1460322482000,
+      "commitName": "1549ea4822139938296a58f59c38ae14f633c5aa",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1459032178000,
+      "commitNameOld": "5123ab33a6cbb67c5e5c2d1dd99f1bb39180e100",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 14.93,
+      "commitsBetweenForRepo": 21,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,12 @@\n     private static String printTree(DetailAST ast) {\n         final StringBuilder messageBuilder \u003d new StringBuilder();\n         DetailAST node \u003d ast;\n         while (node !\u003d null) {\n             messageBuilder.append(getIndentation(node))\n-                    .append(TokenUtils.getTokenName(node.getType())).append(\" -\u003e \")\n-                    .append(excapeAllControlChars(node.getText())).append(\" [\")\n-                    .append(node.getLineNo()).append(\u0027:\u0027).append(node.getColumnNo()).append(\u0027]\u0027)\n+                    .append(getNodeInfo(node))\n                     .append(LINE_SEPARATOR)\n                     .append(printTree(node.getFirstChild()));\n             node \u003d node.getNextSibling();\n         }\n         return messageBuilder.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "25621a3c3391ddf4bc0bb56535d23e73cd293657": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #652: New option to print AST with comment nodes.\n",
+      "commitDate": 1456240030000,
+      "commitName": "25621a3c3391ddf4bc0bb56535d23e73cd293657",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1454581973000,
+      "commitNameOld": "c225479c7d3a7b82fec7d26131ac27496d336853",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 19.19,
+      "commitsBetweenForRepo": 76,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,14 @@\n     private static String printTree(DetailAST ast) {\n         final StringBuilder messageBuilder \u003d new StringBuilder();\n         DetailAST node \u003d ast;\n         while (node !\u003d null) {\n             messageBuilder.append(getIndentation(node))\n                     .append(TokenUtils.getTokenName(node.getType())).append(\" -\u003e \")\n                     .append(excapeAllControlChars(node.getText())).append(\" [\")\n-                    .append(node.getLineNo()).append(\u0027:\u0027).append(node.getColumnNo()).append(\"]\\n\")\n+                    .append(node.getLineNo()).append(\u0027:\u0027).append(node.getColumnNo()).append(\u0027]\u0027)\n+                    .append(LINE_SEPARATOR)\n                     .append(printTree(node.getFirstChild()));\n             node \u003d node.getNextSibling();\n         }\n         return messageBuilder.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "c225479c7d3a7b82fec7d26131ac27496d336853": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2638: Print parse tree from CLI to terminal\n",
+      "commitDate": 1454581973000,
+      "commitName": "c225479c7d3a7b82fec7d26131ac27496d336853",
+      "commitAuthor": "Vladislav Lisetskiy"
+    }
+  }
+}

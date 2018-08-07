@@ -1,0 +1,87 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "isLegalComment___comment-TextBlock",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 216,
+  "changeHistory": [
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d",
+    "fb0f73fc9c382d9279d573bfc3779b872f795aac",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "ea4085cd15fefe1e70a495798187c425295c74b6"
+  ],
+  "changeHistoryShort": {
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d": "Ybodychange",
+    "fb0f73fc9c382d9279d573bfc3779b872f795aac": "Ybodychange",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "ea4085cd15fefe1e70a495798187c425295c74b6": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d": {
+      "type": "Ybodychange",
+      "commitMessage": "minor: enforce FinalLocalVariableCheck on checkstyle code\n",
+      "commitDate": 1453646135000,
+      "commitName": "0d8e93ce79ea33b72b3e904d8796984271ee3d8d",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 19.59,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     private boolean isLegalComment(final TextBlock comment) {\n-        boolean legal;\n+        final boolean legal;\n \n         // multi-line comment can not be legal\n         if (legalComment \u003d\u003d null || comment.getStartLineNo() !\u003d comment.getEndLineNo()) {\n             legal \u003d false;\n         }\n         else {\n             String commentText \u003d comment.getText()[0];\n             // remove chars which start comment\n             commentText \u003d commentText.substring(2);\n             // if this is a C-style comment we need to remove its end\n             if (commentText.endsWith(\"*/\")) {\n                 commentText \u003d commentText.substring(0, commentText.length() - 2);\n             }\n             commentText \u003d commentText.trim();\n             legal \u003d legalComment.matcher(commentText).find();\n         }\n         return legal;\n     }\n\\ No newline at end of file\n"
+    },
+    "fb0f73fc9c382d9279d573bfc3779b872f795aac": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: partial fix of ReturnCount violations\n",
+      "commitDate": 1440678356000,
+      "commitName": "fb0f73fc9c382d9279d573bfc3779b872f795aac",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,20 @@\n     private boolean isLegalComment(final TextBlock comment) {\n-        if (legalComment \u003d\u003d null) {\n-            return false;\n-        }\n+        boolean legal;\n+\n         // multi-line comment can not be legal\n-        if (comment.getStartLineNo() !\u003d comment.getEndLineNo()) {\n-            return false;\n+        if (legalComment \u003d\u003d null || comment.getStartLineNo() !\u003d comment.getEndLineNo()) {\n+            legal \u003d false;\n         }\n-        String commentText \u003d comment.getText()[0];\n-        // remove chars which start comment\n-        commentText \u003d commentText.substring(2);\n-        // if this is a C-style comment we need to remove its end\n-        if (commentText.endsWith(\"*/\")) {\n-            commentText \u003d commentText.substring(0, commentText.length() - 2);\n+        else {\n+            String commentText \u003d comment.getText()[0];\n+            // remove chars which start comment\n+            commentText \u003d commentText.substring(2);\n+            // if this is a C-style comment we need to remove its end\n+            if (commentText.endsWith(\"*/\")) {\n+                commentText \u003d commentText.substring(0, commentText.length() - 2);\n+            }\n+            commentText \u003d commentText.trim();\n+            legal \u003d legalComment.matcher(commentText).find();\n         }\n-        commentText \u003d commentText.trim();\n-        return legalComment.matcher(commentText).find();\n+        return legal;\n     }\n\\ No newline at end of file\n"
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "ea4085cd15fefe1e70a495798187c425295c74b6": {
+      "type": "Yintroduced",
+      "commitMessage": "Fix for rfe 1248106 (TYPECAST is now accepted by NoWhitespaceAfter)\n\nFix for rfe 953266 (thanks to Paul Guyot (pguyot) for submitting patch)\nIllegalType can be configured to accept some abstract classes which\nmatches to regexp of illegal type names (property legalAbstractClassNames)\n\nTrailingComment now can be configured to accept some trailing comments\n(such as NOI18N) (property legalComment, rfe 1385344).\n",
+      "commitDate": 1135527190000,
+      "commitName": "ea4085cd15fefe1e70a495798187c425295c74b6",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

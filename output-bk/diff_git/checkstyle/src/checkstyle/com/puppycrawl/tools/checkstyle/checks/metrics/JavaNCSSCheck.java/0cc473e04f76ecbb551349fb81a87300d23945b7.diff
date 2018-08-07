@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+index 1b894c198..c74d85652 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+@@ -153,101 +153,101 @@ public class JavaNCSSCheck extends Check
+         }
+ 
+         //check if token is countable
+         if (isCountable(aAST)) {
+             //increment the stacked counters
+             for (final Counter c : mCounters) {
+                 c.increment();
+             }
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST aAST)
+     {
+         final int tokenType = aAST.getType();
+         if ((TokenTypes.METHOD_DEF == tokenType)
+             || (TokenTypes.CTOR_DEF == tokenType)
+             || (TokenTypes.STATIC_INIT == tokenType)
+             || (TokenTypes.INSTANCE_INIT == tokenType))
+         {
+             //pop counter from the stack
+             final Counter counter = mCounters.pop();
+ 
+             final int count = counter.getCount();
+             if (count > mMethodMax) {
+                 log(aAST.getLineNo(), aAST.getColumnNo(), "ncss.method",
+                         count, mMethodMax);
+             }
+         }
+         else if (TokenTypes.CLASS_DEF == tokenType) {
+             //pop counter from the stack
+             final Counter counter = mCounters.pop();
+ 
+             final int count = counter.getCount();
+             if (count > mClassMax) {
+                 log(aAST.getLineNo(), aAST.getColumnNo(), "ncss.class",
+                         count, mClassMax);
+             }
+         }
+     }
+ 
+     @Override
+     public void finishTree(DetailAST aRootAST)
+     {
+         //pop counter from the stack
+         final Counter counter = mCounters.pop();
+ 
+         final int count = counter.getCount();
+         if (count > mFileMax) {
+             log(aRootAST.getLineNo(), aRootAST.getColumnNo(), "ncss.file",
+-                    count, mMethodMax);
++                    count, mFileMax);
+         }
+     }
+ 
+     /**
+      * Sets the maximum ncss for a file.
+      *
+      * @param aFileMax
+      *            the maximum ncss
+      */
+     public void setFileMaximum(int aFileMax)
+     {
+         mFileMax = aFileMax;
+     }
+ 
+     /**
+      * Sets the maximum ncss for a class.
+      *
+      * @param aClassMax
+      *            the maximum ncss
+      */
+     public void setClassMaximum(int aClassMax)
+     {
+         mClassMax = aClassMax;
+     }
+ 
+     /**
+      * Sets the maximum ncss for a method.
+      *
+      * @param aMethodMax
+      *            the maximum ncss
+      */
+     public void setMethodMaximum(int aMethodMax)
+     {
+         mMethodMax = aMethodMax;
+     }
+ 
+     /**
+      * Checks if a token is countable for the ncss metric
+      *
+      * @param aAST
+      *            the AST
+      * @return true if the token is countable
+      */
+     private boolean isCountable(DetailAST aAST)
+     {
+         boolean countable = true;
+ 
+         final int tokenType = aAST.getType();
+ 
+         //check if an expression is countable

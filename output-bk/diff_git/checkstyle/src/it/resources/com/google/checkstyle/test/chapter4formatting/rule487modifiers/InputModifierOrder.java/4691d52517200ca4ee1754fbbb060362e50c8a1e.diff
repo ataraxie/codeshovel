@@ -1,0 +1,63 @@
+diff --git a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule487modifiers/InputModifierOrder.java b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule487modifiers/InputModifierOrder.java
+index ad405600d..1af55bc10 100644
+--- a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule487modifiers/InputModifierOrder.java
++++ b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule487modifiers/InputModifierOrder.java
+@@ -189,50 +189,58 @@ class WithInner
+ 
+ 	/**
+ 	 * Inner abstract class
+ 	 * @author max
+ 	 *
+ 	 */
+ 	abstract class AbsInner
+ 	{
+ 		transient private String dontSaveMe; //warn
+ 		
+ 		volatile public int whatImReading; //warn
+ 		
+ 		@MyAnnotation2 public final synchronized strictfp void fooMethod() {}; //ok
+ 	    
+ 	    strictfp protected final @MyAnnotation2 synchronized void fooMethod1() {}; //warn
+ 	    
+ 	    synchronized @MyAnnotation2 strictfp private final void fooMethod2() {}; //warn
+ 	    
+ 	    @MyAnnotation2 synchronized final strictfp protected void fooMethod3() {}; //warn
+ 	    
+ 	    @MyAnnotation2 strictfp final synchronized private void fooMethod4() {}; //warn
+ 	    
+ 	    synchronized final strictfp @MyAnnotation2 public void fooMethod5() {}; //warn
+ 	    
+ 	    @MyAnnotation2 synchronized strictfp private final void fooMethod6() {}; //warn
+ 	    
+ 	    final strictfp synchronized protected @MyAnnotation2 void fooMethod7() {}; //warn
+ 	    
+ 	    @MyAnnotation2 abstract protected void fooMet(); //warn
+ 	    
+ 	    abstract @MyAnnotation2 public void fooMet1(); //warn
+ 	}
+ }
+ 
+ /** Holder for redundant modifiers of annotation fields/variables */
+ @interface Annotation
+ {
+     public String s1 = "";
+     final String s2 = "";
+     static String s3 = "";
+     String s4 = "";
+     public String blah();
+     abstract String blah2();
+ }
+ 
+ @interface MyAnnotation2 {
+ }
+ 
+ @interface MyAnnotation4 {
+ }
++
++/** Illegal order of modifiers for interface methods */
++interface InputModifierOrderInterface
++{
++    default strictfp void a() { }  //ok
++
++    strictfp default void b() { }  //warn
++}

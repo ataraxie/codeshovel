@@ -1,0 +1,120 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+index 4679c9140..985741cae 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+@@ -241,115 +241,100 @@ public abstract class ExpressionHandler
+      * Check the indentation for a set of lines.
+      *
+      * @param aLines              the set of lines to check
+      * @param aIndentLevel        the indentation level
+      * @param aFirstLineMatches   whether or not the first line has to match
+      * @param aFirstLine          firstline of whole expression
+      */
+     private void checkLinesIndent(LineSet aLines,
+                                   IndentLevel aIndentLevel,
+                                   boolean aFirstLineMatches,
+                                   int aFirstLine)
+     {
+         if (aLines.isEmpty()) {
+             return;
+         }
+ 
+         // check first line
+         int startLine = aLines.firstLine();
+         int endLine = aLines.lastLine();
+         int startCol = aLines.firstLineCol();
+ 
+         int realStartCol = getLineStart(mIndentCheck.getLines()[startLine - 1]);
+ 
+         if (realStartCol == startCol) {
+             checkSingleLine(startLine, startCol, aIndentLevel,
+                 aFirstLineMatches);
+         }
+ 
+         // if first line starts the line, following lines are indented
+         // one level; but if the first line of this expression is
+         // nested with the previous expression (which is assumed if it
+         // doesn't start the line) then don't indent more, the first
+         // indentation is absorbed by the nesting
+ 
+         // TODO: shouldIncreaseIndent() is a hack, should be removed
+         //       after complete rewriting of checkExpressionSubtree()
+ 
+         if (aFirstLineMatches
+             || (aFirstLine > mMainAst.getLineNo() && shouldIncreaseIndent()))
+         {
+             aIndentLevel = new IndentLevel(aIndentLevel, getBasicOffset());
+         }
+ 
+         // check following lines
+         for (int i = startLine + 1; i <= endLine; i++) {
+             Integer col = aLines.getStartColumn(new Integer(i));
+             // startCol could be null if this line didn't have an
+             // expression that was required to be checked (it could be
+             // checked by a child expression)
+ 
+-            // TODO: not sure if this does anything, look at taking it out
+-
+-            // TODO: we can check here if this line starts or the previous
+-            // line ends in a dot.  If so, we should increase the indent.
+-
+-            // TODO: check if -2 is possible here?  but unlikely to be a
+-            // problem...
+-            String thisLine = mIndentCheck.getLines()[i - 1];
+-            String prevLine = mIndentCheck.getLines()[i - 2];
+-            if (thisLine.matches("^\\s*\\.")
+-                || prevLine.matches("\\.\\s*$"))
+-            {
+-                aIndentLevel = new IndentLevel(aIndentLevel, getBasicOffset());
+-            }
+-
+             if (col != null) {
+                 checkSingleLine(i, col.intValue(), aIndentLevel, false);
+             }
+         }
+     }
+ 
+     /**
+      * Check the indent level for a single line.
+      *
+      * @param aLineNum       the line number to check
+      * @param aIndentLevel   the required indent level
+      */
+     private void checkSingleLine(int aLineNum, IndentLevel aIndentLevel)
+     {
+         String line = mIndentCheck.getLines()[aLineNum - 1];
+         int start = getLineStart(line);
+         if (aIndentLevel.gt(start)) {
+             logChildError(aLineNum, start, aIndentLevel);
+         }
+     }
+ 
+     /**
+      * Check the indentation for a single line.
+      *
+      * @param aLineNum       the number of the line to check
+      * @param aColNum        the column number we are starting at
+      * @param aIndentLevel   the indentation level
+      * @param aMustMatch     whether or not the indentation level must match
+      */
+ 
+     private void checkSingleLine(int aLineNum, int aColNum,
+         IndentLevel aIndentLevel, boolean aMustMatch)
+     {
+         String line = mIndentCheck.getLines()[aLineNum - 1];
+         int start = getLineStart(line);
+         // if must match is set, it is an error if the line start is not
+         // at the correct indention level; otherwise, it is an only an
+         // error if this statement starts the line and it is less than
+         // the correct indentation level
+         if (aMustMatch ? !aIndentLevel.accept(start)
+             : aColNum == start && aIndentLevel.gt(start))
+         {
+             logChildError(aLineNum, start, aIndentLevel);
+         }
+     }
+ 
+     /**
+      * Get the start of the specified line.
+      *
+      * @param aLine   the specified line number

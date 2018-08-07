@@ -1,0 +1,332 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+index a856f3392..061647e57 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+@@ -1,76 +1,77 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2011  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.coding;
+ 
+ import com.google.common.collect.Sets;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.ScopeUtils;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.Utils;
++
+ import java.util.Set;
+ import java.util.regex.Pattern;
+ import java.util.regex.PatternSyntaxException;
+ import org.apache.commons.beanutils.ConversionException;
+ 
+ /**
+  * <p>Checks that a local variable or a parameter does not shadow
+  * a field that is defined in the same class.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="HiddenField"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check so that it checks variables but not
+  * parameters is:
+  * </p>
+  * <pre>
+  * &lt;module name="HiddenField"&gt;
+  *    &lt;property name="tokens" value="VARIABLE_DEF"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check so that it ignores the parameter of
+  * a setter method is:
+  * </p>
+  * <pre>
+  * &lt;module name="HiddenField"&gt;
+  *    &lt;property name="ignoreSetter" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check so that it ignores constructor
+  * parameters is:
+  * </p>
+  * <pre>
+  * &lt;module name="HiddenField"&gt;
+  *    &lt;property name="ignoreConstructorParameter" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  * @version 1.0
+  */
+ public class HiddenFieldCheck
+     extends Check
+ {
+     /** stack of sets of field names,
+      * one for each class of a set of nested classes.
+@@ -202,127 +203,146 @@ public class HiddenFieldCheck
+         }
+         //local variable or parameter. Does it shadow a field?
+         final DetailAST nameAST = aAST.findFirstToken(TokenTypes.IDENT);
+         final String name = nameAST.getText();
+         if ((mCurrentFrame.containsStaticField(name)
+              || (!inStatic(aAST) && mCurrentFrame.containsInstanceField(name)))
+             && ((mRegexp == null) || (!getRegexp().matcher(name).find()))
+             && !isIgnoredSetterParam(aAST, name)
+             && !isIgnoredConstructorParam(aAST)
+             && !isIgnoredParamOfAbstractMethod(aAST))
+         {
+             log(nameAST, "hidden.field", name);
+         }
+     }
+ 
+     /**
+      * Determines whether an AST node is in a static method or static
+      * initializer.
+      * @param aAST the node to check.
+      * @return true if aAST is in a static method or a static block;
+      */
+     private static boolean inStatic(DetailAST aAST)
+     {
+         DetailAST parent = aAST.getParent();
+         while (parent != null) {
+             switch (parent.getType()) {
+             case TokenTypes.STATIC_INIT:
+                 return true;
+             case TokenTypes.METHOD_DEF:
+                 final DetailAST mods =
+                     parent.findFirstToken(TokenTypes.MODIFIERS);
+                 return mods.branchContains(TokenTypes.LITERAL_STATIC);
+             default:
+                 parent = parent.getParent();
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of a
+      * setter method, where the property setter method for field 'xyz' has
+      * name 'setXyz', one parameter named 'xyz', and return type void.
+      * @param aAST the AST to check.
+      * @param aName the name of aAST.
+      * @return true if aAST should be ignored because check property
+      * ignoreSetter is true and aAST is the parameter of a setter method.
+      */
+     private boolean isIgnoredSetterParam(DetailAST aAST, String aName)
+     {
+-        if (!(aAST.getType() == TokenTypes.PARAMETER_DEF)
++        if (aAST.getType() != TokenTypes.PARAMETER_DEF
+             || !mIgnoreSetter)
+         {
+             return false;
+         }
+         //single parameter?
+         final DetailAST parametersAST = aAST.getParent();
+         if (parametersAST.getChildCount() != 1) {
+             return false;
+         }
+         //method parameter, not constructor parameter?
+         final DetailAST methodAST = parametersAST.getParent();
+         if (methodAST.getType() != TokenTypes.METHOD_DEF) {
+             return false;
+         }
+-        //property setter name?
+-        final String expectedName =
+-            "set" + aName.substring(0, 1).toUpperCase() + aName.substring(1);
+-        final DetailAST methodNameAST =
+-            methodAST.findFirstToken(TokenTypes.IDENT);
+-        final String methodName = methodNameAST.getText();
+-        if (!methodName.equals(expectedName)) {
+-            return false;
+-        }
+         //void?
+         final DetailAST typeAST = methodAST.findFirstToken(TokenTypes.TYPE);
+-        return typeAST.branchContains(TokenTypes.LITERAL_VOID);
++        if (!typeAST.branchContains(TokenTypes.LITERAL_VOID)) {
++            return false;
++        }
++
++        //property setter name?
++        final String methodName =
++                methodAST.findFirstToken(TokenTypes.IDENT).getText();
++        final String expectedName = "set" + capitalize(aName);
++        return methodName.equals(expectedName);
++    }
++
++    /**
++     * Capitalizes a given property name the way we expect to see it in
++     * a setter name.
++     * @param aName a property name
++     * @return capitalized property name
++     */
++    private static String capitalize(final String aName)
++    {
++        if (aName == null || aName.length() == 0) {
++            return aName;
++        }
++        // we should not capitalize the first character if the second
++        // one is a capital one, since according to JavaBeans spec
++        // setXYzz() is a setter for XYzz property, not for xYzz one.
++        if (aName.length() > 1 && Character.isUpperCase(aName.charAt(1))) {
++            return aName;
++        }
++        return aName.substring(0, 1).toUpperCase() + aName.substring(1);
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of a
+      * constructor.
+      * @param aAST the AST to check.
+      * @return true if aAST should be ignored because check property
+      * ignoreConstructorParameter is true and aAST is a constructor parameter.
+      */
+     private boolean isIgnoredConstructorParam(DetailAST aAST)
+     {
+         if ((aAST.getType() != TokenTypes.PARAMETER_DEF)
+             || !mIgnoreConstructorParameter)
+         {
+             return false;
+         }
+         final DetailAST parametersAST = aAST.getParent();
+         final DetailAST constructorAST = parametersAST.getParent();
+         return (constructorAST.getType() == TokenTypes.CTOR_DEF);
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of an
+      * abstract method.
+      * @param aAST the AST to check.
+      * @return true if aAST should be ignored because check property
+      * ignoreAbstactMethods is true and aAST is a parameter of abstract
+      * methods.
+      */
+     private boolean isIgnoredParamOfAbstractMethod(DetailAST aAST)
+     {
+         if ((aAST.getType() != TokenTypes.PARAMETER_DEF)
+             || !mIgnoreAbstractMethods)
+         {
+             return false;
+         }
+         final DetailAST method = aAST.getParent().getParent();
+         if (method.getType() != TokenTypes.METHOD_DEF) {
+             return false;
+         }
+         final DetailAST mods = method.findFirstToken(TokenTypes.MODIFIERS);
+         return ((mods != null) && mods.branchContains(TokenTypes.ABSTRACT));
+     }
+ 
+     /**
+      * Set the ignore format to the specified regular expression.
+      * @param aFormat a <code>String</code> value
+      * @throws ConversionException unable to parse aFormat
+      */
+     public void setIgnoreFormat(String aFormat)
+@@ -391,84 +411,80 @@ public class HiddenFieldCheck
+ 
+         /** set of instance field names */
+         private final Set<String> mInstanceFields = Sets.newHashSet();
+ 
+         /** set of static field names */
+         private final Set<String> mStaticFields = Sets.newHashSet();
+ 
+         /** Creates new frame.
+          * @param aStaticType is this a static inner type (class or enum).
+          * @param aParent parent frame.
+          */
+         public FieldFrame(FieldFrame aParent, boolean aStaticType)
+         {
+             mParent = aParent;
+             mStaticType = aStaticType;
+         }
+ 
+         /** Is this frame for static inner type.
+          * @return is this field frame for static inner type.
+          */
+         boolean isStaticType()
+         {
+             return mStaticType;
+         }
+ 
+         /**
+          * Adds an instance field to this FieldFrame.
+          * @param aField  the name of the instance field.
+          */
+         public void addInstanceField(String aField)
+         {
+             mInstanceFields.add(aField);
+         }
+ 
+         /**
+          * Adds a static field to this FieldFrame.
+          * @param aField  the name of the instance field.
+          */
+         public void addStaticField(String aField)
+         {
+             mStaticFields.add(aField);
+         }
+ 
+         /**
+          * Determines whether this FieldFrame contains an instance field.
+          * @param aField the field to check.
+          * @return true if this FieldFrame contains instance field aField.
+          */
+         public boolean containsInstanceField(String aField)
+         {
+-            if (mInstanceFields.contains(aField)) {
+-                return true;
+-            }
+-            if (isStaticType()) {
+-                return false;
+-            }
++            return mInstanceFields.contains(aField)
++                    || !isStaticType()
++                    && (mParent != null)
++                    && mParent.containsInstanceField(aField);
+ 
+-            return (mParent != null) && mParent.containsInstanceField(aField);
+         }
+ 
+         /**
+          * Determines whether this FieldFrame contains a static field.
+          * @param aField the field to check.
+          * @return true if this FieldFrame contains static field aField.
+          */
+         public boolean containsStaticField(String aField)
+         {
+-            if (mStaticFields.contains(aField)) {
+-                return true;
+-            }
++            return mStaticFields.contains(aField)
++                    || (mParent != null)
++                    && mParent.containsStaticField(aField);
+ 
+-            return (mParent != null) && mParent.containsStaticField(aField);
+         }
+ 
+         /**
+          * Getter for parent frame.
+          * @return parent frame.
+          */
+         public FieldFrame getParent()
+         {
+             return mParent;
+         }
+     }
+ }

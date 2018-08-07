@@ -1,0 +1,131 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+index 8b3992170..061c2745d 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+@@ -82,122 +82,126 @@ public abstract class AbstractClassCouplingCheck extends Check
+         mIgnoredClassNames.add("Exception");
+         mIgnoredClassNames.add("RuntimeException");
+         mIgnoredClassNames.add("IllegalArgumentException");
+         mIgnoredClassNames.add("IllegalStateException");
+         mIgnoredClassNames.add("IndexOutOfBoundsException");
+         mIgnoredClassNames.add("NullPointerException");
+         mIgnoredClassNames.add("Throwable");
+         mIgnoredClassNames.add("SecurityException");
+         mIgnoredClassNames.add("UnsupportedOperationException");
+     }
+ 
+     /** {@inheritDoc} */
+     public final int[] getDefaultTokens()
+     {
+         return getRequiredTokens();
+     }
+ 
+     /** @return allowed complexity. */
+     public final int getMax()
+     {
+         return mMax;
+     }
+ 
+     /**
+      * Sets maximul allowed complexity.
+      * @param aMax allowed complexity.
+      */
+     public final void setMax(int aMax)
+     {
+         mMax = aMax;
+     }
+ 
+     /** {@inheritDoc} */
+     public final void beginTree(DetailAST aAST)
+     {
+         mPackageName = "";
+     }
+ 
+     /** @return message key we use for log violations. */
+     protected abstract String getLogMessageId();
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.PACKAGE_DEF:
+             visitPackageDef(aAST);
+             break;
+         case TokenTypes.CLASS_DEF:
+         case TokenTypes.INTERFACE_DEF:
++        case TokenTypes.ANNOTATION_DEF:
++        case TokenTypes.ENUM_DEF:
+             visitClassDef(aAST);
+             break;
+         case TokenTypes.TYPE:
+             mContext.visitType(aAST);
+             break;
+         case TokenTypes.LITERAL_NEW:
+             mContext.visitLiteralNew(aAST);
+             break;
+         case TokenTypes.LITERAL_THROWS:
+             mContext.visitLiteralThrows(aAST);
+             break;
+         default:
+             throw new IllegalStateException(aAST.toString());
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     public void leaveToken(DetailAST aAST)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.CLASS_DEF:
+         case TokenTypes.INTERFACE_DEF:
++        case TokenTypes.ANNOTATION_DEF:
++        case TokenTypes.ENUM_DEF:
+             leaveClassDef();
+             break;
+         default:
+             // Do nothing
+         }
+     }
+ 
+     /**
+      * Stores package of current class we check.
+      * @param aPkg package definition.
+      */
+     private void visitPackageDef(DetailAST aPkg)
+     {
+         final FullIdent ident = FullIdent.createFullIdent(aPkg.getLastChild()
+                 .getPreviousSibling());
+         mPackageName = ident.getText();
+     }
+ 
+     /**
+      * Creates new context for a given class.
+      * @param aClassDef class definition node.
+      */
+     private void visitClassDef(DetailAST aClassDef)
+     {
+         mContextStack.push(mContext);
+         final String className =
+             aClassDef.findFirstToken(TokenTypes.IDENT).getText();
+         mContext = new Context(className,
+                                aClassDef.getLineNo(),
+                                aClassDef.getColumnNo());
+     }
+ 
+     /** Restores previous context. */
+     private void leaveClassDef()
+     {
+         mContext.checkCoupling();
+         mContext = (Context) mContextStack.pop();
+     }
+ 
+     /**
+      * Incapsulates information about class coupling.
+      *
+      * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+      * @author o_sukhodolsky
+      */
+     private class Context
+     {
+         /** Set of referenced classes. */
+         private final Set mReferencedClassNames = new HashSet();
+         /** Own class name. */

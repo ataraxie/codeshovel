@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ParameterAssignmentCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ParameterAssignmentCheck.java
+index 313b96094..6382616e4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ParameterAssignmentCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ParameterAssignmentCheck.java
+@@ -159,101 +159,101 @@ public final class ParameterAssignmentCheck extends Check
+             case TokenTypes.METHOD_DEF:
+                 leaveMethodDef();
+                 break;
+             case TokenTypes.ASSIGN:
+             case TokenTypes.PLUS_ASSIGN:
+             case TokenTypes.MINUS_ASSIGN:
+             case TokenTypes.STAR_ASSIGN:
+             case TokenTypes.DIV_ASSIGN:
+             case TokenTypes.MOD_ASSIGN:
+             case TokenTypes.SR_ASSIGN:
+             case TokenTypes.BSR_ASSIGN:
+             case TokenTypes.SL_ASSIGN:
+             case TokenTypes.BAND_ASSIGN:
+             case TokenTypes.BXOR_ASSIGN:
+             case TokenTypes.BOR_ASSIGN:
+             case TokenTypes.INC:
+             case TokenTypes.POST_INC:
+             case TokenTypes.DEC:
+             case TokenTypes.POST_DEC:
+                 // Do nothing
+                 break;
+             default:
+                 throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
+     /**
+      * Ckecks if this is assignments of parameter.
+      * @param ast assignment to check.
+      */
+     private void visitAssign(DetailAST ast)
+     {
+         checkIdent(ast);
+     }
+ 
+     /**
+      * Checks if this is increment/decrement of parameter.
+      * @param ast dec/inc to check.
+      */
+     private void visitIncDec(DetailAST ast)
+     {
+         checkIdent(ast);
+     }
+ 
+     /**
+      * Check if ident is parameter.
+      * @param ast ident to check.
+      */
+     private void checkIdent(DetailAST ast)
+     {
+-        if ((parameterNames != null) && !parameterNames.isEmpty()) {
++        if (parameterNames != null && !parameterNames.isEmpty()) {
+             final DetailAST identAST = ast.getFirstChild();
+ 
+-            if ((identAST != null)
+-                && (identAST.getType() == TokenTypes.IDENT)
++            if (identAST != null
++                && identAST.getType() == TokenTypes.IDENT
+                 && parameterNames.contains(identAST.getText()))
+             {
+                 log(ast.getLineNo(), ast.getColumnNo(),
+                     MSG_KEY, identAST.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Creates new set of parameters and store old one in stack.
+      * @param ast a method to process.
+      */
+     private void visitMethodDef(DetailAST ast)
+     {
+         parameterNamesStack.push(parameterNames);
+         parameterNames = Sets.newHashSet();
+ 
+         visitMethodParameters(ast.findFirstToken(TokenTypes.PARAMETERS));
+     }
+ 
+     /** Restores old set of parameters. */
+     private void leaveMethodDef()
+     {
+         parameterNames = parameterNamesStack.pop();
+     }
+ 
+     /**
+      * Creates new parameter set for given method.
+      * @param ast a method for process.
+      */
+     private void visitMethodParameters(DetailAST ast)
+     {
+         DetailAST parameterDefAST =
+             ast.findFirstToken(TokenTypes.PARAMETER_DEF);
+ 
+         for (; parameterDefAST != null;
+              parameterDefAST = parameterDefAST.getNextSibling())
+         {
+             if (parameterDefAST.getType() == TokenTypes.PARAMETER_DEF) {
+                 final DetailAST param =
+                     parameterDefAST.findFirstToken(TokenTypes.IDENT);
+                 parameterNames.add(param.getText());
+             }
+         }
+     }
+ }

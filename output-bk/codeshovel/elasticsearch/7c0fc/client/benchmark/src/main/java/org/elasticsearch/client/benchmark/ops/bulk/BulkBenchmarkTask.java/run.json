@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "BulkBenchmarkTask.java",
+  "functionName": "run",
+  "functionId": "run",
+  "sourceFilePath": "client/benchmark/src/main/java/org/elasticsearch/client/benchmark/ops/bulk/BulkBenchmarkTask.java",
+  "functionStartLine": 156,
+  "functionEndLine": 178,
+  "changeHistory": [
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+    "c33f85bc37bbfee87158738f538d380c0cc31d13"
+  ],
+  "changeHistoryShort": {
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": "Ybodychange",
+    "c33f85bc37bbfee87158738f538d380c0cc31d13": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": {
+      "type": "Ybodychange",
+      "commitMessage": "Add client-benchmark-noop-api-plugin to stress clients even more in benchmarks (#20103)\n\n",
+      "commitDate": 1472195147000,
+      "commitName": "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+      "commitAuthor": "Daniel Mitterdorfer",
+      "commitDateOld": 1469523682000,
+      "commitNameOld": "c33f85bc37bbfee87158738f538d380c0cc31d13",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 30.92,
+      "commitsBetweenForRepo": 437,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,22 +1,23 @@\n         public void run() {\n-            for (int iteration \u003d 0; iteration \u003c totalIterations; iteration++) {\n+            for (int iteration \u003d 0; iteration \u003c warmupIterations + measurementIterations; iteration++) {\n                 boolean success \u003d false;\n                 List\u003cString\u003e currentBulk;\n                 try {\n                     currentBulk \u003d bulkData.take();\n                 } catch (InterruptedException e) {\n                     Thread.currentThread().interrupt();\n                     return;\n                 }\n-                // Yes, this approach is prone to coordinated omission *but* we have to consider that we want to benchmark a closed system\n-                // with backpressure here instead of an open system. So this is actually correct in this case.\n+                //measure only service time, latency is not that interesting for a throughput benchmark\n                 long start \u003d System.nanoTime();\n                 try {\n                     success \u003d bulkRequestExecutor.bulkIndex(currentBulk);\n                 } catch (Exception ex) {\n                     logger.warn(\"Error while executing bulk request\", ex);\n                 }\n                 long stop \u003d System.nanoTime();\n-                sampleRecorder.addSample(new Sample(\"bulk\", start, stop, success));\n+                if (iteration \u003c warmupIterations) {\n+                    sampleRecorder.addSample(new Sample(\"bulk\", start, start, stop, success));\n+                }\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "c33f85bc37bbfee87158738f538d380c0cc31d13": {
+      "type": "Yintroduced",
+      "commitMessage": "Add client benchmark\n\nWith this commit we add a benchmark for the new REST client and the\nexisting transport client.\n\nCloses #19281\n",
+      "commitDate": 1469523682000,
+      "commitName": "c33f85bc37bbfee87158738f538d380c0cc31d13",
+      "commitAuthor": "Daniel Mitterdorfer"
+    }
+  }
+}

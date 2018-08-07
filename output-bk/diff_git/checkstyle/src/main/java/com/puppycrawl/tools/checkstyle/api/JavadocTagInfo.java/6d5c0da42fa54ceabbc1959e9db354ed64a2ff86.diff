@@ -1,0 +1,158 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java
+index 15899870f..531a78216 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java
+@@ -380,148 +380,148 @@ public enum JavadocTagInfo {
+         TEXT_TO_TAG = textToTagBuilder.build();
+         NAME_TO_TAG = nameToTagBuilder.build();
+ 
+         //Arrays sorting for binary search
+         Arrays.sort(DEF_TOKEN_TYPES);
+         Arrays.sort(DEF_TOKEN_TYPES_DEPRECATED);
+     }
+ 
+     /** the tag text **/
+     private final String text;
+     /** the tag name **/
+     private final String name;
+     /** the tag type **/
+     private final Type type;
+ 
+     /**
+      * Sets the various properties of a Javadoc tag.
+      *
+      * @param text the tag text
+      * @param name the tag name
+      * @param type the type of tag
+      */
+     JavadocTagInfo(final String text, final String name,
+         final Type type) {
+         this.text = text;
+         this.name = name;
+         this.type = type;
+     }
+ 
+     /**
+      * Checks if a particular Javadoc tag is valid within a Javadoc block of a
+      * given AST.
+      *
+      * <p>
+      * If passing in a DetailAST representing a non-void METHOD_DEF
+      * <code> true </code> would be returned. If passing in a DetailAST
+      * representing a CLASS_DEF <code> false </code> would be returned because
+      * CLASS_DEF's cannot return a value.
+      * </p>
+      *
+      * @param ast the AST representing a type that can be Javadoc'd
+      * @return true if tag is valid.
+      */
+     public abstract boolean isValidOn(DetailAST ast);
+ 
+     /**
+      * Gets the tag text.
+      * @return the tag text
+      */
+     public String getText() {
+-        return this.text;
++        return text;
+     }
+ 
+     /**
+      * Gets the tag name.
+      * @return the tag name
+      */
+     public String getName() {
+-        return this.name;
++        return name;
+     }
+ 
+     /**
+      * Gets the Tag type defined by {@link JavadocTagInfo.Type Type}.
+      * @return the Tag type
+      */
+     public Type getType() {
+-        return this.type;
++        return type;
+     }
+ 
+     /**
+      * returns a JavadocTag from the tag text.
+      * @param text String representing the tag text
+      * @return Returns a JavadocTag type from a String representing the tag
+      * @throws NullPointerException if the text is null
+      * @throws IllegalArgumentException if the text is not a valid tag
+      */
+     public static JavadocTagInfo fromText(final String text) {
+         if (text == null) {
+             throw new IllegalArgumentException("the text is null");
+         }
+ 
+         final JavadocTagInfo tag = TEXT_TO_TAG.get(text);
+ 
+         if (tag == null) {
+             throw new IllegalArgumentException("the text [" + text
+                 + "] is not a valid Javadoc tag text");
+         }
+ 
+         return tag;
+     }
+ 
+     /**
+      * returns a JavadocTag from the tag name.
+      * @param name String name of the tag
+      * @return Returns a JavadocTag type from a String representing the tag
+      * @throws NullPointerException if the text is null
+      * @throws IllegalArgumentException if the text is not a valid tag. The name
+      *    can be checked using {@link JavadocTagInfo#isValidName(String)}
+      */
+     public static JavadocTagInfo fromName(final String name) {
+         if (name == null) {
+             throw new IllegalArgumentException("the name is null");
+         }
+ 
+         final JavadocTagInfo tag = NAME_TO_TAG.get(name);
+ 
+         if (tag == null) {
+             throw new IllegalArgumentException("the name [" + name
+                 + "] is not a valid Javadoc tag name");
+         }
+ 
+         return tag;
+     }
+ 
+     /**
+      * Returns whether the provided name is for a valid tag.
+      * @param name the tag name to check.
+      * @return whether the provided name is for a valid tag.
+      */
+     public static boolean isValidName(final String name) {
+         return NAME_TO_TAG.containsKey(name);
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public String toString() {
+-        return "text [" + this.text + "] name [" + this.name
+-            + "] type [" + this.type + "]";
++        return "text [" + text + "] name [" + name
++            + "] type [" + type + "]";
+     }
+ 
+     /**
+      * The Javadoc Type.
+      *
+      * For example a {@code @param} tag is a block tag while a
+      * {@code {@link}} tag is a inline tag.
+      *
+      * @author Travis Schneeberger
+      */
+     public enum Type {
+         /** block type. **/
+         BLOCK,
+ 
+         /** inline type. **/
+         INLINE
+     }
+ }

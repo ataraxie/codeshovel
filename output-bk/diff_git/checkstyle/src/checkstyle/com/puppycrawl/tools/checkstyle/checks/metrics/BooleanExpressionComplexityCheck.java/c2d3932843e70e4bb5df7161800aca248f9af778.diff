@@ -1,0 +1,128 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/BooleanExpressionComplexityCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/BooleanExpressionComplexityCheck.java
+index bf6b94d97..396aa7d9e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/BooleanExpressionComplexityCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/BooleanExpressionComplexityCheck.java
+@@ -102,121 +102,121 @@ public final class BooleanExpressionComplexityCheck extends Check
+             visitExpr();
+             break;
+         case TokenTypes.LAND:
+         case TokenTypes.BAND:
+         case TokenTypes.LOR:
+         case TokenTypes.BOR:
+         case TokenTypes.BXOR:
+             mContext.visitBooleanOperator();
+             break;
+         default:
+             throw new IllegalStateException(aAST.toString());
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     public void leaveToken(DetailAST aAST)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.CTOR_DEF:
+         case TokenTypes.METHOD_DEF:
+             leaveMethodDef();
+             break;
+         case TokenTypes.EXPR:
+             leaveExpr(aAST);
+             break;
+         default:
+             // Do nothing
+         }
+     }
+ 
+     /**
+      * Creates new context for a given method.
+      * @param aAST a method we start to check.
+      */
+     private void visitMethodDef(DetailAST aAST)
+     {
+         mContextStack.push(mContext);
+         mContext = new Context(!CheckUtils.isEqualsMethod(aAST));
+     }
+ 
+     /** Removes old context. */
+     private void leaveMethodDef()
+     {
+         mContext = (Context) mContextStack.pop();
+     }
+ 
+     /** Creates and pushes new context. */
+     private void visitExpr()
+     {
+         mContextStack.push(mContext);
+-        mContext = new Context(mContext == null || mContext.isChecking());
++        mContext = new Context((mContext == null) || mContext.isChecking());
+     }
+ 
+     /**
+      * Restores previous context.
+      * @param aAST expression we leave.
+      */
+     private void leaveExpr(DetailAST aAST)
+     {
+         mContext.checkCount(aAST);
+         mContext = (Context) mContextStack.pop();
+     }
+ 
+     /**
+      * Represents context (method/expression) in which we check complexity.
+      *
+      * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+      * @author o_sukhodolsky
+      */
+     private class Context
+     {
+         /**
+          * Should we perform check in current context or not.
+          * Usually false if we are inside equals() method.
+          */
+         private final boolean mChecking;
+         /** Count of boolean operators. */
+         private int mCount;
+ 
+         /**
+          * Creates new instance.
+          * @param aChecking should we check in current context or not.
+          */
+         public Context(boolean aChecking)
+         {
+             mChecking = aChecking;
+             mCount = 0;
+         }
+ 
+         /**
+          * Getter for checking property.
+          * @return should we check in current context or not.
+          */
+         public boolean isChecking()
+         {
+             return mChecking;
+         }
+ 
+         /** Increases operator counter. */
+         public void visitBooleanOperator()
+         {
+             ++mCount;
+         }
+ 
+         /**
+          * Checks if we violates maximum allowed complexity.
+          * @param aAST a node we check now.
+          */
+         public void checkCount(DetailAST aAST)
+         {
+-            if (mChecking && mCount > getMax()) {
++            if (mChecking && (mCount > getMax())) {
+                 DetailAST parentAST = aAST.getParent();
+ 
+                 log(parentAST.getLineNo(), parentAST.getColumnNo(),
+                     "booleanExpressionComplexity",
+                     new Integer(mCount),
+                     new Integer(getMax()));
+             }
+         }
+     }
+ }

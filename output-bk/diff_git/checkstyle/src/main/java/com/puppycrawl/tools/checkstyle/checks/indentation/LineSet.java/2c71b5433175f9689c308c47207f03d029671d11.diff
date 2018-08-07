@@ -1,0 +1,59 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineSet.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineSet.java
+index bbb9de69a..c42a2e80d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineSet.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineSet.java
+@@ -46,53 +46,53 @@ public class LineSet {
+ 
+     /**
+      * Get the starting column for the first line.
+      *
+      * @return the starting column for the first line.
+      */
+     public int firstLineCol() {
+         final Integer firstLineKey = lines.firstKey();
+         return lines.get(firstLineKey);
+     }
+ 
+     /**
+      * Get the line number of the first line.
+      *
+      * @return the line number of the first line
+      */
+     public int firstLine() {
+         return lines.firstKey();
+     }
+ 
+     /**
+      * Get the line number of the last line.
+      *
+      * @return the line number of the last line
+      */
+     public int lastLine() {
+         return lines.lastKey();
+     }
+ 
+     /**
+      * Add a line to this set of lines.
+      *
+      * @param lineNum   the line to add
+      * @param col       the starting column of the new line
+      */
+     public void addLineAndCol(int lineNum, int col) {
+         lines.put(lineNum, col);
+     }
+ 
+     /**
+      * Determines if this set of lines is empty.
+      *
+      * @return true if it is empty, false otherwise
+      */
+     public boolean isEmpty() {
+         return lines.isEmpty();
+     }
+ 
+     @Override
+     public String toString() {
+-        return "LineSet[firstLine=" + firstLine() + ", lastLine=" + lastLine() + "]";
++        return "LineSet[firstLine=" + lines.firstKey() + ", lastLine=" + lines.lastKey() + "]";
+     }
+ }

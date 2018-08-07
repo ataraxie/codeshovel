@@ -1,0 +1,74 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "isSingleLineCase___literalCase-DetailAST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 454,
+  "changeHistory": [
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2",
+    "0fdbbda1022d3d78b5d64a2d9f7260adac377d77",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "b436b3cd9860529718b95c36dafe565fe68f6293"
+  ],
+  "changeHistoryShort": {
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2": "Ybodychange",
+    "0fdbbda1022d3d78b5d64a2d9f7260adac377d77": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "b436b3cd9860529718b95c36dafe565fe68f6293": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #4328: moved variables inside if blocks to reduce execution time",
+      "commitDate": 1494119754000,
+      "commitName": "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1491395871000,
+      "commitNameOld": "3bd3a52280388520c64ec813dd1e4ffb3a0063a2",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 31.53,
+      "commitsBetweenForRepo": 176,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,18 @@\n     private static boolean isSingleLineCase(DetailAST literalCase) {\n         boolean result \u003d false;\n         final DetailAST slist \u003d literalCase.getNextSibling();\n         if (slist \u003d\u003d null) {\n             result \u003d true;\n         }\n         else {\n             final DetailAST block \u003d slist.getFirstChild();\n             if (block.getType() !\u003d TokenTypes.SLIST) {\n                 final DetailAST caseBreak \u003d slist.findFirstToken(TokenTypes.LITERAL_BREAK);\n-                final boolean atOneLine \u003d literalCase.getLineNo() \u003d\u003d block.getLineNo();\n                 if (caseBreak !\u003d null) {\n+                    final boolean atOneLine \u003d literalCase.getLineNo() \u003d\u003d block.getLineNo();\n                     result \u003d atOneLine \u0026\u0026 block.getLineNo() \u003d\u003d caseBreak.getLineNo();\n                 }\n             }\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "0fdbbda1022d3d78b5d64a2d9f7260adac377d77": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3655: Fix NPE in NeedBraces on single line default stmt\n",
+      "commitDate": 1483148074000,
+      "commitName": "0fdbbda1022d3d78b5d64a2d9f7260adac377d77",
+      "commitAuthor": "liscju",
+      "commitDateOld": 1469977049000,
+      "commitNameOld": "7790f3104d2770ac909c61e96ae66daba8d372ec",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 152.44,
+      "commitsBetweenForRepo": 235,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,18 @@\n     private static boolean isSingleLineCase(DetailAST literalCase) {\n         boolean result \u003d false;\n         final DetailAST slist \u003d literalCase.getNextSibling();\n-        final DetailAST block \u003d slist.getFirstChild();\n-        if (block.getType() !\u003d TokenTypes.SLIST) {\n-            final DetailAST caseBreak \u003d slist.findFirstToken(TokenTypes.LITERAL_BREAK);\n-            final boolean atOneLine \u003d literalCase.getLineNo() \u003d\u003d block.getLineNo();\n-            if (caseBreak !\u003d null) {\n-                result \u003d atOneLine \u0026\u0026 block.getLineNo() \u003d\u003d caseBreak.getLineNo();\n+        if (slist \u003d\u003d null) {\n+            result \u003d true;\n+        }\n+        else {\n+            final DetailAST block \u003d slist.getFirstChild();\n+            if (block.getType() !\u003d TokenTypes.SLIST) {\n+                final DetailAST caseBreak \u003d slist.findFirstToken(TokenTypes.LITERAL_BREAK);\n+                final boolean atOneLine \u003d literalCase.getLineNo() \u003d\u003d block.getLineNo();\n+                if (caseBreak !\u003d null) {\n+                    result \u003d atOneLine \u0026\u0026 block.getLineNo() \u003d\u003d caseBreak.getLineNo();\n+                }\n             }\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425777806000,
+      "commitNameOld": "b436b3cd9860529718b95c36dafe565fe68f6293",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 2.84,
+      "commitsBetweenForRepo": 14,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     private static boolean isSingleLineCase(DetailAST literalCase)\n     {\n         boolean result \u003d false;\n         final DetailAST slist \u003d literalCase.getNextSibling();\n         final DetailAST block \u003d slist.getFirstChild();\n         if (block.getType() !\u003d TokenTypes.SLIST) {\n             final DetailAST caseBreak \u003d slist.findFirstToken(TokenTypes.LITERAL_BREAK);\n             final boolean atOneLine \u003d literalCase.getLineNo() \u003d\u003d block.getLineNo();\n             if (caseBreak !\u003d null) {\n-                result \u003d atOneLine \u0026\u0026 (block.getLineNo() \u003d\u003d caseBreak.getLineNo());\n+                result \u003d atOneLine \u0026\u0026 block.getLineNo() \u003d\u003d caseBreak.getLineNo();\n             }\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "b436b3cd9860529718b95c36dafe565fe68f6293": {
+      "type": "Yintroduced",
+      "commitMessage": "Need Braces Check, one-line statements option, issue #300\n",
+      "commitDate": 1425777806000,
+      "commitName": "b436b3cd9860529718b95c36dafe565fe68f6293",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

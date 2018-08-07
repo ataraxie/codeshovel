@@ -1,0 +1,42 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "loadConfiguration___configSource-InputSource__overridePropsResolver-PropertyResolver__omitIgnoredModules-boolean__threadModeSettings-ThreadModeSettings",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 334,
+  "changeHistory": [
+    "dc88a9954baf88df6543cf73baabed710f882363",
+    "036582d728d2e2bb37f360bb3a74f899f04d587d"
+  ],
+  "changeHistoryShort": {
+    "dc88a9954baf88df6543cf73baabed710f882363": "Ybodychange",
+    "036582d728d2e2bb37f360bb3a74f899f04d587d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "dc88a9954baf88df6543cf73baabed710f882363": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4709: fix avoid boolean parameters for public methods\n",
+      "commitDate": 1502279688000,
+      "commitName": "dc88a9954baf88df6543cf73baabed710f882363",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1501378825000,
+      "commitNameOld": "dd91dc1cf4dfbffd1bd608a9b0f8a487eb25122d",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 10.43,
+      "commitsBetweenForRepo": 38,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,21 @@\n     public static Configuration loadConfiguration(InputSource configSource,\n         PropertyResolver overridePropsResolver,\n         boolean omitIgnoredModules, ThreadModeSettings threadModeSettings)\n             throws CheckstyleException {\n         try {\n             final ConfigurationLoader loader \u003d\n                 new ConfigurationLoader(overridePropsResolver,\n                                         omitIgnoredModules, threadModeSettings);\n             loader.parseInputSource(configSource);\n             return loader.configuration;\n         }\n         catch (final SAXParseException ex) {\n-            final String message \u003d String.format(Locale.ROOT, \"%s - %s:%s:%s\",\n+            final String message \u003d String.format(Locale.ROOT, SAX_PARSE_EXCEPTION_FORMAT,\n                     UNABLE_TO_PARSE_EXCEPTION_PREFIX,\n                     ex.getMessage(), ex.getLineNumber(), ex.getColumnNumber());\n             throw new CheckstyleException(message, ex);\n         }\n         catch (final ParserConfigurationException | IOException | SAXException ex) {\n             throw new CheckstyleException(UNABLE_TO_PARSE_EXCEPTION_PREFIX, ex);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "036582d728d2e2bb37f360bb3a74f899f04d587d": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #4370: Add multi thread mode to checkstyle launcher\n",
+      "commitDate": 1499049797000,
+      "commitName": "036582d728d2e2bb37f360bb3a74f899f04d587d",
+      "commitAuthor": "Andrew Kuchev"
+    }
+  }
+}

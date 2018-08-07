@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "TransportClientBenchmark.java",
+  "functionName": "search",
+  "functionId": "search___source-String",
+  "sourceFilePath": "client/benchmark/src/main/java/org/elasticsearch/client/benchmark/transport/TransportClientBenchmark.java",
+  "functionStartLine": 109,
+  "functionEndLine": 123,
+  "changeHistory": [
+    "46e8d97813addd8c57fa54d2c700d26a171f2dbb",
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+    "c33f85bc37bbfee87158738f538d380c0cc31d13"
+  ],
+  "changeHistoryShort": {
+    "46e8d97813addd8c57fa54d2c700d26a171f2dbb": "Ybodychange",
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": "Ybodychange",
+    "c33f85bc37bbfee87158738f538d380c0cc31d13": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "46e8d97813addd8c57fa54d2c700d26a171f2dbb": {
+      "type": "Ybodychange",
+      "commitMessage": "Core: Remove RequestBuilder from Action (#30966)\n\nThis commit removes the RequestBuilder generic type from Action. It was\r\nneeded to be used by the newRequest method, which in turn was used by\r\nclient.prepareExecute. Both of these methods are now removed, along with\r\nthe existing users of prepareExecute constructing the appropriate\r\nbuilder directly.\r\n",
+      "commitDate": 1527776100000,
+      "commitName": "46e8d97813addd8c57fa54d2c700d26a171f2dbb",
+      "commitAuthor": "Ryan Ernst",
+      "commitDateOld": 1486133204000,
+      "commitNameOld": "9a0b216c36e3debb9d48374ced1e58d6568429bd",
+      "commitAuthorOld": "Jason Tedor",
+      "daysBetweenCommits": 481.98,
+      "commitsBetweenForRepo": 7778,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n         public boolean search(String source) {\n             final SearchResponse response;\n-            NoopSearchRequestBuilder builder \u003d NoopSearchAction.INSTANCE.newRequestBuilder(client);\n+            NoopSearchRequestBuilder builder \u003d new NoopSearchRequestBuilder(client, NoopSearchAction.INSTANCE);\n             try {\n                 builder.setIndices(indexName);\n                 builder.setQuery(QueryBuilders.wrapperQuery(source));\n                 response \u003d client.execute(NoopSearchAction.INSTANCE, builder.request()).get();\n                 return response.status() \u003d\u003d RestStatus.OK;\n             } catch (InterruptedException e) {\n                 Thread.currentThread().interrupt();\n                 return false;\n             } catch (ExecutionException e) {\n                 throw new ElasticsearchException(e);\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": {
+      "type": "Ybodychange",
+      "commitMessage": "Add client-benchmark-noop-api-plugin to stress clients even more in benchmarks (#20103)\n\n",
+      "commitDate": 1472195147000,
+      "commitName": "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+      "commitAuthor": "Daniel Mitterdorfer",
+      "commitDateOld": 1469523682000,
+      "commitNameOld": "c33f85bc37bbfee87158738f538d380c0cc31d13",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 30.92,
+      "commitsBetweenForRepo": 437,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,15 @@\n         public boolean search(String source) {\n             final SearchResponse response;\n+            NoopSearchRequestBuilder builder \u003d NoopSearchAction.INSTANCE.newRequestBuilder(client);\n             try {\n-                response \u003d client.prepareSearch(indexName).setQuery(QueryBuilders.wrapperQuery(source)).execute().get();\n+                builder.setIndices(indexName);\n+                builder.setQuery(QueryBuilders.wrapperQuery(source));\n+                response \u003d client.execute(NoopSearchAction.INSTANCE, builder.request()).get();\n                 return response.status() \u003d\u003d RestStatus.OK;\n             } catch (InterruptedException e) {\n                 Thread.currentThread().interrupt();\n                 return false;\n             } catch (ExecutionException e) {\n                 throw new ElasticsearchException(e);\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "c33f85bc37bbfee87158738f538d380c0cc31d13": {
+      "type": "Yintroduced",
+      "commitMessage": "Add client benchmark\n\nWith this commit we add a benchmark for the new REST client and the\nexisting transport client.\n\nCloses #19281\n",
+      "commitDate": 1469523682000,
+      "commitName": "c33f85bc37bbfee87158738f538d380c0cc31d13",
+      "commitAuthor": "Daniel Mitterdorfer"
+    }
+  }
+}

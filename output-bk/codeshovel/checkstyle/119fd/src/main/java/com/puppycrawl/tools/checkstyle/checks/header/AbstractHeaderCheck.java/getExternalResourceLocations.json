@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbstractHeaderCheck.java",
+  "functionName": "getExternalResourceLocations",
+  "functionId": "getExternalResourceLocations",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/header/AbstractHeaderCheck.java",
+  "functionStartLine": 199,
+  "functionEndLine": 210,
+  "changeHistory": [
+    "4cff2eb7149113cd7549e9c4db97a189bbd1f3f3",
+    "292ad0ebf2d18e1d8131127d60b3fde99aa0adf0",
+    "7f8309ba36bb3c47b146f2cacda89d7509fa47f8",
+    "ecbeaa6e1df7cb021745e111b04395b9fbd509c7"
+  ],
+  "changeHistoryShort": {
+    "4cff2eb7149113cd7549e9c4db97a189bbd1f3f3": "Ybodychange",
+    "292ad0ebf2d18e1d8131127d60b3fde99aa0adf0": "Ybodychange",
+    "7f8309ba36bb3c47b146f2cacda89d7509fa47f8": "Ybodychange",
+    "ecbeaa6e1df7cb021745e111b04395b9fbd509c7": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4cff2eb7149113cd7549e9c4db97a189bbd1f3f3": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3771: fixed in NPE in cache for HeaderCheck",
+      "commitDate": 1485633565000,
+      "commitName": "4cff2eb7149113cd7549e9c4db97a189bbd1f3f3",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.23,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,12 @@\n     public Set\u003cString\u003e getExternalResourceLocations() {\n-        return Collections.singleton(headerFile.toString());\n+        final Set\u003cString\u003e result;\n+\n+        if (headerFile \u003d\u003d null) {\n+            result \u003d Collections.emptySet();\n+        }\n+        else {\n+            result \u003d Collections.singleton(headerFile.toString());\n+        }\n+\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "292ad0ebf2d18e1d8131127d60b3fde99aa0adf0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3575: changed module setters for uri",
+      "commitDate": 1480971647000,
+      "commitName": "292ad0ebf2d18e1d8131127d60b3fde99aa0adf0",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1474982938000,
+      "commitNameOld": "7f8309ba36bb3c47b146f2cacda89d7509fa47f8",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 69.31,
+      "commitsBetweenForRepo": 114,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n     public Set\u003cString\u003e getExternalResourceLocations() {\n-        return Collections.singleton(headerFile);\n+        return Collections.singleton(headerFile.toString());\n     }\n\\ No newline at end of file\n"
+    },
+    "7f8309ba36bb3c47b146f2cacda89d7509fa47f8": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3433: Cut down on Checkstyle\u0027s dependencies on Guava (part 4, collections) (#3461)\n\n",
+      "commitDate": 1474982938000,
+      "commitName": "7f8309ba36bb3c47b146f2cacda89d7509fa47f8",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1474426326000,
+      "commitNameOld": "fbf3f95c2273be23b966cba6e6ef89390a6fb020",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 6.44,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n     public Set\u003cString\u003e getExternalResourceLocations() {\n-        return ImmutableSet.of(headerFile);\n+        return Collections.singleton(headerFile);\n     }\n\\ No newline at end of file\n"
+    },
+    "ecbeaa6e1df7cb021745e111b04395b9fbd509c7": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #407: Fix cache usage in presence of modules which use external resources for configuration (#3092)",
+      "commitDate": 1463431992000,
+      "commitName": "ecbeaa6e1df7cb021745e111b04395b9fbd509c7",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

@@ -1,0 +1,215 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index 95ed5b28d..7183e8df3 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -192,100 +192,107 @@ public class SuppressionCommentFilter
+             final Tag other = (Tag) aObject;
+             if (mLine == other.mLine) {
+                 return mColumn - other.mColumn;
+             }
+ 
+             return (mLine - other.mLine);
+         }
+ 
+         /**
+          * Determines whether the source of an audit event
+          * matches the text of this tag.
+          * @param aEvent the <code>AuditEvent</code> to check.
+          * @return true if the source of aEvent matches the text of this tag.
+          */
+         public boolean isMatch(AuditEvent aEvent)
+         {
+             if (mTagCheckRegexp.match(aEvent.getSourceName())) {
+                 return true;
+             }
+             if (mTagMessageRegexp != null) {
+                 return mTagMessageRegexp.match(aEvent.getMessage());
+             }
+             return false;
+         }
+ 
+         /**
+          * Expand based on a matching comment.
+          * @param aComment the comment.
+          * @param aString the string to expand.
+          * @param aRegexp the parsed expander.
+          * @return the expanded string
+          */
+         private String expandFromComment(
+             String aComment,
+             String aString,
+             RE aRegexp)
+         {
+             // Match primarily for effect.
+             if (!aRegexp.match(aComment)) {
+                 ///CLOVER:OFF
+                 return aString;
+                 ///CLOVER:ON
+             }
+             String result = aString;
+             for (int i = 1; i < aRegexp.getParenCount(); i++) {
+                 // $n expands comment match like in RE.subst().
+                 result = result.replaceAll("\\$" + i, aRegexp.getParen(i));
+             }
+             return result;
+         }
++
++        /** {@inheritDoc} */
++        public final String toString()
++        {
++            return "Tag[line=" + getLine() + "; col=" + getColumn()
++                + "; on=" + isOn() + "; text='" + getText() + "']";
++        }
+     }
+ 
+     /** Turns checkstyle reporting off. */
+     private static final String DEFAULT_OFF_FORMAT = "CHECKSTYLE\\:OFF";
+ 
+     /** Turns checkstyle reporting on. */
+     private static final String DEFAULT_ON_FORMAT = "CHECKSTYLE\\:ON";
+ 
+     /** Control all checks */
+     private static final String DEFAULT_CHECK_FORMAT = ".*";
+ 
+     /** Whether to look in comments of the C type. */
+     private boolean mCheckC = true;
+ 
+     /** Whether to look in comments of the C++ type. */
+     private boolean mCheckCPP = true;
+ 
+     /** Parsed comment regexp that turns checkstyle reporting off. */
+     private RE mOffRegexp;
+ 
+     /** Parsed comment regexp that turns checkstyle reporting on. */
+     private RE mOnRegexp;
+ 
+     /** The check format to suppress. */
+     private String mCheckFormat;
+ 
+     /** The parsed check regexp. */
+     private RE mCheckRegexp;
+ 
+     /** The message format to suppress. */
+     private String mMessageFormat;
+ 
+     //TODO: Investigate performance improvement with array
+     /** Tagged comments */
+     private List mTags = new ArrayList();
+ 
+     /**
+      * References the current FileContents for this filter.
+      * Since this is a weak reference to the FileContents, the FileContents
+      * can be reclaimed as soon as the strong references in TreeWalker
+      * and FileContentsHolder are reassigned to the next FileContents,
+      * at which time filtering for the current FileContents is finished.
+      */
+     private WeakReference mFileContentsReference = new WeakReference(null);
+ 
+     /**
+      * Constructs a SuppressionCommentFilter.
+      * Initializes comment on, comment off, and check formats
+      * to defaults.
+      */
+@@ -385,101 +392,101 @@ public class SuppressionCommentFilter
+      */
+     public void setCheckCPP(boolean aCheckCPP)
+     {
+         mCheckCPP = aCheckCPP;
+     }
+ 
+     /**
+      * Set whether to look in C comments.
+      * @param aCheckC <code>true</code> if C comments are checked.
+      */
+     public void setCheckC(boolean aCheckC)
+     {
+         mCheckC = aCheckC;
+     }
+ 
+     /** @see Filter */
+     public boolean accept(AuditEvent aEvent)
+     {
+         if (aEvent.getLocalizedMessage() == null) {
+             return true;        // A special event.
+         }
+ 
+         // Lazy update. If the first event for the current file, update file
+         // contents and tag suppressions
+         final FileContents currentContents = FileContentsHolder.getContents();
+         if (getFileContents() != currentContents) {
+             setFileContents(currentContents);
+             tagSuppressions();
+         }
+         final Tag matchTag = findNearestMatch(aEvent);
+         if ((matchTag != null) && !matchTag.isOn()) {
+             return false;
+         }
+         return true;
+     }
+ 
+     /**
+      * Finds the nearest comment text tag that matches an audit event.
+      * The nearest tag is before the line and column of the event.
+      * @param aEvent the <code>AuditEvent</code> to match.
+      * @return The <code>Tag</code> nearest aEvent.
+      */
+     private Tag findNearestMatch(AuditEvent aEvent)
+     {
+         Tag result = null;
+         // TODO: try binary search if sequential search becomes a performance
+         // problem.
+         for (Iterator iter = mTags.iterator(); iter.hasNext();) {
+             final Tag tag = (Tag) iter.next();
+             if ((tag.getLine() > aEvent.getLine())
+-                || ((tag.getLine() == tag.getLine())
++                || ((tag.getLine() == aEvent.getLine())
+                     && (tag.getColumn() > aEvent.getColumn())))
+             {
+                 break;
+             }
+             if (tag.isMatch(aEvent)) {
+                 result = tag;
+             }
+         };
+         return result;
+     }
+ 
+     /**
+      * Collects all the suppression tags for all comments into a list and
+      * sorts the list.
+      */
+     private void tagSuppressions()
+     {
+         mTags.clear();
+         final FileContents contents = getFileContents();
+         if (mCheckCPP) {
+             tagSuppressions(contents.getCppComments().values());
+         }
+         if (mCheckC) {
+             final Collection cComments = contents.getCComments().values();
+             final Iterator iter = cComments.iterator();
+             while (iter.hasNext()) {
+                 final Collection element = (Collection) iter.next();
+                 tagSuppressions(element);
+             }
+         }
+         Collections.sort(mTags);
+     }
+ 
+     /**
+      * Appends the suppressions in a collection of comments to the full
+      * set of suppression tags.
+      * @param aComments the set of comments.
+      */
+     private void tagSuppressions(Collection aComments)
+     {
+         for (Iterator iter = aComments.iterator(); iter.hasNext();) {
+             final TextBlock comment = (TextBlock) iter.next();
+             final int startLineNo = comment.getStartLineNo();
+             final String[] text = comment.getText();
+             tagCommentLine(text[0], startLineNo, comment.getStartColNo());
+             for (int i = 1; i < text.length; i++) {
+                 tagCommentLine(text[i], startLineNo + i, 0);
+             }
+         }
+     }

@@ -1,0 +1,117 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index ca205f53c..83aeff26f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -337,106 +337,106 @@ public class JavadocStyleCheck
+      * @param ast the node with the Javadoc
+      * @param comment the {@code TextBlock} which represents
+      *                 the Javadoc comment.
+      */
+     private void checkHtmlTags(final DetailAST ast, final TextBlock comment) {
+         final int lineNo = comment.getStartLineNo();
+         final Deque<HtmlTag> htmlStack = new ArrayDeque<>();
+         final String[] text = comment.getText();
+ 
+         final TagParser parser = new TagParser(text, lineNo);
+ 
+         while (parser.hasNextTag()) {
+             final HtmlTag tag = parser.nextTag();
+ 
+             if (tag.isIncompleteTag()) {
+                 log(tag.getLineNo(), INCOMPLETE_TAG,
+                     text[tag.getLineNo() - lineNo]);
+                 return;
+             }
+             if (tag.isClosedTag()) {
+                 //do nothing
+                 continue;
+             }
+             if (tag.isCloseTag()) {
+                 // We have found a close tag.
+                 if (isExtraHtml(tag.getId(), htmlStack)) {
+                     // No corresponding open tag was found on the stack.
+                     log(tag.getLineNo(),
+                         tag.getPosition(),
+                         EXTRA_HTML,
+                         tag);
+                 }
+                 else {
+                     // See if there are any unclosed tags that were opened
+                     // after this one.
+                     checkUnclosedTags(htmlStack, tag.getId());
+                 }
+             }
+             else {
+                 //We only push html tags that are allowed
+                 if (isAllowedTag(tag)) {
+                     htmlStack.push(tag);
+                 }
+             }
+         }
+ 
+         // Identify any tags left on the stack.
+         // Skip multiples, like <b>...<b>
+         String lastFound = "";
+         final List<String> typeParameters = CheckUtils.getTypeParameterNames(ast);
+-        for (final HtmlTag htag : htmlStack) {
+-            if (!isSingleTag(htag)
+-                && !htag.getId().equals(lastFound)
+-                && !typeParameters.contains(htag.getId())) {
+-                log(htag.getLineNo(), htag.getPosition(), UNCLOSED_HTML, htag);
+-                lastFound = htag.getId();
++        for (final HtmlTag htmlTag : htmlStack) {
++            if (!isSingleTag(htmlTag)
++                && !htmlTag.getId().equals(lastFound)
++                && !typeParameters.contains(htmlTag.getId())) {
++                log(htmlTag.getLineNo(), htmlTag.getPosition(), UNCLOSED_HTML, htmlTag);
++                lastFound = htmlTag.getId();
+             }
+         }
+     }
+ 
+     /**
+      * Checks to see if there are any unclosed tags on the stack.  The token
+      * represents a html tag that has been closed and has a corresponding open
+      * tag on the stack.  Any tags, except single tags, that were opened
+      * (pushed on the stack) after the token are missing a close.
+      *
+      * @param htmlStack the stack of opened HTML tags.
+      * @param token the current HTML tag name that has been closed.
+      */
+     private void checkUnclosedTags(Deque<HtmlTag> htmlStack, String token) {
+         final Deque<HtmlTag> unclosedTags = new ArrayDeque<>();
+         HtmlTag lastOpenTag = htmlStack.pop();
+         while (!token.equalsIgnoreCase(lastOpenTag.getId())) {
+             // Find unclosed elements. Put them on a stack so the
+             // output order won't be back-to-front.
+             if (isSingleTag(lastOpenTag)) {
+                 lastOpenTag = htmlStack.pop();
+             }
+             else {
+                 unclosedTags.push(lastOpenTag);
+                 lastOpenTag = htmlStack.pop();
+             }
+         }
+ 
+         // Output the unterminated tags, if any
+         // Skip multiples, like <b>..<b>
+         String lastFound = "";
+         for (final HtmlTag htag : unclosedTags) {
+             lastOpenTag = htag;
+             if (lastOpenTag.getId().equals(lastFound)) {
+                 continue;
+             }
+             lastFound = lastOpenTag.getId();
+             log(lastOpenTag.getLineNo(),
+                 lastOpenTag.getPosition(),
+                 UNCLOSED_HTML,
+                 lastOpenTag);
+         }
+     }
+ 
+     /**
+      * Determines if the HtmlTag is one which does not require a close tag.
+      *
+      * @param tag the HtmlTag to check.
+      * @return {@code true} if the HtmlTag is a single tag.
+      */

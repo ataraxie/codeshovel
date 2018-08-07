@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "TreeTable.java",
+  "functionName": "isCellEditable",
+  "functionId": "isCellEditable___event-EventObject",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/gui/TreeTable.java",
+  "functionStartLine": 280,
+  "functionEndLine": 298,
+  "changeHistory": [
+    "f94694c2231e5c1025b76bcfe0337304a76ec94a",
+    "6e8d1e06728b7defbd734253b3818a33676b62bc",
+    "af4ecbf9b557808a05c7b84820b4ffd28990ee33",
+    "5f5142b2325051f9ed31130167c73d154d547211",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "d3433c91e0a791b0d1f44bf1975e930e15ed74b8"
+  ],
+  "changeHistoryShort": {
+    "f94694c2231e5c1025b76bcfe0337304a76ec94a": "Ybodychange",
+    "6e8d1e06728b7defbd734253b3818a33676b62bc": "Yfilerename",
+    "af4ecbf9b557808a05c7b84820b4ffd28990ee33": "Ybodychange",
+    "5f5142b2325051f9ed31130167c73d154d547211": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "d3433c91e0a791b0d1f44bf1975e930e15ed74b8": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "f94694c2231e5c1025b76bcfe0337304a76ec94a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5613: Replace InputEvent#getModifiers with getModifiersEx\n",
+      "commitDate": 1521258999000,
+      "commitName": "f94694c2231e5c1025b76bcfe0337304a76ec94a",
+      "commitAuthor": "Pavel Bludov",
+      "commitDateOld": 1515294147000,
+      "commitNameOld": "dbcdd1231cf705bdb20e8296d53b52186eb8baed",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 69.04,
+      "commitsBetweenForRepo": 117,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n         public boolean isCellEditable(EventObject event) {\n             if (event instanceof MouseEvent) {\n                 for (int counter \u003d getColumnCount() - 1; counter \u003e\u003d 0;\n                      counter--) {\n                     if (getColumnClass(counter) \u003d\u003d ParseTreeTableModel.class) {\n                         final MouseEvent mouseEvent \u003d (MouseEvent) event;\n                         final MouseEvent newMouseEvent \u003d new MouseEvent(tree, mouseEvent.getID(),\n-                                mouseEvent.getWhen(), mouseEvent.getModifiers(),\n+                                mouseEvent.getWhen(), mouseEvent.getModifiersEx(),\n                                 mouseEvent.getX() - getCellRect(0, counter, true).x,\n                                 mouseEvent.getY(), mouseEvent.getClickCount(),\n                                 mouseEvent.isPopupTrigger());\n                         tree.dispatchEvent(newMouseEvent);\n                         break;\n                     }\n                 }\n             }\n \n             return false;\n         }\n\\ No newline at end of file\n"
+    },
+    "6e8d1e06728b7defbd734253b3818a33676b62bc": {
+      "type": "Yfilerename",
+      "commitMessage": "Issue #3721: enforced no abbreviations in checkstyle",
+      "commitDate": 1487369078000,
+      "commitName": "6e8d1e06728b7defbd734253b3818a33676b62bc",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1487369078000,
+      "commitNameOld": "a103ccf92ba26a1b7bfb4296f9d9ce85ca6dea79",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "af4ecbf9b557808a05c7b84820b4ffd28990ee33": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2609: Drop abstract class and interface in gui package\n",
+      "commitDate": 1449581945000,
+      "commitName": "af4ecbf9b557808a05c7b84820b4ffd28990ee33",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1445806205000,
+      "commitNameOld": "66ed32ae55811c22434e7296566915759e921305",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 43.7,
+      "commitsBetweenForRepo": 209,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n         public boolean isCellEditable(EventObject event) {\n             if (event instanceof MouseEvent) {\n                 for (int counter \u003d getColumnCount() - 1; counter \u003e\u003d 0;\n                      counter--) {\n-                    if (getColumnClass(counter) \u003d\u003d TreeTableModel.class) {\n+                    if (getColumnClass(counter) \u003d\u003d ParseTreeTableModel.class) {\n                         final MouseEvent mouseEvent \u003d (MouseEvent) event;\n                         final MouseEvent newMouseEvent \u003d new MouseEvent(tree, mouseEvent.getID(),\n                                 mouseEvent.getWhen(), mouseEvent.getModifiers(),\n                                 mouseEvent.getX() - getCellRect(0, counter, true).x,\n                                 mouseEvent.getY(), mouseEvent.getClickCount(),\n                                 mouseEvent.isPopupTrigger());\n                         tree.dispatchEvent(newMouseEvent);\n                         break;\n                     }\n                 }\n             }\n \n             return false;\n         }\n\\ No newline at end of file\n"
+    },
+    "5f5142b2325051f9ed31130167c73d154d547211": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #985: Fix PMD violations for ShortVariable rule\n",
+      "commitDate": 1444185186000,
+      "commitName": "5f5142b2325051f9ed31130167c73d154d547211",
+      "commitAuthor": "Roman Ivanov",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1152242806000,
+      "commitNameOld": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n         public boolean isCellEditable(EventObject e)\n         {\n             if (e instanceof MouseEvent) {\n                 for (int counter \u003d getColumnCount() - 1; counter \u003e\u003d 0;\n                      counter--) {\n                     if (getColumnClass(counter) \u003d\u003d TreeTableModel.class) {\n-                        MouseEvent me \u003d (MouseEvent) e;\n-                        MouseEvent newME \u003d new MouseEvent(tree, me.getID(),\n+                        final MouseEvent me \u003d (MouseEvent) e;\n+                        final MouseEvent newME \u003d new MouseEvent(tree, me.getID(),\n                                 me.getWhen(), me.getModifiers(),\n                                 me.getX() - getCellRect(0, counter, true).x,\n                                 me.getY(), me.getClickCount(),\n                                 me.isPopupTrigger());\n                         tree.dispatchEvent(newME);\n                         break;\n                     }\n                 }\n             }\n \n             return false;\n         }\n\\ No newline at end of file\n"
+    },
+    "d3433c91e0a791b0d1f44bf1975e930e15ed74b8": {
+      "type": "Yintroduced",
+      "commitMessage": "Added initial GUI.\n\nOliver, please check that the file headers do not\nlead to license problems with Sun - maybe we need to remove\nour own header and exclude the gui package from the run.checkstyle\ntarget?\n",
+      "commitDate": 1034813584000,
+      "commitName": "d3433c91e0a791b0d1f44bf1975e930e15ed74b8",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

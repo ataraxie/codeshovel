@@ -1,0 +1,111 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java
+index aa9eb9523..33479fe06 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java
+@@ -50,100 +50,106 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  *  <code>
+  *    String nullString = null;
+  *    &quot;My_Sweet_String&quot;.equals(nullString);
+  *  </code>
+  * </pre>
+  *
+  *
+  * <p>
+  * Limitations: If the equals method is overridden or
+  * a covariant equals method is defined and the implementation
+  * is incorrect (where s.equals(t) does not return the same result
+  * as t.equals(s)) then rearranging the called on object and
+  * parameter may have unexpected results
+  *
+  * <br>
+  *
+  * Java's Autoboxing feature has an affect
+  * on how this check is implemented. Pre Java 5 all IDENT + IDENT
+  * object concatenations would not cause a NullPointerException even
+  * if null.  Those situations could have been included in this check.
+  * They would simply act as if they surrounded by String.valueOf()
+  * which would concatenate the String null.
+  *
+  * <p>
+  * The following example will cause a
+  * NullPointerException as a result of what autoboxing does.
+  * <pre>
+  * Integer i = null, j = null;
+  * String number = "5"
+  * number.equals(i + j);
+  * </pre>
+  *
+  *
+  * Since, it is difficult to determine what kind of Object is being
+  * concatenated all ident concatenation is considered unsafe.
+  *
+  * @author Travis Schneeberger
+  * version 1.0
+  */
+ public class EqualsAvoidNullCheck extends Check
+ {
+     /** Whether to process equalsIgnoreCase() invocations. */
+     private boolean ignoreEqualsIgnoreCase;
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.METHOD_CALL};
+     }
+ 
++    @Override
++    public int[] getAcceptableTokens()
++    {
++        return new int[] {TokenTypes.METHOD_CALL};
++    }
++
+     @Override
+     public void visitToken(final DetailAST methodCall)
+     {
+         final DetailAST dot = methodCall.getFirstChild();
+         if (dot.getType() != TokenTypes.DOT) {
+             return;
+         }
+ 
+         final DetailAST objCalledOn = dot.getFirstChild();
+ 
+         //checks for calling equals on String literal and
+         //anon object which cannot be null
+         //Also, checks if calling using strange inner class
+         //syntax outter.inner.equals(otherObj) by looking
+         //for the dot operator which cannot be improved
+         if ((objCalledOn.getType() == TokenTypes.STRING_LITERAL)
+                 || (objCalledOn.getType() == TokenTypes.LITERAL_NEW)
+                 || (objCalledOn.getType() == TokenTypes.DOT))
+         {
+             return;
+         }
+ 
+         final DetailAST method = objCalledOn.getNextSibling();
+         final DetailAST expr = dot.getNextSibling().getFirstChild();
+ 
+         if ("equals".equals(method.getText())
+             && containsOneArg(expr) && containsAllSafeTokens(expr))
+         {
+             log(methodCall.getLineNo(), methodCall.getColumnNo(),
+                 "equals.avoid.null");
+         }
+ 
+         if (!ignoreEqualsIgnoreCase
+             && "equalsIgnoreCase".equals(method.getText())
+             && containsOneArg(expr) && containsAllSafeTokens(expr))
+         {
+             log(methodCall.getLineNo(), methodCall.getColumnNo(),
+                 "equalsIgnoreCase.avoid.null");
+         }
+     }
+ 
+     /**
+      * Checks if a method contains no arguments
+      * starting at with the argument expression.
+      *
+      * @param expr the argument expression
+      * @return true if the method contains no args, false if not
+      */
+     private boolean containsNoArgs(final AST expr)
+     {

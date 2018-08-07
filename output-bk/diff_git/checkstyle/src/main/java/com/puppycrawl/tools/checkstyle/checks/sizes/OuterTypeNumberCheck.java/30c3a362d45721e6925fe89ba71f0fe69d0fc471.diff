@@ -1,0 +1,64 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/OuterTypeNumberCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/OuterTypeNumberCheck.java
+index 7c5473fca..552990f0d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/OuterTypeNumberCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/OuterTypeNumberCheck.java
+@@ -39,56 +39,56 @@ public class OuterTypeNumberCheck extends Check {
+     private int max = 1;
+     /** Tracks the current depth in types. */
+     private int currentDepth;
+     /** Tracks the number of outer types found. */
+     private int outerNum;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.CLASS_DEF, TokenTypes.INTERFACE_DEF,
+             TokenTypes.ENUM_DEF, TokenTypes.ANNOTATION_DEF, };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void beginTree(DetailAST ast) {
+         currentDepth = 0;
+         outerNum = 0;
+     }
+ 
+     @Override
+     public void finishTree(DetailAST ast) {
+         if (max < outerNum) {
+             log(ast, MSG_KEY, outerNum, max);
+         }
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (currentDepth == 0) {
+             outerNum++;
+         }
+         currentDepth++;
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         currentDepth--;
+     }
+ 
+     /**
+      * Sets the maximum allowed number of outer types.
+-     * @param to the new number.
++     * @param max the new number.
+      */
+-    public void setMax(int to) {
+-        max = to;
++    public void setMax(int max) {
++        this.max = max;
+     }
+ }

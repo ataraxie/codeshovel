@@ -1,0 +1,210 @@
+diff --git a/android/guava/src/com/google/common/collect/LinkedHashMultimap.java b/android/guava/src/com/google/common/collect/LinkedHashMultimap.java
+index d422f993c..4dd6f0e1e 100644
+--- a/android/guava/src/com/google/common/collect/LinkedHashMultimap.java
++++ b/android/guava/src/com/google/common/collect/LinkedHashMultimap.java
+@@ -319,101 +319,101 @@ public final class LinkedHashMultimap<K, V>
+     private final K key;
+     @VisibleForTesting ValueEntry<K, V>[] hashTable;
+     private int size = 0;
+     private int modCount = 0;
+ 
+     // We use the set object itself as the end of the linked list, avoiding an unnecessary
+     // entry object per key.
+     private ValueSetLink<K, V> firstEntry;
+     private ValueSetLink<K, V> lastEntry;
+ 
+     ValueSet(K key, int expectedValues) {
+       this.key = key;
+       this.firstEntry = this;
+       this.lastEntry = this;
+       // Round expected values up to a power of 2 to get the table size.
+       int tableSize = Hashing.closedTableSize(expectedValues, VALUE_SET_LOAD_FACTOR);
+ 
+       @SuppressWarnings("unchecked")
+       ValueEntry<K, V>[] hashTable = new ValueEntry[tableSize];
+       this.hashTable = hashTable;
+     }
+ 
+     private int mask() {
+       return hashTable.length - 1;
+     }
+ 
+     @Override
+     public ValueSetLink<K, V> getPredecessorInValueSet() {
+       return lastEntry;
+     }
+ 
+     @Override
+     public ValueSetLink<K, V> getSuccessorInValueSet() {
+       return firstEntry;
+     }
+ 
+     @Override
+     public void setPredecessorInValueSet(ValueSetLink<K, V> entry) {
+       lastEntry = entry;
+     }
+ 
+     @Override
+     public void setSuccessorInValueSet(ValueSetLink<K, V> entry) {
+       firstEntry = entry;
+     }
+ 
+     @Override
+     public Iterator<V> iterator() {
+       return new Iterator<V>() {
+         ValueSetLink<K, V> nextEntry = firstEntry;
+-        ValueEntry<K, V> toRemove;
++        @NullableDecl ValueEntry<K, V> toRemove;
+         int expectedModCount = modCount;
+ 
+         private void checkForComodification() {
+           if (modCount != expectedModCount) {
+             throw new ConcurrentModificationException();
+           }
+         }
+ 
+         @Override
+         public boolean hasNext() {
+           checkForComodification();
+           return nextEntry != ValueSet.this;
+         }
+ 
+         @Override
+         public V next() {
+           if (!hasNext()) {
+             throw new NoSuchElementException();
+           }
+           ValueEntry<K, V> entry = (ValueEntry<K, V>) nextEntry;
+           V result = entry.getValue();
+           toRemove = entry;
+           nextEntry = entry.getSuccessorInValueSet();
+           return result;
+         }
+ 
+         @Override
+         public void remove() {
+           checkForComodification();
+           checkRemove(toRemove != null);
+           ValueSet.this.remove(toRemove.getValue());
+           expectedModCount = modCount;
+           toRemove = null;
+         }
+       };
+     }
+ 
+     @Override
+     public int size() {
+       return size;
+     }
+ 
+     @Override
+     public boolean contains(@NullableDecl Object o) {
+       int smearedHash = Hashing.smearedHash(o);
+       for (ValueEntry<K, V> entry = hashTable[smearedHash & mask()];
+           entry != null;
+           entry = entry.nextInValueBucket) {
+         if (entry.matchesValue(o, smearedHash)) {
+           return true;
+@@ -460,101 +460,101 @@ public final class LinkedHashMultimap<K, V>
+           hashTable[bucket] = valueEntry;
+         }
+       }
+     }
+ 
+     @CanIgnoreReturnValue
+     @Override
+     public boolean remove(@NullableDecl Object o) {
+       int smearedHash = Hashing.smearedHash(o);
+       int bucket = smearedHash & mask();
+       ValueEntry<K, V> prev = null;
+       for (ValueEntry<K, V> entry = hashTable[bucket];
+           entry != null;
+           prev = entry, entry = entry.nextInValueBucket) {
+         if (entry.matchesValue(o, smearedHash)) {
+           if (prev == null) {
+             // first entry in the bucket
+             hashTable[bucket] = entry.nextInValueBucket;
+           } else {
+             prev.nextInValueBucket = entry.nextInValueBucket;
+           }
+           deleteFromValueSet(entry);
+           deleteFromMultimap(entry);
+           size--;
+           modCount++;
+           return true;
+         }
+       }
+       return false;
+     }
+ 
+     @Override
+     public void clear() {
+       Arrays.fill(hashTable, null);
+       size = 0;
+       for (ValueSetLink<K, V> entry = firstEntry;
+           entry != this;
+           entry = entry.getSuccessorInValueSet()) {
+         ValueEntry<K, V> valueEntry = (ValueEntry<K, V>) entry;
+         deleteFromMultimap(valueEntry);
+       }
+       succeedsInValueSet(this, this);
+       modCount++;
+     }
+   }
+ 
+   @Override
+   Iterator<Entry<K, V>> entryIterator() {
+     return new Iterator<Entry<K, V>>() {
+       ValueEntry<K, V> nextEntry = multimapHeaderEntry.successorInMultimap;
+-      ValueEntry<K, V> toRemove;
++      @NullableDecl ValueEntry<K, V> toRemove;
+ 
+       @Override
+       public boolean hasNext() {
+         return nextEntry != multimapHeaderEntry;
+       }
+ 
+       @Override
+       public Entry<K, V> next() {
+         if (!hasNext()) {
+           throw new NoSuchElementException();
+         }
+         ValueEntry<K, V> result = nextEntry;
+         toRemove = result;
+         nextEntry = nextEntry.successorInMultimap;
+         return result;
+       }
+ 
+       @Override
+       public void remove() {
+         checkRemove(toRemove != null);
+         LinkedHashMultimap.this.remove(toRemove.getKey(), toRemove.getValue());
+         toRemove = null;
+       }
+     };
+   }
+ 
+   @Override
+   Iterator<V> valueIterator() {
+     return Maps.valueIterator(entryIterator());
+   }
+ 
+   @Override
+   public void clear() {
+     super.clear();
+     succeedsInMultimap(multimapHeaderEntry, multimapHeaderEntry);
+   }
+ 
+   /**
+    * @serialData the expected values per key, the number of distinct keys, the number of entries,
+    *     and the entries in order
+    */
+   @GwtIncompatible // java.io.ObjectOutputStream
+   private void writeObject(ObjectOutputStream stream) throws IOException {
+     stream.defaultWriteObject();
+     stream.writeInt(keySet().size());
+     for (K key : keySet()) {
+       stream.writeObject(key);
+     }
+     stream.writeInt(size());
+     for (Entry<K, V> entry : entries()) {

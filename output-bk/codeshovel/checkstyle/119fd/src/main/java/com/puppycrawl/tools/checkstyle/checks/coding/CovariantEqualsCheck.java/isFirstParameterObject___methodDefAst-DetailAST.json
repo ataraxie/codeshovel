@@ -1,0 +1,103 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CovariantEqualsCheck.java",
+  "functionName": "isFirstParameterObject",
+  "functionId": "isFirstParameterObject___methodDefAst-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/CovariantEqualsCheck.java",
+  "functionStartLine": 113,
+  "functionEndLine": 123,
+  "changeHistory": [
+    "f7309c44049963f36cd332c369cc267244aaaf63",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "79404974eff1458f4243f8acd6a08b6a8b869342",
+    "71d92d649fabf6cc0a88e9bba1dab411f7fe339a"
+  ],
+  "changeHistoryShort": {
+    "f7309c44049963f36cd332c369cc267244aaaf63": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Ybodychange)",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "79404974eff1458f4243f8acd6a08b6a8b869342": "Ybodychange",
+    "71d92d649fabf6cc0a88e9bba1dab411f7fe339a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "f7309c44049963f36cd332c369cc267244aaaf63": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Issue #1293: Refactorgin of CovariantEqualsCheck\n",
+      "commitDate": 1436942781000,
+      "commitName": "f7309c44049963f36cd332c369cc267244aaaf63",
+      "commitAuthor": "Baratali Izmailov",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425602876000,
+      "commitNameOld": "f7828693395f71a6ae99710f3fab44cb8a66ea51",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 4.87,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     private boolean hasObjectParameter(DetailAST ast)\n     {\n         // one parameter?\n         final DetailAST paramsNode \u003d ast.findFirstToken(TokenTypes.PARAMETERS);\n         if (paramsNode.getChildCount() !\u003d 1) {\n             return false;\n         }\n \n         // parameter type \"Object\"?\n         final DetailAST paramNode \u003d\n             paramsNode.findFirstToken(TokenTypes.PARAMETER_DEF);\n         final DetailAST typeNode \u003d paramNode.findFirstToken(TokenTypes.TYPE);\n         final FullIdent fullIdent \u003d FullIdent.createFullIdentBelow(typeNode);\n         final String name \u003d fullIdent.getText();\n-        return (\"Object\".equals(name) || \"java.lang.Object\".equals(name));\n+        return \"Object\".equals(name) || \"java.lang.Object\".equals(name);\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "79404974eff1458f4243f8acd6a08b6a8b869342": {
+      "type": "Ybodychange",
+      "commitMessage": "Integrate patch #1895152, for Avoid Null Equals Comparison Check\n",
+      "commitDate": 1207482515000,
+      "commitName": "79404974eff1458f4243f8acd6a08b6a8b869342",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200296548000,
+      "commitNameOld": "fd90bd5aa5cd623b08a2e44ef05e8fac8045d333",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 83.17,
+      "commitsBetweenForRepo": 22,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     private boolean hasObjectParameter(DetailAST aAST)\n     {\n         // one parameter?\n         final DetailAST paramsNode \u003d aAST.findFirstToken(TokenTypes.PARAMETERS);\n         if (paramsNode.getChildCount() !\u003d 1) {\n             return false;\n         }\n \n         // parameter type \"Object\"?\n         final DetailAST paramNode \u003d\n             paramsNode.findFirstToken(TokenTypes.PARAMETER_DEF);\n         final DetailAST typeNode \u003d paramNode.findFirstToken(TokenTypes.TYPE);\n         final FullIdent fullIdent \u003d FullIdent.createFullIdentBelow(typeNode);\n         final String name \u003d fullIdent.getText();\n-        return (name.equals(\"Object\") || name.equals(\"java.lang.Object\"));\n+        return (\"Object\".equals(name) || \"java.lang.Object\".equals(name));\n     }\n\\ No newline at end of file\n"
+    },
+    "71d92d649fabf6cc0a88e9bba1dab411f7fe339a": {
+      "type": "Yintroduced",
+      "commitMessage": "check that a class that defines a covariant equals method also overrides\nequals(java.lang.Object)\n",
+      "commitDate": 1056644386000,
+      "commitName": "71d92d649fabf6cc0a88e9bba1dab411f7fe339a",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

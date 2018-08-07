@@ -1,0 +1,91 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/CSVFilter.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/CSVFilter.java
+index 1f6e139f6..cba02465d 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/CSVFilter.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/CSVFilter.java
+@@ -41,85 +41,85 @@ class CSVFilter implements IntFilter
+      */
+     public void addFilter(IntFilter aFilter)
+     {
+         mFilters.add(aFilter);
+     }
+ 
+     /**
+      * Returns the IntFilters of the filter set.
+      * @return the IntFilters of the filter set.
+      */
+     protected Set<IntFilter> getFilters()
+     {
+         return mFilters;
+     }
+ 
+     /**
+      * Constructs a <code>CSVFilter</code> from a CSV, Comma-Separated Values,
+      * string. Each value is an integer, or a range of integers. A range of
+      * integers is of the form integer-integer, such as 1-10.
+      * Note: integers must be non-negative.
+      * @param aPattern the CSV string.
+      * @throws NumberFormatException if a component substring does not
+      * contain a parsable integer.
+      */
+     public CSVFilter(String aPattern)
+         throws NumberFormatException
+     {
+         final StringTokenizer tokenizer = new StringTokenizer(aPattern, ",");
+         while (tokenizer.hasMoreTokens()) {
+             final String token = tokenizer.nextToken().trim();
+             final int index = token.indexOf("-");
+             if (index == -1) {
+                 final int matchValue = Integer.parseInt(token);
+                 addFilter(new IntMatchFilter(matchValue));
+             }
+             else {
+                 final int lowerBound =
+                     Integer.parseInt(token.substring(0, index));
+                 final int upperBound =
+                     Integer.parseInt(token.substring(index + 1));
+                 addFilter(new IntRangeFilter(lowerBound, upperBound));
+             }
+         }
+     }
+ 
+     /**
+      * Determines whether an Integer matches a CSV integer value.
+      * @param aInt the Integer to check.
+      * @return true if aInt is an Integer that matches a CSV value.
+      */
+-    public boolean accept(Integer aInt)
++    public boolean accept(int aInt)
+     {
+         for (IntFilter filter : getFilters()) {
+             if (filter.accept(aInt)) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public String toString()
+     {
+         return mFilters.toString();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int hashCode()
+     {
+         return mFilters.hashCode();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public boolean equals(Object aObject)
+     {
+         if (aObject instanceof CSVFilter) {
+             final CSVFilter other = (CSVFilter) aObject;
+             return this.mFilters.equals(other.mFilters);
+         }
+         return false;
+     }
+ }

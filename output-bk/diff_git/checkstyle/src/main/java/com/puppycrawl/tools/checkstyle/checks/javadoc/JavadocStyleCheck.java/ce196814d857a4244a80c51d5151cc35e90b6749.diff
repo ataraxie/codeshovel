@@ -1,0 +1,111 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index 1561986d7..ca205f53c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -95,104 +95,104 @@ public class JavadocStyleCheck
+ 
+     /**
+      * Indicates if the first sentence should be checked for proper end of
+      * sentence punctuation.
+      */
+     private boolean checkFirstSentence = true;
+ 
+     /**
+      * Indicates if the HTML within the comment should be checked.
+      */
+     private boolean checkHtml = true;
+ 
+     /**
+      * Indicates if empty javadoc statements should be checked.
+      */
+     private boolean checkEmptyJavadoc;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+             TokenTypes.PACKAGE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (shouldCheck(ast)) {
+             final FileContents contents = getFileContents();
+             // Need to start searching for the comment before the annotations
+             // that may exist. Even if annotations are not defined on the
+             // package, the ANNOTATIONS AST is defined.
+-            final TextBlock cmt =
++            final TextBlock textBlock =
+                 contents.getJavadocBefore(ast.getFirstChild().getLineNo());
+ 
+-            checkComment(ast, cmt);
++            checkComment(ast, textBlock);
+         }
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param ast a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST ast) {
+         boolean check = false;
+ 
+         if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+             check = getFileContents().inPackageInfo();
+         }
+         else if (!ScopeUtils.isInCodeBlock(ast)) {
+             final Scope customScope;
+ 
+             if (ScopeUtils.isInInterfaceOrAnnotationBlock(ast)
+                     || ast.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+                 customScope = Scope.PUBLIC;
+             }
+             else {
+                 customScope = ScopeUtils.getScopeFromMods(ast.findFirstToken(TokenTypes.MODIFIERS));
+             }
+             final Scope surroundingScope = ScopeUtils.getSurroundingScope(ast);
+ 
+             check = customScope.isIn(scope)
+                     && (surroundingScope == null || surroundingScope.isIn(scope))
+                     && (excludeScope == null
+                         || !customScope.isIn(excludeScope)
+                         || surroundingScope != null
+                             && !surroundingScope.isIn(excludeScope));
+         }
+         return check;
+     }
+ 
+     /**
+      * Performs the various checks against the Javadoc comment.
+      *
+      * @param ast the AST of the element being documented
+      * @param comment the source lines that make up the Javadoc comment.
+      *
+      * @see #checkFirstSentenceEnding(DetailAST, TextBlock)
+      * @see #checkHtmlTags(DetailAST, TextBlock)
+      */
+     private void checkComment(final DetailAST ast, final TextBlock comment) {
+         if (comment == null) {
+             /*checking for missing docs in JavadocStyleCheck is not consistent
+             with the rest of CheckStyle...  Even though, I didn't think it
+             made sense to make another check just to ensure that the

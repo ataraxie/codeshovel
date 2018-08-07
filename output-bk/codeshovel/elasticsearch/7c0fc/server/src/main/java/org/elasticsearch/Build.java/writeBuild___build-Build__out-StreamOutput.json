@@ -1,0 +1,123 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "Build.java",
+  "functionName": "writeBuild",
+  "functionId": "writeBuild___build-Build__out-StreamOutput",
+  "sourceFilePath": "server/src/main/java/org/elasticsearch/Build.java",
+  "functionStartLine": 214,
+  "functionEndLine": 224,
+  "changeHistory": [
+    "d99d0fa6697672cb868c7c96dfd6fae489a71e4b",
+    "e64e6d89961f16ccd898cb317e3bffee82678ca5",
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+    "4f7dd1284ffef4bc219472285b4133e873ce6819",
+    "8278c9887e427772c9fd909a5c4fcfd6e1a0c878",
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+    "e67cad31273f09d958cadd2d85fe0221dcb1df61"
+  ],
+  "changeHistoryShort": {
+    "d99d0fa6697672cb868c7c96dfd6fae489a71e4b": "Ybodychange",
+    "e64e6d89961f16ccd898cb317e3bffee82678ca5": "Ybodychange",
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": "Yfilerename",
+    "4f7dd1284ffef4bc219472285b4133e873ce6819": "Ybodychange",
+    "8278c9887e427772c9fd909a5c4fcfd6e1a0c878": "Ybodychange",
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5": "Yfilerename",
+    "e67cad31273f09d958cadd2d85fe0221dcb1df61": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "d99d0fa6697672cb868c7c96dfd6fae489a71e4b": {
+      "type": "Ybodychange",
+      "commitMessage": "Add distribution type to startup scripts\n\nThis commit adds the distribution type to the startup scripts so that we\ncan discern from log output and the main response the type of the\ndistribution (deb/rpm/tar/zip).\n",
+      "commitDate": 1524263641000,
+      "commitName": "d99d0fa6697672cb868c7c96dfd6fae489a71e4b",
+      "commitAuthor": "Jason Tedor",
+      "commitDateOld": 1524263638000,
+      "commitNameOld": "e64e6d89961f16ccd898cb317e3bffee82678ca5",
+      "commitAuthorOld": "Jason Tedor",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 17,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,11 @@\n     public static void writeBuild(Build build, StreamOutput out) throws IOException {\n         if (out.getVersion().onOrAfter(Version.V_6_3_0)) {\n             out.writeString(build.flavor().displayName());\n         }\n+        if (out.getVersion().onOrAfter(Version.V_6_3_0)) {\n+            out.writeString(build.type().displayName());\n+        }\n         out.writeString(build.shortHash());\n         out.writeString(build.date());\n         out.writeBoolean(build.isSnapshot());\n     }\n\\ No newline at end of file\n"
+    },
+    "e64e6d89961f16ccd898cb317e3bffee82678ca5": {
+      "type": "Ybodychange",
+      "commitMessage": "Add distribution flavor to startup scripts\n\nThis commit adds the distribution flavor (default versus oss) to the\nbuild process which is passed through the startup scripts to\nElasticsearch. This change will be used to customize the message on\nattempting to install/remove x-pack based on the distribution flavor.\n",
+      "commitDate": 1524263638000,
+      "commitName": "e64e6d89961f16ccd898cb317e3bffee82678ca5",
+      "commitAuthor": "Jason Tedor",
+      "commitDateOld": 1515695443000,
+      "commitNameOld": "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+      "commitAuthorOld": "Tim Brooks",
+      "daysBetweenCommits": 99.17,
+      "commitsBetweenForRepo": 1545,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,8 @@\n     public static void writeBuild(Build build, StreamOutput out) throws IOException {\n+        if (out.getVersion().onOrAfter(Version.V_6_3_0)) {\n+            out.writeString(build.flavor().displayName());\n+        }\n         out.writeString(build.shortHash());\n         out.writeString(build.date());\n         out.writeBoolean(build.isSnapshot());\n     }\n\\ No newline at end of file\n"
+    },
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": {
+      "type": "Yfilerename",
+      "commitMessage": "Rename core module to server (#28180)\n\nThis is related to #27933. It renames the core module to server. This is\r\nthe first step towards introducing an elasticsearch-core jar.",
+      "commitDate": 1515695443000,
+      "commitName": "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+      "commitAuthor": "Tim Brooks",
+      "commitDateOld": 1515688270000,
+      "commitNameOld": "7d0eb3292b8f8ba27ef50dbbf38783dc68c70728",
+      "commitAuthorOld": "Martijn van Groningen",
+      "daysBetweenCommits": 0.08,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "4f7dd1284ffef4bc219472285b4133e873ce6819": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove SNAPSHOT notion from code\n\nToday we have the notion of a snapshot inside Version.java which makes\nreleasing complicated since to do a release Version.java must be changed.\nThis commit removes all notions of snapshot from the code and allows to\nswitch between snapshot and release build by specifying a system property on\nthe build. For instance running:\n\n```\ngradle run -Dbuild.snapshot\u003dfalse\n```\n\nwill build and package a release build while the default always\nbuilds snapshots. Calls to the main rest action will still get the snapshot\ninformation rendered out with the response.\n",
+      "commitDate": 1456013186000,
+      "commitName": "4f7dd1284ffef4bc219472285b4133e873ce6819",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1447784709000,
+      "commitNameOld": "0119caa4a61141c2ab8ec5e008d33c0066512f7f",
+      "commitAuthorOld": "Nik Everett",
+      "daysBetweenCommits": 95.24,
+      "commitsBetweenForRepo": 1710,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,5 @@\n     public static void writeBuild(Build build, StreamOutput out) throws IOException {\n         out.writeString(build.shortHash());\n         out.writeString(build.date());\n+        out.writeBoolean(build.isSnapshot());\n     }\n\\ No newline at end of file\n"
+    },
+    "8278c9887e427772c9fd909a5c4fcfd6e1a0c878": {
+      "type": "Ybodychange",
+      "commitMessage": "Restore build properties\n\nThis commit restores the build properties provided in\norg.elasticsearch.Build. This class previously obtained the build hash\nand timestamp from a resource es-build.properties that was included in\nthe jar and produced by the Maven resources plugin. After the switch to\nGradle, the production of this file was lost and these build properties\ndefaulted to “NA” in all instances.\n\nThe most important place that the build hash is used is in the plugin\nmanager to determine the URL of staging artifacts for plugins.\n\nThe build hash is also used in several responses including the /_nodes\nresponse and the response to HTTP GET requests on the root path.\n\nThese properties can now be obtained from the jar manifest as they are\ncurrently placed there by the gradle-info plugin. However, only the\nshort hash is provided. We now read the manifest for these properties\nand no longer provide the full hash in responses to HTTP GET requests\non the root path.\n",
+      "commitDate": 1446777004000,
+      "commitName": "8278c9887e427772c9fd909a5c4fcfd6e1a0c878",
+      "commitAuthor": "Jason Tedor",
+      "commitDateOld": 1438675878000,
+      "commitNameOld": "a74684473eeb6b924fd7cf88feb94a2973c6f6c0",
+      "commitAuthorOld": "Tanguy Leroux",
+      "daysBetweenCommits": 93.76,
+      "commitsBetweenForRepo": 1695,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,4 @@\n     public static void writeBuild(Build build, StreamOutput out) throws IOException {\n-        out.writeString(build.hash());\n-        out.writeString(build.hashShort());\n-        out.writeString(build.timestamp());\n+        out.writeString(build.shortHash());\n+        out.writeString(build.date());\n     }\n\\ No newline at end of file\n"
+    },
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5": {
+      "type": "Yfilerename",
+      "commitMessage": "create core module\n",
+      "commitDate": 1433502723000,
+      "commitName": "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1433502668000,
+      "commitNameOld": "7ccc193a666e2ae888e7ac93d677a2143e5e07c3",
+      "commitAuthorOld": "Simon Willnauer",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "e67cad31273f09d958cadd2d85fe0221dcb1df61": {
+      "type": "Yintroduced",
+      "commitMessage": "Add build hash to nodes info API\nalso, add it to the cat nodes api\n",
+      "commitDate": 1388408396000,
+      "commitName": "e67cad31273f09d958cadd2d85fe0221dcb1df61",
+      "commitAuthor": "Shay Banon"
+    }
+  }
+}

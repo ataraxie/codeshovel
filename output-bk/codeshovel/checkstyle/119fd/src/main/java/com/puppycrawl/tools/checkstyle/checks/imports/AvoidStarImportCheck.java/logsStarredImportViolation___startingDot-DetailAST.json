@@ -1,0 +1,117 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AvoidStarImportCheck.java",
+  "functionName": "logsStarredImportViolation",
+  "functionId": "logsStarredImportViolation___startingDot-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/AvoidStarImportCheck.java",
+  "functionStartLine": 164,
+  "functionEndLine": 170,
+  "changeHistory": [
+    "085ce12db0983590844ccc24ea49f91686a30ed8",
+    "d938bf243b995b18a52ebbbd552497c78c6e5e30",
+    "2ea1a3dbab2b114cfc4d0baefda80590fbd3d6c0",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "c819b4385834207d821677d35d54a81a2a02e43b",
+    "d9bd21f3f7e589bfce3177a654f38a2e33ddf375"
+  ],
+  "changeHistoryShort": {
+    "085ce12db0983590844ccc24ea49f91686a30ed8": "Ybodychange",
+    "d938bf243b995b18a52ebbbd552497c78c6e5e30": "Ybodychange",
+    "2ea1a3dbab2b114cfc4d0baefda80590fbd3d6c0": "Ybodychange",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "c819b4385834207d821677d35d54a81a2a02e43b": "Ymultichange(Yparameterchange,Ybodychange)",
+    "d9bd21f3f7e589bfce3177a654f38a2e33ddf375": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "085ce12db0983590844ccc24ea49f91686a30ed8": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: MultipleStringLiterals violations fixed\n",
+      "commitDate": 1440543609000,
+      "commitName": "085ce12db0983590844ccc24ea49f91686a30ed8",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439886329000,
+      "commitNameOld": "54ccca18635a4aeea90da86d30590df498f76b08",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 7.61,
+      "commitsBetweenForRepo": 134,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     private void logsStarredImportViolation(DetailAST startingDot) {\n         final FullIdent name \u003d FullIdent.createFullIdent(startingDot);\n         final String importText \u003d name.getText();\n-        if (importText.endsWith(\".*\") \u0026\u0026 !excludes.contains(importText)) {\n+        if (importText.endsWith(STAR_IMPORT_SUFFIX) \u0026\u0026 !excludes.contains(importText)) {\n             log(startingDot.getLineNo(), MSG_KEY, importText);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d938bf243b995b18a52ebbbd552497c78c6e5e30": {
+      "type": "Ybodychange",
+      "commitMessage": "UT coverage for AvoidStarImportCheck. #1128\n",
+      "commitDate": 1434484027000,
+      "commitName": "d938bf243b995b18a52ebbbd552497c78c6e5e30",
+      "commitAuthor": "Aleksandr Ivanov",
+      "commitDateOld": 1433837403000,
+      "commitNameOld": "ae19543f80a2ac86e4f369858128ba7c923efeb9",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 7.48,
+      "commitsBetweenForRepo": 61,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,7 @@\n     private void logsStarredImportViolation(DetailAST startingDot) {\n         final FullIdent name \u003d FullIdent.createFullIdent(startingDot);\n-        if (isStaredImport(name) \u0026\u0026 !excludes.contains(name.getText())) {\n-            log(startingDot.getLineNo(), MSG_KEY, name.getText());\n+        final String importText \u003d name.getText();\n+        if (importText.endsWith(\".*\") \u0026\u0026 !excludes.contains(importText)) {\n+            log(startingDot.getLineNo(), MSG_KEY, importText);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "2ea1a3dbab2b114cfc4d0baefda80590fbd3d6c0": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactored UTs, imports package, issue #537\n",
+      "commitDate": 1424437366000,
+      "commitName": "2ea1a3dbab2b114cfc4d0baefda80590fbd3d6c0",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.66,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     private void logsStarredImportViolation(DetailAST startingDot)\n     {\n         final FullIdent name \u003d FullIdent.createFullIdent(startingDot);\n         if (isStaredImport(name) \u0026\u0026 !excludes.contains(name.getText())) {\n-            log(startingDot.getLineNo(), \"import.avoidStar\", name.getText());\n+            log(startingDot.getLineNo(), MSG_KEY, name.getText());\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, imports, #512\n",
+      "commitDate": 1421678111000,
+      "commitName": "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "c819b4385834207d821677d35d54a81a2a02e43b": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "tidy up the code.\n",
+      "commitDate": 1286602879000,
+      "commitName": "c819b4385834207d821677d35d54a81a2a02e43b",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "d9bd21f3f7e589bfce3177a654f38a2e33ddf375": {
+      "type": "Yintroduced",
+      "commitMessage": "Patch #1939775 for star imports (first draft)\n",
+      "commitDate": 1286601975000,
+      "commitName": "d9bd21f3f7e589bfce3177a654f38a2e33ddf375",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

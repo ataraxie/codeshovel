@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "VisibilityModifierCheck.java",
+  "functionName": "isIgnoredPublicMember",
+  "functionId": "isIgnoredPublicMember___variableName-String__variableScope-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java",
+  "functionStartLine": 577,
+  "functionEndLine": 580,
+  "changeHistory": [
+    "8c3e4a50749044ae3177fc4c84db9c4fd93abca2",
+    "3b452a2e88d0cb670be19818dbd8166335d65884",
+    "f8ba0d727928aaa1275758fa09114155faab0b9e"
+  ],
+  "changeHistoryShort": {
+    "8c3e4a50749044ae3177fc4c84db9c4fd93abca2": "Ybodychange",
+    "3b452a2e88d0cb670be19818dbd8166335d65884": "Ybodychange",
+    "f8ba0d727928aaa1275758fa09114155faab0b9e": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "8c3e4a50749044ae3177fc4c84db9c4fd93abca2": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: MultipleStringLiterals violations partial fix\n",
+      "commitDate": 1440504773000,
+      "commitName": "8c3e4a50749044ae3177fc4c84db9c4fd93abca2",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440502819000,
+      "commitNameOld": "c4a7d06206d86f52665eae47af4db28dc59d93a3",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.02,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n     private boolean isIgnoredPublicMember(String variableName, String variableScope) {\n-        return \"public\".equals(variableScope)\n+        return PUBLIC_ACCESS_MODIFIER.equals(variableScope)\n             \u0026\u0026 publicMemberPattern.matcher(variableName).find();\n     }\n\\ No newline at end of file\n"
+    },
+    "3b452a2e88d0cb670be19818dbd8166335d65884": {
+      "type": "Ybodychange",
+      "commitMessage": "Inline calls to simple getters. #1555\n\nFixes `CallToSimpleGetterInClass` inspection violations.\n\nDescription:\n\u003eReports any calls to a simple property getter from within the property\u0027s class. A simple property getter is defined as one which simply returns the value of a field, and does no other calculation. Such simple getter calls may be safely inlined, at a small performance improvement. Some coding standards also suggest against the use of simple getters for code clarity reasons.\n",
+      "commitDate": 1440243167000,
+      "commitName": "3b452a2e88d0cb670be19818dbd8166335d65884",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440040911000,
+      "commitNameOld": "efa16e17bf710b7b24af828296c2337612912ba9",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 2.34,
+      "commitsBetweenForRepo": 54,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n     private boolean isIgnoredPublicMember(String variableName, String variableScope) {\n         return \"public\".equals(variableScope)\n-            \u0026\u0026 getPublicMemberRegexp().matcher(variableName).find();\n+            \u0026\u0026 publicMemberPattern.matcher(variableName).find();\n     }\n\\ No newline at end of file\n"
+    },
+    "f8ba0d727928aaa1275758fa09114155faab0b9e": {
+      "type": "Yintroduced",
+      "commitMessage": "Fix BooleanExpressionComplexity check violations in Checkstyle code, issue #1052\n",
+      "commitDate": 1438447365000,
+      "commitName": "f8ba0d727928aaa1275758fa09114155faab0b9e",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

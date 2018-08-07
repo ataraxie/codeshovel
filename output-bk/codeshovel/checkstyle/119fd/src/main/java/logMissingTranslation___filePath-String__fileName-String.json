@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "logMissingTranslation___filePath-String__fileName-String",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 334,
+  "changeHistory": [
+    "3363faeeea40d77fa7f8ad600e741514e5f3d367",
+    "cbbcbad89962eb6727e57ad9baa9cd0ac0e19e72",
+    "9b2f177a03d5696671c2b705d2b1b686f127dcce",
+    "d843dd8439cc5163bcd743443f970c392f4ae30e",
+    "b8f2d25b644bf719774c5516e0681d54e38f6e36"
+  ],
+  "changeHistoryShort": {
+    "3363faeeea40d77fa7f8ad600e741514e5f3d367": "Ybodychange",
+    "cbbcbad89962eb6727e57ad9baa9cd0ac0e19e72": "Ybodychange",
+    "9b2f177a03d5696671c2b705d2b1b686f127dcce": "Ybodychange",
+    "d843dd8439cc5163bcd743443f970c392f4ae30e": "Ymultichange(Ymovefromfile,Ybodychange,Yparameterchange)",
+    "b8f2d25b644bf719774c5516e0681d54e38f6e36": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3363faeeea40d77fa7f8ad600e741514e5f3d367": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5057: fixed xml violations/exceptions with file started/finished",
+      "commitDate": 1514645916000,
+      "commitName": "3363faeeea40d77fa7f8ad600e741514e5f3d367",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1514417839000,
+      "commitNameOld": "cbbcbad89962eb6727e57ad9baa9cd0ac0e19e72",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 2.64,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,7 @@\n     private void logMissingTranslation(String filePath, String fileName) {\n+        final MessageDispatcher dispatcher \u003d getMessageDispatcher();\n+        dispatcher.fireFileStarted(filePath);\n         log(0, MSG_KEY_MISSING_TRANSLATION_FILE, fileName);\n         fireErrors(filePath);\n+        dispatcher.fireFileFinished(filePath);\n     }\n\\ No newline at end of file\n"
+    },
+    "cbbcbad89962eb6727e57ad9baa9cd0ac0e19e72": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4675: fix last mutation\n",
+      "commitDate": 1514417839000,
+      "commitName": "cbbcbad89962eb6727e57ad9baa9cd0ac0e19e72",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1514092430000,
+      "commitNameOld": "3b531fe996078098c7fa30b8ab0645a6157dc6d1",
+      "commitAuthorOld": "Pavel Bludov",
+      "daysBetweenCommits": 3.77,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,4 @@\n     private void logMissingTranslation(String filePath, String fileName) {\n         log(0, MSG_KEY_MISSING_TRANSLATION_FILE, fileName);\n         fireErrors(filePath);\n-        getMessageDispatcher().fireFileFinished(filePath);\n     }\n\\ No newline at end of file\n"
+    },
+    "9b2f177a03d5696671c2b705d2b1b686f127dcce": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4675: increase coverage of pitest-checks-misc to 100%\n",
+      "commitDate": 1505956257000,
+      "commitName": "9b2f177a03d5696671c2b705d2b1b686f127dcce",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1503319629000,
+      "commitNameOld": "74c41b3aaa97a1b013656d04bba3835920008bbd",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 30.52,
+      "commitsBetweenForRepo": 137,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,5 @@\n     private void logMissingTranslation(String filePath, String fileName) {\n-        final MessageDispatcher dispatcher \u003d getMessageDispatcher();\n-        dispatcher.fireFileStarted(filePath);\n         log(0, MSG_KEY_MISSING_TRANSLATION_FILE, fileName);\n         fireErrors(filePath);\n-        dispatcher.fireFileFinished(filePath);\n+        getMessageDispatcher().fireFileFinished(filePath);\n     }\n\\ No newline at end of file\n"
+    },
+    "d843dd8439cc5163bcd743443f970c392f4ae30e": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange,Yparameterchange)",
+      "commitMessage": "Issue #2204: Add \u0027baseName\u0027 option for TranslationCheck\n",
+      "commitDate": 1457803906000,
+      "commitName": "d843dd8439cc5163bcd743443f970c392f4ae30e",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange",
+        "Yparameterchange"
+      ]
+    },
+    "b8f2d25b644bf719774c5516e0681d54e38f6e36": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2166: Add \u0027requiredTranslations\u0027 option to Translation check\n",
+      "commitDate": 1443304979000,
+      "commitName": "b8f2d25b644bf719774c5516e0681d54e38f6e36",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

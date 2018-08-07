@@ -1,0 +1,178 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/SingleSpaceSeparatorCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/SingleSpaceSeparatorCheck.java
+index 23d492df7..6805d3c92 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/SingleSpaceSeparatorCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/SingleSpaceSeparatorCheck.java
+@@ -93,164 +93,168 @@ public class SingleSpaceSeparatorCheck extends AbstractCheck {
+     /** Indicates if whitespaces surrounding comments will be ignored. */
+     private boolean validateComments;
+ 
+     /**
+      * Sets whether or not to validate surrounding whitespaces at comments.
+      *
+      * @param validateComments {@code true} to validate surrounding whitespaces at comments.
+      */
+     public void setValidateComments(boolean validateComments) {
+         this.validateComments = validateComments;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return getDefaultTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getDefaultTokens();
+     }
+ 
+     // -@cs[SimpleAccessorNameNotation] Overrides method from base class.
+     // Issue: https://github.com/sevntu-checkstyle/sevntu.checkstyle/issues/166
+     @Override
+     public boolean isCommentNodesRequired() {
+         return validateComments;
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         visitEachToken(rootAST);
+     }
+ 
+     /**
+      * Examines every sibling and child of {@code node} for violations.
+      *
+      * @param node The node to start examining.
+      */
+     private void visitEachToken(DetailAST node) {
+         DetailAST sibling = node;
+ 
+         while (sibling != null) {
+             final int columnNo = sibling.getColumnNo() - 1;
+ 
+-            if (columnNo >= 0
++            // in such expression: "j  =123", placed at the start of the string index of the second
++            // space character will be: 2 = 0(j) + 1(whitespace) + 1(whitespace). It is a minimal
++            // possible index for the second whitespace between non-whitespace characters.
++            final int minSecondWhitespaceColumnNo = 2;
++
++            if (columnNo >= minSecondWhitespaceColumnNo
+                     && !isTextSeparatedCorrectlyFromPrevious(getLine(sibling.getLineNo() - 1),
+                             columnNo)) {
+                 log(sibling.getLineNo(), columnNo, MSG_KEY);
+             }
+-            if (sibling.getChildCount() > 0) {
++            if (sibling.getChildCount() >= 1) {
+                 visitEachToken(sibling.getFirstChild());
+             }
+ 
+             sibling = sibling.getNextSibling();
+         }
+     }
+ 
+     /**
+      * Checks if characters in {@code line} at and around {@code columnNo} has
+      * the correct number of spaces. to return {@code true} the following
+      * conditions must be met:<br />
+      * - the character at {@code columnNo} is the first in the line.<br />
+      * - the character at {@code columnNo} is not separated by whitespaces from
+      * the previous non-whitespace character. <br />
+      * - the character at {@code columnNo} is separated by only one whitespace
+      * from the previous non-whitespace character.<br />
+      * - {@link #validateComments} is disabled and the previous text is the
+      * end of a block comment.
+      *
+      * @param line The line in the file to examine.
+      * @param columnNo The column position in the {@code line} to examine.
+      * @return {@code true} if the text at {@code columnNo} is separated
+      *         correctly from the previous token.
+      */
+     private boolean isTextSeparatedCorrectlyFromPrevious(String line, int columnNo) {
+         return isSingleSpace(line, columnNo)
+                 || !isWhitespace(line, columnNo)
+                 || isFirstInLine(line, columnNo)
+                 || !validateComments && isBlockCommentEnd(line, columnNo);
+     }
+ 
+     /**
+      * Checks if the {@code line} at {@code columnNo} is a single space, and not
+      * preceded by another space.
+      *
+      * @param line The line in the file to examine.
+      * @param columnNo The column position in the {@code line} to examine.
+      * @return {@code true} if the character at {@code columnNo} is a space, and
+      *         not preceded by another space.
+      */
+     private static boolean isSingleSpace(String line, int columnNo) {
+         return !isPrecededByMultipleWhitespaces(line, columnNo)
+                 && isSpace(line, columnNo);
+     }
+ 
+     /**
+      * Checks if the {@code line} at {@code columnNo} is a space.
+      *
+      * @param line The line in the file to examine.
+      * @param columnNo The column position in the {@code line} to examine.
+      * @return {@code true} if the character at {@code columnNo} is a space.
+      */
+     private static boolean isSpace(String line, int columnNo) {
+         return line.charAt(columnNo) == ' ';
+     }
+ 
+     /**
+      * Checks if the {@code line} at {@code columnNo} is preceded by at least 2
+      * whitespaces.
+      *
+      * @param line The line in the file to examine.
+      * @param columnNo The column position in the {@code line} to examine.
+      * @return {@code true} if there are at least 2 whitespace characters before
+      *         {@code columnNo}.
+      */
+     private static boolean isPrecededByMultipleWhitespaces(String line, int columnNo) {
+-        return columnNo >= 1
+-                && Character.isWhitespace(line.charAt(columnNo))
++        return Character.isWhitespace(line.charAt(columnNo))
+                 && Character.isWhitespace(line.charAt(columnNo - 1));
+     }
+ 
+     /**
+      * Checks if the {@code line} at {@code columnNo} is a whitespace character.
+      *
+      * @param line The line in the file to examine.
+      * @param columnNo The column position in the {@code line} to examine.
+      * @return {@code true} if the character at {@code columnNo} is a
+      *         whitespace.
+      */
+     private static boolean isWhitespace(String line, int columnNo) {
+         return Character.isWhitespace(line.charAt(columnNo));
+     }
+ 
+     /**
+      * Checks if the {@code line} up to and including {@code columnNo} is all
+      * non-whitespace text encountered.
+      *
+      * @param line The line in the file to examine.
+      * @param columnNo The column position in the {@code line} to examine.
+      * @return {@code true} if the column position is the first non-whitespace
+      *         text on the {@code line}.
+      */
+     private static boolean isFirstInLine(String line, int columnNo) {
+-        return CommonUtils.isBlank(line.substring(0, columnNo + 1));
++        return CommonUtils.isBlank(line.substring(0, columnNo));
+     }
+ 
+     /**
+      * Checks if the {@code line} at {@code columnNo} is the end of a comment,
+      * '*&#47;'.
+      *
+      * @param line The line in the file to examine.
+      * @param columnNo The column position in the {@code line} to examine.
+      * @return {@code true} if the previous text is a end comment block.
+      */
+     private static boolean isBlockCommentEnd(String line, int columnNo) {
+         return line.substring(0, columnNo).trim().endsWith("*/");
+     }
+ }

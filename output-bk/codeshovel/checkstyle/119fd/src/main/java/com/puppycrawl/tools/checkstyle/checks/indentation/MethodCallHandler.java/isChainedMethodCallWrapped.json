@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MethodCallHandler.java",
+  "functionName": "isChainedMethodCallWrapped",
+  "functionId": "isChainedMethodCallWrapped",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java",
+  "functionStartLine": 109,
+  "functionEndLine": 123,
+  "changeHistory": [
+    "3d4290baf0a9dabd9f5e7f5db304e7ce7b491dcb",
+    "8bd1d6869ba97b6a03dd2b069ffbe5a1571e1b45"
+  ],
+  "changeHistoryShort": {
+    "3d4290baf0a9dabd9f5e7f5db304e7ce7b491dcb": "Ybodychange",
+    "8bd1d6869ba97b6a03dd2b069ffbe5a1571e1b45": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3d4290baf0a9dabd9f5e7f5db304e7ce7b491dcb": {
+      "type": "Ybodychange",
+      "commitMessage": "Add test coverage to MethodCallHandler in Indentation check. #1270\n",
+      "commitDate": 1437289212000,
+      "commitName": "3d4290baf0a9dabd9f5e7f5db304e7ce7b491dcb",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437195084000,
+      "commitNameOld": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.09,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,15 @@\n     private boolean isChainedMethodCallWrapped() {\n         boolean result \u003d false;\n         final DetailAST main \u003d getMainAst();\n         final DetailAST dot \u003d main.getFirstChild();\n         final DetailAST target \u003d dot.getFirstChild();\n \n-        if (dot.getType() \u003d\u003d TokenTypes.DOT\n-            \u0026\u0026 target.getType() \u003d\u003d TokenTypes.METHOD_CALL) {\n-            final DetailAST dot1 \u003d target.getFirstChild();\n-            final DetailAST target1 \u003d dot1.getFirstChild();\n+        final DetailAST dot1 \u003d target.getFirstChild();\n+        final DetailAST target1 \u003d dot1.getFirstChild();\n \n-            if (dot1.getType() \u003d\u003d TokenTypes.DOT\n-                \u0026\u0026 target1.getType() \u003d\u003d TokenTypes.METHOD_CALL) {\n-                result \u003d true;\n-            }\n+        if (dot1.getType() \u003d\u003d TokenTypes.DOT\n+            \u0026\u0026 target1.getType() \u003d\u003d TokenTypes.METHOD_CALL) {\n+            result \u003d true;\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "8bd1d6869ba97b6a03dd2b069ffbe5a1571e1b45": {
+      "type": "Yintroduced",
+      "commitMessage": "PMD rule AvoidDeeplyNestedIfStmts is activated. Issue #744\n",
+      "commitDate": 1429826940000,
+      "commitName": "8bd1d6869ba97b6a03dd2b069ffbe5a1571e1b45",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

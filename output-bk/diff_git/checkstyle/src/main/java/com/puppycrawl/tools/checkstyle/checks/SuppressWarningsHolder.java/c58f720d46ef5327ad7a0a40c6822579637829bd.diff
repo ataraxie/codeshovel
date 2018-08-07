@@ -1,0 +1,119 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
+index 0f9370a26..43d3f29c3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
+@@ -155,111 +155,111 @@ public class SuppressWarningsHolder
+         final int column = event.getColumn();
+         boolean suppressed = false;
+         for (Entry entry : entries) {
+             final boolean afterStart = isSuppressedAfterEventStart(line, column, entry);
+             final boolean beforeEnd = isSuppressedBeforeEventEnd(line, column, entry);
+             final boolean nameMatches =
+                 ALL_WARNING_MATCHING_ID.equals(entry.getCheckName())
+                     || entry.getCheckName().equalsIgnoreCase(checkAlias);
+             final boolean idMatches = event.getModuleId() != null
+                 && event.getModuleId().equals(entry.getCheckName());
+             if (afterStart && beforeEnd && (nameMatches || idMatches)) {
+                 suppressed = true;
+                 break;
+             }
+         }
+         return suppressed;
+     }
+ 
+     /**
+      * Checks whether suppression entry position is after the audit event occurrence position
+      * in the source file.
+      * @param line the line number in the source file where the event occurred.
+      * @param column the column number in the source file where the event occurred.
+      * @param entry suppression entry.
+      * @return true if suppression entry position is after the audit event occurrence position
+      *         in the source file.
+      */
+     private static boolean isSuppressedAfterEventStart(int line, int column, Entry entry) {
+         return entry.getFirstLine() < line
+             || entry.getFirstLine() == line
+             && (column == 0 || entry.getFirstColumn() <= column);
+     }
+ 
+     /**
+      * Checks whether suppression entry position is before the audit event occurrence position
+      * in the source file.
+      * @param line the line number in the source file where the event occurred.
+      * @param column the column number in the source file where the event occurred.
+      * @param entry suppression entry.
+      * @return true if suppression entry position is before the audit event occurrence position
+      *         in the source file.
+      */
+     private static boolean isSuppressedBeforeEventEnd(int line, int column, Entry entry) {
+         return entry.getLastLine() > line
+             || entry.getLastLine() == line && entry
+                 .getLastColumn() >= column;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return getAcceptableTokens();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return new int[] {TokenTypes.ANNOTATION};
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return getAcceptableTokens();
++        return new int[] {TokenTypes.ANNOTATION};
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         ENTRIES.get().clear();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         // check whether annotation is SuppressWarnings
+         // expected children: AT ( IDENT | DOT ) LPAREN <values> RPAREN
+         String identifier = getIdentifier(getNthChild(ast, 1));
+         if (identifier.startsWith(JAVA_LANG_PREFIX)) {
+             identifier = identifier.substring(JAVA_LANG_PREFIX.length());
+         }
+         if ("SuppressWarnings".equals(identifier)) {
+ 
+             final List<String> values = getAllAnnotationValues(ast);
+             if (!isAnnotationEmpty(values)) {
+                 final DetailAST targetAST = getAnnotationTarget(ast);
+ 
+                 if (targetAST == null) {
+                     log(ast.getLineNo(), MSG_KEY);
+                 }
+                 else {
+                     // get text range of target
+                     final int firstLine = targetAST.getLineNo();
+                     final int firstColumn = targetAST.getColumnNo();
+                     final DetailAST nextAST = targetAST.getNextSibling();
+                     final int lastLine;
+                     final int lastColumn;
+                     if (nextAST == null) {
+                         lastLine = Integer.MAX_VALUE;
+                         lastColumn = Integer.MAX_VALUE;
+                     }
+                     else {
+                         lastLine = nextAST.getLineNo();
+                         lastColumn = nextAST.getColumnNo() - 1;
+                     }
+ 
+                     // add suppression entries for listed checks
+                     final List<Entry> entries = ENTRIES.get();
+                     for (String value : values) {
+                         String checkName = value;
+                         // strip off the checkstyle-only prefix if present
+                         checkName = removeCheckstylePrefixIfExists(checkName);
+                         entries.add(new Entry(checkName, firstLine, firstColumn,
+                                 lastLine, lastColumn));
+                     }
+                 }

@@ -1,0 +1,61 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MissingSwitchDefaultCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MissingSwitchDefaultCheck.java
+index 21a8b4a6b..35f69c6fc 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MissingSwitchDefaultCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MissingSwitchDefaultCheck.java
+@@ -22,51 +22,56 @@ package com.puppycrawl.tools.checkstyle.checks.coding;
+ import com.puppycrawl.tools.checkstyle.Utils;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.DescendantTokenCheck;
+ 
+ /**
+  * <p>
+  * Checks that switch statement has &quot;default&quot; clause.
+  * </p>
+  * <p>
+  * Rationale: It's usually a good idea to introduce a
+  * default case in every switch statement. Even if
+  * the developer is sure that all currently possible
+  * cases are covered, this should be expressed in the
+  * default branch, e.g. by using an assertion. This way
+  * the code is protected aginst later changes, e.g.
+  * introduction of new types in an enumeration type.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="MissingSwitchDefault"/&gt;
+  * </pre>
+  * @author o_sukhodolsky
+  */
+ public class MissingSwitchDefaultCheck extends DescendantTokenCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "missing.switch.default";
+ 
+     /** Creates new instance of the check. */
+     public MissingSwitchDefaultCheck() {
+         setLimitedTokens(Utils.getTokenName(TokenTypes.LITERAL_DEFAULT));
+         setMinimumNumber(1);
+         setMaximumDepth(2);
+         setMinimumMessage(MSG_KEY);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[]{TokenTypes.LITERAL_SWITCH};
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return getDefaultTokens();
+     }
++
++    @Override
++    public int[] getRequiredTokens() {
++        return getDefaultTokens();
++    }
+ }

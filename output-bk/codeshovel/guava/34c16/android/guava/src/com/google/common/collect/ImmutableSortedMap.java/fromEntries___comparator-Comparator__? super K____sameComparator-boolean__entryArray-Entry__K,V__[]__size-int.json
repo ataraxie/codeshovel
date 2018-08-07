@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "ImmutableSortedMap.java",
+  "functionName": "fromEntries",
+  "functionId": "fromEntries___comparator-Comparator__? super K____sameComparator-boolean__entryArray-Entry__K,V__[]__size-int",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/ImmutableSortedMap.java",
+  "functionStartLine": 294,
+  "functionEndLine": 350,
+  "changeHistory": [
+    "9bcedd8f5bd2354d133edcb3e058b8f0d4f28e8f",
+    "0c81386a239370c073572212079efc727c911d0b",
+    "813e0366fa399531035b8359f70da61cc8b499c3",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "9bcedd8f5bd2354d133edcb3e058b8f0d4f28e8f": "Ybodychange",
+    "0c81386a239370c073572212079efc727c911d0b": "Ybodychange",
+    "813e0366fa399531035b8359f70da61cc8b499c3": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "9bcedd8f5bd2354d133edcb3e058b8f0d4f28e8f": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix bug where ImmutableSortedMap could accept a null key/value pair.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d171692711\n",
+      "commitDate": 1507657759000,
+      "commitName": "9bcedd8f5bd2354d133edcb3e058b8f0d4f28e8f",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1502905310000,
+      "commitNameOld": "0c81386a239370c073572212079efc727c911d0b",
+      "commitAuthorOld": "jijiang",
+      "daysBetweenCommits": 55.01,
+      "commitsBetweenForRepo": 86,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,56 +1,57 @@\n   private static \u003cK, V\u003e ImmutableSortedMap\u003cK, V\u003e fromEntries(\n       final Comparator\u003c? super K\u003e comparator,\n       boolean sameComparator,\n       Entry\u003cK, V\u003e[] entryArray,\n       int size) {\n     switch (size) {\n       case 0:\n         return emptyMap(comparator);\n       case 1:\n         return ImmutableSortedMap.\u003cK, V\u003eof(\n             comparator, entryArray[0].getKey(), entryArray[0].getValue());\n       default:\n         Object[] keys \u003d new Object[size];\n         Object[] values \u003d new Object[size];\n         if (sameComparator) {\n           // Need to check for nulls, but don\u0027t need to sort or validate.\n           for (int i \u003d 0; i \u003c size; i++) {\n             Object key \u003d entryArray[i].getKey();\n             Object value \u003d entryArray[i].getValue();\n             checkEntryNotNull(key, value);\n             keys[i] \u003d key;\n             values[i] \u003d value;\n           }\n         } else {\n           // Need to sort and check for nulls and dupes.\n           // Inline the Comparator implementation rather than transforming with a Function\n           // to save code size.\n           Arrays.sort(\n               entryArray,\n               0,\n               size,\n               new Comparator\u003cEntry\u003cK, V\u003e\u003e() {\n                 @Override\n                 public int compare(Entry\u003cK, V\u003e e1, Entry\u003cK, V\u003e e2) {\n                   return comparator.compare(e1.getKey(), e2.getKey());\n                 }\n               });\n           K prevKey \u003d entryArray[0].getKey();\n           keys[0] \u003d prevKey;\n           values[0] \u003d entryArray[0].getValue();\n+          checkEntryNotNull(keys[0], values[0]);\n           for (int i \u003d 1; i \u003c size; i++) {\n             K key \u003d entryArray[i].getKey();\n             V value \u003d entryArray[i].getValue();\n             checkEntryNotNull(key, value);\n             keys[i] \u003d key;\n             values[i] \u003d value;\n             checkNoConflict(\n                 comparator.compare(prevKey, key) !\u003d 0, \"key\", entryArray[i - 1], entryArray[i]);\n             prevKey \u003d key;\n           }\n         }\n         return new ImmutableSortedMap\u003c\u003e(\n             new RegularImmutableSortedSet\u003cK\u003e(ImmutableList.\u003cK\u003easImmutableList(keys), comparator),\n             ImmutableList.\u003cV\u003easImmutableList(values));\n     }\n   }\n\\ No newline at end of file\n"
+    },
+    "0c81386a239370c073572212079efc727c911d0b": {
+      "type": "Ybodychange",
+      "commitMessage": "Use diamond operator in collect\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d165450412\n",
+      "commitDate": 1502905310000,
+      "commitName": "0c81386a239370c073572212079efc727c911d0b",
+      "commitAuthor": "jijiang",
+      "commitDateOld": 1501080336000,
+      "commitNameOld": "934e3840945d3b866f80c28135a0369cb32d7163",
+      "commitAuthorOld": "cpovirk",
+      "daysBetweenCommits": 21.12,
+      "commitsBetweenForRepo": 29,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,56 +1,56 @@\n   private static \u003cK, V\u003e ImmutableSortedMap\u003cK, V\u003e fromEntries(\n       final Comparator\u003c? super K\u003e comparator,\n       boolean sameComparator,\n       Entry\u003cK, V\u003e[] entryArray,\n       int size) {\n     switch (size) {\n       case 0:\n         return emptyMap(comparator);\n       case 1:\n         return ImmutableSortedMap.\u003cK, V\u003eof(\n             comparator, entryArray[0].getKey(), entryArray[0].getValue());\n       default:\n         Object[] keys \u003d new Object[size];\n         Object[] values \u003d new Object[size];\n         if (sameComparator) {\n           // Need to check for nulls, but don\u0027t need to sort or validate.\n           for (int i \u003d 0; i \u003c size; i++) {\n             Object key \u003d entryArray[i].getKey();\n             Object value \u003d entryArray[i].getValue();\n             checkEntryNotNull(key, value);\n             keys[i] \u003d key;\n             values[i] \u003d value;\n           }\n         } else {\n           // Need to sort and check for nulls and dupes.\n           // Inline the Comparator implementation rather than transforming with a Function\n           // to save code size.\n           Arrays.sort(\n               entryArray,\n               0,\n               size,\n               new Comparator\u003cEntry\u003cK, V\u003e\u003e() {\n                 @Override\n                 public int compare(Entry\u003cK, V\u003e e1, Entry\u003cK, V\u003e e2) {\n                   return comparator.compare(e1.getKey(), e2.getKey());\n                 }\n               });\n           K prevKey \u003d entryArray[0].getKey();\n           keys[0] \u003d prevKey;\n           values[0] \u003d entryArray[0].getValue();\n           for (int i \u003d 1; i \u003c size; i++) {\n             K key \u003d entryArray[i].getKey();\n             V value \u003d entryArray[i].getValue();\n             checkEntryNotNull(key, value);\n             keys[i] \u003d key;\n             values[i] \u003d value;\n             checkNoConflict(\n                 comparator.compare(prevKey, key) !\u003d 0, \"key\", entryArray[i - 1], entryArray[i]);\n             prevKey \u003d key;\n           }\n         }\n-        return new ImmutableSortedMap\u003cK, V\u003e(\n+        return new ImmutableSortedMap\u003c\u003e(\n             new RegularImmutableSortedSet\u003cK\u003e(ImmutableList.\u003cK\u003easImmutableList(keys), comparator),\n             ImmutableList.\u003cV\u003easImmutableList(values));\n     }\n   }\n\\ No newline at end of file\n"
+    },
+    "813e0366fa399531035b8359f70da61cc8b499c3": {
+      "type": "Ybodychange",
+      "commitMessage": "Make some generics explicit that the maven-compiler-plugin can\u0027t figure our when compiling for Java 7\n\nEach change was reflected in the mainline, or has already deviated from the mainline, so this shouldn\u0027t incur any additional forking costs.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d154053375\n",
+      "commitDate": 1493049369000,
+      "commitName": "813e0366fa399531035b8359f70da61cc8b499c3",
+      "commitAuthor": "ronshapiro",
+      "commitDateOld": 1492741671000,
+      "commitNameOld": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthorOld": "zhenghua",
+      "daysBetweenCommits": 3.56,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,56 +1,56 @@\n   private static \u003cK, V\u003e ImmutableSortedMap\u003cK, V\u003e fromEntries(\n       final Comparator\u003c? super K\u003e comparator,\n       boolean sameComparator,\n       Entry\u003cK, V\u003e[] entryArray,\n       int size) {\n     switch (size) {\n       case 0:\n         return emptyMap(comparator);\n       case 1:\n         return ImmutableSortedMap.\u003cK, V\u003eof(\n             comparator, entryArray[0].getKey(), entryArray[0].getValue());\n       default:\n         Object[] keys \u003d new Object[size];\n         Object[] values \u003d new Object[size];\n         if (sameComparator) {\n           // Need to check for nulls, but don\u0027t need to sort or validate.\n           for (int i \u003d 0; i \u003c size; i++) {\n             Object key \u003d entryArray[i].getKey();\n             Object value \u003d entryArray[i].getValue();\n             checkEntryNotNull(key, value);\n             keys[i] \u003d key;\n             values[i] \u003d value;\n           }\n         } else {\n           // Need to sort and check for nulls and dupes.\n           // Inline the Comparator implementation rather than transforming with a Function\n           // to save code size.\n           Arrays.sort(\n               entryArray,\n               0,\n               size,\n               new Comparator\u003cEntry\u003cK, V\u003e\u003e() {\n                 @Override\n                 public int compare(Entry\u003cK, V\u003e e1, Entry\u003cK, V\u003e e2) {\n                   return comparator.compare(e1.getKey(), e2.getKey());\n                 }\n               });\n           K prevKey \u003d entryArray[0].getKey();\n           keys[0] \u003d prevKey;\n           values[0] \u003d entryArray[0].getValue();\n           for (int i \u003d 1; i \u003c size; i++) {\n             K key \u003d entryArray[i].getKey();\n             V value \u003d entryArray[i].getValue();\n             checkEntryNotNull(key, value);\n             keys[i] \u003d key;\n             values[i] \u003d value;\n             checkNoConflict(\n                 comparator.compare(prevKey, key) !\u003d 0, \"key\", entryArray[i - 1], entryArray[i]);\n             prevKey \u003d key;\n           }\n         }\n         return new ImmutableSortedMap\u003cK, V\u003e(\n-            new RegularImmutableSortedSet\u003cK\u003e(ImmutableList.asImmutableList(keys), comparator),\n-            ImmutableList.asImmutableList(values));\n+            new RegularImmutableSortedSet\u003cK\u003e(ImmutableList.\u003cK\u003easImmutableList(keys), comparator),\n+            ImmutableList.\u003cV\u003easImmutableList(values));\n     }\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

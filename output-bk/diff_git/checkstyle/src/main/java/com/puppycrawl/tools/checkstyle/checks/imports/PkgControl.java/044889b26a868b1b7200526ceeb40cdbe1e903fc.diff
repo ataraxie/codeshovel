@@ -1,0 +1,140 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/PkgControl.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/PkgControl.java
+index 27647b06b..c77b82207 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/PkgControl.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/PkgControl.java
+@@ -35,114 +35,117 @@ class PkgControl {
+     /** List of {@link Guard} objects to check. */
+     private final Deque<Guard> guards = Lists.newLinkedList();
+     /** List of children {@link PkgControl} objects. */
+     private final List<PkgControl> children = Lists.newArrayList();
+     /** The parent. Null indicates we are the root node. */
+     private final PkgControl parent;
+     /** The full package name for the node. */
+     private final String fullPackage;
+ 
+     /**
+      * Construct a root node.
+      * @param pkgName the name of the package.
+      */
+     PkgControl(final String pkgName) {
+         parent = null;
+         fullPackage = pkgName;
+     }
+ 
+     /**
+      * Construct a child node.
+      * @param parent the parent node.
+      * @param subPkg the sub package name.
+      */
+     PkgControl(final PkgControl parent, final String subPkg) {
+         this.parent = parent;
+         fullPackage = parent.fullPackage + "." + subPkg;
+         parent.children.add(this);
+     }
+ 
+     /**
+      * Adds a guard to the node.
+      * @param thug the guard to be added.
+      */
+     void addGuard(final Guard thug) {
+         guards.addFirst(thug);
+     }
+ 
+     /**
+      * @return the full package name represented by the node.
+      */
+     String getFullPackage() {
+         return fullPackage;
+     }
+ 
+     /**
+      * Search down the tree to locate the finest match for a supplied package.
+      * @param forPkg the package to search for.
+      * @return the finest match, or null if no match at all.
+      */
+     PkgControl locateFinest(final String forPkg) {
++        PkgControl finestMatch = null;
+         // Check if we are a match.
+-        // This algormithm should be improved to check for a trailing "."
++        // This algorithm should be improved to check for a trailing "."
+         // or nothing following.
+-        if (!forPkg.startsWith(fullPackage)) {
+-            return null;
+-        }
+-
+-        // Check if any of the children match.
+-        for (PkgControl pc : children) {
+-            final PkgControl match = pc.locateFinest(forPkg);
+-            if (match != null) {
+-                return match;
++        if (forPkg.startsWith(fullPackage)) {
++            // If there won't be match so I am the best there is.
++            finestMatch = this;
++            // Check if any of the children match.
++            for (PkgControl pc : children) {
++                final PkgControl match = pc.locateFinest(forPkg);
++                if (match != null) {
++                    finestMatch = match;
++                    break;
++                }
+             }
+         }
+-
+-        // No match so I am the best there is.
+-        return this;
++        return finestMatch;
+     }
+ 
+     /**
+      * Returns whether a package is allowed to be used. The algorithm checks
+      * with the current node for a result, and if none is found then calls
+      * its parent looking for a match. This will recurse looking for match.
+      * If there is no clear result then {@link AccessResult#UNKNOWN} is
+      * returned.
+      * @param forImport the package to check on.
+      * @param inPkg the package doing the import.
+      * @return an {@link AccessResult}.
+      */
+     AccessResult checkAccess(final String forImport, final String inPkg) {
++        AccessResult result;
+         final AccessResult retVal = localCheckAccess(forImport, inPkg);
+         if (retVal != AccessResult.UNKNOWN) {
+-            return retVal;
++            result = retVal;
+         }
+-        if (parent == null) {
++        else if (parent == null) {
+             // we are the top, so default to not allowed.
+-            return AccessResult.DISALLOWED;
++            result = AccessResult.DISALLOWED;
+         }
+-
+-        return parent.checkAccess(forImport, inPkg);
++        else {
++            result = parent.checkAccess(forImport, inPkg);
++        }
++        return result;
+     }
+ 
+     /**
+      * Checks whether any of the guards for this node control access to
+      * a specified package.
+      * @param forImport the package to check.
+      * @param inPkg the package doing the import.
+      * @return an {@link AccessResult}.
+      */
+     private AccessResult localCheckAccess(final String forImport,
+         final String inPkg) {
+         for (Guard g : guards) {
+             // Check if a Guard is only meant to be applied locally.
+             if (g.isLocalOnly() && !fullPackage.equals(inPkg)) {
+                 continue;
+             }
+             final AccessResult result = g.verifyImport(forImport);
+             if (result != AccessResult.UNKNOWN) {
+                 return result;
+             }
+         }
+         return AccessResult.UNKNOWN;
+     }
+ }

@@ -1,0 +1,61 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java
+index ddf8e567d..21d3bc07c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java
+@@ -52,51 +52,56 @@ public class CyclomaticComplexityCheck
+         super(DEFAULT_VALUE);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_CASE,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.QUESTION,
+             TokenTypes.LAND,
+             TokenTypes.LOR,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_CASE,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.QUESTION,
+             TokenTypes.LAND,
+             TokenTypes.LOR,
+         };
+     }
+ 
+     @Override
+     protected final void visitTokenHook(DetailAST ast) {
+         incrementCurrentValue(BigInteger.ONE);
+     }
+ 
+     @Override
+     protected final String getMessageID() {
+         return MSG_KEY;
+     }
++
++    @Override
++    protected void leaveTokenHook(DetailAST ast) {
++        // No Code
++    }
+ }

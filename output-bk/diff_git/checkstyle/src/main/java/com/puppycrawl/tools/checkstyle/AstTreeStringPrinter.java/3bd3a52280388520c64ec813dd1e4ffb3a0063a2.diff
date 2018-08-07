@@ -1,0 +1,151 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/AstTreeStringPrinter.java b/src/main/java/com/puppycrawl/tools/checkstyle/AstTreeStringPrinter.java
+index 883347678..ebc63bb3d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/AstTreeStringPrinter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/AstTreeStringPrinter.java
+@@ -113,142 +113,142 @@ public final class AstTreeStringPrinter {
+      * @return string javadoc tree
+      */
+     private static String parseAndPrintJavadocTree(DetailAST node) {
+         final DetailAST javadocBlock = node.getParent();
+         final DetailNode tree = DetailNodeTreeStringPrinter.parseJavadocAsDetailNode(javadocBlock);
+ 
+         String baseIndentation = getIndentation(node);
+         baseIndentation = baseIndentation.substring(0, baseIndentation.length() - 2);
+         final String rootPrefix = baseIndentation + "   `--";
+         final String prefix = baseIndentation + "       ";
+         return DetailNodeTreeStringPrinter.printTree(tree, rootPrefix, prefix);
+     }
+ 
+     /**
+      * Parse a file and print the parse tree.
+      * @param text the text to parse.
+      * @param withComments true to include comments to AST
+      * @return the AST of the file in String form.
+      * @throws CheckstyleException if the file is not a Java source.
+      */
+     public static String printAst(FileText text, boolean withComments) throws CheckstyleException {
+         return printTree(parseFileText(text, withComments));
+     }
+ 
+     /**
+      * Print AST.
+      * @param ast the root AST node.
+      * @return string AST.
+      */
+     private static String printTree(DetailAST ast) {
+         final StringBuilder messageBuilder = new StringBuilder();
+         DetailAST node = ast;
+         while (node != null) {
+             messageBuilder.append(getIndentation(node))
+                     .append(getNodeInfo(node))
+                     .append(LINE_SEPARATOR)
+                     .append(printTree(node.getFirstChild()));
+             node = node.getNextSibling();
+         }
+         return messageBuilder.toString();
+     }
+ 
+     /**
+      * Get string representation of the node as token name,
+      * node text, line number and column number.
+      * @param node DetailAST
+      * @return node info
+      */
+     private static String getNodeInfo(DetailAST node) {
+         return TokenUtils.getTokenName(node.getType())
+-                + " -> " + excapeAllControlChars(node.getText())
++                + " -> " + escapeAllControlChars(node.getText())
+                 + " [" + node.getLineNo() + ':' + node.getColumnNo() + ']';
+     }
+ 
+     /**
+      * Get indentation for an AST node.
+      * @param ast the AST to get the indentation for.
+      * @return the indentation in String format.
+      */
+     private static String getIndentation(DetailAST ast) {
+         final boolean isLastChild = ast.getNextSibling() == null;
+         DetailAST node = ast;
+         final StringBuilder indentation = new StringBuilder();
+         while (node.getParent() != null) {
+             node = node.getParent();
+             if (node.getParent() == null) {
+                 if (isLastChild) {
+                     // only ASCII symbols must be used due to
+                     // problems with running tests on Windows
+                     indentation.append("`--");
+                 }
+                 else {
+                     indentation.append("|--");
+                 }
+             }
+             else {
+                 if (node.getNextSibling() == null) {
+                     indentation.insert(0, "    ");
+                 }
+                 else {
+                     indentation.insert(0, "|   ");
+                 }
+             }
+         }
+         return indentation.toString();
+     }
+ 
+     /**
+-     * Replace all control chars with excaped symbols.
++     * Replace all control chars with escaped symbols.
+      * @param text the String to process.
+-     * @return the processed String with all control chars excaped.
++     * @return the processed String with all control chars escaped.
+      */
+-    private static String excapeAllControlChars(String text) {
++    private static String escapeAllControlChars(String text) {
+         final String textWithoutNewlines = NEWLINE.matcher(text).replaceAll("\\\\n");
+         final String textWithoutReturns = RETURN.matcher(textWithoutNewlines).replaceAll("\\\\r");
+         return TAB.matcher(textWithoutReturns).replaceAll("\\\\t");
+     }
+ 
+     /**
+      * Parse a file and return the parse tree.
+      * @param file the file to parse.
+      * @param withComments true to include comment nodes to the tree
+      * @return the root node of the parse tree.
+      * @throws IOException if the file could not be read.
+      * @throws CheckstyleException if the file is not a Java source.
+      */
+     private static DetailAST parseFile(File file, boolean withComments)
+             throws IOException, CheckstyleException {
+         final FileText text = new FileText(file.getAbsoluteFile(),
+             System.getProperty("file.encoding", "UTF-8"));
+         return parseFileText(text, withComments);
+     }
+ 
+     /**
+      * Parse a text and return the parse tree.
+      * @param text the text to parse.
+      * @param withComments true to include comment nodes to the tree
+      * @return the root node of the parse tree.
+      * @throws CheckstyleException if the file is not a Java source.
+      */
+     private static DetailAST parseFileText(FileText text, boolean withComments)
+             throws CheckstyleException {
+         final FileContents contents = new FileContents(text);
+         final DetailAST result;
+         try {
+             if (withComments) {
+                 result = TreeWalker.parseWithComments(contents);
+             }
+             else {
+                 result = TreeWalker.parse(contents);
+             }
+         }
+         catch (RecognitionException | TokenStreamException ex) {
+             final String exceptionMsg = String.format(Locale.ROOT,
+                 "%s occurred during the analysis of file %s.",
+                 ex.getClass().getSimpleName(), text.getFile().getPath());
+             throw new CheckstyleException(exceptionMsg, ex);
+         }
+ 
+         return result;
+     }
+ }

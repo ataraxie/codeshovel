@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java
+index 59c1aa99d..02fc2c9c7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java
+@@ -211,103 +211,101 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
+         final FieldFrame frame = new FieldFrame(currentFrame);
+         final int astType = ast.getType();
+         if (astType == TokenTypes.CLASS_DEF
+                 || astType == TokenTypes.ENUM_DEF
+                 || astType == TokenTypes.ENUM_CONSTANT_DEF) {
+             frame.setClassOrEnumOrEnumConstDef(true);
+             frame.setFrameName(ast.findFirstToken(TokenTypes.IDENT).getText());
+         }
+         currentFrame.addChild(frame);
+         currentFrame = frame;
+     }
+ 
+     /**
+      * Add the method call to the current frame if it should be processed.
+      * @param methodCall METHOD_CALL ast.
+      */
+     private void processMethodCall(DetailAST methodCall) {
+         final DetailAST dot = methodCall.getFirstChild();
+         if (dot.getType() == TokenTypes.DOT) {
+             final String methodName = dot.getLastChild().getText();
+             if (EQUALS.equals(methodName)
+                     || !ignoreEqualsIgnoreCase && "equalsIgnoreCase".equals(methodName)) {
+                 currentFrame.addMethodCall(methodCall);
+             }
+         }
+     }
+ 
+     /**
+      * Determine whether LITERAL_NEW is an anonymous class definition and add it as
+      * a frame in this case.
+      * @param ast LITERAL_NEW ast.
+      */
+     private void processLiteralNew(DetailAST ast) {
+         if (ast.branchContains(TokenTypes.LCURLY)) {
+             final FieldFrame frame = new FieldFrame(currentFrame);
+             currentFrame.addChild(frame);
+             currentFrame = frame;
+         }
+     }
+ 
+     /**
+      * Traverse the tree of the field frames to check all equals method calls.
+      * @param frame to check method calls in.
+      */
+     private void traverseFieldFrameTree(FieldFrame frame) {
+         for (FieldFrame child: frame.getChildren()) {
+             if (!child.getChildren().isEmpty()) {
+                 traverseFieldFrameTree(child);
+             }
+             currentFrame = child;
+-            for (DetailAST methodCall: child.getMethodCalls()) {
+-                checkMethodCall(methodCall);
+-            }
++            child.getMethodCalls().forEach(this::checkMethodCall);
+         }
+     }
+ 
+     /**
+      * Check whether the method call should be violated.
+      * @param methodCall method call to check.
+      */
+     private void checkMethodCall(DetailAST methodCall) {
+         DetailAST objCalledOn = methodCall.getFirstChild().getFirstChild();
+         if (objCalledOn.getType() == TokenTypes.DOT) {
+             objCalledOn = objCalledOn.getLastChild();
+         }
+         final DetailAST expr = methodCall.findFirstToken(TokenTypes.ELIST).getFirstChild();
+         if (isObjectValid(objCalledOn)
+                 && containsOneArgument(methodCall)
+                 && containsAllSafeTokens(expr)
+                 && isCalledOnStringFieldOrVariable(objCalledOn)) {
+             final String methodName = methodCall.getFirstChild().getLastChild().getText();
+             if (EQUALS.equals(methodName)) {
+                 log(methodCall.getLineNo(), methodCall.getColumnNo(),
+                     MSG_EQUALS_AVOID_NULL);
+             }
+             else {
+                 log(methodCall.getLineNo(), methodCall.getColumnNo(),
+                     MSG_EQUALS_IGNORE_CASE_AVOID_NULL);
+             }
+         }
+     }
+ 
+     /**
+      * Check whether the object equals method is called on is not a String literal
+      * and not too complex.
+      * @param objCalledOn the object equals method is called on ast.
+      * @return true if the object is valid.
+      */
+     private static boolean isObjectValid(DetailAST objCalledOn) {
+         boolean result = true;
+         final DetailAST previousSibling = objCalledOn.getPreviousSibling();
+         if (previousSibling != null
+                 && previousSibling.getType() == TokenTypes.DOT) {
+             result = false;
+         }
+         if (isStringLiteral(objCalledOn)) {
+             result = false;
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks for calling equals on String literal and

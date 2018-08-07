@@ -1,0 +1,91 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/ParenPadCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/ParenPadCheck.java
+index 12c000d2d..924ecbb21 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/ParenPadCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/ParenPadCheck.java
+@@ -56,80 +56,84 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * &lt;module name="ParenPad"&gt;
+  *     &lt;property name="tokens"
+  *               value="CTOR_CALL, METHOD_CALL, SUPER_CTOR_CALL"/&gt;
+  *     &lt;property name="option" value="space"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Oliver Burn
+  * @version 1.0
+  */
+ public class ParenPadCheck
+     extends AbstractParenPadCheck
+ {
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.RPAREN,
+                           TokenTypes.LPAREN,
+                           TokenTypes.CTOR_CALL,
+                           TokenTypes.SUPER_CTOR_CALL,
+                           TokenTypes.METHOD_CALL,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void visitToken(DetailAST aAST)
+     {
+         // Strange logic in this method to guard against checking RPAREN tokens
+         // that are associated with a TYPECAST token.
+         if (aAST.getType() != TokenTypes.RPAREN) {
+             if (!isPreceedsEmptyForInit(aAST)) {
+                 processLeft(aAST);
+             }
+         }
+         else if ((aAST.getParent() == null)
+                  || (aAST.getParent().getType() != TokenTypes.TYPECAST))
+         {
+             if (!isFollowsEmptyForIterator(aAST)) {
+                 processRight(aAST);
+             }
+         }
+     }
+ 
+     /**
+      * @param aAST the token to check
+      * @return whether a token follows an empty for iterator
+      */
+     private boolean isFollowsEmptyForIterator(DetailAST aAST)
+     {
+         boolean followsEmptyForIterator = false;
+         final DetailAST parent = aAST.getParent();
++        //Only traditional for statements are examined, not for-each statements
+         if ((parent != null)
+-            && (parent.getType() == TokenTypes.LITERAL_FOR))
++            && (parent.getType() == TokenTypes.LITERAL_FOR)
++            && (parent.findFirstToken(TokenTypes.FOR_EACH_CLAUSE) == null))
+         {
+             final DetailAST forIterator =
+                 parent.findFirstToken(TokenTypes.FOR_ITERATOR);
+             followsEmptyForIterator = (forIterator.getChildCount() == 0)
+                 && (aAST == forIterator.getNextSibling());
+         }
+         return followsEmptyForIterator;
+     }
+ 
+     /**
+      * @param aAST the token to check
+      * @return whether a token preceeds an empty for initializer
+      */
+     private boolean isPreceedsEmptyForInit(DetailAST aAST)
+     {
+         boolean preceedsEmptyForInintializer = false;
+         final DetailAST parent = aAST.getParent();
++        //Only traditional for statements are examined, not for-each statements
+         if ((parent != null)
+-                && (parent.getType() == TokenTypes.LITERAL_FOR))
++            && (parent.getType() == TokenTypes.LITERAL_FOR)
++            && (parent.findFirstToken(TokenTypes.FOR_EACH_CLAUSE) == null))
+         {
+             final DetailAST forIterator =
+                     parent.findFirstToken(TokenTypes.FOR_INIT);
+             preceedsEmptyForInintializer = (forIterator.getChildCount() == 0)
+                     && (aAST == forIterator.getPreviousSibling());
+         }
+         return preceedsEmptyForInintializer;
+     }
+ }

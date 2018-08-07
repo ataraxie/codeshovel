@@ -1,0 +1,74 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
+index 2c7d5d935..eb825ecd5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
+@@ -70,68 +70,68 @@ public final class OneStatementPerLineCheck extends Check
+         exprDepth = 0;
+         inForHeader = false;
+         lastStatementEnd = -1;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         switch (ast.getType()) {
+             case TokenTypes.EXPR:
+                 visitExpr(ast);
+                 break;
+             case TokenTypes.SEMI:
+                 visitSemi(ast);
+                 break;
+             case TokenTypes.FOR_INIT:
+                 inForHeader = true;
+                 break;
+             default:
+                 break;
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast)
+     {
+         switch (ast.getType()) {
+             case TokenTypes.FOR_ITERATOR:
+                 inForHeader = false;
+                 break;
+             case TokenTypes.EXPR:
+                 exprDepth--;
+                 break;
+             default:
+                 break;
+         }
+     }
+ 
+     /**
+      * Mark the state-change for the statement (entering) and remember the
+      * first line of the last statement. If the first line of the new
+      * statement is the same as the last line of the last statement and we are
+      * not within a for-statement, then the rule is violated.
+      * @param ast token for the {@link TokenTypes#EXPR}.
+      */
+     private void visitExpr(DetailAST ast)
+     {
+         exprDepth++;
+         if (exprDepth == 1
+                 && !inForHeader
+-                && (lastStatementEnd == ast.getLineNo()))
++                && lastStatementEnd == ast.getLineNo())
+         {
+             log(ast, MSG_KEY);
+         }
+     }
+ 
+     /**
+      * Mark the state-change for the statement (leaving) and remember the last
+      * line of the last statement.
+      * @param ast for the {@link TokenTypes#SEMI}.
+      */
+     private void visitSemi(DetailAST ast)
+     {
+         if (exprDepth == 0) {
+             lastStatementEnd = ast.getLineNo();
+         }
+     }
+ }

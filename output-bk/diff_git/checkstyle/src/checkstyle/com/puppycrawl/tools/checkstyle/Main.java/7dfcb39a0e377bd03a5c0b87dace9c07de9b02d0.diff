@@ -1,0 +1,106 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+index 52f21ac8b..7515b03db 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+@@ -30,100 +30,101 @@ import java.util.LinkedList;
+ 
+ import org.apache.commons.cli.CommandLine;
+ import org.apache.commons.cli.CommandLineParser;
+ import org.apache.commons.cli.HelpFormatter;
+ import org.apache.commons.cli.Options;
+ import org.apache.commons.cli.ParseException;
+ import org.apache.commons.cli.PosixParser;
+ 
+ import com.puppycrawl.tools.checkstyle.api.AuditListener;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ 
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ 
+ /**
+  * Wrapper command line program for the Checker.
+  * @author Oliver Burn
+  **/
+ public final class Main
+ {
+     /** the options to the command line */
+     private static final Options OPTS = new Options();
+     static {
+         OPTS.addOption("c", true, "The check configuration file to use.");
+         OPTS.addOption("r", true, "Traverse the directory for source files");
+         OPTS.addOption("o", true, "Sets the output file. Defaults to stdout");
+         OPTS.addOption("p", true, "Loads the properties file");
+         OPTS.addOption("n", true, "Loads the package names file");
+         OPTS.addOption(
+             "f",
+             true,
+             "Sets the output format. (plain|xml). Defaults to plain");
+     }
+ 
+     /**
+      * Loops over the files specified checking them for errors. The exit code
+      * is the number of errors found in all the files.
+      * @param aArgs the command line arguments
+      **/
+     public static void main(String[] aArgs)
+     {
+         // parse the parameters
+         final CommandLineParser clp = new PosixParser();
+         CommandLine line = null;
+         try {
+             line = clp.parse(OPTS, aArgs);
+         }
+         catch (final ParseException e) {
+             e.printStackTrace();
+             usage();
+         }
++        assert line != null;
+ 
+         // setup the properties
+         final Properties props =
+             line.hasOption("p")
+                 ? loadProperties(new File(line.getOptionValue("p")))
+                 : System.getProperties();
+ 
+         // ensure a config file is specified
+         if (!line.hasOption("c")) {
+             System.out.println("Must specify a config XML file.");
+             usage();
+         }
+ 
+         final Configuration config = loadConfig(line, props);
+ 
+         //Load the set of package names
+         ModuleFactory moduleFactory = null;
+         if (line.hasOption("n")) {
+             moduleFactory = loadPackages(line);
+         }
+ 
+         // setup the output stream
+         OutputStream out = null;
+         boolean closeOut = false;
+         if (line.hasOption("o")) {
+             final String fname = line.getOptionValue("o");
+             try {
+                 out = new FileOutputStream(fname);
+                 closeOut = true;
+             }
+             catch (final FileNotFoundException e) {
+                 System.out.println("Could not find file: '" + fname + "'");
+                 System.exit(1);
+             }
+         }
+         else {
+             out = System.out;
+             closeOut = false;
+         }
+ 
+         final AuditListener listener = createListener(line, out, closeOut);
+         final List files = getFilesToProcess(line);
+         final Checker c = createChecker(config, moduleFactory, listener);
+ 
+         final File[] processedFiles = new File[files.size()];
+         files.toArray(processedFiles);
+         final int numErrs = c.process(processedFiles);
+         c.destroy();
+         System.exit(numErrs);
+     }

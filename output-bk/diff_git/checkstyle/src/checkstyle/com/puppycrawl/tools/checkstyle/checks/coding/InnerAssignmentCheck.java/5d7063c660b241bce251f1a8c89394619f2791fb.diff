@@ -1,0 +1,66 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java
+index 368e5c604..200183f46 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java
+@@ -76,60 +76,60 @@ public class InnerAssignmentCheck
+             TokenTypes.ASSIGN,            // '='
+             TokenTypes.DIV_ASSIGN,        // "/="
+             TokenTypes.PLUS_ASSIGN,       // "+="
+             TokenTypes.MINUS_ASSIGN,      //"-="
+             TokenTypes.STAR_ASSIGN,       // "*="
+             TokenTypes.MOD_ASSIGN,        // "%="
+             TokenTypes.SR_ASSIGN,         // ">>="
+             TokenTypes.BSR_ASSIGN,        // ">>>="
+             TokenTypes.SL_ASSIGN,         // "<<="
+             TokenTypes.BXOR_ASSIGN,       // "^="
+             TokenTypes.BOR_ASSIGN,        // "|="
+             TokenTypes.BAND_ASSIGN,       // "&="
+         };
+     }
+ 
+     /** @see Check */
+     public void visitToken(DetailAST aAST)
+     {
+         final DetailAST parent1 = aAST.getParent();
+         final DetailAST parent2 = parent1.getParent();
+         final DetailAST parent3 = parent2.getParent();
+ 
+         final boolean assigment = isAssignment(parent1);
+         final boolean expr = parent1.getType() == TokenTypes.EXPR;
+         final boolean exprList =
+                 expr && parent2.getType() == TokenTypes.ELIST;
+         final boolean methodCall =
+                 exprList && parent3.getType() == TokenTypes.METHOD_CALL;
+         final boolean ctorCall =
+                 exprList && parent3.getType() == TokenTypes.LITERAL_NEW;
+ 
+         if (assigment || methodCall || ctorCall) {
+             log(aAST.getLineNo(), aAST.getColumnNo(), "assignment.inner.avoid");
+         }
+     }
+ 
+     /**
+      * Checks if an AST is an assignment operator.
+      * @param aAST the AST to check
+      * @return true iff aAST is an assignment operator.
+      */
+     private boolean isAssignment(DetailAST aAST)
+     {
+         // TODO: make actual tokens available to Check and loop over actual
+         // tokens here?
+         final int[] tokens = getDefaultTokens();
+ 
+         final int astType = aAST.getType();
+ 
+         for (int i = 0; i < tokens.length; i++) {
+-            int tokenType = tokens[i];
++            final int tokenType = tokens[i];
+             if (astType == tokenType) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+ 
+ }

@@ -1,0 +1,143 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/AstTreeStringPrinter.java b/src/main/java/com/puppycrawl/tools/checkstyle/AstTreeStringPrinter.java
+index dc3c88c42..ab83f8b4d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/AstTreeStringPrinter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/AstTreeStringPrinter.java
+@@ -45,126 +45,129 @@ public final class AstTreeStringPrinter {
+     /** Newline pattern. */
+     private static final Pattern NEWLINE = Pattern.compile("\n");
+     /** Return pattern. */
+     private static final Pattern RETURN = Pattern.compile("\r");
+     /** Tab pattern. */
+     private static final Pattern TAB = Pattern.compile("\t");
+ 
+     /** OS specific line separator. */
+     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+ 
+     /** Prevent instances. */
+     private AstTreeStringPrinter() {
+         // no code
+     }
+ 
+     /**
+      * Parse a file and print the parse tree.
+      * @param file the file to print.
+      * @param withComments true to include comments to AST
+      * @return the AST of the file in String form.
+      * @throws IOException if the file could not be read.
+      * @throws CheckstyleException if the file is not a Java source.
+      */
+     public static String printFileAst(File file, boolean withComments)
+             throws IOException, CheckstyleException {
+         return printTree(parseFile(file, withComments));
+     }
+ 
+     /**
+      * Prints full AST (java + comments + javadoc) of the java file.
+      * @param file java file
+      * @return Full tree
+      * @throws IOException Failed to open a file
+      * @throws CheckstyleException error while parsing the file
+      */
+     public static String printJavaAndJavadocTree(File file)
+             throws IOException, CheckstyleException {
+         final DetailAST tree = parseFile(file, true);
+         return printJavaAndJavadocTree(tree);
+     }
+ 
+     /**
+      * Prints full tree (java + comments + javadoc) of the DetailAST.
+      * @param ast root DetailAST
+      * @return Full tree
+      */
+     private static String printJavaAndJavadocTree(DetailAST ast) {
+         final StringBuilder messageBuilder = new StringBuilder();
+         DetailAST node = ast;
+         while (node != null) {
+-            if (node.getType() == TokenTypes.BLOCK_COMMENT_BEGIN
+-                    && JavadocUtils.isJavadocComment(node)) {
++            messageBuilder.append(getIndentation(node))
++                .append(getNodeInfo(node))
++                .append(LINE_SEPARATOR);
++            if (node.getType() == TokenTypes.COMMENT_CONTENT
++                    && JavadocUtils.isJavadocComment(node.getParent())) {
+                 final String javadocTree = parseAndPrintJavadocTree(node);
+                 messageBuilder.append(javadocTree);
+             }
+             else {
+-                messageBuilder.append(getIndentation(node))
+-                    .append(getNodeInfo(node))
+-                    .append(LINE_SEPARATOR)
+-                    .append(printJavaAndJavadocTree(node.getFirstChild()));
++                messageBuilder.append(printJavaAndJavadocTree(node.getFirstChild()));
+             }
+             node = node.getNextSibling();
+         }
+         return messageBuilder.toString();
+     }
+ 
+     /**
+      * Parses block comment as javadoc and prints its tree.
+      * @param node block comment begin
+      * @return string javadoc tree
+      */
+     private static String parseAndPrintJavadocTree(DetailAST node) {
+-        final DetailNode tree = DetailNodeTreeStringPrinter.parseJavadocAsDetailNode(node);
++        final DetailAST javadocBlock = node.getParent();
++        final DetailNode tree = DetailNodeTreeStringPrinter.parseJavadocAsDetailNode(javadocBlock);
+ 
+-        final String rootPrefix = getIndentation(node);
+-        final String prefix = rootPrefix.substring(0, rootPrefix.length() - 2) + "   ";
++        String baseIdentation = getIndentation(node);
++        baseIdentation = baseIdentation.substring(0, baseIdentation.length() - 2);
++        final String rootPrefix = baseIdentation + "   `--";
++        final String prefix = baseIdentation + "       ";
+         return DetailNodeTreeStringPrinter.printTree(tree, rootPrefix, prefix);
+     }
+ 
+     /**
+      * Parse a file and print the parse tree.
+      * @param text the text to parse.
+      * @param withComments true to include comments to AST
+      * @return the AST of the file in String form.
+      * @throws CheckstyleException if the file is not a Java source.
+      */
+     public static String printAst(FileText text, boolean withComments) throws CheckstyleException {
+         return printTree(parseFileText(text, withComments));
+     }
+ 
+     /**
+      * Print AST.
+      * @param ast the root AST node.
+      * @return string AST.
+      */
+     private static String printTree(DetailAST ast) {
+         final StringBuilder messageBuilder = new StringBuilder();
+         DetailAST node = ast;
+         while (node != null) {
+             messageBuilder.append(getIndentation(node))
+                     .append(getNodeInfo(node))
+                     .append(LINE_SEPARATOR)
+                     .append(printTree(node.getFirstChild()));
+             node = node.getNextSibling();
+         }
+         return messageBuilder.toString();
+     }
+ 
+     /**
+      * Get string representation of the node as token name,
+      * node text, line number and column number.
+      * @param node DetailAST
+      * @return node info
+      */
+     private static String getNodeInfo(DetailAST node) {
+         return TokenUtils.getTokenName(node.getType())
+                 + " -> " + excapeAllControlChars(node.getText())
+                 + " [" + node.getLineNo() + ':' + node.getColumnNo() + ']';
+     }
+ 
+     /**
+      * Get indentation for an AST node.
+      * @param ast the AST to get the indentation for.
+      * @return the indentation in String format.
+      */
+     private static String getIndentation(DetailAST ast) {

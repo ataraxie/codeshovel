@@ -1,0 +1,129 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java
+index 18d8a5b7e..26603c3ab 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java
+@@ -83,113 +83,112 @@ public class MultipleStringLiteralsCheck extends AbstractCheck {
+      */
+     public void setAllowedDuplicates(int allowedDuplicates) {
+         this.allowedDuplicates = allowedDuplicates;
+     }
+ 
+     /**
+      * Sets regular expression pattern for ignored strings.
+      * @param ignoreStringsRegexp
+      *        regular expression pattern for ignored strings
+      * @throws org.apache.commons.beanutils.ConversionException
+      *         if unable to create Pattern object
+      */
+     public final void setIgnoreStringsRegexp(String ignoreStringsRegexp) {
+         if (ignoreStringsRegexp == null || ignoreStringsRegexp.isEmpty()) {
+             pattern = null;
+         }
+         else {
+             pattern = CommonUtils.createPattern(ignoreStringsRegexp);
+         }
+     }
+ 
+     /**
+      * Adds a set of tokens the check is interested in.
+      * @param strRep the string representation of the tokens interested in
+      */
+     public final void setIgnoreOccurrenceContext(String... strRep) {
+         ignoreOccurrenceContext.clear();
+         for (final String s : strRep) {
+             final int type = TokenUtils.getTokenId(s);
+             ignoreOccurrenceContext.set(type);
+         }
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.STRING_LITERAL};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+-        if (isInIgnoreOccurrenceContext(ast)) {
+-            return;
+-        }
+-        final String currentString = ast.getText();
+-        if (pattern == null || !pattern.matcher(currentString).find()) {
+-            List<StringInfo> hitList = stringMap.get(currentString);
+-            if (hitList == null) {
+-                hitList = Lists.newArrayList();
+-                stringMap.put(currentString, hitList);
++        if (!isInIgnoreOccurrenceContext(ast)) {
++            final String currentString = ast.getText();
++            if (pattern == null || !pattern.matcher(currentString).find()) {
++                List<StringInfo> hitList = stringMap.get(currentString);
++                if (hitList == null) {
++                    hitList = Lists.newArrayList();
++                    stringMap.put(currentString, hitList);
++                }
++                final int line = ast.getLineNo();
++                final int col = ast.getColumnNo();
++                hitList.add(new StringInfo(line, col));
+             }
+-            final int line = ast.getLineNo();
+-            final int col = ast.getColumnNo();
+-            hitList.add(new StringInfo(line, col));
+         }
+     }
+ 
+     /**
+      * Analyses the path from the AST root to a given AST for occurrences
+      * of the token types in {@link #ignoreOccurrenceContext}.
+      *
+      * @param ast the node from where to start searching towards the root node
+      * @return whether the path from the root node to ast contains one of the
+      *     token type in {@link #ignoreOccurrenceContext}.
+      */
+     private boolean isInIgnoreOccurrenceContext(DetailAST ast) {
+         for (DetailAST token = ast;
+              token.getParent() != null;
+              token = token.getParent()) {
+             final int type = token.getType();
+             if (ignoreOccurrenceContext.get(type)) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         super.beginTree(rootAST);
+         stringMap.clear();
+     }
+ 
+     @Override
+     public void finishTree(DetailAST rootAST) {
+         for (Map.Entry<String, List<StringInfo>> stringListEntry : stringMap.entrySet()) {
+             final List<StringInfo> hits = stringListEntry.getValue();
+             if (hits.size() > allowedDuplicates) {
+                 final StringInfo firstFinding = hits.get(0);
+                 final int line = firstFinding.getLine();
+                 final int col = firstFinding.getCol();
+                 log(line, col, MSG_KEY, stringListEntry.getKey(), hits.size());
+             }
+         }
+     }
+ 
+     /**
+      * This class contains information about where a string was found.
+      */
+     private static final class StringInfo {
+         /**
+          * Line of finding.
+          */
+         private final int line;

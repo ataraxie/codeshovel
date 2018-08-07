@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+index 30b8a4c6d..a7b7945ee 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+@@ -328,101 +328,101 @@ public class ImportOrderCheck
+         if (ast.getType() == TokenTypes.IMPORT) {
+             ident = FullIdent.createFullIdentBelow(ast);
+             isStatic = false;
+         }
+         else {
+             ident = FullIdent.createFullIdent(ast.getFirstChild()
+                     .getNextSibling());
+             isStatic = true;
+         }
+ 
+         final boolean isStaticAndNotLastImport = isStatic && !lastImportStatic;
+         final boolean isNotStaticAndLastImport = !isStatic && lastImportStatic;
+         final ImportOrderOption abstractOption = getAbstractOption();
+ 
+         // using set of IF instead of SWITCH to analyze Enum options to satisfy coverage.
+         // https://github.com/checkstyle/checkstyle/issues/1387
+         if (abstractOption == ImportOrderOption.TOP) {
+ 
+             if (isNotStaticAndLastImport) {
+                 lastGroup = Integer.MIN_VALUE;
+                 lastImport = "";
+             }
+             doVisitToken(ident, isStatic, isStaticAndNotLastImport);
+ 
+         }
+         else if (abstractOption == ImportOrderOption.BOTTOM) {
+ 
+             if (isStaticAndNotLastImport) {
+                 lastGroup = Integer.MIN_VALUE;
+                 lastImport = "";
+             }
+             doVisitToken(ident, isStatic, isNotStaticAndLastImport);
+ 
+         }
+         else if (abstractOption == ImportOrderOption.ABOVE) {
+             // previous non-static but current is static
+             doVisitToken(ident, isStatic, isStaticAndNotLastImport);
+ 
+         }
+         else if (abstractOption == ImportOrderOption.UNDER) {
+             doVisitToken(ident, isStatic, isNotStaticAndLastImport);
+ 
+         }
+         else if (abstractOption == ImportOrderOption.INFLOW) {
+             // "previous" argument is useless here
+             doVisitToken(ident, isStatic, true);
+ 
+         }
+         else {
+             throw new IllegalStateException(
+-                    "Unexpected option for static imports: " + abstractOption.toString());
++                    "Unexpected option for static imports: " + abstractOption);
+         }
+ 
+         lastImportLine = ast.findFirstToken(TokenTypes.SEMI).getLineNo();
+         lastImportStatic = isStatic;
+         beforeFirstImport = false;
+     }
+ 
+     /**
+      * Shares processing...
+      *
+      * @param ident the import to process.
+      * @param isStatic whether the token is static or not.
+      * @param previous previous non-static but current is static (above), or
+      *                  previous static but current is non-static (under).
+      */
+     private void doVisitToken(FullIdent ident, boolean isStatic,
+             boolean previous) {
+         final String name = ident.getText();
+         final int groupIdx = getGroupNumber(name);
+         final int line = ident.getLineNo();
+ 
+         if (!beforeFirstImport && isAlphabeticallySortableStaticImport(isStatic)
+                 || groupIdx == lastGroup) {
+             doVisitTokenInSameGroup(isStatic, previous, name, line);
+         }
+         else if (groupIdx > lastGroup) {
+             if (!beforeFirstImport && separated && line - lastImportLine < 2) {
+                 log(line, MSG_SEPARATION, name);
+             }
+         }
+         else {
+             log(line, MSG_ORDERING, name);
+         }
+ 
+         lastGroup = groupIdx;
+         lastImport = name;
+     }
+ 
+     /**
+      * Checks whether static imports grouped by <b>top</b> or <b>bottom</b> option
+      * are sorted alphabetically or not.
+      * @param isStatic if current import is static.
+      * @return true if static imports should be sorted alphabetically.
+      */
+     private boolean isAlphabeticallySortableStaticImport(boolean isStatic) {
+         return isStatic && sortStaticImportsAlphabetically
+                 && (getAbstractOption() == ImportOrderOption.TOP
+                     || getAbstractOption() == ImportOrderOption.BOTTOM);
+     }
+ 

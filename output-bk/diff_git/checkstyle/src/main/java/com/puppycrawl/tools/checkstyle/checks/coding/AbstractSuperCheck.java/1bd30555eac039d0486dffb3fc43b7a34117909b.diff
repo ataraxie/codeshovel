@@ -1,0 +1,146 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
+index a68cf0e50..a7a9efdbc 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
+@@ -108,132 +108,132 @@ public abstract class AbstractSuperCheck
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.METHOD_DEF,
+             TokenTypes.LITERAL_SUPER,
+         };
+     }
+ 
+     /**
+      * Returns the name of the overriding method.
+      * @return the name of the overriding method.
+      */
+     protected abstract String getMethodName();
+ 
+     @Override
+     public void beginTree(DetailAST rootAST)
+     {
+         methodStack.clear();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         if (isOverridingMethod(ast)) {
+             methodStack.add(new MethodNode(ast));
+         }
+         else if (isSuperCall(ast)) {
+             final MethodNode methodNode = methodStack.getLast();
+             methodNode.setCallsSuper();
+         }
+     }
+ 
+     /**
+      *  Determines whether a 'super' literal is a call to the super method
+      * for this check.
+      * @param ast the AST node of a 'super' literal.
+      * @return true if ast is a call to the super method
+      * for this check.
+      */
+     private boolean isSuperCall(DetailAST ast)
+     {
+         if (ast.getType() != TokenTypes.LITERAL_SUPER) {
+             return false;
+         }
+         // dot operator?
+         DetailAST parent = ast.getParent();
+-        if ((parent == null) || (parent.getType() != TokenTypes.DOT)) {
++        if (parent == null || parent.getType() != TokenTypes.DOT) {
+             return false;
+         }
+ 
+         // same name of method
+         AST sibling = ast.getNextSibling();
+         // ignore type parameters
+-        if ((sibling != null)
+-            && (sibling.getType() == TokenTypes.TYPE_ARGUMENTS))
++        if (sibling != null
++            && sibling.getType() == TokenTypes.TYPE_ARGUMENTS)
+         {
+             sibling = sibling.getNextSibling();
+         }
+-        if ((sibling == null) || (sibling.getType() != TokenTypes.IDENT)) {
++        if (sibling == null || sibling.getType() != TokenTypes.IDENT) {
+             return false;
+         }
+         final String name = sibling.getText();
+         if (!getMethodName().equals(name)) {
+             return false;
+         }
+ 
+         // 0 parameters?
+         final DetailAST args = parent.getNextSibling();
+-        if ((args == null) || (args.getType() != TokenTypes.ELIST)) {
++        if (args == null || args.getType() != TokenTypes.ELIST) {
+             return false;
+         }
+         if (args.getChildCount() != 0) {
+             return false;
+         }
+ 
+         // in an overriding method for this check?
+         while (parent != null) {
+             if (parent.getType() == TokenTypes.METHOD_DEF) {
+                 return isOverridingMethod(parent);
+             }
+-            else if ((parent.getType() == TokenTypes.CTOR_DEF)
+-                || (parent.getType() == TokenTypes.INSTANCE_INIT))
++            else if (parent.getType() == TokenTypes.CTOR_DEF
++                || parent.getType() == TokenTypes.INSTANCE_INIT)
+             {
+                 return false;
+             }
+             parent = parent.getParent();
+         }
+         return false;
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast)
+     {
+         if (isOverridingMethod(ast)) {
+             final MethodNode methodNode =
+                 methodStack.removeLast();
+             if (!methodNode.getCallsSuper()) {
+                 final DetailAST methodAST = methodNode.getMethod();
+                 final DetailAST nameAST =
+                     methodAST.findFirstToken(TokenTypes.IDENT);
+                 log(nameAST.getLineNo(), nameAST.getColumnNo(),
+                     MSG_KEY, nameAST.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Determines whether an AST is a method definition for this check,
+      * with 0 parameters.
+      * @param ast the method definition AST.
+      * @return true if the method of ast is a method for this check.
+      */
+     private boolean isOverridingMethod(DetailAST ast)
+     {
+-        if ((ast.getType() != TokenTypes.METHOD_DEF)
++        if (ast.getType() != TokenTypes.METHOD_DEF
+             || ScopeUtils.inInterfaceOrAnnotationBlock(ast))
+         {
+             return false;
+         }
+         final DetailAST nameAST = ast.findFirstToken(TokenTypes.IDENT);
+         final String name = nameAST.getText();
+         if (!getMethodName().equals(name)) {
+             return false;
+         }
+         final DetailAST params = ast.findFirstToken(TokenTypes.PARAMETERS);
+-        return (params.getChildCount() == 0);
++        return params.getChildCount() == 0;
+     }
+ }

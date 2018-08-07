@@ -1,0 +1,104 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "NestedForDepthCheck.java",
+  "functionName": "visitToken",
+  "functionId": "visitToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/NestedForDepthCheck.java",
+  "functionStartLine": 88,
+  "functionEndLine": 93,
+  "changeHistory": [
+    "fe85a1ef2aa68c749e11fb07440dc570aac81881",
+    "a07cae0aca9f9072256b3a5fd05779e8d69b9748",
+    "27149f3504a2f350b74f456a9bffbae76a460060",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "41954c1bd08f1fa8f634208b875195e772716cc0"
+  ],
+  "changeHistoryShort": {
+    "fe85a1ef2aa68c749e11fb07440dc570aac81881": "Ybodychange",
+    "a07cae0aca9f9072256b3a5fd05779e8d69b9748": "Ybodychange",
+    "27149f3504a2f350b74f456a9bffbae76a460060": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "41954c1bd08f1fa8f634208b875195e772716cc0": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "fe85a1ef2aa68c749e11fb07440dc570aac81881": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2451: removed excess hierarchy from NestedForDepthCheck",
+      "commitDate": 1447042840000,
+      "commitName": "fe85a1ef2aa68c749e11fb07440dc570aac81881",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1439886329000,
+      "commitNameOld": "54ccca18635a4aeea90da86d30590df498f76b08",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 82.83,
+      "commitsBetweenForRepo": 805,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,6 @@\n     public void visitToken(DetailAST ast) {\n-        nestIn(ast, MSG_KEY);\n+        if (depth \u003e max) {\n+            log(ast, MSG_KEY, depth, max);\n+        }\n+        ++depth;\n     }\n\\ No newline at end of file\n"
+    },
+    "a07cae0aca9f9072256b3a5fd05779e8d69b9748": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1293: Refactoring of Nested*DepthCheck-family\n",
+      "commitDate": 1436405266000,
+      "commitName": "a07cae0aca9f9072256b3a5fd05779e8d69b9748",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 52.57,
+      "commitsBetweenForRepo": 298,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,3 @@\n     public void visitToken(DetailAST ast) {\n-        if (TokenTypes.LITERAL_FOR \u003d\u003d ast.getType()) {\n-            nestIn(ast, MSG_KEY);\n-        }\n+        nestIn(ast, MSG_KEY);\n     }\n\\ No newline at end of file\n"
+    },
+    "27149f3504a2f350b74f456a9bffbae76a460060": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactored UTs, coding package, issue #537\n",
+      "commitDate": 1424437367000,
+      "commitName": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.66,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     public void visitToken(DetailAST ast)\n     {\n         if (TokenTypes.LITERAL_FOR \u003d\u003d ast.getType()) {\n-            nestIn(ast, \"nested.for.depth\");\n+            nestIn(ast, MSG_KEY);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "41954c1bd08f1fa8f634208b875195e772716cc0": {
+      "type": "Yintroduced",
+      "commitMessage": "Added NestedForDepth that restricts nested \u003ccode\u003efor\u003c/code\u003e\nblocks to a specified depth (default \u003d 1). Thanks to Alexander\nJesse for patch #1151673.\n",
+      "commitDate": 1285739041000,
+      "commitName": "41954c1bd08f1fa8f634208b875195e772716cc0",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

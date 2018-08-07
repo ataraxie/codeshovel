@@ -1,0 +1,124 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index 119ac51e8..39f9d2b58 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -192,117 +192,117 @@ public class JavadocStyleCheck
+                 && !surroundingScope.isIn(excludeScope));
+     }
+ 
+     /**
+      * Performs the various checks agains the Javadoc comment.
+      *
+      * @param ast the AST of the element being documented
+      * @param comment the source lines that make up the Javadoc comment.
+      *
+      * @see #checkFirstSentence(DetailAST, TextBlock)
+      * @see #checkHtml(DetailAST, TextBlock)
+      */
+     private void checkComment(final DetailAST ast, final TextBlock comment) {
+         if (comment == null) {
+             /*checking for missing docs in JavadocStyleCheck is not consistent
+             with the rest of CheckStyle...  Even though, I didn't think it
+             made sense to make another csheck just to ensure that the
+             package-info.java file actually contains package Javadocs.*/
+             if (getFileContents().inPackageInfo()) {
+                 log(ast.getLineNo(), JAVADOC_MISSING);
+             }
+             return;
+         }
+ 
+         if (checkingFirstSentence) {
+             checkFirstSentence(ast, comment);
+         }
+ 
+         if (checkingHtml) {
+             checkHtml(ast, comment);
+         }
+ 
+         if (checkingEmptyJavadoc) {
+             checkEmptyJavadoc(comment);
+         }
+     }
+ 
+     /**
+      * Checks that the first sentence ends with proper punctuation.  This method
+      * uses a regular expression that checks for the presence of a period,
+      * question mark, or exclamation mark followed either by whitespace, an
+      * HTML element, or the end of string. This method ignores {_AT_inheritDoc}
+      * comments for TokenTypes that are valid for {_AT_inheritDoc}.
+      *
+      * @param ast the current node
+      * @param comment the source lines that make up the Javadoc comment.
+      */
+     private void checkFirstSentence(final DetailAST ast, TextBlock comment) {
+         final String commentText = getCommentText(comment.getText());
+ 
+-        if (commentText.length() != 0
++        if (!commentText.isEmpty()
+             && !getEndOfSentencePattern().matcher(commentText).find()
+             && !("{@inheritDoc}".equals(commentText)
+             && JavadocTagInfo.INHERIT_DOC.isValidOn(ast))) {
+             log(comment.getStartLineNo(), NO_PERIOD);
+         }
+     }
+ 
+     /**
+      * Checks that the Javadoc is not empty.
+      *
+      * @param comment the source lines that make up the Javadoc comment.
+      */
+     private void checkEmptyJavadoc(TextBlock comment) {
+         final String commentText = getCommentText(comment.getText());
+ 
+-        if (commentText.length() == 0) {
++        if (commentText.isEmpty()) {
+             log(comment.getStartLineNo(), EMPTY);
+         }
+     }
+ 
+     /**
+      * Returns the comment text from the Javadoc.
+      * @param comments the lines of Javadoc.
+      * @return a comment text String.
+      */
+     private static String getCommentText(String... comments) {
+         final StringBuilder builder = new StringBuilder();
+         for (final String line : comments) {
+             final int textStart = findTextStart(line);
+ 
+             if (textStart != -1) {
+                 if (line.charAt(textStart) == '@') {
+                     //we have found the tag section
+                     break;
+                 }
+                 builder.append(line.substring(textStart));
+                 trimTail(builder);
+                 builder.append('\n');
+             }
+         }
+ 
+         return builder.toString().trim();
+     }
+ 
+     /**
+      * Finds the index of the first non-whitespace character ignoring the
+      * Javadoc comment start and end strings (&#47** and *&#47) as well as any
+      * leading asterisk.
+      * @param line the Javadoc comment line of text to scan.
+      * @return the int index relative to 0 for the start of text
+      *         or -1 if not found.
+      */
+     private static int findTextStart(String line) {
+         int textStart = -1;
+         for (int i = 0; i < line.length(); i++) {
+             if (!Character.isWhitespace(line.charAt(i))) {
+                 if (line.regionMatches(i, "/**", 0, "/**".length())) {
+                     i += 2;
+                 }
+                 else if (line.regionMatches(i, "*/", 0, 2)) {
+                     i++;
+                 }
+                 else if (line.charAt(i) != '*') {
+                     textStart = i;
+                     break;
+                 }

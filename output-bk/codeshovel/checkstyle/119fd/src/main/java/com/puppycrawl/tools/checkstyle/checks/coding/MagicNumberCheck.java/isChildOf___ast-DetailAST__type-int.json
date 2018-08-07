@@ -1,0 +1,135 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MagicNumberCheck.java",
+  "functionName": "isChildOf",
+  "functionId": "isChildOf___ast-DetailAST__type-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java",
+  "functionStartLine": 441,
+  "functionEndLine": 453,
+  "changeHistory": [
+    "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e",
+    "795968d20ed78e558a95fdd35702366327a4bdc1",
+    "914bf53cd079008971634897b457480a7ca1f669",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "cfcab692ddc353bc331bd9409f36a0b587917e27",
+    "e28ebec1e0158a27217ea2fe71cf39000157edea"
+  ],
+  "changeHistoryShort": {
+    "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e": "Ybodychange",
+    "795968d20ed78e558a95fdd35702366327a4bdc1": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Ybodychange)",
+    "914bf53cd079008971634897b457480a7ca1f669": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "cfcab692ddc353bc331bd9409f36a0b587917e27": "Ybodychange",
+    "e28ebec1e0158a27217ea2fe71cf39000157edea": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #4102: changed loops to end execution early",
+      "commitDate": 1491393573000,
+      "commitName": "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 67.89,
+      "commitsBetweenForRepo": 202,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,13 @@\n     private static boolean isChildOf(DetailAST ast, int type) {\n         boolean result \u003d false;\n         DetailAST node \u003d ast;\n         do {\n             if (node.getType() \u003d\u003d type) {\n                 result \u003d true;\n+                break;\n             }\n             node \u003d node.getParent();\n-        } while (node !\u003d null \u0026\u0026 !result);\n+        } while (node !\u003d null);\n \n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "795968d20ed78e558a95fdd35702366327a4bdc1": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Magic Number annotation detection enhanced for arbitary parent nodes, Issue #926\n",
+      "commitDate": 1431374031000,
+      "commitName": "795968d20ed78e558a95fdd35702366327a4bdc1",
+      "commitAuthor": "Mehmet Can Cömert",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "914bf53cd079008971634897b457480a7ca1f669": {
+      "type": "Ybodychange",
+      "commitMessage": "resolving PMD issues with braces, removing dead code conditions that are impossible to test, coverage become 100%\n",
+      "commitDate": 1428045932000,
+      "commitName": "914bf53cd079008971634897b457480a7ca1f669",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1428045918000,
+      "commitNameOld": "d58f720c819d92f42a37e8863379de3f410cd573",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,6 @@\n     private boolean isInAnnotation(DetailAST ast)\n     {\n-        if (null \u003d\u003d ast.getParent()\n-                || null \u003d\u003d ast.getParent().getParent())\n-        {\n-            return false;\n-        }\n-\n         return TokenTypes.ANNOTATION \u003d\u003d ast.getParent().getParent().getType()\n                 || TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR\n                         \u003d\u003d ast.getParent().getParent().getType();\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437367000,
+      "commitNameOld": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 18.36,
+      "commitsBetweenForRepo": 91,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private boolean isInAnnotation(DetailAST ast)\n     {\n-        if ((null \u003d\u003d ast.getParent())\n-                || (null \u003d\u003d ast.getParent().getParent()))\n+        if (null \u003d\u003d ast.getParent()\n+                || null \u003d\u003d ast.getParent().getParent())\n         {\n             return false;\n         }\n \n-        return (TokenTypes.ANNOTATION \u003d\u003d ast.getParent().getParent().getType())\n-                || (TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR\n-                        \u003d\u003d ast.getParent().getParent().getType());\n+        return TokenTypes.ANNOTATION \u003d\u003d ast.getParent().getParent().getType()\n+                || TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR\n+                        \u003d\u003d ast.getParent().getParent().getType();\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "cfcab692ddc353bc331bd9409f36a0b587917e27": {
+      "type": "Ybodychange",
+      "commitMessage": "clean up the code\n",
+      "commitDate": 1293779277000,
+      "commitName": "cfcab692ddc353bc331bd9409f36a0b587917e27",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1293778232000,
+      "commitNameOld": "e28ebec1e0158a27217ea2fe71cf39000157edea",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,12 @@\n     private boolean isInAnnotation(DetailAST aAST)\n     {\n-        if (aAST.getParent() \u003d\u003d null || aAST.getParent().getParent() \u003d\u003d null) {\n+        if ((null \u003d\u003d aAST.getParent())\n+                || (null \u003d\u003d aAST.getParent().getParent()))\n+        {\n             return false;\n         }\n \n-        if (TokenTypes.ANNOTATION \u003d\u003d aAST.getParent().getParent().getType()\n-                || TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR \u003d\u003d aAST.getParent()\n-                        .getParent().getType())\n-        {\n-            return true;\n-        }\n-        else {\n-            return false;\n-        }\n+        return (TokenTypes.ANNOTATION \u003d\u003d aAST.getParent().getParent().getType())\n+                || (TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR \u003d\u003d\n+                    aAST.getParent().getParent().getType());\n     }\n\\ No newline at end of file\n"
+    },
+    "e28ebec1e0158a27217ea2fe71cf39000157edea": {
+      "type": "Yintroduced",
+      "commitMessage": "apply patch #3132984 - Ignore magic numbers to annotations in MagicNumberCheck\n",
+      "commitDate": 1293778232000,
+      "commitName": "e28ebec1e0158a27217ea2fe71cf39000157edea",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

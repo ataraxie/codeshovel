@@ -1,0 +1,117 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "WhitespaceAroundCheck.java",
+  "functionName": "isEmptyType",
+  "functionId": "isEmptyType___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java",
+  "functionStartLine": 643,
+  "functionEndLine": 652,
+  "changeHistory": [
+    "a66d414ae6254d11f5c6021cc804a56d250a3595",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "6985c4758d4a3252951a6a26b8efdd7b5f0adff4",
+    "d97a2df674716efb7deda50180ae933bdc46d68a",
+    "daf8230919a8ffc9058a7ce129f5c60309739a00",
+    "522a6b31b62d65bf5f8eb051107bbf3223fa32c5",
+    "55c2560774f0624afeae9e6c29fd19ae59e8c24b"
+  ],
+  "changeHistoryShort": {
+    "a66d414ae6254d11f5c6021cc804a56d250a3595": "Ymultichange(Yparameterchange,Ybodychange)",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "6985c4758d4a3252951a6a26b8efdd7b5f0adff4": "Ybodychange",
+    "d97a2df674716efb7deda50180ae933bdc46d68a": "Ymultichange(Yparameterchange,Ybodychange)",
+    "daf8230919a8ffc9058a7ce129f5c60309739a00": "Ybodychange",
+    "522a6b31b62d65bf5f8eb051107bbf3223fa32c5": "Ybodychange",
+    "55c2560774f0624afeae9e6c29fd19ae59e8c24b": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "a66d414ae6254d11f5c6021cc804a56d250a3595": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #2480: Fix skipping validation for non empty classes when allowEmptyTypes is true\n",
+      "commitDate": 1446645632000,
+      "commitName": "a66d414ae6254d11f5c6021cc804a56d250a3595",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436482625000,
+      "commitNameOld": "6985c4758d4a3252951a6a26b8efdd7b5f0adff4",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 8.25,
+      "commitsBetweenForRepo": 85,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    private boolean isEmptyType(DetailAST ast, int parentType) {\n+    private static boolean isEmptyType(DetailAST ast, int parentType) {\n         final int type \u003d ast.getType();\n         return (type \u003d\u003d TokenTypes.RCURLY || type \u003d\u003d TokenTypes.LCURLY)\n                 \u0026\u0026 parentType \u003d\u003d TokenTypes.OBJBLOCK;\n     }\n\\ No newline at end of file\n"
+    },
+    "6985c4758d4a3252951a6a26b8efdd7b5f0adff4": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1289: \u0027WhitespaceAroundCheck\u0027 refactored, UT coverage improved\n",
+      "commitDate": 1436482625000,
+      "commitName": "6985c4758d4a3252951a6a26b8efdd7b5f0adff4",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1436323201000,
+      "commitNameOld": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.85,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,5 @@\n     private boolean isEmptyType(DetailAST ast, int parentType) {\n         final int type \u003d ast.getType();\n-        if ((type \u003d\u003d TokenTypes.RCURLY || type \u003d\u003d TokenTypes.LCURLY)\n-                \u0026\u0026 parentType \u003d\u003d TokenTypes.OBJBLOCK) {\n-            final DetailAST typeNode \u003d ast.getParent().getParent();\n-            final int matchType \u003d typeNode.getType();\n-            if (matchType \u003d\u003d TokenTypes.CLASS_DEF\n-                    || matchType \u003d\u003d TokenTypes.INTERFACE_DEF\n-                    || matchType \u003d\u003d TokenTypes.ENUM_DEF\n-                    || matchType \u003d\u003d TokenTypes.LITERAL_NEW\n-                    || matchType \u003d\u003d TokenTypes.ANNOTATION_DEF) {\n-                return true;\n-            }\n-        }\n-        return false;\n+        return (type \u003d\u003d TokenTypes.RCURLY || type \u003d\u003d TokenTypes.LCURLY)\n+                \u0026\u0026 parentType \u003d\u003d TokenTypes.OBJBLOCK;\n     }\n\\ No newline at end of file\n"
+    },
+    "d97a2df674716efb7deda50180ae933bdc46d68a": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, whitespace, #512\n",
+      "commitDate": 1421677248000,
+      "commitName": "d97a2df674716efb7deda50180ae933bdc46d68a",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "daf8230919a8ffc9058a7ce129f5c60309739a00": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix false positive with ANNOTATION_DEF #237\n",
+      "commitDate": 1407798072000,
+      "commitName": "daf8230919a8ffc9058a7ce129f5c60309739a00",
+      "commitAuthor": "Max",
+      "commitDateOld": 1406204638000,
+      "commitNameOld": "522a6b31b62d65bf5f8eb051107bbf3223fa32c5",
+      "commitAuthorOld": "Max",
+      "daysBetweenCommits": 18.44,
+      "commitsBetweenForRepo": 34,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,19 @@\n     private boolean isEmptyType(DetailAST aAST, int aParentType)\n     {\n         final int type \u003d aAST.getType();\n         if ((type \u003d\u003d TokenTypes.RCURLY || type \u003d\u003d TokenTypes.LCURLY)\n                 \u0026\u0026 aParentType \u003d\u003d TokenTypes.OBJBLOCK)\n         {\n             final DetailAST typeNode \u003d aAST.getParent().getParent();\n             final int matchType \u003d typeNode.getType();\n             if (matchType \u003d\u003d TokenTypes.CLASS_DEF\n                     || matchType \u003d\u003d TokenTypes.INTERFACE_DEF\n                     || matchType \u003d\u003d TokenTypes.ENUM_DEF\n-                    || matchType \u003d\u003d TokenTypes.LITERAL_NEW)\n+                    || matchType \u003d\u003d TokenTypes.LITERAL_NEW\n+                    || matchType \u003d\u003d TokenTypes.ANNOTATION_DEF)\n             {\n                 return true;\n             }\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "522a6b31b62d65bf5f8eb051107bbf3223fa32c5": {
+      "type": "Ybodychange",
+      "commitMessage": "Allowed empty anonymous classes. Was updated allowEmptyTypes property. #197\n",
+      "commitDate": 1406204638000,
+      "commitName": "522a6b31b62d65bf5f8eb051107bbf3223fa32c5",
+      "commitAuthor": "Max",
+      "commitDateOld": 1406058290000,
+      "commitNameOld": "dfb851e673a879120c80caca7167de3e5c3aa662",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 1.69,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,18 @@\n     private boolean isEmptyType(DetailAST aAST, int aParentType)\n     {\n         final int type \u003d aAST.getType();\n         if ((type \u003d\u003d TokenTypes.RCURLY || type \u003d\u003d TokenTypes.LCURLY)\n                 \u0026\u0026 aParentType \u003d\u003d TokenTypes.OBJBLOCK)\n         {\n             final DetailAST typeNode \u003d aAST.getParent().getParent();\n             final int matchType \u003d typeNode.getType();\n             if (matchType \u003d\u003d TokenTypes.CLASS_DEF\n                     || matchType \u003d\u003d TokenTypes.INTERFACE_DEF\n-                    || matchType \u003d\u003d TokenTypes.ENUM_DEF)\n+                    || matchType \u003d\u003d TokenTypes.ENUM_DEF\n+                    || matchType \u003d\u003d TokenTypes.LITERAL_NEW)\n             {\n                 return true;\n             }\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "55c2560774f0624afeae9e6c29fd19ae59e8c24b": {
+      "type": "Yintroduced",
+      "commitMessage": "Update for existing Check: WhitespaceAround #170\n",
+      "commitDate": 1404577816000,
+      "commitName": "55c2560774f0624afeae9e6c29fd19ae59e8c24b",
+      "commitAuthor": "Max"
+    }
+  }
+}

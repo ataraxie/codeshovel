@@ -1,0 +1,300 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+index 8140fd78f..d76a53cbb 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+@@ -74,287 +74,286 @@ public abstract class ExpressionHandler
+     /**
+      * Get the indentation amount for this handler. For performance reasons,
+      * this value is cached. The first time this method is called, the
+      * indentation amount is computed and stored. On further calls, the stored
+      * value is returned.
+      *
+      * @return the expected indentation amount
+      */
+     public final int getLevel()
+     {
+         if (mLevel == UNINITIALIZED) {
+             mLevel = getLevelImpl();
+         }
+         return mLevel;
+     }
+ 
+     /**
+      * Compute the indentation amount for this handler.
+      *
+      * @return the expected indentation amount
+      */
+     protected int getLevelImpl()
+     {
+         return mParent.suggestedChildLevel(this);
+     }
+ 
+     /**
+      * Indentation level suggested for a child element. Children don't have
+      * to respect this, but most do.
+      *
+      * @param aChild  child AST (so suggestion level can differ based on child
+      *                  type)
+      *
+      * @return suggested indentation for child
+      */
+     public int suggestedChildLevel(ExpressionHandler aChild)
+     {
+         return getLevel() + mIndentCheck.getBasicOffset();
+     }
+ 
+     /**
+      * Log an indentation error.
+      *
+      * @param aAst           the expression that caused the error
+      * @param aSubtypeName   the type of the expression
+      * @param aActualLevel    the actual indent level of the expression
+      */
+     protected final void logError(DetailAST aAst, String aSubtypeName,
+                                   int aActualLevel)
+     {
+-        logError(aAst, aSubtypeName, aActualLevel, getLevel());
++        logError(aAst, aSubtypeName, aActualLevel,
++                 new IndentLevel(getLevel()));
+     }
+ 
+     /**
+      * Log an indentation error.
+      *
+      * @param aAst           the expression that caused the error
+      * @param aSubtypeName   the type of the expression
+      * @param aActualLevel   the actual indent level of the expression
+      * @param aExpectedLevel the expected indent level of the expression
+      */
+     protected final void logError(DetailAST aAst, String aSubtypeName,
+-                                  int aActualLevel, int aExpectedLevel)
++                                  int aActualLevel, IndentLevel aExpectedLevel)
+     {
+         String typeStr = (aSubtypeName == "" ? "" : (" " + aSubtypeName));
+         Object[] args = new Object[] {
+             mTypeName + typeStr,
+             new Integer(aActualLevel),
+-            new Integer(aExpectedLevel),
++            aExpectedLevel,
+         };
+         mIndentCheck.indentationLog(aAst.getLineNo(),
+                                     "indentation.error",
+                                     args);
+     }
+ 
+     /**
+      * Log child indentation error.
+      *
+      * @param aLine           the expression that caused the error
+      * @param aActualLevel   the actual indent level of the expression
+      * @param aExpectedLevel the expected indent level of the expression
+      */
+     private void logChildError(int aLine,
+                                int aActualLevel,
+                                IndentLevel aExpectedLevel)
+     {
+         Object[] args = new Object[] {
+             mTypeName,
+             new Integer(aActualLevel),
+             aExpectedLevel,
+         };
+         mIndentCheck.indentationLog(aLine,
+                                     "indentation.child.error",
+                                     args);
+     }
+ 
+     /**
+      * Determines if the given expression is at the start of a line.
+      *
+      * @param aAst   the expression to check
+      *
+      * @return true if it is, false otherwise
+      */
+     protected final boolean startsLine(DetailAST aAst)
+     {
+         return getLineStart(aAst) == expandedTabsColumnNo(aAst);
+     }
+ 
+     /**
+      * Determines if two expressions are on the same line.
+      *
+      * @param aAst1   the first expression
+      * @param aAst2   the second expression
+      *
+      * @return true if they are, false otherwise
+      */
+     static boolean areOnSameLine(DetailAST aAst1, DetailAST aAst2)
+     {
+         return aAst1 != null && aAst2 != null
+             && aAst1.getLineNo() == aAst2.getLineNo();
+     }
+ 
+     /**
+      * Determines if the gieven parent expression is equal to or greater than
+      * the correct indentation level.
+      *
+      * @param aParent   the parent expression
+      *
+      * @return true if it is, false otherwise
+      */
+     protected final boolean atLevelOrGreater(DetailAST aParent)
+     {
+         if (expandedTabsColumnNo(aParent) < getLevel()) {
+             return false;
+         }
+ 
+         for (DetailAST child = aParent.getLastChild(); child != null;
+             child = child.getPreviousSibling())
+         {
+             if (!atLevelOrGreater(child)) {
+                 return false;
+             }
+         }
+         return true;
+     }
+ 
+     /**
+      * Get the start of the line for the given expression.
+      *
+      * @param aAst   the expression to find the start of the line for
+      *
+      * @return the start of the line for the given expression
+      */
+     protected final int getLineStart(DetailAST aAst)
+     {
+-        // TODO: this breaks indentation -- add to tests
+-        String line = mIndentCheck.getLines()[
+-          aAst.getLineNo() - 1];
++        String line = mIndentCheck.getLines()[aAst.getLineNo() - 1];
+         return getLineStart(line);
+     }
+ 
+     // TODO: this whole checking of consecuitive/expression line indents is
+     // smelling pretty bad... and is in serious need of pruning.  But, I
+     // want to finish the invalid tests before I start messing around with
+     // it.
+ 
+     /**
+      * Check the indentation of consecutive lines for the expression we are
+      * handling.
+      *
+      * @param aStartLine     the first line to check
+      * @param aEndLine       the last line to check
+      * @param aIndentLevel   the required indent level
+      */
+     protected final void checkLinesIndent(int aStartLine, int aEndLine,
+         int aIndentLevel)
+     {
+         // check first line
+         checkSingleLine(aStartLine, aIndentLevel);
+ 
+         // check following lines
+         aIndentLevel += mIndentCheck.getBasicOffset();
+         for (int i = aStartLine + 1; i <= aEndLine; i++) {
+             checkSingleLine(i, aIndentLevel);
+         }
+     }
+ 
+     /**
+      * @return true if indentation should be increased after
+      *              fisrt line in checkLinesIndent()
+      *         false otherwise
+      */
+-    protected boolean shouldIncraeseIndent()
++    protected boolean shouldIncreaseIndent()
+     {
+         return true;
+     }
+ 
+     /**
+      * Check the indentation for a set of lines.
+      *
+      * @param aLines              the set of lines to check
+      * @param aIndentLevel        the indentation level
+      * @param aFirstLineMatches   whether or not the first line has to match
+      * @param aFirstLine          firstline of whole expression
+      */
+     private void checkLinesIndent(LineSet aLines,
+                                   IndentLevel aIndentLevel,
+                                   boolean aFirstLineMatches,
+                                   int aFirstLine)
+     {
+         if (aLines.isEmpty()) {
+             return;
+         }
+ 
+         // check first line
+         int startLine = aLines.firstLine();
+         int endLine = aLines.lastLine();
+         int startCol = aLines.firstLineCol();
+ 
+         int realStartCol = getLineStart(mIndentCheck.getLines()[startLine - 1]);
+ 
+         if (realStartCol == startCol) {
+             checkSingleLine(startLine, startCol, aIndentLevel,
+                 aFirstLineMatches);
+         }
+ 
+         // if first line starts the line, following lines are indented
+         // one level; but if the first line of this expression is
+         // nested with the previous expression (which is assumed if it
+         // doesn't start the line) then don't indent more, the first
+         // indentation is absorbed by the nesting
+ 
+-        // TODO: shouldIncreseIndent() is a hack, should be removed
++        // TODO: shouldIncreaseIndent() is a hack, should be removed
+         //       after complete rewriting of checkExpressionSubtree()
+ 
+         if (aFirstLineMatches
+-            || (aFirstLine > mMainAst.getLineNo() && shouldIncraeseIndent()))
++            || (aFirstLine > mMainAst.getLineNo() && shouldIncreaseIndent()))
+         {
+             aIndentLevel = new IndentLevel(aIndentLevel,
+                                            mIndentCheck.getBasicOffset());
+         }
+ 
+         // check following lines
+         for (int i = startLine + 1; i <= endLine; i++) {
+             Integer col = aLines.getStartColumn(new Integer(i));
+             // startCol could be null if this line didn't have an
+             // expression that was required to be checked (it could be
+             // checked by a child expression)
+ 
+             // TODO: not sure if this does anything, look at taking it out
+ 
+             // TODO: we can check here if this line starts or the previous
+             // line ends in a dot.  If so, we should increase the indent.
+ 
+             // TODO: check if -2 is possible here?  but unlikely to be a
+             // problem...
+             String thisLine = mIndentCheck.getLines()[i - 1];
+             String prevLine = mIndentCheck.getLines()[i - 2];
+             if (thisLine.matches("^\\s*\\.")
+                 || prevLine.matches("\\.\\s*$"))
+             {
+                 aIndentLevel = new IndentLevel(aIndentLevel,
+                                                mIndentCheck.getBasicOffset());
+             }
+ 
+             if (col != null) {
+                 checkSingleLine(i, col.intValue(), aIndentLevel, false);
+             }
+         }
+     }
+ 
+     /**
+      * Check the indent level for a single line.
+      *
+      * @param aLineNum       the line number to check
+      * @param aIndentLevel   the required indent level
+      */
+     private void checkSingleLine(int aLineNum, int aIndentLevel)
+     {
+         String line = mIndentCheck.getLines()[aLineNum - 1];
+         int start = getLineStart(line);
+         if (start < aIndentLevel) {
+             logChildError(aLineNum, start, new IndentLevel(aIndentLevel));
+         }
+     }
+ 
+     /**

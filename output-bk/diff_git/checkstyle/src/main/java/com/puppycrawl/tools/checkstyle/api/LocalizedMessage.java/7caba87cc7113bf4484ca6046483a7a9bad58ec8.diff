@@ -1,0 +1,106 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+index 3669112c5..5792a62f5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+@@ -314,100 +314,101 @@ public final class LocalizedMessage
+     public int getLineNo() {
+         return lineNo;
+     }
+ 
+     /**
+      * Gets the column number.
+      * @return the column number
+      */
+     public int getColumnNo() {
+         return columnNo;
+     }
+ 
+     /**
+      * Gets the severity level.
+      * @return the severity level
+      */
+     public SeverityLevel getSeverityLevel() {
+         return severityLevel;
+     }
+ 
+     /**
+      * @return the module identifier.
+      */
+     public String getModuleId() {
+         return moduleId;
+     }
+ 
+     /**
+      * Returns the message key to locate the translation, can also be used
+      * in IDE plugins to map error messages to corrective actions.
+      *
+      * @return the message key
+      */
+     public String getKey() {
+         return key;
+     }
+ 
+     /**
+      * Gets the name of the source for this LocalizedMessage.
+      * @return the name of the source for this LocalizedMessage
+      */
+     public String getSourceName() {
+         return sourceClass.getName();
+     }
+ 
+     /**
+      * Sets a locale to use for localization.
+      * @param locale the locale to use for localization
+      */
+     public static void setLocale(Locale locale) {
++        BUNDLE_CACHE.clear();
+         if (Locale.ENGLISH.getLanguage().equals(locale.getLanguage())) {
+             sLocale = Locale.ROOT;
+         }
+         else {
+             sLocale = locale;
+         }
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Interface Comparable methods
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     @Override
+     public int compareTo(LocalizedMessage other) {
+         int result = Integer.compare(lineNo, other.lineNo);
+ 
+         if (lineNo == other.lineNo) {
+             if (columnNo == other.columnNo) {
+                 result = getMessage().compareTo(other.getMessage());
+             }
+             else {
+                 result = Integer.compare(columnNo, other.columnNo);
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * <p>
+      * Custom ResourceBundle.Control implementation which allows explicitly read
+      * the properties files as UTF-8
+      * </p>
+      *
+      * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+      */
+     protected static class Utf8Control extends Control {
+         @Override
+         public ResourceBundle newBundle(String aBaseName, Locale aLocale, String aFormat,
+                  ClassLoader aLoader, boolean aReload) throws IOException {
+             // The below is a copy of the default implementation.
+             final String bundleName = toBundleName(aBaseName, aLocale);
+             final String resourceName = toResourceName(bundleName, "properties");
+             InputStream stream = null;
+             if (aReload) {
+                 final URL url = aLoader.getResource(resourceName);
+                 if (url != null) {
+                     final URLConnection connection = url.openConnection();
+                     if (connection != null) {
+                         connection.setUseCaches(false);
+                         stream = connection.getInputStream();

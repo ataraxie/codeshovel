@@ -1,0 +1,362 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+index 66e823351..ecf9e6f70 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+@@ -91,347 +91,347 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * <p>
+  * An example of how to configure the check so that it ignores constructor
+  * parameters is:
+  * <pre>
+  * &lt;module name="HiddenField"&gt;
+  *    &lt;property name="ignoreConstructorParameter" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check so that it ignores variables and parameters
+  * named 'test':
+  * <pre>
+  * &lt;module name="HiddenField"&gt;
+  *    &lt;property name="ignoreFormat" value="^test$"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * <pre>
+  * {@code
+  * class SomeClass
+  * {
+  *     private List&lt;String&gt; test;
+  *
+  *     private void addTest(List&lt;String&gt; test) // no violation
+  *     {
+  *         this.test.addAll(test);
+  *     }
+  *
+  *     private void foo()
+  *     {
+  *         final List&lt;String&gt; test = new ArrayList&lt;&gt;(); // no violation
+  *         ...
+  *     }
+  * }
+  * }
+  * </pre>
+  *
+  * @author Dmitri Priimak
+  */
+ public class HiddenFieldCheck
+     extends Check {
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "hidden.field";
+ 
+     /** Stack of sets of field names,
+      * one for each class of a set of nested classes.
+      */
+-    private FieldFrame currentFrame;
++    private FieldFrame frame;
+ 
+     /** Pattern for names of variables and parameters to ignore. */
+     private Pattern regexp;
+ 
+     /** Controls whether to check the parameter of a property setter method */
+     private boolean ignoreSetter;
+ 
+     /**
+      * if ignoreSetter is set to true then this variable controls what
+      * the setter method can return By default setter must return void.
+      * However, is this variable is set to true then setter can also
+      * return class in which is declared.
+      */
+     private boolean setterCanReturnItsClass;
+ 
+     /** Controls whether to check the parameter of a constructor */
+     private boolean ignoreConstructorParameter;
+ 
+     /** Controls whether to check the parameter of abstract methods. */
+     private boolean ignoreAbstractMethods;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+-        currentFrame = new FieldFrame(null, true, null);
++        frame = new FieldFrame(null, true, null);
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final int type = ast.getType();
+         switch (type) {
+             case TokenTypes.VARIABLE_DEF:
+             case TokenTypes.PARAMETER_DEF:
+                 processVariable(ast);
+                 break;
+ 
+             default:
+                 visitOtherTokens(ast, type);
+         }
+     }
+ 
+     /**
+      * Called to process tokens other than {@link TokenTypes#VARIABLE_DEF}
+      * and {@link TokenTypes#PARAMETER_DEF}
+      *
+      * @param ast token to process
+      * @param type type of the token
+      */
+     private void visitOtherTokens(DetailAST ast, int type) {
+         //A more thorough check of enum constant class bodies is
+         //possible (checking for hidden fields against the enum
+         //class body in addition to enum constant class bodies)
+         //but not attempted as it seems out of the scope of this
+         //check.
+         final DetailAST typeMods = ast.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isStaticInnerType =
+                 typeMods != null
+                         && typeMods.branchContains(TokenTypes.LITERAL_STATIC);
+         final String frameName;
+ 
+         if (type == TokenTypes.CLASS_DEF || type == TokenTypes.ENUM_DEF) {
+             frameName = ast.findFirstToken(TokenTypes.IDENT).getText();
+         }
+         else {
+             frameName = null;
+         }
+-        final FieldFrame frame = new FieldFrame(currentFrame, isStaticInnerType, frameName);
++        final FieldFrame newFrame = new FieldFrame(frame, isStaticInnerType, frameName);
+ 
+         //add fields to container
+         final DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);
+         // enum constants may not have bodies
+         if (objBlock != null) {
+             DetailAST child = objBlock.getFirstChild();
+             while (child != null) {
+                 if (child.getType() == TokenTypes.VARIABLE_DEF) {
+                     final String name =
+                         child.findFirstToken(TokenTypes.IDENT).getText();
+                     final DetailAST mods =
+                         child.findFirstToken(TokenTypes.MODIFIERS);
+                     if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {
+-                        frame.addStaticField(name);
++                        newFrame.addStaticField(name);
+                     }
+                     else {
+-                        frame.addInstanceField(name);
++                        newFrame.addInstanceField(name);
+                     }
+                 }
+                 child = child.getNextSibling();
+             }
+         }
+         // push container
+-        currentFrame = frame;
++        frame = newFrame;
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.CLASS_DEF
+             || ast.getType() == TokenTypes.ENUM_DEF
+             || ast.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+             //pop
+-            currentFrame = currentFrame.getParent();
++            frame = frame.getParent();
+         }
+     }
+ 
+     /**
+      * Process a variable token.
+      * Check whether a local variable or parameter shadows a field.
+      * Store a field for later comparison with local variables and parameters.
+      * @param ast the variable token.
+      */
+     private void processVariable(DetailAST ast) {
+         if (!ScopeUtils.inInterfaceOrAnnotationBlock(ast)
+             && (ScopeUtils.isLocalVariableDef(ast)
+                 || ast.getType() == TokenTypes.PARAMETER_DEF)) {
+             // local variable or parameter. Does it shadow a field?
+             final DetailAST nameAST = ast.findFirstToken(TokenTypes.IDENT);
+             final String name = nameAST.getText();
+ 
+             if (isStaticOrOnstanceField(ast, name)
+                 && !isMatchingRegexp(name)
+                 && !isIgnoredSetterParam(ast, name)
+                 && !isIgnoredConstructorParam(ast)
+                 && !isIgnoredParamOfAbstractMethod(ast)) {
+                 log(nameAST, MSG_KEY, name);
+             }
+         }
+     }
+ 
+     /**
+      * check for static or instance field.
+      * @param ast token
+      * @param name identifier of token
+      * @return true if static or instance field
+      */
+     private boolean isStaticOrOnstanceField(DetailAST ast, String name) {
+-        return currentFrame.containsStaticField(name)
+-            || !inStatic(ast) && currentFrame.containsInstanceField(name);
++        return frame.containsStaticField(name)
++                || !inStatic(ast) && frame.containsInstanceField(name);
+     }
+ 
+     /**
+      * check name by regExp
+      * @param name string value to check
+      * @return true is regexp is matching
+      */
+     private boolean isMatchingRegexp(String name) {
+         return regexp != null && regexp.matcher(name).find();
+     }
+ 
+     /**
+      * Determines whether an AST node is in a static method or static
+      * initializer.
+      * @param ast the node to check.
+      * @return true if ast is in a static method or a static block;
+      */
+     private static boolean inStatic(DetailAST ast) {
+         DetailAST parent = ast.getParent();
+         while (parent != null) {
+             switch (parent.getType()) {
+                 case TokenTypes.STATIC_INIT:
+                     return true;
+                 case TokenTypes.METHOD_DEF:
+                     final DetailAST mods =
+                         parent.findFirstToken(TokenTypes.MODIFIERS);
+                     return mods.branchContains(TokenTypes.LITERAL_STATIC);
+                 default:
+                     parent = parent.getParent();
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of a
+      * setter method, where the property setter method for field 'xyz' has
+      * name 'setXyz', one parameter named 'xyz', and return type void
+      * (default behavior) or return type is name of the class in which
+      * such method is declared (allowed only if
+      * {@link #setSetterCanReturnItsClass(boolean)} is called with
+      * value <em>true</em>)
+      *
+      * @param ast the AST to check.
+      * @param name the name of ast.
+      * @return true if ast should be ignored because check property
+      * ignoreSetter is true and ast is the parameter of a setter method.
+      */
+     private boolean isIgnoredSetterParam(DetailAST ast, String name) {
+         if (ast.getType() == TokenTypes.PARAMETER_DEF && ignoreSetter) {
+             final DetailAST parametersAST = ast.getParent();
+             final DetailAST methodAST = parametersAST.getParent();
+             if (parametersAST.getChildCount() == 1
+                 && methodAST.getType() == TokenTypes.METHOD_DEF
+                 && isSetterMethod(methodAST, name)) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Determine if a specific method identified by methodAST and a single
+      * variable name aName is a setter. This recognition partially depends
+      * on mSetterCanReturnItsClass property.
+      *
+      * @param aMethodAST AST corresponding to a method call
+      * @param aName name of single parameter of this method.
+      * @return true of false indicating of method is a setter or not.
+      */
+     private boolean isSetterMethod(DetailAST aMethodAST, String aName) {
+         final String methodName =
+             aMethodAST.findFirstToken(TokenTypes.IDENT).getText();
+         boolean isSetterMethod = false;
+ 
+         if (methodName.equals("set" + capitalize(aName))) {
+             // method name did match set${Name}(${anyType} ${aName})
+             // where ${Name} is capitalized version of ${aName}
+             // therefore this method is potentially a setter
+             final DetailAST typeAST = aMethodAST.findFirstToken(TokenTypes.TYPE);
+             final String returnType = typeAST.getFirstChild().getText();
+             if (typeAST.branchContains(TokenTypes.LITERAL_VOID)
+-                || setterCanReturnItsClass && currentFrame.embeddedIn(returnType)) {
++                    || setterCanReturnItsClass && frame.embeddedIn(returnType)) {
+                 // this method has signature
+                 //
+                 //     void set${Name}(${anyType} ${name})
+                 //
+                 // and therefore considered to be a setter
+                 //
+                 // or
+                 //
+                 // return type is not void, but it is the same as the class
+                 // where method is declared and and mSetterCanReturnItsClass
+                 // is set to true
+                 isSetterMethod = true;
+             }
+         }
+ 
+         return isSetterMethod;
+     }
+ 
+     /**
+      * Capitalizes a given property name the way we expect to see it in
+      * a setter name.
+      * @param name a property name
+      * @return capitalized property name
+      */
+     private static String capitalize(final String name) {
+         String setterName = name;
+         // we should not capitalize the first character if the second
+         // one is a capital one, since according to JavBeans spec
+         // setXYzz() is a setter for XYzz property, not for xYzz one.
+         if (name.length() == 1 || !Character.isUpperCase(name.charAt(1))) {
+             setterName = name.substring(0, 1).toUpperCase(Locale.ENGLISH) + name.substring(1);
+         }
+         return setterName;
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of a
+      * constructor.
+      * @param ast the AST to check.
+      * @return true if ast should be ignored because check property
+      * ignoreConstructorParameter is true and ast is a constructor parameter.
+      */
+     private boolean isIgnoredConstructorParam(DetailAST ast) {
+         boolean result = false;
+         if (ast.getType() == TokenTypes.PARAMETER_DEF
+             && ignoreConstructorParameter) {
+             final DetailAST parametersAST = ast.getParent();
+             final DetailAST constructorAST = parametersAST.getParent();
+             result = constructorAST.getType() == TokenTypes.CTOR_DEF;
+         }

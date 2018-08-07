@@ -1,0 +1,120 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java
+index 9b36e7867..8ff539700 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java
+@@ -64,113 +64,113 @@ public abstract class AbstractExpressionHandler {
+     /** The AST which is handled by this handler. */
+     private final DetailAST mainAst;
+ 
+     /** Name used during output to user. */
+     private final String typeName;
+ 
+     /** Containing AST handler. */
+     private final AbstractExpressionHandler parent;
+ 
+     /** Indentation amount for this handler. */
+     private IndentLevel level;
+ 
+     /**
+      * Construct an instance of this handler with the given indentation check,
+      * name, abstract syntax tree, and parent handler.
+      *
+      * @param indentCheck   the indentation check
+      * @param typeName      the name of the handler
+      * @param expr          the abstract syntax tree
+      * @param parent        the parent handler
+      */
+     protected AbstractExpressionHandler(IndentationCheck indentCheck, String typeName,
+             DetailAST expr, AbstractExpressionHandler parent) {
+         this.indentCheck = indentCheck;
+         this.typeName = typeName;
+         mainAst = expr;
+         this.parent = parent;
+     }
+ 
+     /**
+      * Get the indentation amount for this handler. For performance reasons,
+      * this value is cached. The first time this method is called, the
+      * indentation amount is computed and stored. On further calls, the stored
+      * value is returned.
+      *
+      * @return the expected indentation amount
+      */
+     public final IndentLevel getLevel() {
+         if (level == null) {
+             level = getLevelImpl();
+         }
+         return level;
+     }
+ 
+     /**
+      * Compute the indentation amount for this handler.
+      *
+      * @return the expected indentation amount
+      */
+     protected IndentLevel getLevelImpl() {
+-        return parent.suggestedChildLevel(this);
++        return parent.getSuggestedChildLevel(this);
+     }
+ 
+     /**
+      * Indentation level suggested for a child element. Children don't have
+      * to respect this, but most do.
+      *
+      * @param child  child AST (so suggestion level can differ based on child
+      *                  type)
+      *
+      * @return suggested indentation for child
+      */
+-    public IndentLevel suggestedChildLevel(AbstractExpressionHandler child) {
++    public IndentLevel getSuggestedChildLevel(AbstractExpressionHandler child) {
+         return new IndentLevel(getLevel(), getBasicOffset());
+     }
+ 
+     /**
+      * Log an indentation error.
+      *
+      * @param ast           the expression that caused the error
+      * @param subtypeName   the type of the expression
+      * @param actualLevel    the actual indent level of the expression
+      */
+     protected final void logError(DetailAST ast, String subtypeName,
+                                   int actualLevel) {
+         logError(ast, subtypeName, actualLevel, getLevel());
+     }
+ 
+     /**
+      * Log an indentation error.
+      *
+      * @param ast           the expression that caused the error
+      * @param subtypeName   the type of the expression
+      * @param actualLevel   the actual indent level of the expression
+      * @param expectedLevel the expected indent level of the expression
+      */
+     protected final void logError(DetailAST ast, String subtypeName,
+                                   int actualLevel, IndentLevel expectedLevel) {
+         final String typeStr;
+ 
+         if (subtypeName.isEmpty()) {
+             typeStr = "";
+         }
+         else {
+             typeStr = " " + subtypeName;
+         }
+         String messageKey = MSG_ERROR;
+         if (expectedLevel.isMultiLevel()) {
+             messageKey = MSG_ERROR_MULTI;
+         }
+         indentCheck.indentationLog(ast.getLineNo(), messageKey,
+             typeName + typeStr, actualLevel, expectedLevel);
+     }
+ 
+     /**
+      * Log child indentation error.
+      *
+      * @param line           the expression that caused the error
+      * @param actualLevel   the actual indent level of the expression
+      * @param expectedLevel the expected indent level of the expression
+      */
+     private void logChildError(int line,
+                                int actualLevel,

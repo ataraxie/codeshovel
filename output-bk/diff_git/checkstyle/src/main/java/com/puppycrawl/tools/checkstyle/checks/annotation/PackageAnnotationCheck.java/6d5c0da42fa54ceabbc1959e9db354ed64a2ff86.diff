@@ -1,0 +1,89 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/PackageAnnotationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/PackageAnnotationCheck.java
+index c2f17e887..825b75918 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/PackageAnnotationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/PackageAnnotationCheck.java
+@@ -2,80 +2,80 @@
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.annotation;
+ 
+ import com.puppycrawl.tools.checkstyle.AnnotationUtility;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * This check makes sure that all package annotations are in the
+  * package-info.java file.
+  *
+  * <p>
+  * According to the Java Language Specification.
+  * </p>
+  *
+  * <p>
+  * The JLS does not enforce the placement of package annotations.
+  * This placement may vary based on implementation. The JLS
+  * does highly recommend that all package annotations are
+  * placed in the package-info.java file.
+  *
+  * See <a
+  * href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html#jls-7.4.1">
+  * Java Language Specification, section 7.4.1</a>.
+  * </p>
+  * @author Travis Schneeberger
+  */
+ public class PackageAnnotationCheck extends Check {
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getDefaultTokens() {
+-        return this.getRequiredTokens();
++        return getRequiredTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.PACKAGE_DEF,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getAcceptableTokens() {
+-        return this.getRequiredTokens();
++        return getRequiredTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void visitToken(final DetailAST ast) {
+         final boolean containsAnnotation =
+             AnnotationUtility.containsAnnotation(ast);
+         final boolean inPackageInfo =
+-            this.getFileContents().inPackageInfo();
++            getFileContents().inPackageInfo();
+ 
+         if (containsAnnotation && !inPackageInfo) {
+-            this.log(ast.getLine(), "annotation.package.location");
++            log(ast.getLine(), "annotation.package.location");
+         }
+     }
+ }

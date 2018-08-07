@@ -1,0 +1,162 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/PropertyCacheFile.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/PropertyCacheFile.java
+index d31850db0..c6ef955af 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/PropertyCacheFile.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/PropertyCacheFile.java
+@@ -49,155 +49,141 @@ final class PropertyCacheFile
+      * configuration. To avoid nameclashes with the files that are
+      * checked the key is chosen in such a way that it cannot be a
+      * valid file name.
+      */
+     private static final String CONFIG_HASH_KEY = "configuration*?";
+ 
+     /** name of file to store details **/
+     private final String mDetailsFile;
+     /** the details on files **/
+     private final Properties mDetails = new Properties();
+ 
+     /**
+      * Creates a new <code>PropertyCacheFile</code> instance.
+      *
+      * @param aCurrentConfig the current configuration, not null
+      * @param aFileName the cache file
+      */
+     PropertyCacheFile(Configuration aCurrentConfig, String aFileName)
+     {
+         boolean setInActive = true;
+         if (aFileName != null) {
+             FileInputStream inStream = null;
+             // get the current config so if the file isn't found
+             // the first time the hash will be added to output file
+             final String currentConfigHash = getConfigHashCode(aCurrentConfig);
+             try {
+                 inStream = new FileInputStream(aFileName);
+                 mDetails.load(inStream);
+                 final String cachedConfigHash =
+                     mDetails.getProperty(CONFIG_HASH_KEY);
+                 setInActive = false;
+                 if ((cachedConfigHash == null)
+                     || !cachedConfigHash.equals(currentConfigHash))
+                 {
+                     // Detected configuration change - clear cache
+                     mDetails.clear();
+                     mDetails.put(CONFIG_HASH_KEY, currentConfigHash);
+                 }
+             }
+             catch (final FileNotFoundException e) {
+                 // Ignore, the cache does not exist
+                 setInActive = false;
+                 // put the hash in the file if the file is going to be created
+                 mDetails.put(CONFIG_HASH_KEY, currentConfigHash);
+             }
+             catch (final IOException e) {
+                 Utils.getExceptionLogger()
+                     .debug("Unable to open cache file, ignoring.", e);
+             }
+             finally {
+-                if (inStream != null) {
+-                    try {
+-                        inStream.close();
+-                    }
+-                    catch (final IOException ex) {
+-                        Utils.getExceptionLogger()
+-                            .debug("Unable to close cache file.", ex);
+-                    }
+-                }
++                Utils.closeQuietly(inStream);
+             }
+         }
+         mDetailsFile = (setInActive) ? null : aFileName;
+     }
+ 
+     /** Cleans up the object and updates the cache file. **/
+     void destroy()
+     {
+         if (mDetailsFile != null) {
+             FileOutputStream out = null;
+             try {
+                 out = new FileOutputStream(mDetailsFile);
+                 mDetails.store(out, null);
+             }
+             catch (final IOException e) {
+                 Utils.getExceptionLogger()
+                     .debug("Unable to save cache file.", e);
+             }
+             finally {
+                 this.flushAndCloseOutStream(out);
+             }
+         }
+     }
+ 
+     /**
+      * Flushes and closes output stream.
+      * @param aStream the output stream
+      */
+     private void flushAndCloseOutStream(OutputStream aStream)
+     {
+         if (aStream != null) {
+             try {
+                 aStream.flush();
+             }
+             catch (final IOException ex) {
+                 Utils.getExceptionLogger()
+                     .debug("Unable to flush output stream.", ex);
+             }
+             finally {
+-                try {
+-                    aStream.close();
+-                }
+-                catch (final IOException ex) {
+-                    Utils.getExceptionLogger()
+-                        .debug("Unable to close output stream.", ex);
+-                }
++                Utils.closeQuietly(aStream);
+             }
+         }
+     }
+ 
+     /**
+      * @return whether the specified file has already been checked ok
+      * @param aFileName the file to check
+      * @param aTimestamp the timestamp of the file to check
+      */
+     boolean alreadyChecked(String aFileName, long aTimestamp)
+     {
+         final String lastChecked = mDetails.getProperty(aFileName);
+         return (lastChecked != null)
+             && (lastChecked.equals(Long.toString(aTimestamp)));
+     }
+ 
+     /**
+      * Records that a file checked ok.
+      * @param aFileName name of the file that checked ok
+      * @param aTimestamp the timestamp of the file
+      */
+     void checkedOk(String aFileName, long aTimestamp)
+     {
+         mDetails.put(aFileName, Long.toString(aTimestamp));
+     }
+ 
+     /**
+      * Calculates the hashcode for a GlobalProperties.
+      *
+      * @param aConfiguration the GlobalProperties
+      * @return the hashcode for <code>aConfiguration</code>
+      */
+     private String getConfigHashCode(Serializable aConfiguration)
+     {
+         try {
+             // im-memory serialization of Configuration
+ 
+             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             ObjectOutputStream oos = null;
+             try {
+                 oos = new ObjectOutputStream(baos);
+                 oos.writeObject(aConfiguration);
+             }
+             finally {
+                 this.flushAndCloseOutStream(oos);
+             }
+ 
+             // Instead of hexEncoding baos.toByteArray() directly we
+             // use a message digest here to keep the length of the
+             // hashcode reasonable

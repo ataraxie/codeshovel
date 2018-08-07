@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 1ea980596..748f8fa15 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -162,102 +162,101 @@ public final class TreeWalker
+     }
+ 
+     @Override
+     public void setupChild(Configuration childConf)
+         throws CheckstyleException {
+         final String name = childConf.getName();
+         final Object module = moduleFactory.createModule(name);
+         if (!(module instanceof Check)) {
+             throw new CheckstyleException(
+                 "TreeWalker is not allowed as a parent of " + name);
+         }
+         final Check check = (Check) module;
+         check.contextualize(childContext);
+         check.configure(childConf);
+         check.init();
+ 
+         registerCheck(check);
+     }
+ 
+     @Override
+     protected void processFiltered(File file, List<String> lines) {
+         // check if already checked and passed the file
+         final String fileName = file.getPath();
+         final long timestamp = file.lastModified();
+         if (cache != null
+                 && (cache.inCache(fileName, timestamp)
+                     || !Utils.fileExtensionMatches(file, getFileExtensions()))) {
+             return;
+         }
+ 
+         final String msg = "%s occurred during the analysis of file %s.";
+ 
+         try {
+             final FileText text = FileText.fromLines(file, lines);
+             final FileContents contents = new FileContents(text);
+             final DetailAST rootAST = parse(contents);
+ 
+             getMessageCollector().reset();
+ 
+             walk(rootAST, contents, AstState.ORDINARY);
+ 
+             final DetailAST astWithComments = appendHiddenCommentNodes(rootAST);
+ 
+             walk(astWithComments, contents, AstState.WITH_COMMENTS);
+         }
+         catch (final TokenStreamRecognitionException tre) {
+             final String exceptionMsg = String.format(msg, "TokenStreamRecognitionException",
+                      fileName);
+             LOG.error(exceptionMsg);
+             final RecognitionException re = tre.recog;
+-            String message;
+-            message = re.getMessage();
++            final String message = re.getMessage();
+             getMessageCollector().add(createLocalizedMessage(message));
+         }
+         // RecognitionException and any other (need to check if needed)
+         catch (Throwable ex) {
+             final String exceptionMsg = String.format(msg, ex.getClass().getSimpleName(), fileName);
+             LOG.error(exceptionMsg, ex);
+             getMessageCollector().add(createLocalizedMessage(ex.getMessage()));
+         }
+ 
+         if (cache != null && getMessageCollector().size() == 0) {
+             cache.put(fileName, timestamp);
+         }
+     }
+ 
+     /**
+      * Creates {@link LocalizedMessage} object using default attributes.
+      * @param message
+      *        message that will be used for created object
+      * @return instance of created object
+      */
+     private LocalizedMessage createLocalizedMessage(String message) {
+         return new LocalizedMessage(
+                 0,
+                 Definitions.CHECKSTYLE_BUNDLE,
+                 "general.exception",
+                 new String[] {message },
+                 getId(),
+                 getClass(), null);
+     }
+ 
+     /**
+      * Register a check for a given configuration.
+      * @param check the check to register
+      * @throws CheckstyleException if an error occurs
+      */
+     private void registerCheck(Check check)
+         throws CheckstyleException {
+         final int[] tokens;
+         final Set<String> checkTokens = check.getTokenNames();
+         if (checkTokens.isEmpty()) {
+             tokens = check.getDefaultTokens();
+         }
+         else {
+             tokens = check.getRequiredTokens();
+ 
+             //register configured tokens
+             final int[] acceptableTokens = check.getAcceptableTokens();
+             Arrays.sort(acceptableTokens);
+             for (String token : checkTokens) {
+                 final int tokenId = Utils.getTokenId(token);

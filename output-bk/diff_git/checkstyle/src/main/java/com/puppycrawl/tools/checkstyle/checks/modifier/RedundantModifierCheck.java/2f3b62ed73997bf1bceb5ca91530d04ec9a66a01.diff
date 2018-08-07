@@ -1,0 +1,118 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java
+index 7226966b7..7d0842463 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java
+@@ -209,107 +209,109 @@ public class RedundantModifierCheck
+         }
+     }
+ 
+     /**
+      * Do validation of interface of annotation.
+      * @param ast token AST
+      */
+     private void processInterfaceOrAnnotation(DetailAST ast) {
+         final DetailAST modifiers = ast.findFirstToken(TokenTypes.MODIFIERS);
+         DetailAST modifier = modifiers.getFirstChild();
+         while (modifier != null) {
+ 
+             // javac does not allow final or static in interface methods
+             // order annotation fields hence no need to check that this
+             // is not a method or annotation field
+ 
+             final int type = modifier.getType();
+             if (type == TokenTypes.LITERAL_PUBLIC
+                 || type == TokenTypes.LITERAL_STATIC
+                         && ast.getType() != TokenTypes.METHOD_DEF
+                 || type == TokenTypes.ABSTRACT
+                         && ast.getType() != TokenTypes.CLASS_DEF
+                 || type == TokenTypes.FINAL
+                         && ast.getType() != TokenTypes.CLASS_DEF) {
+                 log(modifier.getLineNo(), modifier.getColumnNo(),
+                         MSG_KEY, modifier.getText());
+                 break;
+             }
+ 
+             modifier = modifier.getNextSibling();
+         }
+     }
+ 
+     /**
+      * Process validation ofMethods.
+      * @param ast method AST
+      */
+     private void processMethods(DetailAST ast) {
+         final DetailAST modifiers =
+                         ast.findFirstToken(TokenTypes.MODIFIERS);
+         // private method?
+         boolean checkFinal =
+             modifiers.branchContains(TokenTypes.LITERAL_PRIVATE);
+         // declared in a final class?
+         DetailAST parent = ast.getParent();
+         while (parent != null) {
+             if (parent.getType() == TokenTypes.CLASS_DEF) {
+                 final DetailAST classModifiers =
+                     parent.findFirstToken(TokenTypes.MODIFIERS);
+                 checkFinal = checkFinal || classModifiers.branchContains(TokenTypes.FINAL);
+-                break;
++                parent = null;
+             }
+-            if (parent.getType() == TokenTypes.LITERAL_NEW) {
++            else if (parent.getType() == TokenTypes.LITERAL_NEW) {
+                 checkFinal = true;
+-                break;
++                parent = null;
++            }
++            else {
++                parent = parent.getParent();
+             }
+-            parent = parent.getParent();
+         }
+         if (checkFinal && !isAnnotatedWithSafeVarargs(ast)) {
+             DetailAST modifier = modifiers.getFirstChild();
+             while (modifier != null) {
+                 final int type = modifier.getType();
+                 if (type == TokenTypes.FINAL) {
+                     log(modifier.getLineNo(), modifier.getColumnNo(),
+                             MSG_KEY, modifier.getText());
+                     break;
+                 }
+                 modifier = modifier.getNextSibling();
+             }
+         }
+     }
+ 
+     /**
+      * Check if class constructor has proper modifiers.
+      * @param classCtorAst class constructor ast
+      */
+     private void checkClassConstructorModifiers(DetailAST classCtorAst) {
+         final DetailAST classDef = classCtorAst.getParent().getParent();
+         if (!isClassPublic(classDef) && !isClassProtected(classDef)) {
+             checkForRedundantPublicModifier(classCtorAst);
+         }
+     }
+ 
+     /**
+      * Checks if given ast has redundant public modifier.
+      * @param ast ast
+      */
+     private void checkForRedundantPublicModifier(DetailAST ast) {
+         final DetailAST astModifiers = ast.findFirstToken(TokenTypes.MODIFIERS);
+         DetailAST astModifier = astModifiers.getFirstChild();
+         while (astModifier != null) {
+             if (astModifier.getType() == TokenTypes.LITERAL_PUBLIC) {
+                 log(astModifier.getLineNo(), astModifier.getColumnNo(),
+                         MSG_KEY, astModifier.getText());
+             }
+ 
+             astModifier = astModifier.getNextSibling();
+         }
+     }
+ 
+     /**
+      * Checks if given class ast has protected modifier.
+      * @param classDef class ast
+      * @return true if class is protected, false otherwise
+      */
+     private static boolean isClassProtected(DetailAST classDef) {
+         final DetailAST classModifiers =

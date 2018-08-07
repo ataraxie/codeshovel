@@ -1,0 +1,161 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+index 245b21935..32804352d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+@@ -1,82 +1,83 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.utils;
+ 
+ import java.io.Closeable;
+ import java.io.File;
+ import java.io.IOException;
+ import java.lang.reflect.Constructor;
+ import java.lang.reflect.InvocationTargetException;
+ import java.net.MalformedURLException;
+ import java.net.URI;
+ import java.net.URISyntaxException;
+ import java.net.URL;
+ import java.nio.file.Path;
+ import java.nio.file.Paths;
++import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ import java.util.regex.PatternSyntaxException;
+ 
+ import org.apache.commons.beanutils.ConversionException;
+ 
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ 
+ /**
+  * Contains utility methods.
+  *
+  * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+  */
+ public final class CommonUtils {
+ 
+     /** Prefix for the exception when unable to find resource. */
+     private static final String UNABLE_TO_FIND_EXCEPTION_PREFIX = "Unable to find: ";
+ 
+     /** Stop instances being created. **/
+     private CommonUtils() {
+ 
+     }
+ 
+     /**
+      * Returns whether the file extension matches what we are meant to process.
+      *
+      * @param file
+      *            the file to be checked.
+      * @param fileExtensions
+      *            files extensions, empty property in config makes it matches to all.
+      * @return whether there is a match.
+      */
+     public static boolean matchesFileExtension(File file, String... fileExtensions) {
+         boolean result = false;
+         if (fileExtensions == null || fileExtensions.length == 0) {
+             result = true;
+         }
+         else {
+             // normalize extensions so all of them have a leading dot
+             final String[] withDotExtensions = new String[fileExtensions.length];
+             for (int i = 0; i < fileExtensions.length; i++) {
+                 final String extension = fileExtensions[i];
+                 if (startsWithChar(extension, '.')) {
+                     withDotExtensions[i] = extension;
+                 }
+                 else {
+                     withDotExtensions[i] = "." + extension;
+                 }
+             }
+ 
+             final String fileName = file.getName();
+@@ -315,51 +316,72 @@ public final class CommonUtils {
+             return;
+         }
+         try {
+             closeable.close();
+         }
+         catch (IOException e) {
+             throw new IllegalStateException("Cannot close the stream", e);
+         }
+     }
+ 
+     /**
+      * Resolve the specified filename to a URI.
+      * @param filename name os the file
+      * @return resolved header file URI
+      * @throws CheckstyleException on failure
+      */
+     public static URI getUriByFilename(String filename) throws CheckstyleException {
+         // figure out if this is a File or a URL
+         URI uri;
+         try {
+             final URL url = new URL(filename);
+             uri = url.toURI();
+         }
+         catch (final URISyntaxException | MalformedURLException ignored) {
+             uri = null;
+         }
+ 
+         if (uri == null) {
+             final File file = new File(filename);
+             if (file.exists()) {
+                 uri = file.toURI();
+             }
+             else {
+                 // check to see if the file is in the classpath
+                 try {
+                     final URL configUrl = CommonUtils.class
+                             .getResource(filename);
+                     if (configUrl == null) {
+                         throw new CheckstyleException(UNABLE_TO_FIND_EXCEPTION_PREFIX + filename);
+                     }
+                     uri = configUrl.toURI();
+                 }
+                 catch (final URISyntaxException e) {
+                     throw new CheckstyleException(UNABLE_TO_FIND_EXCEPTION_PREFIX + filename, e);
+                 }
+             }
+         }
+ 
+         return uri;
+     }
++
++    /**
++     * Puts part of line, which matches regexp into given template
++     * on positions $n where 'n' is number of matched part in line.
++     * @param template the string to expand.
++     * @param lineToPlaceInTemplate contains expression which should be placed into string.
++     * @param regexp expression to find in comment.
++     * @return the string, based on template filled with given lines
++     */
++    public static String fillTemplateWithStringsByRegexp(
++        String template, String lineToPlaceInTemplate, Pattern regexp) {
++        final Matcher matcher = regexp.matcher(lineToPlaceInTemplate);
++        String result = template;
++        if (matcher.find()) {
++            for (int i = 0; i <= matcher.groupCount(); i++) {
++                // $n expands comment match like in Pattern.subst().
++                result = result.replaceAll("\\$" + i, matcher.group(i));
++            }
++        }
++        return result;
++    }
+ }

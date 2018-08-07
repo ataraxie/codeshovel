@@ -1,0 +1,172 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index 6a7ffc316..06c6ef196 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -258,159 +258,145 @@ public class SuppressionCommentFilter
+ 
+     /** Whether to look in comments of the C type. */
+     private boolean checkC = true;
+ 
+     /** Whether to look in comments of the C++ type. */
+     private boolean checkCPP = true;
+ 
+     /** Parsed comment regexp that turns checkstyle reporting off. */
+     private Pattern offRegexp;
+ 
+     /** Parsed comment regexp that turns checkstyle reporting on. */
+     private Pattern onRegexp;
+ 
+     /** The check format to suppress. */
+     private String checkFormat;
+ 
+     /** The parsed check regexp. */
+     private Pattern checkRegexp;
+ 
+     /** The message format to suppress. */
+     private String messageFormat;
+ 
+     //TODO: Investigate performance improvement with array
+     /** Tagged comments */
+     private final List<Tag> tags = Lists.newArrayList();
+ 
+     /**
+      * References the current FileContents for this filter.
+      * Since this is a weak reference to the FileContents, the FileContents
+      * can be reclaimed as soon as the strong references in TreeWalker
+      * and FileContentsHolder are reassigned to the next FileContents,
+      * at which time filtering for the current FileContents is finished.
+      */
+     private WeakReference<FileContents> fileContentsReference = new WeakReference<>(null);
+ 
+     /**
+      * Constructs a SuppressionCoontFilter.
+      * Initializes comment on, comment off, and check formats
+      * to defaults.
+      */
+     public SuppressionCommentFilter()
+     {
+         setOnCommentFormat(DEFAULT_ON_FORMAT);
+         setOffCommentFormat(DEFAULT_OFF_FORMAT);
+         setCheckFormat(DEFAULT_CHECK_FORMAT);
+     }
+ 
+     /**
+      * Set the format for a comment that turns off reporting.
+      * @param format a <code>String</code> value.
+-     * @throws ConversionException unable to parse format.
++     * @throws ConversionException if unable to create Pattern object.
+      */
+     public void setOffCommentFormat(String format)
+         throws ConversionException
+     {
+-        try {
+-            offRegexp = Utils.getPattern(format);
+-        }
+-        catch (final PatternSyntaxException e) {
+-            throw new ConversionException("unable to parse " + format, e);
+-        }
++        offRegexp = Utils.createPattern(format);
+     }
+ 
+     /**
+      * Set the format for a comment that turns on reporting.
+      * @param format a <code>String</code> value
+-     * @throws ConversionException unable to parse format
++     * @throws ConversionException if unable to create Pattern object.
+      */
+     public void setOnCommentFormat(String format)
+         throws ConversionException
+     {
+-        try {
+-            onRegexp = Utils.getPattern(format);
+-        }
+-        catch (final PatternSyntaxException e) {
+-            throw new ConversionException("unable to parse " + format, e);
+-        }
++        onRegexp = Utils.createPattern(format);
+     }
+ 
+     /** @return the FileContents for this filter. */
+     public FileContents getFileContents()
+     {
+         return fileContentsReference.get();
+     }
+ 
+     /**
+      * Set the FileContents for this filter.
+      * @param fileContents the FileContents for this filter.
+      */
+     public void setFileContents(FileContents fileContents)
+     {
+         fileContentsReference = new WeakReference<>(fileContents);
+     }
+ 
+     /**
+      * Set the format for a check.
+      * @param format a <code>String</code> value
+-     * @throws ConversionException unable to parse format
++     * @throws ConversionException if unable to create Pattern object
+      */
+     public void setCheckFormat(String format)
+         throws ConversionException
+     {
+-        try {
+-            checkRegexp = Utils.getPattern(format);
+-            checkFormat = format;
+-        }
+-        catch (final PatternSyntaxException e) {
+-            throw new ConversionException("unable to parse " + format, e);
+-        }
++        checkRegexp = Utils.createPattern(format);
++        checkFormat = format;
++
+     }
+ 
+     /**
+      * Set the format for a message.
+      * @param format a <code>String</code> value
+      * @throws ConversionException unable to parse format
+      */
+     public void setMessageFormat(String format)
+         throws ConversionException
+     {
+         if (!Utils.isPatternValid(format)) {
+             throw new ConversionException("Unable to parse format: " + format);
+         }
+         messageFormat = format;
+     }
+ 
+ 
+     /**
+      * Set whether to look in C++ comments.
+      * @param checkCPP <code>true</code> if C++ comments are checked.
+      */
+     public void setCheckCPP(boolean checkCPP)
+     {
+         this.checkCPP = checkCPP;
+     }
+ 
+     /**
+      * Set whether to look in C comments.
+      * @param checkC <code>true</code> if C comments are checked.
+      */
+     public void setCheckC(boolean checkC)
+     {
+         this.checkC = checkC;
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public boolean accept(AuditEvent event)
+     {
+         if (event.getLocalizedMessage() == null) {
+             return true;        // A special event.
+         }
+ 
+         // Lazy update. If the first event for the current file, update file
+         // contents and tag suppressions
+         final FileContents currentContents = FileContentsHolder.getContents();
+         if (currentContents == null) {
+             // we have no contents, so we can not filter.
+             // TODO: perhaps we should notify user somehow?
+             return true;

@@ -1,0 +1,128 @@
+diff --git a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+index 908a2d5d3..7cd7ae9f4 100644
+--- a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
++++ b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+@@ -207,102 +207,118 @@ public class BaseCheckTestSupport {
+         }
+ 
+         checker.destroy();
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties'
+      * file.
+      *
+      * @param messageKey the key of message in 'messages.properties' file.
+      * @param arguments  the arguments of message in 'messages.properties' file.
+      */
+     protected String getCheckMessage(Class<? extends AbstractViolationReporter> aClass,
+             String messageKey, Object... arguments) {
+         final Properties pr = new Properties();
+         try {
+             pr.load(aClass.getResourceAsStream("messages.properties"));
+         }
+         catch (IOException ex) {
+             return null;
+         }
+         final MessageFormat formatter = new MessageFormat(pr.getProperty(messageKey),
+                 Locale.ROOT);
+         return formatter.format(arguments);
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties' file.
+      * @param messageKey the key of message in 'messages.properties' file.
+      * @param arguments the arguments of message in 'messages.properties' file.
+      */
+     protected String getCheckMessage(Map<String, String> messages, String messageKey,
+             Object... arguments) {
+         for (Map.Entry<String, String> entry : messages.entrySet()) {
+             if (messageKey.equals(entry.getKey())) {
+                 final MessageFormat formatter = new MessageFormat(entry.getValue(), Locale.ROOT);
+                 return formatter.format(arguments);
+             }
+         }
+         return null;
+     }
+ 
+     /**
+      * Returns {@link Configuration} instance for the given check name.
+      * This implementation uses {@link BaseCheckTestSupport#getConfiguration()} method inside.
+      * @param checkName check name.
+      * @return {@link Configuration} instance for the given check name.
+      * @throws CheckstyleException if exception occurs during configuration loading.
+      */
+     protected static Configuration getCheckConfig(String checkName) throws CheckstyleException {
+-        Configuration result = null;
++        final List<Configuration> configs = getCheckConfigs(checkName);
++        if (configs.isEmpty()) {
++            return null;
++        }
++        else {
++            return configs.get(0);
++        }
++    }
++
++    /**
++     * Returns a list of all {@link Configuration} instances for the given check name.
++     * This implementation uses {@link BaseCheckTestSupport#getConfiguration()} method inside.
++     * @param checkName check name.
++     * @return {@link Configuration} instance for the given check name.
++     * @throws CheckstyleException if exception occurs during configuration loading.
++     */
++    protected static List<Configuration> getCheckConfigs(String checkName)
++            throws CheckstyleException {
++        final List<Configuration> result = new ArrayList<>();
+         for (Configuration currentConfig : getConfiguration().getChildren()) {
+             if ("TreeWalker".equals(currentConfig.getName())) {
+                 for (Configuration checkConfig : currentConfig.getChildren()) {
+                     if (checkName.equals(checkConfig.getName())) {
+-                        result = checkConfig;
+-                        break;
++                        result.add(checkConfig);
+                     }
+                 }
+             }
+             else if (checkName.equals(currentConfig.getName())) {
+-                result = currentConfig;
+-                break;
++                result.add(currentConfig);
+             }
+         }
+         return result;
+     }
+ 
+     private static String removeDeviceFromPathOnWindows(String path) {
+         final String os = System.getProperty("os.name", "Unix");
+         if (os.startsWith("Windows")) {
+             return path.substring(path.indexOf(':') + 1);
+         }
+         return path;
+     }
+ 
+     /**
+      * Returns an array of integers which represents the warning line numbers in the file
+      * with the given file name.
+      * @param fileName file name.
+      * @return an array of integers which represents the warning line numbers.
+      * @throws IOException if I/O exception occurs while reading the file.
+      */
+     protected Integer[] getLinesWithWarn(String fileName) throws IOException {
+         final List<Integer> result = new ArrayList<>();
+         try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                 new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+             int lineNumber = 1;
+             while (true) {
+                 final String line = br.readLine();
+                 if (line == null) {
+                     break;
+                 }
+                 if (WARN_PATTERN.matcher(line).find()) {
+                     result.add(lineNumber);
+                 }
+                 lineNumber++;
+             }
+         }
+         return result.toArray(new Integer[result.size()]);
+     }
+ }

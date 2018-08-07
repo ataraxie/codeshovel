@@ -1,0 +1,126 @@
+diff --git a/android/guava/src/com/google/common/collect/AbstractBiMap.java b/android/guava/src/com/google/common/collect/AbstractBiMap.java
+index bf11b200e..d20fafb38 100644
+--- a/android/guava/src/com/google/common/collect/AbstractBiMap.java
++++ b/android/guava/src/com/google/common/collect/AbstractBiMap.java
+@@ -267,119 +267,120 @@ abstract class AbstractBiMap<K, V> extends ForwardingMap<K, V>
+     public <T> T[] toArray(T[] array) {
+       return standardToArray(array);
+     }
+ 
+     @Override
+     public String toString() {
+       return standardToString();
+     }
+   }
+ 
+   @MonotonicNonNullDecl private transient Set<Entry<K, V>> entrySet;
+ 
+   @Override
+   public Set<Entry<K, V>> entrySet() {
+     Set<Entry<K, V>> result = entrySet;
+     return (result == null) ? entrySet = new EntrySet() : result;
+   }
+ 
+   class BiMapEntry extends ForwardingMapEntry<K, V> {
+     private final Entry<K, V> delegate;
+ 
+     BiMapEntry(Entry<K, V> delegate) {
+       this.delegate = delegate;
+     }
+ 
+     @Override
+     protected Entry<K, V> delegate() {
+       return delegate;
+     }
+ 
+     @Override
+     public V setValue(V value) {
+       checkValue(value);
+       // Preconditions keep the map and inverse consistent.
+       checkState(entrySet().contains(this), "entry no longer in map");
+       // similar to putInBothMaps, but set via entry
+       if (Objects.equal(value, getValue())) {
+         return value;
+       }
+       checkArgument(!containsValue(value), "value already present: %s", value);
+       V oldValue = delegate.setValue(value);
+       checkState(Objects.equal(value, get(getKey())), "entry no longer in map");
+       updateInverseMap(getKey(), true, oldValue, value);
+       return oldValue;
+     }
+   }
+ 
+   Iterator<Entry<K, V>> entrySetIterator() {
+     final Iterator<Entry<K, V>> iterator = delegate.entrySet().iterator();
+     return new Iterator<Entry<K, V>>() {
+-      Entry<K, V> entry;
++      @NullableDecl Entry<K, V> entry;
+ 
+       @Override
+       public boolean hasNext() {
+         return iterator.hasNext();
+       }
+ 
+       @Override
+       public Entry<K, V> next() {
+         entry = iterator.next();
+         return new BiMapEntry(entry);
+       }
+ 
+       @Override
+       public void remove() {
+         checkRemove(entry != null);
+         V value = entry.getValue();
+         iterator.remove();
+         removeFromInverseMap(value);
++        entry = null;
+       }
+     };
+   }
+ 
+   @WeakOuter
+   private class EntrySet extends ForwardingSet<Entry<K, V>> {
+     final Set<Entry<K, V>> esDelegate = delegate.entrySet();
+ 
+     @Override
+     protected Set<Entry<K, V>> delegate() {
+       return esDelegate;
+     }
+ 
+     @Override
+     public void clear() {
+       AbstractBiMap.this.clear();
+     }
+ 
+     @Override
+     public boolean remove(Object object) {
+       if (!esDelegate.contains(object)) {
+         return false;
+       }
+ 
+       // safe because esDelegate.contains(object).
+       Entry<?, ?> entry = (Entry<?, ?>) object;
+       inverse.delegate.remove(entry.getValue());
+       /*
+        * Remove the mapping in inverse before removing from esDelegate because
+        * if entry is part of esDelegate, entry might be invalidated after the
+        * mapping is removed from esDelegate.
+        */
+       esDelegate.remove(entry);
+       return true;
+     }
+ 
+     @Override
+     public Iterator<Entry<K, V>> iterator() {
+       return entrySetIterator();
+     }
+ 
+     // See java.util.Collections.CheckedEntrySet for details on attacks.
+ 
+     @Override
+     public Object[] toArray() {
+       return standardToArray();
+     }
+ 
+     @Override
+     public <T> T[] toArray(T[] array) {

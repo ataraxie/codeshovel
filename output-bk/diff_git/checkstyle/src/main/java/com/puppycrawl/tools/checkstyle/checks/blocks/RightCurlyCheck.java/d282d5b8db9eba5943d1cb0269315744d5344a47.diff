@@ -1,0 +1,188 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+index 2fda208ff..06e982ca9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+@@ -113,149 +113,165 @@ public class RightCurlyCheck extends AbstractOptionCheck<RightCurlyOption> {
+     }
+ 
+     /**
+      * Does the check need to check if right curly starts line.
+      * @param flag new value of this property.
+      */
+     public void setShouldStartLine(boolean flag) {
+         shouldStartLine = flag;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.INSTANCE_INIT,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final Details details = getDetails(ast);
+         final DetailAST rcurly = details.rcurly;
+ 
+         if (rcurly == null || rcurly.getType() != TokenTypes.RCURLY) {
+             // we need to have both tokens to perform the check
+             return;
+         }
+ 
+-        final DetailAST lcurly = details.lcurly;
++        final String violation;
++        if (shouldStartLine) {
++            final String targetSourceLine = getLines()[rcurly.getLineNo() - 1];
++            violation = validate(details, getAbstractOption(), true, targetSourceLine);
++        }
++        else {
++            violation = validate(details, getAbstractOption(), false, "");
++        }
+ 
+-        validate(details, rcurly, lcurly);
++        if (!violation.isEmpty()) {
++            log(rcurly, violation, "}", rcurly.getColumnNo() + 1);
++        }
+     }
+ 
+     /**
+      * Does general validation.
+-     * @param details details.
+-     * @param rcurly right curly token.
+-     * @param lcurly left curly token.
++     * @param details for validation.
++     * @param bracePolicy for placing the right curly brace.
++     * @param shouldStartLine do we need to check if right curly starts line.
++     * @param targetSourceLine line that we need to check if shouldStartLine is true.
++     * @return violation message or empty string
++     * if there was not violation durning validation.
+      */
+-    private void validate(Details details, DetailAST rcurly, DetailAST lcurly) {
++    private static String validate(Details details, RightCurlyOption bracePolicy,
++                                   boolean shouldStartLine, String targetSourceLine) {
++        final DetailAST rcurly = details.rcurly;
++        final DetailAST lcurly = details.lcurly;
+         final DetailAST nextToken = details.nextToken;
+         final boolean shouldCheckLastRcurly = details.shouldCheckLastRcurly;
++        String violation = "";
+ 
+-        if (getAbstractOption() == RightCurlyOption.SAME
++        if (bracePolicy == RightCurlyOption.SAME
+                 && !hasLineBreakBefore(rcurly)) {
+-            log(rcurly, MSG_KEY_LINE_BREAK_BEFORE, "}", rcurly.getColumnNo() + 1);
++            violation = MSG_KEY_LINE_BREAK_BEFORE;
+         }
+         else if (shouldCheckLastRcurly) {
+             if (rcurly.getLineNo() == nextToken.getLineNo()) {
+-                log(rcurly, MSG_KEY_LINE_ALONE, "}", rcurly.getColumnNo() + 1);
++                violation = MSG_KEY_LINE_ALONE;
+             }
+         }
+-        else if (getAbstractOption() == RightCurlyOption.SAME
++        else if (bracePolicy == RightCurlyOption.SAME
+                 && rcurly.getLineNo() != nextToken.getLineNo()) {
+-            log(rcurly, MSG_KEY_LINE_SAME, "}", rcurly.getColumnNo() + 1);
++            violation = MSG_KEY_LINE_SAME;
+         }
+-        else if (getAbstractOption() == RightCurlyOption.ALONE
++        else if (bracePolicy == RightCurlyOption.ALONE
+                 && !isAloneOnLine(details)
+                 && !isEmptyBody(lcurly)) {
+-            log(rcurly, MSG_KEY_LINE_ALONE, "}", rcurly.getColumnNo() + 1);
++            violation = MSG_KEY_LINE_ALONE;
+         }
+-        else if (getAbstractOption() == RightCurlyOption.ALONE_OR_SINGLELINE
++        else if (bracePolicy == RightCurlyOption.ALONE_OR_SINGLELINE
+                 && !isAloneOnLine(details)
+                 && !isSingleLineBlock(details)
+                 && !isAnonInnerClassInit(lcurly)
+                 && !isEmptyBody(lcurly)) {
+-            log(rcurly, MSG_KEY_LINE_ALONE, "}", rcurly.getColumnNo() + 1);
++            violation = MSG_KEY_LINE_ALONE;
+         }
+         else if (shouldStartLine) {
+             final boolean startsLine =
+-                Utils.whitespaceBefore(rcurly.getColumnNo(),
+-                    getLines()[rcurly.getLineNo() - 1]);
++                Utils.whitespaceBefore(rcurly.getColumnNo(), targetSourceLine);
+ 
+             if (!startsLine && lcurly.getLineNo() != rcurly.getLineNo()) {
+-                log(rcurly, MSG_KEY_LINE_NEW, "}", rcurly.getColumnNo() + 1);
++                violation = MSG_KEY_LINE_NEW;
+             }
+         }
++        return violation;
+     }
+ 
+     /**
+      * Checks whether right curly is alone on a line.
+      * @param details for validation.
+      * @return true if right curly is alone on a line.
+      */
+     private static boolean isAloneOnLine(Details details) {
+         final DetailAST rcurly = details.rcurly;
+         final DetailAST lcurly = details.lcurly;
+         final DetailAST nextToken = details.nextToken;
+         return rcurly.getLineNo() != lcurly.getLineNo()
+             && rcurly.getLineNo() != nextToken.getLineNo();
+     }
+ 
+     /**
+      * Checks whether block has a single-line format.
+      * @param details for validation.
+      * @return true if block has single-line format.
+      */
+     private static boolean isSingleLineBlock(Details details) {
+         final DetailAST rcurly = details.rcurly;
+         final DetailAST lcurly = details.lcurly;
+         final DetailAST nextToken = details.nextToken;
+         return rcurly.getLineNo() == lcurly.getLineNo()
+             && rcurly.getLineNo() != nextToken.getLineNo();
+     }
+ 
+     /**
+      * Checks wthether lcurly is in anonymous inner class initialization.
+      * @param lcurly left curly token.
+      * @return true if lcurly begins anonymous inner class initialization.
+      */
+     private static boolean isAnonInnerClassInit(DetailAST lcurly) {
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(lcurly);
+         return surroundingScope.ordinal() == Scope.ANONINNER.ordinal();
+     }
+ 
+     /**
+      * Collects validation details.
+      * @param ast detail ast.
+      * @return object that contain all details to make a validation.
+      */
+     private static Details getDetails(DetailAST ast) {
+         // Attempt to locate the tokens to do the check
+         boolean shouldCheckLastRcurly = false;
+         DetailAST rcurly = null;
+         DetailAST lcurly = null;
+         DetailAST nextToken = null;
+ 

@@ -1,0 +1,136 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "VariableDeclarationUsageDistanceCheck.java",
+  "functionName": "isVariableInOperatorExpr",
+  "functionId": "isVariableInOperatorExpr___operator-DetailAST__variable-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java",
+  "functionStartLine": 789,
+  "functionEndLine": 824,
+  "changeHistory": [
+    "31f6765fdcf2233ca6c53730c2fc196576557f66",
+    "931af7ec1411aa04b3f0b5d94373a3da43ce7e27",
+    "495d54c7532363c906bb2b1acf4e010663d6693f",
+    "c4339df8b3d6b58b327b6cfcaca7413e9c526dcf",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "44e274bfbaf09a067726164e01a9c277f4a97090",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "c4e886312aae13b6cfadceed25b1b8aec18d4a96"
+  ],
+  "changeHistoryShort": {
+    "31f6765fdcf2233ca6c53730c2fc196576557f66": "Ybodychange",
+    "931af7ec1411aa04b3f0b5d94373a3da43ce7e27": "Ybodychange",
+    "495d54c7532363c906bb2b1acf4e010663d6693f": "Ybodychange",
+    "c4339df8b3d6b58b327b6cfcaca7413e9c526dcf": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "44e274bfbaf09a067726164e01a9c277f4a97090": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "c4e886312aae13b6cfadceed25b1b8aec18d4a96": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "31f6765fdcf2233ca6c53730c2fc196576557f66": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2080: Fix typos in code\n\nFixes some `SpellCheckingInspection` inspection violations.\n\nDescription:\n\u003eSpellchecker inspection helps locate typos and misspelling in your code, comments and literals.\n",
+      "commitDate": 1441403297000,
+      "commitName": "31f6765fdcf2233ca6c53730c2fc196576557f66",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1441047087000,
+      "commitNameOld": "c899af31c112c07ea1244f6bbe2c5c6c56818ae5",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 4.12,
+      "commitsBetweenForRepo": 73,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,37 +1,37 @@\n     private static boolean isVariableInOperatorExpr(\n             DetailAST operator, DetailAST variable) {\n-        boolean isVarInOperatorDeclr \u003d false;\n+        boolean isVarInOperatorDeclaration \u003d false;\n         final DetailAST openingBracket \u003d\n                 operator.findFirstToken(TokenTypes.LPAREN);\n \n         // Get EXPR between brackets\n         DetailAST exprBetweenBrackets \u003d openingBracket.getNextSibling();\n \n         // Look if variable is in operator expression\n         while (exprBetweenBrackets.getType() !\u003d TokenTypes.RPAREN) {\n \n             if (isChild(exprBetweenBrackets, variable)) {\n-                isVarInOperatorDeclr \u003d true;\n+                isVarInOperatorDeclaration \u003d true;\n                 break;\n             }\n             exprBetweenBrackets \u003d exprBetweenBrackets.getNextSibling();\n         }\n \n         // Variable may be met in ELSE declaration\n         // So, check variable usage in these declarations.\n-        if (!isVarInOperatorDeclr \u0026\u0026 operator.getType() \u003d\u003d TokenTypes.LITERAL_IF) {\n+        if (!isVarInOperatorDeclaration \u0026\u0026 operator.getType() \u003d\u003d TokenTypes.LITERAL_IF) {\n             final DetailAST elseBlock \u003d operator.getLastChild();\n \n             if (elseBlock.getType() \u003d\u003d TokenTypes.LITERAL_ELSE) {\n                 // Get IF followed by ELSE\n                 final DetailAST firstNodeInsideElseBlock \u003d elseBlock.getFirstChild();\n \n                 if (firstNodeInsideElseBlock.getType() \u003d\u003d TokenTypes.LITERAL_IF) {\n-                    isVarInOperatorDeclr \u003d\n+                    isVarInOperatorDeclaration \u003d\n                         isVariableInOperatorExpr(firstNodeInsideElseBlock, variable);\n                 }\n             }\n         }\n \n-        return isVarInOperatorDeclr;\n+        return isVarInOperatorDeclaration;\n     }\n\\ No newline at end of file\n"
+    },
+    "931af7ec1411aa04b3f0b5d94373a3da43ce7e27": {
+      "type": "Ybodychange",
+      "commitMessage": "Simplify expressions that are constant. #1555\n\nFixes `ConstantConditions` inspection violations.\n\nDescription:\n\u003eThis inspection analyzes method control and data flow to report possible conditions that are always true or false and expressions whose value is statically proven to be constant.\n",
+      "commitDate": 1439697645000,
+      "commitName": "931af7ec1411aa04b3f0b5d94373a3da43ce7e27",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439355282000,
+      "commitNameOld": "c4928f486c67afa62e7e8fbd5d8f731be7186985",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 3.96,
+      "commitsBetweenForRepo": 48,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,39 +1,37 @@\n     private static boolean isVariableInOperatorExpr(\n             DetailAST operator, DetailAST variable) {\n         boolean isVarInOperatorDeclr \u003d false;\n         final DetailAST openingBracket \u003d\n                 operator.findFirstToken(TokenTypes.LPAREN);\n \n         // Get EXPR between brackets\n         DetailAST exprBetweenBrackets \u003d openingBracket.getNextSibling();\n \n         // Look if variable is in operator expression\n         while (exprBetweenBrackets.getType() !\u003d TokenTypes.RPAREN) {\n \n             if (isChild(exprBetweenBrackets, variable)) {\n                 isVarInOperatorDeclr \u003d true;\n                 break;\n             }\n             exprBetweenBrackets \u003d exprBetweenBrackets.getNextSibling();\n         }\n \n         // Variable may be met in ELSE declaration\n         // So, check variable usage in these declarations.\n         if (!isVarInOperatorDeclr \u0026\u0026 operator.getType() \u003d\u003d TokenTypes.LITERAL_IF) {\n             final DetailAST elseBlock \u003d operator.getLastChild();\n \n             if (elseBlock.getType() \u003d\u003d TokenTypes.LITERAL_ELSE) {\n                 // Get IF followed by ELSE\n                 final DetailAST firstNodeInsideElseBlock \u003d elseBlock.getFirstChild();\n \n                 if (firstNodeInsideElseBlock.getType() \u003d\u003d TokenTypes.LITERAL_IF) {\n-                    isVarInOperatorDeclr |\u003d\n-                            isVariableInOperatorExpr(\n-                                firstNodeInsideElseBlock,\n-                                    variable);\n+                    isVarInOperatorDeclr \u003d\n+                        isVariableInOperatorExpr(firstNodeInsideElseBlock, variable);\n                 }\n             }\n         }\n \n         return isVarInOperatorDeclr;\n     }\n\\ No newline at end of file\n"
+    },
+    "495d54c7532363c906bb2b1acf4e010663d6693f": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1293. VariableDeclarationUsageCheck refactoring. Useless variable check in \u0027switch\u0027 statement\n",
+      "commitDate": 1439215017000,
+      "commitName": "495d54c7532363c906bb2b1acf4e010663d6693f",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1439215017000,
+      "commitNameOld": "c4339df8b3d6b58b327b6cfcaca7413e9c526dcf",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,57 +1,39 @@\n     private static boolean isVariableInOperatorExpr(\n             DetailAST operator, DetailAST variable) {\n         boolean isVarInOperatorDeclr \u003d false;\n         final DetailAST openingBracket \u003d\n                 operator.findFirstToken(TokenTypes.LPAREN);\n \n         // Get EXPR between brackets\n         DetailAST exprBetweenBrackets \u003d openingBracket.getNextSibling();\n \n         // Look if variable is in operator expression\n         while (exprBetweenBrackets.getType() !\u003d TokenTypes.RPAREN) {\n \n             if (isChild(exprBetweenBrackets, variable)) {\n                 isVarInOperatorDeclr \u003d true;\n                 break;\n             }\n             exprBetweenBrackets \u003d exprBetweenBrackets.getNextSibling();\n         }\n \n-        // Variable may be met in ELSE declaration or in CASE declaration.\n+        // Variable may be met in ELSE declaration\n         // So, check variable usage in these declarations.\n-        if (!isVarInOperatorDeclr) {\n-            switch (operator.getType()) {\n-            case TokenTypes.LITERAL_IF:\n-                final DetailAST elseBlock \u003d operator.getLastChild();\n+        if (!isVarInOperatorDeclr \u0026\u0026 operator.getType() \u003d\u003d TokenTypes.LITERAL_IF) {\n+            final DetailAST elseBlock \u003d operator.getLastChild();\n \n-                if (elseBlock.getType() \u003d\u003d TokenTypes.LITERAL_ELSE) {\n-                    // Get IF followed by ELSE\n-                    final DetailAST firstNodeInsideElseBlock \u003d elseBlock.getFirstChild();\n+            if (elseBlock.getType() \u003d\u003d TokenTypes.LITERAL_ELSE) {\n+                // Get IF followed by ELSE\n+                final DetailAST firstNodeInsideElseBlock \u003d elseBlock.getFirstChild();\n \n-                    if (firstNodeInsideElseBlock.getType() \u003d\u003d TokenTypes.LITERAL_IF) {\n-                        isVarInOperatorDeclr |\u003d isVariableInOperatorExpr(firstNodeInsideElseBlock, variable);\n-                        }\n+                if (firstNodeInsideElseBlock.getType() \u003d\u003d TokenTypes.LITERAL_IF) {\n+                    isVarInOperatorDeclr |\u003d\n+                            isVariableInOperatorExpr(\n+                                firstNodeInsideElseBlock,\n+                                    variable);\n                 }\n-                break;\n-\n-            case TokenTypes.LITERAL_SWITCH:\n-                DetailAST currentCaseBlock \u003d operator.findFirstToken(TokenTypes.CASE_GROUP);\n-\n-                while (currentCaseBlock !\u003d null \u0026\u0026 currentCaseBlock.getType() \u003d\u003d TokenTypes.CASE_GROUP) {\n-                    final DetailAST firstNodeInsideCaseBlock \u003d currentCaseBlock.getFirstChild();\n-\n-                    if (isChild(firstNodeInsideCaseBlock, variable)) {\n-                        isVarInOperatorDeclr \u003d true;\n-                        break;\n-                        }\n-                    currentCaseBlock \u003d currentCaseBlock.getNextSibling();\n-                }\n-                break;\n-\n-            default:\n-                // no code\n             }\n         }\n \n         return isVarInOperatorDeclr;\n     }\n\\ No newline at end of file\n"
+    },
+    "c4339df8b3d6b58b327b6cfcaca7413e9c526dcf": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1293. Improved coverage for VariableDecalarationUsageCheck.\n",
+      "commitDate": 1439215017000,
+      "commitName": "c4339df8b3d6b58b327b6cfcaca7413e9c526dcf",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1439189206000,
+      "commitNameOld": "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.3,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,68 +1,57 @@\n     private static boolean isVariableInOperatorExpr(\n             DetailAST operator, DetailAST variable) {\n         boolean isVarInOperatorDeclr \u003d false;\n         final DetailAST openingBracket \u003d\n                 operator.findFirstToken(TokenTypes.LPAREN);\n \n-        if (openingBracket !\u003d null) {\n-            // Get EXPR between brackets\n-            DetailAST exprBetweenBrackets \u003d openingBracket\n-                    .getNextSibling();\n+        // Get EXPR between brackets\n+        DetailAST exprBetweenBrackets \u003d openingBracket.getNextSibling();\n \n-            // Look if variable is in operator expression\n-            while (exprBetweenBrackets.getType() !\u003d TokenTypes.RPAREN) {\n+        // Look if variable is in operator expression\n+        while (exprBetweenBrackets.getType() !\u003d TokenTypes.RPAREN) {\n \n-                if (isChild(exprBetweenBrackets, variable)) {\n-                    isVarInOperatorDeclr \u003d true;\n-                    break;\n-                }\n-                exprBetweenBrackets \u003d exprBetweenBrackets.getNextSibling();\n+            if (isChild(exprBetweenBrackets, variable)) {\n+                isVarInOperatorDeclr \u003d true;\n+                break;\n             }\n+            exprBetweenBrackets \u003d exprBetweenBrackets.getNextSibling();\n+        }\n \n-            // Variable may be met in ELSE declaration or in CASE declaration.\n-            // So, check variable usage in these declarations.\n-            if (!isVarInOperatorDeclr) {\n-                switch (operator.getType()) {\n-                    case TokenTypes.LITERAL_IF:\n-                        final DetailAST elseBlock \u003d operator.getLastChild();\n+        // Variable may be met in ELSE declaration or in CASE declaration.\n+        // So, check variable usage in these declarations.\n+        if (!isVarInOperatorDeclr) {\n+            switch (operator.getType()) {\n+            case TokenTypes.LITERAL_IF:\n+                final DetailAST elseBlock \u003d operator.getLastChild();\n \n-                        if (elseBlock.getType() \u003d\u003d TokenTypes.LITERAL_ELSE) {\n-                            // Get IF followed by ELSE\n-                            final DetailAST firstNodeInsideElseBlock \u003d elseBlock\n-                                .getFirstChild();\n+                if (elseBlock.getType() \u003d\u003d TokenTypes.LITERAL_ELSE) {\n+                    // Get IF followed by ELSE\n+                    final DetailAST firstNodeInsideElseBlock \u003d elseBlock.getFirstChild();\n \n-                            if (firstNodeInsideElseBlock.getType() \u003d\u003d TokenTypes.LITERAL_IF) {\n-                                isVarInOperatorDeclr |\u003d\n-                                    isVariableInOperatorExpr(\n-                                        firstNodeInsideElseBlock,\n-                                            variable);\n-                            }\n+                    if (firstNodeInsideElseBlock.getType() \u003d\u003d TokenTypes.LITERAL_IF) {\n+                        isVarInOperatorDeclr |\u003d isVariableInOperatorExpr(firstNodeInsideElseBlock, variable);\n                         }\n-                        break;\n-\n-                    case TokenTypes.LITERAL_SWITCH:\n-                        DetailAST currentCaseBlock \u003d operator\n-                            .findFirstToken(TokenTypes.CASE_GROUP);\n-\n-                        while (currentCaseBlock !\u003d null\n-                            \u0026\u0026 currentCaseBlock.getType() \u003d\u003d TokenTypes.CASE_GROUP) {\n-                            final DetailAST firstNodeInsideCaseBlock \u003d\n-                                currentCaseBlock.getFirstChild();\n-\n-                            if (isChild(firstNodeInsideCaseBlock,\n-                                variable)) {\n-                                isVarInOperatorDeclr \u003d true;\n-                                break;\n-                            }\n-                            currentCaseBlock \u003d currentCaseBlock.getNextSibling();\n-                        }\n-                        break;\n-\n-                    default:\n-                        // no code\n                 }\n+                break;\n+\n+            case TokenTypes.LITERAL_SWITCH:\n+                DetailAST currentCaseBlock \u003d operator.findFirstToken(TokenTypes.CASE_GROUP);\n+\n+                while (currentCaseBlock !\u003d null \u0026\u0026 currentCaseBlock.getType() \u003d\u003d TokenTypes.CASE_GROUP) {\n+                    final DetailAST firstNodeInsideCaseBlock \u003d currentCaseBlock.getFirstChild();\n+\n+                    if (isChild(firstNodeInsideCaseBlock, variable)) {\n+                        isVarInOperatorDeclr \u003d true;\n+                        break;\n+                        }\n+                    currentCaseBlock \u003d currentCaseBlock.getNextSibling();\n+                }\n+                break;\n+\n+            default:\n+                // no code\n             }\n         }\n \n         return isVarInOperatorDeclr;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 61.71,
+      "commitsBetweenForRepo": 387,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,70 +1,70 @@\n-    private boolean isVariableInOperatorExpr(\n+    private static boolean isVariableInOperatorExpr(\n             DetailAST operator, DetailAST variable) {\n         boolean isVarInOperatorDeclr \u003d false;\n         final DetailAST openingBracket \u003d\n                 operator.findFirstToken(TokenTypes.LPAREN);\n \n         if (openingBracket !\u003d null) {\n             // Get EXPR between brackets\n             DetailAST exprBetweenBrackets \u003d openingBracket\n                     .getNextSibling();\n \n             // Look if variable is in operator expression\n             while (exprBetweenBrackets.getType() !\u003d TokenTypes.RPAREN) {\n \n                 if (isChild(exprBetweenBrackets, variable)) {\n                     isVarInOperatorDeclr \u003d true;\n                     break;\n                 }\n                 exprBetweenBrackets \u003d exprBetweenBrackets.getNextSibling();\n             }\n \n             // Variable may be met in ELSE declaration or in CASE declaration.\n             // So, check variable usage in these declarations.\n             if (!isVarInOperatorDeclr) {\n                 switch (operator.getType()) {\n                     case TokenTypes.LITERAL_IF:\n                         final DetailAST elseBlock \u003d operator.getLastChild();\n \n                         if (elseBlock.getType() \u003d\u003d TokenTypes.LITERAL_ELSE) {\n                             // Get IF followed by ELSE\n                             final DetailAST firstNodeInsideElseBlock \u003d elseBlock\n                                 .getFirstChild();\n \n                             if (firstNodeInsideElseBlock.getType()\n                                 \u003d\u003d TokenTypes.LITERAL_IF) {\n                                 isVarInOperatorDeclr |\u003d\n                                     isVariableInOperatorExpr(\n                                         firstNodeInsideElseBlock,\n                                             variable);\n                             }\n                         }\n                         break;\n \n                     case TokenTypes.LITERAL_SWITCH:\n                         DetailAST currentCaseBlock \u003d operator\n                             .findFirstToken(TokenTypes.CASE_GROUP);\n \n                         while (currentCaseBlock !\u003d null\n                             \u0026\u0026 currentCaseBlock.getType()\n                             \u003d\u003d TokenTypes.CASE_GROUP) {\n                             final DetailAST firstNodeInsideCaseBlock \u003d\n                                 currentCaseBlock.getFirstChild();\n \n                             if (isChild(firstNodeInsideCaseBlock,\n                                 variable)) {\n                                 isVarInOperatorDeclr \u003d true;\n                                 break;\n                             }\n                             currentCaseBlock \u003d currentCaseBlock.getNextSibling();\n                         }\n                         break;\n \n                     default:\n                         // no code\n                 }\n             }\n         }\n \n         return isVarInOperatorDeclr;\n     }\n\\ No newline at end of file\n"
+    },
+    "44e274bfbaf09a067726164e01a9c277f4a97090": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary semicolons to fix PMD violations, issue #744\n\nAll violations of rule [EmptyStatementNotInLoop](http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/empty.html#EmptyStatementNotInLoop) are fixed. Empty statements sometimes were used to trick Checkstyle to allow empty blocks. While generally empty blocks are bad practice, there are too many of them in Checkstyle code to fix them in scope of this commit. Instead, [EmplyBlock](http://checkstyle.sourceforge.net/config_blocks.html#EmptyBlock) setting was changed to allow empty block when there is comment inside it for Checkstyle codebase.\n",
+      "commitDate": 1426113655000,
+      "commitName": "44e274bfbaf09a067726164e01a9c277f4a97090",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1426023398000,
+      "commitNameOld": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.04,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,74 +1,74 @@\n     private boolean isVariableInOperatorExpr(\n             DetailAST operator, DetailAST variable)\n     {\n         boolean isVarInOperatorDeclr \u003d false;\n         final DetailAST openingBracket \u003d\n                 operator.findFirstToken(TokenTypes.LPAREN);\n \n         if (openingBracket !\u003d null) {\n             // Get EXPR between brackets\n             DetailAST exprBetweenBrackets \u003d openingBracket\n                     .getNextSibling();\n \n             // Look if variable is in operator expression\n             while (exprBetweenBrackets.getType() !\u003d TokenTypes.RPAREN) {\n \n                 if (isChild(exprBetweenBrackets, variable)) {\n                     isVarInOperatorDeclr \u003d true;\n                     break;\n                 }\n                 exprBetweenBrackets \u003d exprBetweenBrackets.getNextSibling();\n             }\n \n             // Variable may be met in ELSE declaration or in CASE declaration.\n             // So, check variable usage in these declarations.\n             if (!isVarInOperatorDeclr) {\n                 switch (operator.getType()) {\n                     case TokenTypes.LITERAL_IF:\n                         final DetailAST elseBlock \u003d operator.getLastChild();\n \n                         if (elseBlock.getType() \u003d\u003d TokenTypes.LITERAL_ELSE) {\n                             // Get IF followed by ELSE\n                             final DetailAST firstNodeInsideElseBlock \u003d elseBlock\n                                 .getFirstChild();\n \n                             if (firstNodeInsideElseBlock.getType()\n                                 \u003d\u003d TokenTypes.LITERAL_IF)\n                             {\n                                 isVarInOperatorDeclr |\u003d\n                                     isVariableInOperatorExpr(\n                                         firstNodeInsideElseBlock,\n                                             variable);\n                             }\n                         }\n                         break;\n \n                     case TokenTypes.LITERAL_SWITCH:\n                         DetailAST currentCaseBlock \u003d operator\n                             .findFirstToken(TokenTypes.CASE_GROUP);\n \n                         while (currentCaseBlock !\u003d null\n                             \u0026\u0026 currentCaseBlock.getType()\n                             \u003d\u003d TokenTypes.CASE_GROUP)\n                         {\n                             final DetailAST firstNodeInsideCaseBlock \u003d\n                                 currentCaseBlock.getFirstChild();\n \n                             if (isChild(firstNodeInsideCaseBlock,\n                                 variable))\n                             {\n                                 isVarInOperatorDeclr \u003d true;\n                                 break;\n                             }\n                             currentCaseBlock \u003d currentCaseBlock.getNextSibling();\n                         }\n                         break;\n \n                     default:\n-                        ;// no code\n+                        // no code\n                 }\n             }\n         }\n \n         return isVarInOperatorDeclr;\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "c4e886312aae13b6cfadceed25b1b8aec18d4a96": {
+      "type": "Yintroduced",
+      "commitMessage": "VariableDeclarationUsageDistanceCheck was imported #223\n",
+      "commitDate": 1407390645000,
+      "commitName": "c4e886312aae13b6cfadceed25b1b8aec18d4a96",
+      "commitAuthor": "Max"
+    }
+  }
+}

@@ -1,0 +1,85 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/gui/AbstractCellEditor.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/gui/AbstractCellEditor.java
+index a240491ed..c81c9680f 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/gui/AbstractCellEditor.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/gui/AbstractCellEditor.java
+@@ -36,78 +36,78 @@ public class AbstractCellEditor implements CellEditor
+ 
+     /** @see CellEditor */
+     public Object getCellEditorValue()
+     {
+         return null;
+     }
+ 
+     /** @see CellEditor */
+     public boolean isCellEditable(EventObject e)
+     {
+         return true;
+     }
+ 
+     /** @see CellEditor */
+     public boolean shouldSelectCell(EventObject anEvent)
+     {
+         return false;
+     }
+ 
+     /** @see CellEditor */
+     public boolean stopCellEditing()
+     {
+         return true;
+     }
+ 
+     /** @see CellEditor */
+     public void cancelCellEditing()
+     {
+     }
+ 
+     /** @see CellEditor */
+     public void addCellEditorListener(CellEditorListener l)
+     {
+         mListenerList.add(CellEditorListener.class, l);
+     }
+ 
+     /** @see CellEditor */
+     public void removeCellEditorListener(CellEditorListener l)
+     {
+         mListenerList.remove(CellEditorListener.class, l);
+     }
+ 
+     /*
+      * Notify all listeners that have registered interest for
+      * notification on this event type.
+      * @see EventListenerList
+      */
+     protected void fireEditingStopped()
+     {
+         // Guaranteed to return a non-null array
+-        Object[] listeners = mListenerList.getListenerList();
++        final Object[] listeners = mListenerList.getListenerList();
+         // Process the listeners last to first, notifying
+         // those that are interested in this event
+         for (int i = listeners.length - 2; i >= 0; i -= 2) {
+             if (listeners[i] == CellEditorListener.class) {
+                 ((CellEditorListener) listeners[i + 1]).editingStopped(new ChangeEvent(this));
+             }
+         }
+     }
+ 
+     /*
+      * Notify all listeners that have registered interest for
+      * notification on this event type.
+      * @see EventListenerList
+      */
+     protected void fireEditingCanceled()
+     {
+         // Guaranteed to return a non-null array
+-        Object[] listeners = mListenerList.getListenerList();
++        final Object[] listeners = mListenerList.getListenerList();
+         // Process the listeners last to first, notifying
+         // those that are interested in this event
+         for (int i = listeners.length - 2; i >= 0; i -= 2) {
+             if (listeners[i] == CellEditorListener.class) {
+                 ((CellEditorListener) listeners[i + 1]).editingCanceled(new ChangeEvent(this));
+             }
+         }
+     }
+ }

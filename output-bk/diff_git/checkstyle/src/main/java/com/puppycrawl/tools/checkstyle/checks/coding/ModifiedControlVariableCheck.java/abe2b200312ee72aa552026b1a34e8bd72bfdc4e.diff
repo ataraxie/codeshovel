@@ -1,0 +1,132 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ModifiedControlVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ModifiedControlVariableCheck.java
+index 8454fb5a0..356cdd2a0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ModifiedControlVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ModifiedControlVariableCheck.java
+@@ -22,100 +22,127 @@ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FastStack;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ /**
+  * Check for ensuring that for loop control variables are not modified
+  * inside the for block.
+  *
+  * @author Daniel Grenner
+  */
+ public final class ModifiedControlVariableCheck extends Check
+ {
+     /** Current set of parameters. */
+     private FastStack<String> currentVariables = FastStack.newInstance();
+     /** Stack of block parameters. */
+     private final FastStack<FastStack<String>> variableStack =
+         FastStack.newInstance();
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.OBJBLOCK,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.FOR_ITERATOR,
+             TokenTypes.FOR_EACH_CLAUSE,
+             TokenTypes.ASSIGN,
+             TokenTypes.PLUS_ASSIGN,
+             TokenTypes.MINUS_ASSIGN,
+             TokenTypes.STAR_ASSIGN,
+             TokenTypes.DIV_ASSIGN,
+             TokenTypes.MOD_ASSIGN,
+             TokenTypes.SR_ASSIGN,
+             TokenTypes.BSR_ASSIGN,
+             TokenTypes.SL_ASSIGN,
+             TokenTypes.BAND_ASSIGN,
+             TokenTypes.BXOR_ASSIGN,
+             TokenTypes.BOR_ASSIGN,
+             TokenTypes.INC,
+             TokenTypes.POST_INC,
+             TokenTypes.DEC,
+             TokenTypes.POST_DEC,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
++    @Override
++    public int[] getAcceptableTokens()
++    {
++        return new int[] {
++            TokenTypes.OBJBLOCK,
++            TokenTypes.LITERAL_FOR,
++            TokenTypes.FOR_ITERATOR,
++            TokenTypes.FOR_EACH_CLAUSE,
++            TokenTypes.ASSIGN,
++            TokenTypes.PLUS_ASSIGN,
++            TokenTypes.MINUS_ASSIGN,
++            TokenTypes.STAR_ASSIGN,
++            TokenTypes.DIV_ASSIGN,
++            TokenTypes.MOD_ASSIGN,
++            TokenTypes.SR_ASSIGN,
++            TokenTypes.BSR_ASSIGN,
++            TokenTypes.SL_ASSIGN,
++            TokenTypes.BAND_ASSIGN,
++            TokenTypes.BXOR_ASSIGN,
++            TokenTypes.BOR_ASSIGN,
++            TokenTypes.INC,
++            TokenTypes.POST_INC,
++            TokenTypes.DEC,
++            TokenTypes.POST_DEC,
++        };
++    }
++
+     @Override
+     public void beginTree(DetailAST rootAST)
+     {
+         // clear data
+         currentVariables.clear();
+         variableStack.clear();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+                 enterBlock();
+                 break;
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.FOR_ITERATOR:
+             case TokenTypes.FOR_EACH_CLAUSE:
+                 break;
+             case TokenTypes.ASSIGN:
+             case TokenTypes.PLUS_ASSIGN:
+             case TokenTypes.MINUS_ASSIGN:
+             case TokenTypes.STAR_ASSIGN:
+             case TokenTypes.DIV_ASSIGN:
+             case TokenTypes.MOD_ASSIGN:
+             case TokenTypes.SR_ASSIGN:
+             case TokenTypes.BSR_ASSIGN:
+             case TokenTypes.SL_ASSIGN:
+             case TokenTypes.BAND_ASSIGN:
+             case TokenTypes.BXOR_ASSIGN:
+             case TokenTypes.BOR_ASSIGN:
+             case TokenTypes.INC:
+             case TokenTypes.POST_INC:
+             case TokenTypes.DEC:
+             case TokenTypes.POST_DEC:
+                 checkIdent(ast);
+                 break;
+             default:
+                 throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
+ 
+     @Override
+     public void leaveToken(DetailAST ast)
+     {
+         switch (ast.getType()) {
+             case TokenTypes.FOR_ITERATOR:
+                 leaveForIter(ast.getParent());
+                 break;

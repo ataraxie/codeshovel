@@ -1,0 +1,106 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/TreeTableModelAdapter.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/TreeTableModelAdapter.java
+index d27656c5f..601ac1805 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/TreeTableModelAdapter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/TreeTableModelAdapter.java
+@@ -66,100 +66,95 @@ public class TreeTableModelAdapter extends AbstractTableModel {
+         treeTableModel.addTreeModelListener(new UpdatingTreeModelListener());
+     }
+ 
+     // Wrappers, implementing TableModel interface.
+ 
+     @Override
+     public int getColumnCount() {
+         return treeTableModel.getColumnCount();
+     }
+ 
+     @Override
+     public String getColumnName(int column) {
+         return treeTableModel.getColumnName(column);
+     }
+ 
+     @Override
+     public Class<?> getColumnClass(int column) {
+         return treeTableModel.getColumnClass(column);
+     }
+ 
+     @Override
+     public int getRowCount() {
+         return tree.getRowCount();
+     }
+ 
+     @Override
+     public Object getValueAt(int row, int column) {
+         return treeTableModel.getValueAt(nodeForRow(row), column);
+     }
+ 
+     @Override
+     public boolean isCellEditable(int row, int column) {
+         return treeTableModel.isCellEditable(column);
+     }
+ 
+     /**
+      * Finds node for a given row.
+      * @param row Row for which to find a related node.
+      * @return Node for a given row.
+      */
+     private Object nodeForRow(int row) {
+         final TreePath treePath = tree.getPathForRow(row);
+         return treePath.getLastPathComponent();
+     }
+ 
+     /**
+      * Invokes fireTableDataChanged after all the pending events have been
+      * processed. SwingUtilities.invokeLater is used to handle this.
+      */
+     private void delayedFireTableDataChanged() {
+-        SwingUtilities.invokeLater(new Runnable() {
+-            @Override
+-            public void run() {
+-                fireTableDataChanged();
+-            }
+-        });
++        SwingUtilities.invokeLater(this::fireTableDataChanged);
+     }
+ 
+     /**
+      * TreeExpansionListener that can update the table when tree changes.
+      */
+     private class UpdatingTreeExpansionListener implements TreeExpansionListener {
+         // Don't use fireTableRowsInserted() here; the selection model
+         // would get updated twice.
+         @Override
+         public void treeExpanded(TreeExpansionEvent event) {
+             fireTableDataChanged();
+         }
+ 
+         @Override
+         public void treeCollapsed(TreeExpansionEvent event) {
+             fireTableDataChanged();
+         }
+     }
+ 
+     /**
+      * TreeModelListener that can update the table when tree changes.
+      */
+     private class UpdatingTreeModelListener implements TreeModelListener {
+         @Override
+         public void treeNodesChanged(TreeModelEvent event) {
+             delayedFireTableDataChanged();
+         }
+ 
+         @Override
+         public void treeNodesInserted(TreeModelEvent event) {
+             delayedFireTableDataChanged();
+         }
+ 
+         @Override
+         public void treeNodesRemoved(TreeModelEvent event) {
+             delayedFireTableDataChanged();
+         }
+ 
+         @Override
+         public void treeStructureChanged(TreeModelEvent event) {
+             delayedFireTableDataChanged();
+         }
+     }
+ }

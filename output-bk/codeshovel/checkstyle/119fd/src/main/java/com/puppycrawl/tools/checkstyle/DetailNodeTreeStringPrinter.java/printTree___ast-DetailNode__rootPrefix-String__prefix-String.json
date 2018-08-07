@@ -1,0 +1,89 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DetailNodeTreeStringPrinter.java",
+  "functionName": "printTree",
+  "functionId": "printTree___ast-DetailNode__rootPrefix-String__prefix-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/DetailNodeTreeStringPrinter.java",
+  "functionStartLine": 108,
+  "functionEndLine": 127,
+  "changeHistory": [
+    "46fa8090954480eecdeb6e7367f0e30655853f42",
+    "3bd3a52280388520c64ec813dd1e4ffb3a0063a2",
+    "67e6b46e9fa424fbd0a2fba611a3a59b30727692",
+    "1549ea4822139938296a58f59c38ae14f633c5aa",
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a"
+  ],
+  "changeHistoryShort": {
+    "46fa8090954480eecdeb6e7367f0e30655853f42": "Ybodychange",
+    "3bd3a52280388520c64ec813dd1e4ffb3a0063a2": "Ybodychange",
+    "67e6b46e9fa424fbd0a2fba611a3a59b30727692": "Ybodychange",
+    "1549ea4822139938296a58f59c38ae14f633c5aa": "Ymultichange(Yparameterchange,Ymodifierchange,Ybodychange)",
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "46fa8090954480eecdeb6e7367f0e30655853f42": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4812: add report on StringBufferMustHaveInitialCapacity\n",
+      "commitDate": 1501186710000,
+      "commitName": "46fa8090954480eecdeb6e7367f0e30655853f42",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1499372568000,
+      "commitNameOld": "82979737c4201b4913ea30b9c9431e71783d1c02",
+      "commitAuthorOld": "Timur",
+      "daysBetweenCommits": 21.0,
+      "commitsBetweenForRepo": 146,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     public static String printTree(DetailNode ast, String rootPrefix, String prefix) {\n-        final StringBuilder messageBuilder \u003d new StringBuilder();\n+        final StringBuilder messageBuilder \u003d new StringBuilder(1024);\n         DetailNode node \u003d ast;\n         while (node !\u003d null) {\n             if (node.getType() \u003d\u003d JavadocTokenTypes.JAVADOC) {\n                 messageBuilder.append(rootPrefix);\n             }\n             else {\n                 messageBuilder.append(prefix);\n             }\n             messageBuilder.append(getIndentation(node))\n                     .append(JavadocUtils.getTokenName(node.getType())).append(\" -\u003e \")\n                     .append(JavadocUtils.escapeAllControlChars(node.getText())).append(\" [\")\n                     .append(node.getLineNumber()).append(\u0027:\u0027).append(node.getColumnNumber())\n                     .append(\u0027]\u0027).append(LINE_SEPARATOR)\n                     .append(printTree(JavadocUtils.getFirstChild(node), rootPrefix, prefix));\n             node \u003d JavadocUtils.getNextSibling(node);\n         }\n         return messageBuilder.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "3bd3a52280388520c64ec813dd1e4ffb3a0063a2": {
+      "type": "Ybodychange",
+      "commitMessage": "spelling: fix some typos in code/javadoc/comments\n",
+      "commitDate": 1491395871000,
+      "commitName": "3bd3a52280388520c64ec813dd1e4ffb3a0063a2",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 67.92,
+      "commitsBetweenForRepo": 207,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     public static String printTree(DetailNode ast, String rootPrefix, String prefix) {\n         final StringBuilder messageBuilder \u003d new StringBuilder();\n         DetailNode node \u003d ast;\n         while (node !\u003d null) {\n             if (node.getType() \u003d\u003d JavadocTokenTypes.JAVADOC) {\n                 messageBuilder.append(rootPrefix);\n             }\n             else {\n                 messageBuilder.append(prefix);\n             }\n             messageBuilder.append(getIndentation(node))\n                     .append(JavadocUtils.getTokenName(node.getType())).append(\" -\u003e \")\n-                    .append(JavadocUtils.excapeAllControlChars(node.getText())).append(\" [\")\n+                    .append(JavadocUtils.escapeAllControlChars(node.getText())).append(\" [\")\n                     .append(node.getLineNumber()).append(\u0027:\u0027).append(node.getColumnNumber())\n                     .append(\u0027]\u0027).append(LINE_SEPARATOR)\n                     .append(printTree(JavadocUtils.getFirstChild(node), rootPrefix, prefix));\n             node \u003d JavadocUtils.getNextSibling(node);\n         }\n         return messageBuilder.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "67e6b46e9fa424fbd0a2fba611a3a59b30727692": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3153: IllegalTokenTextCheck and IllegalTokenCheck does not work with COMMENT_CONTENT token\n",
+      "commitDate": 1462710857000,
+      "commitName": "67e6b46e9fa424fbd0a2fba611a3a59b30727692",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1460322482000,
+      "commitNameOld": "1549ea4822139938296a58f59c38ae14f633c5aa",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 27.64,
+      "commitsBetweenForRepo": 57,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     public static String printTree(DetailNode ast, String rootPrefix, String prefix) {\n         final StringBuilder messageBuilder \u003d new StringBuilder();\n         DetailNode node \u003d ast;\n         while (node !\u003d null) {\n             if (node.getType() \u003d\u003d JavadocTokenTypes.JAVADOC) {\n                 messageBuilder.append(rootPrefix);\n             }\n             else {\n                 messageBuilder.append(prefix);\n             }\n             messageBuilder.append(getIndentation(node))\n                     .append(JavadocUtils.getTokenName(node.getType())).append(\" -\u003e \")\n-                    .append(excapeAllControlChars(node.getText())).append(\" [\")\n+                    .append(JavadocUtils.excapeAllControlChars(node.getText())).append(\" [\")\n                     .append(node.getLineNumber()).append(\u0027:\u0027).append(node.getColumnNumber())\n                     .append(\u0027]\u0027).append(LINE_SEPARATOR)\n                     .append(printTree(JavadocUtils.getFirstChild(node), rootPrefix, prefix));\n             node \u003d JavadocUtils.getNextSibling(node);\n         }\n         return messageBuilder.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "1549ea4822139938296a58f59c38ae14f633c5aa": {
+      "type": "Ymultichange(Yparameterchange,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Issue #3040: New CLI option to print full tree (java+comments+javadoc). (#3078)",
+      "commitDate": 1460322482000,
+      "commitName": "1549ea4822139938296a58f59c38ae14f633c5aa",
+      "commitAuthor": "Baratali Izmailov",
+      "subchanges": [
+        "Yparameterchange",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #652: New CLI option to print Javadoc comment parse tree\n",
+      "commitDate": 1458220789000,
+      "commitName": "68b49fd2843f23f55dc711a89213d59f2acf3a0a",
+      "commitAuthor": "Baratali Izmailov"
+    }
+  }
+}

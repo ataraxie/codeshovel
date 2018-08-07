@@ -1,0 +1,89 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ForHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ForHandler.java
+index 1d72b9866..b13a495a5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ForHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ForHandler.java
+@@ -9,82 +9,82 @@
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.indentation;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Handler for for loops.
+  *
+  * @author jrichard
+  */
+ public class ForHandler extends BlockParentHandler {
+     /**
+      * Construct an instance of this handler with the given indentation check,
+      * abstract syntax tree, and parent handler.
+      *
+      * @param indentCheck   the indentation check
+      * @param ast           the abstract syntax tree
+      * @param parent        the parent handler
+      */
+     public ForHandler(IndentationCheck indentCheck,
+         DetailAST ast, AbstractExpressionHandler parent) {
+         super(indentCheck, "for", ast, parent);
+     }
+ 
+     /**
+      * Check the indentation of the parameters of the 'for' loop.
+      */
+     private void checkForParams() {
+         final IndentLevel expected =
+             new IndentLevel(getLevel(), getBasicOffset());
+         final DetailAST init = getMainAst().findFirstToken(TokenTypes.FOR_INIT);
+ 
+         if (init != null) {
+             checkExpressionSubtree(init, expected, false, false);
+ 
+             final DetailAST cond =
+                 getMainAst().findFirstToken(TokenTypes.FOR_CONDITION);
+             checkExpressionSubtree(cond, expected, false, false);
+ 
+-            final DetailAST iter =
++            final DetailAST forIterator =
+                 getMainAst().findFirstToken(TokenTypes.FOR_ITERATOR);
+-            checkExpressionSubtree(iter, expected, false, false);
++            checkExpressionSubtree(forIterator, expected, false, false);
+         }
+         // for each
+         else {
+             final DetailAST forEach =
+                 getMainAst().findFirstToken(TokenTypes.FOR_EACH_CLAUSE);
+             checkExpressionSubtree(forEach, expected, false, false);
+         }
+     }
+ 
+     @Override
+     public void checkIndentation() {
+         checkForParams();
+         super.checkIndentation();
+         final LineWrappingHandler lineWrap =
+             new LineWrappingHandler(getIndentCheck(), getMainAst(),
+                 getForLoopRightParen(getMainAst()));
+         lineWrap.checkIndentation();
+     }
+ 
+     /**
+      * Returns right parenthesis of for-loop statement.
+      * @param literalForAst
+      *          literal-for ast node(TokenTypes.LITERAL_FOR)
+      * @return right parenthesis of for-loop statement.
+      */
+     private static DetailAST getForLoopRightParen(DetailAST literalForAst) {
+         return literalForAst.findFirstToken(TokenTypes.RPAREN);
+     }
+ }

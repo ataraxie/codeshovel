@@ -1,0 +1,152 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ExecutableStatementCountCheck.java",
+  "functionName": "leaveMemberDef",
+  "functionId": "leaveMemberDef___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/ExecutableStatementCountCheck.java",
+  "functionStartLine": 151,
+  "functionEndLine": 158,
+  "changeHistory": [
+    "a244f057057913003dd17e952ee76a844f0fb76b",
+    "0dc48c7c567555a1efe8fb9cbf7ba1812034a5f2",
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "22705bd0d4d4867f646b8c3aca115d7b3cb9c022",
+    "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d",
+    "20b7faa45014272fb58104d96041c50ae97c02a7",
+    "b0bb7e1b50237a03ce4e977af15665c07e20f078",
+    "b8f9b199ad7de16619cec1f288bd751fad8bc4a9"
+  ],
+  "changeHistoryShort": {
+    "a244f057057913003dd17e952ee76a844f0fb76b": "Ybodychange",
+    "0dc48c7c567555a1efe8fb9cbf7ba1812034a5f2": "Ybodychange",
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "22705bd0d4d4867f646b8c3aca115d7b3cb9c022": "Ybodychange",
+    "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d": "Ybodychange",
+    "20b7faa45014272fb58104d96041c50ae97c02a7": "Yfilerename",
+    "b0bb7e1b50237a03ce4e977af15665c07e20f078": "Yrename",
+    "b8f9b199ad7de16619cec1f288bd751fad8bc4a9": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "a244f057057913003dd17e952ee76a844f0fb76b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove calls to simple getters withing classes. #1555\n\nFixes `CallToSimpleGetterInClass` inspection violations.\n\nDescription:\n\u003eReports any calls to a simple property getter from within the property\u0027s class. A simple property getter is defined as one which simply returns the value of a field, and does no other calculation. Such simple getter calls may be safely inlined, at a small performance improvement. Some coding standards also suggest against the use of simple getters for code clarity reasons.\n",
+      "commitDate": 1440497151000,
+      "commitName": "a244f057057913003dd17e952ee76a844f0fb76b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440243292000,
+      "commitNameOld": "d1f4e8d40014f53f40f045c6f8bea7ead44761c1",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 2.94,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private void leaveMemberDef(DetailAST ast) {\n         final int count \u003d context.getCount();\n-        if (count \u003e getMax()) {\n+        if (count \u003e max) {\n             log(ast.getLineNo(), ast.getColumnNo(),\n-                    MSG_KEY, count, getMax());\n+                    MSG_KEY, count, max);\n         }\n         context \u003d contextStack.pop();\n     }\n\\ No newline at end of file\n"
+    },
+    "0dc48c7c567555a1efe8fb9cbf7ba1812034a5f2": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactored UTs, sizes package, issue #537\n",
+      "commitDate": 1424437365000,
+      "commitName": "0dc48c7c567555a1efe8fb9cbf7ba1812034a5f2",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.66,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     private void leaveMemberDef(DetailAST ast)\n     {\n         final int count \u003d context.getCount();\n         if (count \u003e getMax()) {\n             log(ast.getLineNo(), ast.getColumnNo(),\n-                    \"executableStatementCount\", count, getMax());\n+                    MSG_KEY, count, getMax());\n         }\n         context \u003d contextStack.pop();\n     }\n\\ No newline at end of file\n"
+    },
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, sizes, #512\n",
+      "commitDate": 1421677310000,
+      "commitName": "3fec4a92e39afc5b68b03c5fd023cb8d13408385",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "22705bd0d4d4867f646b8c3aca115d7b3cb9c022": {
+      "type": "Ybodychange",
+      "commitMessage": "Removal of explicit boxing.\n",
+      "commitDate": 1198150614000,
+      "commitName": "22705bd0d4d4867f646b8c3aca115d7b3cb9c022",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1197694270000,
+      "commitNameOld": "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 5.28,
+      "commitsBetweenForRepo": 30,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,9 @@\n     private void leaveMemberDef(DetailAST aAST)\n     {\n         final int count \u003d mContext.getCount();\n         if (count \u003e getMax()) {\n-            log(\n-                aAST.getLineNo(),\n-                aAST.getColumnNo(),\n-                \"executableStatementCount\",\n-                new Integer(count),\n-                new Integer(getMax()));\n+            log(aAST.getLineNo(), aAST.getColumnNo(),\n+                    \"executableStatementCount\", count, getMax());\n         }\n         mContext \u003d mContextStack.pop();\n     }\n\\ No newline at end of file\n"
+    },
+    "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d": {
+      "type": "Ybodychange",
+      "commitMessage": "Start of adding generics.\n",
+      "commitDate": 1197694270000,
+      "commitName": "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1169909494000,
+      "commitNameOld": "1efc394250b8f1c79bd7f8344b738a7d13396ed3",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 321.58,
+      "commitsBetweenForRepo": 29,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private void leaveMemberDef(DetailAST aAST)\n     {\n         final int count \u003d mContext.getCount();\n         if (count \u003e getMax()) {\n             log(\n                 aAST.getLineNo(),\n                 aAST.getColumnNo(),\n                 \"executableStatementCount\",\n                 new Integer(count),\n                 new Integer(getMax()));\n         }\n-        mContext \u003d (Context) mContextStack.pop();\n+        mContext \u003d mContextStack.pop();\n     }\n\\ No newline at end of file\n"
+    },
+    "20b7faa45014272fb58104d96041c50ae97c02a7": {
+      "type": "Yfilerename",
+      "commitMessage": "Moved ExecutableStatementCountCheck to sizes package.\n",
+      "commitDate": 1062347161000,
+      "commitName": "20b7faa45014272fb58104d96041c50ae97c02a7",
+      "commitAuthor": "Rick Giles",
+      "commitDateOld": 1062329778000,
+      "commitNameOld": "258c092278eebfab70ca80a891fbdfe08ea18322",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 0.2,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "b0bb7e1b50237a03ce4e977af15665c07e20f078": {
+      "type": "Yrename",
+      "commitMessage": "Correct ExecutableStatementCountCheck counts for inner members when configured for a subset of tokens.\n",
+      "commitDate": 1062324267000,
+      "commitName": "b0bb7e1b50237a03ce4e977af15665c07e20f078",
+      "commitAuthor": "Rick Giles",
+      "commitDateOld": 1062278261000,
+      "commitNameOld": "b8f9b199ad7de16619cec1f288bd751fad8bc4a9",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 0.53,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n-    private void leaveMethodDef(DetailAST aAST)\n+    private void leaveMemberDef(DetailAST aAST)\n     {\n         final int count \u003d mContext.getCount();\n         if (count \u003e getMax()) {\n             log(\n                 aAST.getLineNo(),\n                 aAST.getColumnNo(),\n                 \"executableStatementCount\",\n                 new Integer(count),\n                 new Integer(getMax()));\n         }\n         mContext \u003d (Context) mContextStack.pop();\n     }\n\\ No newline at end of file\n"
+    },
+    "b8f9b199ad7de16619cec1f288bd751fad8bc4a9": {
+      "type": "Yintroduced",
+      "commitMessage": "Added ExecutableStatementCount check from Simon Harris (request 750751).\n",
+      "commitDate": 1062278261000,
+      "commitName": "b8f9b199ad7de16619cec1f288bd751fad8bc4a9",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbbreviationAsWordInNameCheck.java",
+  "functionName": "getDisallowedAbbreviation",
+  "functionId": "getDisallowedAbbreviation___str-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInNameCheck.java",
+  "functionStartLine": 308,
+  "functionEndLine": 340,
+  "changeHistory": [
+    "6e775898e7d1ac179bcb6550f3023ee9b9d70bc3",
+    "bdda55ed1b207cab5e7f8ab3e6ebfb4d07a62a5a",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976",
+    "7c5f94aafd422312a6c19a36f53796d547788827",
+    "0ceec1502926f96f81534cf84cf3d50536f17db1"
+  ],
+  "changeHistoryShort": {
+    "6e775898e7d1ac179bcb6550f3023ee9b9d70bc3": "Ybodychange",
+    "bdda55ed1b207cab5e7f8ab3e6ebfb4d07a62a5a": "Ybodychange",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": "Ymultichange(Yparameterchange,Ybodychange)",
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976": "Ymultichange(Yparameterchange,Ybodychange)",
+    "7c5f94aafd422312a6c19a36f53796d547788827": "Yfilerename",
+    "0ceec1502926f96f81534cf84cf3d50536f17db1": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6e775898e7d1ac179bcb6550f3023ee9b9d70bc3": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #46: Statements shouldn\u0027t be nested too deep.\n",
+      "commitDate": 1441134086000,
+      "commitName": "6e775898e7d1ac179bcb6550f3023ee9b9d70bc3",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1441045466000,
+      "commitNameOld": "2b861bd6e16584e22bb115ff7abd65c35072eb92",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 1.03,
+      "commitsBetweenForRepo": 32,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,35 +1,33 @@\n     private String getDisallowedAbbreviation(String str) {\n         int beginIndex \u003d 0;\n         boolean abbrStarted \u003d false;\n         String result \u003d null;\n \n         for (int index \u003d 0; index \u003c str.length(); index++) {\n             final char symbol \u003d str.charAt(index);\n \n             if (Character.isUpperCase(symbol)) {\n                 if (!abbrStarted) {\n                     abbrStarted \u003d true;\n                     beginIndex \u003d index;\n                 }\n             }\n-            else {\n-                if (abbrStarted) {\n-                    abbrStarted \u003d false;\n+            else if (abbrStarted) {\n+                abbrStarted \u003d false;\n \n-                    final int endIndex \u003d index - 1;\n-                    // -1 as a first capital is usually beginning of next word\n-                    result \u003d getAbbreviationIfIllegal(str, beginIndex, endIndex);\n-                    if (result !\u003d null) {\n-                        break;\n-                    }\n-                    beginIndex \u003d -1;\n+                final int endIndex \u003d index - 1;\n+                // -1 as a first capital is usually beginning of next word\n+                result \u003d getAbbreviationIfIllegal(str, beginIndex, endIndex);\n+                if (result !\u003d null) {\n+                    break;\n                 }\n+                beginIndex \u003d -1;\n             }\n         }\n         // if abbreviation at the end of name and it is not single character (example: scaleX)\n         if (abbrStarted \u0026\u0026 beginIndex !\u003d str.length() - 1) {\n             final int endIndex \u003d str.length();\n             result \u003d getAbbreviationIfIllegal(str, beginIndex, endIndex);\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "bdda55ed1b207cab5e7f8ab3e6ebfb4d07a62a5a": {
+      "type": "Ybodychange",
+      "commitMessage": "AbbreviationAsWordInNameCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434352355000,
+      "commitName": "bdda55ed1b207cab5e7f8ab3e6ebfb4d07a62a5a",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 28.81,
+      "commitsBetweenForRepo": 160,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,46 +1,35 @@\n     private String getDisallowedAbbreviation(String str) {\n         int beginIndex \u003d 0;\n         boolean abbrStarted \u003d false;\n         String result \u003d null;\n \n         for (int index \u003d 0; index \u003c str.length(); index++) {\n             final char symbol \u003d str.charAt(index);\n \n             if (Character.isUpperCase(symbol)) {\n                 if (!abbrStarted) {\n                     abbrStarted \u003d true;\n                     beginIndex \u003d index;\n                 }\n             }\n             else {\n                 if (abbrStarted) {\n                     abbrStarted \u003d false;\n \n-                    // -1 as a first capital is usually beginning of next word\n                     final int endIndex \u003d index - 1;\n-                    final int abbrLength \u003d endIndex - beginIndex;\n-                    if (abbrLength \u003e allowedAbbreviationLength) {\n-                        result \u003d str.substring(beginIndex, endIndex);\n-                        if (!allowedAbbreviations.contains(result)) {\n-                            break;\n-                        }\n-                        else {\n-                            result \u003d null;\n-                        }\n+                    // -1 as a first capital is usually beginning of next word\n+                    result \u003d getAbbreviationIfIllegal(str, beginIndex, endIndex);\n+                    if (result !\u003d null) {\n+                        break;\n                     }\n                     beginIndex \u003d -1;\n                 }\n             }\n         }\n-        if (abbrStarted) {\n+        // if abbreviation at the end of name and it is not single character (example: scaleX)\n+        if (abbrStarted \u0026\u0026 beginIndex !\u003d str.length() - 1) {\n             final int endIndex \u003d str.length();\n-            final int abbrLength \u003d endIndex - beginIndex;\n-            if (abbrLength \u003e 1 \u0026\u0026 abbrLength \u003e allowedAbbreviationLength) {\n-                result \u003d str.substring(beginIndex, endIndex);\n-                if (allowedAbbreviations.contains(result)) {\n-                    result \u003d null;\n-                }\n-            }\n+            result \u003d getAbbreviationIfIllegal(str, beginIndex, endIndex);\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checkstyle, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java\n",
+      "commitDate": 1421678312000,
+      "commitName": "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, naming, #512\n",
+      "commitDate": 1421677299000,
+      "commitName": "750b733bd124eaea34d4692a1bb8d0fd0fe90976",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "7c5f94aafd422312a6c19a36f53796d547788827": {
+      "type": "Yfilerename",
+      "commitMessage": "AbbreviationAsAWordInName moved to naming package , documentation was rewritten, mTarget was removed from Check (fix after non problematic rebase)\n",
+      "commitDate": 1407008532000,
+      "commitName": "7c5f94aafd422312a6c19a36f53796d547788827",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1407002089000,
+      "commitNameOld": "9c9ba5466dd13f5da92e350772994f896a6e5cdf",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.07,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "0ceec1502926f96f81534cf84cf3d50536f17db1": {
+      "type": "Yintroduced",
+      "commitMessage": "AbbreviationAsWordInName. #212\n",
+      "commitDate": 1407002089000,
+      "commitName": "0ceec1502926f96f81534cf84cf3d50536f17db1",
+      "commitAuthor": "Max"
+    }
+  }
+}

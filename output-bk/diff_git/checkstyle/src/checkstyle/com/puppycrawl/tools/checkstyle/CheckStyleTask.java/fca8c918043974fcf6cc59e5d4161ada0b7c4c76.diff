@@ -1,0 +1,288 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index f23f165e4..47df6aebe 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -274,100 +274,118 @@ public class CheckStyleTask
+      *                 import statements
+      */
+     public void setIgnoreImportLen(final boolean aIgnore)
+     {
+         mOptionMemory.add(new Runnable()
+             {
+                 public void run()
+                 {
+                     mConfig.setIgnoreImportLength(aIgnore);
+                 }
+             });
+     }
+ 
+     /** @param aPat pattern for member variables **/
+     public void setMemberPattern(final String aPat)
+     {
+         mOptionMemory.add(new Runnable()
+             {
+                 public void run()
+                 {
+                     try {
+                         mConfig.setMemberPat(aPat);
+                     }
+                     catch (RESyntaxException ex) {
+                         throw new BuildException(
+                             "Unable to parse memberPattern - ", ex);
+                     }
+                 }
+             });
+ 
+     }
+ 
+     /** @param aPat pattern for public member variables **/
+     public void setPublicMemberPattern(final String aPat)
+     {
+         mOptionMemory.add(new Runnable()
+             {
+                 public void run()
+                 {
+                     try {
+                         mConfig.setPublicMemberPat(aPat);
+                     }
+                     catch (RESyntaxException ex) {
+                         throw new BuildException(
+                             "Unable to parse publicMemberPattern - ", ex);
+                     }
+                 }
+             });
+     }
+ 
++    /** @param aPat pattern for todo lines **/
++    public void setTodoPattern(final String aPat)
++    {
++        mOptionMemory.add(new Runnable()
++            {
++                public void run()
++                {
++                    try {
++                        mConfig.setTodoPat(aPat);
++                    }
++                    catch (RESyntaxException ex) {
++                        throw new BuildException(
++                            "Unable to parse todoPattern - ", ex);
++                    }
++                }
++            });
++    }
++
+     /** @param aPat pattern for parameters **/
+     public void setParamPattern(final String aPat)
+     {
+         mOptionMemory.add(new Runnable()
+             {
+                 public void run()
+                 {
+                     try {
+                         mConfig.setParamPat(aPat);
+                     }
+                     catch (RESyntaxException ex) {
+                         throw new BuildException(
+                             "Unable to parse paramPattern - ", ex);
+                     }
+                 }
+             });
+     }
+ 
+     /** @param aPat pattern for constant variables **/
+     public void setConstPattern(final String aPat)
+     {
+         mOptionMemory.add(new Runnable()
+             {
+                 public void run()
+                 {
+                     try {
+                         mConfig.setStaticFinalPat(aPat);
+                     }
+                     catch (RESyntaxException ex) {
+                         throw new BuildException(
+                             "Unable to parse constPattern - " , ex);
+                     }
+                 }
+             });
+     }
+ 
+     /** @param aPat pattern for static variables **/
+     public void setStaticPattern(final String aPat)
+     {
+         mOptionMemory.add(new Runnable()
+             {
+                 public void run()
+                 {
+                     try {
+                         mConfig.setStaticPat(aPat);
+                     }
+                     catch (RESyntaxException ex) {
+                         throw new BuildException(
+                             "Unable to parse staticPattern - ", ex);
+                     }
+@@ -659,102 +677,100 @@ public class CheckStyleTask
+ 
+         // Create the checker
+         Checker c = null;
+         try {
+             try {
+                 applyExplicitOptions();
+                 c = new Checker(mConfig);
+                 // setup the listeners
+                 AuditListener[] listeners = getListeners();
+                 for (int i = 0; i < listeners.length; i++) {
+                     c.addListener(listeners[i]);
+                 }
+             }
+             catch (Exception e) {
+                 throw new BuildException("Unable to create a Checker", e);
+             }
+ 
+             // Process the files
+             final String[] files = scanFileSets();
+             final int numErrs = c.process(files);
+ 
+             // Handle the return status
+             if ((numErrs > 0) && mFailureProperty != null) {
+                 getProject().setProperty(mFailureProperty, "true");
+             }
+ 
+             if ((numErrs > 0) && mFailOnViolation) {
+                 throw new BuildException("Got " + numErrs + " errors.",
+                                          location);
+             }
+         }
+         finally {
+             if (c != null) {
+                 c.destroy();
+             }
+         }
+     }
+ 
+     /**
+      * Return the list of listeners set in this task.
+      * @return the list of listeners.
+      * @throws ClassNotFoundException if an error occurs
+      * @throws InstantiationException if an error occurs
+      * @throws IllegalAccessException if an error occurs
+      * @throws IOException if an error occurs
+      */
+     protected AuditListener[] getListeners()
+         throws ClassNotFoundException, InstantiationException,
+         IllegalAccessException, IOException
+     {
+-        // @todo should we add a default plain stdout
+-        // formatter ?
+         if (mFormatters.size() == 0) {
+             final Formatter f = new Formatter();
+             final FormatterType type = new FormatterType();
+             type.setValue(E_PLAIN);
+             f.setType(type);
+             mFormatters.add(f);
+         }
+ 
+         final AuditListener[] listeners = new AuditListener[mFormatters.size()];
+         for (int i = 0; i < listeners.length; i++) {
+             final Formatter f = (Formatter) mFormatters.get(i);
+             listeners[i] = f.createListener(this);
+         }
+         return listeners;
+     }
+ 
+     /**
+      * returns the list of files (full path name) to process.
+      * @return the list of files included via the filesets.
+      */
+     protected String[] scanFileSets()
+     {
+         final ArrayList list = new ArrayList();
+         if (mFileName != null) {
+             // oops we've got an additional one to process, don't
+             // forget it. No sweat, it's fully resolved via the setter.
+             log("Adding standalone file for audit", Project.MSG_VERBOSE);
+             list.add(mFileName);
+         }
+         for (int i = 0; i < mFileSets.size(); i++) {
+             final FileSet fs = (FileSet) mFileSets.get(i);
+             final DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+             ds.scan();
+ 
+             final String[] names = ds.getIncludedFiles();
+             log(i + ") Adding " + names.length + " files from directory " +
+                 ds.getBasedir(), Project.MSG_VERBOSE);
+ 
+             for (int j = 0; j < names.length; j++) {
+                 final String pathname =
+                     ds.getBasedir() + File.separator + names[j];
+                 list.add(pathname);
+             }
+         }
+ 
+         return (String[]) list.toArray(new String[0]);
+     }
+ 
+     /**
+      * Poor mans enumeration for the formatter types.
+@@ -860,59 +876,59 @@ public class CheckStyleTask
+      * @throws BuildException if unable to decode aFrom
+      */
+     private LeftCurlyOption extractLeftCurlyOption(String aFrom)
+         throws BuildException
+     {
+         final LeftCurlyOption opt = LeftCurlyOption.decode(aFrom);
+         if (opt == null) {
+             throw new BuildException("Unable to parse '" + aFrom + "'.",
+                                      location);
+         }
+         return opt;
+     }
+ 
+     /**
+      * @param aFrom String to decode the option from
+      * @return the RightCurlyOption represented by aFrom
+      * @throws BuildException if unable to decode aFrom
+      */
+     private RightCurlyOption extractRightCurlyOption(String aFrom)
+         throws BuildException
+     {
+         final RightCurlyOption opt = RightCurlyOption.decode(aFrom);
+         if (opt == null) {
+             throw new BuildException("Unable to parse '" + aFrom + "'.",
+                                      location);
+         }
+         return opt;
+     }
+ 
+     /**
+      * @param aFrom String to decode the option from
+      * @return the PadOption represented by aFrom
+      * @throws BuildException if unable to decode aFrom
+      */
+     private PadOption extractPadOption(String aFrom)
+         throws BuildException
+     {
+         final PadOption opt = PadOption.decode(aFrom);
+         if (opt == null) {
+             throw new BuildException("Unable to parse '" + aFrom + "'.",
+                                      location);
+         }
+         return opt;
+     }
+ 
+     /**
+      * Applies the options that have been saved in the mOptionMemory.
+      */
+     private void applyExplicitOptions()
+     {
+-        Iterator it = mOptionMemory.iterator();
++        final Iterator it = mOptionMemory.iterator();
+         while (it.hasNext()) {
+-            Runnable runnable = (Runnable) it.next();
++            final Runnable runnable = (Runnable) it.next();
+             runnable.run();
+         }
+         mOptionMemory.clear();
+     }
+ 
+ }

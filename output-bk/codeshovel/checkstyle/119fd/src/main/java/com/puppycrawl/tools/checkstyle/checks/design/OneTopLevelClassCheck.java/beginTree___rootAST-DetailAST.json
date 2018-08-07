@@ -1,0 +1,56 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "OneTopLevelClassCheck.java",
+  "functionName": "beginTree",
+  "functionId": "beginTree___rootAST-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/OneTopLevelClassCheck.java",
+  "functionStartLine": 122,
+  "functionEndLine": 142,
+  "changeHistory": [
+    "949f78ab6084827c8f0027fd0e925133aefdcb70",
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f",
+    "9d93afb1f351d4619953e9ac18c59423b8623e81"
+  ],
+  "changeHistoryShort": {
+    "949f78ab6084827c8f0027fd0e925133aefdcb70": "Ybodychange",
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f": "Ymultichange(Yparameterchange,Ybodychange)",
+    "9d93afb1f351d4619953e9ac18c59423b8623e81": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "949f78ab6084827c8f0027fd0e925133aefdcb70": {
+      "type": "Ybodychange",
+      "commitMessage": "OneTopLevelClass check example is broken and documentation missing, for \u0027tokens\u0027 property. Issue #1017\n",
+      "commitDate": 1430438884000,
+      "commitName": "949f78ab6084827c8f0027fd0e925133aefdcb70",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1428520314000,
+      "commitNameOld": "95fc97c6d8b63393d8f07c65b501820d46272d42",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 22.21,
+      "commitsBetweenForRepo": 117,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,23 @@\n     public void beginTree(DetailAST rootAST)\n     {\n+        publicTypeFound \u003d false;\n+        lineNumberTypeMap.clear();\n+\n         DetailAST currentNode \u003d rootAST;\n         while (currentNode !\u003d null) {\n             if (currentNode.getType() \u003d\u003d TokenTypes.CLASS_DEF\n                     || currentNode.getType() \u003d\u003d TokenTypes.ENUM_DEF\n                     || currentNode.getType() \u003d\u003d TokenTypes.INTERFACE_DEF)\n             {\n                 if (isPublic(currentNode)) {\n                     publicTypeFound \u003d true;\n                 }\n-\n                 else {\n                     final String typeName \u003d currentNode.\n                             findFirstToken(TokenTypes.IDENT).getText();\n                     lineNumberTypeMap.put(currentNode.getLineNo(), typeName);\n                 }\n             }\n             currentNode \u003d currentNode.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, design, #512\n",
+      "commitDate": 1421677275000,
+      "commitName": "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "9d93afb1f351d4619953e9ac18c59423b8623e81": {
+      "type": "Yintroduced",
+      "commitMessage": "OneTopLevelClass #172\n",
+      "commitDate": 1404568725000,
+      "commitName": "9d93afb1f351d4619953e9ac18c59423b8623e81",
+      "commitAuthor": "Max"
+    }
+  }
+}

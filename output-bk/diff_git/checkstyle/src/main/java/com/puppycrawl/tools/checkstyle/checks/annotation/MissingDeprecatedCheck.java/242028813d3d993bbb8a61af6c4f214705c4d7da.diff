@@ -1,0 +1,84 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/MissingDeprecatedCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/MissingDeprecatedCheck.java
+index c4f7f3c54..8350e88f8 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/MissingDeprecatedCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/MissingDeprecatedCheck.java
+@@ -161,77 +161,78 @@ public final class MissingDeprecatedCheck extends Check {
+     private boolean containsJavadocTag(final TextBlock javadoc) {
+         if (javadoc == null) {
+             return false;
+         }
+ 
+         final String[] lines = javadoc.getText();
+ 
+         boolean found = false;
+ 
+         int currentLine = javadoc.getStartLineNo() - 1;
+ 
+         for (int i = 0; i < lines.length; i++) {
+             currentLine++;
+             final String line = lines[i];
+ 
+             final Matcher javadocNoargMatcher =
+                 MATCH_DEPRECATED.matcher(line);
+             final Matcher noargMultilineStart = MATCH_DEPRECATED_MULTILINE_START.matcher(line);
+ 
+             if (javadocNoargMatcher.find()) {
+                 if (found) {
+                     log(currentLine, MSG_KEY_JAVADOC_DUPLICATE_TAG,
+                         JavadocTagInfo.DEPRECATED.getText());
+                 }
+                 found = true;
+             }
+             else if (noargMultilineStart.find()) {
+                 found = validateTagAtTheRestOfComment(lines, found, currentLine, i);
+ 
+             }
+         }
+         return found;
+     }
+ 
+     /**
+      * Look for the rest of the comment if all we saw was
+      * the tag and the name. Stop when we see '*' (end of
+      * Javadoc), '{@literal @}' (start of next tag), or anything that's
+      *  not whitespace or '*' characters.
+      * @param lines all lines
+      * @param foundBefore flag from parent method
+      * @param currentLine current line
+      * @param i som index
+      * @return true if Tag is found
+      */
+     private boolean validateTagAtTheRestOfComment(String[] lines, boolean foundBefore,
+                                                   int currentLine, int i) {
+ 
+         boolean found = false;
+         for (int reindex = i + 1;
+-            reindex < lines.length; reindex++) {
++            reindex < lines.length;) {
+             final Matcher multilineCont = MATCH_DEPRECATED_MULTILINE_CONT.matcher(lines[reindex]);
+ 
+             if (multilineCont.find()) {
+                 reindex = lines.length;
+                 final String lFin = multilineCont.group(1);
+                 if (!lFin.equals(NEXT_TAG)
+                     && !lFin.equals(END_JAVADOC)) {
+                     if (foundBefore) {
+                         log(currentLine, MSG_KEY_JAVADOC_DUPLICATE_TAG,
+                             JavadocTagInfo.DEPRECATED.getText());
+                     }
+                     found = true;
+                 }
+                 else {
+                     log(currentLine, MSG_KEY_JAVADOC_MISSING);
+                     if (foundBefore) {
+                         log(currentLine, MSG_KEY_JAVADOC_DUPLICATE_TAG,
+                             JavadocTagInfo.DEPRECATED.getText());
+                     }
+                     found = true;
+                 }
+             }
++            reindex++;
+         }
+         return found;
+     }
+ }

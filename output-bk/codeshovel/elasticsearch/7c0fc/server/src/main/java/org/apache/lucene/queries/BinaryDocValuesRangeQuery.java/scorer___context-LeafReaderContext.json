@@ -1,0 +1,91 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "BinaryDocValuesRangeQuery.java",
+  "functionName": "scorer",
+  "functionId": "scorer___context-LeafReaderContext",
+  "sourceFilePath": "server/src/main/java/org/apache/lucene/queries/BinaryDocValuesRangeQuery.java",
+  "functionStartLine": 65,
+  "functionEndLine": 111,
+  "changeHistory": [
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+    "75c0cd06720bddb1afd76c3b37296d5233d2ce20",
+    "93da7720ff14ebb3a0edafa2fb920413e7c3c43e",
+    "454cfc2ceab7471315df57cbd4aaf4f6addcb09b",
+    "0a25558f98a2d32eda61d51fef093e2394d02890"
+  ],
+  "changeHistoryShort": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": "Yfilerename",
+    "75c0cd06720bddb1afd76c3b37296d5233d2ce20": "Yfilerename",
+    "93da7720ff14ebb3a0edafa2fb920413e7c3c43e": "Yfilerename",
+    "454cfc2ceab7471315df57cbd4aaf4f6addcb09b": "Ybodychange",
+    "0a25558f98a2d32eda61d51fef093e2394d02890": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": {
+      "type": "Yfilerename",
+      "commitMessage": "Rename core module to server (#28180)\n\nThis is related to #27933. It renames the core module to server. This is\r\nthe first step towards introducing an elasticsearch-core jar.",
+      "commitDate": 1515695443000,
+      "commitName": "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+      "commitAuthor": "Tim Brooks",
+      "commitDateOld": 1515688270000,
+      "commitNameOld": "7d0eb3292b8f8ba27ef50dbbf38783dc68c70728",
+      "commitAuthorOld": "Martijn van Groningen",
+      "daysBetweenCommits": 0.08,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "75c0cd06720bddb1afd76c3b37296d5233d2ce20": {
+      "type": "Yfilerename",
+      "commitMessage": "Move range field mapper back to core\n\nThis commit moves the range field mapper back to core so that we can\r\nremove the compile-time dependency of percolator on mapper-extras which\r\ncompilcates dependency management for the percolator client JAR, and\r\nmodules should not be intertwined like this anyway.\r\n\r\nRelates #27854\r\n",
+      "commitDate": 1513538830000,
+      "commitName": "75c0cd06720bddb1afd76c3b37296d5233d2ce20",
+      "commitAuthor": "Jason Tedor",
+      "commitDateOld": 1513529478000,
+      "commitNameOld": "fade828c5054fd90e59b159fe7e189e318404e11",
+      "commitAuthorOld": "Jason Tedor",
+      "daysBetweenCommits": 0.11,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "93da7720ff14ebb3a0edafa2fb920413e7c3c43e": {
+      "type": "Yfilerename",
+      "commitMessage": "Move non-core mappers to a module. (#26549)\n\nToday we have all non-plugin mappers in core. I\u0027d like to start moving those\r\nthat neither map to json datatypes nor are very frequently used like `date` or\r\n`ip` to a module.\r\n\r\nThis commit creates a new module called `mappers-extra` and moves the\r\n`scaled_float` and `token_count` mappers to it. I\u0027d like to eventually move\r\n`range` fields there but it\u0027s more complicated due to their intimate\r\nrelationship with range queries.\r\n\r\nRelates #10368",
+      "commitDate": 1505318333000,
+      "commitName": "93da7720ff14ebb3a0edafa2fb920413e7c3c43e",
+      "commitAuthor": "Adrien Grand",
+      "commitDateOld": 1505316511000,
+      "commitNameOld": "7404221b55363197b4613b4ffb2d805136632272",
+      "commitAuthorOld": "Tanguy Leroux",
+      "daysBetweenCommits": 0.02,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "454cfc2ceab7471315df57cbd4aaf4f6addcb09b": {
+      "type": "Ybodychange",
+      "commitMessage": "More efficient encoding of range fields. (#26470)\n\nThis PR removes the vInt that precedes every value in order to know how long\r\nthey are. Instead the query takes an enum that tells how to compute the length\r\nof values: for fixed-length data (ip addresses, double, float) the length is a\r\nconstant while longs and integers use a variable-length representation that\r\nallows the length to be computed from the encoded values.\r\n\r\nAlso the encoding of ints/longs was made a bit more efficient in order not to\r\nwaste 3 bits in the header. As a consequence, values between -8 and 7 can now\r\nbe encoded on 1 byte and values between -2048 and 2047 can now be encoded on 2\r\nbytes or less.\r\n\r\nCloses #26443",
+      "commitDate": 1505309193000,
+      "commitName": "454cfc2ceab7471315df57cbd4aaf4f6addcb09b",
+      "commitAuthor": "Adrien Grand",
+      "commitDateOld": 1499857454000,
+      "commitNameOld": "0a25558f98a2d32eda61d51fef093e2394d02890",
+      "commitAuthorOld": "Martijn van Groningen",
+      "daysBetweenCommits": 63.1,
+      "commitsBetweenForRepo": 531,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,42 +1,47 @@\n             public Scorer scorer(LeafReaderContext context) throws IOException {\n                 final BinaryDocValues values \u003d context.reader().getBinaryDocValues(fieldName);\n                 if (values \u003d\u003d null) {\n                     return null;\n                 }\n \n                 final TwoPhaseIterator iterator \u003d new TwoPhaseIterator(values) {\n \n                     ByteArrayDataInput in \u003d new ByteArrayDataInput();\n-                    BytesRef otherFrom \u003d new BytesRef(16);\n-                    BytesRef otherTo \u003d new BytesRef(16);\n+                    BytesRef otherFrom \u003d new BytesRef();\n+                    BytesRef otherTo \u003d new BytesRef();\n \n                     @Override\n                     public boolean matches() throws IOException {\n                         BytesRef encodedRanges \u003d values.binaryValue();\n                         in.reset(encodedRanges.bytes, encodedRanges.offset, encodedRanges.length);\n                         int numRanges \u003d in.readVInt();\n+                        final byte[] bytes \u003d encodedRanges.bytes;\n+                        otherFrom.bytes \u003d bytes;\n+                        otherTo.bytes \u003d bytes;\n+                        int offset \u003d in.getPosition();\n                         for (int i \u003d 0; i \u003c numRanges; i++) {\n-                            otherFrom.length \u003d in.readVInt();\n-                            otherFrom.bytes \u003d encodedRanges.bytes;\n-                            otherFrom.offset \u003d in.getPosition();\n-                            in.skipBytes(otherFrom.length);\n+                            int length \u003d lengthType.readLength(bytes, offset);\n+                            otherFrom.offset \u003d offset;\n+                            otherFrom.length \u003d length;\n+                            offset +\u003d length;\n \n-                            otherTo.length \u003d in.readVInt();\n-                            otherTo.bytes \u003d encodedRanges.bytes;\n-                            otherTo.offset \u003d in.getPosition();\n-                            in.skipBytes(otherTo.length);\n+                            length \u003d lengthType.readLength(bytes, offset);\n+                            otherTo.offset \u003d offset;\n+                            otherTo.length \u003d length;\n+                            offset +\u003d length;\n \n                             if (queryType.matches(from, to, otherFrom, otherTo)) {\n                                 return true;\n                             }\n                         }\n+                        assert offset \u003d\u003d encodedRanges.offset + encodedRanges.length;\n                         return false;\n                     }\n \n                     @Override\n                     public float matchCost() {\n                         return 4; // at most 4 comparisons\n                     }\n                 };\n                 return new ConstantScoreScorer(this, score(), iterator);\n             }\n\\ No newline at end of file\n"
+    },
+    "0a25558f98a2d32eda61d51fef093e2394d02890": {
+      "type": "Yintroduced",
+      "commitMessage": "Query range fields by doc values when they are expected to be more efficient than points.\n\n* Enable doc values for range fields by default.\n* Store ranges in a binary format that support multi field fields.\n* Added BinaryDocValuesRangeQuery that can query ranges that have been encoded into a binary doc values field.\n* Wrap range queries on a range field in IndexOrDocValuesQuery query.\n\nCloses #24314\n",
+      "commitDate": 1499857454000,
+      "commitName": "0a25558f98a2d32eda61d51fef093e2394d02890",
+      "commitAuthor": "Martijn van Groningen"
+    }
+  }
+}

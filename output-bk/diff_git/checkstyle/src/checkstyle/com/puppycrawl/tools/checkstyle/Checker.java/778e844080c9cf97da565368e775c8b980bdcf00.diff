@@ -1,0 +1,139 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+index af12daf41..a8ef5bbf6 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -190,115 +190,134 @@ public class Checker extends AutomaticBean
+             if (child instanceof AutomaticBean) {
+                 final AutomaticBean bean = (AutomaticBean) child;
+                 bean.contextualize(mChildContext);
+                 bean.configure(aChildConf);
+             }
+             if (child instanceof FileSetCheck) {
+                 final FileSetCheck fsc = (FileSetCheck) child;
+                 addFileSetCheck(fsc);
+             }
+             else if (child instanceof Filter) {
+                 final Filter filter = (Filter) child;
+                 addFilter(filter);
+             }
+             else if (child instanceof AuditListener) {
+                 final AuditListener listener = (AuditListener) child;
+                 addListener(listener);
+             }
+             else {
+                 throw new CheckstyleException(name
+                     + " is not allowed as a child in Checker");
+             }
+         }
+         catch (Exception ex) {
+             // TODO i18n
+             throw new CheckstyleException(
+                     "cannot initialize module "
+                     + name + " - " + ex.getMessage(), ex);
+         }
+     }
+ 
+     /**
+      * Adds a FileSetCheck to the list of FileSetChecks
+      * that is executed in process().
+      * @param aFileSetCheck the additional FileSetCheck
+      */
+     public void addFileSetCheck(FileSetCheck aFileSetCheck)
+     {
+         aFileSetCheck.setMessageDispatcher(this);
+         mFileSetChecks.add(aFileSetCheck);
+     }
+ 
+     /**
+      * Adds a filter to the end of the audit event filter chain.
+      * @param aFilter the additional filter
+      */
+     public void addFilter(Filter aFilter)
+     {
+         mFilters.addFilter(aFilter);
+     }
+ 
++    /**
++     * Removes filter.
++     * @param aFilter filter to remove.
++     */
++    public void removeFilter(Filter aFilter)
++    {
++        mFilters.removeFilter(aFilter);
++    }
++
+     /** Cleans up the object. **/
+     public void destroy()
+     {
+         mListeners.clear();
++        mFilters.clear();
+     }
+ 
+     /**
+      * Add the listener that will be used to receive events from the audit.
+      * @param aListener the nosy thing
+      */
+     public void addListener(AuditListener aListener)
+     {
+         mListeners.add(aListener);
+     }
+ 
++    /**
++     * Removes a given listener.
++     * @param aListener a listener to remove
++     */
++    public void removeListener(AuditListener aListener)
++    {
++        mListeners.remove(aListener);
++    }
++
+     /**
+      * Processes a set of files with all FileSetChecks.
+      * Once this is done, it is highly recommended to call for
+      * the destroy method to close and remove the listeners.
+      * @param aFiles the list of files to be audited.
+      * @return the total number of errors found
+      * @see #destroy()
+      */
+     public int process(File[] aFiles)
+     {
+         fireAuditStarted();
+         for (int i = 0; i < mFileSetChecks.size(); i++) {
+             FileSetCheck fileSetCheck = (FileSetCheck) mFileSetChecks.get(i);
+             fileSetCheck.process(aFiles);
+             fileSetCheck.destroy();
+         }
+         int errorCount = mCounter.getCount();
+         fireAuditFinished();
+         return errorCount;
+     }
+ 
+ 
+     /**
+      * Create a stripped down version of a filename.
+      * @param aFileName the original filename
+      * @return the filename where an initial prefix of basedir is stripped
+      */
+     private String getStrippedFileName(final String aFileName)
+     {
+         return Utils.getStrippedFileName(mBasedir, aFileName);
+     }
+ 
+     /** @param aBasedir the base directory to strip off in filenames */
+     public void setBasedir(String aBasedir)
+     {
+         // we use getAbsolutePath() instead of getCanonicalPath()
+         // because normalize() removes all . and .. so path
+         // will be canonical by default.
+         mBasedir = normalize(aBasedir);
+     }
+ 
+     /**
+      * &quot;normalize&quot; the given absolute path.
+      *
+      * <p>This includes:
+      * <ul>
+      *   <li>Uppercase the drive letter if there is one.</li>
+      *   <li>Remove redundant slashes after the drive spec.</li>
+      *   <li>resolve all ./, .\, ../ and ..\ sequences.</li>
+      *   <li>DOS style paths that start with a drive letter will have

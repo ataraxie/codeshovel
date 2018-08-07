@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
+index 594f250a5..04bb27c18 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
+@@ -215,101 +215,102 @@ public class CommentsIndentationCheck extends Check {
+             }
+         }
+         return destributed;
+     }
+ 
+     /**
+      * Checks whether the previous statement of a single line comment is a destributed return
+      * statement.
+      * @param commentPreviousSibling previous sibling of the single line comment.
+      * @return true if the previous statement of a single line comment is a destributed return
+      *         statement.
+      */
+     private static boolean isDistributedReturnStatement(DetailAST commentPreviousSibling) {
+         boolean destributed = false;
+         if (commentPreviousSibling != null
+                 && commentPreviousSibling.getType() == TokenTypes.LITERAL_RETURN) {
+             final DetailAST firstChild = commentPreviousSibling.getFirstChild();
+             final DetailAST nextSibling = firstChild.getNextSibling();
+             if (nextSibling != null) {
+                 destributed = true;
+             }
+         }
+         return  destributed;
+     }
+ 
+     /**
+      * Checks whether the previous statement of a single line comment is a destributed throw
+      * statement.
+      * @param commentPreviousSibling previous sibling of the single line comment.
+      * @return true if the previous statement of a single line comment is a destributed throw
+      *         statement.
+      */
+     private static boolean isDistributedThrowStatement(DetailAST commentPreviousSibling) {
+         boolean destributed = false;
+         if (commentPreviousSibling != null
+                 && commentPreviousSibling.getType() == TokenTypes.LITERAL_THROW) {
+             final DetailAST firstChild = commentPreviousSibling.getFirstChild();
+             final DetailAST nextSibling = firstChild.getNextSibling();
+             if (nextSibling.getLineNo() != commentPreviousSibling.getLineNo()) {
+                 destributed = true;
+             }
+         }
+         return destributed;
+     }
+ 
+     /**
+      * Returns the first token of the destributed previous statement of single line comment.
+      * @param comment single line comment.
+      * @return the first token of the destributed previous statement of single line comment.
+      */
+-    public static DetailAST getDistributedPreviousStatementOfSingleLineComment(DetailAST comment) {
++    private static DetailAST getDistributedPreviousStatementOfSingleLineComment(
++            DetailAST comment) {
+         DetailAST previousStatement = comment.getPreviousSibling();
+         if (previousStatement.getType() == TokenTypes.LITERAL_RETURN
+                 || previousStatement.getType() == TokenTypes.LITERAL_THROW) {
+             return previousStatement;
+         }
+         previousStatement = previousStatement.getPreviousSibling();
+         while (previousStatement.getFirstChild() != null) {
+             previousStatement = previousStatement.getFirstChild();
+         }
+         return previousStatement;
+     }
+ 
+     /**
+      * Checks whether case block is empty.
+      * @param nextStmt previous statement.
+      * @param prevStmt next statement.
+      * @return true if case block is empty.
+      */
+     private static boolean isInEmptyCaseBlock(DetailAST prevStmt, DetailAST nextStmt) {
+         return prevStmt != null
+             && nextStmt != null
+             && (prevStmt.getType() == TokenTypes.LITERAL_CASE
+                 || prevStmt.getType() == TokenTypes.CASE_GROUP)
+             && (nextStmt.getType() == TokenTypes.LITERAL_CASE
+                 || nextStmt.getType() == TokenTypes.LITERAL_DEFAULT);
+     }
+ 
+     /**
+      * Checks whether single line comment is a 'fall through' comment.
+      * For example:
+      * <p>
+      * {@code
+      *    ...
+      *    case OPTION_ONE:
+      *        int someVariable = 1;
+      *        // fall through
+      *    case OPTION_TWO:
+      *        int a = 5;
+      *        break;
+      *    ...
+      * }
+      * </p>
+      * @param prevStmt previous statement.
+      * @param nextStmt next statement.
+      * @return true if a single line comment is a 'fall through' comment.
+      */
+     private static boolean isFallThroughSingleLineComment(DetailAST prevStmt, DetailAST nextStmt) {
+         return prevStmt != null
+             && prevStmt.getType() != TokenTypes.LITERAL_CASE
+             && nextStmt != null

@@ -1,0 +1,130 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeTablePresentation.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeTablePresentation.java
+index c94f6f16d..bb3c87b5e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeTablePresentation.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeTablePresentation.java
+@@ -247,123 +247,123 @@ public class ParseTreeTablePresentation {
+      * @param column the column number
+      * @return true if editable
+      */
+     public boolean isCellEditable(int column) {
+         return false;
+     }
+ 
+     /**
+      * Creates artificial tree root.
+      * @return artificial tree root.
+      */
+     private static DetailAST createArtificialTreeRoot() {
+         final ASTFactory factory = new ASTFactory();
+         factory.setASTNodeClass(DetailAST.class.getName());
+         return (DetailAST) factory.create(TokenTypes.EOF, "ROOT");
+     }
+ 
+     /**
+      * Gets child of DetailAST node at specified index.
+      * @param parent DetailAST node
+      * @param index child index
+      * @return child DetailsAST or DetailNode if child is Javadoc node
+      *         and parseMode is JAVA_WITH_JAVADOC_AND_COMMENTS.
+      */
+     private Object getChildAtDetailAst(DetailAST parent, int index) {
+         final Object result;
+         if (parseMode == ParseMode.JAVA_WITH_JAVADOC_AND_COMMENTS
+                 && parent.getType() == TokenTypes.COMMENT_CONTENT
+                 && JavadocUtils.isJavadocComment(parent.getParent())) {
+             result = getJavadocTree(parent.getParent());
+         }
+         else {
+             int currentIndex = 0;
+             DetailAST child = parent.getFirstChild();
+             while (currentIndex < index) {
+                 child = child.getNextSibling();
+                 currentIndex++;
+             }
+             result = child;
+         }
+ 
+         return result;
+     }
+ 
+     /**
+      * Gets a value for DetailNode object.
+      * @param node DetailNode(Javadoc) node.
+      * @param column column index.
+      * @return value at specified column.
+      */
+-    private Object getValueAtDetailNode(DetailNode node, int column) {
++    private static Object getValueAtDetailNode(DetailNode node, int column) {
+         final Object value;
+ 
+         switch (column) {
+             case 0:
+                 // first column is tree model. no value needed
+                 value = null;
+                 break;
+             case 1:
+                 value = JavadocUtils.getTokenName(node.getType());
+                 break;
+             case 2:
+                 value = node.getLineNumber();
+                 break;
+             case 3:
+                 value = node.getColumnNumber();
+                 break;
+             case 4:
+                 value = node.getText();
+                 break;
+             default:
+                 throw new IllegalStateException(UNKNOWN_COLUMN_MSG);
+         }
+         return value;
+     }
+ 
+     /**
+      * Gets a value for DetailAST object.
+      * @param ast DetailAST node.
+      * @param column column index.
+      * @return value at specified column.
+      */
+-    private Object getValueAtDetailAST(DetailAST ast, int column) {
++    private static Object getValueAtDetailAST(DetailAST ast, int column) {
+         final Object value;
+ 
+         switch (column) {
+             case 0:
+                 // first column is tree model. no value needed
+                 value = null;
+                 break;
+             case 1:
+                 value = TokenUtils.getTokenName(ast.getType());
+                 break;
+             case 2:
+                 value = ast.getLineNo();
+                 break;
+             case 3:
+                 value = ast.getColumnNo();
+                 break;
+             case 4:
+                 value = ast.getText();
+                 break;
+             default:
+                 throw new IllegalStateException(UNKNOWN_COLUMN_MSG);
+         }
+         return value;
+     }
+ 
+     /**
+      * Gets Javadoc (DetailNode) tree of specified block comments.
+      * @param blockComment Javadoc comment as a block comment
+      * @return DetailNode tree
+      */
+     private DetailNode getJavadocTree(DetailAST blockComment) {
+         DetailNode javadocTree = blockCommentToJavadocTree.get(blockComment);
+         if (javadocTree == null) {
+             javadocTree = new JavadocDetailNodeParser().parseJavadocAsDetailNode(blockComment)
+                     .getTree();
+             blockCommentToJavadocTree.put(blockComment, javadocTree);
+         }
+         return javadocTree;
+     }
+ }

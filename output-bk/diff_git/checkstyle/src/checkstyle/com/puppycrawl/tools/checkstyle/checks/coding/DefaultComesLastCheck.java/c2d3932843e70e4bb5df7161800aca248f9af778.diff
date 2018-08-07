@@ -1,0 +1,66 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/DefaultComesLastCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/DefaultComesLastCheck.java
+index a7d15a306..09766faa0 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/DefaultComesLastCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/DefaultComesLastCheck.java
+@@ -26,58 +26,59 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * <p>
+  * Check that the <code>default</code> is after all the <code>case</code>s
+  * in a <code>switch</code> statement.
+  * </p>
+  * <p>
+  * Rationale: Java allows <code>default</code> anywhere within the
+  * <code>switch</code> statement. But if it comes after the last
+  * <code>case</code> then it is more readable.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="DefaultComesLast"/&gt;
+  * </pre>
+  * @author o_sukhodolsky
+  */
+ public class DefaultComesLastCheck extends Check
+ {
+     /** Creates new instance of the check. */
+     public DefaultComesLastCheck()
+     {
+         // do nothing
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.LITERAL_DEFAULT,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getAcceptableTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         final DetailAST defaultGroupAST = aAST.getParent();
+         //default keywords used in annotations too - not what we're
+         //interested in
+         if (defaultGroupAST.getType() != TokenTypes.ANNOTATION_FIELD_DEF) {
+             final DetailAST switchAST = defaultGroupAST.getParent();
+             final DetailAST lastGroupAST =
+                 switchAST.getLastChild().getPreviousSibling();
+ 
+-            if (defaultGroupAST.getLineNo() != lastGroupAST.getLineNo()
+-                || defaultGroupAST.getColumnNo() != lastGroupAST.getColumnNo())
++            if ((defaultGroupAST.getLineNo() != lastGroupAST.getLineNo())
++                || (defaultGroupAST.getColumnNo()
++                    != lastGroupAST.getColumnNo()))
+             {
+                 log(aAST, "default.comes.last");
+             }
+         }
+     }
+ }

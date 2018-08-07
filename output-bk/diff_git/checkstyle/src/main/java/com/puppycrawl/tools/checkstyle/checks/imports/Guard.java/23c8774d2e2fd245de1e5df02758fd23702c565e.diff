@@ -1,0 +1,119 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/Guard.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/Guard.java
+index 78cc62d72..e5f78bb2c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/Guard.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/Guard.java
+@@ -41,97 +41,109 @@ class Guard {
+     /**
+      * Indicates if the package and the class names are to be interpreted
+      * as regular expressions.
+      */
+     private final boolean regExp;
+ 
+     /**
+      * Constructs an instance.
+      * @param allow whether to allow access.
+      * @param localOnly whether guard is to be applied locally only
+      * @param pkgName the package to apply guard on.
+      * @param exactMatch whether the package must match exactly.
+      * @param regExp whether the package is to be interpreted as regular
+      *        expression.
+      */
+     Guard(final boolean allow, final boolean localOnly,
+         final String pkgName, final boolean exactMatch, final boolean regExp) {
+         allowed = allow;
+         this.localOnly = localOnly;
+         this.pkgName = pkgName;
+         this.regExp = regExp;
+         className = null;
+         this.exactMatch = exactMatch;
+     }
+ 
+     /**
+      * Constructs an instance.
+      * @param allow whether to allow access.
+      * @param localOnly whether guard is to be applied locally only
+      * @param className the class to apply guard on.
+      * @param regExp whether the class is to be interpreted as regular
+      *        expression.
+      */
+     Guard(final boolean allow, final boolean localOnly,
+         final String className, final boolean regExp) {
+         allowed = allow;
+         this.localOnly = localOnly;
+         this.regExp = regExp;
+         pkgName = null;
+         this.className = className;
+         exactMatch = true; // not used.
+     }
+ 
+     /**
+      * Verifies whether a package name be used.
+      * @param forImport the package to check.
+      * @return a result {@link AccessResult} indicating whether it can be used.
+      */
+     AccessResult verifyImport(final String forImport) {
+         if (className != null) {
+-            final boolean classMatch = regExp
+-                ? forImport.matches(className)
+-                : forImport.equals(className);
++            final boolean classMatch;
++
++            if (regExp) {
++                classMatch = forImport.matches(className);
++            }
++            else {
++                classMatch = forImport.equals(className);
++            }
+             return calculateResult(classMatch);
+         }
+ 
+         // Must be checking a package. First check that we actually match
+         // the package. Then check if matched and we must be an exact match.
+         // In this case, the text after the first "." must not contain
+         // another "." as this indicates that it is not an exact match.
+         boolean pkgMatch;
+         if (regExp) {
+             pkgMatch = forImport.matches(pkgName + "\\..*");
+             if (pkgMatch && exactMatch) {
+                 pkgMatch = !forImport.matches(pkgName + "\\..*\\..*");
+             }
+         }
+         else {
+             pkgMatch = forImport.startsWith(pkgName + ".");
+             if (pkgMatch && exactMatch) {
+                 pkgMatch = forImport.indexOf('.',
+                         pkgName.length() + 1) == -1;
+             }
+         }
+         return calculateResult(pkgMatch);
+     }
+ 
+     /**
+      * @return returns whether the guard is to only be applied locally.
+      */
+     boolean isLocalOnly() {
+         return localOnly;
+     }
+ 
+     /**
+      * Returns the appropriate {@link AccessResult} based on whether there
+      * was a match and if the guard is to allow access.
+      * @param matched indicates whether there was a match.
+      * @return An appropriate {@link AccessResult}.
+      */
+     private AccessResult calculateResult(final boolean matched) {
++        AccessResult result = AccessResult.UNKNOWN;
++
+         if (matched) {
+-            return allowed ? AccessResult.ALLOWED : AccessResult.DISALLOWED;
++            if (allowed) {
++                result = AccessResult.ALLOWED;
++            }
++            else {
++                result = AccessResult.DISALLOWED;
++            }
+         }
+-        return AccessResult.UNKNOWN;
++        return result;
+     }
+ }

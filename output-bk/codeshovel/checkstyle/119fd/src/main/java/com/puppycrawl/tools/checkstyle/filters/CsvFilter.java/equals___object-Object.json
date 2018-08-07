@@ -1,0 +1,101 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CsvFilter.java",
+  "functionName": "equals",
+  "functionId": "equals___object-Object",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/filters/CsvFilter.java",
+  "functionStartLine": 103,
+  "functionEndLine": 112,
+  "changeHistory": [
+    "f60a9cfe8b1b27d5ea25095bdfc690001da9f4d6",
+    "cf5851ed2977d062777a16d013b4b8ec24d73ffc",
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "889f470ea6ca16b3067e35e2463282d9678f7bf0",
+    "8d242382f8bb77488b6da23bdd0d2d61583703fc"
+  ],
+  "changeHistoryShort": {
+    "f60a9cfe8b1b27d5ea25095bdfc690001da9f4d6": "Ymultichange(Yfilerename,Ybodychange)",
+    "cf5851ed2977d062777a16d013b4b8ec24d73ffc": "Ybodychange",
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "889f470ea6ca16b3067e35e2463282d9678f7bf0": "Ybodychange",
+    "8d242382f8bb77488b6da23bdd0d2d61583703fc": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "f60a9cfe8b1b27d5ea25095bdfc690001da9f4d6": {
+      "type": "Ymultichange(Yfilerename,Ybodychange)",
+      "commitMessage": "Issue #2639: CSV is removed from allowed abbreviations\n",
+      "commitDate": 1448478074000,
+      "commitName": "f60a9cfe8b1b27d5ea25095bdfc690001da9f4d6",
+      "commitAuthor": "Roman Ivanov",
+      "subchanges": [
+        "Yfilerename",
+        "Ybodychange"
+      ]
+    },
+    "cf5851ed2977d062777a16d013b4b8ec24d73ffc": {
+      "type": "Ybodychange",
+      "commitMessage": "Use EqualsVerifier to test CSVFilter. #1088\n",
+      "commitDate": 1431953801000,
+      "commitName": "cf5851ed2977d062777a16d013b4b8ec24d73ffc",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.05,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,10 @@\n     public boolean equals(Object object) {\n-        if (object instanceof CSVFilter) {\n-            final CSVFilter other \u003d (CSVFilter) object;\n-            return this.filters.equals(other.filters);\n+        if (this \u003d\u003d object) {\n+            return true;\n         }\n-        return false;\n+        if (object \u003d\u003d null || getClass() !\u003d object.getClass()) {\n+            return false;\n+        }\n+        final CSVFilter csvFilter \u003d (CSVFilter) object;\n+        return Objects.equals(filters, csvFilter.filters);\n     }\n\\ No newline at end of file\n"
+    },
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, filters, #512\n",
+      "commitDate": 1421677232000,
+      "commitName": "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "889f470ea6ca16b3067e35e2463282d9678f7bf0": {
+      "type": "Ybodychange",
+      "commitMessage": "General cleanup\n",
+      "commitDate": 1090408546000,
+      "commitName": "889f470ea6ca16b3067e35e2463282d9678f7bf0",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1074648205000,
+      "commitNameOld": "9e5fe92b7cfbfd61db3312c1085215c79511ba2a",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 182.41,
+      "commitsBetweenForRepo": 109,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,8 @@\n     public boolean equals(Object aObject)\n     {\n         if (aObject instanceof CSVFilter) {\n             final CSVFilter other \u003d (CSVFilter) aObject;\n             return this.mFilters.equals(other.mFilters);\n         }\n-        else {\n-            return false;\n-        }\n+        return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "8d242382f8bb77488b6da23bdd0d2d61583703fc": {
+      "type": "Yintroduced",
+      "commitMessage": "Filter.accept() now takes AuditEvent, not an Object.\n",
+      "commitDate": 1068180594000,
+      "commitName": "8d242382f8bb77488b6da23bdd0d2d61583703fc",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

@@ -1,0 +1,106 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+index ae92820a9..30b51a0d3 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+@@ -104,101 +104,100 @@ public class UncommentedMainCheck
+     {
+         if (aAst.getType() == TokenTypes.CLASS_DEF) {
+             if (mClassDepth == 1) {
+                 mCurrentClass = null;
+             }
+             mClassDepth--;
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAst)
+     {
+         switch (aAst.getType()) {
+         case TokenTypes.PACKAGE_DEF:
+             visitPackageDef(aAst);
+             break;
+         case TokenTypes.CLASS_DEF:
+             visitClassDef(aAst);
+             break;
+         case TokenTypes.METHOD_DEF:
+             visitMethodDef(aAst);
+             break;
+         default:
+             throw new IllegalStateException(aAst.toString());
+         }
+     }
+ 
+     /**
+      * Sets current package.
+      * @param aPackage node for package definition
+      */
+     private void visitPackageDef(DetailAST aPackage)
+     {
+         mPackage = FullIdent.createFullIdent(aPackage.getLastChild()
+                 .getPreviousSibling());
+     }
+ 
+     /**
+      * If not inner class then change current class name.
+      * @param aClass node for class definition
+      */
+     private void visitClassDef(DetailAST aClass)
+     {
+         // we are not use inner classes because they can not
+         // have static methods
+         if (mClassDepth == 0) {
+             final DetailAST ident = aClass.findFirstToken(TokenTypes.IDENT);
+             mCurrentClass = mPackage.getText() + "." + ident.getText();
+             mClassDepth++;
+         }
+-        return;
+     }
+ 
+     /**
+      * Checks method definition if this is
+      * <code>public static void main(String[])</code>.
+      * @param aMethod method definition node
+      */
+     private void visitMethodDef(DetailAST aMethod)
+     {
+         if (mClassDepth != 1) {
+             // method in inner class or in interface definition
+             return;
+         }
+ 
+         if (checkClassName()
+             && checkName(aMethod)
+             && checkModifiers(aMethod)
+             && checkType(aMethod)
+             && checkParams(aMethod))
+         {
+             log(aMethod.getLineNo(), "uncommented.main");
+         }
+     }
+ 
+     /**
+      * Checks that current class is not excluded
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkClassName()
+     {
+         return !mExcludedClassesPattern.matcher(mCurrentClass).find();
+     }
+ 
+     /**
+      * Checks that method name is @quot;main@quot;.
+      * @param aMethod the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkName(DetailAST aMethod)
+     {
+         final DetailAST ident = aMethod.findFirstToken(TokenTypes.IDENT);
+         return "main".equals(ident.getText());
+     }
+ 
+     /**
+      * Checks that method has final and static modifiers.
+      * @param aMethod the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkModifiers(DetailAST aMethod)

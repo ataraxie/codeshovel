@@ -1,0 +1,136 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MutableExceptionCheck.java",
+  "functionName": "isExtendedClassNamedAsException",
+  "functionId": "isExtendedClassNamedAsException___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/MutableExceptionCheck.java",
+  "functionStartLine": 161,
+  "functionEndLine": 173,
+  "changeHistory": [
+    "d6f3a17328226debcddb53ed25c39501f2781764",
+    "8888fa5919dc31c6abe07ddc2f5fe0e29f66ef37",
+    "0689f76ab3c1ba70d30da17ce888dcd57a587259",
+    "050de1a6c09647a42341dd497e0fee2b09f9d898",
+    "3eb75145e9718172ff9c74e6148b81762625803b",
+    "e8255c208f9b75bda2d724e901fc210fff9ab15a",
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f",
+    "4297ca50a95bd01c236ee1f4aeb13488298b104f"
+  ],
+  "changeHistoryShort": {
+    "d6f3a17328226debcddb53ed25c39501f2781764": "Ybodychange",
+    "8888fa5919dc31c6abe07ddc2f5fe0e29f66ef37": "Ybodychange",
+    "0689f76ab3c1ba70d30da17ce888dcd57a587259": "Ybodychange",
+    "050de1a6c09647a42341dd497e0fee2b09f9d898": "Ybodychange",
+    "3eb75145e9718172ff9c74e6148b81762625803b": "Ybodychange",
+    "e8255c208f9b75bda2d724e901fc210fff9ab15a": "Ybodychange",
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f": "Ymultichange(Yparameterchange,Ybodychange)",
+    "4297ca50a95bd01c236ee1f4aeb13488298b104f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "d6f3a17328226debcddb53ed25c39501f2781764": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in imports, regexp, naming, design, sizes packages\n",
+      "commitDate": 1493045733000,
+      "commitName": "d6f3a17328226debcddb53ed25c39501f2781764",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 87.02,
+      "commitsBetweenForRepo": 318,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,13 @@\n     private boolean isExtendedClassNamedAsException(DetailAST ast) {\n+        boolean result \u003d false;\n         final DetailAST extendsClause \u003d ast.findFirstToken(TokenTypes.EXTENDS_CLAUSE);\n         if (extendsClause !\u003d null) {\n             DetailAST currentNode \u003d extendsClause;\n             while (currentNode.getLastChild() !\u003d null) {\n                 currentNode \u003d currentNode.getLastChild();\n             }\n             final String extendedClassName \u003d currentNode.getText();\n-            return extendedClassNameFormat.matcher(extendedClassName).matches();\n+            result \u003d extendedClassNameFormat.matcher(extendedClassName).matches();\n         }\n-        return false;\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "8888fa5919dc31c6abe07ddc2f5fe0e29f66ef37": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3255: changed module setters for pattern",
+      "commitDate": 1478694863000,
+      "commitName": "8888fa5919dc31c6abe07ddc2f5fe0e29f66ef37",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1454680863000,
+      "commitNameOld": "cf96dd9adcf0c3c8f8f05a9ffdcb765cafe17479",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 277.94,
+      "commitsBetweenForRepo": 544,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private boolean isExtendedClassNamedAsException(DetailAST ast) {\n         final DetailAST extendsClause \u003d ast.findFirstToken(TokenTypes.EXTENDS_CLAUSE);\n         if (extendsClause !\u003d null) {\n             DetailAST currentNode \u003d extendsClause;\n             while (currentNode.getLastChild() !\u003d null) {\n                 currentNode \u003d currentNode.getLastChild();\n             }\n             final String extendedClassName \u003d currentNode.getText();\n-            return extendedClassName.matches(extendedClassNameFormat);\n+            return extendedClassNameFormat.matcher(extendedClassName).matches();\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "0689f76ab3c1ba70d30da17ce888dcd57a587259": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1903: Fixed NPE in MutableExceptionCheck.isExtendedClassNamedAsException .\n",
+      "commitDate": 1441286232000,
+      "commitName": "0689f76ab3c1ba70d30da17ce888dcd57a587259",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1441051115000,
+      "commitNameOld": "49a0ee81710e0c43ed06a01f1d64ac7f5598a934",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 2.72,
+      "commitsBetweenForRepo": 43,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private boolean isExtendedClassNamedAsException(DetailAST ast) {\n         final DetailAST extendsClause \u003d ast.findFirstToken(TokenTypes.EXTENDS_CLAUSE);\n         if (extendsClause !\u003d null) {\n             DetailAST currentNode \u003d extendsClause;\n-            while (currentNode.getType() !\u003d TokenTypes.IDENT) {\n+            while (currentNode.getLastChild() !\u003d null) {\n                 currentNode \u003d currentNode.getLastChild();\n             }\n             final String extendedClassName \u003d currentNode.getText();\n             return extendedClassName.matches(extendedClassNameFormat);\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "050de1a6c09647a42341dd497e0fee2b09f9d898": {
+      "type": "Ybodychange",
+      "commitMessage": "Add support for canonical class names in MutableException. #1124\n",
+      "commitDate": 1432593529000,
+      "commitName": "050de1a6c09647a42341dd497e0fee2b09f9d898",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1432519135000,
+      "commitNameOld": "3eb75145e9718172ff9c74e6148b81762625803b",
+      "commitAuthorOld": "vlad",
+      "daysBetweenCommits": 0.86,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,12 @@\n     private boolean isExtendedClassNamedAsException(DetailAST ast) {\n         final DetailAST extendsClause \u003d ast.findFirstToken(TokenTypes.EXTENDS_CLAUSE);\n         if (extendsClause !\u003d null) {\n-            final DetailAST extendedClass \u003d extendsClause.findFirstToken(TokenTypes.IDENT);\n-            if (extendedClass !\u003d null) {\n-                final String extendedClassName \u003d extendedClass.getText();\n-                return extendedClassName.matches(extendedClassNameFormat);\n+            DetailAST currentNode \u003d extendsClause;\n+            while (currentNode.getType() !\u003d TokenTypes.IDENT) {\n+                currentNode \u003d currentNode.getLastChild();\n             }\n+            final String extendedClassName \u003d currentNode.getText();\n+            return extendedClassName.matches(extendedClassNameFormat);\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "3eb75145e9718172ff9c74e6148b81762625803b": {
+      "type": "Ybodychange",
+      "commitMessage": "fix in MutableExceptionCheck, #1124",
+      "commitDate": 1432519135000,
+      "commitName": "3eb75145e9718172ff9c74e6148b81762625803b",
+      "commitAuthor": "vlad",
+      "commitDateOld": 1431998943000,
+      "commitNameOld": "e8255c208f9b75bda2d724e901fc210fff9ab15a",
+      "commitAuthorOld": "vlad",
+      "daysBetweenCommits": 6.02,
+      "commitsBetweenForRepo": 28,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,11 @@\n     private boolean isExtendedClassNamedAsException(DetailAST ast) {\n         final DetailAST extendsClause \u003d ast.findFirstToken(TokenTypes.EXTENDS_CLAUSE);\n         if (extendsClause !\u003d null) {\n             final DetailAST extendedClass \u003d extendsClause.findFirstToken(TokenTypes.IDENT);\n-            final String extendedClassName \u003d extendedClass.getText();\n-            return extendedClassName.matches(extendedClassNameFormat);\n+            if (extendedClass !\u003d null) {\n+                final String extendedClassName \u003d extendedClass.getText();\n+                return extendedClassName.matches(extendedClassNameFormat);\n+            }\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "e8255c208f9b75bda2d724e901fc210fff9ab15a": {
+      "type": "Ybodychange",
+      "commitMessage": "remove dead code from MutableExceptionCheck, #1103",
+      "commitDate": 1431998943000,
+      "commitName": "e8255c208f9b75bda2d724e901fc210fff9ab15a",
+      "commitAuthor": "vlad",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.57,
+      "commitsBetweenForRepo": 9,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,9 @@\n     private boolean isExtendedClassNamedAsException(DetailAST ast) {\n         final DetailAST extendsClause \u003d ast.findFirstToken(TokenTypes.EXTENDS_CLAUSE);\n         if (extendsClause !\u003d null) {\n             final DetailAST extendedClass \u003d extendsClause.findFirstToken(TokenTypes.IDENT);\n-            if (extendedClass !\u003d null) {\n-                final String extendedClassName \u003d extendedClass.getText();\n-                return extendedClassName.matches(extendedClassNameFormat);\n-            }\n+            final String extendedClassName \u003d extendedClass.getText();\n+            return extendedClassName.matches(extendedClassNameFormat);\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, design, #512\n",
+      "commitDate": 1421677275000,
+      "commitName": "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "4297ca50a95bd01c236ee1f4aeb13488298b104f": {
+      "type": "Yintroduced",
+      "commitMessage": "MutableException check requires class to explicitly extend some other class (for issue #60)\n",
+      "commitDate": 1419099165000,
+      "commitName": "4297ca50a95bd01c236ee1f4aeb13488298b104f",
+      "commitAuthor": "Michal Kordas"
+    }
+  }
+}

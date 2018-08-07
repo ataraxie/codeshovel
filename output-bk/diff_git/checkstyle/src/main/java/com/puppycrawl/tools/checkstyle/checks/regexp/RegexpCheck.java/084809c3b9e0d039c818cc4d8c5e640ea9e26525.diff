@@ -1,0 +1,73 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/RegexpCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/RegexpCheck.java
+index 9ed47bc56..d9e610e02 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/RegexpCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/RegexpCheck.java
+@@ -208,67 +208,67 @@ public class RegexpCheck extends AbstractFormatCheck {
+             }
+         }
+         else if (!illegalPattern && matchCount == 0) {
+             logMessage(0);
+         }
+ 
+     }
+ 
+     /**
+      * check if we can stop valiation
+      * @param ignore flag
+      * @return true is we can continue
+      */
+     private boolean canContinueValidation(boolean ignore) {
+         return errorCount < errorLimit
+                 && (ignore || illegalPattern || checkForDuplicates);
+     }
+ 
+     /**
+      * detect ignore situation
+      * @param startLine position of line
+      * @param text file text
+      * @param start line colun
+      * @return true is that need to be ignored
+      */
+     private boolean isIgnore(int startLine, FileText text, LineColumn start) {
+         final LineColumn end;
+         if (matcher.end() == 0) {
+             end = text.lineColumn(0);
+         }
+         else {
+             end = text.lineColumn(matcher.end() - 1);
+         }
+         final int startColumn = start.getColumn();
+         final int endLine = end.getLine();
+         final int endColumn = end.getColumn();
+         boolean ignore = false;
+         if (ignoreComments) {
+             final FileContents theFileContents = getFileContents();
+             ignore = theFileContents.hasIntersectionWithComment(startLine,
+                 startColumn, endLine, endColumn);
+         }
+         return ignore;
+     }
+ 
+     /**
+      * Displays the right message.
+      * @param lineNumber the line number the message relates to.
+      */
+     private void logMessage(int lineNumber) {
+-        String msg = "".equals(getMessage()) ? getFormat() : message;
++        String msg = getMessage().isEmpty() ? getFormat() : message;
+         if (errorCount >= errorLimit) {
+             msg = ERROR_LIMIT_EXCEEDED_MESSAGE + msg;
+         }
+         if (illegalPattern) {
+             log(lineNumber, MSG_ILLEGAL_REGEXP, msg);
+         }
+         else {
+             if (lineNumber > 0) {
+                 log(lineNumber, MSG_DUPLICATE_REGEXP, msg);
+             }
+             else {
+                 log(lineNumber, MSG_REQUIRED_REGEXP, msg);
+             }
+         }
+     }
+ }

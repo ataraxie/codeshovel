@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "VariableDeclarationUsageDistanceCheck.java",
+  "functionName": "getDistToVariableUsageInChildNode",
+  "functionId": "getDistToVariableUsageInChildNode___childNode-DetailAST__varIdent-DetailAST__currentDistToVarUsage-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java",
+  "functionStartLine": 423,
+  "functionEndLine": 461,
+  "changeHistory": [
+    "4784b98f2f5daae5a543b6a2bab13e861bf2136e",
+    "963f94927dafac985290943d9459eb68761b11cc"
+  ],
+  "changeHistoryShort": {
+    "4784b98f2f5daae5a543b6a2bab13e861bf2136e": "Ybodychange",
+    "963f94927dafac985290943d9459eb68761b11cc": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4784b98f2f5daae5a543b6a2bab13e861bf2136e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usages of branchContains for Variable Distance",
+      "commitDate": 1511736703000,
+      "commitName": "4784b98f2f5daae5a543b6a2bab13e861bf2136e",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1510708572000,
+      "commitNameOld": "32e2b7ba57e189074662d84a04535a87c3a19b0c",
+      "commitAuthorOld": "Subbu Dantu",
+      "daysBetweenCommits": 11.9,
+      "commitsBetweenForRepo": 29,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,34 +1,39 @@\n     private static int getDistToVariableUsageInChildNode(DetailAST childNode, DetailAST varIdent,\n                                                          int currentDistToVarUsage) {\n+        DetailAST examineNode \u003d childNode;\n+        if (examineNode.getType() \u003d\u003d TokenTypes.LABELED_STAT) {\n+            examineNode \u003d examineNode.getFirstChild().getNextSibling();\n+        }\n+\n         int resultDist \u003d currentDistToVarUsage;\n-        switch (childNode.getType()) {\n+        switch (examineNode.getType()) {\n             case TokenTypes.VARIABLE_DEF:\n                 resultDist++;\n                 break;\n             case TokenTypes.SLIST:\n                 resultDist \u003d 0;\n                 break;\n             case TokenTypes.LITERAL_FOR:\n             case TokenTypes.LITERAL_WHILE:\n             case TokenTypes.LITERAL_DO:\n             case TokenTypes.LITERAL_IF:\n             case TokenTypes.LITERAL_SWITCH:\n-                if (isVariableInOperatorExpr(childNode, varIdent)) {\n+                if (isVariableInOperatorExpr(examineNode, varIdent)) {\n                     resultDist++;\n                 }\n                 else {\n                     // variable usage is in inner scope\n                     // reset counters, because we can\u0027t determine distance\n                     resultDist \u003d 0;\n                 }\n                 break;\n             default:\n-                if (childNode.branchContains(TokenTypes.SLIST)) {\n-                    resultDist \u003d 0;\n+                if (examineNode.findFirstToken(TokenTypes.SLIST) \u003d\u003d null) {\n+                    resultDist++;\n                 }\n                 else {\n-                    resultDist++;\n+                    resultDist \u003d 0;\n                 }\n         }\n         return resultDist;\n     }\n\\ No newline at end of file\n"
+    },
+    "963f94927dafac985290943d9459eb68761b11cc": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2874: Use CyclomaticComplexity.switchBlockAsSingleDecisionPoint in checkstyle_checks.xml (#3401)\n\n",
+      "commitDate": 1473365239000,
+      "commitName": "963f94927dafac985290943d9459eb68761b11cc",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

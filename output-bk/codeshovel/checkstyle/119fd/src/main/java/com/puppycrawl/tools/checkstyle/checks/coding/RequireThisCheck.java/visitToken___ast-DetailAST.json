@@ -1,0 +1,136 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RequireThisCheck.java",
+  "functionName": "visitToken",
+  "functionId": "visitToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java",
+  "functionStartLine": 234,
+  "functionEndLine": 252,
+  "changeHistory": [
+    "253de634b108f3869a0136d33049e28877fea038",
+    "36fdb1ba18843c9e5a6e3a7e3bbacfad7fde7369",
+    "4424370783f1c41fc1e146f554468f89e8f0e88b",
+    "bc83a3a82fc14ac5f83dca972d7e48776d2b98d9",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "b5c738e6d0118111481daee0afd93b2a2d7d916a",
+    "80f34569e748731253b4cdc5c2c201c754a0f32a"
+  ],
+  "changeHistoryShort": {
+    "253de634b108f3869a0136d33049e28877fea038": "Ybodychange",
+    "36fdb1ba18843c9e5a6e3a7e3bbacfad7fde7369": "Ybodychange",
+    "4424370783f1c41fc1e146f554468f89e8f0e88b": "Ybodychange",
+    "bc83a3a82fc14ac5f83dca972d7e48776d2b98d9": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "b5c738e6d0118111481daee0afd93b2a2d7d916a": "Ybodychange",
+    "80f34569e748731253b4cdc5c2c201c754a0f32a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "253de634b108f3869a0136d33049e28877fea038": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #5392: fixed RequireThisCheck and for loop variable handling",
+      "commitDate": 1514325116000,
+      "commitName": "253de634b108f3869a0136d33049e28877fea038",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1514243814000,
+      "commitNameOld": "36fdb1ba18843c9e5a6e3a7e3bbacfad7fde7369",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 0.94,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,19 @@\n     public void visitToken(DetailAST ast) {\n         switch (ast.getType()) {\n             case TokenTypes.IDENT :\n                 processIdent(ast);\n                 break;\n             case TokenTypes.CLASS_DEF :\n             case TokenTypes.INTERFACE_DEF :\n             case TokenTypes.ENUM_DEF :\n             case TokenTypes.ANNOTATION_DEF :\n             case TokenTypes.SLIST :\n             case TokenTypes.METHOD_DEF :\n             case TokenTypes.CTOR_DEF :\n+            case TokenTypes.LITERAL_FOR :\n                 current.push(frames.get(ast));\n                 break;\n             default :\n                 // do nothing\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "36fdb1ba18843c9e5a6e3a7e3bbacfad7fde7369": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #5364: changed RequireThis kept track of the frame being examined",
+      "commitDate": 1514243814000,
+      "commitName": "36fdb1ba18843c9e5a6e3a7e3bbacfad7fde7369",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1514005623000,
+      "commitNameOld": "0c20ec3c398c1c85e12e2c4f1d9b874476ced4df",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 2.76,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,18 @@\n     public void visitToken(DetailAST ast) {\n         switch (ast.getType()) {\n             case TokenTypes.IDENT :\n                 processIdent(ast);\n                 break;\n             case TokenTypes.CLASS_DEF :\n             case TokenTypes.INTERFACE_DEF :\n             case TokenTypes.ENUM_DEF :\n             case TokenTypes.ANNOTATION_DEF :\n             case TokenTypes.SLIST :\n             case TokenTypes.METHOD_DEF :\n             case TokenTypes.CTOR_DEF :\n-                current \u003d frames.get(ast);\n+                current.push(frames.get(ast));\n                 break;\n             default :\n                 // do nothing\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "4424370783f1c41fc1e146f554468f89e8f0e88b": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2451: removed excess hierarchy from RequireThisCheck",
+      "commitDate": 1446945172000,
+      "commitName": "4424370783f1c41fc1e146f554468f89e8f0e88b",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1441403297000,
+      "commitNameOld": "31f6765fdcf2233ca6c53730c2fc196576557f66",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 64.14,
+      "commitsBetweenForRepo": 410,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,18 @@\n     public void visitToken(DetailAST ast) {\n-        super.visitToken(ast);\n-        if (ast.getType() \u003d\u003d TokenTypes.IDENT) {\n-            processIdent(ast);\n+        switch (ast.getType()) {\n+            case TokenTypes.IDENT :\n+                processIdent(ast);\n+                break;\n+            case TokenTypes.CLASS_DEF :\n+            case TokenTypes.INTERFACE_DEF :\n+            case TokenTypes.ENUM_DEF :\n+            case TokenTypes.ANNOTATION_DEF :\n+            case TokenTypes.SLIST :\n+            case TokenTypes.METHOD_DEF :\n+            case TokenTypes.CTOR_DEF :\n+                current \u003d frames.get(ast);\n+                break;\n+            default :\n+                // do nothing\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "bc83a3a82fc14ac5f83dca972d7e48776d2b98d9": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix AbbreviationAsWordInName Check in Checkstyle Code. #945\n",
+      "commitDate": 1435420373000,
+      "commitName": "bc83a3a82fc14ac5f83dca972d7e48776d2b98d9",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1434649920000,
+      "commitNameOld": "eb5896a4a1d66552f5100046413f15d62b485b62",
+      "commitAuthorOld": "Bhavik Patel",
+      "daysBetweenCommits": 8.92,
+      "commitsBetweenForRepo": 22,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     public void visitToken(DetailAST ast) {\n         super.visitToken(ast);\n         if (ast.getType() \u003d\u003d TokenTypes.IDENT) {\n-            processIDENT(ast);\n+            processIdent(ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "b5c738e6d0118111481daee0afd93b2a2d7d916a": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix for 1098126 - UnusedImportsCheck does not work properly\nwe need to collect information about declared fields and variables.\nAdded some java 1.5 support for RequireThis check, since both\nUnusedImport and RequireThis now have common superclass and it\u0027s not\nvery hard :)\nFixed couple testinputs files to make them compilable.\n",
+      "commitDate": 1113483764000,
+      "commitName": "b5c738e6d0118111481daee0afd93b2a2d7d916a",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1111714049000,
+      "commitNameOld": "117d339322b71aee6d7684d8ce0f0e504164e798",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 20.48,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,7 @@\n     public void visitToken(DetailAST aAST)\n     {\n-        switch (aAST.getType()) {\n-        case TokenTypes.PARAMETER_DEF :\n-        case TokenTypes.VARIABLE_DEF : {\n-            final DetailAST nameAST \u003d aAST.findFirstToken(TokenTypes.IDENT);\n-            this.mFrames.current().addName(nameAST.getText());\n-            break;\n-        }\n-        case TokenTypes.CLASS_DEF : {\n-            final DetailAST nameAST \u003d aAST.findFirstToken(TokenTypes.IDENT);\n-            this.mFrames.current().addName(nameAST.getText());\n-            this.mFrames.enter(new ClassFrame());\n-            break;\n-        }\n-        case TokenTypes.SLIST :\n-            this.mFrames.enter(new BlockFrame());\n-            break;\n-        case TokenTypes.METHOD_DEF :\n-        case TokenTypes.CTOR_DEF :\n-            this.mFrames.enter(new MethodFrame());\n-            break;\n-        case TokenTypes.IDENT :\n+        super.visitToken(aAST);\n+        if (aAST.getType() \u003d\u003d TokenTypes.IDENT) {\n             processIDENT(aAST);\n-            break;\n-        default:\n-            log(aAST, \"require.this.unexpected.visit\",\n-                new Integer(aAST.getType()));\n-        } // end switch\n+        }\n     } // end visitToken\n\\ No newline at end of file\n"
+    },
+    "80f34569e748731253b4cdc5c2c201c754a0f32a": {
+      "type": "Yintroduced",
+      "commitMessage": "Draft implementation of RequireThis check submitted by Stephen Bloch.  More testing needed\n",
+      "commitDate": 1073648248000,
+      "commitName": "80f34569e748731253b4cdc5c2c201c754a0f32a",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

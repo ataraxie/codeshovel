@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
+index 5473261c4..559988801 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
+@@ -127,83 +127,80 @@ public class MethodCallHandler extends ExpressionHandler
+ 
+         return astNode;
+     }
+ 
+     @Override
+     public IndentLevel suggestedChildLevel(ExpressionHandler child)
+     {
+         // for whatever reason a method that crosses lines, like asList
+         // here:
+         //            System.out.println("methods are: " + Arrays.asList(
+         //                new String[] {"method"}).toString());
+         // will not have the right line num, so just get the child name
+ 
+         final DetailAST first = getMainAst().getFirstChild();
+         int indentLevel = getLineStart(first);
+         if (!areOnSameLine(child.getMainAst().getFirstChild(),
+                            getMainAst().getFirstChild()))
+         {
+             indentLevel += getBasicOffset();
+         }
+         return new IndentLevel(indentLevel);
+     }
+ 
+     @Override
+     public void checkIndentation()
+     {
+         final DetailAST exprNode = getMainAst().getParent();
+         if (exprNode.getParent().getType() != TokenTypes.LCURLY
+             && exprNode.getParent().getType() != TokenTypes.SLIST)
+         {
+             return;
+         }
+         final DetailAST methodName = getMainAst().getFirstChild();
+         checkExpressionSubtree(methodName, getLevel(), false, false);
+ 
+         final DetailAST lparen = getMainAst();
+         final DetailAST rparen = getMainAst().findFirstToken(TokenTypes.RPAREN);
+         checkLParen(lparen);
+ 
+         if (rparen.getLineNo() == lparen.getLineNo()) {
+             return;
+         }
+ 
+         checkExpressionSubtree(
+             getMainAst().findFirstToken(TokenTypes.ELIST),
+             new IndentLevel(getLevel(), getBasicOffset()),
+             false, true);
+ 
+         checkRParen(lparen, rparen);
+         final LineWrappingHandler lineWrap =
+-            new LineWrappingHandler(getIndentCheck(), getMainAst()) {
+-                @Override
+-                public DetailAST findLastNode(DetailAST firstNode)
+-                {
+-                    DetailAST lastNode;
+-                    if (getFirstNode().getNextSibling() == null) {
+-                        lastNode = getFirstNode().getLastChild();
+-                    }
+-                    else {
+-                        lastNode = getFirstNode().getNextSibling();
+-                    }
+-                    return lastNode;
+-                }
+-
+-                @Override
+-                public int getCurrentIndentation()
+-                {
+-                    DetailAST curNode = getFirstNode();
+-                    while (curNode.getType() != TokenTypes.IDENT) {
+-                        curNode = curNode.getFirstChild();
+-                    }
+-                    return curNode.getColumnNo() + getIndentLevel();
+-                }
+-            };
++            new LineWrappingHandler(getIndentCheck(), getMainAst(),
++                    getMethodCallLastNode(getMainAst()));
+         lineWrap.checkIndentation();
+     }
+ 
+     @Override
+     protected boolean shouldIncreaseIndent()
+     {
+         return false;
+     }
++
++    /**
++     * Returns method call right paren.
++     * @param firstNode
++     *          method call ast(TokenTypes.METHOD_CALL)
++     * @return ast node containing right paren for specified method call. If
++     * method calls are chained returns right paren for last call.
++     */
++    private static DetailAST getMethodCallLastNode(DetailAST firstNode)
++    {
++        DetailAST lastNode;
++        if (firstNode.getNextSibling() == null) {
++            lastNode = firstNode.getLastChild();
++        }
++        else {
++            lastNode = firstNode.getNextSibling();
++        }
++        return lastNode;
++    }
+ }

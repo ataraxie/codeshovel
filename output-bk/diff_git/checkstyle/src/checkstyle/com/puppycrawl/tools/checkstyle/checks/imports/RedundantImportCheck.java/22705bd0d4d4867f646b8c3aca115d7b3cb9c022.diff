@@ -1,0 +1,112 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java
+index 2535cc6c7..12dcc090b 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java
+@@ -54,102 +54,97 @@ import java.util.Set;
+ public class RedundantImportCheck
+     extends Check
+ {
+     /** name of package in file */
+     private String mPkgName;
+     /** set of the imports */
+     private final Set<FullIdent> mImports = new HashSet<FullIdent>();
+     /** set of static imports */
+     private final Set<FullIdent> mStaticImports = new HashSet<FullIdent>();
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void beginTree(DetailAST aRootAST)
+     {
+         mPkgName = null;
+         mImports.clear();
+         mStaticImports.clear();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[]
+         {TokenTypes.IMPORT,
+          TokenTypes.STATIC_IMPORT,
+          TokenTypes.PACKAGE_DEF, };
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         if (aAST.getType() == TokenTypes.PACKAGE_DEF) {
+             mPkgName = FullIdent.createFullIdent(
+                     aAST.getLastChild().getPreviousSibling()).getText();
+         }
+         else if (aAST.getType() == TokenTypes.IMPORT) {
+             final FullIdent imp = FullIdent.createFullIdentBelow(aAST);
+             if (fromPackage(imp.getText(), "java.lang")) {
+                 log(aAST.getLineNo(), aAST.getColumnNo(), "import.lang",
+                     imp.getText());
+             }
+             else if (fromPackage(imp.getText(), mPkgName)) {
+                 log(aAST.getLineNo(), aAST.getColumnNo(), "import.same",
+                     imp.getText());
+             }
+             // Check for a duplicate import
+             for (FullIdent full : mImports) {
+                 if (imp.getText().equals(full.getText())) {
+-                    log(aAST.getLineNo(),
+-                        aAST.getColumnNo(),
+-                        "import.duplicate",
+-                        new Integer(full.getLineNo()),
+-                        imp.getText());
++                    log(aAST.getLineNo(), aAST.getColumnNo(),
++                            "import.duplicate", full.getLineNo(),
++                            imp.getText());
+                 }
+             }
+ 
+             mImports.add(imp);
+         }
+         else {
+             // Check for a duplicate static import
+             final FullIdent imp =
+                 FullIdent.createFullIdent(
+                     aAST.getLastChild().getPreviousSibling());
+             for (FullIdent full : mStaticImports) {
+                 if (imp.getText().equals(full.getText())) {
+-                    log(aAST.getLineNo(),
+-                        aAST.getColumnNo(),
+-                        "import.duplicate",
+-                        new Integer(full.getLineNo()),
+-                        imp.getText());
++                    log(aAST.getLineNo(), aAST.getColumnNo(),
++                        "import.duplicate", full.getLineNo(), imp.getText());
+                 }
+             }
+ 
+             mStaticImports.add(imp);
+         }
+     }
+ 
+     /**
+      * Determines if an import statement is for types from a specified package.
+      * @param aImport the import name
+      * @param aPkg the package name
+      * @return whether from the package
+      */
+     private static boolean fromPackage(String aImport, String aPkg)
+     {
+         boolean retVal = false;
+         if (aPkg == null) {
+             // If not package, then check for no package in the import.
+             retVal = (aImport.indexOf('.') == -1);
+         }
+         else {
+             final int index = aImport.lastIndexOf('.');
+             if (index != -1) {
+                 final String front = aImport.substring(0, index);
+                 retVal = front.equals(aPkg);
+             }
+         }
+         return retVal;
+     }
+ }

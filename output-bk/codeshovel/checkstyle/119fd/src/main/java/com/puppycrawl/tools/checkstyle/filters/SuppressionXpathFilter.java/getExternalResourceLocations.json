@@ -1,0 +1,90 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SuppressionXpathFilter.java",
+  "functionName": "getExternalResourceLocations",
+  "functionId": "getExternalResourceLocations",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionXpathFilter.java",
+  "functionStartLine": 97,
+  "functionEndLine": 99,
+  "changeHistory": [
+    "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec",
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020",
+    "de022d2434e58dd633fd50a7f9bb50565a8767b5",
+    "7790f3104d2770ac909c61e96ae66daba8d372ec",
+    "ecbeaa6e1df7cb021745e111b04395b9fbd509c7"
+  ],
+  "changeHistoryShort": {
+    "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec": "Ymultichange(Ymovefromfile,Ymodifierchange,Ybodychange,Yparameterchange)",
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020": "Ybodychange",
+    "de022d2434e58dd633fd50a7f9bb50565a8767b5": "Ybodychange",
+    "7790f3104d2770ac909c61e96ae66daba8d372ec": "Ymodifierchange",
+    "ecbeaa6e1df7cb021745e111b04395b9fbd509c7": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec": {
+      "type": "Ymultichange(Ymovefromfile,Ymodifierchange,Ybodychange,Yparameterchange)",
+      "commitMessage": "Issue #4421: Support suppression-xpath element in SuppressionLoader\n",
+      "commitDate": 1506566816000,
+      "commitName": "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec",
+      "commitAuthor": "Timur",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ymodifierchange",
+        "Ybodychange",
+        "Yparameterchange"
+      ]
+    },
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3433: Cut down on Checkstyle\u0027s dependencies on Guava (part 2) (#3454)\n\n",
+      "commitDate": 1474426326000,
+      "commitName": "fbf3f95c2273be23b966cba6e6ef89390a6fb020",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1473337840000,
+      "commitNameOld": "de022d2434e58dd633fd50a7f9bb50565a8767b5",
+      "commitAuthorOld": "Mariia Mykhailova",
+      "daysBetweenCommits": 12.6,
+      "commitsBetweenForRepo": 18,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     private static Set\u003cString\u003e getExternalResourceLocations(Set\u003cAbstractCheck\u003e checks) {\n-        final Set\u003cString\u003e externalConfigurationResources \u003d Sets.newHashSet();\n+        final Set\u003cString\u003e externalConfigurationResources \u003d new HashSet\u003c\u003e();\n         checks.stream().filter(check -\u003e check instanceof ExternalResourceHolder).forEach(check -\u003e {\n             final Set\u003cString\u003e checkExternalResources \u003d\n                 ((ExternalResourceHolder) check).getExternalResourceLocations();\n             externalConfigurationResources.addAll(checkExternalResources);\n         });\n         return externalConfigurationResources;\n     }\n\\ No newline at end of file\n"
+    },
+    "de022d2434e58dd633fd50a7f9bb50565a8767b5": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3233: Resolve IntelijIdea inspection violations for java8 migration (#3434)\n\n",
+      "commitDate": 1473337840000,
+      "commitName": "de022d2434e58dd633fd50a7f9bb50565a8767b5",
+      "commitAuthor": "Mariia Mykhailova",
+      "commitDateOld": 1469977049000,
+      "commitNameOld": "7790f3104d2770ac909c61e96ae66daba8d372ec",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 38.9,
+      "commitsBetweenForRepo": 31,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,9 @@\n     private static Set\u003cString\u003e getExternalResourceLocations(Set\u003cAbstractCheck\u003e checks) {\n         final Set\u003cString\u003e externalConfigurationResources \u003d Sets.newHashSet();\n-        for (AbstractCheck check : checks) {\n-            if (check instanceof ExternalResourceHolder) {\n-                final Set\u003cString\u003e checkExternalResources \u003d\n-                    ((ExternalResourceHolder) check).getExternalResourceLocations();\n-                externalConfigurationResources.addAll(checkExternalResources);\n-            }\n-        }\n+        checks.stream().filter(check -\u003e check instanceof ExternalResourceHolder).forEach(check -\u003e {\n+            final Set\u003cString\u003e checkExternalResources \u003d\n+                ((ExternalResourceHolder) check).getExternalResourceLocations();\n+            externalConfigurationResources.addAll(checkExternalResources);\n+        });\n         return externalConfigurationResources;\n     }\n\\ No newline at end of file\n"
+    },
+    "7790f3104d2770ac909c61e96ae66daba8d372ec": {
+      "type": "Ymodifierchange",
+      "commitMessage": "minor: eclipse violations - methods can be static",
+      "commitDate": 1469977049000,
+      "commitName": "7790f3104d2770ac909c61e96ae66daba8d372ec",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1464439637000,
+      "commitNameOld": "9a733ed7985274aadb75dad8bce405749d7e61d6",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 64.09,
+      "commitsBetweenForRepo": 151,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n-    private Set\u003cString\u003e getExternalResourceLocations(Set\u003cAbstractCheck\u003e checks) {\n+    private static Set\u003cString\u003e getExternalResourceLocations(Set\u003cAbstractCheck\u003e checks) {\n         final Set\u003cString\u003e externalConfigurationResources \u003d Sets.newHashSet();\n         for (AbstractCheck check : checks) {\n             if (check instanceof ExternalResourceHolder) {\n                 final Set\u003cString\u003e checkExternalResources \u003d\n                     ((ExternalResourceHolder) check).getExternalResourceLocations();\n                 externalConfigurationResources.addAll(checkExternalResources);\n             }\n         }\n         return externalConfigurationResources;\n     }\n\\ No newline at end of file\n"
+    },
+    "ecbeaa6e1df7cb021745e111b04395b9fbd509c7": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #407: Fix cache usage in presence of modules which use external resources for configuration (#3092)",
+      "commitDate": 1463431992000,
+      "commitName": "ecbeaa6e1df7cb021745e111b04395b9fbd509c7",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

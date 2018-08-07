@@ -1,0 +1,133 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbstractTypeAwareCheck.java",
+  "functionName": "createClassInfo",
+  "functionId": "createClassInfo___name-Token__surroundingClass-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractTypeAwareCheck.java",
+  "functionStartLine": 372,
+  "functionEndLine": 383,
+  "changeHistory": [
+    "16f91dda1a15e0e3c3d7142a159f17db72c06d0f",
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c",
+    "30c3a362d45721e6925fe89ba71f0fe69d0fc471",
+    "eb5896a4a1d66552f5100046413f15d62b485b62",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "cbe38280adb03f058f89e8ea81bc0e3be2fc5b94"
+  ],
+  "changeHistoryShort": {
+    "16f91dda1a15e0e3c3d7142a159f17db72c06d0f": "Yfilerename",
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c": "Ybodychange",
+    "30c3a362d45721e6925fe89ba71f0fe69d0fc471": "Ybodychange",
+    "eb5896a4a1d66552f5100046413f15d62b485b62": "Ymultichange(Yreturntypechange,Ybodychange)",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "cbe38280adb03f058f89e8ea81bc0e3be2fc5b94": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "16f91dda1a15e0e3c3d7142a159f17db72c06d0f": {
+      "type": "Yfilerename",
+      "commitMessage": "Issue #4676: move AbstractTypeAwareCheck and ClassResolver to javadoc\n",
+      "commitDate": 1501987881000,
+      "commitName": "16f91dda1a15e0e3c3d7142a159f17db72c06d0f",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1501985382000,
+      "commitNameOld": "6cdae0ff01b436cfe387d18b5e1206c6f078376b",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.checks and com.puppycrawl.tools.checkstyle\n",
+      "commitDate": 1492827278000,
+      "commitName": "de50d3465849b83d25910590e1f5f39a25fe6e2c",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1491975676000,
+      "commitNameOld": "eb9606f86f6a94ef854f29217cb3fd0ce63a2678",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 9.86,
+      "commitsBetweenForRepo": 56,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,12 @@\n     protected final AbstractClassInfo createClassInfo(final Token name,\n                                               final String surroundingClass) {\n+        final AbstractClassInfo result;\n         final AbstractClassInfo classInfo \u003d findClassAlias(name.getText());\n-        if (classInfo !\u003d null) {\n-            return new ClassAlias(name, classInfo);\n+        if (classInfo \u003d\u003d null) {\n+            result \u003d new RegularClass(name, surroundingClass, this);\n         }\n-        return new RegularClass(name, surroundingClass, this);\n+        else {\n+            result \u003d new ClassAlias(name, classInfo);\n+        }\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "30c3a362d45721e6925fe89ba71f0fe69d0fc471": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #985: Fix PMD violations for ShortVariable rule\n",
+      "commitDate": 1444178762000,
+      "commitName": "30c3a362d45721e6925fe89ba71f0fe69d0fc471",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1441051115000,
+      "commitNameOld": "49a0ee81710e0c43ed06a01f1d64ac7f5598a934",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 36.2,
+      "commitsBetweenForRepo": 227,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     protected final AbstractClassInfo createClassInfo(final Token name,\n                                               final String surroundingClass) {\n-        final AbstractClassInfo ci \u003d findClassAlias(name.getText());\n-        if (ci !\u003d null) {\n-            return new ClassAlias(name, ci);\n+        final AbstractClassInfo classInfo \u003d findClassAlias(name.getText());\n+        if (classInfo !\u003d null) {\n+            return new ClassAlias(name, classInfo);\n         }\n         return new RegularClass(name, surroundingClass, this);\n     }\n\\ No newline at end of file\n"
+    },
+    "eb5896a4a1d66552f5100046413f15d62b485b62": {
+      "type": "Ymultichange(Yreturntypechange,Ybodychange)",
+      "commitMessage": "Fix PMD violations for AbstractNaming rule #983\n",
+      "commitDate": 1434649920000,
+      "commitName": "eb5896a4a1d66552f5100046413f15d62b485b62",
+      "commitAuthor": "Bhavik Patel",
+      "subchanges": [
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1152243235000,
+      "commitNameOld": "f4a92dad02a3a36b5e2e988bba04debb1e2c9db9",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     protected final ClassInfo createClassInfo(final Token aName,\n                                               final String aSurroundingClass)\n     {\n-        ClassInfo ci \u003d findClassAlias(aName.getText());\n+        final ClassInfo ci \u003d findClassAlias(aName.getText());\n         if (ci !\u003d null) {\n             return new ClassAlias(aName, ci);\n         }\n         return new RegularClass(aName, aSurroundingClass, this);\n     }\n\\ No newline at end of file\n"
+    },
+    "cbe38280adb03f058f89e8ea81bc0e3be2fc5b94": {
+      "type": "Yintroduced",
+      "commitMessage": "Fixed 1249707: AbstractTypeAwareCheck doesn\u0027t work with types from typeparm\n\nSome pretty big refactoring for typeaware checks performed.\nAlso added handling for type params.  Current handling algorithm\nhas some preconditions and restriction, but it works for most cases\n(not sure I\u0027ve covered all situation when type param will have name\nof real exception, but I do not think it is critical for now :)\n\nAlso, I\u0027ve added column number for JavadocTag (mainly to be able use\nClassInfo for it).  So, JavadocTypeCheck also affected.\n\nAnd I\u0027ve added new logger for TreeWalker (if we have loggers we should\nuse them :)\n",
+      "commitDate": 1123248811000,
+      "commitName": "cbe38280adb03f058f89e8ea81bc0e3be2fc5b94",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

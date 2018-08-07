@@ -1,0 +1,139 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+index 8a3b632de..eab700d25 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+@@ -198,131 +198,134 @@ public class FinalLocalVariableCheck extends AbstractCheck {
+                     storePrevScopeUninitializedVariableData();
+                     scopeStack.push(new ScopeData());
+                 }
+                 break;
+             case TokenTypes.PARAMETER_DEF:
+                 if (!isInLambda(ast)
+                         && !ast.branchContains(TokenTypes.FINAL)
+                         && !isInAbstractOrNativeMethod(ast)
+                         && !ScopeUtils.isInInterfaceBlock(ast)
+                         && !isMultipleTypeCatch(ast)) {
+                     insertParameter(ast);
+                 }
+                 break;
+             case TokenTypes.VARIABLE_DEF:
+                 if (ast.getParent().getType() != TokenTypes.OBJBLOCK
+                         && !ast.branchContains(TokenTypes.FINAL)
+                         && !isVariableInForInit(ast)
+                         && shouldCheckEnhancedForLoopVariable(ast)) {
+                     insertVariable(ast);
+                 }
+                 break;
+             case TokenTypes.IDENT:
+                 final int parentType = ast.getParent().getType();
+                 if (isAssignOperator(parentType) && isFirstChild(ast)) {
+                     final Optional<FinalVariableCandidate> candidate = getFinalCandidate(ast);
+                     if (candidate.isPresent()) {
+                         determineAssignmentConditions(ast, candidate.get());
+                         currentScopeAssignedVariables.peek().add(ast);
+                     }
+                     removeFinalVariableCandidateFromStack(ast);
+                 }
+                 break;
+             case TokenTypes.LITERAL_BREAK:
+                 scopeStack.peek().containsBreak = true;
+                 break;
+             default:
+                 throw new IllegalStateException("Incorrect token type");
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         Map<String, FinalVariableCandidate> scope = null;
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+                 scope = scopeStack.pop().scope;
+                 break;
+             case TokenTypes.SLIST:
++                // -@cs[MoveVariableInsideIf] assignment value is modified later so it can't be
++                // moved
+                 final Deque<DetailAST> prevScopeUnitializedVariableData =
+                     prevScopeUninitializedVariables.peek();
+                 boolean containsBreak = false;
+                 if (ast.getParent().getType() != TokenTypes.CASE_GROUP
+                     || findLastChildWhichContainsSpecifiedToken(ast.getParent().getParent(),
+                             TokenTypes.CASE_GROUP, TokenTypes.SLIST) == ast.getParent()) {
+                     containsBreak = scopeStack.peek().containsBreak;
+                     scope = scopeStack.pop().scope;
+                     prevScopeUninitializedVariables.pop();
+                 }
+                 final DetailAST parent = ast.getParent();
+                 if (containsBreak || shouldUpdateUninitializedVariables(parent)) {
+                     updateAllUninitializedVariables(prevScopeUnitializedVariableData);
+                 }
+                 updateCurrentScopeAssignedVariables();
+                 break;
+             default:
+                 // do nothing
+         }
+         if (scope != null) {
+             for (FinalVariableCandidate candidate : scope.values()) {
+                 final DetailAST ident = candidate.variableIdent;
+                 log(ident.getLineNo(), ident.getColumnNo(), MSG_KEY, ident.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Update assigned variables in a temporary stack.
+      */
+     private void updateCurrentScopeAssignedVariables() {
++        // -@cs[MoveVariableInsideIf] assignment value is a modification call so it can't be moved
+         final Deque<DetailAST> poppedScopeAssignedVariableData =
+                 currentScopeAssignedVariables.pop();
+         final Deque<DetailAST> currentScopeAssignedVariableData =
+                 currentScopeAssignedVariables.peek();
+         if (currentScopeAssignedVariableData != null) {
+             currentScopeAssignedVariableData.addAll(poppedScopeAssignedVariableData);
+         }
+     }
+ 
+     /**
+      * Determines identifier assignment conditions (assigned or already assigned).
+      * @param ident identifier.
+      * @param candidate final local variable candidate.
+      */
+     private static void determineAssignmentConditions(DetailAST ident,
+                                                       FinalVariableCandidate candidate) {
+         if (candidate.assigned) {
+             if (!isInSpecificCodeBlock(ident, TokenTypes.LITERAL_ELSE)
+                     && !isInSpecificCodeBlock(ident, TokenTypes.CASE_GROUP)) {
+                 candidate.alreadyAssigned = true;
+             }
+         }
+         else {
+             candidate.assigned = true;
+         }
+     }
+ 
+     /**
+      * Checks whether the scope of a node is restricted to a specific code block.
+      * @param node node.
+      * @param blockType block type.
+      * @return true if the scope of a node is restricted to a specific code block.
+      */
+     private static boolean isInSpecificCodeBlock(DetailAST node, int blockType) {
+         boolean returnValue = false;
+         for (DetailAST token = node.getParent(); token != null; token = token.getParent()) {
+             final int type = token.getType();
+             if (type == blockType) {
+                 returnValue = true;
+                 break;
+             }
+         }
+         return returnValue;
+     }
+ 
+     /**
+      * Gets final variable candidate for ast.
+      * @param ast ast.
+      * @return Optional of {@link FinalVariableCandidate} for ast from scopeStack.
+      */

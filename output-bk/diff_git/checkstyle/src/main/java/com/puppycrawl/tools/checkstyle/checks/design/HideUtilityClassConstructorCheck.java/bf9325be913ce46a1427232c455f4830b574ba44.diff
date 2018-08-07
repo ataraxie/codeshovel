@@ -1,0 +1,111 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/HideUtilityClassConstructorCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/HideUtilityClassConstructorCheck.java
+index 8e3246bd7..f397d6c2a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/HideUtilityClassConstructorCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/HideUtilityClassConstructorCheck.java
+@@ -31,104 +31,104 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * A common mistake is forgetting to hide the default constructor.
+  * </p>
+  *
+  * @author lkuehne
+  */
+ public class HideUtilityClassConstructorCheck extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "hide.utility.class";
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.CLASS_DEF};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (isAbstract(ast)) {
+             // abstract class could not have private constructor
+             return;
+         }
+         final boolean hasStaticModifier = isStatic(ast);
+ 
+         final Details details = new Details(ast);
+         details.invoke();
+ 
+         final boolean hasDefaultCtor = details.isHasDefaultCtor();
+         final boolean hasPublicCtor = details.isHasPublicCtor();
+         final boolean hasMethodOrField = details.isHasMethodOrField();
+         final boolean hasNonStaticMethodOrField = details.isHasNonStaticMethodOrField();
+         final boolean hasNonPrivateStaticMethodOrField =
+                 details.isHasNonPrivateStaticMethodOrField();
+ 
+         final boolean hasAccessibleCtor = hasDefaultCtor || hasPublicCtor;
+ 
+         // figure out if class extends java.lang.object directly
+         // keep it simple for now and get a 99% solution
+-        final boolean extendsJLO =
++        final boolean extendsJlo =
+             ast.findFirstToken(TokenTypes.EXTENDS_CLAUSE) == null;
+ 
+-        final boolean isUtilClass = extendsJLO && hasMethodOrField
++        final boolean isUtilClass = extendsJlo && hasMethodOrField
+             && !hasNonStaticMethodOrField && hasNonPrivateStaticMethodOrField;
+ 
+         if (isUtilClass && hasAccessibleCtor && !hasStaticModifier) {
+             log(ast.getLineNo(), ast.getColumnNo(), MSG_KEY);
+         }
+     }
+ 
+     /**
+      * @param ast class definition for check.
+      * @return true if a given class declared as abstract.
+      */
+     private static boolean isAbstract(DetailAST ast) {
+         return ast.findFirstToken(TokenTypes.MODIFIERS)
+             .branchContains(TokenTypes.ABSTRACT);
+     }
+ 
+     /**
+      * @param ast class definition for check.
+      * @return true if a given class declared as static.
+      */
+     private static boolean isStatic(DetailAST ast) {
+         return ast.findFirstToken(TokenTypes.MODIFIERS)
+             .branchContains(TokenTypes.LITERAL_STATIC);
+     }
+ 
+     /**
+      * Details of class that are required for validation.
+      */
+     private static class Details {
+         /** Class ast. */
+         private final DetailAST ast;
+         /** Result of details gathering. */
+         private boolean hasMethodOrField;
+         /** Result of details gathering. */
+         private boolean hasNonStaticMethodOrField;
+         /** Result of details gathering. */
+         private boolean hasNonPrivateStaticMethodOrField;
+         /** Result of details gathering. */
+         private boolean hasDefaultCtor;
+         /** Result of details gathering. */
+         private boolean hasPublicCtor;
+ 
+         /**
+          * C-tor.
+          * @param ast class ast
+          * */
+         Details(DetailAST ast) {
+             this.ast = ast;
+         }
+ 

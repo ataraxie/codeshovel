@@ -1,0 +1,62 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+index 061c2745d..0757b5da0 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+@@ -256,56 +256,56 @@ public abstract class AbstractClassCouplingCheck extends Check
+          * @param aAST NEW to process.
+          */
+         public void visitLiteralNew(DetailAST aAST)
+         {
+             mContext.addReferencedClassName((DetailAST) aAST.getFirstChild());
+         }
+ 
+         /**
+          * Adds new referenced class.
+          * @param aAST a node which represents referenced class.
+          */
+         private void addReferencedClassName(DetailAST aAST)
+         {
+             final String className = FullIdent.createFullIdent(aAST).getText();
+             addReferencedClassName(className);
+         }
+ 
+         /**
+          * Adds new referenced class.
+          * @param aClassName class name of the referenced class.
+          */
+         private void addReferencedClassName(String aClassName)
+         {
+             if (isSignificant(aClassName)) {
+                 mReferencedClassNames.add(aClassName);
+             }
+         }
+ 
+         /** Checks if coupling less than allowed or not. */
+         public void checkCoupling()
+         {
+             mReferencedClassNames.remove(mClassName);
+             mReferencedClassNames.remove(mPackageName + "." + mClassName);
+ 
+             if (mReferencedClassNames.size() > mMax) {
+                 log(mLineNo, mColumnNo, getLogMessageId(),
+                     new Object[] {
+                         new Integer(mReferencedClassNames.size()),
+                         new Integer(getMax()),
+                         mReferencedClassNames.toString(), });
+             }
+         }
+ 
+         /**
+          * Checks if given class shouldn't be ignored and not from java.lang.
+          * @param aClassName class to check.
+          * @return true if we should count this class.
+          */
+         private boolean isSignificant(String aClassName)
+         {
+-            return aClassName.length() > 0
++            return (aClassName.length() > 0)
+                     && !mIgnoredClassNames.contains(aClassName)
+                     && !aClassName.startsWith("java.lang.");
+         }
+     }
+ }

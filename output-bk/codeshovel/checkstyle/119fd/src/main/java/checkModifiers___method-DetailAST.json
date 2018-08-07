@@ -1,0 +1,103 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "checkModifiers___method-DetailAST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 189,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "5d7063c660b241bce251f1a8c89394619f2791fb",
+    "1878e21451499ee852bf1e45af1653439d7a4c8d"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "5d7063c660b241bce251f1a8c89394619f2791fb": "Ybodychange",
+    "1878e21451499ee852bf1e45af1653439d7a4c8d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1505956257000,
+      "commitNameOld": "9b2f177a03d5696671c2b705d2b1b686f127dcce",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 35.07,
+      "commitsBetweenForRepo": 65,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     private static boolean checkModifiers(DetailAST method) {\n         final DetailAST modifiers \u003d\n             method.findFirstToken(TokenTypes.MODIFIERS);\n \n-        return modifiers.branchContains(TokenTypes.LITERAL_PUBLIC)\n-            \u0026\u0026 modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n+        return modifiers.findFirstToken(TokenTypes.LITERAL_PUBLIC) !\u003d null\n+            \u0026\u0026 modifiers.findFirstToken(TokenTypes.LITERAL_STATIC) !\u003d null;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 61.71,
+      "commitsBetweenForRepo": 387,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n-    private boolean checkModifiers(DetailAST method) {\n+    private static boolean checkModifiers(DetailAST method) {\n         final DetailAST modifiers \u003d\n             method.findFirstToken(TokenTypes.MODIFIERS);\n \n         return modifiers.branchContains(TokenTypes.LITERAL_PUBLIC)\n             \u0026\u0026 modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n     }\n\\ No newline at end of file\n"
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "5d7063c660b241bce251f1a8c89394619f2791fb": {
+      "type": "Ybodychange",
+      "commitMessage": "Tighten up code\n",
+      "commitDate": 1093527252000,
+      "commitName": "5d7063c660b241bce251f1a8c89394619f2791fb",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1074114639000,
+      "commitNameOld": "5670252b46f4915b276e647fa000361915eb4ff4",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 224.68,
+      "commitsBetweenForRepo": 137,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,8 @@\n     private boolean checkModifiers(DetailAST aMethod)\n     {\n-        DetailAST modifiers \u003d aMethod.findFirstToken(TokenTypes.MODIFIERS);\n+        final DetailAST modifiers \u003d\n+            aMethod.findFirstToken(TokenTypes.MODIFIERS);\n \n         return modifiers.branchContains(TokenTypes.LITERAL_PUBLIC)\n             \u0026\u0026 modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n     }\n\\ No newline at end of file\n"
+    },
+    "1878e21451499ee852bf1e45af1653439d7a4c8d": {
+      "type": "Yintroduced",
+      "commitMessage": "Added check for uncommented main methods (debugging leftovers). (module UncommentedMain,request 732257)\n",
+      "commitDate": 1054323355000,
+      "commitName": "1878e21451499ee852bf1e45af1653439d7a4c8d",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

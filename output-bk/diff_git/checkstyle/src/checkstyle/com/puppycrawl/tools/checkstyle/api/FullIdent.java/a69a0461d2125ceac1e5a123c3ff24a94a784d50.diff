@@ -1,0 +1,63 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FullIdent.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FullIdent.java
+index 694c498d3..6782215cd 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FullIdent.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FullIdent.java
+@@ -94,51 +94,58 @@ public final class FullIdent
+         }
+         else if (aAST.getColumnNo() > 0) {
+             mColNo = Math.min(mColNo, aAST.getColumnNo());
+         }
+     }
+ 
+     /**
+      * Creates a new FullIdent starting from the specified node.
+      * @param aAST the node to start from
+      * @return a <code>FullIdent</code> value
+      */
+     public static FullIdent createFullIdent(DetailAST aAST)
+     {
+         final FullIdent fi = new FullIdent();
+         extractFullIdent(fi, aAST);
+         return fi;
+     }
+ 
+     /**
+      * Creates a new FullIdent starting from the child of the specified node.
+      * @param aAST the parent node from where to start from
+      * @return a <code>FullIdent</code> value
+      */
+     public static FullIdent createFullIdentBelow(DetailAST aAST)
+     {
+         return createFullIdent((DetailAST) aAST.getFirstChild());
+     }
+ 
+     /**
+      * Recursively extract a FullIdent.
+      *
+      * @param aFull the FullIdent to add to
+      * @param aAST the node to recurse from
+      */
+     private static void extractFullIdent(FullIdent aFull, DetailAST aAST)
+     {
+         if (aAST == null) {
+             return;
+         }
+ 
+         if (aAST.getType() == TokenTypes.DOT) {
+             extractFullIdent(aFull, (DetailAST) aAST.getFirstChild());
+             aFull.append(".");
+             extractFullIdent(
+                 aFull, (DetailAST) aAST.getFirstChild().getNextSibling());
+         }
+         else {
+             aFull.append(aAST);
+         }
+     }
++
++    /** {@inheritDoc} */
++    public String toString()
++    {
++        return getText() + "[" + getLineNo() + "x" + getColumnNo() + "]";
++    }
++
+ }

@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+index ea1db7525..2eae6780b 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+@@ -496,101 +496,101 @@ public abstract class AbstractJavadocCheck extends Check
+         final CommonTokenStream tokens = new CommonTokenStream(lexer);
+ 
+         final JavadocParser parser = new JavadocParser(tokens);
+ 
+         // remove default error listeners
+         parser.removeErrorListeners();
+ 
+         // add custom error listener that logs syntax errors
+         parser.addErrorListener(errorListener);
+ 
+         // This strategy stops parsing when parser error occurs.
+         // By default it uses Error Recover Strategy which is slow and useless.
+         parser.setErrorHandler(new BailErrorStrategy());
+ 
+         return parser.javadoc();
+     }
+ 
+     /**
+      * Processes JavadocAST tree notifying Check.
+      * @param root
+      *        root of JavadocAST tree.
+      */
+     private void processTree(DetailNode root)
+     {
+         beginJavadocTree(root);
+         walk(root);
+         finishJavadocTree(root);
+     }
+ 
+     /**
+      * Processes a node calling Check at interested nodes.
+      * @param root
+      *        the root of tree for process
+      */
+     private void walk(DetailNode root)
+     {
+         final int[] defaultTokenTypes = getDefaultJavadocTokens();
+ 
+         if (defaultTokenTypes == null) {
+             return;
+         }
+ 
+         DetailNode curNode = root;
+         while (curNode != null) {
+             final boolean waitsFor = Ints.contains(defaultTokenTypes, curNode.getType());
+ 
+             if (waitsFor) {
+                 visitJavadocToken(curNode);
+             }
+             DetailNode toVisit = JavadocUtils.getFirstChild(curNode);
+-            while ((curNode != null) && (toVisit == null)) {
++            while (curNode != null && toVisit == null) {
+ 
+                 if (waitsFor) {
+                     leaveJavadocToken(curNode);
+                 }
+ 
+                 toVisit = JavadocUtils.getNextSibling(curNode);
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+     }
+ 
+     /**
+      * Custom error listener for JavadocParser that prints user readable errors.
+      */
+     class DescriptiveErrorListener extends BaseErrorListener
+     {
+         /**
+          * Parse error while token recognition.
+          */
+         private static final String JAVADOC_PARSE_TOKEN_ERROR = "javadoc.parse.token.error";
+ 
+         /**
+          * Parse error while rule recognition.
+          */
+         private static final String JAVADOC_PARSE_RULE_ERROR = "javadoc.parse.rule.error";
+ 
+         /**
+          * Message key of error message. Missed close HTML tag breaks structure
+          * of parse tree, so parser stops parsing and generates such error
+          * message. This case is special because parser prints error like
+          * {@code "no viable alternative at input 'b \n *\n'"} and it is not
+          * clear that error is about missed close HTML tag.
+          */
+         private static final String JAVADOC_MISSED_HTML_CLOSE = "javadoc.missed.html.close";
+ 
+         /**
+          * Message key of error message.
+          */
+         private static final String JAVADOC_WRONG_SINGLETON_TAG =
+                 "javadoc.wrong.singleton.html.tag";
+ 
+         /**
+          * Offset is line number of beginning of the Javadoc comment. Log
+          * messages should have line number in scope of file, not in scope of
+          * Javadoc comment.
+          */
+         private int offset;

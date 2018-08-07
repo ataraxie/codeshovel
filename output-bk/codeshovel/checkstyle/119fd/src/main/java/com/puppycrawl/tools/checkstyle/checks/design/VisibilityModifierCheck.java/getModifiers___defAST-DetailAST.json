@@ -1,0 +1,144 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "VisibilityModifierCheck.java",
+  "functionName": "getModifiers",
+  "functionId": "getModifiers___defAST-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java",
+  "functionStartLine": 609,
+  "functionEndLine": 620,
+  "changeHistory": [
+    "f9f60d3142533c3eebff775e8eb1159935faaba1",
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "7552a0b72e07c9a0070e84789b5abe6d293de6e0",
+    "08638b5f739d9929698860048c052da2d5f80209",
+    "32d19d680144540a83c5dde5588f5a7ac302f8e1",
+    "303352fe2d7b467edce0bf02064e0a519a139250",
+    "84eddc36730c1eca845257201c71a0d1fb2d40cf",
+    "220f6cb5d992429a1d71f867088c8e7ab39a453a"
+  ],
+  "changeHistoryShort": {
+    "f9f60d3142533c3eebff775e8eb1159935faaba1": "Ymultichange(Yparameterchange,Ymodifierchange,Ybodychange)",
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "7552a0b72e07c9a0070e84789b5abe6d293de6e0": "Ybodychange",
+    "08638b5f739d9929698860048c052da2d5f80209": "Ymultichange(Yreturntypechange,Ybodychange)",
+    "32d19d680144540a83c5dde5588f5a7ac302f8e1": "Yfilerename",
+    "303352fe2d7b467edce0bf02064e0a519a139250": "Ymultichange(Yparameterchange,Ybodychange)",
+    "84eddc36730c1eca845257201c71a0d1fb2d40cf": "Ybodychange",
+    "220f6cb5d992429a1d71f867088c8e7ab39a453a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "f9f60d3142533c3eebff775e8eb1159935faaba1": {
+      "type": "Ymultichange(Yparameterchange,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Visibility Modifier Check, added option allows public immutable fields, issue #61\n",
+      "commitDate": 1424982930000,
+      "commitName": "f9f60d3142533c3eebff775e8eb1159935faaba1",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, design, #512\n",
+      "commitDate": 1421677275000,
+      "commitName": "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "7552a0b72e07c9a0070e84789b5abe6d293de6e0": {
+      "type": "Ybodychange",
+      "commitMessage": "Drinking the \"Google Collections\" Kool-Aid.\n\nI like the reduced duplication.\n",
+      "commitDate": 1208867287000,
+      "commitName": "7552a0b72e07c9a0070e84789b5abe6d293de6e0",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200296548000,
+      "commitNameOld": "fd90bd5aa5cd623b08a2e44ef05e8fac8045d333",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 99.2,
+      "commitsBetweenForRepo": 30,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     private Set\u003cString\u003e getModifiers(DetailAST aVariableDefAST)\n     {\n         final AST modifiersAST \u003d aVariableDefAST.getFirstChild();\n         if (modifiersAST.getType() !\u003d TokenTypes.MODIFIERS) {\n             throw new IllegalStateException(\"Strange parse tree\");\n         }\n-        final Set\u003cString\u003e retVal \u003d new HashSet\u003cString\u003e();\n+        final Set\u003cString\u003e retVal \u003d Sets.newHashSet();\n         AST modifier \u003d modifiersAST.getFirstChild();\n         while (modifier !\u003d null) {\n             retVal.add(modifier.getText());\n             modifier \u003d modifier.getNextSibling();\n         }\n         return retVal;\n \n     }\n\\ No newline at end of file\n"
+    },
+    "08638b5f739d9929698860048c052da2d5f80209": {
+      "type": "Ymultichange(Yreturntypechange,Ybodychange)",
+      "commitMessage": "Start of adding generics.\n",
+      "commitDate": 1197700618000,
+      "commitName": "08638b5f739d9929698860048c052da2d5f80209",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "32d19d680144540a83c5dde5588f5a7ac302f8e1": {
+      "type": "Yfilerename",
+      "commitMessage": "Refactored the Design checks\n",
+      "commitDate": 1054770724000,
+      "commitName": "32d19d680144540a83c5dde5588f5a7ac302f8e1",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1054742916000,
+      "commitNameOld": "679f818267161d9501a73ffdcc0d991537233633",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 0.32,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "303352fe2d7b467edce0bf02064e0a519a139250": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "fixed checkstyle errors\n",
+      "commitDate": 1037970001000,
+      "commitName": "303352fe2d7b467edce0bf02064e0a519a139250",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "84eddc36730c1eca845257201c71a0d1fb2d40cf": {
+      "type": "Ybodychange",
+      "commitMessage": "Added a new class TokenTypes that contains all the type constants. This class\nbreaks the circular dependencies - the cost is needing to maintain this class\nwhen a new grammar is introduced.\n",
+      "commitDate": 1035008886000,
+      "commitName": "84eddc36730c1eca845257201c71a0d1fb2d40cf",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1034895145000,
+      "commitNameOld": "7f35e143a2472ecb49625cc841bd0482fe3dfeea",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 1.32,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     private Set getModifiers(DetailAST variableDefAST)\n     {\n-        AST modifiersAST \u003d variableDefAST.getFirstChild();\n-        if (modifiersAST.getType() !\u003d JavaTokenTypes.MODIFIERS) {\n+        final AST modifiersAST \u003d variableDefAST.getFirstChild();\n+        if (modifiersAST.getType() !\u003d TokenTypes.MODIFIERS) {\n             throw new IllegalStateException(\"Strange parse tree\");\n         }\n-        Set retVal \u003d new HashSet();\n+        final Set retVal \u003d new HashSet();\n         AST modifier \u003d modifiersAST.getFirstChild();\n         while (modifier !\u003d null) {\n             retVal.add(modifier.getText());\n             modifier \u003d modifier.getNextSibling();\n         }\n         return retVal;\n \n     }\n\\ No newline at end of file\n"
+    },
+    "220f6cb5d992429a1d71f867088c8e7ab39a453a": {
+      "type": "Yintroduced",
+      "commitMessage": "ported member visibility checks\n",
+      "commitDate": 1034813262000,
+      "commitName": "220f6cb5d992429a1d71f867088c8e7ab39a453a",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

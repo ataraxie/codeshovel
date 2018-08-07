@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java
+index 5f25655c9..dcdb0515d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java
+@@ -170,101 +170,101 @@ public class GenericWhitespaceCheck extends Check {
+         //   class IntEnumValueType<E extends Enum<E> & IntEnum>
+         //                                          ^
+         //   should be whitespace if followed by & -+
+         //
+         final int indexOfAmp = line.indexOf('&', after);
+         if (indexOfAmp >= 0
+             && whitespaceBetween(after, indexOfAmp, line)) {
+             if (indexOfAmp - after == 0) {
+                 log(ast.getLineNo(), after, WS_NOT_PRECEDED, "&");
+             }
+             else if (indexOfAmp - after != 1) {
+                 log(ast.getLineNo(), after, WS_FOLLOWED, ">");
+             }
+         }
+         else if (line.charAt(after) == ' ') {
+             log(ast.getLineNo(), after, WS_FOLLOWED, ">");
+         }
+     }
+ 
+     /**
+      * process Single-generic
+      * @param ast token
+      * @param line line content
+      * @param after position after
+      */
+     private void processSingleGeneric(DetailAST ast, String line, int after) {
+         final char charAfter = line.charAt(after);
+ 
+         // Need to handle a number of cases. First is:
+         //    Collections.<Object>emptySet();
+         //                        ^
+         //                        +--- whitespace not allowed
+         if (isGenericBeforeMethod(ast)) {
+             if (Character.isWhitespace(charAfter)) {
+                 log(ast.getLineNo(), after, WS_FOLLOWED, ">");
+             }
+         }
+         else if (!Character.isWhitespace(charAfter)
+             && charAfter != '(' && charAfter != ')'
+             && charAfter != ',' && charAfter != '['
+             && charAfter != '.' && charAfter != ':') {
+             log(ast.getLineNo(), after, WS_ILLEGAL_FOLLOW, ">");
+         }
+     }
+ 
+     /**
+      * is generic before method reference
+      * @param ast ast
+      * @return true if generic before a method ref
+      */
+-    private boolean isGenericBeforeMethod(DetailAST ast) {
++    private static boolean isGenericBeforeMethod(DetailAST ast) {
+         return ast.getParent().getType() == TokenTypes.TYPE_ARGUMENTS
+                 && ast.getParent().getParent().getType()
+                     == TokenTypes.DOT
+                 && ast.getParent().getParent().getParent().getType()
+                     == TokenTypes.METHOD_CALL
+                 || isAfterMethodReference(ast);
+     }
+ 
+     /**
+      * Checks if current generic end ('>') is located after
+      * {@link TokenTypes#METHOD_REF method reference operator}.
+      * @param genericEnd {@link TokenTypes#GENERIC_END}
+      * @return true if '>' follows after method reference.
+      */
+     private static boolean isAfterMethodReference(DetailAST genericEnd) {
+         return genericEnd.getParent().getParent().getType() == TokenTypes.METHOD_REF;
+     }
+ 
+     /**
+      * Checks the token for the start of Generics.
+      * @param ast the token to check
+      */
+     private void processStart(DetailAST ast) {
+         final String line = getLine(ast.getLineNo() - 1);
+         final int before = ast.getColumnNo() - 1;
+         final int after = ast.getColumnNo() + 1;
+ 
+         // Need to handle two cases as in:
+         //
+         //   public static <T> Callable<T> callable(Runnable task, T result)
+         //                 ^           ^
+         //      ws reqd ---+           +--- whitespace NOT required
+         //
+         if (before >= 0) {
+             // Detect if the first case
+             final DetailAST parent = ast.getParent();
+             final DetailAST grandparent = parent.getParent();
+             if (TokenTypes.TYPE_PARAMETERS == parent.getType()
+                 && (TokenTypes.CTOR_DEF == grandparent.getType()
+                     || TokenTypes.METHOD_DEF == grandparent.getType())) {
+                 // Require whitespace
+                 if (!Character.isWhitespace(line.charAt(before))) {
+                     log(ast.getLineNo(), before, WS_NOT_PRECEDED, "<");
+                 }
+             }
+             // Whitespace not required
+             else if (Character.isWhitespace(line.charAt(before))
+                 && !Utils.whitespaceBefore(before, line)) {
+                 log(ast.getLineNo(), before, WS_PRECEDED, "<");
+             }

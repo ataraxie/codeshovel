@@ -1,0 +1,107 @@
+diff --git a/android/guava/src/com/google/common/collect/ArrayTable.java b/android/guava/src/com/google/common/collect/ArrayTable.java
+index d63e548f9..992ec9463 100644
+--- a/android/guava/src/com/google/common/collect/ArrayTable.java
++++ b/android/guava/src/com/google/common/collect/ArrayTable.java
+@@ -50,101 +50,101 @@ import javax.annotation.Nullable;
+  * clear} methods are not supported by the table or its views. The {@link
+  * #erase} and {@link #eraseAll} methods may be used instead.
+  *
+  * <p>The ordering of the row and column keys provided when the table is
+  * constructed determines the iteration ordering across rows and columns in the
+  * table's views. None of the view iterators support {@link Iterator#remove}.
+  * If the table is modified after an iterator is created, the iterator remains
+  * valid.
+  *
+  * <p>This class requires less memory than the {@link HashBasedTable} and {@link
+  * TreeBasedTable} implementations, except when the table is sparse.
+  *
+  * <p>Null row keys or column keys are not permitted.
+  *
+  * <p>This class provides methods involving the underlying array structure,
+  * where the array indices correspond to the position of a row or column in the
+  * lists of allowed keys and values. See the {@link #at}, {@link #set}, {@link
+  * #toArray}, {@link #rowKeyList}, and {@link #columnKeyList} methods for more
+  * details.
+  *
+  * <p>Note that this implementation is not synchronized. If multiple threads
+  * access the same cell of an {@code ArrayTable} concurrently and one of the
+  * threads modifies its value, there is no guarantee that the new value will be
+  * fully visible to the other threads. To guarantee that modifications are
+  * visible, synchronize access to the table. Unlike other {@code Table}
+  * implementations, synchronization is unnecessary between a thread that writes
+  * to one cell and a thread that reads from another.
+  *
+  * <p>See the Guava User Guide article on <a href=
+  * "https://github.com/google/guava/wiki/NewCollectionTypesExplained#table">
+  * {@code Table}</a>.
+  *
+  * @author Jared Levy
+  * @since 10.0
+  */
+ @Beta
+ @GwtCompatible(emulated = true)
+ public final class ArrayTable<R, C, V> extends AbstractTable<R, C, V> implements Serializable {
+ 
+   /**
+    * Creates an empty {@code ArrayTable}.
+    *
+    * @param rowKeys row keys that may be stored in the generated table
+    * @param columnKeys column keys that may be stored in the generated table
+    * @throws NullPointerException if any of the provided keys is null
+    * @throws IllegalArgumentException if {@code rowKeys} or {@code columnKeys}
+    *     contains duplicates or is empty
+    */
+   public static <R, C, V> ArrayTable<R, C, V> create(
+       Iterable<? extends R> rowKeys, Iterable<? extends C> columnKeys) {
+-    return new ArrayTable<R, C, V>(rowKeys, columnKeys);
++    return new ArrayTable<>(rowKeys, columnKeys);
+   }
+ 
+   /*
+    * TODO(jlevy): Add factory methods taking an Enum class, instead of an
+    * iterable, to specify the allowed row keys and/or column keys. Note that
+    * custom serialization logic is needed to support different enum sizes during
+    * serialization and deserialization.
+    */
+ 
+   /**
+    * Creates an {@code ArrayTable} with the mappings in the provided table.
+    *
+    * <p>If {@code table} includes a mapping with row key {@code r} and a
+    * separate mapping with column key {@code c}, the returned table contains a
+    * mapping with row key {@code r} and column key {@code c}. If that row key /
+    * column key pair in not in {@code table}, the pair maps to {@code null} in
+    * the generated table.
+    *
+    * <p>The returned table allows subsequent {@code put} calls with the row keys
+    * in {@code table.rowKeySet()} and the column keys in {@code
+    * table.columnKeySet()}. Calling {@link #put} with other keys leads to an
+    * {@code IllegalArgumentException}.
+    *
+    * <p>The ordering of {@code table.rowKeySet()} and {@code
+    * table.columnKeySet()} determines the row and column iteration ordering of
+    * the returned table.
+    *
+    * @throws NullPointerException if {@code table} has a null key
+    * @throws IllegalArgumentException if the provided table is empty
+    */
+   public static <R, C, V> ArrayTable<R, C, V> create(Table<R, C, V> table) {
+     return (table instanceof ArrayTable<?, ?, ?>)
+         ? new ArrayTable<R, C, V>((ArrayTable<R, C, V>) table)
+         : new ArrayTable<R, C, V>(table);
+   }
+ 
+   private final ImmutableList<R> rowList;
+   private final ImmutableList<C> columnList;
+ 
+   // TODO(jlevy): Add getters returning rowKeyToIndex and columnKeyToIndex?
+   private final ImmutableMap<R, Integer> rowKeyToIndex;
+   private final ImmutableMap<C, Integer> columnKeyToIndex;
+   private final V[][] array;
+ 
+   private ArrayTable(Iterable<? extends R> rowKeys, Iterable<? extends C> columnKeys) {
+     this.rowList = ImmutableList.copyOf(rowKeys);
+     this.columnList = ImmutableList.copyOf(columnKeys);
+     checkArgument(!rowList.isEmpty());
+     checkArgument(!columnList.isEmpty());
+ 

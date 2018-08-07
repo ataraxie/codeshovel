@@ -1,0 +1,69 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenTextCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenTextCheck.java
+index 5313c4446..06bcdd673 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenTextCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenTextCheck.java
+@@ -32,63 +32,63 @@ import com.puppycrawl.tools.checkstyle.checks.GenericIllegalRegexpCheck;
+  * <p> An example of how to configure the check to forbid String literals
+  * containing <code>"a href"</code> is:
+  * </p>
+  * <pre>
+  * &lt;module name="IllegalTokenText"&gt;
+  *     &lt;property name="tokens" value="STRING_LITERAL"/&gt;
+  *     &lt;property name="format" value="a href"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * <p> An example of how to configure the check to forbid leading zeros in an
+  * integer literal, other than zero and a hex literal is:
+  * </p>
+  * <pre>
+  * &lt;module name="IllegalTokenText"&gt;
+  *     &lt;property name="tokens" value="NUM_INT,NUM_LONG"/&gt;
+  *     &lt;property name="format" value="^0[^lx]"/&gt;
+  *     &lt;property name="ignoreCase" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  */
+ public class IllegalTokenTextCheck
+     extends GenericIllegalRegexpCheck
+ {
+     /**  @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void beginTree(DetailAST aRootAST)
+     {
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getAcceptableTokens()
+     {
+         // Any tokens set by property 'tokens' are acceptable
+         final Set tokenNames = getTokenNames();
+         final int[] result = new int[tokenNames.size()];
+         int i = 0;
+         final Iterator it = tokenNames.iterator();
+         while (it.hasNext()) {
+             final String name = (String) it.next();
+             result[i] = TokenTypes.getTokenId(name);
+             i++;
+         }
+         return result;
+     }
+     /**
+      * @see com.puppycrawl.tools.checkstyle.api.Check
+      */
+     public void visitToken(DetailAST aAST)
+     {
+         final String text = aAST.getText();
+-        if (getRegexp().match(text)) {
++        if (getRegexp().matcher(text).find()) {
+             String message = getMessage();
+             if ("".equals(message)) {
+                 message = "illegal.token.text";
+             }
+             log(
+                 aAST.getLineNo(),
+                 aAST.getColumnNo(),
+                 message,
+                 getFormat());
+         }
+     }
+ }

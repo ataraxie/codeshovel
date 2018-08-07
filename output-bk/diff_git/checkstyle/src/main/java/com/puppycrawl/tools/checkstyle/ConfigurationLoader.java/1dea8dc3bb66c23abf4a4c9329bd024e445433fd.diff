@@ -1,0 +1,220 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java b/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+index 8740a6f17..eccf2192a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+@@ -1,106 +1,104 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle;
+ 
+ import java.io.IOException;
+ import java.io.InputStream;
+ import java.net.URI;
+ import java.util.ArrayDeque;
+ import java.util.ArrayList;
++import java.util.Arrays;
+ import java.util.Deque;
+ import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
++import java.util.Optional;
+ 
+ import javax.xml.parsers.ParserConfigurationException;
+ 
+-import org.apache.commons.logging.Log;
+-import org.apache.commons.logging.LogFactory;
+ import org.xml.sax.Attributes;
+ import org.xml.sax.InputSource;
+ import org.xml.sax.SAXException;
+ import org.xml.sax.SAXParseException;
+ 
+ import com.puppycrawl.tools.checkstyle.api.AbstractLoader;
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
+ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * Loads a configuration from a standard configuration XML file.
+  *
+  * @author Oliver Burn
+  */
+ public final class ConfigurationLoader {
+-    /** Logger for ConfigurationLoader. */
+-    private static final Log LOG = LogFactory.getLog(ConfigurationLoader.class);
+ 
+     /** The public ID for version 1_0 of the configuration dtd. */
+     private static final String DTD_PUBLIC_ID_1_0 =
+         "-//Puppy Crawl//DTD Check Configuration 1.0//EN";
+ 
+     /** The resource for version 1_0 of the configuration dtd. */
+     private static final String DTD_RESOURCE_NAME_1_0 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_0.dtd";
+ 
+     /** The public ID for version 1_1 of the configuration dtd. */
+     private static final String DTD_PUBLIC_ID_1_1 =
+         "-//Puppy Crawl//DTD Check Configuration 1.1//EN";
+ 
+     /** The resource for version 1_1 of the configuration dtd. */
+     private static final String DTD_RESOURCE_NAME_1_1 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_1.dtd";
+ 
+     /** The public ID for version 1_2 of the configuration dtd. */
+     private static final String DTD_PUBLIC_ID_1_2 =
+         "-//Puppy Crawl//DTD Check Configuration 1.2//EN";
+ 
+     /** The resource for version 1_2 of the configuration dtd. */
+     private static final String DTD_RESOURCE_NAME_1_2 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_2.dtd";
+ 
+     /** The public ID for version 1_3 of the configuration dtd. */
+     private static final String DTD_PUBLIC_ID_1_3 =
+         "-//Puppy Crawl//DTD Check Configuration 1.3//EN";
+ 
+     /** The resource for version 1_3 of the configuration dtd. */
+     private static final String DTD_RESOURCE_NAME_1_3 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_3.dtd";
+ 
+     /** Prefix for the exception when unable to parse resource. */
+     private static final String UNABLE_TO_PARSE_EXCEPTION_PREFIX = "unable to parse"
+             + " configuration stream";
+ 
+     /** Dollar sign literal. */
+     private static final char DOLLAR_SIGN = '$';
+ 
+     /** The SAX document handler. */
+     private final InternalLoader saxHandler;
+ 
+     /** Property resolver. **/
+     private final PropertyResolver overridePropsResolver;
+     /** The loaded configurations. **/
+     private final Deque<DefaultConfiguration> configStack = new ArrayDeque<>();
+ 
+     /** Flags if modules with the severity 'ignore' should be omitted. */
+     private final boolean omitIgnoredModules;
+@@ -419,81 +417,97 @@ public final class ConfigurationLoader {
+ 
+                 if (configuration == null) {
+                     configuration = conf;
+                 }
+ 
+                 //add configuration to it's parent
+                 if (!configStack.isEmpty()) {
+                     final DefaultConfiguration top =
+                         configStack.peek();
+                     top.addChild(conf);
+                 }
+ 
+                 configStack.push(conf);
+             }
+             else if (qName.equals(PROPERTY)) {
+                 //extract value and name
+                 final String value;
+                 try {
+                     value = replaceProperties(attributes.getValue(VALUE),
+                         overridePropsResolver, attributes.getValue(DEFAULT));
+                 }
+                 catch (final CheckstyleException ex) {
+                     throw new SAXException(ex);
+                 }
+                 final String name = attributes.getValue(NAME);
+ 
+                 //add to attributes of configuration
+                 final DefaultConfiguration top =
+                     configStack.peek();
+                 top.addAttribute(name, value);
+             }
+             else if (qName.equals(MESSAGE)) {
+                 //extract key and value
+                 final String key = attributes.getValue(KEY);
+                 final String value = attributes.getValue(VALUE);
+ 
+                 //add to messages of configuration
+                 final DefaultConfiguration top = configStack.peek();
+                 top.addMessage(key, value);
+             }
+             else {
+                 if (!qName.equals(METADATA)) {
+                     throw new IllegalStateException("Unknown name:" + qName + ".");
+                 }
+             }
+         }
+ 
+         @Override
+         public void endElement(String uri,
+                                String localName,
+-                               String qName) {
++                               String qName) throws SAXException {
+             if (qName.equals(MODULE)) {
+ 
+                 final Configuration recentModule =
+                     configStack.pop();
+ 
+-                // remove modules with severity ignore if these modules should
+-                // be omitted
++                // get severity attribute if it exists
+                 SeverityLevel level = null;
+-                try {
+-                    final String severity = recentModule.getAttribute(SEVERITY);
+-                    level = SeverityLevel.getInstance(severity);
+-                }
+-                catch (final CheckstyleException ex) {
+-                    LOG.debug("Severity not set, ignoring exception", ex);
++                if (containsAttribute(recentModule, SEVERITY)) {
++                    try {
++                        final String severity = recentModule.getAttribute(SEVERITY);
++                        level = SeverityLevel.getInstance(severity);
++                    }
++                    catch (final CheckstyleException ex) {
++                        throw new SAXException(
++                                "Problem during accessing '" + SEVERITY + "' attribute for "
++                                        + recentModule.getName(), ex);
++                    }
+                 }
+ 
+                 // omit this module if these should be omitted and the module
+                 // has the severity 'ignore'
+                 final boolean omitModule = omitIgnoredModules
+                     && level == SeverityLevel.IGNORE;
+ 
+                 if (omitModule && !configStack.isEmpty()) {
+                     final DefaultConfiguration parentModule =
+                         configStack.peek();
+                     parentModule.removeChild(recentModule);
+                 }
+             }
+         }
++
++        /**
++         * Util method to recheck attribute in module.
++         * @param module module to check
++         * @param attributeName name of attribute in module to find
++         * @return true if attribute is present in module
++         */
++        private boolean containsAttribute(Configuration module, String attributeName) {
++            final String[] names = module.getAttributeNames();
++            final Optional<String> result = Arrays.stream(names)
++                    .filter(name -> name.equals(attributeName)).findFirst();
++            return result.isPresent();
++        }
+     }
+ }

@@ -1,0 +1,149 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "FileLengthCheck.java",
+  "functionName": "processFiltered",
+  "functionId": "processFiltered___file-File__fileText-FileText",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/FileLengthCheck.java",
+  "functionStartLine": 74,
+  "functionEndLine": 78,
+  "changeHistory": [
+    "0c2abadbb7f2887f31011157d62edf40bea131c3",
+    "82979737c4201b4913ea30b9c9431e71783d1c02",
+    "0aec69c702a43a0219a7cc1e3d0c2a21d8d871f0",
+    "0dc48c7c567555a1efe8fb9cbf7ba1812034a5f2",
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "fc8a5ae78cffc8f6d5951a72fc722c52dedc1d04",
+    "ec6582beb1c026f1c3a9477d318d723e1caacb4a",
+    "4b209708c6823dabedb3ba74bbfa92fe638f11be"
+  ],
+  "changeHistoryShort": {
+    "0c2abadbb7f2887f31011157d62edf40bea131c3": "Ybodychange",
+    "82979737c4201b4913ea30b9c9431e71783d1c02": "Ymultichange(Yparameterchange,Ybodychange)",
+    "0aec69c702a43a0219a7cc1e3d0c2a21d8d871f0": "Ybodychange",
+    "0dc48c7c567555a1efe8fb9cbf7ba1812034a5f2": "Ybodychange",
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "fc8a5ae78cffc8f6d5951a72fc722c52dedc1d04": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ymodifierchange,Ybodychange)",
+    "ec6582beb1c026f1c3a9477d318d723e1caacb4a": "Yfilerename",
+    "4b209708c6823dabedb3ba74bbfa92fe638f11be": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0c2abadbb7f2887f31011157d62edf40bea131c3": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4641: Avoid usage of getLines method from FileText\n",
+      "commitDate": 1499716651000,
+      "commitName": "0c2abadbb7f2887f31011157d62edf40bea131c3",
+      "commitAuthor": "Timur",
+      "commitDateOld": 1499372568000,
+      "commitNameOld": "82979737c4201b4913ea30b9c9431e71783d1c02",
+      "commitAuthorOld": "Timur",
+      "daysBetweenCommits": 3.98,
+      "commitsBetweenForRepo": 46,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,5 @@\n     protected void processFiltered(File file, FileText fileText) {\n-        final List\u003cString\u003e lines \u003d fileText.getLines();\n-        if (lines.size() \u003e max) {\n-            log(1, MSG_KEY, lines.size(), max);\n+        if (fileText.size() \u003e max) {\n+            log(1, MSG_KEY, fileText.size(), max);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "82979737c4201b4913ea30b9c9431e71783d1c02": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #3034: FileText should not extends AbstractList\n",
+      "commitDate": 1499372568000,
+      "commitName": "82979737c4201b4913ea30b9c9431e71783d1c02",
+      "commitAuthor": "Timur",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "0aec69c702a43a0219a7cc1e3d0c2a21d8d871f0": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix suspicious getters and setters. #1555\n\nFixes `SuspiciousGetterSetter` inspection violations.\n\nDescription:\n\u003eReports suspicious getter or setter methods. A getter or setter is suspicious if it accesses a different field than would be expected by its name.\n",
+      "commitDate": 1440498848000,
+      "commitName": "0aec69c702a43a0219a7cc1e3d0c2a21d8d871f0",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439886329000,
+      "commitNameOld": "54ccca18635a4aeea90da86d30590df498f76b08",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 7.09,
+      "commitsBetweenForRepo": 105,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n     protected void processFiltered(File file, List\u003cString\u003e lines) {\n-        if (lines.size() \u003e maxFileLength) {\n-            log(1, MSG_KEY, lines.size(), maxFileLength);\n+        if (lines.size() \u003e max) {\n+            log(1, MSG_KEY, lines.size(), max);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "0dc48c7c567555a1efe8fb9cbf7ba1812034a5f2": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactored UTs, sizes package, issue #537\n",
+      "commitDate": 1424437365000,
+      "commitName": "0dc48c7c567555a1efe8fb9cbf7ba1812034a5f2",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.66,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     protected void processFiltered(File file, List\u003cString\u003e lines)\n     {\n         if (lines.size() \u003e maxFileLength) {\n-            log(1, \"maxLen.file\", lines.size(), maxFileLength);\n+            log(1, MSG_KEY, lines.size(), maxFileLength);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, sizes, #512\n",
+      "commitDate": 1421677310000,
+      "commitName": "3fec4a92e39afc5b68b03c5fd023cb8d13408385",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "fc8a5ae78cffc8f6d5951a72fc722c52dedc1d04": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Changed FileLength  check to be a FileSetCheck.\n",
+      "commitDate": 1226232747000,
+      "commitName": "fc8a5ae78cffc8f6d5951a72fc722c52dedc1d04",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Yreturntypechange",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "ec6582beb1c026f1c3a9477d318d723e1caacb4a": {
+      "type": "Yfilerename",
+      "commitMessage": "Refactored the Sizes checks\n",
+      "commitDate": 1054729409000,
+      "commitName": "ec6582beb1c026f1c3a9477d318d723e1caacb4a",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1054727729000,
+      "commitNameOld": "2e8126e99047befc39560342981b0b8e7cabea21",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.02,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "4b209708c6823dabedb3ba74bbfa92fe638f11be": {
+      "type": "Yintroduced",
+      "commitMessage": "ported FileLengthCheck and TabCharacterCheck, tests still missing\n",
+      "commitDate": 1033246543000,
+      "commitName": "4b209708c6823dabedb3ba74bbfa92fe638f11be",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

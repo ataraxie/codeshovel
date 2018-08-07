@@ -1,0 +1,90 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbstractSuperCheck.java",
+  "functionName": "hasArguments",
+  "functionId": "hasArguments___methodCallDotAst-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java",
+  "functionStartLine": 139,
+  "functionEndLine": 142,
+  "changeHistory": [
+    "b550547318c087850b5f2c6d9d21a1bb0d45ed8d",
+    "af52963008a800390e8b356db5811886572f37a3",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+    "cc6caa71f55ae33ad8c018e3b7915e6b93b7de81"
+  ],
+  "changeHistoryShort": {
+    "b550547318c087850b5f2c6d9d21a1bb0d45ed8d": "Ymodifierchange",
+    "af52963008a800390e8b356db5811886572f37a3": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Ybodychange)",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a": "Ybodychange",
+    "cc6caa71f55ae33ad8c018e3b7915e6b93b7de81": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b550547318c087850b5f2c6d9d21a1bb0d45ed8d": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make method static. #1555\n\nFixes `MethodMayBeStatic` inspection violation.\n\nDescription:\n\u003eReports any methods which may safely be made static. A method may be static if it is not synchronized, it does not reference any of its class\u0027 non static methods and non static fields and is not overridden in a sub class.\n",
+      "commitDate": 1439010845000,
+      "commitName": "b550547318c087850b5f2c6d9d21a1bb0d45ed8d",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1438566538000,
+      "commitNameOld": "6fd60de0a4363b806d37d4129d9a430f8f3dee6b",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 5.14,
+      "commitsBetweenForRepo": 48,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n-    private boolean hasArguments(DetailAST methodCallDotAst) {\n+    private static boolean hasArguments(DetailAST methodCallDotAst) {\n         final DetailAST argumentsList \u003d methodCallDotAst.getNextSibling();\n         return argumentsList.getChildCount() \u003e 0;\n     }\n\\ No newline at end of file\n"
+    },
+    "af52963008a800390e8b356db5811886572f37a3": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Issue #1293: Refactoring of AbstractSuperCheck. Code coverage has been improved.\n",
+      "commitDate": 1438460103000,
+      "commitName": "af52963008a800390e8b356db5811886572f37a3",
+      "commitAuthor": "Baratali Izmailov",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436323201000,
+      "commitNameOld": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 10.09,
+      "commitsBetweenForRepo": 97,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    private boolean isZeroParameters(DetailAST parent) {\n+    private static boolean isZeroParameters(DetailAST parent) {\n \n         final DetailAST args \u003d parent.getNextSibling();\n         return args \u003d\u003d null || args.getType() !\u003d TokenTypes.ELIST || args.getChildCount() !\u003d 0;\n     }\n\\ No newline at end of file\n"
+    },
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a": {
+      "type": "Ybodychange",
+      "commitMessage": "Update Maven PMD Plugin to 3.5. #1300\n",
+      "commitDate": 1436323201000,
+      "commitName": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1434261690000,
+      "commitNameOld": "cc6caa71f55ae33ad8c018e3b7915e6b93b7de81",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 23.86,
+      "commitsBetweenForRepo": 154,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,5 @@\n     private boolean isZeroParameters(DetailAST parent) {\n \n         final DetailAST args \u003d parent.getNextSibling();\n-        if (args \u003d\u003d null || args.getType() !\u003d TokenTypes.ELIST) {\n-            return true;\n-        }\n-        if (args.getChildCount() !\u003d 0) {\n-            return true;\n-        }\n-        return false;\n+        return args \u003d\u003d null || args.getType() !\u003d TokenTypes.ELIST || args.getChildCount() !\u003d 0;\n     }\n\\ No newline at end of file\n"
+    },
+    "cc6caa71f55ae33ad8c018e3b7915e6b93b7de81": {
+      "type": "Yintroduced",
+      "commitMessage": "AbstractSuperCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434261690000,
+      "commitName": "cc6caa71f55ae33ad8c018e3b7915e6b93b7de81",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

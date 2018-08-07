@@ -1,0 +1,109 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+index 99355df29..f974d8a1d 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+@@ -30,101 +30,103 @@ import java.util.Set;
+ /**
+  * Abstract class that endeavours to maintain type information for the Java
+  * file being checked. It provides helper methods for performing type
+  * information functions.
+  *
+  * @author Oliver Burn
+  * @version 1.0
+  */
+ public abstract class AbstractTypeAwareCheck
+     extends Check
+ {
+     /** imports details **/
+     private Set mImports = new HashSet();
+ 
+     /** full identifier for package of the method **/
+     private FullIdent mPackageFullIdent;
+ 
+     /** Name of current class. */
+     private String mCurrentClass;
+ 
+     /** <code>ClassResolver</code> instance for current tree. */
+     private ClassResolver mClassResolver;
+ 
+     /**
+      * Called to process an AST when visiting it.
+      * @param aAST the AST to process. Guaranteed to not be PACKAGE_DEF or
+      *             IMPORT tokens.
+      */
+     protected abstract void processAST(DetailAST aAST);
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void beginTree(DetailAST aRootAST)
+     {
+         mPackageFullIdent = FullIdent.createFullIdent(null);
+         mImports.clear();
+         // add java.lang.* since it's always imported
+         mImports.add("java.lang.*");
+         mClassResolver = null;
+         mCurrentClass = "";
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public final void visitToken(DetailAST aAST)
+     {
+         if (aAST.getType() == TokenTypes.PACKAGE_DEF) {
+             processPackage(aAST);
+         }
+         else if (aAST.getType() == TokenTypes.IMPORT) {
+             processImport(aAST);
+         }
+-        else if (aAST.getType() == TokenTypes.CLASS_DEF) {
++        else if (aAST.getType() == TokenTypes.CLASS_DEF
++                 || aAST.getType() == TokenTypes.ENUM_DEF)
++        {
+             processClass(aAST);
+         }
+         else {
+             processAST(aAST);
+         }
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public final void leaveToken(DetailAST aAST)
+     {
+         if (aAST.getType() == TokenTypes.CLASS_DEF) {
+             int dotIdx = mCurrentClass.lastIndexOf(".");
+             if (dotIdx == -1) {
+                 mCurrentClass = "";
+             }
+             else {
+                 mCurrentClass = mCurrentClass.substring(0, dotIdx);
+             }
+         }
+     }
+ 
+     /**
+      * Calculate if one type name is a shortname for another type name.
+      * @param aShortName a shorthand, such as <code>IOException</code>
+      * @param aFullName a full name, such as <code>java.io.IOException</code>
+      * @return true iff aShortName represents the same type as aFullName
+      */
+     protected boolean isShortName(String aShortName, String aFullName)
+     {
+         if (aShortName.length() >= aFullName.length()) {
+             return false;
+         }
+ 
+         final String base = Utils.baseClassname(aFullName);
+         if (aShortName.length() >= aFullName.length()
+                 || !base.equals(aShortName))
+         {
+             return false;
+         }
+ 
+         // check fully qualified import
+         if (mImports.contains(aFullName)) {
+             return true;
+         }
+ 
+         // check .* import
+         final int endIndex = aFullName.length() - base.length() - 1;
+         final String packageName = aFullName.substring(0, endIndex);
+         final String starImport = packageName + ".*";
+         if (mImports.contains(starImport)) {

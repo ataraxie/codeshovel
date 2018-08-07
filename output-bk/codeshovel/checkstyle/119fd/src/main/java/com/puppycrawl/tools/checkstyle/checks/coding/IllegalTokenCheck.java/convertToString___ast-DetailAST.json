@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IllegalTokenCheck.java",
+  "functionName": "convertToString",
+  "functionId": "convertToString___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenCheck.java",
+  "functionStartLine": 104,
+  "functionEndLine": 119,
+  "changeHistory": [
+    "3bd3a52280388520c64ec813dd1e4ffb3a0063a2",
+    "67e6b46e9fa424fbd0a2fba611a3a59b30727692",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "dd47d21b9eb0d254016315790db9be5db2c28ea4"
+  ],
+  "changeHistoryShort": {
+    "3bd3a52280388520c64ec813dd1e4ffb3a0063a2": "Ybodychange",
+    "67e6b46e9fa424fbd0a2fba611a3a59b30727692": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "dd47d21b9eb0d254016315790db9be5db2c28ea4": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bd3a52280388520c64ec813dd1e4ffb3a0063a2": {
+      "type": "Ybodychange",
+      "commitMessage": "spelling: fix some typos in code/javadoc/comments\n",
+      "commitDate": 1491395871000,
+      "commitName": "3bd3a52280388520c64ec813dd1e4ffb3a0063a2",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 67.92,
+      "commitsBetweenForRepo": 207,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     private static String convertToString(DetailAST ast) {\n         final String tokenText;\n         switch (ast.getType()) {\n             case TokenTypes.LABELED_STAT:\n                 tokenText \u003d ast.getFirstChild().getText() + ast.getText();\n                 break;\n-            // multyline tokens need to become singlelined\n+            // multiline tokens need to become singlelined\n             case TokenTypes.COMMENT_CONTENT:\n-                tokenText \u003d JavadocUtils.excapeAllControlChars(ast.getText());\n+                tokenText \u003d JavadocUtils.escapeAllControlChars(ast.getText());\n                 break;\n             default:\n                 tokenText \u003d ast.getText();\n                 break;\n         }\n         return tokenText;\n     }\n\\ No newline at end of file\n"
+    },
+    "67e6b46e9fa424fbd0a2fba611a3a59b30727692": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3153: IllegalTokenTextCheck and IllegalTokenCheck does not work with COMMENT_CONTENT token\n",
+      "commitDate": 1462710857000,
+      "commitName": "67e6b46e9fa424fbd0a2fba611a3a59b30727692",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1458221995000,
+      "commitNameOld": "167dd96d8ca503a472bf003f187191d6b0ce586c",
+      "commitAuthorOld": "Rasmus Kaj",
+      "daysBetweenCommits": 51.95,
+      "commitsBetweenForRepo": 102,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,16 @@\n     private static String convertToString(DetailAST ast) {\n         final String tokenText;\n-        if (ast.getType() \u003d\u003d TokenTypes.LABELED_STAT) {\n-            tokenText \u003d ast.getFirstChild().getText() + ast.getText();\n-        }\n-        else {\n-            tokenText \u003d ast.getText();\n+        switch (ast.getType()) {\n+            case TokenTypes.LABELED_STAT:\n+                tokenText \u003d ast.getFirstChild().getText() + ast.getText();\n+                break;\n+            // multyline tokens need to become singlelined\n+            case TokenTypes.COMMENT_CONTENT:\n+                tokenText \u003d JavadocUtils.excapeAllControlChars(ast.getText());\n+                break;\n+            default:\n+                tokenText \u003d ast.getText();\n+                break;\n         }\n         return tokenText;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1433436050000,
+      "commitNameOld": "dd47d21b9eb0d254016315790db9be5db2c28ea4",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 43.51,
+      "commitsBetweenForRepo": 305,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n-    private String convertToString(DetailAST ast) {\n+    private static String convertToString(DetailAST ast) {\n         final String tokenText;\n         if (ast.getType() \u003d\u003d TokenTypes.LABELED_STAT) {\n             tokenText \u003d ast.getFirstChild().getText() + ast.getText();\n         }\n         else {\n             tokenText \u003d ast.getText();\n         }\n         return tokenText;\n     }\n\\ No newline at end of file\n"
+    },
+    "dd47d21b9eb0d254016315790db9be5db2c28ea4": {
+      "type": "Yintroduced",
+      "commitMessage": "Detect only label as illegal token in IllegalToken check. #1162\n\nSwitch and postfix increment/decrement are no longer considered as illegal by default.\n",
+      "commitDate": 1433436050000,
+      "commitName": "dd47d21b9eb0d254016315790db9be5db2c28ea4",
+      "commitAuthor": "Michal Kordas"
+    }
+  }
+}

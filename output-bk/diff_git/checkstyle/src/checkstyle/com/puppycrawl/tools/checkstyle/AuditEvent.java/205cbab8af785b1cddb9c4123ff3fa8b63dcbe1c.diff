@@ -1,0 +1,67 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/AuditEvent.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/AuditEvent.java
+index 2e43c7467..5f7882295 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/AuditEvent.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/AuditEvent.java
+@@ -74,56 +74,62 @@ public final class AuditEvent
+      */
+     public AuditEvent(Object aSrc, String aFileName, LocalizedMessage aMessage)
+     {
+         super(aSrc);
+         mFileName = aFileName;
+         mMessage = aMessage;
+     }
+ 
+     /**
+      * @return the file name currently being audited or null if there is
+      * no relation to a file.
+      */
+     public String getFileName()
+     {
+         return mFileName;
+     }
+ 
+     /**
+      * return the line number on the source file where the event occurred.
+      * This may be 0 if there is no relation to a file content.
+      * @return an integer representing the line number in the file source code.
+      */
+     public int getLine()
+     {
+         return mMessage.getLineNo();
+     }
+ 
+     /**
+      * return the message associated to the event.
+      * @return the event message
+      */
+     public String getMessage()
+     {
+         return mMessage.getMessage();
+     }
+ 
+     /** @return the column associated with the message **/
+     public int getColumn()
+     {
+         return mMessage.getColumnNo();
+     }
+ 
+     /** @return the audit event severity level **/
+     public SeverityLevel getSeverityLevel()
+     {
+         return (mMessage == null)
+             ? SeverityLevel.INFO
+             : mMessage.getSeverityLevel();
+     }
+ 
++    /** @return the name of the source for the message **/
++    public String getSourceName()
++    {
++        return mMessage.getSourceName();
++    }
++    
+     /** @return the localized message **/
+     public LocalizedMessage getLocalizedMessage()
+     {
+         return mMessage;
+     }
+ }

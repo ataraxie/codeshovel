@@ -1,0 +1,142 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IndentationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IndentationCheck.java
+index 9f1d45c03..00c7e19ac 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IndentationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IndentationCheck.java
+@@ -80,112 +80,137 @@ import com.puppycrawl.tools.checkstyle.api.FastStack;
+  * </p>
+  *
+  * <p>
+  *  While an ExpressionHandler checks the indentation level of its own
+  *  AST, it typically also checks surrounding ASTs.  For instance, a
+  *  while loop handler checks the while loop as well as the braces
+  *  and immediate children.
+  * </p>
+  * <pre>
+  *   - handler class -to-&gt; ID mapping kept in Map
+  *   - parent passed in during construction
+  *   - suggest child indent level
+  *   - allows for some tokens to be on same line (ie inner classes OBJBLOCK)
+  *     and not increase indentation level
+  *   - looked at using double dispatch for suggestedChildLevel(), but it
+  *     doesn't seem worthwhile, at least now
+  *   - both tabs and spaces are considered whitespace in front of the line...
+  *     tabs are converted to spaces
+  *   - block parents with parens -- for, while, if, etc... -- are checked that
+  *     they match the level of the parent
+  * </pre>
+  *
+  * @author jrichard
+  * @author o_sukhodolsky
+  * @author Maikel Steneker
+  * @author maxvetrenko
+  */
+ public class IndentationCheck extends Check
+ {
+     /** Default indentation amount - based on Sun */
+     private static final int DEFAULT_INDENTATION = 4;
+ 
+     /** how many tabs or spaces to use */
+     private int mBasicOffset = DEFAULT_INDENTATION;
+ 
+     /** how much to indent a case label */
+     private int mCaseIndentationAmount = DEFAULT_INDENTATION;
+ 
+     /** how far brace should be indented when on next line */
+     private int mBraceAdjustment;
+ 
+     /** how far throws should be indented when on next line */
+     private int mThrowsIndentationAmount = DEFAULT_INDENTATION;
+ 
+     /** how much to indent an array initialization when on next line */
+     private int mArrayInitIndentationAmount = DEFAULT_INDENTATION;
+ 
+     /** how far continuation line should be indented when line-wrapping is present */
+     private int mLineWrappingIndentation = DEFAULT_INDENTATION;
+ 
++    /**
++     * Force strict condition in line wrapping case. If value is true, line wrap indent
++     * have to be same as lineWrappingIndentation parameter, if value is false, line wrap indent
++     * have to be not less than mLineWrappingIndentation parameter.
++     */
++    private boolean mForceStrictCondition;
++
+     /** handlers currently in use */
+     private final FastStack<ExpressionHandler> mHandlers =
+         FastStack.newInstance();
+ 
+     /** factory from which handlers are distributed */
+     private final HandlerFactory mHandlerFactory = new HandlerFactory();
+ 
+     /** Creates a new instance of IndentationCheck. */
+     public IndentationCheck()
+     {
+     }
+ 
++    /**
++     * Get forcing strict condition.
++     * @return mForceStrictCondition value.
++     */
++    public boolean getForceStrictCondition()
++    {
++        return mForceStrictCondition;
++    }
++
++    /**
++     * Set forcing strict condition.
++     * @param aValue user's value of mForceStrictCondition.
++     */
++    public void setForceStrictCondition(boolean aValue)
++    {
++        mForceStrictCondition = aValue;
++    }
++
+     /**
+      * Set the basic offset.
+      *
+      * @param aBasicOffset   the number of tabs or spaces to indent
+      */
+     public void setBasicOffset(int aBasicOffset)
+     {
+         mBasicOffset = aBasicOffset;
+     }
+ 
+     /**
+      * Get the basic offset.
+      *
+      * @return the number of tabs or spaces to indent
+      */
+     public int getBasicOffset()
+     {
+         return mBasicOffset;
+     }
+ 
+     /**
+      * Adjusts brace indentation (positive offset).
+      *
+      * @param aAdjustmentAmount   the brace offset
+      */
+     public void setBraceAdjustment(int aAdjustmentAmount)
+     {
+         mBraceAdjustment = aAdjustmentAmount;
+     }
+ 
+     /**
+      * Get the brace adjustment amount.
+      *
+      * @return the positive offset to adjust braces
+      */
+     public int getBraceAdjustement()
+     {
+         return mBraceAdjustment;
+     }
+ 
+     /**
+      * Set the case indentation level.
+      *
+      * @param aAmount   the case indentation level
+      */
+     public void setCaseIndent(int aAmount)
+     {
+         mCaseIndentationAmount = aAmount;
+     }
+ 

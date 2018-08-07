@@ -1,0 +1,76 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AuditEvent.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AuditEvent.java
+index 039ff0ac3..d3532c8e9 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AuditEvent.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AuditEvent.java
+@@ -72,62 +72,71 @@ public final class AuditEvent
+      */
+     public AuditEvent(Object aSrc, String aFileName, LocalizedMessage aMessage)
+     {
+         super(aSrc);
+         mFileName = aFileName;
+         mMessage = aMessage;
+     }
+ 
+     /**
+      * @return the file name currently being audited or null if there is
+      * no relation to a file.
+      */
+     public String getFileName()
+     {
+         return mFileName;
+     }
+ 
+     /**
+      * return the line number on the source file where the event occurred.
+      * This may be 0 if there is no relation to a file content.
+      * @return an integer representing the line number in the file source code.
+      */
+     public int getLine()
+     {
+         return mMessage.getLineNo();
+     }
+ 
+     /**
+      * return the message associated to the event.
+      * @return the event message
+      */
+     public String getMessage()
+     {
+         return mMessage.getMessage();
+     }
+ 
+     /** @return the column associated with the message **/
+     public int getColumn()
+     {
+         return mMessage.getColumnNo();
+     }
+ 
+     /** @return the audit event severity level **/
+     public SeverityLevel getSeverityLevel()
+     {
+         return (mMessage == null)
+             ? SeverityLevel.INFO
+             : mMessage.getSeverityLevel();
+     }
+ 
++    /**
++     * @return the identifier of the module that generated the event. Can return
++     *         null.
++     */
++    public String getModuleId()
++    {
++        return mMessage.getModuleId();
++    }
++
+     /** @return the name of the source for the message **/
+     public String getSourceName()
+     {
+         return mMessage.getSourceName();
+     }
+ 
+     /** @return the localized message **/
+     public LocalizedMessage getLocalizedMessage()
+     {
+         return mMessage;
+     }
+ }

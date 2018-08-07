@@ -1,0 +1,72 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IfHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IfHandler.java
+index 04f11aa87..97eea3969 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IfHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IfHandler.java
+@@ -47,66 +47,63 @@ public class IfHandler extends BlockParentHandler {
+             return getIndent();
+         }
+         return super.getSuggestedChildIndent(child);
+     }
+ 
+     @Override
+     protected IndentLevel getIndentImpl() {
+         if (isIfAfterElse()) {
+             return getParent().getIndent();
+         }
+         return super.getIndentImpl();
+     }
+ 
+     /**
+      * Determines if this 'if' statement is part of an 'else' clause
+      * and on the same line.
+      *
+      * @return true if this 'if' is part of an 'else', false otherwise
+      */
+     private boolean isIfAfterElse() {
+         // check if there is an 'else' and an 'if' on the same line
+         final DetailAST parent = getMainAst().getParent();
+         return parent.getType() == TokenTypes.LITERAL_ELSE
+             && parent.getLineNo() == getMainAst().getLineNo();
+     }
+ 
+     @Override
+     protected void checkTopLevelToken() {
+         if (isIfAfterElse()) {
+             return;
+         }
+ 
+         super.checkTopLevelToken();
+     }
+ 
+     /**
+      * Check the indentation of the conditional expression.
+      */
+     private void checkCondExpr() {
+         final DetailAST condAst = getMainAst().findFirstToken(TokenTypes.LPAREN)
+             .getNextSibling();
+         final IndentLevel expected =
+             new IndentLevel(getIndent(), getBasicOffset());
+         checkExpressionSubtree(condAst, expected, false, false);
+     }
+ 
+     @Override
+     public void checkIndentation() {
+         super.checkIndentation();
+         checkCondExpr();
+-        final LineWrappingHandler lineWrap =
+-            new LineWrappingHandler(getIndentCheck(), getMainAst(),
+-                    getIfStatementRightParen(getMainAst()));
+-        lineWrap.checkIndentation();
++        checkWrappingIndentation(getMainAst(), getIfStatementRightParen(getMainAst()));
+     }
+ 
+     /**
+      * Returns right parenthesis of if statement.
+      * @param literalIfAst
+      *          literal-if ast node(TokenTypes.LITERAL_IF)
+      * @return right parenthesis of if statement.
+      */
+     private static DetailAST getIfStatementRightParen(DetailAST literalIfAst) {
+         return literalIfAst.findFirstToken(TokenTypes.RPAREN);
+     }
+ }

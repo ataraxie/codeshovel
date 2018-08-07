@@ -1,0 +1,66 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/NPathComplexityCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/NPathComplexityCheck.java
+index dadc21b98..aff35858e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/NPathComplexityCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/NPathComplexityCheck.java
+@@ -113,51 +113,61 @@ public final class NPathComplexityCheck extends AbstractComplexityCheck {
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.LITERAL_WHILE:
+             case TokenTypes.LITERAL_DO:
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.LITERAL_IF:
+             case TokenTypes.QUESTION:
+             case TokenTypes.LITERAL_TRY:
+             case TokenTypes.LITERAL_SWITCH:
+                 leaveMultiplyingConditional();
+                 break;
+             case TokenTypes.LITERAL_ELSE:
+             case TokenTypes.LITERAL_CATCH:
+             case TokenTypes.LITERAL_CASE:
+                 leaveAddingConditional();
+                 break;
+             default:
+                 super.leaveToken(ast);
+         }
+     }
+ 
+     @Override
+     protected String getMessageID() {
+         return MSG_KEY;
+     }
+ 
+     /** Visits else, catch or case. */
+     private void visitAddingConditional() {
+         pushValue();
+     }
+ 
+     /** Leaves else, catch or case. */
+     private void leaveAddingConditional() {
+         setCurrentValue(
+                 getCurrentValue().subtract(BigInteger.ONE).add(popValue()));
+     }
+ 
+     /** Visits while, do, for, if, try, ? (in ?::) or switch. */
+     private void visitMultiplyingConditional() {
+         pushValue();
+     }
+ 
+     /** Leaves while, do, for, if, try, ? (in ?::) or switch. */
+     private void leaveMultiplyingConditional() {
+         setCurrentValue(
+                 getCurrentValue().add(BigInteger.ONE).multiply(popValue()));
+     }
++
++    @Override
++    protected void visitTokenHook(DetailAST ast) {
++        // no code
++    }
++
++    @Override
++    protected void leaveTokenHook(DetailAST ast) {
++        // no code
++    }
+ }

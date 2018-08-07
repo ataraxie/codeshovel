@@ -1,0 +1,80 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntMatchFilter.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntMatchFilter.java
+index ce6bd36e5..87bd20c9e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntMatchFilter.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntMatchFilter.java
+@@ -1,69 +1,69 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2007  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.filters;
+ 
+ /**
+  * This filter accepts a matching Integer.
+  * @author Rick Giles
+  */
+ class IntMatchFilter implements IntFilter
+ {
+     /** the matching Integer */
+-    private Integer mMatchValue;
++    private final int mMatchValue;
+ 
+     /**
+      * Constructs a MatchFilter for an int.
+      * @param aMatchValue the matching int.
+      */
+     public IntMatchFilter(int aMatchValue)
+     {
+-        mMatchValue = new Integer(aMatchValue);
++        mMatchValue = aMatchValue;
+     }
+ 
+     /** {@inheritDoc} */
+-    public boolean accept(Integer aInt)
++    public boolean accept(int aInt)
+     {
+-        return mMatchValue.equals(aInt);
++        return mMatchValue == aInt;
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public String toString()
+     {
+         return "IntMatchFilter[" + mMatchValue + "]";
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int hashCode()
+     {
+-        return mMatchValue.hashCode();
++        return Integer.valueOf(mMatchValue).hashCode();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public boolean equals(Object aObject)
+     {
+         if (aObject instanceof IntMatchFilter) {
+             final IntMatchFilter other = (IntMatchFilter) aObject;
+-            return (this.mMatchValue).equals(other.mMatchValue);
++            return this.mMatchValue == other.mMatchValue;
+         }
+         return false;
+     }
+ }

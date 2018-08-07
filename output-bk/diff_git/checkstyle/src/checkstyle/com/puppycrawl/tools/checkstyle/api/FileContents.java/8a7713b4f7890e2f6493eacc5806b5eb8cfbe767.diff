@@ -1,0 +1,64 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FileContents.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FileContents.java
+index 261fabb99..a5b4af1c9 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FileContents.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FileContents.java
+@@ -230,51 +230,59 @@ public final class FileContents implements CommentListener
+ 
+     /**
+      * Checks if the specified line is a single-line comment without code.
+      * @param aLineNo  the line number to check
+      * @return if the specified line consists of only a single line comment
+      *         without code.
+      **/
+     public boolean lineIsComment(int aLineNo)
+     {
+         return MATCH_SINGLELINE_COMMENT.matcher(mLines[aLineNo]).matches();
+     }
+ 
+     /**
+      * Checks if the specified position intersects with a comment.
+      * @param aStartLineNo the starting line number
+      * @param aStartColNo the starting column number
+      * @param aEndLineNo the ending line number
+      * @param aEndColNo the ending column number
+      * @return true if the positions intersects with a comment.
+      **/
+     public boolean hasIntersectionWithComment(int aStartLineNo,
+             int aStartColNo, int aEndLineNo, int aEndColNo)
+     {
+         // Check C comments (all comments should be checked)
+         final Collection<List<TextBlock>> values = mCComments.values();
+         for (List<TextBlock> row : values) {
+             for (TextBlock comment : row) {
+                 if (comment.intersects(aStartLineNo, aStartColNo, aEndLineNo,
+                         aEndColNo))
+                 {
+                     return true;
+                 }
+             }
+         }
+ 
+         // Check CPP comments (line searching is possible)
+         for (int lineNumber = aStartLineNo; lineNumber <= aEndLineNo;
+              lineNumber++)
+         {
+             final TextBlock comment = mCPlusPlusComments.get(lineNumber);
+             if ((comment != null)
+                     && comment.intersects(aStartLineNo, aStartColNo,
+                             aEndLineNo, aEndColNo))
+             {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
++    /**
++     * Checks if the current file is a package-info.java file.
++     * @return true if the package file.
++     */
++    public boolean inPackageInfo()
++    {
++        return this.getFilename().endsWith("package-info.java");
++    }
+ }

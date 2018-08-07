@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ScopeUtils.java",
+  "functionName": "isLocalVariableDef",
+  "functionId": "isLocalVariableDef___node-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/utils/ScopeUtils.java",
+  "functionStartLine": 243,
+  "functionEndLine": 263,
+  "changeHistory": [
+    "a6d025d0c72777b4dab2a5f8b27638b644a4fa72",
+    "3813f1ccbf157f463c041ccfc462399845ddff6e",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+    "0da1e4d980420f6abb465af441e5ced254698273",
+    "6fd60de0a4363b806d37d4129d9a430f8f3dee6b",
+    "650272adb91f9a0b06a8be4efd7b94037bed4d6e",
+    "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d"
+  ],
+  "changeHistoryShort": {
+    "a6d025d0c72777b4dab2a5f8b27638b644a4fa72": "Ybodychange",
+    "3813f1ccbf157f463c041ccfc462399845ddff6e": "Ymultichange(Yparameterchange,Ybodychange)",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": "Yfilerename",
+    "0da1e4d980420f6abb465af441e5ced254698273": "Ybodychange",
+    "6fd60de0a4363b806d37d4129d9a430f8f3dee6b": "Ybodychange",
+    "650272adb91f9a0b06a8be4efd7b94037bed4d6e": "Ybodychange",
+    "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "a6d025d0c72777b4dab2a5f8b27638b644a4fa72": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3348: add validation of try with resources to the LocalFinalVariableName check\n",
+      "commitDate": 1494193777000,
+      "commitName": "a6d025d0c72777b4dab2a5f8b27638b644a4fa72",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 100.3,
+      "commitsBetweenForRepo": 386,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,21 @@\n     public static boolean isLocalVariableDef(DetailAST node) {\n         boolean localVariableDef \u003d false;\n         // variable declaration?\n         if (node.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n             final DetailAST parent \u003d node.getParent();\n             final int type \u003d parent.getType();\n             localVariableDef \u003d type \u003d\u003d TokenTypes.SLIST\n                     || type \u003d\u003d TokenTypes.FOR_INIT\n                     || type \u003d\u003d TokenTypes.FOR_EACH_CLAUSE;\n         }\n         // catch parameter?\n         if (node.getType() \u003d\u003d TokenTypes.PARAMETER_DEF) {\n             final DetailAST parent \u003d node.getParent();\n             localVariableDef \u003d parent.getType() \u003d\u003d TokenTypes.LITERAL_CATCH;\n         }\n+\n+        if (node.getType() \u003d\u003d TokenTypes.RESOURCE) {\n+            localVariableDef \u003d true;\n+        }\n         return localVariableDef;\n     }\n\\ No newline at end of file\n"
+    },
+    "3813f1ccbf157f463c041ccfc462399845ddff6e": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #2604: Update regexp pattern for ParameterName\n",
+      "commitDate": 1449446571000,
+      "commitName": "3813f1ccbf157f463c041ccfc462399845ddff6e",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": {
+      "type": "Yfilerename",
+      "commitMessage": "Utils classes have been moved to utils package. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440637702000,
+      "commitNameOld": "f6113bb56d695719a8803274effb3596cb82120f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.46,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "0da1e4d980420f6abb465af441e5ced254698273": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: ReturnCount violations (partial fix)\n",
+      "commitDate": 1440047165000,
+      "commitName": "0da1e4d980420f6abb465af441e5ced254698273",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439886329000,
+      "commitNameOld": "54ccca18635a4aeea90da86d30590df498f76b08",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 1.86,
+      "commitsBetweenForRepo": 44,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,17 @@\n     public static boolean isLocalVariableDef(DetailAST aAST) {\n+        boolean localVariableDef \u003d false;\n         // variable declaration?\n         if (aAST.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n             final DetailAST parent \u003d aAST.getParent();\n             final int type \u003d parent.getType();\n-            return type \u003d\u003d TokenTypes.SLIST\n+            localVariableDef \u003d type \u003d\u003d TokenTypes.SLIST\n                     || type \u003d\u003d TokenTypes.FOR_INIT\n                     || type \u003d\u003d TokenTypes.FOR_EACH_CLAUSE;\n         }\n         // catch parameter?\n         if (aAST.getType() \u003d\u003d TokenTypes.PARAMETER_DEF) {\n             final DetailAST parent \u003d aAST.getParent();\n-            return parent.getType() \u003d\u003d TokenTypes.LITERAL_CATCH;\n+            localVariableDef \u003d parent.getType() \u003d\u003d TokenTypes.LITERAL_CATCH;\n         }\n-        return false;\n+        return localVariableDef;\n     }\n\\ No newline at end of file\n"
+    },
+    "6fd60de0a4363b806d37d4129d9a430f8f3dee6b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove confusing else branches. #1538\n",
+      "commitDate": 1438566538000,
+      "commitName": "6fd60de0a4363b806d37d4129d9a430f8f3dee6b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 10.83,
+      "commitsBetweenForRepo": 122,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     public static boolean isLocalVariableDef(DetailAST aAST) {\n         // variable declaration?\n         if (aAST.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n             final DetailAST parent \u003d aAST.getParent();\n             final int type \u003d parent.getType();\n             return type \u003d\u003d TokenTypes.SLIST\n                     || type \u003d\u003d TokenTypes.FOR_INIT\n                     || type \u003d\u003d TokenTypes.FOR_EACH_CLAUSE;\n         }\n         // catch parameter?\n-        else if (aAST.getType() \u003d\u003d TokenTypes.PARAMETER_DEF) {\n+        if (aAST.getType() \u003d\u003d TokenTypes.PARAMETER_DEF) {\n             final DetailAST parent \u003d aAST.getParent();\n             return parent.getType() \u003d\u003d TokenTypes.LITERAL_CATCH;\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "650272adb91f9a0b06a8be4efd7b94037bed4d6e": {
+      "type": "Ybodychange",
+      "commitMessage": "UTs coverage for ScopeUtils become 100%. #1294\n",
+      "commitDate": 1436743648000,
+      "commitName": "650272adb91f9a0b06a8be4efd7b94037bed4d6e",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 56.49,
+      "commitsBetweenForRepo": 335,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,16 @@\n     public static boolean isLocalVariableDef(DetailAST aAST) {\n         // variable declaration?\n         if (aAST.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n             final DetailAST parent \u003d aAST.getParent();\n-            if (parent !\u003d null) {\n-                final int type \u003d parent.getType();\n-                return type \u003d\u003d TokenTypes.SLIST\n+            final int type \u003d parent.getType();\n+            return type \u003d\u003d TokenTypes.SLIST\n                     || type \u003d\u003d TokenTypes.FOR_INIT\n                     || type \u003d\u003d TokenTypes.FOR_EACH_CLAUSE;\n-            }\n         }\n         // catch parameter?\n         else if (aAST.getType() \u003d\u003d TokenTypes.PARAMETER_DEF) {\n             final DetailAST parent \u003d aAST.getParent();\n-            if (parent !\u003d null) {\n-                return parent.getType() \u003d\u003d TokenTypes.LITERAL_CATCH;\n-            }\n+            return parent.getType() \u003d\u003d TokenTypes.LITERAL_CATCH;\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d": {
+      "type": "Yintroduced",
+      "commitMessage": "Util classes should be moved out of api package. Issue #1057\n",
+      "commitDate": 1430869230000,
+      "commitName": "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

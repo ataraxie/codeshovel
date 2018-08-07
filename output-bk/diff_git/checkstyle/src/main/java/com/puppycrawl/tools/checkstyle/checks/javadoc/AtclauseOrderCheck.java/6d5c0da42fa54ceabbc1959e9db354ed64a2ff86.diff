@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AtclauseOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AtclauseOrderCheck.java
+index 173ff21ef..6ed9f39a5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AtclauseOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AtclauseOrderCheck.java
+@@ -74,101 +74,101 @@ public class AtclauseOrderCheck extends AbstractJavadocCheck {
+      */
+     private static final String[] DEFAULT_ORDER = {
+         "@author", "@version",
+         "@param", "@return",
+         "@throws", "@exception",
+         "@see", "@since",
+         "@serial", "@serialField",
+         "@serialData", "@deprecated",
+     };
+ 
+     /**
+      * Default target of checking atclauses.
+      */
+     private List<Integer> target = Arrays.asList(
+         TokenTypes.CLASS_DEF,
+         TokenTypes.INTERFACE_DEF,
+         TokenTypes.ENUM_DEF,
+         TokenTypes.METHOD_DEF,
+         TokenTypes.CTOR_DEF,
+         TokenTypes.VARIABLE_DEF
+     );
+ 
+     /**
+      * Order of atclauses.
+      */
+     private List<String> tagOrder = Arrays.asList(DEFAULT_ORDER);
+ 
+     /**
+      * Sets custom targets.
+      * @param target user's targets.
+      */
+     public void setTarget(String target) {
+         final List<Integer> customTarget = new ArrayList<>();
+         final String[] sTarget = target.split(",");
+         for (String aSTarget : sTarget) {
+             customTarget.add(Utils.getTokenId(aSTarget.trim()));
+         }
+         this.target = customTarget;
+     }
+ 
+     /**
+      * Sets custom order of atclauses.
+      * @param order user's order.
+      */
+     public void setTagOrder(String order) {
+         final List<String> customOrder = new ArrayList<>();
+         final String[] sOrder = order.split(",");
+         for (String aSOrder : sOrder) {
+             customOrder.add(aSOrder.trim());
+         }
+-        this.tagOrder = customOrder;
++        tagOrder = customOrder;
+     }
+ 
+     @Override
+     public int[] getDefaultJavadocTokens() {
+         return new int[] {
+             JavadocTokenTypes.JAVADOC,
+         };
+     }
+ 
+     @Override
+     public void visitJavadocToken(DetailNode ast) {
+         final int parentType = getParentType(getBlockCommentAst());
+ 
+         if (target.contains(parentType)) {
+             checkOrderInTagSection(ast);
+         }
+     }
+ 
+     /**
+      * Checks order of atclauses in tag section node.
+      * @param javadoc Javadoc root node.
+      */
+     private void checkOrderInTagSection(DetailNode javadoc) {
+         int indexOrderOfPreviousTag = 0;
+         int indexOrderOfCurrentTag;
+ 
+         for (DetailNode node : javadoc.getChildren()) {
+             if (node.getType() == JavadocTokenTypes.JAVADOC_TAG) {
+                 final String tagText = JavadocUtils.getFirstChild(node).getText();
+                 indexOrderOfCurrentTag = tagOrder.indexOf(tagText);
+ 
+                 if (tagOrder.contains(tagText)
+                         && indexOrderOfCurrentTag < indexOrderOfPreviousTag) {
+                     log(node.getLineNumber(), MSG_KEY, tagOrder.toString());
+                 }
+                 indexOrderOfPreviousTag = indexOrderOfCurrentTag;
+             }
+         }
+     }
+ 
+     /**
+      * Returns type of parent node.
+      * @param commentBlock child node.
+      * @return parent type.
+      */
+     private static int getParentType(DetailAST commentBlock) {
+         int type = 0;
+         final DetailAST parentNode = commentBlock.getParent();
+         if (parentNode != null) {
+             type = parentNode.getType();

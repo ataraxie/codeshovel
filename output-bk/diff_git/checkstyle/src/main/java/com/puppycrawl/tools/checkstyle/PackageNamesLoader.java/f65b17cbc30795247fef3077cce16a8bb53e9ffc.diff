@@ -1,0 +1,82 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java b/src/main/java/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
+index 414550b94..bd31da08b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
+@@ -102,71 +102,71 @@ public final class PackageNamesLoader
+         while (iterator.hasNext()) {
+             final String subPackage = iterator.next();
+             buf.append(subPackage);
+             if (!CommonUtils.endsWithChar(subPackage, '.')) {
+                 buf.append('.');
+             }
+         }
+         return buf.toString();
+     }
+ 
+     @Override
+     public void endElement(String uri,
+                            String localName,
+                            String qName) {
+         if (PACKAGE_ELEMENT_NAME.equals(qName)) {
+ 
+             packageNames.add(getPackageName());
+             packageStack.pop();
+         }
+     }
+ 
+     /**
+      * Returns the set of package names, compiled from all
+      * checkstyle_packages.xml files found on the given class loaders
+      * classpath.
+      * @param classLoader the class loader for loading the
+      *          checkstyle_packages.xml files.
+      * @return the set of package names.
+      * @throws CheckstyleException if an error occurs.
+      */
+     public static Set<String> getPackageNames(ClassLoader classLoader)
+             throws CheckstyleException {
+ 
+         final Set<String> result;
+         try {
+             //create the loader outside the loop to prevent PackageObjectFactory
+             //being created anew for each file
+             final PackageNamesLoader namesLoader = new PackageNamesLoader();
+ 
+             final Enumeration<URL> packageFiles = classLoader.getResources(CHECKSTYLE_PACKAGES);
+ 
+             while (packageFiles.hasMoreElements()) {
+                 final URL packageFile = packageFiles.nextElement();
+                 InputStream stream = null;
+ 
+                 try {
+                     stream = new BufferedInputStream(packageFile.openStream());
+                     final InputSource source = new InputSource(stream);
+                     namesLoader.parseInputSource(source);
+                 }
+-                catch (IOException e) {
+-                    throw new CheckstyleException("unable to open " + packageFile, e);
++                catch (IOException ex) {
++                    throw new CheckstyleException("unable to open " + packageFile, ex);
+                 }
+                 finally {
+                     Closeables.closeQuietly(stream);
+                 }
+             }
+ 
+             result = namesLoader.packageNames;
+ 
+         }
+-        catch (IOException e) {
+-            throw new CheckstyleException("unable to get package file resources", e);
++        catch (IOException ex) {
++            throw new CheckstyleException("unable to get package file resources", ex);
+         }
+-        catch (ParserConfigurationException | SAXException e) {
+-            throw new CheckstyleException("unable to open one of package files", e);
++        catch (ParserConfigurationException | SAXException ex) {
++            throw new CheckstyleException("unable to open one of package files", ex);
+         }
+ 
+         return result;
+     }
+ }

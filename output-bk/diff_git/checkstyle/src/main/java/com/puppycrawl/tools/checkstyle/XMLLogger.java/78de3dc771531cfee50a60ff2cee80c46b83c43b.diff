@@ -1,0 +1,116 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java b/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
+index b88a8ccda..5a7e823f9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
+@@ -95,103 +95,108 @@ public class XMLLogger
+         final OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+         writer = new PrintWriter(osw);
+     }
+ 
+     @Override
+     public void auditStarted(AuditEvent event) {
+         writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+ 
+         final ResourceBundle compilationProperties =
+             ResourceBundle.getBundle("checkstylecompilation", Locale.ROOT);
+         final String version =
+             compilationProperties.getString("checkstyle.compile.version");
+ 
+         writer.println("<checkstyle version=\"" + version + "\">");
+     }
+ 
+     @Override
+     public void auditFinished(AuditEvent event) {
+         writer.println("</checkstyle>");
+         if (closeStream) {
+             writer.close();
+         }
+         else {
+             writer.flush();
+         }
+     }
+ 
+     @Override
+     public void fileStarted(AuditEvent event) {
+         writer.println("<file name=\"" + encode(event.getFileName()) + "\">");
+     }
+ 
+     @Override
+     public void fileFinished(AuditEvent event) {
+         writer.println("</file>");
+     }
+ 
+     @Override
+     public void addError(AuditEvent event) {
+         if (event.getSeverityLevel() != SeverityLevel.IGNORE) {
+             writer.print("<error" + " line=\"" + event.getLine() + "\"");
+             if (event.getColumn() > 0) {
+                 writer.print(" column=\"" + event.getColumn() + "\"");
+             }
+             writer.print(" severity=\""
+                 + event.getSeverityLevel().getName()
+                 + "\"");
+             writer.print(" message=\""
+                 + encode(event.getMessage())
+                 + "\"");
+-            writer.println(" source=\""
+-                + encode(event.getSourceName())
+-                + "\"/>");
++            writer.print(" source=\"");
++            if (event.getModuleId() == null) {
++                writer.print(encode(event.getSourceName()));
++            }
++            else {
++                writer.print(encode(event.getModuleId()));
++            }
++            writer.println("\"/>");
+         }
+     }
+ 
+     @Override
+     public void addException(AuditEvent event, Throwable throwable) {
+         final StringWriter stringWriter = new StringWriter();
+         final PrintWriter printer = new PrintWriter(stringWriter);
+         printer.println("<exception>");
+         printer.println("<![CDATA[");
+         throwable.printStackTrace(printer);
+         printer.println("]]>");
+         printer.println("</exception>");
+         writer.println(encode(stringWriter.toString()));
+     }
+ 
+     /**
+      * Escape &lt;, &gt; &amp; &#39; and &quot; as their entities.
+      * @param value the value to escape.
+      * @return the escaped value if necessary.
+      */
+     public static String encode(String value) {
+         final StringBuilder sb = new StringBuilder(256);
+         for (int i = 0; i < value.length(); i++) {
+             final char chr = value.charAt(i);
+             switch (chr) {
+                 case '<':
+                     sb.append("&lt;");
+                     break;
+                 case '>':
+                     sb.append("&gt;");
+                     break;
+                 case '\'':
+                     sb.append("&apos;");
+                     break;
+                 case '\"':
+                     sb.append("&quot;");
+                     break;
+                 case '&':
+                     sb.append(encodeAmpersand(value, i));
+                     break;
+                 case '\r':
+                     break;
+                 case '\n':
+                     sb.append("&#10;");
+                     break;
+                 default:
+                     sb.append(chr);
+                     break;
+             }
+         }

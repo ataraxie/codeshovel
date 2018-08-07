@@ -1,0 +1,76 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/LineColumn.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/LineColumn.java
+index 23ea260cf..44b87774b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/LineColumn.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/LineColumn.java
+@@ -24,67 +24,67 @@ import java.util.Objects;
+ /**
+  * Immutable line and column numbers.
+  *
+  * @author Martin von Gagern
+  */
+ public class LineColumn implements Comparable<LineColumn> {
+ 
+     /** The one-based line number. */
+     private final int line;
+ 
+     /** The zero-based column number. */
+     private final int column;
+ 
+     /**
+      * Constructs a new pair of line and column numbers.
+      * @param line the one-based line number
+      * @param column the zero-based column number
+      */
+     public LineColumn(int line, int column) {
+         this.line = line;
+         this.column = column;
+     }
+ 
+     /**
+      * Gets the one-based line number.
+      * @return the one-based line number
+      */
+     public int getLine() {
+         return line;
+     }
+ 
+     /**
+      * Gets the zero-based column number.
+      * @return the zero-based column number
+      */
+     public int getColumn() {
+         return column;
+     }
+ 
+     @Override
+     public int compareTo(LineColumn lineColumn) {
+         if (line == lineColumn.line) {
+             return Integer.compare(column, lineColumn.column);
+         }
+         else {
+             return Integer.compare(line, lineColumn.line);
+         }
+     }
+ 
+     @Override
+-    public boolean equals(Object o) {
+-        if (this == o) {
++    public boolean equals(Object other) {
++        if (this == other) {
+             return true;
+         }
+-        if (o == null || getClass() != o.getClass()) {
++        if (other == null || getClass() != other.getClass()) {
+             return false;
+         }
+-        final LineColumn lineColumn = (LineColumn) o;
++        final LineColumn lineColumn = (LineColumn) other;
+         return Objects.equals(line, lineColumn.line)
+                 && Objects.equals(column, lineColumn.column);
+     }
+ 
+     @Override
+     public int hashCode() {
+         return Objects.hash(line, column);
+     }
+ }

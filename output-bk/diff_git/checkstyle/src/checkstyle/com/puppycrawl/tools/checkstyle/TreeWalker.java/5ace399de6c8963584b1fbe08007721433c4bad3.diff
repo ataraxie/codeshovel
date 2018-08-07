@@ -1,0 +1,150 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 6c8ac9c0d..f77b34bff 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -179,144 +179,142 @@ public final class TreeWalker
+     public void finishLocalSetup()
+     {
+         DefaultContext checkContext = new DefaultContext();
+         checkContext.add("classLoader", mClassLoader);
+         checkContext.add("messages", getMessageCollector());
+         checkContext.add("severity", getSeverity());
+         // TODO: hmmm.. this looks less than elegant
+         // we have just parsed the string,
+         // now we're recreating it only to parse it again a few moments later
+         checkContext.add("tabWidth", String.valueOf(mTabWidth));
+ 
+         mChildContext = checkContext;
+     }
+ 
+     /**
+      * Instantiates, configures and registers a Check that is specified
+      * in the provided configuration.
+      * @see com.puppycrawl.tools.checkstyle.api.AutomaticBean
+      */
+     public void setupChild(Configuration aChildConf)
+             throws CheckstyleException
+     {
+         // TODO: improve the error handing
+         final String name = aChildConf.getName();
+         final Object module = mModuleFactory.createModule(name);
+         if (!(module instanceof Check)) {
+             throw new CheckstyleException(
+                 "TreeWalker is not allowed as a parent of " + name);
+         }
+         final Check c = (Check) module;
+         c.contextualize(mChildContext);
+         c.configure(aChildConf);
+         c.init();
+ 
+         registerCheck(c);
+     }
+ 
+     /**
+      * Processes a specified file and reports all errors found.
+      * @param aFile the file to process
+      **/
+     private void process(File aFile)
+     {
+         // check if already checked and passed the file
+         final String fileName = aFile.getPath();
+         final long timestamp = aFile.lastModified();
+         if (mCache.alreadyChecked(fileName, timestamp)) {
+             return;
+         }
+ 
+-        getMessageCollector().reset();
+         try {
+             getMessageDispatcher().fireFileStarted(fileName);
+             final String[] lines = Utils.getLines(fileName);
+             final FileContents contents = new FileContents(fileName, lines);
+             final DetailAST rootAST = TreeWalker.parse(contents);
+             walk(rootAST, contents);
+         }
+         catch (FileNotFoundException fnfe) {
+             getMessageCollector().add(new LocalizedMessage(
+                 0, Defn.CHECKSTYLE_BUNDLE,
+                 "general.fileNotFound", null));
+         }
+         catch (IOException ioe) {
+             getMessageCollector().add(new LocalizedMessage(
+                 0, Defn.CHECKSTYLE_BUNDLE,
+                 "general.exception",
+                 new String[] {ioe.getMessage()}));
+         }
+         catch (RecognitionException re) {
+             getMessageCollector().add(new LocalizedMessage(
+                 0, Defn.CHECKSTYLE_BUNDLE,
+                 "general.exception",
+                 new String[] {re.getMessage()}));
+         }
+         catch (TokenStreamException te) {
+             getMessageCollector().add(new LocalizedMessage(
+                 0, Defn.CHECKSTYLE_BUNDLE,
+                 "general.exception",
+                 new String[] {te.getMessage()}));
+         }
+         catch (Throwable err) {
+             getMessageCollector().add(new LocalizedMessage(
+                 0, Defn.CHECKSTYLE_BUNDLE,
+                 "general.exception",
+                 new String[] {"" + err}));
+         }
+ 
+         if (getMessageCollector().size() == 0) {
+             mCache.checkedOk(fileName, timestamp);
+         }
+         else {
+-            getMessageDispatcher().fireErrors(
+-                fileName, getMessageCollector().getMessages());
++            fireErrors(fileName);
+         }
+ 
+         getMessageDispatcher().fireFileFinished(fileName);
+     }
+ 
+     /**
+      * Register a check for a given configuration.
+      * @param aCheck the check to register
+      * @throws CheckstyleException if an error occurs
+      */
+     private void registerCheck(Check aCheck)
+         throws CheckstyleException
+     {
+         int[] tokens = new int[] {}; //safety initialization
+         final Set checkTokens = aCheck.getTokenNames();
+         if (!checkTokens.isEmpty()) {
+             tokens = aCheck.getRequiredTokens();
+ 
+             //register configured tokens
+             final int acceptableTokens[] = aCheck.getAcceptableTokens();
+             Arrays.sort(acceptableTokens);
+             final Iterator it = checkTokens.iterator();
+             while (it.hasNext()) {
+                 final String token = (String) it.next();
+                 try {
+                     final int tokenId = TokenTypes.getTokenId(token);
+                     if (Arrays.binarySearch(acceptableTokens, tokenId) >= 0) {
+                         registerCheck(token, aCheck);
+                     }
+                     // TODO: else log warning
+                 }
+                 catch (IllegalArgumentException ex) {
+                     throw new CheckstyleException("illegal token \""
+                         + token + "\" in check " + aCheck, ex);
+                 }
+             }
+         }
+         else {
+             tokens = aCheck.getDefaultTokens();
+         }
+         for (int i = 0; i < tokens.length; i++) {
+             registerCheck(tokens[i], aCheck);
+         }
+         mAllChecks.add(aCheck);
+     }
+ 
+     /**
+      * Register a check for a specified token id.
+      * @param aTokenID the id of the token
+      * @param aCheck the check to register

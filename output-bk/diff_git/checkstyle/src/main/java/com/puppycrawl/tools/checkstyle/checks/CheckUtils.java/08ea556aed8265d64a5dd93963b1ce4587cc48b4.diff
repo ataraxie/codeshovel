@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java
+index 16a68e07b..3d1ae3662 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java
+@@ -104,101 +104,101 @@ public final class CheckUtils
+     private static boolean isElseWithCurlyBraces(DetailAST aAST)
+     {
+         return (aAST.getType() == TokenTypes.SLIST)
+             && (aAST.getChildCount() == 2)
+             && isElse(aAST.getParent());
+     }
+ 
+     /**
+      * Creates <code>FullIdent</code> for given type node.
+      * @param aTypeAST a type node.
+      * @return <code>FullIdent</code> for given type.
+      */
+     public static FullIdent createFullType(DetailAST aTypeAST)
+     {
+         final DetailAST arrayDeclAST =
+             aTypeAST.findFirstToken(TokenTypes.ARRAY_DECLARATOR);
+ 
+         return createFullTypeNoArrays(arrayDeclAST == null ? aTypeAST
+                                                            : arrayDeclAST);
+     }
+ 
+     /**
+      * @param aTypeAST a type node (no array)
+      * @return <code>FullIdent</code> for given type.
+      */
+     private static FullIdent createFullTypeNoArrays(DetailAST aTypeAST)
+     {
+         return FullIdent.createFullIdent(aTypeAST.getFirstChild());
+     }
+ 
+     // constants for parseDouble()
+     /** octal radix */
+     private static final int BASE_8 = 8;
+ 
+     /** decimal radix */
+     private static final int BASE_10 = 10;
+ 
+     /** hex radix */
+     private static final int BASE_16 = 16;
+ 
+     /**
+      * Returns the value represented by the specified string of the specified
+      * type. Returns 0 for types other than float, double, int, and long.
+      * @param aText the string to be parsed.
+      * @param aType the token type of the text. Should be a constant of
+      * {@link com.puppycrawl.tools.checkstyle.api.TokenTypes}.
+      * @return the double value represented by the string argument.
+      */
+     public static double parseDouble(String aText, int aType)
+     {
+-        String txt = aText;
++        String txt = aText.replaceAll("_", "");
+         double result = 0;
+         switch (aType) {
+         case TokenTypes.NUM_FLOAT:
+         case TokenTypes.NUM_DOUBLE:
+             result = Double.parseDouble(txt);
+             break;
+         case TokenTypes.NUM_INT:
+         case TokenTypes.NUM_LONG:
+             int radix = BASE_10;
+             if (txt.startsWith("0x") || txt.startsWith("0X")) {
+                 radix = BASE_16;
+                 txt = txt.substring(2);
+             }
+             else if (txt.charAt(0) == '0') {
+                 radix = BASE_8;
+                 txt = txt.substring(1);
+             }
+             if ((txt.endsWith("L")) || (txt.endsWith("l"))) {
+                 txt = txt.substring(0, txt.length() - 1);
+             }
+             if (txt.length() > 0) {
+                 if (aType == TokenTypes.NUM_INT) {
+                     result = parseInt(txt, radix);
+                 }
+                 else {
+                     result = parseLong(txt, radix);
+                 }
+             }
+             break;
+         default:
+             break;
+         }
+         return result;
+     }
+ 
+     /**
+      * Parses the string argument as a signed integer in the radix specified by
+      * the second argument. The characters in the string must all be digits of
+      * the specified radix. Handles negative values, which method
+      * java.lang.Integer.parseInt(String, int) does not.
+      * @param aText the String containing the integer representation to be
+      * parsed. Precondition: aText contains a parsable int.
+      * @param aRadix the radix to be used while parsing aText.
+      * @return the integer represented by the string argument in the specified
+      * radix.
+      */
+     public static int parseInt(String aText, int aRadix)
+     {
+         int result = 0;
+         final int max = aText.length();

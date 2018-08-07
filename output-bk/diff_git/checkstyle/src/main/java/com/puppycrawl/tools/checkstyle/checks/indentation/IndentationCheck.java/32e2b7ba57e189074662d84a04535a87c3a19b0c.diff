@@ -1,0 +1,112 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IndentationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IndentationCheck.java
+index e382c729e..f02bc35b6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IndentationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IndentationCheck.java
+@@ -253,104 +253,104 @@ public class IndentationCheck extends AbstractCheck {
+      */
+     public int getArrayInitIndent() {
+         return arrayInitIndent;
+     }
+ 
+     /**
+      * Get the array line-wrapping indentation level.
+      *
+      * @return the line-wrapping indentation level
+      */
+     public int getLineWrappingIndentation() {
+         return lineWrappingIndentation;
+     }
+ 
+     /**
+      * Set the line-wrapping indentation level.
+      *
+      * @param lineWrappingIndentation the line-wrapping indentation level
+      */
+     public void setLineWrappingIndentation(int lineWrappingIndentation) {
+         this.lineWrappingIndentation = lineWrappingIndentation;
+     }
+ 
+     /**
+      * Log an error message.
+      *
+      * @param line the line number where the error was found
+      * @param key the message that describes the error
+      * @param args the details of the message
+      *
+      * @see java.text.MessageFormat
+      */
+     public void indentationLog(int line, String key, Object... args) {
+         if (!incorrectIndentationLines.contains(line)) {
+             incorrectIndentationLines.add(line);
+             log(line, key, args);
+         }
+     }
+ 
+     /**
+      * Get the width of a tab.
+      *
+      * @return the width of a tab
+      */
+     public int getIndentationTabWidth() {
+         return getTabWidth();
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return getAcceptableTokens();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return handlerFactory.getHandledTypes();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return getAcceptableTokens();
++        return handlerFactory.getHandledTypes();
+     }
+ 
+     @Override
+     public void beginTree(DetailAST ast) {
+         handlerFactory.clearCreatedHandlers();
+         handlers.clear();
+         final PrimordialHandler primordialHandler = new PrimordialHandler(this);
+         handlers.push(primordialHandler);
+         primordialHandler.checkIndentation();
+         incorrectIndentationLines = new HashSet<>();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final AbstractExpressionHandler handler = handlerFactory.getHandler(this, ast,
+             handlers.peek());
+         handlers.push(handler);
+         handler.checkIndentation();
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         handlers.pop();
+     }
+ 
+     /**
+      * Accessor for the line wrapping handler.
+      *
+      * @return the line wrapping handler
+      */
+     public LineWrappingHandler getLineWrappingHandler() {
+         return lineWrappingHandler;
+     }
+ 
+     /**
+      * Accessor for the handler factory.
+      *
+      * @return the handler factory
+      */
+     public final HandlerFactory getHandlerFactory() {
+         return handlerFactory;
+     }
+ }

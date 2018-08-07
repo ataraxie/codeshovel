@@ -1,0 +1,192 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+index 5c41f0921..0408959fd 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+@@ -122,182 +122,182 @@ public class TranslationCheck extends AbstractFileSetCheck {
+ 
+     /**
+      * A key is pointing to the warning message text for wrong language code
+      * in "messages.properties" file.
+      */
+     private static final String WRONG_LANGUAGE_CODE_KEY = "translation.wrongLanguageCode";
+ 
+     /** Logger for TranslationCheck. */
+     private static final Log LOG = LogFactory.getLog(TranslationCheck.class);
+ 
+     /**
+      * Regexp string for default tranlsation files.
+      * For example, messages.properties.
+      */
+     private static final String DEFAULT_TRANSLATION_REGEXP = "^.+\\..+$";
+ 
+     /**
+      * Regexp pattern for bundles names wich end with language code, followed by country code and
+      * variant suffix. For example, messages_es_ES_UNIX.properties.
+      */
+     private static final Pattern LANGUAGE_COUNTRY_VARIANT_PATTERN =
+         CommonUtils.createPattern("^.+\\_[a-z]{2}\\_[A-Z]{2}\\_[A-Za-z]+\\..+$");
+     /**
+      * Regexp pattern for bundles names wich end with language code, followed by country code
+      * suffix. For example, messages_es_ES.properties.
+      */
+     private static final Pattern LANGUAGE_COUNTRY_PATTERN =
+         CommonUtils.createPattern("^.+\\_[a-z]{2}\\_[A-Z]{2}\\..+$");
+     /**
+      * Regexp pattern for bundles names wich end with language code suffix.
+      * For example, messages_es.properties.
+      */
+     private static final Pattern LANGUAGE_PATTERN =
+         CommonUtils.createPattern("^.+\\_[a-z]{2}\\..+$");
+ 
+     /** File name format for default translation. */
+     private static final String DEFAULT_TRANSLATION_FILE_NAME_FORMATTER = "%s.%s";
+     /** File name format with language code. */
+     private static final String FILE_NAME_WITH_LANGUAGE_CODE_FORMATTER = "%s_%s.%s";
+ 
+     /** Formatting string to form regexp to validate required tranlsations file names. */
+     private static final String REGEXP_FORMAT_TO_CHECK_REQUIRED_TRANSLATIONS =
+         "^%1$s\\_%2$s(\\_[A-Z]{2})?\\.%3$s$|^%1$s\\_%2$s\\_[A-Z]{2}\\_[A-Za-z]+\\.%3$s$";
+     /** Formatting string to form regexp to validate default tranlsations file names. */
+     private static final String REGEXP_FORMAT_TO_CHECK_DEFAULT_TRANSLATIONS = "^%s\\.%s$";
+ 
+     /** The files to process. */
+     private final Set<File> filesToProcess = new HashSet<>();
+ 
+     /** The base name regexp pattern. */
+-    private Pattern baseNamePattern;
++    private Pattern baseName;
+ 
+     /**
+      * Language codes of required translations for the check (de, pt, ja, etc).
+      */
+     private Set<String> requiredTranslations = new HashSet<>();
+ 
+     /**
+      * Creates a new {@code TranslationCheck} instance.
+      */
+     public TranslationCheck() {
+         setFileExtensions("properties");
+-        baseNamePattern = CommonUtils.createPattern("^messages.*$");
++        baseName = CommonUtils.createPattern("^messages.*$");
+     }
+ 
+     /**
+      * Sets the base name regexp pattern.
+      * @param baseName base name regexp.
+      */
+-    public void setBaseName(String baseName) {
+-        baseNamePattern = CommonUtils.createPattern(baseName);
++    public void setBaseName(Pattern baseName) {
++        this.baseName = baseName;
+     }
+ 
+     /**
+      * Sets language codes of required translations for the check.
+      * @param translationCodes a comma separated list of language codes.
+      */
+     public void setRequiredTranslations(String... translationCodes) {
+         requiredTranslations = Arrays.stream(translationCodes).collect(Collectors.toSet());
+         validateUserSpecifiedLanguageCodes(requiredTranslations);
+     }
+ 
+     /**
+      * Validates the correctness of user specififed language codes for the check.
+      * @param languageCodes user specified language codes for the check.
+      */
+     private void validateUserSpecifiedLanguageCodes(Set<String> languageCodes) {
+         for (String code : languageCodes) {
+             if (!isValidLanguageCode(code)) {
+                 final LocalizedMessage msg = new LocalizedMessage(0, TRANSLATION_BUNDLE,
+                         WRONG_LANGUAGE_CODE_KEY, new Object[] {code}, getId(), getClass(), null);
+                 final String exceptionMessage = String.format(Locale.ROOT,
+                         "%s [%s]", msg.getMessage(), TranslationCheck.class.getSimpleName());
+                 throw new IllegalArgumentException(exceptionMessage);
+             }
+         }
+     }
+ 
+     /**
+      * Checks whether user specified language code is correct (is contained in available locales).
+      * @param userSpecifiedLanguageCode user specified language code.
+      * @return true if user specified language code is correct.
+      */
+     private static boolean isValidLanguageCode(final String userSpecifiedLanguageCode) {
+         boolean valid = false;
+         final Locale[] locales = Locale.getAvailableLocales();
+         for (Locale locale : locales) {
+             if (userSpecifiedLanguageCode.equals(locale.toString())) {
+                 valid = true;
+                 break;
+             }
+         }
+         return valid;
+     }
+ 
+     @Override
+     public void beginProcessing(String charset) {
+         super.beginProcessing(charset);
+         filesToProcess.clear();
+     }
+ 
+     @Override
+     protected void processFiltered(File file, List<String> lines) {
+         // We just collecting files for processing at finishProcessing()
+         filesToProcess.add(file);
+     }
+ 
+     @Override
+     public void finishProcessing() {
+         super.finishProcessing();
+ 
+-        final Set<ResourceBundle> bundles = groupFilesIntoBundles(filesToProcess, baseNamePattern);
++        final Set<ResourceBundle> bundles = groupFilesIntoBundles(filesToProcess, baseName);
+         for (ResourceBundle currentBundle : bundles) {
+             checkExistenceOfDefaultTranslation(currentBundle);
+             checkExistenceOfRequiredTranslations(currentBundle);
+             checkTranslationKeys(currentBundle);
+         }
+     }
+ 
+     /**
+      * Checks an existence of default translation file in the resource bundle.
+      * @param bundle resource bundle.
+      */
+     private void checkExistenceOfDefaultTranslation(ResourceBundle bundle) {
+         final Optional<String> fileName = getMissingFileName(bundle, null);
+         if (fileName.isPresent()) {
+             logMissingTranslation(bundle.getPath(), fileName.get());
+         }
+     }
+ 
+     /**
+      * Checks an existence of translation files in the resource bundle.
+      * The name of translation file begins with the base name of resource bundle which is followed
+      * by '_' and a language code (country and variant are optional), it ends with the extension
+      * suffix.
+      * @param bundle resource bundle.
+      */
+     private void checkExistenceOfRequiredTranslations(ResourceBundle bundle) {
+         for (String languageCode : requiredTranslations) {
+             final Optional<String> fileName = getMissingFileName(bundle, languageCode);
+             if (fileName.isPresent()) {
+                 logMissingTranslation(bundle.getPath(), fileName.get());
+             }
+         }
+     }
+ 
+     /**
+      * Returns the name of translation file which is absent in resource bundle or Guava's Optional,
+      * if there is not missing translation.
+      * @param bundle resource bundle.
+      * @param languageCode language code.
+      * @return the name of translation file which is absent in resource bundle or Guava's Optional,
+      *         if there is not missing translation.
+      */
+     private static Optional<String> getMissingFileName(ResourceBundle bundle, String languageCode) {
+         final String fileNameRegexp;
+         final boolean searchForDefaultTranslation;
+         final String extension = bundle.getExtension();
+         final String baseName = bundle.getBaseName();
+         if (languageCode == null) {
+             searchForDefaultTranslation = true;
+             fileNameRegexp = String.format(Locale.ROOT, REGEXP_FORMAT_TO_CHECK_DEFAULT_TRANSLATIONS,

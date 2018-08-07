@@ -1,0 +1,107 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RegexpHeaderCheck.java",
+  "functionName": "setHeader",
+  "functionId": "setHeader___header-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/header/RegexpHeaderCheck.java",
+  "functionStartLine": 174,
+  "functionEndLine": 181,
+  "changeHistory": [
+    "ce21086e087661553f3a774c38362327ee88996a",
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+    "9777146e28e6457160a7f91d897776f9fe4af10a",
+    "167dd96d8ca503a472bf003f187191d6b0ce586c",
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+    "589c5a261a6d13f2e83235ddb2a070ed2da78e9b"
+  ],
+  "changeHistoryShort": {
+    "ce21086e087661553f3a774c38362327ee88996a": "Ybodychange",
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": "Ybodychange",
+    "9777146e28e6457160a7f91d897776f9fe4af10a": "Ybodychange",
+    "167dd96d8ca503a472bf003f187191d6b0ce586c": "Ybodychange",
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": "Ybodychange",
+    "589c5a261a6d13f2e83235ddb2a070ed2da78e9b": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "ce21086e087661553f3a774c38362327ee88996a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3763: Try to avoid non-jdk runtime exceptions in code\n",
+      "commitDate": 1488165925000,
+      "commitName": "ce21086e087661553f3a774c38362327ee88996a",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 30.54,
+      "commitsBetweenForRepo": 104,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     public void setHeader(String header) {\n         if (!CommonUtils.isBlank(header)) {\n             if (!CommonUtils.isPatternValid(header)) {\n-                throw new ConversionException(\"Unable to parse format: \" + header);\n+                throw new IllegalArgumentException(\"Unable to parse format: \" + header);\n             }\n             super.setHeader(header);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3143: forbid empty return statements and fixed violations",
+      "commitDate": 1464356569000,
+      "commitName": "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1458509698000,
+      "commitNameOld": "9777146e28e6457160a7f91d897776f9fe4af10a",
+      "commitAuthorOld": "Rasmus Kaj",
+      "daysBetweenCommits": 67.67,
+      "commitsBetweenForRepo": 136,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,8 @@\n     public void setHeader(String header) {\n-        if (CommonUtils.isBlank(header)) {\n-            return;\n+        if (!CommonUtils.isBlank(header)) {\n+            if (!CommonUtils.isPatternValid(header)) {\n+                throw new ConversionException(\"Unable to parse format: \" + header);\n+            }\n+            super.setHeader(header);\n         }\n-        if (!CommonUtils.isPatternValid(header)) {\n-            throw new ConversionException(\"Unable to parse format: \" + header);\n-        }\n-        super.setHeader(header);\n     }\n\\ No newline at end of file\n"
+    },
+    "9777146e28e6457160a7f91d897776f9fe4af10a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2428: remove dependency to commons-lang3 library\n",
+      "commitDate": 1458509698000,
+      "commitName": "9777146e28e6457160a7f91d897776f9fe4af10a",
+      "commitAuthor": "Rasmus Kaj",
+      "commitDateOld": 1458221995000,
+      "commitNameOld": "167dd96d8ca503a472bf003f187191d6b0ce586c",
+      "commitAuthorOld": "Rasmus Kaj",
+      "daysBetweenCommits": 3.33,
+      "commitsBetweenForRepo": 9,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public void setHeader(String header) {\n-        if (header \u003d\u003d null || CharMatcher.WHITESPACE.matchesAllOf(header)) {\n+        if (CommonUtils.isBlank(header)) {\n             return;\n         }\n         if (!CommonUtils.isPatternValid(header)) {\n             throw new ConversionException(\"Unable to parse format: \" + header);\n         }\n         super.setHeader(header);\n     }\n\\ No newline at end of file\n"
+    },
+    "167dd96d8ca503a472bf003f187191d6b0ce586c": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2428: remove dependency to commons-lang3 library\n",
+      "commitDate": 1458221995000,
+      "commitName": "167dd96d8ca503a472bf003f187191d6b0ce586c",
+      "commitAuthor": "Rasmus Kaj",
+      "commitDateOld": 1453387260000,
+      "commitNameOld": "6c66229190b570b56ef1bdea47b1de1716a06029",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 55.96,
+      "commitsBetweenForRepo": 177,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public void setHeader(String header) {\n-        if (StringUtils.isBlank(header)) {\n+        if (header \u003d\u003d null || CharMatcher.WHITESPACE.matchesAllOf(header)) {\n             return;\n         }\n         if (!CommonUtils.isPatternValid(header)) {\n             throw new ConversionException(\"Unable to parse format: \" + header);\n         }\n         super.setHeader(header);\n     }\n\\ No newline at end of file\n"
+    },
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": {
+      "type": "Ybodychange",
+      "commitMessage": "Utils class has been splitted to CommonUtils and TokenUtils. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public void setHeader(String header) {\n         if (StringUtils.isBlank(header)) {\n             return;\n         }\n-        if (!Utils.isPatternValid(header)) {\n+        if (!CommonUtils.isPatternValid(header)) {\n             throw new ConversionException(\"Unable to parse format: \" + header);\n         }\n         super.setHeader(header);\n     }\n\\ No newline at end of file\n"
+    },
+    "589c5a261a6d13f2e83235ddb2a070ed2da78e9b": {
+      "type": "Yintroduced",
+      "commitMessage": "added validation for header in setHeader in RegexpHeaderCheck.java to provide better feedback when an invalid Pattern is specified (was InvocationTargetException only before). Changes are made base on @krichter722 commit. Issue #897\n",
+      "commitDate": 1429891826000,
+      "commitName": "589c5a261a6d13f2e83235ddb2a070ed2da78e9b",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

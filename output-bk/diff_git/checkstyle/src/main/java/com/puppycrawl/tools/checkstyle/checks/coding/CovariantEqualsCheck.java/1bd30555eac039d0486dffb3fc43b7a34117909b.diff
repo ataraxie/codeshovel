@@ -1,0 +1,59 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/CovariantEqualsCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/CovariantEqualsCheck.java
+index 18b91e709..f3395d3c6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/CovariantEqualsCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/CovariantEqualsCheck.java
+@@ -80,53 +80,53 @@ public class CovariantEqualsCheck extends Check
+         final DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);
+         if (objBlock != null) {
+             DetailAST child = objBlock.getFirstChild();
+             while (child != null) {
+                 if (child.getType() == TokenTypes.METHOD_DEF
+                         && CheckUtils.isEqualsMethod(child))
+                 {
+                     if (hasObjectParameter(child)) {
+                         hasEqualsObject = true;
+                     }
+                     else {
+                         equalsMethods.add(child);
+                     }
+                 }
+                 child = child.getNextSibling();
+             }
+ 
+             // report equals method definitions
+             if (!hasEqualsObject) {
+                 for (DetailAST equalsAST : equalsMethods) {
+                     final DetailAST nameNode = equalsAST
+                             .findFirstToken(TokenTypes.IDENT);
+                     log(nameNode.getLineNo(), nameNode.getColumnNo(),
+                             MSG_KEY);
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Tests whether a method definition AST has exactly one
+      * parameter of type Object.
+      * @param ast the method definition AST to test.
+      * Precondition: ast is a TokenTypes.METHOD_DEF node.
+      * @return true if ast has exactly one parameter of type Object.
+      */
+     private boolean hasObjectParameter(DetailAST ast)
+     {
+         // one parameter?
+         final DetailAST paramsNode = ast.findFirstToken(TokenTypes.PARAMETERS);
+         if (paramsNode.getChildCount() != 1) {
+             return false;
+         }
+ 
+         // parameter type "Object"?
+         final DetailAST paramNode =
+             paramsNode.findFirstToken(TokenTypes.PARAMETER_DEF);
+         final DetailAST typeNode = paramNode.findFirstToken(TokenTypes.TYPE);
+         final FullIdent fullIdent = FullIdent.createFullIdentBelow(typeNode);
+         final String name = fullIdent.getText();
+-        return ("Object".equals(name) || "java.lang.Object".equals(name));
++        return "Object".equals(name) || "java.lang.Object".equals(name);
+     }
+ }

@@ -1,0 +1,135 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UniquePropertiesCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UniquePropertiesCheck.java
+index e22621a3a..d21c5e835 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UniquePropertiesCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UniquePropertiesCheck.java
+@@ -30,120 +30,125 @@ import java.util.regex.Pattern;
+ import com.google.common.collect.HashMultiset;
+ import com.google.common.collect.ImmutableMultiset;
+ import com.google.common.collect.Multiset;
+ import com.google.common.collect.Multiset.Entry;
+ import com.puppycrawl.tools.checkstyle.api.AbstractFileSetCheck;
+ 
+ /**
+  * Checks the uniqueness of property keys (left from equal sign) in the
+  * properties file.
+  *
+  * @author Pavel Baranchikov
+  */
+ public class UniquePropertiesCheck extends AbstractFileSetCheck {
+ 
+     /**
+      * Localization key for check violation.
+      */
+     public static final String MSG_KEY = "properties.duplicateproperty";
+     /**
+      * Localization key for IO exception occurred on file open.
+      */
+     public static final String IO_EXCEPTION_KEY = "unable.open.cause";
+ 
+     /**
+      * Construct the check with default values.
+      */
+     public UniquePropertiesCheck() {
+         setFileExtensions("properties");
+     }
+ 
+     @Override
+     protected void processFiltered(File file, List<String> lines) {
+         final UniqueProperties properties = new UniqueProperties();
+ 
+         try {
+             final FileInputStream fileInputStream = new FileInputStream(file);
+             try {
+                 // As file is already read, there should not be any exceptions.
+                 properties.load(fileInputStream);
+             }
+             finally {
+                 fileInputStream.close();
+             }
+         }
+         catch (IOException e) {
+             log(0, IO_EXCEPTION_KEY, file.getPath(),
+                     e.getLocalizedMessage());
+         }
+ 
+         for (Entry<String> duplication : properties
+-                .getDuplicatedStrings().entrySet()) {
++                .getDuplicatedKeys().entrySet()) {
+             final String keyName = duplication.getElement();
+             final int lineNumber = getLineNumber(lines, keyName);
+             // Number of occurrences is number of duplications + 1
+             log(lineNumber, MSG_KEY, keyName, duplication.getCount() + 1);
+         }
+     }
+ 
+     /**
+      * Method returns line number the key is detected in the checked properties
+      * files first.
+      *
+      * @param lines
+      *            properties file lines list
+      * @param keyName
+      *            key name to look for
+      * @return line number of first occurrence. If no key found in properties
+      *         file, 0 is returned
+      */
+     protected static int getLineNumber(List<String> lines, String keyName) {
+         final String keyPatternString =
+                 "^" + keyName.replace(" ", "\\\\ ") + "[\\s:=].*$";
+         final Pattern keyPattern = Pattern.compile(keyPatternString);
+         int lineNumber = 1;
+         final Matcher matcher = keyPattern.matcher("");
+         for (String line : lines) {
+             matcher.reset(line);
+             if (matcher.matches()) {
+                 break;
+             }
+             ++lineNumber;
+         }
+         if (lineNumber > lines.size()) {
+             lineNumber = 0;
+         }
+         return lineNumber;
+     }
+ 
+     /**
+      * Properties subclass to store duplicated property keys in a separate map.
+      *
+      * @author Pavel Baranchikov
+      */
+     private static class UniqueProperties extends Properties {
+         /**
+          * Default serial version id.
+          */
+         private static final long serialVersionUID = 1L;
+         /**
+          * Multiset, holding duplicated keys. Keys are added here only if they
+          * already exist in Properties' inner map.
+          */
+-        private final Multiset<String> duplicatedStrings = HashMultiset
++        private final Multiset<String> duplicatedKeys = HashMultiset
+                 .create();
+ 
+         @Override
+         public Object put(Object key, Object value) {
+             final Object oldValue = super.put(key, value);
+             if (oldValue != null && key instanceof String) {
+                 final String keyString = (String) key;
+-                duplicatedStrings.add(keyString);
++                duplicatedKeys.add(keyString);
+             }
+             return oldValue;
+         }
+ 
+-        public Multiset<String> getDuplicatedStrings() {
+-            return ImmutableMultiset.copyOf(duplicatedStrings);
++        /**
++         * Retrieves a collections of duplicated properties keys.
++         *
++         * @return A collection of duplicated keys.
++         */
++        public Multiset<String> getDuplicatedKeys() {
++            return ImmutableMultiset.copyOf(duplicatedKeys);
+         }
+     }
+ }

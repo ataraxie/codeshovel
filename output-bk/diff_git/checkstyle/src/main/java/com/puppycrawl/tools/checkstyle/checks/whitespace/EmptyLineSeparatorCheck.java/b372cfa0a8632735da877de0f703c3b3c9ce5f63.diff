@@ -1,0 +1,140 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java
+index f191e016d..00d249af1 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java
+@@ -228,118 +228,123 @@ public class EmptyLineSeparatorCheck extends Check {
+                     break;
+                 default:
+                     if (nextToken.getType() != TokenTypes.RCURLY && !hasEmptyLineAfter(ast)) {
+                         log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED, nextToken.getText());
+                     }
+                     if (hasNotAllowedTwoEmptyLinesBefore(ast)) {
+                         log(ast.getLineNo(), MSG_MULTIPLE_LINES, ast.getText());
+                     }
+             }
+         }
+     }
+ 
+     /**
+      * Process Package
+      * @param ast token
+      * @param nextToken next token
+      */
+     private void processPackage(DetailAST ast, DetailAST nextToken) {
+         if (ast.getLineNo() > 1 && !hasEmptyLineBefore(ast)) {
+             log(ast.getLineNo(), MSG_SHOULD_BE_SEPARATED, ast.getText());
+         }
+         if (!hasEmptyLineAfter(ast)) {
+             log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED, nextToken.getText());
+         }
+         if (hasNotAllowedTwoEmptyLinesBefore(ast)) {
+             log(ast.getLineNo(), MSG_MULTIPLE_LINES, ast.getText());
+         }
+     }
+ 
+     /**
+      * Process Import
+      * @param ast token
+      * @param nextToken next token
+      * @param astType token Type
+      */
+     private void processImport(DetailAST ast, DetailAST nextToken, int astType) {
+         if (astType != nextToken.getType() && !hasEmptyLineAfter(ast)) {
+             log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED, nextToken.getText());
+         }
+         if (hasNotAllowedTwoEmptyLinesBefore(ast)) {
+             log(ast.getLineNo(), MSG_MULTIPLE_LINES, ast.getText());
+         }
+     }
+ 
+     /**
+      * Process Variable
+      * @param ast token
+      * @param nextToken next Token
+      */
+     private void processVariableDef(DetailAST ast, DetailAST nextToken) {
+-        if (isTypeField(ast) && !hasEmptyLineAfter(ast)) {
+-            if (allowNoEmptyLineBetweenFields
+-                && nextToken.getType() != TokenTypes.VARIABLE_DEF
+-                && nextToken.getType() != TokenTypes.RCURLY) {
+-                log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED,
+-                     nextToken.getText());
+-            }
+-            else if (!allowNoEmptyLineBetweenFields
+-                     && nextToken.getType() != TokenTypes.RCURLY) {
+-                log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED,
+-                     nextToken.getText());
+-            }
++        if (isTypeField(ast) && !hasEmptyLineAfter(ast)
++                && isViolatingEmptyLineBetweenFieldsPolicy(nextToken)) {
++            log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED,
++                    nextToken.getText());
+         }
+         if (isTypeField(ast) && hasNotAllowedTwoEmptyLinesBefore(ast)) {
+             log(ast.getLineNo(), MSG_MULTIPLE_LINES, ast.getText());
+         }
+     }
+ 
++    /**
++     * Checks whether token placement violates policy of empty line between fields.
++     * @param detailAST token to be analyzed
++     * @return true if policy is violated and warning should be raised; false otherwise
++     */
++    private boolean isViolatingEmptyLineBetweenFieldsPolicy(DetailAST detailAST) {
++        return allowNoEmptyLineBetweenFields
++                    && detailAST.getType() != TokenTypes.VARIABLE_DEF
++                    && detailAST.getType() != TokenTypes.RCURLY
++                || !allowNoEmptyLineBetweenFields
++                    && detailAST.getType() != TokenTypes.RCURLY;
++    }
++
+     /**
+      * Checks if a token has empty two previous lines and multiple empty lines is not allowed
+      * @param token DetailAST token
+      * @return true, if token has empty two lines before and allowMultipleEmptyLines is false
+      */
+     private boolean hasNotAllowedTwoEmptyLinesBefore(DetailAST token) {
+         return !allowMultipleEmptyLines && hasEmptyLineBefore(token)
+                 && isPrePreviousLineEmpty(token);
+     }
+ 
+     /**
+      * Checks if a token has empty pre-previous line.
+      * @param token DetailAST token.
+      * @return true, if token has empty lines before.
+      */
+     private boolean isPrePreviousLineEmpty(DetailAST token) {
+         boolean result = false;
+         final int lineNo = token.getLineNo();
+         // 3 is the number of the pre-previous line because the numbering starts from zero.
+         final int number = 3;
+         if (lineNo >= number) {
+             final String prePreviousLine = getLines()[lineNo - number];
+             result = prePreviousLine.trim().isEmpty();
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if token have empty line after.
+      * @param token token.
+      * @return true if token have empty line after.
+      */
+     private static boolean hasEmptyLineAfter(DetailAST token) {
+         DetailAST lastToken = token.getLastChild().getLastChild();
+         if (lastToken == null) {
+             lastToken = token.getLastChild();
+         }
+         return token.getNextSibling().getLineNo() - lastToken.getLineNo() > 1;
+     }
+ 
+     /**
+      * Checks if a token has a empty line before.
+      * @param token token.
+      * @return true, if token have empty line before.
+      */
+     private boolean hasEmptyLineBefore(DetailAST token) {
+         final int lineNo = token.getLineNo();
+         if (lineNo == 1) {
+             return false;
+         }

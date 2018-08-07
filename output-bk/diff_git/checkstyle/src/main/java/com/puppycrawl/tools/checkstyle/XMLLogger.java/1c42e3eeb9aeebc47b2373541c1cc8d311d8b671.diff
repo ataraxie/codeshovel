@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java b/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
+index 78de51442..a63473e24 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
+@@ -140,101 +140,101 @@ public class XMLLogger
+                 + evt.getSeverityLevel().getName()
+                 + "\"");
+             writer.print(" message=\""
+                 + encode(evt.getMessage())
+                 + "\"");
+             writer.println(" source=\""
+                 + encode(evt.getSourceName())
+                 + "\"/>");
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void addException(AuditEvent evt, Throwable throwable)
+     {
+         final StringWriter sw = new StringWriter();
+         final PrintWriter pw = new PrintWriter(sw);
+         pw.println("<exception>");
+         pw.println("<![CDATA[");
+         throwable.printStackTrace(pw);
+         pw.println("]]>");
+         pw.println("</exception>");
+         pw.flush();
+         writer.println(encode(sw.toString()));
+     }
+ 
+     /**
+      * Escape &lt;, &gt; &amp; &#39; and &quot; as their entities.
+      * @param value the value to escape.
+      * @return the escaped value if necessary.
+      */
+     public String encode(String value)
+     {
+         final StringBuilder sb = new StringBuilder();
+         for (int i = 0; i < value.length(); i++) {
+             final char c = value.charAt(i);
+             switch (c) {
+                 case '<':
+                     sb.append("&lt;");
+                     break;
+                 case '>':
+                     sb.append("&gt;");
+                     break;
+                 case '\'':
+                     sb.append("&apos;");
+                     break;
+                 case '\"':
+                     sb.append("&quot;");
+                     break;
+                 case '&':
+-                    final int nextSemi = value.indexOf(";", i);
++                    final int nextSemi = value.indexOf(';', i);
+                     if (nextSemi < 0
+                         || !isReference(value.substring(i, nextSemi + 1)))
+                     {
+                         sb.append("&amp;");
+                     }
+                     else {
+                         sb.append('&');
+                     }
+                     break;
+                 default:
+                     sb.append(c);
+                     break;
+             }
+         }
+         return sb.toString();
+     }
+ 
+     /**
+      * @return whether the given argument a character or entity reference
+      * @param ent the possible entity to look for.
+      */
+     public boolean isReference(String ent)
+     {
+         if (!(ent.charAt(0) == '&') || !ent.endsWith(";")) {
+             return false;
+         }
+ 
+         if (ent.charAt(1) == '#') {
+             int prefixLength = 2; // "&#"
+             int radix = BASE_10;
+             if (ent.charAt(2) == 'x') {
+                 prefixLength++;
+                 radix = BASE_16;
+             }
+             try {
+                 Integer.parseInt(
+                     ent.substring(prefixLength, ent.length() - 1), radix);
+                 return true;
+             }
+             catch (final NumberFormatException nfe) {
+                 return false;
+             }
+         }
+ 
+         final String name = ent.substring(1, ent.length() - 1);
+         for (String element : ENTITIES) {
+             if (name.equals(element)) {
+                 return true;
+             }
+         }

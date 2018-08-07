@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "EmptyLineSeparatorCheck.java",
+  "functionName": "isPrecededByJavadoc",
+  "functionId": "isPrecededByJavadoc___token-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java",
+  "functionStartLine": 566,
+  "functionEndLine": 574,
+  "changeHistory": [
+    "c0eb205f6ab7abff2c409a387c853a8b51646c79",
+    "65fe91df6a9712f3ec7af2ed963867a50303b0e9"
+  ],
+  "changeHistoryShort": {
+    "c0eb205f6ab7abff2c409a387c853a8b51646c79": "Ybodychange",
+    "65fe91df6a9712f3ec7af2ed963867a50303b0e9": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "c0eb205f6ab7abff2c409a387c853a8b51646c79": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4405: Javadoc position to be checked before rendering ASTs\n",
+      "commitDate": 1498523692000,
+      "commitName": "c0eb205f6ab7abff2c409a387c853a8b51646c79",
+      "commitAuthor": "Piyush Sharma",
+      "commitDateOld": 1495136630000,
+      "commitNameOld": "7609e96cc998cca40b396eb3f2d7ae82f60fcce1",
+      "commitAuthorOld": "Dmytro Kytsmen",
+      "daysBetweenCommits": 39.2,
+      "commitsBetweenForRepo": 113,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     private static boolean isPrecededByJavadoc(DetailAST token) {\n         boolean result \u003d false;\n         final DetailAST previous \u003d token.getPreviousSibling();\n         if (previous.getType() \u003d\u003d TokenTypes.BLOCK_COMMENT_BEGIN\n-                \u0026\u0026 JavadocUtils.isJavadocComment(previous)) {\n+                \u0026\u0026 JavadocUtils.isJavadocComment(previous.getFirstChild().getText())) {\n             result \u003d true;\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "65fe91df6a9712f3ec7af2ed963867a50303b0e9": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #3426: remove warning on PACKAGE_DEF preceded by javadoc not separated by line\n",
+      "commitDate": 1481551452000,
+      "commitName": "65fe91df6a9712f3ec7af2ed963867a50303b0e9",
+      "commitAuthor": "kazachka"
+    }
+  }
+}

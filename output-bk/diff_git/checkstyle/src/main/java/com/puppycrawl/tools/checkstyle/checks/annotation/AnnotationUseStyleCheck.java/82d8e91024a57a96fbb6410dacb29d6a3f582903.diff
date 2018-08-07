@@ -1,0 +1,143 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+index e11a4f895..3f3d9283d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+@@ -254,136 +254,135 @@ public final class AnnotationUseStyleCheck extends Check {
+      * @param annotation the annotation token
+      */
+     private void checkStyleType(final DetailAST annotation) {
+ 
+         switch (style) {
+             case COMPACT_NO_ARRAY:
+                 checkCompactNoArrayStyle(annotation);
+                 break;
+             case COMPACT:
+                 checkCompactStyle(annotation);
+                 break;
+             case EXPANDED:
+                 checkExpandedStyle(annotation);
+                 break;
+             default:
+                 break;
+         }
+     }
+ 
+     /**
+      * Checks for expanded style type violations.
+      *
+      * @param annotation the annotation token
+      */
+     private void checkExpandedStyle(final DetailAST annotation) {
+         final int valuePairCount =
+             annotation.getChildCount(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
+ 
+         if (valuePairCount == 0
+             && annotation.branchContains(TokenTypes.EXPR)) {
+             log(annotation.getLineNo(), MSG_KEY_ANNOTATION_INCORRECT_STYLE,
+                 ElementStyle.EXPANDED);
+         }
+     }
+ 
+     /**
+      * Checks for compact style type violations.
+      *
+      * @param annotation the annotation token
+      */
+     private void checkCompactStyle(final DetailAST annotation) {
+         final int valuePairCount =
+             annotation.getChildCount(
+                 TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
+ 
+         final DetailAST valuePair =
+             annotation.findFirstToken(
+                 TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
+ 
+         if (valuePairCount == 1
+-            && AnnotationUseStyleCheck.ANNOTATION_ELEMENT_SINGLE_NAME.equals(
++            && ANNOTATION_ELEMENT_SINGLE_NAME.equals(
+                 valuePair.getFirstChild().getText())) {
+             log(annotation.getLineNo(), MSG_KEY_ANNOTATION_INCORRECT_STYLE,
+                 ElementStyle.COMPACT);
+         }
+     }
+ 
+     /**
+      * Checks for compact no array style type violations.
+      *
+      * @param annotation the annotation token
+      */
+     private void checkCompactNoArrayStyle(final DetailAST annotation) {
+         final DetailAST arrayInit =
+             annotation.findFirstToken(TokenTypes.ANNOTATION_ARRAY_INIT);
+ 
+         final int valuePairCount =
+             annotation.getChildCount(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
+ 
+         final DetailAST valuePair =
+             annotation.findFirstToken(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
+ 
+         //in compact style with one value
+         if (arrayInit != null
+             && arrayInit.getChildCount(TokenTypes.EXPR) == 1) {
+             log(annotation.getLineNo(), MSG_KEY_ANNOTATION_INCORRECT_STYLE,
+                 ElementStyle.COMPACT_NO_ARRAY);
+         }
+         //in expanded style with one value and the correct element name
+         else if (valuePairCount == 1) {
+             final DetailAST nestedArrayInit =
+                 valuePair.findFirstToken(TokenTypes.ANNOTATION_ARRAY_INIT);
+ 
+             if (nestedArrayInit != null
+-                && AnnotationUseStyleCheck
+-                    .ANNOTATION_ELEMENT_SINGLE_NAME.equals(
++                && ANNOTATION_ELEMENT_SINGLE_NAME.equals(
+                     valuePair.getFirstChild().getText())
+                     && nestedArrayInit.getChildCount(TokenTypes.EXPR) == 1) {
+                 log(annotation.getLineNo(), MSG_KEY_ANNOTATION_INCORRECT_STYLE,
+                     ElementStyle.COMPACT_NO_ARRAY);
+             }
+         }
+     }
+ 
+     /**
+      * Checks to see if the trailing comma is present if required or
+      * prohibited.
+      *
+      * @param annotation the annotation token
+      */
+     private void checkTrailingComma(final DetailAST annotation) {
+         if (TrailingArrayComma.IGNORE == comma) {
+             return;
+         }
+ 
+         DetailAST child = annotation.getFirstChild();
+ 
+         while (child != null) {
+             DetailAST arrayInit = null;
+ 
+             if (child.getType() == TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR) {
+                 arrayInit = child.findFirstToken(TokenTypes.ANNOTATION_ARRAY_INIT);
+             }
+             else if (child.getType() == TokenTypes.ANNOTATION_ARRAY_INIT) {
+                 arrayInit = child;
+             }
+ 
+             if (arrayInit != null) {
+                 logCommaViolation(arrayInit);
+             }
+             child = child.getNextSibling();
+         }
+     }
+ 
+     /**
+      * logs a trailing array comma violation if one exists.
+      *
+      * @param ast the array init
+      * {@link TokenTypes#ANNOTATION_ARRAY_INIT ANNOTATION_ARRAY_INIT}.
+      */
+     private void logCommaViolation(final DetailAST ast) {
+         final DetailAST rCurly = ast.findFirstToken(TokenTypes.RCURLY);
+ 
+         //comma can be null if array is empty
+         final DetailAST comma = rCurly.getPreviousSibling();
+ 

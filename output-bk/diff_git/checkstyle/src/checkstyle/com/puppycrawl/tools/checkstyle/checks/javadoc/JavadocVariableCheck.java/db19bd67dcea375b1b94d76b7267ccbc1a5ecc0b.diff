@@ -1,0 +1,65 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java
+index 7252ecbaa..9abdb99df 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java
+@@ -44,59 +44,57 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * <pre>
+  * &lt;module name="JavadocVariable"&gt;
+  *    &lt;property name="scope" value="public"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Oliver Burn
+  * @version 1.0
+  */
+ public class JavadocVariableCheck
+     extends Check
+ {
+     /** the scope to check */
+     private Scope mScope = Scope.PRIVATE;
+ 
+     /**
+      * Sets the scope to check.
+      * @param aFrom string to get the scope from
+      */
+     public void setScope(String aFrom)
+     {
+         mScope = Scope.getInstance(aFrom);
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void visitToken(DetailAST aAST)
+     {
+         if (!ScopeUtils.inCodeBlock(aAST)) {
+             final DetailAST mods = aAST.findFirstToken(TokenTypes.MODIFIERS);
+             final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
+             final Scope variableScope =
+                 ScopeUtils.inInterfaceBlock(aAST)
+                     ? Scope.PUBLIC
+                     : declaredScope;
+ 
+             if (variableScope.isIn(mScope)) {
+                 final Scope surroundingScope =
+                     ScopeUtils.getSurroundingScope(aAST);
+ 
+                 if (surroundingScope.isIn(mScope)) {
+                     final FileContents contents = getFileContents();
+                     final TextBlock cmt =
+                         contents.getJavadocBefore(aAST.getLineNo());
+ 
+                     if (cmt == null) {
+-                        log(aAST.getLineNo(),
+-                            aAST.getColumnNo(),
+-                            "javadoc.missing");
++                        log(aAST, "javadoc.missing");
+                     }
+                 }
+             }
+         }
+     }
+ }

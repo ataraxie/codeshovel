@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/DescendantTokenCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/DescendantTokenCheck.java
+index d34b5d00d..8a00332ad 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/DescendantTokenCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/DescendantTokenCheck.java
+@@ -171,101 +171,101 @@ public class DescendantTokenCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_MIN = "descendant.token.min";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_MAX = "descendant.token.max";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_SUM_MIN = "descendant.token.sum.min";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_SUM_MAX = "descendant.token.sum.max";
+ 
+     /** Minimum depth. */
+     private int minimumDepth;
+     /** Maximum depth. */
+     private int maximumDepth = Integer.MAX_VALUE;
+     /** Minimum number. */
+     private int minimumNumber;
+     /** Maximum number. */
+     private int maximumNumber = Integer.MAX_VALUE;
+     /** Whether to sum the number of tokens found. */
+     private boolean sumTokenCounts;
+     /** Limited tokens. */
+     private int[] limitedTokens = CommonUtils.EMPTY_INT_ARRAY;
+     /** Error message when minimum count not reached. */
+     private String minimumMessage;
+     /** Error message when maximum count exceeded. */
+     private String maximumMessage;
+ 
+     /**
+      * Counts of descendant tokens.
+      * Indexed by (token ID - 1) for performance.
+      */
+     private int[] counts = CommonUtils.EMPTY_INT_ARRAY;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return CommonUtils.EMPTY_INT_ARRAY;
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         //reset counts
+         Arrays.fill(counts, 0);
+         countTokens(ast, 0);
+ 
+         if (sumTokenCounts) {
+             logAsTotal(ast);
+         }
+         else {
+             logAsSeparated(ast);
+         }
+     }
+ 
+     /**
+      * Log violations for each Token.
+      * @param ast token
+      */
+     private void logAsSeparated(DetailAST ast) {
+         // name of this token
+         final String name = TokenUtils.getTokenName(ast.getType());
+ 
+         for (int element : limitedTokens) {
+             final int tokenCount = counts[element - 1];
+             if (tokenCount < minimumNumber) {
+                 final String descendantName = TokenUtils.getTokenName(element);
+ 
+                 if (minimumMessage == null) {
+                     minimumMessage = MSG_KEY_MIN;
+                 }
+                 log(ast.getLineNo(), ast.getColumnNo(),
+                         minimumMessage,
+                         String.valueOf(tokenCount),
+                         String.valueOf(minimumNumber),
+                         name,
+                         descendantName);
+             }
+             if (tokenCount > maximumNumber) {
+                 final String descendantName = TokenUtils.getTokenName(element);
+ 
+                 if (maximumMessage == null) {
+                     maximumMessage = MSG_KEY_MAX;
+                 }

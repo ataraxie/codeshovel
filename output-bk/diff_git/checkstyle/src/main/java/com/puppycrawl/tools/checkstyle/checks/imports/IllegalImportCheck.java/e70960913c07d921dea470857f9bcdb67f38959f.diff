@@ -1,0 +1,102 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/IllegalImportCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/IllegalImportCheck.java
+index 8b5a17a29..cb72825f1 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/IllegalImportCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/IllegalImportCheck.java
+@@ -33,96 +33,96 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * not 100% Pure Java</a>.
+  * </p>
+  * <p>
+  * To reject other packages, set property illegalPkgs to a comma-separated
+  * list of the illegal packages.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="IllegalImport"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check so that it rejects packages
+  * <code>java.io.*</code> and <code>java.sql.*</code> is
+  * </p>
+  * <pre>
+  * &lt;module name="IllegalImport"&gt;
+  *    &lt;property name="illegalPkgs" value="java.io, java.sql"/&gt;
+  * &lt;/module&gt;
+  *
+  * Compatible with Java 1.5 source.
+  *
+  * </pre>
+  * @author Oliver Burn
+  * @author Lars Kühne
+  */
+ public class IllegalImportCheck
+     extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "import.illegal";
+ 
+     /** list of illegal packages */
+     private String[] illegalPkgs;
+ 
+     /**
+      * Creates a new <code>IllegalImportCheck</code> instance.
+      */
+     public IllegalImportCheck() {
+         setIllegalPkgs("sun");
+     }
+ 
+     /**
+      * Set the list of illegal packages.
+      * @param from array of illegal packages
+      */
+-    public void setIllegalPkgs(String... from) {
++    public final void setIllegalPkgs(String... from) {
+         illegalPkgs = from.clone();
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final FullIdent imp;
+         if (ast.getType() == TokenTypes.IMPORT) {
+             imp = FullIdent.createFullIdentBelow(ast);
+         }
+         else {
+             imp = FullIdent.createFullIdent(
+                 ast.getFirstChild().getNextSibling());
+         }
+         if (isIllegalImport(imp.getText())) {
+             log(ast.getLineNo(),
+                 ast.getColumnNo(),
+                 MSG_KEY,
+                 imp.getText());
+         }
+     }
+ 
+     /**
+      * Checks if an import is from a package that must not be used.
+      * @param importText the argument of the import keyword
+      * @return if <code>importText</code> contains an illegal package prefix
+      */
+     private boolean isIllegalImport(String importText) {
+         for (String element : illegalPkgs) {
+             if (importText.startsWith(element + ".")) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ }

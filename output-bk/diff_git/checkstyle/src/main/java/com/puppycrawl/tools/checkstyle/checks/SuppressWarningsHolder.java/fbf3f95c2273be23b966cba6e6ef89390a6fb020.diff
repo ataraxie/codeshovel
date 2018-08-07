@@ -1,0 +1,189 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
+index 8902693fa..4647c4ef9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
+@@ -1,81 +1,80 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks;
+ 
+ import java.util.HashMap;
+ import java.util.LinkedList;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
+ 
+ import org.apache.commons.beanutils.ConversionException;
+ 
+ import com.google.common.collect.ImmutableList;
+-import com.google.common.collect.Lists;
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.AuditEvent;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Maintains a set of check suppressions from {@link SuppressWarnings}
+  * annotations.
+  * @author Trevor Robinson
+  * @author St&eacute;phane Galland
+  */
+ public class SuppressWarningsHolder
+     extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "suppress.warnings.invalid.target";
+ 
+     /**
+      * Optional prefix for warning suppressions that are only intended to be
+      * recognized by checkstyle. For instance, to suppress {@code
+      * FallThroughCheck} only in checkstyle (and not in javac), use the
+      * suppression {@code "checkstyle:fallthrough"} or {@code "checkstyle:FallThrough"}.
+      * To suppress the warning in both tools, just use {@code "fallthrough"}.
+      */
+     public static final String CHECKSTYLE_PREFIX = "checkstyle:";
+ 
+     /** Java.lang namespace prefix, which is stripped from SuppressWarnings */
+     private static final String JAVA_LANG_PREFIX = "java.lang.";
+ 
+     /** Suffix to be removed from subclasses of Check. */
+     private static final String CHECK_SUFFIX = "Check";
+ 
+     /** Special warning id for matching all the warnings. */
+     private static final String ALL_WARNING_MATCHING_ID = "all";
+ 
+     /** A map from check source names to suppression aliases. */
+     private static final Map<String, String> CHECK_ALIAS_MAP = new HashMap<>();
+ 
+     /**
+      * A thread-local holder for the list of suppression entries for the last
+      * file parsed.
+      */
+     private static final ThreadLocal<List<Entry>> ENTRIES = new ThreadLocal<List<Entry>>() {
+         @Override
+         protected List<Entry> initialValue() {
+             return new LinkedList<>();
+         }
+@@ -431,101 +430,101 @@ public class SuppressWarningsHolder
+      */
+     private static String getStringExpr(DetailAST ast) {
+         final DetailAST firstChild = ast.getFirstChild();
+         String expr = "";
+ 
+         switch (firstChild.getType()) {
+             case TokenTypes.STRING_LITERAL:
+                 // NOTE: escaped characters are not unescaped
+                 final String quotedText = firstChild.getText();
+                 expr = quotedText.substring(1, quotedText.length() - 1);
+                 break;
+             case TokenTypes.IDENT:
+                 expr = firstChild.getText();
+                 break;
+             case TokenTypes.DOT:
+                 expr = firstChild.getLastChild().getText();
+                 break;
+             default:
+                 // annotations with complex expressions cannot suppress warnings
+         }
+         return expr;
+     }
+ 
+     /**
+      * Returns the annotation values represented by an AST.
+      * @param ast an AST node for an EXPR or ANNOTATION_ARRAY_INIT
+      * @return the list of Java string represented by the given AST for an
+      *         expression or annotation array initializer
+      * @throws IllegalArgumentException if the AST is invalid
+      */
+     private static List<String> getAnnotationValues(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.EXPR:
+                 return ImmutableList.of(getStringExpr(ast));
+ 
+             case TokenTypes.ANNOTATION_ARRAY_INIT:
+                 return findAllExpressionsInChildren(ast);
+ 
+             default:
+                 throw new IllegalArgumentException(
+                         "Expression or annotation array initializer AST expected: " + ast);
+         }
+     }
+ 
+     /**
+      * Method looks at children and returns list of expressions in strings.
+      * @param parent ast, that contains children
+      * @return list of expressions in strings
+      */
+     private static List<String> findAllExpressionsInChildren(DetailAST parent) {
+-        final List<String> valueList = Lists.newLinkedList();
++        final List<String> valueList = new LinkedList<>();
+         DetailAST childAST = parent.getFirstChild();
+         while (childAST != null) {
+             if (childAST.getType() == TokenTypes.EXPR) {
+                 valueList.add(getStringExpr(childAST));
+             }
+             childAST = childAST.getNextSibling();
+         }
+         return valueList;
+     }
+ 
+     /** Records a particular suppression for a region of a file. */
+     private static class Entry {
+         /** The source name of the suppressed check. */
+         private final String checkName;
+         /** The suppression region for the check - first line. */
+         private final int firstLine;
+         /** The suppression region for the check - first column. */
+         private final int firstColumn;
+         /** The suppression region for the check - last line. */
+         private final int lastLine;
+         /** The suppression region for the check - last column. */
+         private final int lastColumn;
+ 
+         /**
+          * Constructs a new suppression region entry.
+          * @param checkName the source name of the suppressed check
+          * @param firstLine the first line of the suppression region
+          * @param firstColumn the first column of the suppression region
+          * @param lastLine the last line of the suppression region
+          * @param lastColumn the last column of the suppression region
+          */
+         Entry(String checkName, int firstLine, int firstColumn,
+             int lastLine, int lastColumn) {
+             this.checkName = checkName;
+             this.firstLine = firstLine;
+             this.firstColumn = firstColumn;
+             this.lastLine = lastLine;
+             this.lastColumn = lastColumn;
+         }
+ 
+         /**
+          * Gets he source name of the suppressed check.
+          * @return the source name of the suppressed check
+          */
+         public String getCheckName() {
+             return checkName;
+         }
+ 
+         /**
+          * Gets the first line of the suppression region.

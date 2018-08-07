@@ -1,0 +1,266 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+index 93bca2ec3..20f0d24fe 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+@@ -1,77 +1,78 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.coding;
+ 
++import java.util.Arrays;
++
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.ScopeUtils;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
+-import java.util.Arrays;
+ 
+ /**
+  * <p>
+  * Checks that there are no <a href="http://en.wikipedia.org/wiki/Magic_number_%28programming%29">
+  * &quot;magic numbers&quot;</a> where a magic
+  * number is a numeric literal that is not defined as a constant.
+  * By default, -1, 0, 1, and 2 are not considered to be magic numbers.
+  * </p>
+  * <p>
+  * Check have following options:
+  * ignoreHashCodeMethod - ignore magic numbers in hashCode methods;
+  * ignoreAnnotation - ignore magic numbers in annotation declarations;
+  * ignoreFieldDeclaration - ignore magic numbers in field declarations.
+  * <p>
+  * To configure the check with default configuration:
+  * </p>
+  * <pre>
+  * &lt;module name=&quot;MagicNumber&quot;/&gt;
+  * </pre>
+  * <p>
+  * results is following violations:
+  * </p>
+  * <pre>
+  * <code>
+  *   {@literal @}MyAnnotation(6) // violation
+  *   class MyClass {
+  *       private field = 7; // violation
+  *
+  *       void foo() {
+  *          int i = i + 1; // no violation
+  *          int j = j + 8; // violation
+  *       }
+  *   }
+  * </code>
+  * </pre>
+  * <p>
+  * To configure the check so that it checks floating-point numbers
+  * that are not 0, 0.5, or 1:
+  * </p>
+  * <pre>
+  *   &lt;module name=&quot;MagicNumber&quot;&gt;
+  *       &lt;property name=&quot;tokens&quot; value=&quot;NUM_DOUBLE, NUM_FLOAT&quot;/&gt;
+  *       &lt;property name=&quot;ignoreNumbers&quot; value=&quot;0, 0.5, 1&quot;/&gt;
+  *       &lt;property name=&quot;ignoreFieldDeclaration&quot; value=&quot;true&quot;/&gt;
+  *       &lt;property name=&quot;ignoreAnnotation&quot; value=&quot;true&quot;/&gt;
+  *   &lt;/module&gt;
+  * </pre>
+  * <p>
+  * results is following violations:
+  * </p>
+@@ -113,101 +114,101 @@ public class MagicNumberCheck extends Check
+         TokenTypes.UNARY_PLUS,
+         TokenTypes.UNARY_MINUS,
+         TokenTypes.TYPECAST,
+         TokenTypes.ELIST,
+         TokenTypes.LITERAL_NEW,
+         TokenTypes.METHOD_CALL,
+         TokenTypes.STAR,
+     };
+ 
+     static {
+         Arrays.sort(ALLOWED_PATH_TOKENTYPES);
+     }
+ 
+     /** the numbers to ignore in the check, sorted */
+     private double[] ignoreNumbers = {-1, 0, 1, 2};
+ 
+     /** Whether to ignore magic numbers in a hash code method. */
+     private boolean ignoreHashCodeMethod;
+ 
+     /** Whether to ignore magic numbers in annotation. */
+     private boolean ignoreAnnotation;
+ 
+     /** Whether to ignore magic numbers in field declaration. */
+     private boolean ignoreFieldDeclaration;
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.NUM_DOUBLE,
+             TokenTypes.NUM_FLOAT,
+             TokenTypes.NUM_INT,
+             TokenTypes.NUM_LONG,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.NUM_DOUBLE,
+             TokenTypes.NUM_FLOAT,
+             TokenTypes.NUM_INT,
+             TokenTypes.NUM_LONG,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+-        if (ignoreAnnotation && isInAnnotation(ast)) {
++        if (ignoreAnnotation && isChildOf(ast, TokenTypes.ANNOTATION)) {
+             return;
+         }
+ 
+         if (inIgnoreList(ast)
+             || ignoreHashCodeMethod && isInHashCodeMethod(ast))
+         {
+             return;
+         }
+ 
+         final DetailAST constantDefAST = findContainingConstantDef(ast);
+ 
+         if (constantDefAST == null) {
+             if (!(ignoreFieldDeclaration && isFieldDeclaration(ast))) {
+                 reportMagicNumber(ast);
+             }
+         }
+         else {
+             DetailAST astNode = ast.getParent();
+             while (astNode != constantDefAST) {
+                 final int type = astNode.getType();
+                 if (Arrays.binarySearch(ALLOWED_PATH_TOKENTYPES, type) < 0) {
+                     reportMagicNumber(ast);
+                     break;
+                 }
+ 
+                 astNode = astNode.getParent();
+             }
+         }
+     }
+ 
+     /**
+      * Finds the constant definition that contains aAST.
+      * @param ast the AST
+      * @return the constant def or null if ast is not
+      * contained in a constant definition
+      */
+     private DetailAST findContainingConstantDef(DetailAST ast)
+     {
+         DetailAST varDefAST = ast;
+         while (varDefAST != null
+                 && varDefAST.getType() != TokenTypes.VARIABLE_DEF
+                 && varDefAST.getType() != TokenTypes.ENUM_CONSTANT_DEF)
+         {
+             varDefAST = varDefAST.getParent();
+         }
+ 
+         // no containing variable definition?
+         if (varDefAST == null) {
+             return null;
+         }
+@@ -342,64 +343,71 @@ public class MagicNumberCheck extends Check
+     }
+ 
+ 
+     /**
+      * Sets the numbers to ignore in the check.
+      * BeanUtils converts numeric token list to double array automatically.
+      * @param list list of numbers to ignore.
+      */
+     public void setIgnoreNumbers(double... list)
+     {
+         if (list.length == 0) {
+             ignoreNumbers = new double[0];
+         }
+         else {
+             ignoreNumbers = new double[list.length];
+             System.arraycopy(list, 0, ignoreNumbers, 0, list.length);
+             Arrays.sort(ignoreNumbers);
+         }
+     }
+ 
+     /**
+      * Set whether to ignore hashCode methods.
+      * @param ignoreHashCodeMethod decide whether to ignore
+      * hash code methods
+      */
+     public void setIgnoreHashCodeMethod(boolean ignoreHashCodeMethod)
+     {
+         this.ignoreHashCodeMethod = ignoreHashCodeMethod;
+     }
+ 
+     /**
+      * Set whether to ignore Annotations.
+      * @param ignoreAnnotation decide whether to ignore annotations
+      */
+     public void setIgnoreAnnotation(boolean ignoreAnnotation)
+     {
+         this.ignoreAnnotation = ignoreAnnotation;
+     }
+ 
+     /**
+      * Set whether to ignore magic numbers in field declaration.
+      * @param ignoreFieldDeclaration decide whether to ignore magic numbers
+      * in field declaration
+      */
+     public void setIgnoreFieldDeclaration(boolean ignoreFieldDeclaration)
+     {
+         this.ignoreFieldDeclaration = ignoreFieldDeclaration;
+     }
+ 
+     /**
+-     * Determines if the column displays a token type of annotation or
+-     * annotation member
++     * Determines if the given AST node has a parent node with given token type code.
+      *
+      * @param ast the AST from which to search for annotations
++     * @param type the type code of parent token
+      *
+-     * @return {@code true} if the token type for this node is a annotation
++     * @return {@code true} if the AST node has a parent with given token type.
+      */
+-    private boolean isInAnnotation(DetailAST ast)
++    private static boolean isChildOf(DetailAST ast, int type)
+     {
+-        return TokenTypes.ANNOTATION == ast.getParent().getParent().getType()
+-                || TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR
+-                        == ast.getParent().getParent().getType();
++        boolean result = false;
++        DetailAST node = ast;
++        do {
++            if (node.getType() == type) {
++                result = true;
++            }
++            node = node.getParent();
++        } while (node != null && !result);
++
++        return result;
+     }
+ }

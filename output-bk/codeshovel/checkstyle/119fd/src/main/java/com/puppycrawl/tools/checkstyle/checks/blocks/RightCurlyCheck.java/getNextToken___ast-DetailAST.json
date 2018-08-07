@@ -1,0 +1,136 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RightCurlyCheck.java",
+  "functionName": "getNextToken",
+  "functionId": "getNextToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java",
+  "functionStartLine": 582,
+  "functionEndLine": 590,
+  "changeHistory": [
+    "f1dc9b205d1ccdba85e34f4cb7adf9ffd4af2361",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "cea86a6cad3098ebcdb4a88db2e49477b07e0d93",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "78e9ce870170ca3ef88fd78f8e0af0681c958eb3"
+  ],
+  "changeHistoryShort": {
+    "f1dc9b205d1ccdba85e34f4cb7adf9ffd4af2361": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "cea86a6cad3098ebcdb4a88db2e49477b07e0d93": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": "Ybodychange",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "78e9ce870170ca3ef88fd78f8e0af0681c958eb3": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "f1dc9b205d1ccdba85e34f4cb7adf9ffd4af2361": {
+      "type": "Ybodychange",
+      "commitMessage": "coverage has been increased to 100% in RughtCurlyCheck. Issue #1291\n",
+      "commitDate": 1438050838000,
+      "commitName": "f1dc9b205d1ccdba85e34f4cb7adf9ffd4af2361",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 4.86,
+      "commitsBetweenForRepo": 53,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     private static DetailAST getNextToken(DetailAST ast) {\n         DetailAST next \u003d null;\n         DetailAST parent \u003d ast;\n-        while (parent !\u003d null \u0026\u0026 next \u003d\u003d null) {\n+        while (next \u003d\u003d null) {\n             next \u003d parent.getNextSibling();\n             parent \u003d parent.getParent();\n         }\n         return CheckUtils.getFirstNode(next);\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1435721870000,
+      "commitNameOld": "cf8a2787c193f6f56d1259154f00de3d5f44fb12",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 17.05,
+      "commitsBetweenForRepo": 137,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n-    private DetailAST getNextToken(DetailAST ast) {\n+    private static DetailAST getNextToken(DetailAST ast) {\n         DetailAST next \u003d null;\n         DetailAST parent \u003d ast;\n         while (parent !\u003d null \u0026\u0026 next \u003d\u003d null) {\n             next \u003d parent.getNextSibling();\n             parent \u003d parent.getParent();\n         }\n         return CheckUtils.getFirstNode(next);\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425602876000,
+      "commitNameOld": "f7828693395f71a6ae99710f3fab44cb8a66ea51",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 4.87,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     private DetailAST getNextToken(DetailAST ast)\n     {\n         DetailAST next \u003d null;\n         DetailAST parent \u003d ast;\n-        while ((parent !\u003d null) \u0026\u0026 (next \u003d\u003d null)) {\n+        while (parent !\u003d null \u0026\u0026 next \u003d\u003d null) {\n             next \u003d parent.getNextSibling();\n             parent \u003d parent.getParent();\n         }\n         return CheckUtils.getFirstNode(next);\n     }\n\\ No newline at end of file\n"
+    },
+    "cea86a6cad3098ebcdb4a88db2e49477b07e0d93": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, blocks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/AvoidNestedBlocksCheck.java\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java\n",
+      "commitDate": 1421677949000,
+      "commitName": "cea86a6cad3098ebcdb4a88db2e49477b07e0d93",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": {
+      "type": "Ybodychange",
+      "commitMessage": "Inspired by patch# 2111354 - changes to remove casting. Neat trick\n",
+      "commitDate": 1221737656000,
+      "commitName": "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1214975994000,
+      "commitNameOld": "d4b933799af120cf4a8490db98f396b6348430e9",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 78.26,
+      "commitsBetweenForRepo": 14,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     private DetailAST getNextToken(DetailAST aAST)\n     {\n         DetailAST next \u003d null;\n         DetailAST parent \u003d aAST;\n         while ((parent !\u003d null) \u0026\u0026 (next \u003d\u003d null)) {\n-            next \u003d (DetailAST) parent.getNextSibling();\n+            next \u003d parent.getNextSibling();\n             parent \u003d parent.getParent();\n         }\n         return CheckUtils.getFirstNode(next);\n     }\n\\ No newline at end of file\n"
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1137847382000,
+      "commitNameOld": "c38185458ab824874b8465c46b4dc42646440aaa",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 166.61,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     private DetailAST getNextToken(DetailAST aAST)\n     {\n         DetailAST next \u003d null;\n         DetailAST parent \u003d aAST;\n-        while (parent !\u003d null \u0026\u0026 next \u003d\u003d null) {\n+        while ((parent !\u003d null) \u0026\u0026 (next \u003d\u003d null)) {\n             next \u003d (DetailAST) parent.getNextSibling();\n             parent \u003d parent.getParent();\n         }\n         return CheckUtils.getFirstNode(next);\n     }\n\\ No newline at end of file\n"
+    },
+    "78e9ce870170ca3ef88fd78f8e0af0681c958eb3": {
+      "type": "Yintroduced",
+      "commitMessage": "Fix for 1000092 (RightCurlyCheck misbehaves for LIT_CATCH)\nNow the check verifies the placement of rcurly after all IFs, ELSEs,\nCATCHes and FINALLYs.  Also it could check that rcurly starts the\nline.\n\nAlso minor fix for typos in all AllTests.main(): we need to call\nrunner with AllTests.suite(), not with AllTests.class\n",
+      "commitDate": 1134846213000,
+      "commitName": "78e9ce870170ca3ef88fd78f8e0af0681c958eb3",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

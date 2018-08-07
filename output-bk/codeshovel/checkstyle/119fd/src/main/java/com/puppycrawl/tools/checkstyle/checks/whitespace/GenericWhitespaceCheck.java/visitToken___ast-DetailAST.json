@@ -1,0 +1,72 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "GenericWhitespaceCheck.java",
+  "functionName": "visitToken",
+  "functionId": "visitToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java",
+  "functionStartLine": 130,
+  "functionEndLine": 143,
+  "changeHistory": [
+    "6d3dbe2fd3d64b491ee39ac1d42d0ee88938d190",
+    "d97a2df674716efb7deda50180ae933bdc46d68a",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "ac596b1c3ab07d52cafd96abf471016900861100"
+  ],
+  "changeHistoryShort": {
+    "6d3dbe2fd3d64b491ee39ac1d42d0ee88938d190": "Ybodychange",
+    "d97a2df674716efb7deda50180ae933bdc46d68a": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "ac596b1c3ab07d52cafd96abf471016900861100": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6d3dbe2fd3d64b491ee39ac1d42d0ee88938d190": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1289: \u0027GenericWhitespaceCheck\u0027 refactored, UT coverage improved\n",
+      "commitDate": 1437004697000,
+      "commitName": "6d3dbe2fd3d64b491ee39ac1d42d0ee88938d190",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1434344165000,
+      "commitNameOld": "7c1d239748c9a90112bf3a59b189dc31ffe41983",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 30.79,
+      "commitsBetweenForRepo": 212,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,14 @@\n     public void visitToken(DetailAST ast) {\n-        if (ast.getType() \u003d\u003d TokenTypes.GENERIC_START) {\n-            processStart(ast);\n-            depth++;\n-        }\n-        else if (ast.getType() \u003d\u003d TokenTypes.GENERIC_END) {\n-            processEnd(ast);\n-            depth--;\n+        switch (ast.getType()) {\n+            case TokenTypes.GENERIC_START:\n+                processStart(ast);\n+                depth++;\n+                break;\n+            case TokenTypes.GENERIC_END:\n+                processEnd(ast);\n+                depth--;\n+                break;\n+            default:\n+                throw new IllegalArgumentException(\"Unknown type \" + ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d97a2df674716efb7deda50180ae933bdc46d68a": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, whitespace, #512\n",
+      "commitDate": 1421677248000,
+      "commitName": "d97a2df674716efb7deda50180ae933bdc46d68a",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "ac596b1c3ab07d52cafd96abf471016900861100": {
+      "type": "Yintroduced",
+      "commitMessage": "Implementation of a check to ensure \"correct\" whitespace around the Generic statements. A long overdue check.\n",
+      "commitDate": 1197777583000,
+      "commitName": "ac596b1c3ab07d52cafd96abf471016900861100",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

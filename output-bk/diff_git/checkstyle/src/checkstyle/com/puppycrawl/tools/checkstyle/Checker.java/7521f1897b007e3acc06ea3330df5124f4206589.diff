@@ -1,0 +1,117 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+index 9729a5253..e9c1e28d3 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -121,108 +121,108 @@ public class Checker
+      */
+     public void addListener(AuditListener aListener)
+     {
+         mListeners.add(aListener);
+     }
+ 
+     /**
+      * Processes a set of files.
+      * Once this is done, it is highly recommended to call for
+      * the destroy method to close and remove the listeners.
+      * @param aFiles the list of files to be audited.
+      * @return the total number of errors found
+      * @see #destroy()
+      */
+     public int process(String[] aFiles)
+     {
+         int total = 0;
+         fireAuditStarted();
+ 
+         // If you move checkPackageHtml() around beware of the caching
+         // functionality of checkstyle. Make sure that package.html
+         // checks are not skipped because of caching. Otherwise you
+         // might e.g. have a package.html file, check all java files
+         // without errors, delete package.html and then recheck without
+         // errors because the html file is not covered by the cache.
+         total += checkPackageHtml(aFiles);
+ 
+         for (int i = 0; i < aFiles.length; i++) {
+             total += process(aFiles[i]);
+         }
+         fireAuditFinished();
+         return total;
+     }
+ 
+     /**
+      * Processes a specified file and prints out all errors found.
+      * @return the number of errors found
+      * @param aFileName the name of the file to process
+      **/
+     private int process(String aFileName)
+     {
+         // check if already checked and passed the file
+         final File f = new File(aFileName);
+         final long timestamp = f.lastModified();
+         if (mCache.alreadyChecked(aFileName, timestamp)) {
+             return 0;
+         }
+ 
+         // Create a stripped down version
+         final String stripped;
+-        if ((mConfig.getBasedir() == null)
+-            || !aFileName.startsWith(mConfig.getBasedir()))
+-        {
++        final String basedir = mConfig.getBasedir();
++        if ((basedir == null) || !aFileName.startsWith(basedir)) {
+             stripped = aFileName;
+         }
+         else {
+             // making the assumption that there is text after basedir
+-            stripped = aFileName.substring(mConfig.getBasedir().length() + 1);
++            final int skipSep = basedir.endsWith(File.separator) ? 0 : 1;
++            stripped = aFileName.substring(basedir.length() + skipSep);
+         }
+ 
+         LineText[] errors;
+         try {
+             fireFileStarted(stripped);
+             final String[] lines = getLines(aFileName);
+             try {
+                 // try the 1.4 grammar first, this will succeed for
+                 // all code that compiles without any warnings in JDK 1.4,
+                 // that should cover most cases
+                 VerifierSingleton.getInstance().clearMessages();
+                 VerifierSingleton.getInstance().setLines(lines);
+                 final Reader sar = new StringArrayReader(lines);
+                 final GeneratedJava14Lexer jl = new GeneratedJava14Lexer(sar);
+                 jl.setFilename(aFileName);
+                 final GeneratedJava14Recognizer jr =
+                     new SilentJava14Recognizer(jl);
+                 jr.setFilename(aFileName);
+                 jr.setASTNodeClass(MyCommonAST.class.getName());
+                 jr.compilationUnit();
+             }
+             catch (RecognitionException re) {
+                 // Parsing might have failed because the checked
+                 // file contains "assert" as an identifier. Retry with a
+                 // grammar that treats "assert" as an identifier
+                 // and not as a keyword
+ 
+                 // Arghh - the pain - duplicate code!
+                 VerifierSingleton.getInstance().clearMessages();
+                 VerifierSingleton.getInstance().setLines(lines);
+                 final Reader sar = new StringArrayReader(lines);
+                 final GeneratedJavaLexer jl = new GeneratedJavaLexer(sar);
+                 jl.setFilename(aFileName);
+                 final GeneratedJavaRecognizer jr =
+                     new GeneratedJavaRecognizer(jl);
+                 jr.setFilename(aFileName);
+                 jr.setASTNodeClass(MyCommonAST.class.getName());
+                 jr.compilationUnit();
+             }
+             errors = VerifierSingleton.getInstance().getMessages();
+         }
+         catch (FileNotFoundException fnfe) {
+             errors = new LineText[] {new LineText(0, "File not found!")};
+         }
+         catch (IOException ioe) {
+             errors = new LineText[] {
+                 new LineText(0, "Got an IOException -" + ioe.getMessage())};
+         }
+         catch (RecognitionException re) {
+             errors = new LineText[] {

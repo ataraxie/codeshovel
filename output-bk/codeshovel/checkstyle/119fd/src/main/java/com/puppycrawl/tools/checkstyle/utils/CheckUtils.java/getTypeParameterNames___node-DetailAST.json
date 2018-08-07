@@ -1,0 +1,165 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CheckUtils.java",
+  "functionName": "getTypeParameterNames",
+  "functionId": "getTypeParameterNames___node-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/utils/CheckUtils.java",
+  "functionStartLine": 266,
+  "functionEndLine": 288,
+  "changeHistory": [
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020",
+    "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+    "7552a0b72e07c9a0070e84789b5abe6d293de6e0",
+    "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "a031901307ecd3b1ae035d7ac185bc221472b396"
+  ],
+  "changeHistoryShort": {
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020": "Ybodychange",
+    "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0": "Ybodychange",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": "Yfilerename",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": "Ybodychange",
+    "7552a0b72e07c9a0070e84789b5abe6d293de6e0": "Ybodychange",
+    "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d": "Ymultichange(Yreturntypechange,Ybodychange)",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "a031901307ecd3b1ae035d7ac185bc221472b396": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3433: Cut down on Checkstyle\u0027s dependencies on Guava (part 2) (#3454)\n\n",
+      "commitDate": 1474426326000,
+      "commitName": "fbf3f95c2273be23b966cba6e6ef89390a6fb020",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1466112819000,
+      "commitNameOld": "40a0b5dcf7f9b45ae98ddcb1dec6e9e7c4eec676",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 96.22,
+      "commitsBetweenForRepo": 140,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,23 @@\n     public static List\u003cString\u003e getTypeParameterNames(final DetailAST node) {\n         final DetailAST typeParameters \u003d\n             node.findFirstToken(TokenTypes.TYPE_PARAMETERS);\n \n-        final List\u003cString\u003e typeParameterNames \u003d Lists.newArrayList();\n+        final List\u003cString\u003e typeParameterNames \u003d new ArrayList\u003c\u003e();\n         if (typeParameters !\u003d null) {\n             final DetailAST typeParam \u003d\n                 typeParameters.findFirstToken(TokenTypes.TYPE_PARAMETER);\n             typeParameterNames.add(\n                     typeParam.findFirstToken(TokenTypes.IDENT).getText());\n \n             DetailAST sibling \u003d typeParam.getNextSibling();\n             while (sibling !\u003d null) {\n                 if (sibling.getType() \u003d\u003d TokenTypes.TYPE_PARAMETER) {\n                     typeParameterNames.add(\n                             sibling.findFirstToken(TokenTypes.IDENT).getText());\n                 }\n                 sibling \u003d sibling.getNextSibling();\n             }\n         }\n \n         return typeParameterNames;\n     }\n\\ No newline at end of file\n"
+    },
+    "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix typos in utlis package. #1555\n\nFixes some `SpellCheckingInspection` inspection violations.\n\nDescription:\n\u003eSpellchecker inspection helps locate typos and misspelling in your code, comments and literals.\n",
+      "commitDate": 1440739587000,
+      "commitName": "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440694468000,
+      "commitNameOld": "a21164df1fbaff36ba020968b3a6128ab8476756",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 0.52,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,23 @@\n     public static List\u003cString\u003e getTypeParameterNames(final DetailAST node) {\n         final DetailAST typeParameters \u003d\n             node.findFirstToken(TokenTypes.TYPE_PARAMETERS);\n \n-        final List\u003cString\u003e typeParanames \u003d Lists.newArrayList();\n+        final List\u003cString\u003e typeParameterNames \u003d Lists.newArrayList();\n         if (typeParameters !\u003d null) {\n             final DetailAST typeParam \u003d\n                 typeParameters.findFirstToken(TokenTypes.TYPE_PARAMETER);\n-            typeParanames.add(\n-                typeParam.findFirstToken(TokenTypes.IDENT).getText());\n+            typeParameterNames.add(\n+                    typeParam.findFirstToken(TokenTypes.IDENT).getText());\n \n             DetailAST sibling \u003d typeParam.getNextSibling();\n             while (sibling !\u003d null) {\n                 if (sibling.getType() \u003d\u003d TokenTypes.TYPE_PARAMETER) {\n-                    typeParanames.add(\n-                        sibling.findFirstToken(TokenTypes.IDENT).getText());\n+                    typeParameterNames.add(\n+                            sibling.findFirstToken(TokenTypes.IDENT).getText());\n                 }\n                 sibling \u003d sibling.getNextSibling();\n             }\n         }\n \n-        return typeParanames;\n+        return typeParameterNames;\n     }\n\\ No newline at end of file\n"
+    },
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": {
+      "type": "Yfilerename",
+      "commitMessage": "Utils classes have been moved to utils package. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440637702000,
+      "commitNameOld": "f6113bb56d695719a8803274effb3596cb82120f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.46,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": {
+      "type": "Ybodychange",
+      "commitMessage": "Inspired by patch# 2111354 - changes to remove casting. Neat trick\n",
+      "commitDate": 1221737656000,
+      "commitName": "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1208867287000,
+      "commitNameOld": "7552a0b72e07c9a0070e84789b5abe6d293de6e0",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 148.96,
+      "commitsBetweenForRepo": 41,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,24 @@\n     public static List\u003cString\u003e getTypeParameterNames(final DetailAST aNode)\n     {\n         final DetailAST typeParameters \u003d\n             aNode.findFirstToken(TokenTypes.TYPE_PARAMETERS);\n \n         final List\u003cString\u003e typeParamNames \u003d Lists.newArrayList();\n         if (typeParameters !\u003d null) {\n             final DetailAST typeParam \u003d\n                 typeParameters.findFirstToken(TokenTypes.TYPE_PARAMETER);\n             typeParamNames.add(\n                 typeParam.findFirstToken(TokenTypes.IDENT).getText());\n \n-            DetailAST sibling \u003d (DetailAST) typeParam.getNextSibling();\n+            DetailAST sibling \u003d typeParam.getNextSibling();\n             while (sibling !\u003d null) {\n                 if (sibling.getType() \u003d\u003d TokenTypes.TYPE_PARAMETER) {\n                     typeParamNames.add(\n                         sibling.findFirstToken(TokenTypes.IDENT).getText());\n                 }\n-                sibling \u003d (DetailAST) sibling.getNextSibling();\n+                sibling \u003d sibling.getNextSibling();\n             }\n         }\n \n         return typeParamNames;\n     }\n\\ No newline at end of file\n"
+    },
+    "7552a0b72e07c9a0070e84789b5abe6d293de6e0": {
+      "type": "Ybodychange",
+      "commitMessage": "Drinking the \"Google Collections\" Kool-Aid.\n\nI like the reduced duplication.\n",
+      "commitDate": 1208867287000,
+      "commitName": "7552a0b72e07c9a0070e84789b5abe6d293de6e0",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200192438000,
+      "commitNameOld": "5a7e221b757e91d49be1aea105eb4b839e653fbd",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 100.4,
+      "commitsBetweenForRepo": 34,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,24 @@\n     public static List\u003cString\u003e getTypeParameterNames(final DetailAST aNode)\n     {\n         final DetailAST typeParameters \u003d\n             aNode.findFirstToken(TokenTypes.TYPE_PARAMETERS);\n \n-        final List\u003cString\u003e typeParamNames \u003d new ArrayList\u003cString\u003e();\n+        final List\u003cString\u003e typeParamNames \u003d Lists.newArrayList();\n         if (typeParameters !\u003d null) {\n             final DetailAST typeParam \u003d\n                 typeParameters.findFirstToken(TokenTypes.TYPE_PARAMETER);\n             typeParamNames.add(\n                 typeParam.findFirstToken(TokenTypes.IDENT).getText());\n \n             DetailAST sibling \u003d (DetailAST) typeParam.getNextSibling();\n             while (sibling !\u003d null) {\n                 if (sibling.getType() \u003d\u003d TokenTypes.TYPE_PARAMETER) {\n                     typeParamNames.add(\n                         sibling.findFirstToken(TokenTypes.IDENT).getText());\n                 }\n                 sibling \u003d (DetailAST) sibling.getNextSibling();\n             }\n         }\n \n         return typeParamNames;\n     }\n\\ No newline at end of file\n"
+    },
+    "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d": {
+      "type": "Ymultichange(Yreturntypechange,Ybodychange)",
+      "commitMessage": "Start of adding generics.\n",
+      "commitDate": 1197694270000,
+      "commitName": "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1152242806000,
+      "commitNameOld": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,24 @@\n     public static List getTypeParameterNames(final DetailAST aNode)\n     {\n-        DetailAST typeParameters \u003d\n+        final DetailAST typeParameters \u003d\n             aNode.findFirstToken(TokenTypes.TYPE_PARAMETERS);\n \n-        List typeParamNames \u003d new ArrayList();\n+        final List typeParamNames \u003d new ArrayList();\n         if (typeParameters !\u003d null) {\n-            DetailAST typeParam \u003d\n+            final DetailAST typeParam \u003d\n                 typeParameters.findFirstToken(TokenTypes.TYPE_PARAMETER);\n             typeParamNames.add(\n                 typeParam.findFirstToken(TokenTypes.IDENT).getText());\n \n             DetailAST sibling \u003d (DetailAST) typeParam.getNextSibling();\n             while (sibling !\u003d null) {\n                 if (sibling.getType() \u003d\u003d TokenTypes.TYPE_PARAMETER) {\n                     typeParamNames.add(\n                         sibling.findFirstToken(TokenTypes.IDENT).getText());\n                 }\n                 sibling \u003d (DetailAST) sibling.getNextSibling();\n             }\n         }\n \n         return typeParamNames;\n     }\n\\ No newline at end of file\n"
+    },
+    "a031901307ecd3b1ae035d7ac185bc221472b396": {
+      "type": "Yintroduced",
+      "commitMessage": "Fix for 1185501.\n",
+      "commitDate": 1117930286000,
+      "commitName": "a031901307ecd3b1ae035d7ac185bc221472b396",
+      "commitAuthor": "Michael Studman"
+    }
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IfHandler.java",
+  "functionName": "getSuggestedChildIndent",
+  "functionId": "getSuggestedChildIndent___child-AbstractExpressionHandler",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/IfHandler.java",
+  "functionStartLine": 46,
+  "functionEndLine": 55,
+  "changeHistory": [
+    "8174ea2a778fbd3e75c790f89f83f979ad8e3c9a",
+    "8c891372187779376158becd95fcaf4e28b8bb8d",
+    "ab74399c2d18b8881c4a0c13155b7afce869eebf",
+    "eb5896a4a1d66552f5100046413f15d62b485b62",
+    "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "80c8e1c7a8f32c0dd263fdd30d9d87ade317f51c",
+    "7f7db38a097a95c264307123924779380fb40077",
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b",
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955"
+  ],
+  "changeHistoryShort": {
+    "8174ea2a778fbd3e75c790f89f83f979ad8e3c9a": "Ybodychange",
+    "8c891372187779376158becd95fcaf4e28b8bb8d": "Ymultichange(Yrename,Ybodychange)",
+    "ab74399c2d18b8881c4a0c13155b7afce869eebf": "Ymultichange(Yrename,Ybodychange)",
+    "eb5896a4a1d66552f5100046413f15d62b485b62": "Yparameterchange",
+    "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "80c8e1c7a8f32c0dd263fdd30d9d87ade317f51c": "Ybodychange",
+    "7f7db38a097a95c264307123924779380fb40077": "Yreturntypechange",
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "8174ea2a778fbd3e75c790f89f83f979ad8e3c9a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: ReturnCount: enforce max\u003d1 over checkstyle code\n",
+      "commitDate": 1503403207000,
+      "commitName": "8174ea2a778fbd3e75c790f89f83f979ad8e3c9a",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 206.89,
+      "commitsBetweenForRepo": 810,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,10 @@\n     public IndentLevel getSuggestedChildIndent(AbstractExpressionHandler child) {\n+        final IndentLevel result;\n         if (child instanceof ElseHandler) {\n-            return getIndent();\n+            result \u003d getIndent();\n         }\n-        return super.getSuggestedChildIndent(child);\n+        else {\n+            result \u003d super.getSuggestedChildIndent(child);\n+        }\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "8c891372187779376158becd95fcaf4e28b8bb8d": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "minor: renaming indentation methods to more natural name",
+      "commitDate": 1450282560000,
+      "commitName": "8c891372187779376158becd95fcaf4e28b8bb8d",
+      "commitAuthor": "rnveach",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "ab74399c2d18b8881c4a0c13155b7afce869eebf": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "minor: renaming indentation methods to more natural name",
+      "commitDate": 1449255189000,
+      "commitName": "ab74399c2d18b8881c4a0c13155b7afce869eebf",
+      "commitAuthor": "rnveach",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "eb5896a4a1d66552f5100046413f15d62b485b62": {
+      "type": "Yparameterchange",
+      "commitMessage": "Fix PMD violations for AbstractNaming rule #983\n",
+      "commitDate": 1434649920000,
+      "commitName": "eb5896a4a1d66552f5100046413f15d62b485b62",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 32.25,
+      "commitsBetweenForRepo": 181,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n-    public IndentLevel suggestedChildLevel(ExpressionHandler child) {\n+    public IndentLevel suggestedChildLevel(AbstractExpressionHandler child) {\n         if (child instanceof ElseHandler) {\n             return getLevel();\n         }\n         return super.suggestedChildLevel(child);\n     }\n\\ No newline at end of file\n"
+    },
+    "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, indentation, #512\n",
+      "commitDate": 1421678099000,
+      "commitName": "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "80c8e1c7a8f32c0dd263fdd30d9d87ade317f51c": {
+      "type": "Ybodychange",
+      "commitMessage": "General cleanup.\n",
+      "commitDate": 1090409700000,
+      "commitName": "80c8e1c7a8f32c0dd263fdd30d9d87ade317f51c",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1074114639000,
+      "commitNameOld": "5670252b46f4915b276e647fa000361915eb4ff4",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 188.6,
+      "commitsBetweenForRepo": 119,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,7 @@\n     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)\n     {\n         if (aChild instanceof ElseHandler) {\n             return getLevel();\n         }\n-        else {\n-            return super.suggestedChildLevel(aChild);\n-        }\n+        return super.suggestedChildLevel(aChild);\n     }\n\\ No newline at end of file\n"
+    },
+    "7f7db38a097a95c264307123924779380fb40077": {
+      "type": "Yreturntypechange",
+      "commitMessage": "IndentationCheck: Some refactoring and fixes for some TODOs and bugs.\n",
+      "commitDate": 1060715940000,
+      "commitName": "7f7db38a097a95c264307123924779380fb40077",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1055144900000,
+      "commitNameOld": "889587fdd22ba03ea670e404d36810e9af113c9d",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 64.48,
+      "commitsBetweenForRepo": 142,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n-    public int suggestedChildLevel(ExpressionHandler aChild)\n+    public IndentLevel suggestedChildLevel(ExpressionHandler aChild)\n     {\n         if (aChild instanceof ElseHandler) {\n             return getLevel();\n         }\n         else {\n             return super.suggestedChildLevel(aChild);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Refactoring of original IndentationCheck made by Jeff Weston (Sir Toby) applied.\nFixed two know problems:\n - with static init block (catched by testValidBlockWithChecker())\n - with throws in method definition.\n   unit-test (testInvalidMethodWithChecker()) fixed too.\n",
+      "commitDate": 1052639583000,
+      "commitName": "eaad55fdba73e17e103dc6600867f26fd6a3896b",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955": {
+      "type": "Yintroduced",
+      "commitMessage": "added IndentationCheck, contributed by John Richardson\nThis check currently fails to pass checkstyle.checkstyle\nbecause most methods are missing javadoc, I hope somebody\ncan help me adding it\n",
+      "commitDate": 1051248087000,
+      "commitName": "9aab61241e7970ccfb4a9ee66c8eb7f062d31955",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

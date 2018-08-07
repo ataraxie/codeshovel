@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+index 6fb74178c..01e84ca57 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -338,101 +338,101 @@ public class Checker extends AutomaticBean implements MessageDispatcher
+     {
+         final String stripped = Utils.relativizeAndNormalizePath(basedir, fileName);
+         final AuditEvent evt = new AuditEvent(this, stripped);
+         for (final AuditListener listener : listeners) {
+             listener.fileStarted(evt);
+         }
+     }
+ 
+     /**
+      * Notify all listeners about the end of a file audit.
+      *
+      * @param fileName
+      *            the audited file
+      */
+     @Override
+     public void fireFileFinished(String fileName)
+     {
+         final String stripped = Utils.relativizeAndNormalizePath(basedir, fileName);
+         final AuditEvent evt = new AuditEvent(this, stripped);
+         for (final AuditListener listener : listeners) {
+             listener.fileFinished(evt);
+         }
+     }
+ 
+     /**
+      * notify all listeners about the errors in a file.
+      *
+      * @param fileName the audited file
+      * @param errors the audit errors from the file
+      */
+     @Override
+     public void fireErrors(String fileName, SortedSet<LocalizedMessage> errors)
+     {
+         final String stripped = Utils.relativizeAndNormalizePath(basedir, fileName);
+         for (final LocalizedMessage element : errors) {
+             final AuditEvent evt = new AuditEvent(this, stripped, element);
+             if (filters.accept(evt)) {
+                 for (final AuditListener listener : listeners) {
+                     listener.addError(evt);
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Sets the file extensions that identify the files that pass the
+      * filter of this FileSetCheck.
+      * @param extensions the set of file extensions. A missing
+      * initial '.' character of an extension is automatically added.
+      */
+-    public final void setFileExtensions(String[] extensions)
++    public final void setFileExtensions(String... extensions)
+     {
+         if (extensions == null) {
+             fileExtensions = null;
+             return;
+         }
+ 
+         fileExtensions = new String[extensions.length];
+         for (int i = 0; i < extensions.length; i++) {
+             final String extension = extensions[i];
+             if (extension.startsWith(".")) {
+                 fileExtensions[i] = extension;
+             }
+             else {
+                 fileExtensions[i] = "." + extension;
+             }
+         }
+     }
+ 
+     /**
+      * Sets the factory for creating submodules.
+      *
+      * @param moduleFactory the factory for creating FileSetChecks
+      */
+     public void setModuleFactory(ModuleFactory moduleFactory)
+     {
+         this.moduleFactory = moduleFactory;
+     }
+ 
+     /** @param localeCountry the country to report messages  **/
+     public void setLocaleCountry(String localeCountry)
+     {
+         this.localeCountry = localeCountry;
+     }
+ 
+     /** @param localeLanguage the language to report messages  **/
+     public void setLocaleLanguage(String localeLanguage)
+     {
+         this.localeLanguage = localeLanguage;
+     }
+ 
+     /**
+      * Sets the severity level.  The string should be one of the names
+      * defined in the <code>SeverityLevel</code> class.
+      *
+      * @param severity  The new severity level
+      * @see SeverityLevel
+      */
+     public final void setSeverity(String severity)
+     {
+         severityLevel = SeverityLevel.getInstance(severity);

@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "LinkedHashMultimap.java",
+  "functionName": "iterator",
+  "functionId": "iterator",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/LinkedHashMultimap.java",
+  "functionStartLine": 364,
+  "functionEndLine": 403,
+  "changeHistory": [
+    "b2ab1f0a0bf3849085f55acbd01e3768f995aeb7",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "b2ab1f0a0bf3849085f55acbd01e3768f995aeb7": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b2ab1f0a0bf3849085f55acbd01e3768f995aeb7": {
+      "type": "Ybodychange",
+      "commitMessage": "Add nullness annotations on the fields in LinkedHashMultimap.java\n\nRELNOTES\u003dn/a.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d180936351\n",
+      "commitDate": 1515173909000,
+      "commitName": "b2ab1f0a0bf3849085f55acbd01e3768f995aeb7",
+      "commitAuthor": "cnsun",
+      "commitDateOld": 1514924685000,
+      "commitNameOld": "b6492022b5122cf3f73820d1cc4ce78794558541",
+      "commitAuthorOld": "cnsun",
+      "daysBetweenCommits": 2.88,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,40 +1,40 @@\n     public Iterator\u003cV\u003e iterator() {\n       return new Iterator\u003cV\u003e() {\n         ValueSetLink\u003cK, V\u003e nextEntry \u003d firstEntry;\n-        ValueEntry\u003cK, V\u003e toRemove;\n+        @NullableDecl ValueEntry\u003cK, V\u003e toRemove;\n         int expectedModCount \u003d modCount;\n \n         private void checkForComodification() {\n           if (modCount !\u003d expectedModCount) {\n             throw new ConcurrentModificationException();\n           }\n         }\n \n         @Override\n         public boolean hasNext() {\n           checkForComodification();\n           return nextEntry !\u003d ValueSet.this;\n         }\n \n         @Override\n         public V next() {\n           if (!hasNext()) {\n             throw new NoSuchElementException();\n           }\n           ValueEntry\u003cK, V\u003e entry \u003d (ValueEntry\u003cK, V\u003e) nextEntry;\n           V result \u003d entry.getValue();\n           toRemove \u003d entry;\n           nextEntry \u003d entry.getSuccessorInValueSet();\n           return result;\n         }\n \n         @Override\n         public void remove() {\n           checkForComodification();\n           checkRemove(toRemove !\u003d null);\n           ValueSet.this.remove(toRemove.getValue());\n           expectedModCount \u003d modCount;\n           toRemove \u003d null;\n         }\n       };\n     }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

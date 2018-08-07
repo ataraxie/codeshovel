@@ -1,0 +1,163 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/UnnecessaryParenthesesCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/UnnecessaryParenthesesCheck.java
+index 84d0a5722..c23427393 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/UnnecessaryParenthesesCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/UnnecessaryParenthesesCheck.java
+@@ -149,133 +149,127 @@ public class UnnecessaryParenthesesCheck extends Check {
+             TokenTypes.BXOR_ASSIGN,
+             TokenTypes.DIV_ASSIGN,
+             TokenTypes.MINUS_ASSIGN,
+             TokenTypes.MOD_ASSIGN,
+             TokenTypes.PLUS_ASSIGN,
+             TokenTypes.SL_ASSIGN,
+             TokenTypes.SR_ASSIGN,
+             TokenTypes.STAR_ASSIGN,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.EXPR,
+             TokenTypes.IDENT,
+             TokenTypes.NUM_DOUBLE,
+             TokenTypes.NUM_FLOAT,
+             TokenTypes.NUM_INT,
+             TokenTypes.NUM_LONG,
+             TokenTypes.STRING_LITERAL,
+             TokenTypes.LITERAL_NULL,
+             TokenTypes.LITERAL_FALSE,
+             TokenTypes.LITERAL_TRUE,
+             TokenTypes.ASSIGN,
+             TokenTypes.BAND_ASSIGN,
+             TokenTypes.BOR_ASSIGN,
+             TokenTypes.BSR_ASSIGN,
+             TokenTypes.BXOR_ASSIGN,
+             TokenTypes.DIV_ASSIGN,
+             TokenTypes.MINUS_ASSIGN,
+             TokenTypes.MOD_ASSIGN,
+             TokenTypes.PLUS_ASSIGN,
+             TokenTypes.SL_ASSIGN,
+             TokenTypes.SR_ASSIGN,
+             TokenTypes.STAR_ASSIGN,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         // Check can work with any of acceptable tokens
+         return ArrayUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final int type = ast.getType();
+         final DetailAST parent = ast.getParent();
+ 
+-        if (type == TokenTypes.ASSIGN
+-            && parent.getType() == TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR) {
+-            // shouldn't process assign in annotation pairs
+-            return;
+-        }
+-
+-        // An identifier surrounded by parentheses.
+-        final boolean surrounded = isSurrounded(ast);
+-        if (surrounded && type == TokenTypes.IDENT) {
+-            parentToSkip = ast.getParent();
+-            log(ast, MSG_IDENT, ast.getText());
+-            return;
+-        }
+-
+-        // A literal (numeric or string) surrounded by parentheses.
+-        if (surrounded && isInTokenList(type, LITERALS)) {
+-            parentToSkip = ast.getParent();
+-            if (type == TokenTypes.STRING_LITERAL) {
+-                log(ast, MSG_STRING,
+-                    chopString(ast.getText()));
++        if (type != TokenTypes.ASSIGN
++            || parent.getType() != TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR) {
++
++            final boolean surrounded = isSurrounded(ast);
++            // An identifier surrounded by parentheses.
++            if (surrounded && type == TokenTypes.IDENT) {
++                parentToSkip = ast.getParent();
++                log(ast, MSG_IDENT, ast.getText());
+             }
+-            else {
+-                log(ast, MSG_LITERAL, ast.getText());
++            // A literal (numeric or string) surrounded by parentheses.
++            else if (surrounded && isInTokenList(type, LITERALS)) {
++                parentToSkip = ast.getParent();
++                if (type == TokenTypes.STRING_LITERAL) {
++                    log(ast, MSG_STRING,
++                        chopString(ast.getText()));
++                }
++                else {
++                    log(ast, MSG_LITERAL, ast.getText());
++                }
+             }
+-            return;
+-        }
+-
+-        // The rhs of an assignment surrounded by parentheses.
+-        if (isInTokenList(type, ASSIGNMENTS)) {
+-            assignDepth++;
+-            final DetailAST last = ast.getLastChild();
+-            if (last.getType() == TokenTypes.RPAREN) {
+-                log(ast, MSG_ASSIGN);
++            // The rhs of an assignment surrounded by parentheses.
++            else if (isInTokenList(type, ASSIGNMENTS)) {
++                assignDepth++;
++                final DetailAST last = ast.getLastChild();
++                if (last.getType() == TokenTypes.RPAREN) {
++                    log(ast, MSG_ASSIGN);
++                }
+             }
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         final int type = ast.getType();
+         final DetailAST parent = ast.getParent();
+ 
+         if (type == TokenTypes.ASSIGN
+             && parent.getType() == TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR) {
+             // shouldn't process assign in annotation pairs
+             return;
+         }
+ 
+         // An expression is surrounded by parentheses.
+         if (type == TokenTypes.EXPR) {
+ 
+             // If 'parentToSkip' == 'ast', then we've already logged a
+             // warning about an immediate child node in visitToken, so we don't
+             // need to log another one here.
+ 
+             if (parentToSkip != ast && isExprSurrounded(ast)) {
+                 if (assignDepth >= 1) {
+                     log(ast, MSG_ASSIGN);
+                 }
+                 else if (ast.getParent().getType() == TokenTypes.LITERAL_RETURN) {
+                     log(ast, MSG_RETURN);
+                 }
+                 else {
+                     log(ast, MSG_EXPR);
+                 }
+             }
+ 
+             parentToSkip = null;
+         }
+         else if (isInTokenList(type, ASSIGNMENTS)) {
+             assignDepth--;
+         }
+ 
+         super.leaveToken(ast);
+     }
+ 
+     /**
+      * Tests if the given {@code DetailAST} is surrounded by parentheses.
+      * In short, does {@code ast} have a previous sibling whose type is
+      * {@code TokenTypes.LPAREN} and a next sibling whose type is {@code
+      * TokenTypes.RPAREN}.
+      * @param ast the {@code DetailAST} to check if it is surrounded by
+      *        parentheses.

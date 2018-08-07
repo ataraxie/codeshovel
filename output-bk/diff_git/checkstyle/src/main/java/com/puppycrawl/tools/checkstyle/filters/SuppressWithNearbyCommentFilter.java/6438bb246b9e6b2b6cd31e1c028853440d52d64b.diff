@@ -1,0 +1,77 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+index 66068a7c1..9125ce1e1 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+@@ -368,65 +368,71 @@ public class SuppressWithNearbyCommentFilter
+          * @return a negative number if this tag is before the other tag,
+          *     0 if they are at the same position, and a positive number if this
+          *     tag is after the other tag.
+          */
+         @Override
+         public int compareTo(Tag other) {
+             if (firstLine == other.firstLine) {
+                 return Integer.compare(lastLine, other.lastLine);
+             }
+ 
+             return Integer.compare(firstLine, other.firstLine);
+         }
+ 
+         @Override
+         public boolean equals(Object other) {
+             if (this == other) {
+                 return true;
+             }
+             if (other == null || getClass() != other.getClass()) {
+                 return false;
+             }
+             final Tag tag = (Tag) other;
+             return Objects.equals(firstLine, tag.firstLine)
+                     && Objects.equals(lastLine, tag.lastLine)
+                     && Objects.equals(text, tag.text)
+                     && Objects.equals(tagCheckRegexp, tag.tagCheckRegexp)
+                     && Objects.equals(tagMessageRegexp, tag.tagMessageRegexp);
+         }
+ 
+         @Override
+         public int hashCode() {
+             return Objects.hash(text, firstLine, lastLine, tagCheckRegexp, tagMessageRegexp);
+         }
+ 
+         /**
+          * Determines whether the source of an audit event
+          * matches the text of this tag.
+          * @param event the {@code AuditEvent} to check.
+          * @return true if the source of event matches the text of this tag.
+          */
+         public boolean isMatch(AuditEvent event) {
+             final int line = event.getLine();
+             boolean match = false;
+ 
+             if (line >= firstLine && line <= lastLine) {
+                 final Matcher tagMatcher = tagCheckRegexp.matcher(event.getSourceName());
+ 
+                 if (tagMatcher.find()) {
+                     match = true;
+                 }
+-                else if (tagMessageRegexp != null) {
++                else if (tagMessageRegexp == null) {
++                    if (event.getModuleId() != null) {
++                        final Matcher idMatcher = tagCheckRegexp.matcher(event.getModuleId());
++                        match = idMatcher.find();
++                    }
++                }
++                else {
+                     final Matcher messageMatcher = tagMessageRegexp.matcher(event.getMessage());
+                     match = messageMatcher.find();
+                 }
+             }
+             return match;
+         }
+ 
+         @Override
+         public final String toString() {
+             return "Tag[lines=[" + firstLine + " to " + lastLine
+                 + "]; text='" + text + "']";
+         }
+     }
+ }

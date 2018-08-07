@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "UnusedImportsCheck.java",
+  "functionName": "processJavadocTag",
+  "functionId": "processJavadocTag___tag-JavadocTag",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java",
+  "functionStartLine": 269,
+  "functionEndLine": 277,
+  "changeHistory": [
+    "66d73fe6189267fee3423e2e8d7fc2d68599a43f",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "ff5cbc39c4882b3a3dcdbedcad9393e170148725",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+    "e196edcf8b06f6c287c06f01748dafa7fd9892e4"
+  ],
+  "changeHistoryShort": {
+    "66d73fe6189267fee3423e2e8d7fc2d68599a43f": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "ff5cbc39c4882b3a3dcdbedcad9393e170148725": "Ybodychange",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": "Ymultichange(Yparameterchange,Ybodychange)",
+    "e196edcf8b06f6c287c06f01748dafa7fd9892e4": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "66d73fe6189267fee3423e2e8d7fc2d68599a43f": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: MemberName and MethodName violations fixed\n",
+      "commitDate": 1439560811000,
+      "commitName": "66d73fe6189267fee3423e2e8d7fc2d68599a43f",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 22.33,
+      "commitsBetweenForRepo": 269,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     private static Set\u003cString\u003e processJavadocTag(JavadocTag tag) {\n         final Set\u003cString\u003e references \u003d new HashSet\u003c\u003e();\n-        final String identifier \u003d tag.getArg1().trim();\n+        final String identifier \u003d tag.getFirstArg().trim();\n         for (Pattern pattern : new Pattern[]\n         {FIRST_CLASS_NAME, ARGUMENT_NAME}) {\n             references.addAll(matchPattern(identifier, pattern));\n         }\n         return references;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 61.71,
+      "commitsBetweenForRepo": 387,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n-    private Set\u003cString\u003e processJavadocTag(JavadocTag tag) {\n+    private static Set\u003cString\u003e processJavadocTag(JavadocTag tag) {\n         final Set\u003cString\u003e references \u003d new HashSet\u003c\u003e();\n         final String identifier \u003d tag.getArg1().trim();\n         for (Pattern pattern : new Pattern[]\n         {FIRST_CLASS_NAME, ARGUMENT_NAME}) {\n             references.addAll(matchPattern(identifier, pattern));\n         }\n         return references;\n     }\n\\ No newline at end of file\n"
+    },
+    "ff5cbc39c4882b3a3dcdbedcad9393e170148725": {
+      "type": "Ybodychange",
+      "commitMessage": "Replace verbose type arguments with diamond type \u003c\u003e\n\nThis syntax is not supported under Java 6 or earlier, but Checkstyle codebase uses Java 7 already.\n",
+      "commitDate": 1424017336000,
+      "commitName": "ff5cbc39c4882b3a3dcdbedcad9393e170148725",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1423431987000,
+      "commitNameOld": "abe2b200312ee72aa552026b1a34e8bd72bfdc4e",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 6.77,
+      "commitsBetweenForRepo": 19,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     private Set\u003cString\u003e processJavadocTag(JavadocTag tag)\n     {\n-        final Set\u003cString\u003e references \u003d new HashSet\u003cString\u003e();\n+        final Set\u003cString\u003e references \u003d new HashSet\u003c\u003e();\n         final String identifier \u003d tag.getArg1().trim();\n         for (Pattern pattern : new Pattern[]\n         {FIRST_CLASS_NAME, ARGUMENT_NAME})\n         {\n             references.addAll(matchPattern(identifier, pattern));\n         }\n         return references;\n     }\n\\ No newline at end of file\n"
+    },
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, imports, #512\n",
+      "commitDate": 1421678111000,
+      "commitName": "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "e196edcf8b06f6c287c06f01748dafa7fd9892e4": {
+      "type": "Yintroduced",
+      "commitMessage": "Update UnusedImportsCheck to correctly detect classes in parameters and inline tags nested within block tags.\nfixing checkstyle issues\nFixing even more checkstyle issues\n",
+      "commitDate": 1402462919000,
+      "commitName": "e196edcf8b06f6c287c06f01748dafa7fd9892e4",
+      "commitAuthor": "James Gorman"
+    }
+  }
+}

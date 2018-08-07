@@ -1,0 +1,129 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java
+index c69e2f635..8ac590402 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java
+@@ -144,113 +144,119 @@ public class InnerAssignmentCheck
+         if (isInContext(ast, ALLOWED_ASSIGMENT_CONTEXT)) {
+             return;
+         }
+ 
+         if (isInNoBraceControlStatement(ast)) {
+             return;
+         }
+ 
+         if (isInWhileIdiom(ast)) {
+             return;
+         }
+ 
+         log(ast.getLineNo(), ast.getColumnNo(), MSG_KEY);
+     }
+ 
+     /**
+      * Determines if ast is in the body of a flow control statement without
+      * braces. An example of such a statement would be
+      * <p>
+      * <pre>
+      * if (y < 0)
+      *     x = y;
+      * </pre>
+      * </p>
+      * <p>
+      * This leads to the following AST structure:
+      * </p>
+      * <p>
+      * <pre>
+      * LITERAL_IF
+      *     LPAREN
+      *     EXPR // test
+      *     RPAREN
+      *     EXPR // body
+      *     SEMI
+      * </pre>
+      * </p>
+      * <p>
+      * We need to ensure that ast is in the body and not in the test.
+      * </p>
+      *
+      * @param ast an assignment operator AST
+      * @return whether ast is in the body of a flow control statement
+      */
+     private static boolean isInNoBraceControlStatement(DetailAST ast) {
+         if (!isInContext(ast, CONTROL_CONTEXT)) {
+             return false;
+         }
+         final DetailAST expr = ast.getParent();
+         final AST exprNext = expr.getNextSibling();
+-        return exprNext != null && exprNext.getType() == TokenTypes.SEMI;
++        return exprNext.getType() == TokenTypes.SEMI;
+     }
+ 
+     /**
+      * Tests whether the given AST is used in the "assignment in while test"
+      * idiom.
+      * <p>
+      * <pre>
+      * while ((b = is.read()) != -1) {
+      *   // work with b
+      * }
+      * </pre>
+      * </p>
+      *
+      * @param ast assignment AST
+      * @return whether the context of the assignemt AST indicates the idiom
+      */
+     private static boolean isInWhileIdiom(DetailAST ast) {
+         if (!isComparison(ast.getParent())) {
+             return false;
+         }
+         return isInContext(
+                 ast.getParent(), ALLOWED_ASSIGMENT_IN_COMPARISON_CONTEXT);
+     }
+ 
+     /**
+      * Checks if an AST is a comparison operator.
+      * @param ast the AST to check
+      * @return true iff ast is a comparison operator.
+      */
+     private static boolean isComparison(DetailAST ast) {
+         final int astType = ast.getType();
+         return Arrays.binarySearch(COMPARISON_TYPES, astType) >= 0;
+     }
+ 
+     /**
+      * Tests whether the provided AST is in
+      * one of the given contexts.
+      *
+      * @param ast the AST from which to start walking towards root
+      * @param contextSet the contexts to test against.
+      *
+      * @return whether the parents nodes of ast match
+      * one of the allowed type paths
+      */
+     private static boolean isInContext(DetailAST ast, int[]... contextSet) {
++        boolean found = false;
+         for (int[] element : contextSet) {
+             DetailAST current = ast;
+             final int len = element.length;
+             for (int j = 0; j < len; j++) {
+                 current = current.getParent();
+                 final int expectedType = element[j];
+-                if (current == null || current.getType() != expectedType) {
++                if (current.getType() != expectedType) {
++                    found = false;
+                     break;
+                 }
+-                if (j == len - 1) {
+-                    return true;
++                else {
++                    found = true;
+                 }
+             }
++
++            if (found) {
++                break;
++            }
+         }
+-        return false;
++        return found;
+     }
+ }

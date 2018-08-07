@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
+index 2e93d7ed9..33699fec1 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
+@@ -146,101 +146,101 @@ public class LineWrappingHandler
+             else if (currentType == TokenTypes.LITERAL_IF) {
+                 final DetailAST parent = node.getParent();
+ 
+                 if (parent.getType() == TokenTypes.LITERAL_ELSE) {
+                     logWarningMessage(parent, currentIndent);
+                 }
+             }
+             else {
+                 logWarningMessage(node, currentIndent);
+             }
+         }
+     }
+ 
+     /**
+      * Calculates indentation of first node.
+      *
+      * @param node
+      *            first node.
+      * @return indentation of first node.
+      */
+     private int getFirstNodeIndent(DetailAST node)
+     {
+         int indentLevel = node.getColumnNo();
+ 
+         if (node.getType() == TokenTypes.LITERAL_IF
+                 && node.getParent().getType() == TokenTypes.LITERAL_ELSE)
+         {
+             final DetailAST lcurly = node.getParent().getPreviousSibling();
+             final DetailAST rcurly = lcurly.getLastChild();
+ 
+             if (lcurly.getType() == TokenTypes.SLIST
+                     && rcurly.getLineNo() == node.getLineNo())
+             {
+                 indentLevel = rcurly.getColumnNo();
+             }
+             else {
+                 indentLevel = node.getParent().getColumnNo();
+             }
+         }
+         return indentLevel;
+     }
+ 
+     /**
+      * Finds first nodes on line and puts them into Map.
+      *
+      * @return NavigableMap which contains lines numbers as a key and first
+      *         nodes on lines as a values.
+      */
+     private NavigableMap<Integer, DetailAST> collectFirstNodes()
+     {
+-        final NavigableMap<Integer, DetailAST> result = new TreeMap<Integer, DetailAST>();
++        final NavigableMap<Integer, DetailAST> result = new TreeMap<>();
+ 
+         result.put(firstNode.getLineNo(), firstNode);
+         DetailAST curNode = firstNode.getFirstChild();
+ 
+         while (curNode != null && curNode != lastNode) {
+ 
+             if (curNode.getType() == TokenTypes.OBJBLOCK) {
+                 curNode = curNode.getNextSibling();
+             }
+ 
+             if (curNode != null) {
+                 final DetailAST firstTokenOnLine = result.get(curNode.getLineNo());
+ 
+                 if (firstTokenOnLine == null
+                         || firstTokenOnLine != null
+                         && firstTokenOnLine.getColumnNo() >= curNode.getColumnNo())
+                 {
+                     result.put(curNode.getLineNo(), curNode);
+                 }
+                 curNode = getNextCurNode(curNode);
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Returns next curNode node.
+      *
+      * @param curNode current node.
+      * @return next curNode node.
+      */
+     private DetailAST getNextCurNode(DetailAST curNode)
+     {
+         DetailAST nodeToVisit = curNode.getFirstChild();
+         DetailAST currentNode = curNode;
+ 
+         while ((currentNode != null) && (nodeToVisit == null)) {
+             nodeToVisit = currentNode.getNextSibling();
+             if (nodeToVisit == null) {
+                 currentNode = currentNode.getParent();
+             }
+         }
+         return nodeToVisit;
+     }
+ 
+     /**
+      * Checks line wrapping into annotations.
+      *
+      * @param atNode at-clause node.
+      * @param firstNodesOnLines map which contains

@@ -1,0 +1,83 @@
+diff --git a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule413emptyblocks/InputEmptyBlockCatch.java b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule413emptyblocks/InputEmptyBlockCatch.java
+index 259bef7e5..c4c27aca8 100644
+--- a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule413emptyblocks/InputEmptyBlockCatch.java
++++ b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule413emptyblocks/InputEmptyBlockCatch.java
+@@ -1,75 +1,75 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // Test case file for checkstyle.
+ // Created: 2001
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.google.checkstyle.test.chapter4formatting.rule413emptyblocks;
+ 
+ import java.io.*; 
+ import java.awt.Dimension;
+ import java.awt.Color;
+ 
+ class Catch {
+     boolean flag;
+     void doSm() {}
+     void foo() {
+         try {
+            if (!flag) {
+                doSm();
+            }
+         } catch (Exception e) { /* ignore */ } //ok
+         finally {/* ignore */} //ok
+     }
+ 
+     void foo2() {
+         try {
+            if (!flag) {
+                doSm();
+            }
+         } catch (Exception e) {} //warn
+-        finally {} //warn
++        finally {}
+     }
+ 
+     class Inner {
+         boolean flag;
+         void doSm() {}
+         void foo() {
+             try {
+                if (!flag) {
+                    doSm();
+                }
+             } catch (Exception e) { /* ignore */ } //ok
+             finally {/* ignore */} //ok
+         }
+ 
+         void foo2() {
+             try {
+                if (!flag) {
+                    doSm();
+                }
+             } catch (Exception e) {} //warn
+-            finally {} //warn
++            finally {}
+         }
+     }
+     
+     Inner anon = new Inner(){
+         boolean flag;
+         void doSm() {}
+         void foo() {
+             try {
+                if (!flag) {
+                    doSm();
+                }
+             } catch (Exception e) { /* ignore */ } //ok
+             finally {/* ignore */} //ok
+         }
+ 
+         void foo2() {
+             try {
+                if (!flag) {
+                    doSm();
+                }
+             } catch (Exception e) {} //warn
+-            finally {} //warn
++            finally {}
+         }
+     };
+ }

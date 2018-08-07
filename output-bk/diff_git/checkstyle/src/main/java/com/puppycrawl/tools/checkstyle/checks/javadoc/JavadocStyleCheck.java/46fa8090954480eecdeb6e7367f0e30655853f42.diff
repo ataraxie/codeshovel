@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index 890a2d554..58a669748 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -213,101 +213,101 @@ public class JavadocStyleCheck
+             if (checkHtml) {
+                 checkHtmlTags(ast, comment);
+             }
+ 
+             if (checkEmptyJavadoc) {
+                 checkJavadocIsNotEmpty(comment);
+             }
+         }
+     }
+ 
+     /**
+      * Checks that the first sentence ends with proper punctuation.  This method
+      * uses a regular expression that checks for the presence of a period,
+      * question mark, or exclamation mark followed either by whitespace, an
+      * HTML element, or the end of string. This method ignores {_AT_inheritDoc}
+      * comments for TokenTypes that are valid for {_AT_inheritDoc}.
+      *
+      * @param ast the current node
+      * @param comment the source lines that make up the Javadoc comment.
+      */
+     private void checkFirstSentenceEnding(final DetailAST ast, TextBlock comment) {
+         final String commentText = getCommentText(comment.getText());
+ 
+         if (!commentText.isEmpty()
+             && !endOfSentenceFormat.matcher(commentText).find()
+             && !(commentText.startsWith("{@inheritDoc}")
+             && JavadocTagInfo.INHERIT_DOC.isValidOn(ast))) {
+             log(comment.getStartLineNo(), MSG_NO_PERIOD);
+         }
+     }
+ 
+     /**
+      * Checks that the Javadoc is not empty.
+      *
+      * @param comment the source lines that make up the Javadoc comment.
+      */
+     private void checkJavadocIsNotEmpty(TextBlock comment) {
+         final String commentText = getCommentText(comment.getText());
+ 
+         if (commentText.isEmpty()) {
+             log(comment.getStartLineNo(), MSG_EMPTY);
+         }
+     }
+ 
+     /**
+      * Returns the comment text from the Javadoc.
+      * @param comments the lines of Javadoc.
+      * @return a comment text String.
+      */
+     private static String getCommentText(String... comments) {
+-        final StringBuilder builder = new StringBuilder();
++        final StringBuilder builder = new StringBuilder(1024);
+         for (final String line : comments) {
+             final int textStart = findTextStart(line);
+ 
+             if (textStart != -1) {
+                 if (line.charAt(textStart) == '@') {
+                     //we have found the tag section
+                     break;
+                 }
+                 builder.append(line.substring(textStart));
+                 trimTail(builder);
+                 builder.append('\n');
+             }
+         }
+ 
+         return builder.toString().trim();
+     }
+ 
+     /**
+      * Finds the index of the first non-whitespace character ignoring the
+      * Javadoc comment start and end strings (&#47** and *&#47) as well as any
+      * leading asterisk.
+      * @param line the Javadoc comment line of text to scan.
+      * @return the int index relative to 0 for the start of text
+      *         or -1 if not found.
+      */
+     private static int findTextStart(String line) {
+         int textStart = -1;
+         int index = 0;
+         while (index < line.length()) {
+             if (!Character.isWhitespace(line.charAt(index))) {
+                 if (line.regionMatches(index, "/**", 0, "/**".length())) {
+                     index += 2;
+                 }
+                 else if (line.regionMatches(index, "*/", 0, 2)) {
+                     index++;
+                 }
+                 else if (line.charAt(index) != '*') {
+                     textStart = index;
+                     break;
+                 }
+             }
+             index++;
+         }
+         return textStart;
+     }
+ 
+     /**
+      * Trims any trailing whitespace or the end of Javadoc comment string.
+      * @param builder the StringBuilder to trim.
+      */

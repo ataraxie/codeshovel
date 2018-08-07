@@ -1,0 +1,72 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RedundantModifierCheck.java",
+  "functionName": "isInterfaceOrAnnotationMember",
+  "functionId": "isInterfaceOrAnnotationMember___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java",
+  "functionStartLine": 424,
+  "functionEndLine": 433,
+  "changeHistory": [
+    "23c8774d2e2fd245de1e5df02758fd23702c565e",
+    "f768f75438e1d71413a65d11a73208f7f8b449ea",
+    "0fcae24380f86386ada6b2bb017c2ffe98ecb17e",
+    "0aab6d6243c3675a978940eebb1f18a9d633929f"
+  ],
+  "changeHistoryShort": {
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": "Ybodychange",
+    "f768f75438e1d71413a65d11a73208f7f8b449ea": "Ybodychange",
+    "0fcae24380f86386ada6b2bb017c2ffe98ecb17e": "Ymultichange(Yparameterchange,Ybodychange)",
+    "0aab6d6243c3675a978940eebb1f18a9d633929f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: AvoidInlineConditional violations fixed\n",
+      "commitDate": 1439784080000,
+      "commitName": "23c8774d2e2fd245de1e5df02758fd23702c565e",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439438006000,
+      "commitNameOld": "7b34e9d7cd424732e7a9035f8ba795369157d6ab",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 4.01,
+      "commitsBetweenForRepo": 60,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,10 @@\n     private static boolean isInterfaceOrAnnotationMember(DetailAST ast) {\n-        final DetailAST parentTypeDef \u003d\n-                ast.getParent() !\u003d null ? ast.getParent().getParent() : null;\n+        DetailAST parentTypeDef \u003d ast.getParent();\n+\n+        if (parentTypeDef !\u003d null) {\n+            parentTypeDef \u003d parentTypeDef.getParent();\n+        }\n         return parentTypeDef !\u003d null\n                 \u0026\u0026 (parentTypeDef.getType() \u003d\u003d TokenTypes.INTERFACE_DEF\n                     || parentTypeDef.getType() \u003d\u003d TokenTypes.ANNOTATION_DEF);\n     }\n\\ No newline at end of file\n"
+    },
+    "f768f75438e1d71413a65d11a73208f7f8b449ea": {
+      "type": "Ybodychange",
+      "commitMessage": "Make RedundantModifier checks if inner types declared in interface has redundant\nstatic modifier, fixes part of #1242\n",
+      "commitDate": 1437835909000,
+      "commitName": "f768f75438e1d71413a65d11a73208f7f8b449ea",
+      "commitAuthor": "liscju",
+      "commitDateOld": 1437797642000,
+      "commitNameOld": "2f7481ee4e20ae785298c31ec2f979752dd7eb03",
+      "commitAuthorOld": "liscju",
+      "daysBetweenCommits": 0.44,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,7 @@\n     private static boolean isInterfaceOrAnnotationMember(DetailAST ast) {\n-        final DetailAST parentTypeDef \u003d ast.getParent().getParent();\n-        return parentTypeDef.getType() \u003d\u003d TokenTypes.INTERFACE_DEF\n-               || parentTypeDef.getType() \u003d\u003d TokenTypes.ANNOTATION_DEF;\n+        final DetailAST parentTypeDef \u003d\n+                ast.getParent() !\u003d null ? ast.getParent().getParent() : null;\n+        return parentTypeDef !\u003d null\n+                \u0026\u0026 (parentTypeDef.getType() \u003d\u003d TokenTypes.INTERFACE_DEF\n+                    || parentTypeDef.getType() \u003d\u003d TokenTypes.ANNOTATION_DEF);\n     }\n\\ No newline at end of file\n"
+    },
+    "0fcae24380f86386ada6b2bb017c2ffe98ecb17e": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, modifier, #512\n",
+      "commitDate": 1421678144000,
+      "commitName": "0fcae24380f86386ada6b2bb017c2ffe98ecb17e",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "0aab6d6243c3675a978940eebb1f18a9d633929f": {
+      "type": "Yintroduced",
+      "commitMessage": "Redundant Modifier Check fixed bug with warning on final variables in default methods issue #364\n",
+      "commitDate": 1418104131000,
+      "commitName": "0aab6d6243c3675a978940eebb1f18a9d633929f",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

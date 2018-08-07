@@ -1,0 +1,189 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
+index 5224acc5b..61f7eb64a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
+@@ -1,73 +1,74 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.indentation;
+ 
++import java.util.ArrayDeque;
++import java.util.Deque;
+ import java.util.Locale;
+-import java.util.Stack;
+ 
+ import org.apache.commons.lang3.ArrayUtils;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * This Check controls the indentation between comments and surrounding code.
+  * Comments are indented at the same level as the surrounding code.
+  * Detailed info about such convention can be found
+  * <a href=
+  * "http://checkstyle.sourceforge.net/reports/google-java-style.html#s4.8.6.1-block-comment-style">
+  * here</a>
+  * <p>
+  * Examples:
+  * </p>
+  * <p>
+  * To configure the Check:
+  * </p>
+  *
+  * <pre>
+  * {@code
+  * &lt;module name=&quot;CommentsIndentation&quot;/&gt;
+  * }
+  * {@code
+  * /*
+  *  * comment
+  *  * some comment
+  *  *&#47;
+  * boolean bool = true; - such comment indentation is ok
+  *    /*
+  *    * comment
+  *    * some comment
+  *     *&#47;
+  * double d = 3.14; - Block Comment has incorrect indentation level 7, expected 4.
+  * // some comment - comment is ok
+  * String str = "";
+  *     // some comment Comment has incorrect indentation level 8, expected 4.
+  * String str1 = "";
+  * }
+  * </pre>
+  *
+  * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+  * @author <a href="mailto:andreyselkin@gmail.com">Andrei Selkin</a>
+  */
+ public class CommentsIndentationCheck extends Check {
+ 
+     /**
+@@ -450,105 +451,105 @@ public class CommentsIndentationCheck extends Check {
+                     || prevStmt.getType() == TokenTypes.LITERAL_DEFAULT
+                     || prevStmt.getType() == TokenTypes.SINGLE_LINE_COMMENT) {
+                 if (comment.getColumnNo() < nextStmt.getColumnNo()) {
+                     log(comment.getLineNo(), MSG_KEY_SINGLE, nextStmt.getLineNo(),
+                         comment.getColumnNo(), nextStmt.getColumnNo());
+                 }
+             }
+             else if (!areSameLevelIndented(comment, prevStmt, prevStmt)) {
+                 log(comment.getLineNo(), MSG_KEY_SINGLE, prevStmt.getLineNo(),
+                     comment.getColumnNo(), prevStmt.getColumnNo());
+             }
+         }
+ 
+     }
+ 
+     /**
+      * Handles a single line comment which is placed within the empty code block.
+      * Note, if comment is placed at the end of the empty code block, we have Checkstyle's
+      * limitations to clearly detect user intention of explanation target - above or below. The
+      * only case we can assume as a violation is when a single line comment within the empty
+      * code block has indentation level that is lower than the indentation level of the closing
+      * right curly brace. For example:
+      * <p>
+      * {@code
+      *    if (a == true) {
+      * // violation
+      *    }
+      * }
+      * </p>
+      *
+      * @param comment single line comment.
+      * @param nextStmt next statement.
+      */
+     private void handleSingleLineCommentInEmptyCodeBlock(DetailAST comment, DetailAST nextStmt) {
+         if (comment.getColumnNo() < nextStmt.getColumnNo()) {
+             log(comment.getLineNo(), MSG_KEY_SINGLE, nextStmt.getLineNo(),
+                 comment.getColumnNo(), nextStmt.getColumnNo());
+         }
+     }
+ 
+     /**
+      * Does pre-order traverse of abstract syntax tree to find the previous statement of the
+      * single line comment. If previous statement of the comment is found, then the traverse will
+      * be finished.
+      * @param comment current statement.
+      * @return previous statement of the comment or null if the comment does not have previous
+      *         statement.
+      */
+     private static DetailAST getOneLinePreviousStatementOfSingleLineComment(DetailAST comment) {
+         DetailAST previousStatement = null;
+-        final Stack<DetailAST> stack = new Stack<>();
++        final Deque<DetailAST> stack = new ArrayDeque<>();
+         DetailAST root = comment.getParent();
+ 
+-        while (root != null || !stack.empty()) {
+-            if (!stack.empty()) {
++        while (root != null || !stack.isEmpty()) {
++            if (!stack.isEmpty()) {
+                 root = stack.pop();
+             }
+             while (root != null) {
+                 previousStatement = findPreviousStatementOfSingleLineComment(comment, root);
+                 if (previousStatement != null) {
+                     root = null;
+                     stack.clear();
+                     break;
+                 }
+                 if (root.getNextSibling() != null) {
+                     stack.push(root.getNextSibling());
+                 }
+                 root = root.getFirstChild();
+             }
+         }
+         return previousStatement;
+     }
+ 
+     /**
+      * Finds a previous statement of the single line comment.
+      * Uses root token of the line while searching.
+      * @param comment single line comment.
+      * @param root root token of the line.
+      * @return previous statement of the single line comment or null if previous statement was not
+      *         found.
+      */
+     private static DetailAST findPreviousStatementOfSingleLineComment(DetailAST comment,
+                                                                       DetailAST root) {
+         DetailAST previousStatement = null;
+         if (root.getLineNo() >= comment.getLineNo()) {
+             // ATTENTION: parent of the comment is below the comment in case block
+             // See https://github.com/checkstyle/checkstyle/issues/851
+             previousStatement = getPrevStatementFromSwitchBlock(comment);
+         }
+         final DetailAST tokenWhichBeginsTheLine;
+         if (root.getType() == TokenTypes.EXPR
+                 && root.getFirstChild().getFirstChild() != null) {
+             if (root.getFirstChild().getType() == TokenTypes.LITERAL_NEW) {
+                 tokenWhichBeginsTheLine = root.getFirstChild();
+             }
+             else {
+                 tokenWhichBeginsTheLine = findTokenWhichBeginsTheLine(root);
+             }
+         }
+         else if (root.getType() == TokenTypes.PLUS) {
+             tokenWhichBeginsTheLine = root.getFirstChild();
+         }
+         else {
+             tokenWhichBeginsTheLine = root;
+         }

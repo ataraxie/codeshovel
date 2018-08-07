@@ -1,0 +1,128 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+index 2329851f4..dce74f30b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+@@ -57,121 +57,121 @@ public final class Main {
+     private static final String OPTION_V_NAME = "v";
+ 
+     /** Name for the option 'c'. */
+     private static final String OPTION_C_NAME = "c";
+ 
+     /** Name for the option 'f'. */
+     private static final String OPTION_F_NAME = "f";
+ 
+     /** Name for the option 'p'. */
+     private static final String OPTION_P_NAME = "p";
+ 
+     /** Name for the option 'o'. */
+     private static final String OPTION_O_NAME = "o";
+ 
+     /** Name for 'xml' format. */
+     private static final String XML_FORMAT_NAME = "xml";
+ 
+     /** Name for 'plain' format. */
+     private static final String PLAIN_FORMAT_NAME = "plain";
+ 
+     /** Don't create instance of this class, use {@link #main(String[])} method instead. */
+     private Main() {
+     }
+ 
+     /**
+      * Loops over the files specified checking them for errors. The exit code
+      * is the number of errors found in all the files.
+      * @param args the command line arguments.
+      * @throws UnsupportedEncodingException if there is a problem to use UTF-8
+      * @throws FileNotFoundException if there is a problem with files access
+      **/
+     public static void main(String... args) throws UnsupportedEncodingException,
+             FileNotFoundException {
+         int errorCounter = 0;
+         boolean cliViolations = false;
+         // provide proper exit code based on results.
+         final int exitWithCliViolation = -1;
+         int exitStatus = 0;
+ 
+         try {
+             //parse CLI arguments
+             final CommandLine commandLine = parseCli(args);
+ 
+             // show version and exit if it is requested
+             if (commandLine.hasOption(OPTION_V_NAME)) {
+                 System.out.println("Checkstyle version: "
+                         + Main.class.getPackage().getImplementationVersion());
+                 exitStatus = 0;
+             }
+             else {
+-                // return error is smth is wrong in arguments
++                // return error if something is wrong in arguments
+                 final List<String> messages = validateCli(commandLine);
+                 cliViolations = !messages.isEmpty();
+                 if (cliViolations) {
+                     exitStatus = exitWithCliViolation;
+                     errorCounter = 1;
+                     for (String message : messages) {
+                         System.out.println(message);
+                     }
+                 }
+                 else {
+                     // create config helper object
+                     final CliOptions config = convertCliToPojo(commandLine);
+                     // run Checker
+                     errorCounter = runCheckstyle(config);
+                     exitStatus = errorCounter;
+                 }
+             }
+         }
+         catch (ParseException pex) {
+-            // smth wrong with arguments - print error and manual
++            // something wrong with arguments - print error and manual
+             cliViolations = true;
+             exitStatus = exitWithCliViolation;
+             errorCounter = 1;
+             System.out.println(pex.getMessage());
+             printUsage();
+         }
+         catch (CheckstyleException e) {
+             exitStatus = EXIT_WITH_CHECKSTYLE_EXCEPTION_CODE;
+             errorCounter = 1;
+             System.out.println(e.getMessage());
+         }
+         finally {
+             // return exit code base on validation of Checker
+             if (errorCounter != 0 && !cliViolations) {
+                 System.out.println(String.format("Checkstyle ends with %d errors.", errorCounter));
+             }
+             if (exitStatus != 0) {
+                 System.exit(exitStatus);
+             }
+         }
+     }
+ 
+     /**
+      * Parses and executes Checkstyle based on passed arguments.
+      * @param args
+      *        command line parameters
+      * @return parsed information about passed parameters
+      * @throws ParseException
+      *         when passed arguments are not valid
+      */
+     private static CommandLine parseCli(String... args)
+             throws ParseException {
+         // parse the parameters
+         final CommandLineParser clp = new DefaultParser();
+         // always returns not null value
+         return clp.parse(buildOptions(), args);
+     }
+ 
+     /**
+      * Do validation of Command line options.
+      * @param cmdLine command line object
+      * @return list of violations
+      */
+     private static List<String> validateCli(CommandLine cmdLine) {
+         final List<String> result = new ArrayList<>();
+         // ensure a configuration file is specified
+         if (cmdLine.hasOption(OPTION_C_NAME)) {
+             // validate optional parameters
+             if (cmdLine.hasOption(OPTION_F_NAME)) {
+                 final String format = cmdLine.getOptionValue(OPTION_F_NAME);

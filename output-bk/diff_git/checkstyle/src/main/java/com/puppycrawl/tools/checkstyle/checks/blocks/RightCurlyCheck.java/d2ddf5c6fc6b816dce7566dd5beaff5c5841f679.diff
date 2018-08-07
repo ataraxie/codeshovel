@@ -1,0 +1,210 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+index 93d0a5979..7a353b67f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+@@ -65,101 +65,101 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+  * An example of how to configure the check with policy
+  * {@link RightCurlyOption#ALONE} for {@code else} and
+  * {@code {@link TokenTypes#METHOD_DEF METHOD_DEF}}tokens is:
+  * </p>
+  * <pre>
+  * &lt;module name="RightCurly"&gt;
+  *     &lt;property name="tokens" value="LITERAL_ELSE"/&gt;
+  *     &lt;property name="option" value="alone"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author Oliver Burn
+  * @author lkuehne
+  * @author o_sukhodolsky
+  * @author maxvetrenko
+  * @author Andrei Selkin
+  * @author <a href="mailto:piotr.listkiewicz@gmail.com">liscju</a>
+  */
+ public class RightCurlyCheck extends AbstractCheck {
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_LINE_BREAK_BEFORE = "line.break.before";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_LINE_ALONE = "line.alone";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_LINE_SAME = "line.same";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_LINE_NEW = "line.new";
+ 
+     /** Do we need to check if right curly starts line. */
+     private boolean shouldStartLine = true;
+ 
+     /** The policy to enforce. */
+     private RightCurlyOption option = RightCurlyOption.SAME;
+ 
+     /**
+-     * Set the option to enforce.
++     * Sets the option to enforce.
+      * @param optionStr string to decode option from
+      * @throws IllegalArgumentException if unable to decode
+      */
+     public void setOption(String optionStr) {
+         try {
+             option = RightCurlyOption.valueOf(optionStr.trim().toUpperCase(Locale.ENGLISH));
+         }
+         catch (IllegalArgumentException iae) {
+             throw new IllegalArgumentException("unable to parse " + optionStr, iae);
+         }
+     }
+ 
+     /**
+      * Does the check need to check if right curly starts line.
+      * @param flag new value of this property.
+      */
+     public void setShouldStartLine(boolean flag) {
+         shouldStartLine = flag;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.INSTANCE_INIT,
+         };
+     }
+ 
+@@ -331,101 +331,101 @@ public class RightCurlyCheck extends AbstractCheck {
+                 if (nextToken == null) {
+                     shouldCheckLastRcurly = true;
+                     nextToken = getNextToken(ast);
+                 }
+                 break;
+             case TokenTypes.LITERAL_IF:
+                 nextToken = ast.findFirstToken(TokenTypes.LITERAL_ELSE);
+                 if (nextToken == null) {
+                     shouldCheckLastRcurly = true;
+                     nextToken = getNextToken(ast);
+                     lcurly = ast.getLastChild();
+                 }
+                 else {
+                     lcurly = nextToken.getPreviousSibling();
+                 }
+                 if (lcurly.getType() == TokenTypes.SLIST) {
+                     rcurly = lcurly.getLastChild();
+                 }
+                 break;
+             case TokenTypes.LITERAL_ELSE:
+             case TokenTypes.LITERAL_FINALLY:
+                 shouldCheckLastRcurly = true;
+                 nextToken = getNextToken(ast);
+                 lcurly = ast.getFirstChild();
+                 if (lcurly.getType() == TokenTypes.SLIST) {
+                     rcurly = lcurly.getLastChild();
+                 }
+                 break;
+             case TokenTypes.CLASS_DEF:
+                 final DetailAST child = ast.getLastChild();
+                 lcurly = child.getFirstChild();
+                 rcurly = child.getLastChild();
+                 nextToken = ast;
+                 break;
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.STATIC_INIT:
+             case TokenTypes.INSTANCE_INIT:
+                 lcurly = ast.findFirstToken(TokenTypes.SLIST);
+                 rcurly = lcurly.getLastChild();
+                 nextToken = getNextToken(ast);
+                 break;
+             case TokenTypes.LITERAL_DO:
+                 nextToken = ast.findFirstToken(TokenTypes.DO_WHILE);
+                 lcurly = ast.findFirstToken(TokenTypes.SLIST);
+                 if (lcurly != null) {
+                     rcurly = lcurly.getLastChild();
+                 }
+                 break;
+             default:
+                 // ATTENTION! We have default here, but we expect case TokenTypes.METHOD_DEF,
+-                // TokenTypes.LITERAL_FOR, TokenTypes.LITERAL_WHILE, only.
++                // TokenTypes.LITERAL_FOR, TokenTypes.LITERAL_WHILE only.
+                 // It has been done to improve coverage to 100%. I couldn't replace it with
+                 // if-else-if block because code was ugly and didn't pass pmd check.
+ 
+                 lcurly = ast.findFirstToken(TokenTypes.SLIST);
+                 if (lcurly != null) {
+                     // SLIST could be absent if method is abstract,
+                     // and code like "while(true);"
+                     rcurly = lcurly.getLastChild();
+                 }
+                 nextToken = getNextToken(ast);
+                 break;
+         }
+ 
+         final Details details = new Details();
+         details.rcurly = rcurly;
+         details.lcurly = lcurly;
+         details.nextToken = nextToken;
+         details.shouldCheckLastRcurly = shouldCheckLastRcurly;
+ 
+         return details;
+     }
+ 
+     /**
+      * Checks if definition body is empty.
+      * @param lcurly left curly.
+      * @return true if definition body is empty.
+      */
+     private static boolean isEmptyBody(DetailAST lcurly) {
+         boolean result = false;
+         if (lcurly.getParent().getType() == TokenTypes.OBJBLOCK) {
+             if (lcurly.getNextSibling().getType() == TokenTypes.RCURLY) {
+                 result = true;
+             }
+         }
+         else if (lcurly.getFirstChild().getType() == TokenTypes.RCURLY) {
+             result = true;
+         }
+         return result;
+     }
+ 
+     /**
+      * Finds next token after the given one.
+      * @param ast the given node.
+      * @return the token which represents next lexical item.
+      */
+     private static DetailAST getNextToken(DetailAST ast) {
+         DetailAST next = null;
+         DetailAST parent = ast;
+         while (next == null) {
+             next = parent.getNextSibling();

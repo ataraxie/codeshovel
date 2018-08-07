@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
+index a730d84a1..1a11df7ae 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
+@@ -73,101 +73,101 @@ public final class PackageNamesLoader
+         super(DTD_PUBLIC_ID, DTD_RESOURCE_NAME);
+     }
+ 
+     @Override
+     public void startElement(String aNamespaceURI,
+                              String aLocalName,
+                              String aQName,
+                              Attributes aAtts)
+         throws SAXException
+     {
+         if ("package".equals(aQName)) {
+             //push package name
+             final String name = aAtts.getValue("name");
+             if (name == null) {
+                 throw new SAXException("missing package name");
+             }
+             mPackageStack.push(name);
+         }
+     }
+ 
+     /**
+      * Creates a full package name from the package names on the stack.
+      * @return the full name of the current package.
+      */
+     private String getPackageName()
+     {
+         final StringBuffer buf = new StringBuffer();
+         for (String subPackage : mPackageStack) {
+             buf.append(subPackage);
+             if (!subPackage.endsWith(".")) {
+                 buf.append(".");
+             }
+         }
+         return buf.toString();
+     }
+ 
+     /**
+      * Returns the module factory that has just been configured.
+      * @return the module factory, never null
+      */
+     private ModuleFactory getModuleFactory()
+     {
+         return mModuleFactory;
+     }
+ 
+     @Override
+     public void endElement(String aNamespaceURI,
+                            String aLocalName,
+                            String aQName)
+     {
+-        if (aQName.equals("package")) {
++        if ("package".equals(aQName)) {
+             mModuleFactory.addPackage(getPackageName());
+             mPackageStack.pop();
+         }
+     }
+ 
+     /**
+      * Returns the default list of package names.
+      * @param aClassLoader the class loader that gets the
+      * default package names.
+      * @return the default list of package names.
+      * @throws CheckstyleException if an error occurs.
+      */
+     public static ModuleFactory loadModuleFactory(ClassLoader aClassLoader)
+         throws CheckstyleException
+     {
+ 
+         final InputStream stream =
+             aClassLoader.getResourceAsStream(DEFAULT_PACKAGES);
+         final InputSource source = new InputSource(stream);
+         return loadModuleFactory(source, "default package names");
+     }
+ 
+     /**
+      * Returns the package names in a specified file.
+      * @param aFilename name of the package file.
+      * @return the list of package names stored in the
+      *  package file.
+      * @throws CheckstyleException if an error occurs.
+      */
+     public static ModuleFactory loadModuleFactory(String aFilename)
+         throws CheckstyleException
+     {
+         FileInputStream fis = null;
+         try {
+             fis = new FileInputStream(aFilename);
+         }
+         catch (final FileNotFoundException e) {
+             throw new CheckstyleException(
+                 "unable to find " + aFilename, e);
+         }
+         final InputSource source = new InputSource(fis);
+         return loadModuleFactory(source, aFilename);
+     }
+ 
+     /**
+      * Returns the list of package names in a specified source.
+      * @param aSource the source for the list.
+      * @param aSourceName the name of the source.
+      * @return the list ofpackage names stored in aSource.
+      * @throws CheckstyleException if an error occurs.

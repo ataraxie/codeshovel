@@ -1,0 +1,103 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "checkType___method-DetailAST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 200,
+  "changeHistory": [
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+    "5d7063c660b241bce251f1a8c89394619f2791fb",
+    "1878e21451499ee852bf1e45af1653439d7a4c8d"
+  ],
+  "changeHistoryShort": {
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": "Ybodychange",
+    "5d7063c660b241bce251f1a8c89394619f2791fb": "Ybodychange",
+    "1878e21451499ee852bf1e45af1653439d7a4c8d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 61.71,
+      "commitsBetweenForRepo": 387,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    private boolean checkType(DetailAST method) {\n+    private static boolean checkType(DetailAST method) {\n         final DetailAST type \u003d\n             method.findFirstToken(TokenTypes.TYPE).getFirstChild();\n         return type.getType() \u003d\u003d TokenTypes.LITERAL_VOID;\n     }\n\\ No newline at end of file\n"
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": {
+      "type": "Ybodychange",
+      "commitMessage": "Inspired by patch# 2111354 - changes to remove casting. Neat trick\n",
+      "commitDate": 1221737656000,
+      "commitName": "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200296548000,
+      "commitNameOld": "fd90bd5aa5cd623b08a2e44ef05e8fac8045d333",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 248.16,
+      "commitsBetweenForRepo": 71,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     private boolean checkType(DetailAST aMethod)\n     {\n         final DetailAST type \u003d\n-            (DetailAST) aMethod.findFirstToken(TokenTypes.TYPE).getFirstChild();\n+            aMethod.findFirstToken(TokenTypes.TYPE).getFirstChild();\n         return type.getType() \u003d\u003d TokenTypes.LITERAL_VOID;\n     }\n\\ No newline at end of file\n"
+    },
+    "5d7063c660b241bce251f1a8c89394619f2791fb": {
+      "type": "Ybodychange",
+      "commitMessage": "Tighten up code\n",
+      "commitDate": 1093527252000,
+      "commitName": "5d7063c660b241bce251f1a8c89394619f2791fb",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1074114639000,
+      "commitNameOld": "5670252b46f4915b276e647fa000361915eb4ff4",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 224.68,
+      "commitsBetweenForRepo": 137,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     private boolean checkType(DetailAST aMethod)\n     {\n-        DetailAST type \u003d\n+        final DetailAST type \u003d\n             (DetailAST) aMethod.findFirstToken(TokenTypes.TYPE).getFirstChild();\n         return type.getType() \u003d\u003d TokenTypes.LITERAL_VOID;\n     }\n\\ No newline at end of file\n"
+    },
+    "1878e21451499ee852bf1e45af1653439d7a4c8d": {
+      "type": "Yintroduced",
+      "commitMessage": "Added check for uncommented main methods (debugging leftovers). (module UncommentedMain,request 732257)\n",
+      "commitDate": 1054323355000,
+      "commitName": "1878e21451499ee852bf1e45af1653439d7a4c8d",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

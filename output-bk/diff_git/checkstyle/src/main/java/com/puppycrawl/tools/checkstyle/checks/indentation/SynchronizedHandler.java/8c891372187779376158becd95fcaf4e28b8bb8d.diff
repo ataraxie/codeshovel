@@ -1,0 +1,78 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/SynchronizedHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/SynchronizedHandler.java
+index 92052c4ba..78115abdd 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/SynchronizedHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/SynchronizedHandler.java
+@@ -20,72 +20,72 @@
+ package com.puppycrawl.tools.checkstyle.checks.indentation;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Handler for synchronized statements.
+  *
+  * @author liscju piotr.listkiewicz@gmail.com
+  */
+ public class SynchronizedHandler extends BlockParentHandler {
+ 
+     /**
+      * Determine that "synchronized" token used as modifier of method.
+      */
+     private final boolean methodModifier;
+ 
+     /**
+      * Construct an instance of this handler with the given indentation check,
+      * name, abstract syntax tree, and parent handler.
+      *
+      * @param indentCheck the indentation check
+      * @param ast         the abstract syntax tree
+      * @param parent      the parent handler
+      */
+     public SynchronizedHandler(IndentationCheck indentCheck, DetailAST ast,
+                                AbstractExpressionHandler parent) {
+         super(indentCheck, "synchronized", ast, parent);
+         methodModifier = isMethodModifier(ast);
+     }
+ 
+     @Override
+     public void checkIndentation() {
+         if (!methodModifier) {
+             super.checkIndentation();
+             checkSynchronizedExpr();
+             final LineWrappingHandler lineWrap =
+                     new LineWrappingHandler(getIndentCheck(), getMainAst(),
+                             getSynchronizedStatementRightParen(getMainAst()));
+             lineWrap.checkIndentation();
+         }
+     }
+ 
+     /**
+      * Check indentation of expression we synchronized on.
+      */
+     private void checkSynchronizedExpr() {
+         final DetailAST syncAst = getMainAst().findFirstToken(TokenTypes.LPAREN)
+                 .getNextSibling();
+         final IndentLevel expected =
+-                new IndentLevel(getLevel(), getBasicOffset());
++                new IndentLevel(getIndent(), getBasicOffset());
+         checkExpressionSubtree(syncAst, expected, false, false);
+     }
+ 
+     /**
+      * Checks if given synchronized is modifier of method*
+      * @param ast synchronized(TokenTypes.LITERAL_SYNCHRONIZED) to check
+      * @return true if synchronized only modifies method
+      */
+     private static boolean isMethodModifier(DetailAST ast) {
+         return ast.getParent().getType() == TokenTypes.MODIFIERS;
+     }
+ 
+     /**
+      * Returns right parenthesis of synchronized statement.
+      * @param syncStatementAST ast node(TokenTypes.LITERAL_SYNCHRONIZED)
+      * @return right parenthesis of synchronized statement.
+      */
+     private static DetailAST getSynchronizedStatementRightParen(DetailAST syncStatementAST) {
+         return syncStatementAST.findFirstToken(TokenTypes.RPAREN);
+     }
+ }

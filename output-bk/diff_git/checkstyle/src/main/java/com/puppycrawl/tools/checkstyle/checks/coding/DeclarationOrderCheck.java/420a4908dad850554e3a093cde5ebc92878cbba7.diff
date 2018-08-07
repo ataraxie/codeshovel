@@ -1,0 +1,170 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java
+index 88642309c..9040b7132 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java
+@@ -198,128 +198,157 @@ public class DeclarationOrderCheck extends AbstractCheck {
+                 if (parentType == TokenTypes.VARIABLE_DEF
+                     && ast.getParent().getParent().getType() == TokenTypes.OBJBLOCK) {
+                     processModifiers(ast);
+                 }
+                 break;
+             case TokenTypes.CTOR_DEF:
+                 if (parentType == TokenTypes.OBJBLOCK) {
+                     processConstructor(ast);
+                 }
+                 break;
+             case TokenTypes.METHOD_DEF:
+                 if (parentType == TokenTypes.OBJBLOCK) {
+                     final ScopeState state = scopeStates.peek();
+                     // nothing can be bigger than method's state
+                     state.currentScopeState = STATE_METHOD_DEF;
+                 }
+                 break;
+             case TokenTypes.VARIABLE_DEF:
+                 if (ScopeUtils.isClassFieldDef(ast)) {
+                     final DetailAST fieldDef = ast.findFirstToken(TokenTypes.IDENT);
+                     classFieldNames.add(fieldDef.getText());
+                 }
+                 break;
+             default:
+                 break;
+         }
+     }
+ 
+     /**
+      * Processes constructor.
+      * @param ast constructor AST.
+      */
+     private void processConstructor(DetailAST ast) {
+ 
+         final ScopeState state = scopeStates.peek();
+         if (state.currentScopeState > STATE_CTOR_DEF) {
+             if (!ignoreConstructors) {
+                 log(ast, MSG_CONSTRUCTOR);
+             }
+         }
+         else {
+             state.currentScopeState = STATE_CTOR_DEF;
+         }
+     }
+ 
+     /**
+      * Processes modifiers.
+      * @param ast ast of Modifiers.
+      */
+     private void processModifiers(DetailAST ast) {
+-
+         final ScopeState state = scopeStates.peek();
+-        if (ast.findFirstToken(TokenTypes.LITERAL_STATIC) == null) {
++        final boolean isStateValid = processModifiersState(ast, state);
++        processModifiersSubState(ast, state, isStateValid);
++    }
++
++    /**
++     * Process if given modifiers are appropriate in given state
++     * ({@code STATE_STATIC_VARIABLE_DEF}, {@code STATE_INSTANCE_VARIABLE_DEF},
++     * ({@code STATE_CTOR_DEF}, {@code STATE_METHOD_DEF}), if it is
++     * it updates states where appropriate or logs violation.
++     * @param modifierAst modifiers to process
++     * @param state current state
++     * @return true if modifierAst is valid in given state, false otherwise
++     */
++    private boolean processModifiersState(DetailAST modifierAst, ScopeState state) {
++        boolean isStateValid = true;
++        if (modifierAst.findFirstToken(TokenTypes.LITERAL_STATIC) == null) {
+             if (state.currentScopeState > STATE_INSTANCE_VARIABLE_DEF) {
+-                log(ast, MSG_INSTANCE);
++                isStateValid = false;
++                log(modifierAst, MSG_INSTANCE);
+             }
+             else if (state.currentScopeState == STATE_STATIC_VARIABLE_DEF) {
+                 state.declarationAccess = Scope.PUBLIC;
+                 state.currentScopeState = STATE_INSTANCE_VARIABLE_DEF;
+             }
+         }
+         else {
+             if (state.currentScopeState > STATE_STATIC_VARIABLE_DEF) {
+                 if (!ignoreModifiers
+                         || state.currentScopeState > STATE_INSTANCE_VARIABLE_DEF) {
+-                    log(ast, MSG_STATIC);
++                    isStateValid = false;
++                    log(modifierAst, MSG_STATIC);
+                 }
+             }
+             else {
+                 state.currentScopeState = STATE_STATIC_VARIABLE_DEF;
+             }
+         }
++        return isStateValid;
++    }
+ 
+-        final Scope access = ScopeUtils.getScopeFromMods(ast);
++    /**
++     * Checks if given modifiers are valid in substate of given
++     * state({@code Scope}), if it is it updates substate or else it
++     * logs violation.
++     * @param modifiersAst modifiers to process
++     * @param state curent state
++     * @param isStateValid is main state for given modifiers is valid
++     */
++    private void processModifiersSubState(DetailAST modifiersAst, ScopeState state,
++                                          boolean isStateValid) {
++        final Scope access = ScopeUtils.getScopeFromMods(modifiersAst);
+         if (state.declarationAccess.compareTo(access) > 0) {
+-            if (!ignoreModifiers
+-                    && !isForwardReference(ast.getParent())) {
+-                log(ast, MSG_ACCESS);
++            if (isStateValid
++                    && !ignoreModifiers
++                    && !isForwardReference(modifiersAst.getParent())) {
++                log(modifiersAst, MSG_ACCESS);
+             }
+         }
+         else {
+             state.declarationAccess = access;
+         }
+     }
+ 
+     /**
+      * Checks whether an identifier references a field which has been already defined in class.
+      * @param fieldDef a field definition.
+      * @return true if an identifier references a field which has been already defined in class.
+      */
+     private boolean isForwardReference(DetailAST fieldDef) {
+         final DetailAST exprStartIdent = fieldDef.findFirstToken(TokenTypes.IDENT);
+         final Set<DetailAST> exprIdents = getAllTokensOfType(exprStartIdent, TokenTypes.IDENT);
+         boolean forwardReference = false;
+         for (DetailAST ident : exprIdents) {
+             if (classFieldNames.contains(ident.getText())) {
+                 forwardReference = true;
+                 break;
+             }
+         }
+         return forwardReference;
+     }
+ 
+     /**
+      * Collects all tokens of specific type starting with the current ast node.
+      * @param ast ast node.
+      * @param tokenType token type.
+      * @return a set of all tokens of specific type starting with the current ast node.
+      */
+     private static Set<DetailAST> getAllTokensOfType(DetailAST ast, int tokenType) {
+         DetailAST vertex = ast;
+         final Set<DetailAST> result = Sets.newHashSet();
+         final Deque<DetailAST> stack = Queues.newArrayDeque();
+         while (vertex != null || !stack.isEmpty()) {
+             if (!stack.isEmpty()) {
+                 vertex = stack.pop();
+             }
+             while (vertex != null) {
+                 if (vertex.getType() == tokenType && !vertex.equals(ast)) {
+                     result.add(vertex);
+                 }
+                 if (vertex.getNextSibling() != null) {
+                     stack.push(vertex.getNextSibling());
+                 }
+                 vertex = vertex.getFirstChild();
+             }
+         }
+         return result;

@@ -1,0 +1,81 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/LineSet.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/LineSet.java
+index 94f119a60..57b1617a7 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/LineSet.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/LineSet.java
+@@ -36,74 +36,74 @@ public class LineSet
+ 
+     /**
+      * Get the starting column for a given line number.
+      *
+      * @param aLineNum   the specified line number
+      *
+      * @return the starting column for the given line number
+      */
+     public Integer getStartColumn(Integer aLineNum)
+     {
+         return mLines.get(aLineNum);
+     }
+ 
+     /**
+      * Get the starting column for the first line.
+      *
+      * @return the starting column for the first line.
+      */
+     public int firstLineCol()
+     {
+         final Object firstLineKey = mLines.firstKey();
+         return (mLines.get(firstLineKey)).intValue();
+     }
+ 
+     /**
+      * Get the line number of the first line.
+      *
+      * @return the line number of the first line
+      */
+     public int firstLine()
+     {
+         return (mLines.firstKey()).intValue();
+     }
+ 
+     /**
+      * Get the line number of the last line.
+      *
+      * @return the line number of the last line
+      */
+     public int lastLine()
+     {
+         return (mLines.lastKey()).intValue();
+     }
+ 
+     /**
+      * Add a line to this set of lines.
+      *
+      * @param aLineNum   the line to add
+      * @param aCol       the starting column of the new line
+      */
+-    public void addLineAndCol(Integer aLineNum, int aCol)
++    public void addLineAndCol(int aLineNum, int aCol)
+     {
+-        mLines.put(aLineNum, new Integer(aCol));
++        mLines.put(aLineNum, aCol);
+     }
+ 
+     /**
+      * Determines if this set of lines is empty.
+      *
+      * @return true if it is empty, false otherwise
+      */
+     public boolean isEmpty()
+     {
+         return mLines.isEmpty();
+     }
+ 
+     /**
+      * @return string representation
+      */
+     @Override
+     public String toString()
+     {
+         return "LineSet[ start=" + firstLine() + ", last=" + lastLine() + "]";
+     }
+ }

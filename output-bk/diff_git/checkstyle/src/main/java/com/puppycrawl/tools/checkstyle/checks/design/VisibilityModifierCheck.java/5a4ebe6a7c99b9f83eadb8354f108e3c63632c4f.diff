@@ -1,0 +1,192 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+index 5d3995118..91f8784e6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+@@ -1,81 +1,80 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.design;
+ 
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.HashSet;
+ import java.util.List;
+ import java.util.Set;
+ import java.util.regex.Pattern;
+ 
+ import antlr.collections.AST;
+ import com.google.common.collect.ImmutableList;
+-import com.google.common.collect.Iterables;
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.utils.AnnotationUtility;
+ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+ 
+ /**
+  * Checks visibility of class members. Only static final, immutable or annotated
+  * by specified annotation members may be public,
+  * other class members must be private unless allowProtected/Package is set.
+  * <p>
+  * Public members are not flagged if the name matches the public
+  * member regular expression (contains "^serialVersionUID$" by
+  * default).
+  * </p>
+  * Rationale: Enforce encapsulation.
+  * <p>
+  * Check also has options making it less strict:
+  * </p>
+  * <p>
+  * <b>ignoreAnnotationCanonicalNames</b> - the list of annotations canonical names
+  * which ignore variables in consideration, if user will provide short annotation name
+  * that type will match to any named the same type without consideration of package,
+  * list by default:
+  * </p>
+  * <ul>
+  * <li>org.junit.Rule</li>
+  * <li>org.junit.ClassRule</li>
+  * <li>com.google.common.annotations.VisibleForTesting</li>
+  * </ul>
+  * <p>
+  * For example such public field will be skipped by default value of list above:
+  * </p>
+  *
+  * <pre>
+  * {@code @org.junit.Rule
+  * public TemporaryFolder publicJUnitRule = new TemporaryFolder();
+  * }
+  * </pre>
+  *
+  * <p>
+  * <b>allowPublicFinalFields</b> - which allows public final fields. Default value is <b>false</b>.
+  * </p>
+  * <p>
+  * <b>allowPublicImmutableFields</b> - which allows immutable fields to be
+  * declared as public if defined in final class. Default value is <b>false</b>
+  * </p>
+  * <p>
+@@ -681,103 +680,103 @@ public class VisibilityModifierCheck
+     }
+ 
+     /**
+      * Returns generic type arguments token.
+      * @param type type token.
+      * @param isCanonicalName whether type name is in canonical form.
+      * @return generic type arguments token.
+      */
+     private static DetailAST getGenericTypeArgs(DetailAST type, boolean isCanonicalName) {
+         final DetailAST typeArgs;
+         if (isCanonicalName) {
+             // if type class name is in canonical form, abstract tree has specific structure
+             typeArgs = type.getFirstChild().findFirstToken(TokenTypes.TYPE_ARGUMENTS);
+         }
+         else {
+             typeArgs = type.findFirstToken(TokenTypes.TYPE_ARGUMENTS);
+         }
+         return typeArgs;
+     }
+ 
+     /**
+      * Returns a list of type parameters class names.
+      * @param typeArgs type arguments token.
+      * @return a list of type parameters class names.
+      */
+     private static List<String> getTypeArgsClassNames(DetailAST typeArgs) {
+         final List<String> typeClassNames = new ArrayList<>();
+         DetailAST type = typeArgs.findFirstToken(TokenTypes.TYPE_ARGUMENT);
+         boolean isCanonicalName = isCanonicalName(type);
+         String typeName = getTypeName(type, isCanonicalName);
+         typeClassNames.add(typeName);
+         DetailAST sibling = type.getNextSibling();
+         while (sibling.getType() == TokenTypes.COMMA) {
+             type = sibling.getNextSibling();
+             isCanonicalName = isCanonicalName(type);
+             typeName = getTypeName(type, isCanonicalName);
+             typeClassNames.add(typeName);
+             sibling = type.getNextSibling();
+         }
+         return typeClassNames;
+     }
+ 
+     /**
+      * Checks whether all of generic type arguments are immutable.
+      * If at least one argument is mutable, we assume that the whole list of type arguments
+      * is mutable.
+      * @param typeArgsClassNames type arguments class names.
+      * @return true if all of generic type arguments are immutable.
+      */
+     private boolean areImmutableTypeArguments(List<String> typeArgsClassNames) {
+-        return !Iterables.tryFind(typeArgsClassNames,
++        return !typeArgsClassNames.stream().filter(
+             typeName -> !immutableClassShortNames.contains(typeName)
+-            && !immutableClassCanonicalNames.contains(typeName)).isPresent();
++                && !immutableClassCanonicalNames.contains(typeName)).findFirst().isPresent();
+     }
+ 
+     /**
+      * Checks whether current field is final.
+      * @param variableDef field in consideration.
+      * @return true if current field is final.
+      */
+     private static boolean isFinalField(DetailAST variableDef) {
+         final DetailAST modifiers = variableDef.findFirstToken(TokenTypes.MODIFIERS);
+         return modifiers.branchContains(TokenTypes.FINAL);
+     }
+ 
+     /**
+      * Gets the name of type from given ast {@link TokenTypes#TYPE TYPE} node.
+      * If type is specified via its canonical name - canonical name will be returned,
+      * else - short type's name.
+      * @param type {@link TokenTypes#TYPE TYPE} node.
+      * @param isCanonicalName is given name canonical.
+      * @return String representation of given type's name.
+      */
+     private static String getTypeName(DetailAST type, boolean isCanonicalName) {
+         final String typeName;
+         if (isCanonicalName) {
+             typeName = getCanonicalName(type);
+         }
+         else {
+             typeName = type.getFirstChild().getText();
+         }
+         return typeName;
+     }
+ 
+     /**
+      * Checks if current type is primitive type (int, short, float, boolean, double, etc.).
+      * As primitive types have special tokens for each one, such as:
+      * LITERAL_INT, LITERAL_BOOLEAN, etc.
+      * So, if type's identifier differs from {@link TokenTypes#IDENT IDENT} token - it's a
+      * primitive type.
+      * @param type Ast {@link TokenTypes#TYPE TYPE} node.
+      * @return true if current type is primitive type.
+      */
+     private static boolean isPrimitive(DetailAST type) {
+         return type.getFirstChild().getType() != TokenTypes.IDENT;
+     }
+ 
+     /**
+      * Gets canonical type's name from given {@link TokenTypes#TYPE TYPE} node.
+      * @param type DetailAST {@link TokenTypes#TYPE TYPE} node.
+      * @return canonical type's name
+      */
+     private static String getCanonicalName(DetailAST type) {

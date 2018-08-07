@@ -1,0 +1,128 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+index db0794046..cc32ef218 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+@@ -398,117 +398,117 @@ public class CustomImportOrderCheck extends AbstractCheck {
+      * @param regexp
+      *        user value.
+      */
+     public final void setThirdPartyPackageRegExp(Pattern regexp) {
+         thirdPartyPackageRegExp = regexp;
+     }
+ 
+     /**
+      * Sets specialImportsRegExp specified by user.
+      * @param regexp
+      *        user value.
+      */
+     public final void setSpecialImportsRegExp(Pattern regexp) {
+         specialImportsRegExp = regexp;
+     }
+ 
+     /**
+      * Sets separateLineBetweenGroups specified by user.
+      * @param value
+      *        user value.
+      */
+     public final void setSeparateLineBetweenGroups(boolean value) {
+         separateLineBetweenGroups = value;
+     }
+ 
+     /**
+      * Sets sortImportsInGroupAlphabetically specified by user.
+      * @param value
+      *        user value.
+      */
+     public final void setSortImportsInGroupAlphabetically(boolean value) {
+         sortImportsInGroupAlphabetically = value;
+     }
+ 
+     /**
+      * Sets a custom import order from the rules in the string format specified
+      * by user.
+      * @param inputCustomImportOrder
+      *        user value.
+      */
+     public final void setCustomImportOrderRules(final String inputCustomImportOrder) {
+         customImportOrderRules.clear();
+         for (String currentState : GROUP_SEPARATOR_PATTERN.split(inputCustomImportOrder)) {
+             addRulesToList(currentState);
+         }
+         customImportOrderRules.add(NON_GROUP_RULE_GROUP);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return getAcceptableTokens();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
++        return getRequiredTokens();
++    }
++
++    @Override
++    public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.IMPORT,
+             TokenTypes.STATIC_IMPORT,
+             TokenTypes.PACKAGE_DEF,
+         };
+     }
+ 
+-    @Override
+-    public int[] getRequiredTokens() {
+-        return getAcceptableTokens();
+-    }
+-
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         importToGroupList.clear();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+             if (customImportOrderRules.contains(SAME_PACKAGE_RULE_GROUP)) {
+                 samePackageDomainsRegExp = createSamePackageRegexp(
+                         samePackageMatchingDepth, ast);
+             }
+         }
+         else {
+             final String importFullPath = getFullImportIdent(ast);
+             final int lineNo = ast.getLineNo();
+             final boolean isStatic = ast.getType() == TokenTypes.STATIC_IMPORT;
+             importToGroupList.add(new ImportDetails(importFullPath,
+                     lineNo, getImportGroup(isStatic, importFullPath),
+                     isStatic));
+         }
+     }
+ 
+     @Override
+     public void finishTree(DetailAST rootAST) {
+ 
+         if (!importToGroupList.isEmpty()) {
+             finishImportList();
+         }
+     }
+ 
+     /** Examine the order of all the imports and log any violations. */
+     private void finishImportList() {
+         final ImportDetails firstImport = importToGroupList.get(0);
+         String currentGroup = getImportGroup(firstImport.isStaticImport(),
+                 firstImport.getImportFullPath());
+         int currentGroupNumber = customImportOrderRules.indexOf(currentGroup);
+         String previousImportFromCurrentGroup = null;
+ 
+         for (ImportDetails importObject : importToGroupList) {
+             final String importGroup = importObject.getImportGroup();
+             final String fullImportIdent = importObject.getImportFullPath();
+ 
+             if (getCountOfEmptyLinesBefore(importObject.getLineNumber()) > 1) {
+                 log(importObject.getLineNumber(), MSG_LINE_SEPARATOR, fullImportIdent);
+             }
+             if (importGroup.equals(currentGroup)) {
+                 if (sortImportsInGroupAlphabetically
+                         && previousImportFromCurrentGroup != null
+                         && compareImports(fullImportIdent, previousImportFromCurrentGroup) < 0) {

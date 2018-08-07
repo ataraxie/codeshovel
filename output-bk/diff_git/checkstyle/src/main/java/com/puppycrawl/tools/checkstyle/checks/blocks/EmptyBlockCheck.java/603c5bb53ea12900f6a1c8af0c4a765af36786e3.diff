@@ -1,0 +1,89 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java
+index 54a1d9c13..f4ad906cb 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java
+@@ -154,61 +154,78 @@ public class EmptyBlockCheck
+                         ast.getText());
+                 }
+             }
+             else if (!hasText(leftCurly)) {
+                 log(leftCurly.getLineNo(),
+                     leftCurly.getColumnNo(),
+                     MSG_KEY_BLOCK_EMPTY,
+                     ast.getText());
+             }
+         }
+     }
+ 
+     /**
+      * @param slistAST a {@code DetailAST} value
+      * @return whether the SLIST token contains any text.
+      */
+     protected boolean hasText(final DetailAST slistAST) {
+         final DetailAST rightCurly = slistAST.findFirstToken(TokenTypes.RCURLY);
+         final DetailAST rcurlyAST;
+ 
+         if (rightCurly == null) {
+             rcurlyAST = slistAST.getParent().findFirstToken(TokenTypes.RCURLY);
+         }
+         else {
+             rcurlyAST = rightCurly;
+         }
+         final int slistLineNo = slistAST.getLineNo();
+         final int slistColNo = slistAST.getColumnNo();
+         final int rcurlyLineNo = rcurlyAST.getLineNo();
+         final int rcurlyColNo = rcurlyAST.getColumnNo();
+         final String[] lines = getLines();
+         boolean retVal = false;
+         if (slistLineNo == rcurlyLineNo) {
+             // Handle braces on the same line
+             final String txt = lines[slistLineNo - 1]
+                     .substring(slistColNo + 1, rcurlyColNo);
+             if (StringUtils.isNotBlank(txt)) {
+                 retVal = true;
+             }
+         }
+         else {
+             // check only whitespace of first & last lines
+             if (!lines[slistLineNo - 1]
+                 .substring(slistColNo + 1).trim().isEmpty()
+                     || !lines[rcurlyLineNo - 1]
+                 .substring(0, rcurlyColNo).trim().isEmpty()) {
+                 retVal = true;
+             }
+             else {
+                 // check if all lines are also only whitespace
+-                for (int i = slistLineNo; i < rcurlyLineNo - 1; i++) {
+-                    if (!lines[i].trim().isEmpty()) {
+-                        retVal = true;
+-                        break;
+-                    }
+-                }
++                retVal = !checkIsAllLinesAreWhitespace(lines, slistLineNo, rcurlyLineNo);
+             }
+         }
+         return retVal;
+     }
++
++    /**
++     * Checks is all lines in array contain whitespaces only.
++     *
++     * @param lines
++     *            array of lines
++     * @param lineFrom
++     *            check from this line number
++     * @param lineTo
++     *            check to this line numbers
++     * @return true if lines contain only whitespaces
++     */
++    private static boolean checkIsAllLinesAreWhitespace(String[] lines, int lineFrom, int lineTo) {
++        boolean result = true;
++        for (int i = lineFrom; i < lineTo - 1; i++) {
++            if (!lines[i].trim().isEmpty()) {
++                result = false;
++                break;
++            }
++        }
++        return result;
++    }
+ }

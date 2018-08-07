@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DetailAST.java",
+  "functionName": "getBranchTokenTypes",
+  "functionId": "getBranchTokenTypes",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java",
+  "functionStartLine": 346,
+  "functionEndLine": 362,
+  "changeHistory": [
+    "0fc8b62a35beddc89cb3412388c27e88cd8cab4a",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+    "db5ec5f654316e862f7b5d3f5faa897ce0ca2352",
+    "ce177456e7042b22b1842cb0309b6b285dc900d4",
+    "acc3f40015ffe1263cfa684ca4b29939249e9aed"
+  ],
+  "changeHistoryShort": {
+    "0fc8b62a35beddc89cb3412388c27e88cd8cab4a": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": "Ybodychange",
+    "db5ec5f654316e862f7b5d3f5faa897ce0ca2352": "Ymultichange(Yreturntypechange,Ybodychange)",
+    "ce177456e7042b22b1842cb0309b6b285dc900d4": "Ybodychange",
+    "acc3f40015ffe1263cfa684ca4b29939249e9aed": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0fc8b62a35beddc89cb3412388c27e88cd8cab4a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2080: Fix typos in code\n",
+      "commitDate": 1442014362000,
+      "commitName": "0fc8b62a35beddc89cb3412388c27e88cd8cab4a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1441051115000,
+      "commitNameOld": "49a0ee81710e0c43ed06a01f1d64ac7f5598a934",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 11.15,
+      "commitsBetweenForRepo": 113,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,18 @@\n     private BitSet getBranchTokenTypes() {\n         // lazy init\n         if (branchTokenTypes \u003d\u003d null) {\n \n             branchTokenTypes \u003d new BitSet();\n             branchTokenTypes.set(getType());\n \n-            // add union of all childs\n+            // add union of all children\n             DetailAST child \u003d getFirstChild();\n             while (child !\u003d null) {\n                 final BitSet childTypes \u003d child.getBranchTokenTypes();\n                 branchTokenTypes.or(childTypes);\n \n                 child \u003d child.getNextSibling();\n             }\n         }\n         return branchTokenTypes;\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ybodychange",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1413609550000,
+      "commitNameOld": "a24df47cafeab03fd65cf72b460aad3d2fafce3d",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 93.38,
+      "commitsBetweenForRepo": 273,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     private BitSet getBranchTokenTypes()\n     {\n         // lazy init\n-        if (mBranchTokenTypes \u003d\u003d null) {\n+        if (branchTokenTypes \u003d\u003d null) {\n \n-            mBranchTokenTypes \u003d new BitSet();\n-            mBranchTokenTypes.set(getType());\n+            branchTokenTypes \u003d new BitSet();\n+            branchTokenTypes.set(getType());\n \n             // add union of all childs\n             DetailAST child \u003d getFirstChild();\n             while (child !\u003d null) {\n                 final BitSet childTypes \u003d child.getBranchTokenTypes();\n-                mBranchTokenTypes.or(childTypes);\n+                branchTokenTypes.or(childTypes);\n \n                 child \u003d child.getNextSibling();\n             }\n         }\n-        return mBranchTokenTypes;\n+        return branchTokenTypes;\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": {
+      "type": "Ybodychange",
+      "commitMessage": "Inspired by patch# 2111354 - changes to remove casting. Neat trick\n",
+      "commitDate": 1221737656000,
+      "commitName": "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200352313000,
+      "commitNameOld": "315033ff5647ef9896130573d9212fee6fe141db",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 247.52,
+      "commitsBetweenForRepo": 67,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     private BitSet getBranchTokenTypes()\n     {\n         // lazy init\n         if (mBranchTokenTypes \u003d\u003d null) {\n \n             mBranchTokenTypes \u003d new BitSet();\n             mBranchTokenTypes.set(getType());\n \n             // add union of all childs\n-            DetailAST child \u003d (DetailAST) getFirstChild();\n+            DetailAST child \u003d getFirstChild();\n             while (child !\u003d null) {\n                 final BitSet childTypes \u003d child.getBranchTokenTypes();\n                 mBranchTokenTypes.or(childTypes);\n \n-                child \u003d (DetailAST) child.getNextSibling();\n+                child \u003d child.getNextSibling();\n             }\n         }\n         return mBranchTokenTypes;\n     }\n\\ No newline at end of file\n"
+    },
+    "db5ec5f654316e862f7b5d3f5faa897ce0ca2352": {
+      "type": "Ymultichange(Yreturntypechange,Ybodychange)",
+      "commitMessage": "Nice patch from Matt Quail to DetailAST to replace all the repeated int[] array construction with a BitSet.\n",
+      "commitDate": 1056028833000,
+      "commitName": "db5ec5f654316e862f7b5d3f5faa897ce0ca2352",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "ce177456e7042b22b1842cb0309b6b285dc900d4": {
+      "type": "Ybodychange",
+      "commitMessage": "Made some style changes.\n",
+      "commitDate": 1036288032000,
+      "commitName": "ce177456e7042b22b1842cb0309b6b285dc900d4",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1036255492000,
+      "commitNameOld": "e70cb13b07f5b2c17dec74a42c05e7e32bb33ffb",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 0.38,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,25 @@\n     private int[] getBranchTokenTypes()\n     {\n         // lazy init\n         if (mBranchTokenTypes \u003d\u003d null) {\n \n-            // TODO improve algorithm to avoid most array creation\n+            // TODO: improve algorithm to avoid most array creation\n             int[] bag \u003d new int[] { getType() };\n \n             // add union of all childs\n             DetailAST child \u003d (DetailAST) getFirstChild();\n             while (child !\u003d null) {\n-                int[] childTypes \u003d child.getBranchTokenTypes();\n-                int[] savedBag \u003d bag;\n+                final int[] childTypes \u003d child.getBranchTokenTypes();\n+                final int[] savedBag \u003d bag;\n                 bag \u003d new int[savedBag.length + childTypes.length];\n                 System.arraycopy(savedBag, 0, bag, 0, savedBag.length);\n                 System.arraycopy(childTypes, 0, bag, savedBag.length,\n                         childTypes.length);\n                 child \u003d (DetailAST) child.getNextSibling();\n             }\n             // TODO: remove duplicates to speed up searching\n             mBranchTokenTypes \u003d bag;\n             Arrays.sort(mBranchTokenTypes);\n         }\n         return mBranchTokenTypes;\n     }\n\\ No newline at end of file\n"
+    },
+    "acc3f40015ffe1263cfa684ca4b29939249e9aed": {
+      "type": "Yintroduced",
+      "commitMessage": "Added branchContains() to DetailAST.\n\nCurrently only used in EqualsHashCodeCheck to simplify code,\nbut I think this will be the main source of performance improvements in TreeWalker\n",
+      "commitDate": 1035289689000,
+      "commitName": "acc3f40015ffe1263cfa684ca4b29939249e9aed",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

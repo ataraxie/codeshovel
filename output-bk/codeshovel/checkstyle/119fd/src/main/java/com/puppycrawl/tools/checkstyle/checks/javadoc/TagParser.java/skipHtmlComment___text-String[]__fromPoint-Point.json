@@ -1,0 +1,149 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "TagParser.java",
+  "functionName": "skipHtmlComment",
+  "functionId": "skipHtmlComment___text-String[]__fromPoint-Point",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java",
+  "functionStartLine": 214,
+  "functionEndLine": 222,
+  "changeHistory": [
+    "30c3a362d45721e6925fe89ba71f0fe69d0fc471",
+    "1bc8a685f64ec17d87b465cb765127cc5f0db1ca",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "2ed89e1e5846efdd01a56dac167f2ae39f5fde63",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "fd6a743fd4b3c9283d62174327dd978bda694892"
+  ],
+  "changeHistoryShort": {
+    "30c3a362d45721e6925fe89ba71f0fe69d0fc471": "Ymultichange(Yparameterchange,Ybodychange)",
+    "1bc8a685f64ec17d87b465cb765127cc5f0db1ca": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "2ed89e1e5846efdd01a56dac167f2ae39f5fde63": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "fd6a743fd4b3c9283d62174327dd978bda694892": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "30c3a362d45721e6925fe89ba71f0fe69d0fc471": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #985: Fix PMD violations for ShortVariable rule\n",
+      "commitDate": 1444178762000,
+      "commitName": "30c3a362d45721e6925fe89ba71f0fe69d0fc471",
+      "commitAuthor": "Roman Ivanov",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "1bc8a685f64ec17d87b465cb765127cc5f0db1ca": {
+      "type": "Ybodychange",
+      "commitMessage": "Add tests and refactor TagParser for JavadocStyle check. #1308\n",
+      "commitDate": 1437782507000,
+      "commitName": "1bc8a685f64ec17d87b465cb765127cc5f0db1ca",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 1.75,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,9 @@\n     private static Point skipHtmlComment(String[] text, Point from) {\n         Point to \u003d from;\n         to \u003d findChar(text, \u0027\u003e\u0027, to);\n-        while (to.getLineNo() \u003c text.length\n-               \u0026\u0026 !text[to.getLineNo()]\n+        while (!text[to.getLineNo()]\n                .substring(0, to.getColumnNo() + 1).endsWith(\"--\u003e\")) {\n             to \u003d findChar(text, \u0027\u003e\u0027, getNextCharPos(text, to));\n         }\n         return to;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 61.71,
+      "commitsBetweenForRepo": 387,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n-    private Point skipHtmlComment(String[] text, Point from) {\n+    private static Point skipHtmlComment(String[] text, Point from) {\n         Point to \u003d from;\n         to \u003d findChar(text, \u0027\u003e\u0027, to);\n         while (to.getLineNo() \u003c text.length\n                \u0026\u0026 !text[to.getLineNo()]\n                .substring(0, to.getColumnNo() + 1).endsWith(\"--\u003e\")) {\n             to \u003d findChar(text, \u0027\u003e\u0027, getNextCharPos(text, to));\n         }\n         return to;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 20.02,
+      "commitsBetweenForRepo": 107,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private Point skipHtmlComment(String[] text, Point from)\n     {\n         Point to \u003d from;\n         to \u003d findChar(text, \u0027\u003e\u0027, to);\n-        while ((to.getLineNo() \u003c text.length)\n+        while (to.getLineNo() \u003c text.length\n                \u0026\u0026 !text[to.getLineNo()]\n                .substring(0, to.getColumnNo() + 1).endsWith(\"--\u003e\"))\n         {\n             to \u003d findChar(text, \u0027\u003e\u0027, getNextCharPos(text, to));\n         }\n         return to;\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "2ed89e1e5846efdd01a56dac167f2ae39f5fde63": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix for issue #119 \"HTML comments break the Javadoc style HTML check\" error in TagParser\n",
+      "commitDate": 1396156412000,
+      "commitName": "2ed89e1e5846efdd01a56dac167f2ae39f5fde63",
+      "commitAuthor": "theqaguy",
+      "commitDateOld": 1393953491000,
+      "commitNameOld": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthorOld": "Ivan Sopov",
+      "daysBetweenCommits": 25.5,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private Point skipHtmlComment(String[] aText, Point aFrom)\n     {\n         Point to \u003d aFrom;\n         to \u003d findChar(aText, \u0027\u003e\u0027, to);\n         while ((to.getLineNo() \u003c aText.length)\n                \u0026\u0026 !aText[to.getLineNo()]\n-               .substring(0, to.getColumnNo()).endsWith(\"--\u003e\"))\n+               .substring(0, to.getColumnNo() + 1).endsWith(\"--\u003e\"))\n         {\n             to \u003d findChar(aText, \u0027\u003e\u0027, getNextCharPos(aText, to));\n         }\n         return to;\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1123546736000,
+      "commitNameOld": "d6175fd6c95f64e854c1604e0331d8d1ab9dcaf3",
+      "commitAuthorOld": "Michael Studman",
+      "daysBetweenCommits": 332.13,
+      "commitsBetweenForRepo": 82,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private Point skipHtmlComment(String[] aText, Point aFrom)\n     {\n         Point to \u003d aFrom;\n         to \u003d findChar(aText, \u0027\u003e\u0027, to);\n-        while (to.getLineNo() \u003c aText.length\n+        while ((to.getLineNo() \u003c aText.length)\n                \u0026\u0026 !aText[to.getLineNo()]\n                .substring(0, to.getColumnNo()).endsWith(\"--\u003e\"))\n         {\n             to \u003d findChar(aText, \u0027\u003e\u0027, getNextCharPos(aText, to));\n         }\n         return to;\n     }\n\\ No newline at end of file\n"
+    },
+    "fd6a743fd4b3c9283d62174327dd978bda694892": {
+      "type": "Yintroduced",
+      "commitMessage": "Draft fix for 843887 (XHTML not handled correctly in JavadocStyle).  Feel free to improve it.\n",
+      "commitDate": 1069327160000,
+      "commitName": "fd6a743fd4b3c9283d62174327dd978bda694892",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

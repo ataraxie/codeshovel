@@ -1,0 +1,78 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+index 66345c776..588a2a105 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+@@ -474,51 +474,73 @@ public final class CommonUtils {
+      */
+     public static boolean isIdentifier(String str) {
+         boolean isIdentifier = !str.isEmpty();
+ 
+         for (int i = 0; isIdentifier && i < str.length(); i++) {
+             if (i == 0) {
+                 isIdentifier = Character.isJavaIdentifierStart(str.charAt(0));
+             }
+             else {
+                 isIdentifier = Character.isJavaIdentifierPart(str.charAt(i));
+             }
+         }
+ 
+         return isIdentifier;
+     }
+ 
+     /**
+      * Checks whether the given string is a valid name.
+      * @param str A string to check.
+      * @return true when the given string contains valid name.
+      */
+     public static boolean isName(String str) {
+         boolean isName = !str.isEmpty();
+ 
+         final String[] identifiers = str.split("\\.", -1);
+         for (int i = 0; isName && i < identifiers.length; i++) {
+             isName = isIdentifier(identifiers[i]);
+         }
+ 
+         return isName;
+     }
+ 
+     /**
+      * Checks if the value arg is blank by either being null,
+      * empty, or contains only whitespace characters.
+      * @param value A string to check.
+      * @return true if the arg is blank.
+      */
+     public static boolean isBlank(String value) {
+         boolean result = true;
+         if (value != null && !value.isEmpty()) {
+             for (int i = 0; i < value.length(); i++) {
+                 if (!Character.isWhitespace(value.charAt(i))) {
+                     result = false;
+                     break;
+                 }
+             }
+         }
+         return result;
+     }
++
++    /**
++     * Checks whether the string contains an integer value.
++     * @param str a string to check
++     * @return true if the given string is an integer, false otherwise.
++     */
++    public static boolean isInt(String str) {
++        boolean isInt;
++        if (str == null) {
++            isInt = false;
++        }
++        else {
++            try {
++                Integer.parseInt(str);
++                isInt = true;
++            }
++            catch (NumberFormatException ignored) {
++                isInt = false;
++            }
++        }
++        return isInt;
++    }
+ }

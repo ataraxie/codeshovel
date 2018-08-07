@@ -1,0 +1,114 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java
+index 121dfff58..a67bcb293 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java
+@@ -537,97 +537,108 @@ public enum JavadocTagInfo
+     {
+         return this.mText;
+     }
+ 
+     /**
+      * Gets the tag name.
+      * @return the tag name
+      */
+     public String getName()
+     {
+         return this.mName;
+     }
+ 
+     /**
+      * Gets the Tag type defined by {@link JavadocTagInfo.Type Type}.
+      * @return the Tag type
+      */
+     public Type getType()
+     {
+         return this.mType;
+     }
+ 
+     /**
+      * returns a JavadocTag from the tag text.
+      * @param aText String representing the tag text
+      * @return Returns a JavadocTag type from a String representing the tag
+      * @throws NullPointerException if the text is null
+      * @throws IllegalArgumentException if the text is not a valid tag
+      */
+     public static JavadocTagInfo fromText(final String aText)
+     {
+         if (aText == null) {
+             throw new NullPointerException("the text is null");
+         }
+ 
+         final JavadocTagInfo tag = TEXT_TO_TAG.get(aText);
+ 
+         if (tag == null) {
+             throw new IllegalArgumentException("the text [" + aText
+                 + "] is not a valid Javadoc tag text");
+         }
+ 
+         return tag;
+     }
+ 
+     /**
+      * returns a JavadocTag from the tag name.
+      * @param aName String name of the tag
+      * @return Returns a JavadocTag type from a String representing the tag
+      * @throws NullPointerException if the text is null
+-     * @throws IllegalArgumentException if the text is not a valid tag
++     * @throws IllegalArgumentException if the text is not a valid tag. The name
++     *    can be checked using {@link JavadocTagInfo#isValidName(String)}
+      */
+     public static JavadocTagInfo fromName(final String aName)
+     {
+         if (aName == null) {
+             throw new NullPointerException("the name is null");
+         }
+ 
+         final JavadocTagInfo tag = NAME_TO_TAG.get(aName);
+ 
+         if (tag == null) {
+             throw new IllegalArgumentException("the name [" + aName
+                 + "] is not a valid Javadoc tag name");
+         }
+ 
+         return tag;
+     }
+ 
++    /**
++     * Returns whether the provided name is for a valid tag.
++     * @param aName the tag name to check.
++     * @return whether the provided name is for a valid tag.
++     */
++    public static boolean isValidName(final String aName)
++    {
++        return NAME_TO_TAG.containsKey(aName);
++    }
++
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public String toString()
+     {
+         return "text [" + this.mText + "] name [" + this.mName
+             + "] type [" + this.mType
+             + "] validInPackageHtml [" + this.mValidInPackageHtml
+             + "] validInOverviewHtml [" + this.mValidInOverviewHtml + "]";
+     }
+ 
+     /**
+      * The Javadoc Type.
+      *
+      * For example a {@code @param} tag is a block tag while a
+      * {@code {@link}} tag is a inline tag.
+      *
+      * @author Travis Schneeberger
+      */
+     public enum Type
+     {
+         /** block type. **/
+         BLOCK,
+ 
+         /** inline type. **/
+         INLINE;
+     }
+ }

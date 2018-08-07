@@ -1,0 +1,86 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/DefaultLogger.java b/src/main/java/com/puppycrawl/tools/checkstyle/DefaultLogger.java
+index 683da8b0d..ff5e76ccd 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/DefaultLogger.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/DefaultLogger.java
+@@ -93,79 +93,81 @@ public class DefaultLogger
+ 
+     /**
+      * Print an Emacs compliant line on the error stream.
+      * If the column number is non zero, then also display it.
+      * @param evt {@inheritDoc}
+      * @see AuditListener
+      **/
+     @Override
+     public void addError(AuditEvent evt) {
+         final SeverityLevel severityLevel = evt.getSeverityLevel();
+         if (SeverityLevel.IGNORE != severityLevel) {
+ 
+             final String fileName = evt.getFileName();
+             final String message = evt.getMessage();
+ 
+             // avoid StringBuffer.expandCapacity
+             final int bufLen = fileName.length() + message.length()
+                 + BUFFER_CUSHION;
+             final StringBuilder sb = new StringBuilder(bufLen);
+ 
+             sb.append(fileName).append(':').append(evt.getLine());
+             if (evt.getColumn() > 0) {
+                 sb.append(':').append(evt.getColumn());
+             }
+             if (SeverityLevel.WARNING == severityLevel) {
+                 sb.append(": warning");
+             }
+             sb.append(": ").append(message);
+             errorWriter.println(sb.toString());
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void addException(AuditEvent evt, Throwable throwable) {
+         synchronized (errorWriter) {
+             errorWriter.println("Error auditing " + evt.getFileName());
+             throwable.printStackTrace(errorWriter);
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void auditStarted(AuditEvent evt) {
+         infoWriter.println("Starting audit...");
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void fileFinished(AuditEvent evt) {
++        // No need to implement this method in this class
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void fileStarted(AuditEvent evt) {
++        // No need to implement this method in this class
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void auditFinished(AuditEvent evt) {
+         infoWriter.println("Audit done.");
+         closeStreams();
+     }
+ 
+     /**
+      * Flushes the output streams and closes them if needed.
+      */
+     protected void closeStreams() {
+         infoWriter.flush();
+         if (closeInfo) {
+             infoWriter.close();
+         }
+ 
+         errorWriter.flush();
+         if (closeError) {
+             errorWriter.close();
+         }
+     }
+ }

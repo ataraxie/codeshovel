@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RequireThisCheck.java",
+  "functionName": "isDeclarationToken",
+  "functionId": "isDeclarationToken___parentType-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java",
+  "functionStartLine": 915,
+  "functionEndLine": 917,
+  "changeHistory": [
+    "1ad7c80579044d5ade384a834bdfd8ba76e3f772",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "5a9b7249e3d092a78ac8e7d48aeeb62bf1c44e20"
+  ],
+  "changeHistoryShort": {
+    "1ad7c80579044d5ade384a834bdfd8ba76e3f772": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "5a9b7249e3d092a78ac8e7d48aeeb62bf1c44e20": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "1ad7c80579044d5ade384a834bdfd8ba76e3f772": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1555: Replace complex boolean expression with set of tokens\n\nFixes `OverlyComplexBooleanExpression` inspection violation.\n\nDescription:\n\u003eReports boolean expressions with too many terms. Such expressions may be confusing and bug-prone.\n",
+      "commitDate": 1440888145000,
+      "commitName": "1ad7c80579044d5ade384a834bdfd8ba76e3f772",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440791300000,
+      "commitNameOld": "ae3861225a68ce3682a86acb72f09a0eca612c44",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 1.12,
+      "commitsBetweenForRepo": 50,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,3 @@\n     private static boolean isDeclarationToken(int parentType) {\n-        return parentType \u003d\u003d TokenTypes.VARIABLE_DEF\n-            || parentType \u003d\u003d TokenTypes.CTOR_DEF\n-            || parentType \u003d\u003d TokenTypes.METHOD_DEF\n-            || parentType \u003d\u003d TokenTypes.CLASS_DEF\n-            || parentType \u003d\u003d TokenTypes.ENUM_DEF\n-            || parentType \u003d\u003d TokenTypes.INTERFACE_DEF\n-            || parentType \u003d\u003d TokenTypes.PARAMETER_DEF\n-            || parentType \u003d\u003d TokenTypes.TYPE_ARGUMENT;\n+        return DECLARATION_TOKENS.contains(parentType);\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1435420373000,
+      "commitNameOld": "bc83a3a82fc14ac5f83dca972d7e48776d2b98d9",
+      "commitAuthorOld": "Bhavik Patel",
+      "daysBetweenCommits": 20.54,
+      "commitsBetweenForRepo": 184,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n-    private boolean isDeclarationToken(int parentType) {\n+    private static boolean isDeclarationToken(int parentType) {\n         return parentType \u003d\u003d TokenTypes.VARIABLE_DEF\n             || parentType \u003d\u003d TokenTypes.CTOR_DEF\n             || parentType \u003d\u003d TokenTypes.METHOD_DEF\n             || parentType \u003d\u003d TokenTypes.CLASS_DEF\n             || parentType \u003d\u003d TokenTypes.ENUM_DEF\n             || parentType \u003d\u003d TokenTypes.INTERFACE_DEF\n             || parentType \u003d\u003d TokenTypes.PARAMETER_DEF\n             || parentType \u003d\u003d TokenTypes.TYPE_ARGUMENT;\n     }\n\\ No newline at end of file\n"
+    },
+    "5a9b7249e3d092a78ac8e7d48aeeb62bf1c44e20": {
+      "type": "Yintroduced",
+      "commitMessage": "RequireThisCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344164000,
+      "commitName": "5a9b7249e3d092a78ac8e7d48aeeb62bf1c44e20",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

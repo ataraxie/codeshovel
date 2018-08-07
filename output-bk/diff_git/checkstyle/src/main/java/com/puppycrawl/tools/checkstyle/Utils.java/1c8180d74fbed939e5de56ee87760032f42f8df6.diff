@@ -1,0 +1,127 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java b/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
+index 3904847c3..cf56f1868 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
+@@ -121,103 +121,119 @@ public final class Utils
+             }
+         }
+         return true;
+     }
+ 
+     /**
+      * Returns the length of a string ignoring all trailing whitespace. It is a
+      * pity that there is not a trim() like method that only removed the
+      * trailing whitespace.
+      * @param line the string to process
+      * @return the length of the string ignoring all trailing whitespace
+      **/
+     public static int lengthMinusTrailingWhitespace(String line)
+     {
+         int len = line.length();
+         for (int i = len - 1; i >= 0; i--) {
+             if (!Character.isWhitespace(line.charAt(i))) {
+                 break;
+             }
+             len--;
+         }
+         return len;
+     }
+ 
+     /**
+      * Returns the length of a String prefix with tabs expanded.
+      * Each tab is counted as the number of characters is takes to
+      * jump to the next tab stop.
+      * @param string the input String
+      * @param toIdx index in string (exclusive) where the calculation stops
+      * @param tabWidth the distance between tab stop position.
+      * @return the length of string.substring(0, toIdx) with tabs expanded.
+      */
+     public static int lengthExpandedTabs(String string,
+                                          int toIdx,
+                                          int tabWidth)
+     {
+         int len = 0;
+         for (int idx = 0; idx < toIdx; idx++) {
+             if (string.charAt(idx) == '\t') {
+                 len = (len / tabWidth + 1) * tabWidth;
+             }
+             else {
+                 len++;
+             }
+         }
+         return len;
+     }
+ 
+     /**
+-     * This is a factory method to return an Pattern object for the specified
+-     * regular expression. It calls {@link #getPattern(String, int)} with the
+-     * compile flags defaults to 0.
++     * Validates whether passed string is a valid pattern or not.
++     * @param pattern
++     *        string to validate
++     * @return true if the pattern is valid false otherwise
++     */
++    public static boolean isPatternValid(String pattern)
++    {
++        try {
++            Utils.getPattern(pattern);
++        }
++        catch (final PatternSyntaxException e) {
++            return false;
++        }
++        return true;
++    }
++
++    /**
++     * This is a factory method to return an Pattern object for the specified regular expression. It
++     * calls {@link #getPattern(String, int)} with the compile flags defaults to 0.
+      * @return an Pattern object for the supplied pattern
+      * @param pattern the regular expression pattern
+      * @throws PatternSyntaxException an invalid pattern was supplied
+      **/
+     public static Pattern getPattern(String pattern)
+         throws PatternSyntaxException
+     {
+         return getPattern(pattern, 0);
+     }
+ 
+     /**
+      * This is a factory method to return an Pattern object for the specified
+      * regular expression and compile flags.
+      * @return an Pattern object for the supplied pattern
+      * @param pattern the regular expression pattern
+      * @param compileFlags the compilation flags
+      * @throws PatternSyntaxException an invalid pattern was supplied
+      **/
+     public static Pattern getPattern(String pattern, int compileFlags)
+         throws PatternSyntaxException
+     {
+         final String key = pattern + ":flags-" + compileFlags;
+         Pattern retVal = CREATED_RES.get(key);
+         if (retVal == null) {
+             retVal = Pattern.compile(pattern, compileFlags);
+             CREATED_RES.putIfAbsent(key, retVal);
+         }
+         return retVal;
+     }
+ 
+     /**
+      * Loads the contents of a file in a String array.
+      * @return the lines in the file
+      * @param fileName the name of the file to load
+      * @throws IOException error occurred
+      * @deprecated consider using {@link com.puppycrawl.tools.checkstyle.api.FileText} instead
+      **/
+     @Deprecated
+     public static String[] getLines(String fileName)
+         throws IOException
+     {
+         return getLines(
+             fileName,
+             System.getProperty("file.encoding", "UTF-8"));
+     }
+ 
+     /**
+      * Loads the contents of a file in a String array using
+      * the named charset.
+      * @return the lines in the file

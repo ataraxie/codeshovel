@@ -1,0 +1,143 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+index 0e7d9fd07..096e14aa0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+@@ -377,128 +377,133 @@ public class VariableDeclarationUsageDistanceCheck extends AbstractCheck {
+     /**
+      * Calculates distance between declaration of variable and its first usage
+      * in single scope.
+      * @param semicolonAst
+      *        Regular node of Ast which is checked for content of checking
+      *        variable.
+      * @param variableIdentAst
+      *        Variable which distance is calculated for.
+      * @return entry which contains expression with variable usage and distance.
+      */
+     private static Entry<DetailAST, Integer> calculateDistanceInSingleScope(
+             DetailAST semicolonAst, DetailAST variableIdentAst) {
+         int dist = 0;
+         boolean firstUsageFound = false;
+         DetailAST currentAst = semicolonAst;
+         DetailAST variableUsageAst = null;
+ 
+         while (!firstUsageFound && currentAst != null
+                 && currentAst.getType() != TokenTypes.RCURLY) {
+             if (currentAst.getFirstChild() != null) {
+ 
+                 if (isChild(currentAst, variableIdentAst)) {
+                     dist = getDistToVariableUsageInChildNode(currentAst, variableIdentAst, dist);
+                     variableUsageAst = currentAst;
+                     firstUsageFound = true;
+                 }
+                 else if (currentAst.getType() != TokenTypes.VARIABLE_DEF) {
+                     dist++;
+                 }
+             }
+             currentAst = currentAst.getNextSibling();
+         }
+ 
+         // If variable wasn't used after its declaration, distance is 0.
+         if (!firstUsageFound) {
+             dist = 0;
+         }
+ 
+         return new SimpleEntry<>(variableUsageAst, dist);
+     }
+ 
+     /**
+      * Returns the distance to variable usage for in the child node.
+      * @param childNode child node.
+      * @param varIdent variable variable identifier.
+      * @param currentDistToVarUsage current distance to the variable usage.
+      * @return the distance to variable usage for in the child node.
+      */
+     private static int getDistToVariableUsageInChildNode(DetailAST childNode, DetailAST varIdent,
+                                                          int currentDistToVarUsage) {
++        DetailAST examineNode = childNode;
++        if (examineNode.getType() == TokenTypes.LABELED_STAT) {
++            examineNode = examineNode.getFirstChild().getNextSibling();
++        }
++
+         int resultDist = currentDistToVarUsage;
+-        switch (childNode.getType()) {
++        switch (examineNode.getType()) {
+             case TokenTypes.VARIABLE_DEF:
+                 resultDist++;
+                 break;
+             case TokenTypes.SLIST:
+                 resultDist = 0;
+                 break;
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.LITERAL_WHILE:
+             case TokenTypes.LITERAL_DO:
+             case TokenTypes.LITERAL_IF:
+             case TokenTypes.LITERAL_SWITCH:
+-                if (isVariableInOperatorExpr(childNode, varIdent)) {
++                if (isVariableInOperatorExpr(examineNode, varIdent)) {
+                     resultDist++;
+                 }
+                 else {
+                     // variable usage is in inner scope
+                     // reset counters, because we can't determine distance
+                     resultDist = 0;
+                 }
+                 break;
+             default:
+-                if (childNode.branchContains(TokenTypes.SLIST)) {
+-                    resultDist = 0;
++                if (examineNode.findFirstToken(TokenTypes.SLIST) == null) {
++                    resultDist++;
+                 }
+                 else {
+-                    resultDist++;
++                    resultDist = 0;
+                 }
+         }
+         return resultDist;
+     }
+ 
+     /**
+      * Calculates distance between declaration of variable and its first usage
+      * in multiple scopes.
+      * @param ast
+      *        Regular node of Ast which is checked for content of checking
+      *        variable.
+      * @param variable
+      *        Variable which distance is calculated for.
+      * @return entry which contains expression with variable usage and distance.
+      */
+     private static Entry<DetailAST, Integer> calculateDistanceBetweenScopes(
+             DetailAST ast, DetailAST variable) {
+         int dist = 0;
+         DetailAST currentScopeAst = ast;
+         DetailAST variableUsageAst = null;
+         while (currentScopeAst != null) {
+             final Entry<List<DetailAST>, Integer> searchResult =
+                     searchVariableUsageExpressions(variable, currentScopeAst);
+ 
+             currentScopeAst = null;
+ 
+             final List<DetailAST> variableUsageExpressions = searchResult.getKey();
+             dist += searchResult.getValue();
+ 
+             // If variable usage exists in a single scope, then look into
+             // this scope and count distance until variable usage.
+             if (variableUsageExpressions.size() == 1) {
+                 final DetailAST blockWithVariableUsage = variableUsageExpressions
+                         .get(0);
+                 DetailAST exprWithVariableUsage = null;
+                 switch (blockWithVariableUsage.getType()) {
+                     case TokenTypes.VARIABLE_DEF:
+                     case TokenTypes.EXPR:
+                         dist++;
+                         break;
+                     case TokenTypes.LITERAL_FOR:
+                     case TokenTypes.LITERAL_WHILE:
+                     case TokenTypes.LITERAL_DO:
+                         exprWithVariableUsage = getFirstNodeInsideForWhileDoWhileBlocks(
+                             blockWithVariableUsage, variable);
+                         break;
+                     case TokenTypes.LITERAL_IF:
+                         exprWithVariableUsage = getFirstNodeInsideIfBlock(
+                             blockWithVariableUsage, variable);
+                         break;

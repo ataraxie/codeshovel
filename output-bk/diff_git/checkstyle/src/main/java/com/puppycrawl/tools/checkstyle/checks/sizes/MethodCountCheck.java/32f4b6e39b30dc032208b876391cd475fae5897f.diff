@@ -1,0 +1,110 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodCountCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodCountCheck.java
+index 95cedf59a..762db73d5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodCountCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodCountCheck.java
+@@ -73,104 +73,101 @@ public final class MethodCountCheck extends AbstractCheck {
+ 
+     /** Maintains stack of counters, to support inner types. */
+     private final Deque<MethodCounter> counters = new ArrayDeque<>();
+ 
+     /** Maximum private methods. */
+     private int maxPrivate = DEFAULT_MAX_METHODS;
+     /** Maximum package methods. */
+     private int maxPackage = DEFAULT_MAX_METHODS;
+     /** Maximum protected methods. */
+     private int maxProtected = DEFAULT_MAX_METHODS;
+     /** Maximum public methods. */
+     private int maxPublic = DEFAULT_MAX_METHODS;
+     /** Maximum total number of methods. */
+     private int maxTotal = DEFAULT_MAX_METHODS;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.METHOD_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {TokenTypes.METHOD_DEF};
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.METHOD_DEF) {
+             raiseCounter(ast);
+         }
+         else {
+             final boolean inInterface = ast.getType() == TokenTypes.INTERFACE_DEF;
+             counters.push(new MethodCounter(inInterface));
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+-        if (ast.getType() == TokenTypes.CLASS_DEF
+-            || ast.getType() == TokenTypes.INTERFACE_DEF
+-            || ast.getType() == TokenTypes.ENUM_CONSTANT_DEF
+-            || ast.getType() == TokenTypes.ENUM_DEF) {
++        if (ast.getType() != TokenTypes.METHOD_DEF) {
+             final MethodCounter counter = counters.pop();
+             checkCounters(counter, ast);
+         }
+     }
+ 
+     /**
+      * Determine the visibility modifier and raise the corresponding counter.
+      * @param method
+      *            The method-subtree from the AbstractSyntaxTree.
+      */
+     private void raiseCounter(DetailAST method) {
+         final MethodCounter actualCounter = counters.peek();
+         final DetailAST temp = method.findFirstToken(TokenTypes.MODIFIERS);
+         final Scope scope = ScopeUtils.getScopeFromMods(temp);
+         actualCounter.increment(scope);
+     }
+ 
+     /**
+      * Check the counters and report violations.
+      * @param counter the method counters to check
+      * @param ast to report errors against.
+      */
+     private void checkCounters(MethodCounter counter, DetailAST ast) {
+         checkMax(maxPrivate, counter.value(Scope.PRIVATE),
+                  MSG_PRIVATE_METHODS, ast);
+         checkMax(maxPackage, counter.value(Scope.PACKAGE),
+                  MSG_PACKAGE_METHODS, ast);
+         checkMax(maxProtected, counter.value(Scope.PROTECTED),
+                  MSG_PROTECTED_METHODS, ast);
+         checkMax(maxPublic, counter.value(Scope.PUBLIC),
+                  MSG_PUBLIC_METHODS, ast);
+         checkMax(maxTotal, counter.getTotal(), MSG_MANY_METHODS, ast);
+     }
+ 
+     /**
+      * Utility for reporting if a maximum has been exceeded.
+      * @param max the maximum allowed value
+      * @param value the actual value
+      * @param msg the message to log. Takes two arguments of value and maximum.
+      * @param ast the AST to associate with the message.
+      */
+     private void checkMax(int max, int value, String msg, DetailAST ast) {
+         if (max < value) {
+             log(ast.getLineNo(), msg, value, max);
+         }
+     }
+ 
+     /**
+      * Sets the maximum allowed {@code private} methods per type.
+      * @param value the maximum allowed.

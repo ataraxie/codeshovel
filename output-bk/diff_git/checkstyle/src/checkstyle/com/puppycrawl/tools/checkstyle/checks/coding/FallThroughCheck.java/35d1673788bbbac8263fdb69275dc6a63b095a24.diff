@@ -1,0 +1,111 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
+index 26ec3f4d6..042e984da 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
+@@ -283,103 +283,103 @@ public class FallThroughCheck extends Check
+      * @return true if switch is terminated.
+      */
+     private boolean checkSwitch(final DetailAST aAST, boolean aUseContinue)
+     {
+         DetailAST caseGroup = aAST.findFirstToken(TokenTypes.CASE_GROUP);
+         boolean isTerminated = (caseGroup != null);
+         while (isTerminated && (caseGroup != null)
+                && (caseGroup.getType() != TokenTypes.RCURLY))
+         {
+             final DetailAST caseBody =
+                 caseGroup.findFirstToken(TokenTypes.SLIST);
+             isTerminated &= isTerminated(caseBody, false, aUseContinue);
+             caseGroup = (DetailAST) caseGroup.getNextSibling();
+         }
+         return isTerminated;
+     }
+ 
+     /**
+      * Determines if the fall through case between <code>aCurrentCase</code> and
+      * <code>aNextCase</code> is reliefed by a appropriate comment.
+      *
+      * @param aCurrentCase AST of the case that falls through to the next case.
+      * @param aNextCase AST of the next case.
+      * @return True if a relief comment was found
+      */
+     private boolean hasFallTruComment(DetailAST aCurrentCase,
+             DetailAST aNextCase)
+     {
+ 
+         final int startLineNo = aCurrentCase.getLineNo();
+         final int endLineNo = aNextCase.getLineNo();
+         final int endColNo = aNextCase.getColumnNo();
+ 
+         /*
+          * Remember: The lines number returned from the AST is 1-based, but
+          * the lines number in this array are 0-based. So you will often
+          * see a "lineNo-1" etc.
+          */
+         final String[] lines = getLines();
+ 
+         /*
+          * Handle:
+          *    case 1:
+          *    /+ FALLTHRU +/ case 2:
+          *    ....
+          * and
+          *    switch(i) {
+          *    default:
+          *    /+ FALLTHRU +/}
+          */
+-        String linepart = lines[endLineNo - 1].substring(0, endColNo);
++        final String linepart = lines[endLineNo - 1].substring(0, endColNo);
+         if (commentMatch(mRegExp, linepart, endLineNo)) {
+             return true;
+         }
+ 
+         /*
+          * Handle:
+          *    case 1:
+          *    .....
+          *    // FALLTHRU
+          *    case 2:
+          *    ....
+          * and
+          *    switch(i) {
+          *    default:
+          *    // FALLTHRU
+          *    }
+          */
+         for (int i = endLineNo - 2; i > startLineNo - 1; i--) {
+             if (lines[i].trim().length() != 0) {
+                 return commentMatch(mRegExp, lines[i], i + 1);
+             }
+         }
+ 
+         // Well -- no relief comment found.
+         return false;
+     }
+ 
+     /**
+      * Does a regular expression match on the given line and checks that a
+      * possible match is within a comment.
+      * @param aPattern The regular expression pattern to use.
+      * @param aLine The line of test to do the match on.
+      * @param aLineNo The line number in the file.
+      * @return True if a match was found inside a comment.
+      */
+     private boolean commentMatch(Pattern aPattern, String aLine, int aLineNo
+     )
+     {
+-        Matcher matcher = aPattern.matcher(aLine);
++        final Matcher matcher = aPattern.matcher(aLine);
+ 
+-        boolean hit = matcher.find();
++        final boolean hit = matcher.find();
+ 
+         if (hit) {
+             final int startMatch = matcher.start();
+             // -1 because it returns the char position beyond the match
+             final int endMatch = matcher.end() - 1;
+             return getFileContents().hasIntersectionWithComment(aLineNo,
+                     startMatch, aLineNo, endMatch);
+         }
+         return false;
+     }
+ }

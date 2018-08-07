@@ -1,0 +1,149 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IllegalImportCheck.java",
+  "functionName": "isIllegalImport",
+  "functionId": "isIllegalImport___importText-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/IllegalImportCheck.java",
+  "functionStartLine": 222,
+  "functionEndLine": 231,
+  "changeHistory": [
+    "34bd19015f57dd9b89c4f2ecff64a4f32fe82ec8",
+    "d6f3a17328226debcddb53ed25c39501f2781764",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "e50e1fcd1c17ba1f73d11df38382907cc163a1d1",
+    "ddb334d9e4443c96fed60ff0a0b9210615846315",
+    "9118f376bee8c9281c4458b96fbda8f3ff49bbdc",
+    "18d65a1993ddb57b7de36092614413d2eb6bc69b",
+    "00447a8fe3741b163901128b01ab7087392fc7c6"
+  ],
+  "changeHistoryShort": {
+    "34bd19015f57dd9b89c4f2ecff64a4f32fe82ec8": "Ybodychange",
+    "d6f3a17328226debcddb53ed25c39501f2781764": "Ybodychange",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "e50e1fcd1c17ba1f73d11df38382907cc163a1d1": "Ybodychange",
+    "ddb334d9e4443c96fed60ff0a0b9210615846315": "Yfilerename",
+    "9118f376bee8c9281c4458b96fbda8f3ff49bbdc": "Ybodychange",
+    "18d65a1993ddb57b7de36092614413d2eb6bc69b": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "00447a8fe3741b163901128b01ab7087392fc7c6": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "34bd19015f57dd9b89c4f2ecff64a4f32fe82ec8": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3449: IllegalImport: new property illegalClasses to let blacklist certain classes import\n",
+      "commitDate": 1493672706000,
+      "commitName": "34bd19015f57dd9b89c4f2ecff64a4f32fe82ec8",
+      "commitAuthor": "Tima",
+      "commitDateOld": 1493045733000,
+      "commitNameOld": "d6f3a17328226debcddb53ed25c39501f2781764",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 7.26,
+      "commitsBetweenForRepo": 37,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     private boolean isIllegalImport(String importText) {\n-        boolean isIllegal \u003d false;\n-        for (String element : illegalPkgs) {\n-            if (importText.startsWith(element + \".\")) {\n-                isIllegal \u003d true;\n-                break;\n-            }\n+        final boolean result;\n+        if (regexp) {\n+            result \u003d isIllegalImportByRegularExpressions(importText);\n         }\n-        return isIllegal;\n+        else {\n+            result \u003d isIllegalImportByPackagesAndClassNames(importText);\n+        }\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "d6f3a17328226debcddb53ed25c39501f2781764": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in imports, regexp, naming, design, sizes packages\n",
+      "commitDate": 1493045733000,
+      "commitName": "d6f3a17328226debcddb53ed25c39501f2781764",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 87.02,
+      "commitsBetweenForRepo": 318,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,10 @@\n     private boolean isIllegalImport(String importText) {\n+        boolean isIllegal \u003d false;\n         for (String element : illegalPkgs) {\n             if (importText.startsWith(element + \".\")) {\n-                return true;\n+                isIllegal \u003d true;\n+                break;\n             }\n         }\n-        return false;\n+        return isIllegal;\n     }\n\\ No newline at end of file\n"
+    },
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, imports, #512\n",
+      "commitDate": 1421678111000,
+      "commitName": "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "e50e1fcd1c17ba1f73d11df38382907cc163a1d1": {
+      "type": "Ybodychange",
+      "commitMessage": "Use the new syntactic sugar \"for loop\".\n\nEnd of the cosmetic changes.\n",
+      "commitDate": 1197714527000,
+      "commitName": "e50e1fcd1c17ba1f73d11df38382907cc163a1d1",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1169909494000,
+      "commitNameOld": "1efc394250b8f1c79bd7f8344b738a7d13396ed3",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 321.82,
+      "commitsBetweenForRepo": 34,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     private boolean isIllegalImport(String aImportText)\n     {\n-        for (int i \u003d 0; i \u003c mIllegalPkgs.length; i++) {\n-            if (aImportText.startsWith(mIllegalPkgs[i] + \".\")) {\n+        for (String element : mIllegalPkgs) {\n+            if (aImportText.startsWith(element + \".\")) {\n                 return true;\n             }\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "ddb334d9e4443c96fed60ff0a0b9210615846315": {
+      "type": "Yfilerename",
+      "commitMessage": "Moved the Import checks to a sub-package. That is all\nthe refactoring I have time for over the next few days.\n",
+      "commitDate": 1054649602000,
+      "commitName": "ddb334d9e4443c96fed60ff0a0b9210615846315",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1054648289000,
+      "commitNameOld": "04ac5dd87c11a2bf7b908b45bbca7933382df515",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.02,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "9118f376bee8c9281c4458b96fbda8f3ff49bbdc": {
+      "type": "Ybodychange",
+      "commitMessage": "simplified implementation\n",
+      "commitDate": 1038984080000,
+      "commitName": "9118f376bee8c9281c4458b96fbda8f3ff49bbdc",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1038937654000,
+      "commitNameOld": "1ed1a11612a7710f2642fa1b5c719edc1db69c0c",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 0.54,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,9 @@\n     private boolean isIllegalImport(String aImportText)\n     {\n-        for (Iterator it \u003d mIllegalPkgs.iterator(); it.hasNext();) {\n-            final String illegalPkg \u003d (String) it.next();\n-            if (aImportText.startsWith(illegalPkg + \".\")) {\n+        for (int i \u003d 0; i \u003c mIllegalPkgs.length; i++) {\n+            if (aImportText.startsWith(mIllegalPkgs[i] + \".\")) {\n                 return true;\n             }\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "18d65a1993ddb57b7de36092614413d2eb6bc69b": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Moved across all the import checks\n",
+      "commitDate": 1033278902000,
+      "commitName": "18d65a1993ddb57b7de36092614413d2eb6bc69b",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "00447a8fe3741b163901128b01ab7087392fc7c6": {
+      "type": "Yintroduced",
+      "commitMessage": "added check for illegal imports\n",
+      "commitDate": 1019018635000,
+      "commitName": "00447a8fe3741b163901128b01ab7087392fc7c6",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

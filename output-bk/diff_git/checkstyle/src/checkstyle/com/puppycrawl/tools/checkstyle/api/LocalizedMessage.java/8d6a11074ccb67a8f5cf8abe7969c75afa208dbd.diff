@@ -1,0 +1,64 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+index cb43810d0..99836c92e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+@@ -223,58 +223,58 @@ public final class LocalizedMessage
+             sBundleCache.put(aBundleName, bundle);
+         }
+         return bundle;
+     }
+ 
+     /** @return the line number **/
+     public int getLineNo()
+     {
+         return mLineNo;
+     }
+ 
+     /** @return the column number **/
+     public int getColumnNo()
+     {
+         return mColNo;
+     }
+ 
+     /** @return the severity level **/
+     public SeverityLevel getSeverityLevel()
+     {
+         return mSeverityLevel;
+     }
+ 
+     /**
+      * Returns the message key to locate the translation, can also be used
+      * in IDE plugins to map error messages to corrective actions.
+      *
+      * @return the message key
+      */
+     public String getKey()
+     {
+         return mKey;
+     }
+ 
+     /** @param aLocale the locale to use for localization **/
+     public static void setLocale(Locale aLocale)
+     {
+         sLocale = aLocale;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Interface Comparable methods
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /** @see java.lang.Comparable **/
+     public int compareTo(Object aOther)
+     {
+         final LocalizedMessage lt = (LocalizedMessage) aOther;
+         if (getLineNo() == lt.getLineNo()) {
+             if (getColumnNo() == lt.getColumnNo()) {
+-                return mKey.compareTo(lt.mKey);
++                return getMessage().compareTo(lt.getMessage());
+             }
+             return (getColumnNo() < lt.getColumnNo()) ? -1 : 1;
+         }
+ 
+         return (getLineNo() < lt.getLineNo()) ? -1 : 1;
+     }
+ }

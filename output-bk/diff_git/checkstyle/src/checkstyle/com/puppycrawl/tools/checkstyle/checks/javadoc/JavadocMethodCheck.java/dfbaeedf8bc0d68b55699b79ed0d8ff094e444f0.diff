@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index b2d91c141..0e2f46788 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -653,101 +653,101 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck
+                 }
+                 found = true;
+                 it.remove();
+             }
+         }
+ 
+         // Handle there being no @return tags :- unless
+         // the user has chosen to suppress these problems
+         if (!found && !mAllowMissingReturnTag && aReportExpectedTags) {
+             log(aLineNo, "javadoc.return.expected");
+         }
+     }
+ 
+     /**
+      * Checks a set of tags for matching throws.
+      *
+      * @param aTags the tags to check
+      * @param aThrows the throws to check
+      * @param aReportExpectedTags whether we should report if do not find
+      *            expected tag
+      */
+     private void checkThrowsTags(List aTags, List aThrows,
+                                  boolean aReportExpectedTags)
+     {
+         // Loop over the tags, checking to see they exist in the throws.
+         final Set foundThrows = new HashSet(); //used for performance only
+         final ListIterator tagIt = aTags.listIterator();
+         while (tagIt.hasNext()) {
+             final JavadocTag tag = (JavadocTag) tagIt.next();
+ 
+             if (!tag.isThrowsTag()) {
+                 continue;
+             }
+ 
+             tagIt.remove();
+ 
+             // Loop looking for matching throw
+             final String documentedEx = tag.getArg1();
+             Token token = new Token(tag.getArg1(), tag.getLineNo(),
+                                     tag.getColumnNo());
+             ClassInfo documentedCI =
+                 createClassInfo(token, getCurrentClassName());
+             boolean found = foundThrows.contains(documentedEx);
+ 
+             final ListIterator throwIt = aThrows.listIterator();
+             while (!found && throwIt.hasNext()) {
+                 final ExceptionInfo ei = (ExceptionInfo) throwIt.next();
+                 final Token fi = ei.getName();
+                 final String declaredEx = fi.getText();
+ 
+-                if (isSameType(declaredEx, documentedEx)) {
++                if (documentedCI.getClazz() == ei.getClazz()) {
+                     found = true;
+                     ei.setFound();
+                     foundThrows.add(documentedEx);
+                 }
+                 else if (mAllowThrowsTagsForSubclasses) {
+                     found = isSubclass(documentedCI.getClazz(), ei.getClazz());
+                 }
+             }
+ 
+             // Handle extra JavadocTag.
+             if (!found) {
+                 boolean reqd = true;
+                 if (mAllowUndeclaredRTE) {
+                     reqd = !isUnchecked(documentedCI.getClazz());
+                 }
+ 
+                 if (reqd) {
+                     log(tag.getLineNo(), tag.getColumnNo(),
+                         "javadoc.unusedTag", "@throws", tag.getArg1());
+ 
+                 }
+             }
+         }
+ 
+         // Now dump out all throws without tags :- unless
+         // the user has chosen to suppress these problems
+         if (!mAllowMissingThrowsTags && aReportExpectedTags) {
+             final ListIterator throwIt = aThrows.listIterator();
+             while (throwIt.hasNext()) {
+                 final ExceptionInfo ei = (ExceptionInfo) throwIt.next();
+                 if (!ei.isFound()) {
+                     final Token fi = ei.getName();
+                     log(fi.getLineNo(), fi.getColumnNo(),
+                         "javadoc.expectedTag", "@throws", fi.getText());
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Returns whether an AST represents a setter method.
+      * @param aAST the AST to check with
+      * @return whether the AST represents a setter method
+      */
+     private boolean isSetterMethod(final DetailAST aAST)
+     {
+         // Check have a method with exactly 7 children which are all that
+         // is allowed in a proper setter method which does not throw any
+         // exceptions.
+         if ((aAST.getType() != TokenTypes.METHOD_DEF)

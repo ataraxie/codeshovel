@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "GeneralRange.java",
+  "functionName": "intersect",
+  "functionId": "intersect___other-GeneralRange__T__",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/GeneralRange.java",
+  "functionStartLine": 176,
+  "functionEndLine": 221,
+  "changeHistory": [
+    "6f22af40e1526b8c194e9e36d457bcd37680c6a3",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "6f22af40e1526b8c194e9e36d457bcd37680c6a3": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6f22af40e1526b8c194e9e36d457bcd37680c6a3": {
+      "type": "Ybodychange",
+      "commitMessage": "Migrate from jsr305 @Nullable to Checker Framework @NullableDecl.\n[]\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d178274875\n",
+      "commitDate": 1512679066000,
+      "commitName": "6f22af40e1526b8c194e9e36d457bcd37680c6a3",
+      "commitAuthor": "cpovirk",
+      "commitDateOld": 1512409023000,
+      "commitNameOld": "fd919e54a55ba169dc7d9f54b7b3485aa7fa0970",
+      "commitAuthorOld": "cpovirk",
+      "daysBetweenCommits": 3.13,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,46 +1,46 @@\n   GeneralRange\u003cT\u003e intersect(GeneralRange\u003cT\u003e other) {\n     checkNotNull(other);\n     checkArgument(comparator.equals(other.comparator));\n \n     boolean hasLowBound \u003d this.hasLowerBound;\n-    @Nullable T lowEnd \u003d getLowerEndpoint();\n+    @NullableDecl T lowEnd \u003d getLowerEndpoint();\n     BoundType lowType \u003d getLowerBoundType();\n     if (!hasLowerBound()) {\n       hasLowBound \u003d other.hasLowerBound;\n       lowEnd \u003d other.getLowerEndpoint();\n       lowType \u003d other.getLowerBoundType();\n     } else if (other.hasLowerBound()) {\n       int cmp \u003d comparator.compare(getLowerEndpoint(), other.getLowerEndpoint());\n       if (cmp \u003c 0 || (cmp \u003d\u003d 0 \u0026\u0026 other.getLowerBoundType() \u003d\u003d OPEN)) {\n         lowEnd \u003d other.getLowerEndpoint();\n         lowType \u003d other.getLowerBoundType();\n       }\n     }\n \n     boolean hasUpBound \u003d this.hasUpperBound;\n-    @Nullable T upEnd \u003d getUpperEndpoint();\n+    @NullableDecl T upEnd \u003d getUpperEndpoint();\n     BoundType upType \u003d getUpperBoundType();\n     if (!hasUpperBound()) {\n       hasUpBound \u003d other.hasUpperBound;\n       upEnd \u003d other.getUpperEndpoint();\n       upType \u003d other.getUpperBoundType();\n     } else if (other.hasUpperBound()) {\n       int cmp \u003d comparator.compare(getUpperEndpoint(), other.getUpperEndpoint());\n       if (cmp \u003e 0 || (cmp \u003d\u003d 0 \u0026\u0026 other.getUpperBoundType() \u003d\u003d OPEN)) {\n         upEnd \u003d other.getUpperEndpoint();\n         upType \u003d other.getUpperBoundType();\n       }\n     }\n \n     if (hasLowBound \u0026\u0026 hasUpBound) {\n       int cmp \u003d comparator.compare(lowEnd, upEnd);\n       if (cmp \u003e 0 || (cmp \u003d\u003d 0 \u0026\u0026 lowType \u003d\u003d OPEN \u0026\u0026 upType \u003d\u003d OPEN)) {\n         // force allowed empty range\n         lowEnd \u003d upEnd;\n         lowType \u003d OPEN;\n         upType \u003d CLOSED;\n       }\n     }\n \n     return new GeneralRange\u003cT\u003e(comparator, hasLowBound, lowEnd, lowType, hasUpBound, upEnd, upType);\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

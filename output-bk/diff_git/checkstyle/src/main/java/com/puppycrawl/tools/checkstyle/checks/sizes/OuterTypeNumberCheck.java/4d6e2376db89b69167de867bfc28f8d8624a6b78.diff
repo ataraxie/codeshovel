@@ -1,0 +1,75 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/OuterTypeNumberCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/OuterTypeNumberCheck.java
+index 1a8f6c092..b23a09de3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/OuterTypeNumberCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/OuterTypeNumberCheck.java
+@@ -22,69 +22,69 @@ package com.puppycrawl.tools.checkstyle.checks.sizes;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Checks for the number of defined types at the "outer" level.
+  * @author oliverb
+  */
+ public class OuterTypeNumberCheck extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "maxOuterTypes";
+ 
+     /** The maximum allowed number of outer types. */
+     private int max = 1;
+     /** Tracks the current depth in types. */
+     private int currentDepth;
+     /** Tracks the number of outer types found. */
+     private int outerNum;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {TokenTypes.CLASS_DEF, TokenTypes.INTERFACE_DEF,
+             TokenTypes.ENUM_DEF, TokenTypes.ANNOTATION_DEF, };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.CLASS_DEF, TokenTypes.INTERFACE_DEF,
+             TokenTypes.ENUM_DEF, TokenTypes.ANNOTATION_DEF, };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST ast) {
+         currentDepth = 0;
+         outerNum = 0;
+     }
+ 
+     @Override
+     public void finishTree(DetailAST ast) {
+         if (max < outerNum) {
+             log(ast, MSG_KEY, outerNum, max);
+         }
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+-        if (0 == currentDepth) {
++        if (currentDepth == 0) {
+             outerNum++;
+         }
+         currentDepth++;
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         currentDepth--;
+     }
+ 
+     /**
+      * Sets the maximum allowed number of outer types.
+      * @param to the new number.
+      */
+     public void setMax(int to) {
+         max = to;
+     }
+ }

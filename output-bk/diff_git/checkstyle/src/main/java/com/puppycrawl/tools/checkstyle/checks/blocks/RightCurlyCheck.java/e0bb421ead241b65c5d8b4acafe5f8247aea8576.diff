@@ -1,0 +1,195 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+index b661d1efa..e91df508d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+@@ -141,164 +141,177 @@ public class RightCurlyCheck extends AbstractCheck {
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.INSTANCE_INIT,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final Details details = getDetails(ast);
+         final DetailAST rcurly = details.rcurly;
+ 
+         if (rcurly != null) {
+             final String violation = validate(details);
+             if (!violation.isEmpty()) {
+                 log(rcurly, violation, "}", rcurly.getColumnNo() + 1);
+             }
+         }
+     }
+ 
+     /**
+      * Does general validation.
+      * @param details for validation.
+      * @return violation message or empty string
+      *     if there was not violation during validation.
+      */
+     private String validate(Details details) {
+-        final DetailAST rcurly = details.rcurly;
+-        final DetailAST nextToken = details.nextToken;
+-        final boolean shouldCheckLastRcurly = details.shouldCheckLastRcurly;
+         String violation = "";
+         if (shouldHaveLineBreakBefore(option, details)) {
+             violation = MSG_KEY_LINE_BREAK_BEFORE;
+         }
+-        else if (shouldCheckLastRcurly
+-                 && option != RightCurlyOption.ALONE) {
+-            if (rcurly.getLineNo() == nextToken.getLineNo()) {
+-                violation = MSG_KEY_LINE_ALONE;
+-            }
+-        }
+         else if (shouldBeOnSameLine(option, details)) {
+             violation = MSG_KEY_LINE_SAME;
+         }
+         else if (shouldBeAloneOnLine(option, details)) {
+             violation = MSG_KEY_LINE_ALONE;
+         }
+         else if (shouldStartLine) {
+-            final String targetSourceLine = getLines()[rcurly.getLineNo() - 1];
++            final String targetSourceLine = getLines()[details.rcurly.getLineNo() - 1];
+             if (!isOnStartOfLine(details, targetSourceLine)) {
+                 violation = MSG_KEY_LINE_NEW;
+             }
+         }
+         return violation;
+     }
+ 
+     /**
+      * Checks whether a right curly should have a line break before.
+      * @param bracePolicy option for placing the right curly brace.
+      * @param details details for validation.
+      * @return true if a right curly should have a line break before.
+      */
+     private static boolean shouldHaveLineBreakBefore(RightCurlyOption bracePolicy,
+                                                      Details details) {
+         return bracePolicy == RightCurlyOption.SAME
+                 && !hasLineBreakBefore(details.rcurly)
+                 && details.lcurly.getLineNo() != details.rcurly.getLineNo();
+     }
+ 
+     /**
+      * Checks that a right curly should be on the same line as the next statement.
+      * @param bracePolicy option for placing the right curly brace
+      * @param details Details for validation
+      * @return true if a right curly should be alone on a line.
+      */
+     private static boolean shouldBeOnSameLine(RightCurlyOption bracePolicy, Details details) {
+         return bracePolicy == RightCurlyOption.SAME
++                && !details.shouldCheckLastRcurly
+                 && details.rcurly.getLineNo() != details.nextToken.getLineNo();
+     }
+ 
+     /**
+      * Checks that a right curly should be alone on a line.
+      * @param bracePolicy option for placing the right curly brace
+      * @param details Details for validation
+      * @return true if a right curly should be alone on a line.
+      */
+     private static boolean shouldBeAloneOnLine(RightCurlyOption bracePolicy, Details details) {
+         return bracePolicy == RightCurlyOption.ALONE
+-                && !isAloneOnLine(details)
+-                && !isEmptyBody(details.lcurly)
++                    && shouldBeAloneOnLineWithAloneOption(details)
+                 || bracePolicy == RightCurlyOption.ALONE_OR_SINGLELINE
+-                && !isAloneOnLine(details)
++                    && shouldBeAloneOnLineWithAloneOrSinglelineOption(details)
++                || details.shouldCheckLastRcurly
++                    && details.rcurly.getLineNo() == details.nextToken.getLineNo();
++    }
++
++    /**
++     * Whether right curly should be alone on line when ALONE option is used.
++     * @param details details for validation.
++     * @return true, if right curly should be alone on line when ALONE option is used.
++     */
++    private static boolean shouldBeAloneOnLineWithAloneOption(Details details) {
++        return !isAloneOnLine(details)
++                && !isEmptyBody(details.lcurly);
++    }
++
++    /**
++     * Whether right curly should be alone on line when ALONE_OR_SINGLELINE option is used.
++     * @param details details for validation.
++     * @return true, if right curly should be alone on line
++     *         when ALONE_OR_SINGLELINE option is used.
++     */
++    private static boolean shouldBeAloneOnLineWithAloneOrSinglelineOption(Details details) {
++        return !isAloneOnLine(details)
+                 && !isSingleLineBlock(details)
+                 && !isAnonInnerClassInit(details.lcurly)
+                 && !isEmptyBody(details.lcurly);
+     }
+ 
+     /**
+      * Whether right curly brace starts target source line.
+      * @param details Details of right curly brace for validation
+      * @param targetSourceLine source line to check
+      * @return true if right curly brace starts target source line.
+      */
+     private static boolean isOnStartOfLine(Details details, String targetSourceLine) {
+         return CommonUtils.hasWhitespaceBefore(details.rcurly.getColumnNo(), targetSourceLine)
+                 || details.lcurly.getLineNo() == details.rcurly.getLineNo();
+     }
+ 
+     /**
+      * Checks whether right curly is alone on a line.
+      * @param details for validation.
+      * @return true if right curly is alone on a line.
+      */
+     private static boolean isAloneOnLine(Details details) {
+         final DetailAST rcurly = details.rcurly;
+         final DetailAST lcurly = details.lcurly;
+         final DetailAST nextToken = details.nextToken;
+         return rcurly.getLineNo() != lcurly.getLineNo()
+             && rcurly.getLineNo() != nextToken.getLineNo();
+     }
+ 
+     /**
+      * Checks whether block has a single-line format.
+      * @param details for validation.
+      * @return true if block has single-line format.
+      */
+     private static boolean isSingleLineBlock(Details details) {
+         final DetailAST rcurly = details.rcurly;
+         final DetailAST lcurly = details.lcurly;
+         final DetailAST nextToken = details.nextToken;
+         return rcurly.getLineNo() == lcurly.getLineNo()
+             && rcurly.getLineNo() != nextToken.getLineNo();
+     }
+ 
+     /**
+      * Checks whether lcurly is in anonymous inner class initialization.
+      * @param lcurly left curly token.
+      * @return true if lcurly begins anonymous inner class initialization.
+      */
+     private static boolean isAnonInnerClassInit(DetailAST lcurly) {
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(lcurly);
+         return surroundingScope.ordinal() == Scope.ANONINNER.ordinal();

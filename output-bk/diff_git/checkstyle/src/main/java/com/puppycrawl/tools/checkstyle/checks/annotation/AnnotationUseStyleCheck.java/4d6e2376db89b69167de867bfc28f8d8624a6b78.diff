@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+index 6b508a0ce..6ebeb549f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+@@ -346,106 +346,106 @@ public final class AnnotationUseStyleCheck extends Check {
+                 this.log(annotation.getLineNo(), MSG_KEY_ANNOTATION_INCORRECT_STYLE,
+                     ElementStyle.COMPACT_NO_ARRAY);
+             }
+         }
+     }
+ 
+     /**
+      * Checks to see if the trailing comma is present if required or
+      * prohibited.
+      *
+      * @param annotation the annotation token
+      */
+     private void checkTrailingComma(final DetailAST annotation) {
+         if (TrailingArrayComma.IGNORE == this.comma) {
+             return;
+         }
+ 
+         DetailAST child = annotation.getFirstChild();
+ 
+         while (child != null) {
+             DetailAST arrayInit = null;
+ 
+             if (child.getType()
+                 == TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR) {
+                 arrayInit =
+                     child.findFirstToken(TokenTypes.ANNOTATION_ARRAY_INIT);
+             }
+             else if (child.getType() == TokenTypes.ANNOTATION_ARRAY_INIT) {
+                 arrayInit = child;
+             }
+ 
+             if (arrayInit != null) {
+                 this.logCommaViolation(arrayInit);
+             }
+             child = child.getNextSibling();
+         }
+     }
+ 
+     /**
+      * logs a trailing array comma violation if one exists.
+      *
+      * @param ast the array init
+      * {@link TokenTypes#ANNOTATION_ARRAY_INIT ANNOTATION_ARRAY_INIT}.
+      */
+     private void logCommaViolation(final DetailAST ast) {
+         final DetailAST rCurly = ast.findFirstToken(TokenTypes.RCURLY);
+ 
+         //comma can be null if array is empty
+         final DetailAST comma = rCurly.getPreviousSibling();
+ 
+-        if (TrailingArrayComma.ALWAYS == this.comma
++        if (this.comma == TrailingArrayComma.ALWAYS
+             && (comma == null || comma.getType() != TokenTypes.COMMA)) {
+             this.log(rCurly.getLineNo(),
+                 rCurly.getColumnNo(), MSG_KEY_ANNOTATION_TRAILING_COMMA_MISSING);
+         }
+-        else if (TrailingArrayComma.NEVER == this.comma
++        else if (this.comma == TrailingArrayComma.NEVER
+             && comma != null && comma.getType() == TokenTypes.COMMA) {
+             this.log(comma.getLineNo(),
+                 comma.getColumnNo(), MSG_KEY_ANNOTATION_TRAILING_COMMA_PRESENT);
+         }
+     }
+ 
+     /**
+      * Checks to see if the closing parenthesis are present if required or
+      * prohibited.
+      *
+      * @param ast the annotation token
+      */
+     private void checkCheckClosingParens(final DetailAST ast) {
+         if (ClosingParens.IGNORE == this.parens) {
+             return;
+         }
+ 
+         final DetailAST paren = ast.getLastChild();
+         final boolean parenExists = paren.getType() == TokenTypes.RPAREN;
+ 
+         if (ClosingParens.ALWAYS == this.parens
+             && !parenExists) {
+             this.log(ast.getLineNo(), MSG_KEY_ANNOTATION_PARENS_MISSING);
+         }
+         else if (ClosingParens.NEVER == this.parens
+             && !ast.branchContains(TokenTypes.EXPR)
+             && !ast.branchContains(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR)
+             && !ast.branchContains(TokenTypes.ANNOTATION_ARRAY_INIT)
+             && parenExists) {
+             this.log(ast.getLineNo(), MSG_KEY_ANNOTATION_PARENS_PRESENT);
+         }
+     }
+ 
+     /**
+      * Defines the styles for defining elements in an annotation.
+      * @author Travis Schneeberger
+      */
+     public static enum ElementStyle {
+ 
+         /**
+          * expanded example
+          *
+          * <pre>@SuppressWarnings(value={"unchecked","unused",})</pre>.
+          */
+         EXPANDED,
+ 
+         /**
+          * compact example
+          *
+          * <pre>@SuppressWarnings({"unchecked","unused",})</pre>

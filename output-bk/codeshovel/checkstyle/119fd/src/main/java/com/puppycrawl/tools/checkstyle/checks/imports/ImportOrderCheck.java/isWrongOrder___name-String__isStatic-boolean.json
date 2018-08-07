@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ImportOrderCheck.java",
+  "functionName": "isWrongOrder",
+  "functionId": "isWrongOrder___name-String__isStatic-boolean",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java",
+  "functionStartLine": 548,
+  "functionEndLine": 568,
+  "changeHistory": [
+    "acfe3c0ad96616bee811de28528aaeac74a62319",
+    "d8c2a7263ac4fb5b10c7f5959046da87c8ef8efd"
+  ],
+  "changeHistoryShort": {
+    "acfe3c0ad96616bee811de28528aaeac74a62319": "Ybodychange",
+    "d8c2a7263ac4fb5b10c7f5959046da87c8ef8efd": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "acfe3c0ad96616bee811de28528aaeac74a62319": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5176: adjacent static import groups ones became impossible in 8.3\n",
+      "commitDate": 1511495267000,
+      "commitName": "acfe3c0ad96616bee811de28528aaeac74a62319",
+      "commitAuthor": "BBG",
+      "commitDateOld": 1509412562000,
+      "commitNameOld": "5cdbb191a17c65c2956b35d71513e9b59b6d2166",
+      "commitAuthorOld": "Andrew Kuchev",
+      "daysBetweenCommits": 24.11,
+      "commitsBetweenForRepo": 27,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,21 @@\n     private boolean isWrongOrder(String name, boolean isStatic) {\n         final boolean result;\n-        if (isStatic \u0026\u0026 useContainerOrderingForStatic) {\n-            result \u003d compareContainerOrder(lastImport, name, caseSensitive) \u003e 0;\n+        if (isStatic) {\n+            if (useContainerOrderingForStatic) {\n+                result \u003d compareContainerOrder(lastImport, name, caseSensitive) \u003e\u003d 0;\n+            }\n+            else if (option \u003d\u003d ImportOrderOption.TOP\n+                || option \u003d\u003d ImportOrderOption.BOTTOM) {\n+                result \u003d sortStaticImportsAlphabetically\n+                    \u0026\u0026 compare(lastImport, name, caseSensitive) \u003e\u003d 0;\n+            }\n+            else {\n+                result \u003d compare(lastImport, name, caseSensitive) \u003e\u003d 0;\n+            }\n         }\n         else {\n             // out of lexicographic order\n-            result \u003d compare(lastImport, name, caseSensitive) \u003e 0;\n+            result \u003d compare(lastImport, name, caseSensitive) \u003e\u003d 0;\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "d8c2a7263ac4fb5b10c7f5959046da87c8ef8efd": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #3101: Add new \u0027useContainerOrderingForStatic\u0027 option for ImportOrderCheck (#3337)\n\n",
+      "commitDate": 1467825414000,
+      "commitName": "d8c2a7263ac4fb5b10c7f5959046da87c8ef8efd",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

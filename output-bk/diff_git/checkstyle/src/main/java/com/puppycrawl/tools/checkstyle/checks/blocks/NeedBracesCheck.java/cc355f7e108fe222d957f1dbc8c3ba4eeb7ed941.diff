@@ -1,0 +1,115 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java
+index 644fe0e13..5a82774a0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java
+@@ -252,103 +252,107 @@ public class NeedBracesCheck extends Check {
+      */
+     private static boolean isSingleLineDoWhile(DetailAST literalDo) {
+         boolean result = false;
+         if (literalDo.getParent().getType() == TokenTypes.SLIST
+                 && literalDo.getFirstChild().getType() != TokenTypes.SLIST) {
+             final DetailAST block = literalDo.getFirstChild();
+             result = block.getLineNo() == literalDo.getLineNo();
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if current for statement is single-line statement, e.g.:
+      * <p>
+      * <code>
+      * for (int i = 0; ; ) this.notify();
+      * </code>
+      * </p>
+      * @param literalFor {@link TokenTypes#LITERAL_FOR for statement}.
+      * @return true if current for statement is single-line statement.
+      */
+     private static boolean isSingleLineFor(DetailAST literalFor) {
+         boolean result = false;
+         if (literalFor.getLastChild().getType() == TokenTypes.EMPTY_STAT) {
+             result = true;
+         }
+         else if (literalFor.getParent().getType() == TokenTypes.SLIST
+                 && literalFor.getLastChild().getType() != TokenTypes.SLIST) {
+             final DetailAST block = literalFor.findFirstToken(TokenTypes.EXPR);
+             if (block != null) {
+                 result = literalFor.getLineNo() == block.getLineNo();
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if current if statement is single-line statement, e.g.:
+      * <p>
+      * <code>
+      * if (obj.isValid()) return true;
+      * </code>
+      * </p>
+      * @param literalIf {@link TokenTypes#LITERAL_IF if statement}.
+      * @return true if current if statement is single-line statement.
+      */
+     private static boolean isSingleLineIf(DetailAST literalIf) {
+         boolean result = false;
+         final DetailAST ifCondition = literalIf.findFirstToken(TokenTypes.EXPR);
+         if (literalIf.getParent().getType() == TokenTypes.SLIST) {
+-            DetailAST block = literalIf.getLastChild();
+-            if (block.getType() != TokenTypes.LITERAL_RETURN) {
+-                block = literalIf.getLastChild().getPreviousSibling();
++            final DetailAST literalIfLastChild = literalIf.getLastChild();
++            final DetailAST block;
++            if (literalIfLastChild.getType() == TokenTypes.LITERAL_ELSE) {
++                block = literalIfLastChild.getPreviousSibling();
++            }
++            else {
++                block = literalIfLastChild;
+             }
+             result = ifCondition.getLineNo() == block.getLineNo();
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if current lambda statement is single-line statement, e.g.:
+      * <p>
+      * <code>
+      * Runnable r = () -> System.out.println("Hello, world!");
+      * </code>
+      * </p>
+      * @param lambda {@link TokenTypes#LAMBDA lambda statement}.
+      * @return true if current lambda statement is single-line statement.
+      */
+     private static boolean isSingleLineLambda(DetailAST lambda) {
+         boolean result = false;
+         final DetailAST block = lambda.getLastChild();
+         if (block.getType() != TokenTypes.SLIST) {
+             result = lambda.getLineNo() == block.getLineNo();
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if current case statement is single-line statement, e.g.:
+      * <p>
+      * <code>
+      * case 1: dosomeStuff(); break;
+      * case 2: dosomeStuff(); break;
+      * </code>
+      * </p>
+      * @param literalCase {@link TokenTypes#LITERAL_CASE case statement}.
+      * @return true if current case statement is single-line statement.
+      */
+     private static boolean isSingleLineCase(DetailAST literalCase) {
+         boolean result = false;
+         final DetailAST slist = literalCase.getNextSibling();
+         final DetailAST block = slist.getFirstChild();
+         if (block.getType() != TokenTypes.SLIST) {
+             final DetailAST caseBreak = slist.findFirstToken(TokenTypes.LITERAL_BREAK);
+             final boolean atOneLine = literalCase.getLineNo() == block.getLineNo();
+             if (caseBreak != null) {
+                 result = atOneLine && block.getLineNo() == caseBreak.getLineNo();
+             }
+         }
+         return result;
+     }
+ 

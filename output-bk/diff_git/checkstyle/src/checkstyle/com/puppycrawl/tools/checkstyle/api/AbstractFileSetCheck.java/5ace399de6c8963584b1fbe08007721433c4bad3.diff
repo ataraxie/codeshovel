@@ -1,0 +1,80 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
+index bd24ebad6..cec038eb2 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
+@@ -102,61 +102,74 @@ public abstract class AbstractFileSetCheck
+      * @param aExtensions the set of file extensions. A missing
+      * initial '.' character of an extension is automatically added.
+      */
+     public final void setFileExtensions(String[] aExtensions)
+     {
+         if (aExtensions == null) {
+             mFileExtensions = null;
+             return;
+         }
+ 
+         mFileExtensions = new String[aExtensions.length];
+         for (int i = 0; i < aExtensions.length; i++) {
+             final String extension = aExtensions[i];
+             if (extension.startsWith(".")) {
+                 mFileExtensions[i] = extension;
+             }
+             else {
+                 mFileExtensions[i] = "." + extension;
+             }
+         }
+     }
+ 
+     /**
+      * Returns the collector for violation messages.
+      * Subclasses can use the collector to find out the violation
+      * messages to fire via the message dispatcher.
+      *
+      * @return the collector for localized messages.
+      */
+     protected final LocalizedMessages getMessageCollector()
+     {
+         return mMessages;
+     }
+ 
+     /**
+      * Adds a violation message to the
+      * {@link #getMessageCollector message collector}.
+      * @see AbstractViolationReporter#log(int, String, Object[])
+      */
+     protected final void log(int aLine, String aKey, Object aArgs[])
+     {
+         log(aLine, 0, aKey, aArgs);
+     }
+ 
+     /**
+      * Adds a violation message to the
+      * {@link #getMessageCollector message collector}.
+      * @see AbstractViolationReporter#log(int, int, String, Object[])
+      */
+     protected final void log(int aLineNo, int aColNo,
+-        String aKey, Object[] aArgs)
++                             String aKey, Object[] aArgs)
+     {
+         getMessageCollector().add(
+             new LocalizedMessage(aLineNo,
+                                  aColNo,
+                                  getMessageBundle(),
+                                  aKey,
+                                  aArgs,
+                                  getSeverityLevel()));
+     }
++
++    /**
++     * Notify all listeners about the errors in a file.
++     * Calls <code>MessageDispatcher.fireErrors()</code> with 
++     * all logged errors and than clears errors' list.
++     * @param aFileName the audited file
++     */
++    protected final void fireErrors(String aFileName)
++    {
++        final LocalizedMessage[] errors = getMessageCollector().getMessages();
++        getMessageCollector().reset();
++        getMessageDispatcher().fireErrors(aFileName, errors);
++    }
+ }

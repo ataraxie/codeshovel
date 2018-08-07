@@ -1,0 +1,149 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+index b58724384..2d98fcac7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+@@ -98,140 +98,131 @@ public final class Main {
+                     }
+                 }
+             }
+         }
+         catch (ParseException pex) {
+             // smth wrong with arguments - print error and manual
+             cliViolations = true;
+             exitStatus = exitWithCliViolation;
+             errorCounter = 1;
+             System.out.println(pex.getMessage());
+             printUsage();
+         }
+         catch (CheckstyleException e) {
+             exitStatus = exitWithCheckstyleException;
+             errorCounter = 1;
+             System.out.println(e.getMessage());
+         }
+         finally {
+             // return exit code base on validation of Checker
+             if (errorCounter != 0 && !cliViolations) {
+                 System.out.println(String.format("Checkstyle ends with %d errors.", errorCounter));
+             }
+             System.exit(exitStatus);
+         }
+     }
+ 
+     /**
+      * Parses and executes Checkstyle based on passed arguments.
+      * @param args
+      *        command line parameters
+      * @return parsed information about passed parameters
+      * @throws ParseException
+      *         when passed arguments are not valid
+      */
+     private static CommandLine parseCli(String... args)
+             throws ParseException {
+         // parse the parameters
+         final CommandLineParser clp = new DefaultParser();
+         // always returns not null value
+         return clp.parse(buildOptions(), args);
+     }
+ 
+     /**
+      * Do validation of Command line options
+      * @param cmdLine command line object
+      * @return list of violations
+      */
+     private static List<String> validateCli(CommandLine cmdLine) {
+         final List<String> result = new ArrayList<>();
+         // ensure a configuration file is specified
+-        if (cmdLine.hasOption("c")) {
+-            final String configLocation = cmdLine.getOptionValue("c");
+-            final File configFile =  new File(configLocation);
+-            if (!configFile.exists()) {
+-                result.add(String.format("unable to find '%s'.", configLocation));
+-            }
+-
++        if (!cmdLine.hasOption("c")) {
++            result.add("Must specify a config XML file.");
++        }
++        else {
+             // validate optional parameters
+             if (cmdLine.hasOption("f")) {
+                 final String format = cmdLine.getOptionValue("f");
+                 if (!"plain".equals(format) && !"xml".equals(format)) {
+                     result.add(String.format("Invalid output format."
+                             + " Found '%s' but expected 'plain' or 'xml'.", format));
+                 }
+             }
+-
+             if (cmdLine.hasOption("p")) {
+                 final String propertiesLocation = cmdLine.getOptionValue("p");
+                 final File file = new File(propertiesLocation);
+                 if (!file.exists()) {
+                     result.add(String.format("Could not find file '%s'.", propertiesLocation));
+                 }
+             }
+-
+             if (cmdLine.hasOption("o")) {
+                 final String outputLocation = cmdLine.getOptionValue("o");
+                 final File file = new File(outputLocation);
+                 if (file.exists() && !(file.canRead() && file.canWrite())) {
+                     result.add(String.format("Permission denied : '%s'.", outputLocation));
+                 }
+             }
+-
+             final List<File> files = getFilesToProcess(cmdLine.getArgs());
+             if (files.isEmpty()) {
+                 result.add("Must specify files to process, found 0.");
+             }
+         }
+-        else {
+-            result.add("Must specify a config XML file.");
+-        }
+ 
+         return result;
+     }
+ 
+     /**
+      * Util method to convert ComandLine type to POJO object
+      * @param cmdLine command line object
+      * @return command line option as POJO object
+      */
+     private static CliOptions convertCliToPojo(CommandLine cmdLine) {
+         final CliOptions conf = new CliOptions();
+         conf.format = cmdLine.getOptionValue("f");
+         if (conf.format == null) {
+             conf.format = "plain";
+         }
+         conf.outputLocation = cmdLine.getOptionValue("o");
+         conf.configLocation = cmdLine.getOptionValue("c");
+         conf.propertiesLocation = cmdLine.getOptionValue("p");
+         conf.files = getFilesToProcess(cmdLine.getArgs());
+         return conf;
+     }
+ 
+     /**
+      * Executes required Checkstyle actions based on passed parameters.
+      * @param cliOptions
+      *        pojo object that contains all options
+      * @return number of violations of ERROR level
+      * @throws FileNotFoundException
+      *         when output file could not be found
+      * @throws CheckstyleException
+      *         when properties file could not be loaded
+      * @throws UnsupportedEncodingException
+      *         if there is problem to use UTf-8
+      */
+     private static int runCheckstyle(CliOptions cliOptions)
+             throws CheckstyleException, UnsupportedEncodingException, FileNotFoundException {
+         // setup the properties
+         final Properties props =
+                 cliOptions.propertiesLocation != null
+                         ? loadProperties(new File(cliOptions.propertiesLocation))
+                         : System.getProperties();
+ 
+         // create a configuration
+         final Configuration config = ConfigurationLoader.loadConfiguration(
+                 cliOptions.configLocation, new PropertiesExpander(props));
+ 
+         // create a listener for output
+         final AuditListener listener = createListener(cliOptions.format, cliOptions.outputLocation);
+ 
+         // create Checker object and run it

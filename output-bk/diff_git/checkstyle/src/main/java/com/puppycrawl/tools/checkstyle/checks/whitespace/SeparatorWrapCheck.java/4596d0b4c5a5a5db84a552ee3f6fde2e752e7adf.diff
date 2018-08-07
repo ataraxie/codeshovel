@@ -1,0 +1,130 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/SeparatorWrapCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/SeparatorWrapCheck.java
+index 18a0d917c..5eed6b8c3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/SeparatorWrapCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/SeparatorWrapCheck.java
+@@ -33,110 +33,123 @@ import com.puppycrawl.tools.checkstyle.checks.AbstractOptionCheck;
+  *  {@link TokenTypes#DOT DOT},
+  *  {@link TokenTypes#COMMA COMMA},
+  * Other acceptable tokens are
+  *  {@link TokenTypes#SEMI SEMI},
+  *  {@link TokenTypes#ELLIPSIS ELLIPSIS},
+  *  {@link TokenTypes#AT AT},
+  *  {@link TokenTypes#LPAREN LPAREN},
+  *  {@link TokenTypes#RPAREN RPAREN},
+  *  {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR},
+  *  {@link TokenTypes#RBRACK RBRACK},
+  * </p>
+  * <p>
+  * Code example for comma and dot at the new line:
+  * </p>
+  * <pre>
+  * s
+  *    .isEmpty();
+  * foo(i
+  *    ,s);
+  * </pre>
+  *  <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="SeparatorWrap"/&gt;
+  * </pre>
+  * <p>
+  * Code example for comma and dot at the previous line:
+  * </p>
+  * <pre>
+  * s.
+  *    isEmpty();
+  * foo(i,
+  *    s);
+  * </pre>
+  * <p> An example of how to configure the check for comma at the
+  * new line is:
+  * </p>
+  * <pre>
+  * &lt;module name="SeparatorWrap"&gt;
+  *     &lt;property name="tokens" value="COMMA"/&gt;
+  *     &lt;property name="option" value="nl"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author maxvetrenko
+  */
+ public class SeparatorWrapCheck
+     extends AbstractOptionCheck<WrapOption>
+ {
++
++    /**
++     * A key is pointing to the warning message text in "messages.properties"
++     * file.
++     */
++    public static final String LINE_PREVIOUS = "line.previous";
++
++    /**
++     * A key is pointing to the warning message text in "messages.properties"
++     * file.
++     */
++    public static final String LINE_NEW = "line.new";
++
+     /**
+      * Sets the comma wrap option to end of the line.
+      */
+     public SeparatorWrapCheck()
+     {
+         super(WrapOption.EOL, WrapOption.class);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.DOT,
+             TokenTypes.COMMA,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.DOT,
+             TokenTypes.COMMA,
+             TokenTypes.SEMI,
+             TokenTypes.ELLIPSIS,
+             TokenTypes.AT,
+             TokenTypes.LPAREN,
+             TokenTypes.RPAREN,
+             TokenTypes.ARRAY_DECLARATOR,
+             TokenTypes.RBRACK,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         // TODO: It is a copy/paste from OperatorWrapCheck.
+         //It should be fixed in another issue
+         final String text = ast.getText();
+         final int colNo = ast.getColumnNo();
+         final int lineNo = ast.getLineNo();
+         final String currentLine = getLines()[lineNo - 1];
+         final String substringAfterToken =
+                 currentLine.substring(colNo + text.length()).trim();
+         final String substringBeforeToken =
+                 currentLine.substring(0, colNo).trim();
+         final WrapOption wSp = getAbstractOption();
+ 
+         if (wSp == WrapOption.EOL
+                 && (substringBeforeToken.length() == 0))
+         {
+-            log(lineNo, colNo, "line.previous", text);
++            log(lineNo, colNo, LINE_PREVIOUS, text);
+         }
+         else if (wSp == WrapOption.NL
+                  && substringAfterToken.length() == 0)
+         {
+-            log(lineNo, colNo, "line.new", text);
++            log(lineNo, colNo, LINE_NEW, text);
+         }
+     }
+ }

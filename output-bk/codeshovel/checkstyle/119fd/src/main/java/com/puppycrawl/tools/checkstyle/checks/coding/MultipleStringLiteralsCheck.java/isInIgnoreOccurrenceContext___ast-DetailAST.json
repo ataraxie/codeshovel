@@ -1,0 +1,72 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MultipleStringLiteralsCheck.java",
+  "functionName": "isInIgnoreOccurrenceContext",
+  "functionId": "isInIgnoreOccurrenceContext___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java",
+  "functionStartLine": 156,
+  "functionEndLine": 168,
+  "changeHistory": [
+    "6054b46c9b717a03cf000c7884d0256335fc01e9",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "a501b8d95ac2840ce201549e552f2cc540fde4ce"
+  ],
+  "changeHistoryShort": {
+    "6054b46c9b717a03cf000c7884d0256335fc01e9": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "a501b8d95ac2840ce201549e552f2cc540fde4ce": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6054b46c9b717a03cf000c7884d0256335fc01e9": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4940: fix MultipleReturnPointsPerMethod idea violation\n",
+      "commitDate": 1503206988000,
+      "commitName": "6054b46c9b717a03cf000c7884d0256335fc01e9",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1502351766000,
+      "commitNameOld": "d243badf77c9c70a4e4ecde28a34ca8802de41b6",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 9.9,
+      "commitsBetweenForRepo": 15,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,13 @@\n     private boolean isInIgnoreOccurrenceContext(DetailAST ast) {\n+        boolean isInIgnoreOccurrenceContext \u003d false;\n         for (DetailAST token \u003d ast;\n              token.getParent() !\u003d null;\n              token \u003d token.getParent()) {\n             final int type \u003d token.getType();\n             if (ignoreOccurrenceContext.get(type)) {\n-                return true;\n+                isInIgnoreOccurrenceContext \u003d true;\n+                break;\n             }\n         }\n-        return false;\n+        return isInIgnoreOccurrenceContext;\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "a501b8d95ac2840ce201549e552f2cc540fde4ce": {
+      "type": "Yintroduced",
+      "commitMessage": "fix for bug 1560940: MultipleStringLiteralCheck now ignores annotations by default. It is possible to retain the old behaviour by setting the new check property ignoreOccurrenceContext to an empty value.\n",
+      "commitDate": 1171201039000,
+      "commitName": "a501b8d95ac2840ce201549e552f2cc540fde4ce",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

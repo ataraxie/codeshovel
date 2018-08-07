@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ObjectBlockHandler.java",
+  "functionName": "checkIndentation",
+  "functionId": "checkIndentation",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java",
+  "functionStartLine": 79,
+  "functionEndLine": 88,
+  "changeHistory": [
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b",
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955"
+  ],
+  "changeHistoryShort": {
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3143: forbid empty return statements and fixed violations",
+      "commitDate": 1464356569000,
+      "commitName": "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1455928479000,
+      "commitNameOld": "452a1df819f34313bb7dd7316d0586db2f8db83b",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 97.55,
+      "commitsBetweenForRepo": 220,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,10 @@\n     public void checkIndentation() {\n         // if we have a class or interface as a parent, don\u0027t do anything,\n         // as this is checked by class def; so\n         // only do this if we have a new for a parent (anonymous inner\n         // class)\n         final DetailAST parentAST \u003d getMainAst().getParent();\n-        if (parentAST.getType() !\u003d TokenTypes.LITERAL_NEW) {\n-            return;\n+        if (parentAST.getType() \u003d\u003d TokenTypes.LITERAL_NEW) {\n+            super.checkIndentation();\n         }\n-\n-        super.checkIndentation();\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1122108240000,
+      "commitNameOld": "50559c68761e235f57e48cd2dc28928b417d7745",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 348.79,
+      "commitsBetweenForRepo": 100,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     public void checkIndentation()\n     {\n         // if we have a class or interface as a parent, don\u0027t do anything,\n         // as this is checked by class def; so\n         // only do this if we have a new for a parent (anonymous inner\n         // class)\n-        DetailAST parentAST \u003d getMainAst().getParent();\n+        final DetailAST parentAST \u003d getMainAst().getParent();\n         if (parentAST.getType() !\u003d TokenTypes.LITERAL_NEW) {\n             return;\n         }\n \n         super.checkIndentation();\n     }\n\\ No newline at end of file\n"
+    },
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Refactoring of original IndentationCheck made by Jeff Weston (Sir Toby) applied.\nFixed two know problems:\n - with static init block (catched by testValidBlockWithChecker())\n - with throws in method definition.\n   unit-test (testInvalidMethodWithChecker()) fixed too.\n",
+      "commitDate": 1052639583000,
+      "commitName": "eaad55fdba73e17e103dc6600867f26fd6a3896b",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955": {
+      "type": "Yintroduced",
+      "commitMessage": "added IndentationCheck, contributed by John Richardson\nThis check currently fails to pass checkstyle.checkstyle\nbecause most methods are missing javadoc, I hope somebody\ncan help me adding it\n",
+      "commitDate": 1051248087000,
+      "commitName": "9aab61241e7970ccfb4a9ee66c8eb7f062d31955",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

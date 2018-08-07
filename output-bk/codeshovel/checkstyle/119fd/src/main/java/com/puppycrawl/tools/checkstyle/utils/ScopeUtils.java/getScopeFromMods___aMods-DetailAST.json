@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ScopeUtils.java",
+  "functionName": "getScopeFromMods",
+  "functionId": "getScopeFromMods___aMods-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/utils/ScopeUtils.java",
+  "functionStartLine": 44,
+  "functionEndLine": 61,
+  "changeHistory": [
+    "ce196814d857a4244a80c51d5151cc35e90b6749",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+    "7770f2a2c25c41bf024355f19caac358419110a6",
+    "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d"
+  ],
+  "changeHistoryShort": {
+    "ce196814d857a4244a80c51d5151cc35e90b6749": "Ybodychange",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": "Yfilerename",
+    "7770f2a2c25c41bf024355f19caac358419110a6": "Ybodychange",
+    "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "ce196814d857a4244a80c51d5151cc35e90b6749": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2080: Fix typos in code\n",
+      "commitDate": 1445038509000,
+      "commitName": "ce196814d857a4244a80c51d5151cc35e90b6749",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1441991673000,
+      "commitNameOld": "dba6c944cdbf9acfbb40b9a2d8e6315fb14d87f0",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 35.26,
+      "commitsBetweenForRepo": 215,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,18 @@\n     public static Scope getScopeFromMods(DetailAST aMods) {\n         // default scope\n-        Scope retVal \u003d Scope.PACKAGE;\n+        Scope returnValue \u003d Scope.PACKAGE;\n         for (AST token \u003d aMods.getFirstChild(); token !\u003d null\n-                \u0026\u0026 retVal \u003d\u003d Scope.PACKAGE;\n+                \u0026\u0026 returnValue \u003d\u003d Scope.PACKAGE;\n                 token \u003d token.getNextSibling()) {\n             if (\"public\".equals(token.getText())) {\n-                retVal \u003d Scope.PUBLIC;\n+                returnValue \u003d Scope.PUBLIC;\n             }\n             else if (\"protected\".equals(token.getText())) {\n-                retVal \u003d Scope.PROTECTED;\n+                returnValue \u003d Scope.PROTECTED;\n             }\n             else if (\"private\".equals(token.getText())) {\n-                retVal \u003d Scope.PRIVATE;\n+                returnValue \u003d Scope.PRIVATE;\n             }\n         }\n-        return retVal;\n+        return returnValue;\n     }\n\\ No newline at end of file\n"
+    },
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": {
+      "type": "Yfilerename",
+      "commitMessage": "Utils classes have been moved to utils package. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440637702000,
+      "commitNameOld": "f6113bb56d695719a8803274effb3596cb82120f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.46,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "7770f2a2c25c41bf024355f19caac358419110a6": {
+      "type": "Ybodychange",
+      "commitMessage": "Loops have to have only one breal/continue. Issue #46\n",
+      "commitDate": 1439438882000,
+      "commitName": "7770f2a2c25c41bf024355f19caac358419110a6",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1439324041000,
+      "commitNameOld": "82d8e91024a57a96fbb6410dacb29d6a3f582903",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.33,
+      "commitsBetweenForRepo": 19,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,17 @@\n     public static Scope getScopeFromMods(DetailAST aMods) {\n         Scope retVal \u003d Scope.PACKAGE; // default scope\n-        for (AST token \u003d aMods.getFirstChild();\n-            token !\u003d null;\n-            token \u003d token.getNextSibling()) {\n+        for (AST token \u003d aMods.getFirstChild(); token !\u003d null\n+                \u0026\u0026 retVal \u003d\u003d Scope.PACKAGE;\n+                token \u003d token.getNextSibling()) {\n             if (\"public\".equals(token.getText())) {\n                 retVal \u003d Scope.PUBLIC;\n-                break;\n             }\n             else if (\"protected\".equals(token.getText())) {\n                 retVal \u003d Scope.PROTECTED;\n-                break;\n             }\n             else if (\"private\".equals(token.getText())) {\n                 retVal \u003d Scope.PRIVATE;\n-                break;\n             }\n         }\n         return retVal;\n     }\n\\ No newline at end of file\n"
+    },
+    "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d": {
+      "type": "Yintroduced",
+      "commitMessage": "Util classes should be moved out of api package. Issue #1057\n",
+      "commitDate": 1430869230000,
+      "commitName": "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

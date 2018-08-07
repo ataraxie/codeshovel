@@ -1,0 +1,116 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RequireThisCheck.java",
+  "functionName": "getClassFrameWhereViolationIsFound",
+  "functionId": "getClassFrameWhereViolationIsFound___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java",
+  "functionStartLine": 495,
+  "functionEndLine": 538,
+  "changeHistory": [
+    "db64216a19b480855058d85f489d22fface4ff13",
+    "81c030e322201085e463b9cc97e3e8dbce0e38d4",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+    "6c04cd63af392376159dc7aae41d85bbc348e96d",
+    "11639b8437306390798d85fc54422b4559f553c3",
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+    "4424370783f1c41fc1e146f554468f89e8f0e88b"
+  ],
+  "changeHistoryShort": {
+    "db64216a19b480855058d85f489d22fface4ff13": "Ybodychange",
+    "81c030e322201085e463b9cc97e3e8dbce0e38d4": "Ybodychange",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": "Ymultichange(Yrename,Ybodychange)",
+    "6c04cd63af392376159dc7aae41d85bbc348e96d": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+    "11639b8437306390798d85fc54422b4559f553c3": "Ymodifierchange",
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a": "Ymultichange(Yparameterchange,Ybodychange)",
+    "4424370783f1c41fc1e146f554468f89e8f0e88b": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "db64216a19b480855058d85f489d22fface4ff13": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3423: Allow local vars without any unnecessary violations from RequireThisCheck. Added UT. Fixed related UT\n",
+      "commitDate": 1492045779000,
+      "commitName": "db64216a19b480855058d85f489d22fface4ff13",
+      "commitAuthor": "Piyush Sharma",
+      "commitDateOld": 1491393573000,
+      "commitNameOld": "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 7.55,
+      "commitsBetweenForRepo": 50,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,54 +1,45 @@\n     private AbstractFrame getClassFrameWhereViolationIsFound(DetailAST ast) {\n         AbstractFrame frameWhereViolationIsFound \u003d null;\n         final AbstractFrame variableDeclarationFrame \u003d findFrame(ast, false);\n         final FrameType variableDeclarationFrameType \u003d variableDeclarationFrame.getType();\n         final DetailAST prevSibling \u003d ast.getPreviousSibling();\n         if (variableDeclarationFrameType \u003d\u003d FrameType.CLASS_FRAME\n                 \u0026\u0026 !validateOnlyOverlapping\n                 \u0026\u0026 prevSibling \u003d\u003d null\n                 \u0026\u0026 canBeReferencedFromStaticContext(ast)) {\n             frameWhereViolationIsFound \u003d variableDeclarationFrame;\n         }\n         else if (variableDeclarationFrameType \u003d\u003d FrameType.METHOD_FRAME) {\n             if (isOverlappingByArgument(ast)) {\n                 if (!isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n                         \u0026\u0026 !isReturnedVariable(variableDeclarationFrame, ast)\n                         \u0026\u0026 canBeReferencedFromStaticContext(ast)\n                         \u0026\u0026 canAssignValueToClassField(ast)) {\n                     frameWhereViolationIsFound \u003d findFrame(ast, true);\n                 }\n             }\n             else if (!validateOnlyOverlapping\n                      \u0026\u0026 prevSibling \u003d\u003d null\n                      \u0026\u0026 isAssignToken(ast.getParent().getType())\n                      \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n                      \u0026\u0026 canBeReferencedFromStaticContext(ast)\n                      \u0026\u0026 canAssignValueToClassField(ast)) {\n                 frameWhereViolationIsFound \u003d findFrame(ast, true);\n \n             }\n         }\n         else if (variableDeclarationFrameType \u003d\u003d FrameType.CTOR_FRAME\n                  \u0026\u0026 isOverlappingByArgument(ast)\n                  \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)) {\n             frameWhereViolationIsFound \u003d findFrame(ast, true);\n         }\n-        else if (variableDeclarationFrameType \u003d\u003d FrameType.BLOCK_FRAME) {\n-            if (isOverlappingByLocalVariable(ast)) {\n-                if (canAssignValueToClassField(ast)\n-                        \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n-                        \u0026\u0026 !isReturnedVariable(variableDeclarationFrame, ast)\n-                        \u0026\u0026 canBeReferencedFromStaticContext(ast)) {\n-                    frameWhereViolationIsFound \u003d findFrame(ast, true);\n-                }\n-            }\n-            else if (!validateOnlyOverlapping\n-                     \u0026\u0026 prevSibling \u003d\u003d null\n-                     \u0026\u0026 isAssignToken(ast.getParent().getType())\n-                     \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n-                     \u0026\u0026 canBeReferencedFromStaticContext(ast)) {\n-                frameWhereViolationIsFound \u003d findFrame(ast, true);\n-            }\n+        else if (variableDeclarationFrameType \u003d\u003d FrameType.BLOCK_FRAME\n+                    \u0026\u0026 isOverlappingByLocalVariable(ast)\n+                    \u0026\u0026 canAssignValueToClassField(ast)\n+                    \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n+                    \u0026\u0026 !isReturnedVariable(variableDeclarationFrame, ast)\n+                    \u0026\u0026 canBeReferencedFromStaticContext(ast)) {\n+            frameWhereViolationIsFound \u003d findFrame(ast, true);\n         }\n         return frameWhereViolationIsFound;\n     }\n\\ No newline at end of file\n"
+    },
+    "81c030e322201085e463b9cc97e3e8dbce0e38d4": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3335: prevented static variables being checked for RequireThis (#3355)\n\n",
+      "commitDate": 1469508708000,
+      "commitName": "81c030e322201085e463b9cc97e3e8dbce0e38d4",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1467737762000,
+      "commitNameOld": "0a85131b141a185ec3d7bb92df8ccbd92d38570e",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 20.5,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,57 +1,54 @@\n     private AbstractFrame getClassFrameWhereViolationIsFound(DetailAST ast) {\n         AbstractFrame frameWhereViolationIsFound \u003d null;\n         final AbstractFrame variableDeclarationFrame \u003d findFrame(ast, false);\n-        if (variableDeclarationFrame !\u003d null) {\n-            final FrameType variableDeclarationFrameType \u003d variableDeclarationFrame.getType();\n-            final DetailAST prevSibling \u003d ast.getPreviousSibling();\n-            if (variableDeclarationFrameType \u003d\u003d FrameType.CLASS_FRAME\n-                    \u0026\u0026 !validateOnlyOverlapping\n-                    \u0026\u0026 prevSibling \u003d\u003d null\n-                    \u0026\u0026 !ScopeUtils.isInInterfaceBlock(ast)\n-                    \u0026\u0026 canBeReferencedFromStaticContext(ast)) {\n-                frameWhereViolationIsFound \u003d variableDeclarationFrame;\n-            }\n-            else if (variableDeclarationFrameType \u003d\u003d FrameType.METHOD_FRAME) {\n-                if (isOverlappingByArgument(ast)) {\n-                    if (!isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n-                            \u0026\u0026 !isReturnedVariable(variableDeclarationFrame, ast)\n-                            \u0026\u0026 canBeReferencedFromStaticContext(ast)\n-                            \u0026\u0026 canAssignValueToClassField(ast)) {\n-                        frameWhereViolationIsFound \u003d findFrame(ast, true);\n-                    }\n-                }\n-                else if (!validateOnlyOverlapping\n-                         \u0026\u0026 prevSibling \u003d\u003d null\n-                         \u0026\u0026 isAssignToken(ast.getParent().getType())\n-                         \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n-                         \u0026\u0026 canBeReferencedFromStaticContext(ast)\n-                         \u0026\u0026 canAssignValueToClassField(ast)) {\n+        final FrameType variableDeclarationFrameType \u003d variableDeclarationFrame.getType();\n+        final DetailAST prevSibling \u003d ast.getPreviousSibling();\n+        if (variableDeclarationFrameType \u003d\u003d FrameType.CLASS_FRAME\n+                \u0026\u0026 !validateOnlyOverlapping\n+                \u0026\u0026 prevSibling \u003d\u003d null\n+                \u0026\u0026 canBeReferencedFromStaticContext(ast)) {\n+            frameWhereViolationIsFound \u003d variableDeclarationFrame;\n+        }\n+        else if (variableDeclarationFrameType \u003d\u003d FrameType.METHOD_FRAME) {\n+            if (isOverlappingByArgument(ast)) {\n+                if (!isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n+                        \u0026\u0026 !isReturnedVariable(variableDeclarationFrame, ast)\n+                        \u0026\u0026 canBeReferencedFromStaticContext(ast)\n+                        \u0026\u0026 canAssignValueToClassField(ast)) {\n                     frameWhereViolationIsFound \u003d findFrame(ast, true);\n-\n                 }\n             }\n-            else if (variableDeclarationFrameType \u003d\u003d FrameType.CTOR_FRAME\n-                     \u0026\u0026 isOverlappingByArgument(ast)\n-                     \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)) {\n+            else if (!validateOnlyOverlapping\n+                     \u0026\u0026 prevSibling \u003d\u003d null\n+                     \u0026\u0026 isAssignToken(ast.getParent().getType())\n+                     \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n+                     \u0026\u0026 canBeReferencedFromStaticContext(ast)\n+                     \u0026\u0026 canAssignValueToClassField(ast)) {\n                 frameWhereViolationIsFound \u003d findFrame(ast, true);\n+\n             }\n-            else if (variableDeclarationFrameType \u003d\u003d FrameType.BLOCK_FRAME) {\n-                if (isOverlappingByLocalVariable(ast)) {\n-                    if (canAssignValueToClassField(ast)\n-                            \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n-                            \u0026\u0026 !isReturnedVariable(variableDeclarationFrame, ast)\n-                            \u0026\u0026 canBeReferencedFromStaticContext(ast)) {\n-                        frameWhereViolationIsFound \u003d findFrame(ast, true);\n-                    }\n-                }\n-                else if (!validateOnlyOverlapping\n-                         \u0026\u0026 prevSibling \u003d\u003d null\n-                         \u0026\u0026 isAssignToken(ast.getParent().getType())\n-                         \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n-                         \u0026\u0026 canBeReferencedFromStaticContext(ast)) {\n+        }\n+        else if (variableDeclarationFrameType \u003d\u003d FrameType.CTOR_FRAME\n+                 \u0026\u0026 isOverlappingByArgument(ast)\n+                 \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)) {\n+            frameWhereViolationIsFound \u003d findFrame(ast, true);\n+        }\n+        else if (variableDeclarationFrameType \u003d\u003d FrameType.BLOCK_FRAME) {\n+            if (isOverlappingByLocalVariable(ast)) {\n+                if (canAssignValueToClassField(ast)\n+                        \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n+                        \u0026\u0026 !isReturnedVariable(variableDeclarationFrame, ast)\n+                        \u0026\u0026 canBeReferencedFromStaticContext(ast)) {\n                     frameWhereViolationIsFound \u003d findFrame(ast, true);\n                 }\n             }\n+            else if (!validateOnlyOverlapping\n+                     \u0026\u0026 prevSibling \u003d\u003d null\n+                     \u0026\u0026 isAssignToken(ast.getParent().getType())\n+                     \u0026\u0026 !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)\n+                     \u0026\u0026 canBeReferencedFromStaticContext(ast)) {\n+                frameWhereViolationIsFound \u003d findFrame(ast, true);\n+            }\n         }\n         return frameWhereViolationIsFound;\n     }\n\\ No newline at end of file\n"
+    },
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "Issue #2362: Add \u0027validateOnlyOverlapping\u0027 option for RequireThisCheck\n",
+      "commitDate": 1457102074000,
+      "commitName": "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "6c04cd63af392376159dc7aae41d85bbc348e96d": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+      "commitMessage": "Issue #2239: Extend RequireThis check message\n",
+      "commitDate": 1450994205000,
+      "commitName": "6c04cd63af392376159dc7aae41d85bbc348e96d",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "11639b8437306390798d85fc54422b4559f553c3": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Pull #2605: Make methods private in RequireThisCheck\n",
+      "commitDate": 1447657308000,
+      "commitName": "11639b8437306390798d85fc54422b4559f553c3",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1447597420000,
+      "commitNameOld": "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 0.69,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    protected final boolean isClassField(DetailAST ident) {\n+    private boolean isClassField(DetailAST ident) {\n         final LexicalFrame frame \u003d findFrame(ident, false);\n         return frame instanceof ClassFrame\n                 \u0026\u0026 ((ClassFrame) frame).hasInstanceMember(ident);\n     }\n\\ No newline at end of file\n"
+    },
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #2240: Fix false negative in RequireThisCheck\n",
+      "commitDate": 1447597420000,
+      "commitName": "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "4424370783f1c41fc1e146f554468f89e8f0e88b": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2451: removed excess hierarchy from RequireThisCheck",
+      "commitDate": 1446945172000,
+      "commitName": "4424370783f1c41fc1e146f554468f89e8f0e88b",
+      "commitAuthor": "rnveach"
+    }
+  }
+}

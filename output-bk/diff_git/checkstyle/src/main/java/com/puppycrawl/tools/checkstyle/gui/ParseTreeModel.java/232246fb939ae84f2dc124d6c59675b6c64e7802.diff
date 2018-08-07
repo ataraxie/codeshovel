@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeModel.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeModel.java
+index f90567c08..9c95c1ba5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeModel.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeModel.java
+@@ -37,99 +37,101 @@ public class ParseTreeModel extends AbstractTreeTableModel
+ 
+     public ParseTreeModel(DetailAST parseTree)
+     {
+         super(createArtificialTreeRoot());
+         setParseTree(parseTree);
+     }
+ 
+     private static DetailAST createArtificialTreeRoot()
+     {
+         final ASTFactory factory = new ASTFactory();
+         factory.setASTNodeClass(DetailAST.class.getName());
+         return (DetailAST) factory.create(TokenTypes.EOF, "ROOT");
+     }
+ 
+     void setParseTree(DetailAST parseTree)
+     {
+         final DetailAST root = (DetailAST) getRoot();
+         root.setFirstChild(parseTree);
+         final Object[] path = {root};
+         // no need to setup remaining info, as the call results in a
+         // table structure changed event anyway - we just pass nulls
+         fireTreeStructureChanged(this, path, null, null);
+     }
+ 
+     @Override
+     public int getColumnCount()
+     {
+         return COLUMN_NAMES.length;
+     }
+ 
+     @Override
+     public String getColumnName(int column)
+     {
+         return COLUMN_NAMES[column];
+     }
+ 
+     @Override
+     public Class<?> getColumnClass(int column)
+     {
+         switch (column) {
+             case 0:
+                 return TreeTableModel.class;
+             case 1:
+                 return String.class;
+             case 2:
+                 return Integer.class;
+             case 3:
+                 return Integer.class;
+             case 4:
+                 return String.class;
++            default:
++                return Object.class;
+         }
+-        return Object.class;
+     }
+ 
+     @Override
+     public Object getValueAt(Object node, int column)
+     {
+         final DetailAST ast = (DetailAST) node;
+         switch (column) {
+             case 0:
+                 return null;
+             case 1:
+                 return TokenTypes.getTokenName(ast.getType());
+             case 2:
+                 return ast.getLineNo();
+             case 3:
+                 return ast.getColumnNo();
+             case 4:
+                 return ast.getText();
++            default:
++                return null;
+         }
+-        return null;
+     }
+ 
+     @Override
+     public void setValueAt(Object aValue, Object node, int column)
+     {
+     }
+ 
+     @Override
+     public Object getChild(Object parent, int index)
+     {
+         final DetailAST ast = (DetailAST) parent;
+         int i = 0;
+         AST child = ast.getFirstChild();
+         while (i < index) {
+             child = child.getNextSibling();
+             i++;
+         }
+         return child;
+     }
+ 
+     @Override
+     public int getChildCount(Object parent)
+     {
+         final DetailAST ast = (DetailAST) parent;
+         return ast.getChildCount();
+     }
+ 
+ }

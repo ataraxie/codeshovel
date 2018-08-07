@@ -1,0 +1,120 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/AvoidEscapedUnicodeCharactersCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/AvoidEscapedUnicodeCharactersCheck.java
+index 1da498539..744afd679 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/AvoidEscapedUnicodeCharactersCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/AvoidEscapedUnicodeCharactersCheck.java
+@@ -205,111 +205,110 @@ public class AvoidEscapedUnicodeCharactersCheck
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+ 
+         final String literal = ast.getText();
+ 
+         if (hasUnicodeChar(literal) && !(allowByTailComment && hasTrailComment(ast)
+                 || isAllCharactersEscaped(literal)
+                 || allowEscapesForControlCharacters
+                         && isOnlyUnicodeValidChars(literal, UNICODE_CONTROL)
+                 || allowNonPrintableEscapes
+                         && isOnlyUnicodeValidChars(literal, NON_PRINTABLE_CHARS))) {
+             log(ast.getLineNo(), "forbid.escaped.unicode.char");
+         }
+     }
+ 
+     /**
+      * Checks if literal has Unicode chars.
+      * @param literal String literal.
+      * @return true if literal has Unicode chars.
+      */
+     private static boolean hasUnicodeChar(String literal) {
+         return UNICODE_REGEXP.matcher(literal).find();
+     }
+ 
+     /**
+      * Check if String literal contains Unicode control chars.
+      * @param literal String literal.
+      * @param pattern RegExp for valid characters.
+      * @return true, if String literal contains Unicode control chars.
+      */
+     private static boolean isOnlyUnicodeValidChars(String literal, Pattern pattern) {
+         final int unicodeMatchesCounter =
+                 countMatches(UNICODE_REGEXP, literal);
+         final int unicodeValidMatchesCounter =
+                 countMatches(pattern, literal);
+         return unicodeMatchesCounter - unicodeValidMatchesCounter == 0;
+     }
+ 
+     /**
+      * Check if trail comment is present after ast token.
+      * @param ast current token.
+      * @return true if trail comment is present after ast token.
+      */
+     private boolean hasTrailComment(DetailAST ast) {
+         final DetailAST variableDef = getVariableDef(ast);
+         DetailAST semi;
+ 
+-        if (variableDef != null) {
+-
++        if (variableDef == null) {
++            semi = getSemi(ast);
++        }
++        else {
+             semi = variableDef.getNextSibling();
+ 
+             if (semi.getType() != TokenTypes.SEMI) {
+                 semi = variableDef.getLastChild();
+             }
+         }
+-        else {
+-            semi = getSemi(ast);
+-        }
+ 
+         boolean result = false;
+         if (semi != null) {
+             final int lineNo = semi.getLineNo();
+             final String currentLine = getLine(lineNo - 1);
+ 
+             if (COMMENT_REGEXP.matcher(currentLine).find()) {
+                 result = true;
+             }
+         }
+ 
+         return result;
+     }
+ 
+     /**
+      * Count regexp matches into String literal.
+      * @param pattern pattern.
+      * @param target String literal.
+      * @return count of regexp matches.
+      */
+     private static int countMatches(Pattern pattern, String target) {
+         int matcherCounter = 0;
+         final Matcher matcher = pattern.matcher(target);
+         while (matcher.find()) {
+             matcherCounter++;
+         }
+         return matcherCounter;
+     }
+ 
+     /**
+      * Get variable definition.
+      * @param ast current token.
+      * @return variable definition.
+      */
+     private static DetailAST getVariableDef(DetailAST ast) {
+         DetailAST result = ast.getParent();
+         while (result != null
+                 && result.getType() != TokenTypes.VARIABLE_DEF) {
+             result = result.getParent();
+         }
+         return result;
+     }
+ 
+     /**
+      * Get semi token.
+      * @param ast current token.
+      * @return semi token or null.
+      */
+     private static DetailAST getSemi(DetailAST ast) {
+         DetailAST result = ast.getParent();

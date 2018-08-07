@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "NoopSearchRequestBuilder.java",
+  "functionName": "addRescorer",
+  "functionId": "addRescorer___rescorer-RescorerBuilder__?__",
+  "sourceFilePath": "client/client-benchmark-noop-api-plugin/src/main/java/org/elasticsearch/plugin/noop/action/search/NoopSearchRequestBuilder.java",
+  "functionStartLine": 429,
+  "functionEndLine": 432,
+  "changeHistory": [
+    "b3edd11aa01fec1f5bb08c0d2c90513016dcab15",
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518"
+  ],
+  "changeHistoryShort": {
+    "b3edd11aa01fec1f5bb08c0d2c90513016dcab15": "Yparameterchange",
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b3edd11aa01fec1f5bb08c0d2c90513016dcab15": {
+      "type": "Yparameterchange",
+      "commitMessage": "Allow plugins to plug rescore implementations (#26368)\n\nThis allows plugins to plug rescore implementations into\r\nElasticsearch. While this is a fairly expert thing to do I\u0027ve\r\ndone my best to point folks to the QueryRescorer as one that at\r\nleast documents the tradeoffs that it makes. I\u0027ve attempted to\r\nlimit the API surface area by removing `SearchContext` from the\r\nexposed interface, instead exposing just the IndexSearcher and\r\n`QueryShardContext`. I also tried to make some of the class names\r\nmore consistent and do some general cleanup while I was there.\r\n\r\nI entertained the notion of moving the `QueryRescorer` to module.\r\nAfter all, it\u0027d be a wonderful test to prove that you can plug\r\nrescore implementation into Elasticsearch if the only built in\r\nrescore implementation is in the module. But I decided against it\r\nbecause the new module would require a client jar and it\u0027d require\r\nmoving some more things around. I think if we really want to do\r\nit, we should do it as a followup.\r\n\r\nI did, on the other hand, create an \"example\" rescore plugin which\r\nshould both be a nice example for anyone wanting to plug in their\r\nown rescore implementation and servers as a good integration test\r\nto make sure that you can indeed plug one in.\r\n\r\nCloses #26208",
+      "commitDate": 1503683217000,
+      "commitName": "b3edd11aa01fec1f5bb08c0d2c90513016dcab15",
+      "commitAuthor": "Nik Everett",
+      "commitDateOld": 1472198333000,
+      "commitNameOld": "4460998ff8aadcae4165696667b750045228ad2d",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 364.41,
+      "commitsBetweenForRepo": 4285,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n-    public NoopSearchRequestBuilder addRescorer(RescoreBuilder\u003c?\u003e rescorer) {\n+    public NoopSearchRequestBuilder addRescorer(RescorerBuilder\u003c?\u003e rescorer) {\n         sourceBuilder().addRescorer(rescorer);\n         return this;\n     }\n\\ No newline at end of file\n"
+    },
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": {
+      "type": "Yintroduced",
+      "commitMessage": "Add client-benchmark-noop-api-plugin to stress clients even more in benchmarks (#20103)\n\n",
+      "commitDate": 1472195147000,
+      "commitName": "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+      "commitAuthor": "Daniel Mitterdorfer"
+    }
+  }
+}

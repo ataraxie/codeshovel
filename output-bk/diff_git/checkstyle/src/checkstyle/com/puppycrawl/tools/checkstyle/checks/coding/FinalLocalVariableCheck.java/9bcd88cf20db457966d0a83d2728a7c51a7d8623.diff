@@ -1,0 +1,109 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+index d6d1efa6f..9f4eaf528 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+@@ -65,101 +65,103 @@ public class FinalLocalVariableCheck extends Check
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+         };
+     }
+ 
+     /**
+      * @see Check#visitToken(DetailAST)
+      */
+     public void visitToken(DetailAST aAST)
+     {
+         switch(aAST.getType()) {
+         case TokenTypes.OBJBLOCK:
+         case TokenTypes.SLIST:
+         case TokenTypes.LITERAL_FOR:
+         case TokenTypes.METHOD_DEF:
+         case TokenTypes.CTOR_DEF:
+         case TokenTypes.STATIC_INIT:
+         case TokenTypes.INSTANCE_INIT:
+             mScopeStack.push(new HashMap());
+             break;
+ 
+         case TokenTypes.PARAMETER_DEF:
+             if (ScopeUtils.inInterfaceBlock(aAST)
+                 || inAbstractMethod(aAST))
+             {
+                 break;
+             }
+         case TokenTypes.VARIABLE_DEF:
+-            if (aAST.getParent().getType() != TokenTypes.OBJBLOCK) {
++            if (aAST.getParent().getType() != TokenTypes.OBJBLOCK
++                && aAST.getParent().getType() != TokenTypes.FOR_EACH_CLAUSE)
++            {
+                 insertVariable(aAST);
+             }
+             break;
+ 
+         case TokenTypes.IDENT:
+             final int parentType = aAST.getParent().getType();
+             if ((TokenTypes.POST_DEC        == parentType)
+                 || (TokenTypes.DEC          == parentType)
+                 || (TokenTypes.POST_INC     == parentType)
+                 || (TokenTypes.INC          == parentType)
+                 || (TokenTypes.ASSIGN       == parentType)
+                 || (TokenTypes.PLUS_ASSIGN  == parentType)
+                 || (TokenTypes.MINUS_ASSIGN == parentType)
+                 || (TokenTypes.DIV_ASSIGN   == parentType)
+                 || (TokenTypes.STAR_ASSIGN  == parentType)
+                 || (TokenTypes.MOD_ASSIGN   == parentType)
+                 || (TokenTypes.SR_ASSIGN    == parentType)
+                 || (TokenTypes.BSR_ASSIGN   == parentType)
+                 || (TokenTypes.SL_ASSIGN    == parentType)
+                 || (TokenTypes.BXOR_ASSIGN  == parentType)
+                 || (TokenTypes.BOR_ASSIGN   == parentType)
+                 || (TokenTypes.BAND_ASSIGN  == parentType))
+             {
+                 removeVariable(aAST);
+             }
+             break;
+ 
+         default:
+         }
+     }
+ 
+     /**
+      * Determines whether an AST is a descentant of an abstract method.
+      * @param aAST the AST to check.
+      * @return true if aAST is a descentant of an abstract method.
+      */
+     private boolean inAbstractMethod(DetailAST aAST)
+     {
+         DetailAST parent = aAST.getParent();
+         while (parent != null) {
+             if (parent.getType() == TokenTypes.METHOD_DEF) {
+                 final DetailAST modifiers =
+                     parent.findFirstToken(TokenTypes.MODIFIERS);
+                 return modifiers.branchContains(TokenTypes.ABSTRACT);
+             }
+             parent = parent.getParent();
+         }
+         return false;
+     }
+ 

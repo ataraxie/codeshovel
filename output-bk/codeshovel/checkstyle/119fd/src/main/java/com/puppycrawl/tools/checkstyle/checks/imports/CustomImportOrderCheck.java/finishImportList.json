@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CustomImportOrderCheck.java",
+  "functionName": "finishImportList",
+  "functionId": "finishImportList",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java",
+  "functionStartLine": 495,
+  "functionEndLine": 544,
+  "changeHistory": [
+    "914dd9994c9f108f54849a96bc35bbdd85de1053",
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0"
+  ],
+  "changeHistoryShort": {
+    "914dd9994c9f108f54849a96bc35bbdd85de1053": "Ybodychange",
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "914dd9994c9f108f54849a96bc35bbdd85de1053": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3551: CustomImportOrder shows violation on multiple line separation\n",
+      "commitDate": 1483121659000,
+      "commitName": "914dd9994c9f108f54849a96bc35bbdd85de1053",
+      "commitAuthor": "kazachka",
+      "commitDateOld": 1478694863000,
+      "commitNameOld": "8888fa5919dc31c6abe07ddc2f5fe0e29f66ef37",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 51.24,
+      "commitsBetweenForRepo": 120,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,47 +1,50 @@\n     private void finishImportList() {\n         final ImportDetails firstImport \u003d importToGroupList.get(0);\n         String currentGroup \u003d getImportGroup(firstImport.isStaticImport(),\n                 firstImport.getImportFullPath());\n         int currentGroupNumber \u003d customImportOrderRules.indexOf(currentGroup);\n         String previousImportFromCurrentGroup \u003d null;\n \n         for (ImportDetails importObject : importToGroupList) {\n             final String importGroup \u003d importObject.getImportGroup();\n             final String fullImportIdent \u003d importObject.getImportFullPath();\n \n+            if (getCountOfEmptyLinesBefore(importObject.getLineNumber()) \u003e 1) {\n+                log(importObject.getLineNumber(), MSG_LINE_SEPARATOR, fullImportIdent);\n+            }\n             if (importGroup.equals(currentGroup)) {\n                 if (sortImportsInGroupAlphabetically\n                         \u0026\u0026 previousImportFromCurrentGroup !\u003d null\n                         \u0026\u0026 compareImports(fullImportIdent, previousImportFromCurrentGroup) \u003c 0) {\n                     log(importObject.getLineNumber(), MSG_LEX,\n                             fullImportIdent, previousImportFromCurrentGroup);\n                 }\n                 else {\n                     previousImportFromCurrentGroup \u003d fullImportIdent;\n                 }\n             }\n             else {\n                 //not the last group, last one is always NON_GROUP\n                 if (customImportOrderRules.size() \u003e currentGroupNumber + 1) {\n                     final String nextGroup \u003d getNextImportGroup(currentGroupNumber + 1);\n                     if (importGroup.equals(nextGroup)) {\n                         if (separateLineBetweenGroups\n-                                \u0026\u0026 !hasEmptyLineBefore(importObject.getLineNumber())) {\n+                                \u0026\u0026 getCountOfEmptyLinesBefore(importObject.getLineNumber()) \u003d\u003d 0) {\n                             log(importObject.getLineNumber(), MSG_LINE_SEPARATOR, fullImportIdent);\n                         }\n                         currentGroup \u003d nextGroup;\n                         currentGroupNumber \u003d customImportOrderRules.indexOf(nextGroup);\n                         previousImportFromCurrentGroup \u003d fullImportIdent;\n                     }\n                     else {\n                         logWrongImportGroupOrder(importObject.getLineNumber(),\n                                 importGroup, nextGroup, fullImportIdent);\n                     }\n                 }\n                 else {\n                     logWrongImportGroupOrder(importObject.getLineNumber(),\n                             importGroup, currentGroup, fullImportIdent);\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #3143: forbid empty return statements and fixed violations",
+      "commitDate": 1464356569000,
+      "commitName": "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+      "commitAuthor": "rnveach"
+    }
+  }
+}

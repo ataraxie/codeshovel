@@ -1,0 +1,90 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/ThrowsCountCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/ThrowsCountCheck.java
+index d717bff4f..3a9799ef6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/ThrowsCountCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/ThrowsCountCheck.java
+@@ -102,84 +102,85 @@ public final class ThrowsCountCheck extends AbstractCheck {
+     }
+ 
+     /**
+      * Setter for max property.
+      * @param max maximum allowed throws statements.
+      */
+     public void setMax(int max) {
+         this.max = max;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.LITERAL_THROWS) {
+             visitLiteralThrows(ast);
+         }
+         else {
+             throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
+     /**
+      * Checks number of throws statements.
+      * @param ast throws for check.
+      */
+     private void visitLiteralThrows(DetailAST ast) {
+         if ((!ignorePrivateMethods || !isInPrivateMethod(ast))
+                 && !isOverriding(ast)) {
+             // Account for all the commas!
+             final int count = (ast.getChildCount() + 1) / 2;
+             if (count > max) {
+                 log(ast.getLineNo(), ast.getColumnNo(), MSG_KEY,
+                     count, max);
+             }
+         }
+     }
+ 
+     /**
+      * Check if a method has annotation @Override.
+      * @param ast throws, which is being checked.
+      * @return true, if a method has annotation @Override.
+      */
+     private static boolean isOverriding(DetailAST ast) {
+         final DetailAST modifiers = ast.getParent().findFirstToken(TokenTypes.MODIFIERS);
+         boolean isOverriding = false;
+         if (modifiers.branchContains(TokenTypes.ANNOTATION)) {
+             DetailAST child = modifiers.getFirstChild();
+             while (child != null) {
+                 if (child.getType() == TokenTypes.ANNOTATION
+                         && "Override".equals(getAnnotationName(child))) {
+                     isOverriding = true;
++                    break;
+                 }
+                 child = child.getNextSibling();
+             }
+         }
+         return isOverriding;
+     }
+ 
+     /**
+      * Gets name of an annotation.
+      * @param annotation to get name of.
+      * @return name of an annotation.
+      */
+     private static String getAnnotationName(DetailAST annotation) {
+         final DetailAST dotAst = annotation.findFirstToken(TokenTypes.DOT);
+         final String name;
+         if (dotAst == null) {
+             name = annotation.findFirstToken(TokenTypes.IDENT).getText();
+         }
+         else {
+             name = dotAst.findFirstToken(TokenTypes.IDENT).getText();
+         }
+         return name;
+     }
+ 
+     /**
+      * Checks if method, which throws an exception is private.
+      * @param ast throws, which is being checked.
+      * @return true, if method, which throws an exception is private.
+      */
+     private static boolean isInPrivateMethod(DetailAST ast) {
+         final DetailAST methodModifiers = ast.getParent().findFirstToken(TokenTypes.MODIFIERS);
+         return methodModifiers.findFirstToken(TokenTypes.LITERAL_PRIVATE) != null;
+     }
+ }

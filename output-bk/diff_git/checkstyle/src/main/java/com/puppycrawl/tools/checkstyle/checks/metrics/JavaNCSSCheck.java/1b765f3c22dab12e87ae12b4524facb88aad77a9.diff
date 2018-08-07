@@ -1,0 +1,77 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+index 3b8573b67..d2b0a135d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+@@ -325,69 +325,69 @@ public class JavaNCSSCheck extends Check {
+             //the sibling is no COMMA.
+             //This is done because multiple assignment on one line are counted
+             // as 1
+             countable = prevSibling == null
+                     || prevSibling.getType() != TokenTypes.COMMA;
+         }
+ 
+         return countable;
+     }
+ 
+     /**
+      * Checks if an expression is countable for the ncss metric.
+      *
+      * @param ast the AST
+      * @return true if the expression is countable, false otherwise
+      */
+     private static boolean isExpressionCountable(DetailAST ast) {
+         boolean countable;
+ 
+         //count expressions only if they are direct child to a slist (method
+         // body, for loop...)
+         //or direct child of label,if,else,do,while,for
+         final int parentType = ast.getParent().getType();
+         switch (parentType) {
+             case TokenTypes.SLIST :
+             case TokenTypes.LABELED_STAT :
+             case TokenTypes.LITERAL_FOR :
+             case TokenTypes.LITERAL_DO :
+             case TokenTypes.LITERAL_WHILE :
+             case TokenTypes.LITERAL_IF :
+             case TokenTypes.LITERAL_ELSE :
+                 //don't count if or loop conditions
+                 final DetailAST prevSibling = ast.getPreviousSibling();
+                 countable = prevSibling == null
+                     || prevSibling.getType() != TokenTypes.LPAREN;
+                 break;
+             default :
+                 countable = false;
+                 break;
+         }
+         return countable;
+     }
+ 
+     /**
+      * @author Lars Ködderitzsch
+      *
+      * Class representing a counter,
+      */
+     private static class Counter {
+         /** The counters internal integer */
+-        private int ivCount;
++        private int count;
+ 
+         /**
+          * Increments the counter.
+          */
+         public void increment() {
+-            ivCount++;
++            count++;
+         }
+ 
+         /**
+          * Gets the counters value
+          *
+          * @return the counter
+          */
+         public int getCount() {
+-            return ivCount;
++            return count;
+         }
+     }
+ }

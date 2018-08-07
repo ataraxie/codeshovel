@@ -1,0 +1,72 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "JavadocMethodCheck.java",
+  "functionName": "getMethodsNumberOfLine",
+  "functionId": "getMethodsNumberOfLine___methodDef-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java",
+  "functionStartLine": 391,
+  "functionEndLine": 403,
+  "changeHistory": [
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "e56f3d21ee1a0e8c0eced70ec7990fb03dcb3215"
+  ],
+  "changeHistoryShort": {
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "e56f3d21ee1a0e8c0eced70ec7990fb03dcb3215": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d": {
+      "type": "Ybodychange",
+      "commitMessage": "minor: enforce FinalLocalVariableCheck on checkstyle code\n",
+      "commitDate": 1453646135000,
+      "commitName": "0d8e93ce79ea33b72b3e904d8796984271ee3d8d",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 19.59,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private static int getMethodsNumberOfLine(DetailAST methodDef) {\n-        int numberOfLines;\n+        final int numberOfLines;\n         final DetailAST lcurly \u003d methodDef.getLastChild();\n         final DetailAST rcurly \u003d lcurly.getLastChild();\n \n         if (lcurly.getFirstChild() \u003d\u003d rcurly) {\n             numberOfLines \u003d 1;\n         }\n         else {\n             numberOfLines \u003d rcurly.getLineNo() - lcurly.getLineNo() - 1;\n         }\n         return numberOfLines;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436323201000,
+      "commitNameOld": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 10.09,
+      "commitsBetweenForRepo": 97,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n-    private int getMethodsNumberOfLine(DetailAST methodDef) {\n+    private static int getMethodsNumberOfLine(DetailAST methodDef) {\n         int numberOfLines;\n         final DetailAST lcurly \u003d methodDef.getLastChild();\n         final DetailAST rcurly \u003d lcurly.getLastChild();\n \n         if (lcurly.getFirstChild() \u003d\u003d rcurly) {\n             numberOfLines \u003d 1;\n         }\n         else {\n             numberOfLines \u003d rcurly.getLineNo() - lcurly.getLineNo() - 1;\n         }\n         return numberOfLines;\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "e56f3d21ee1a0e8c0eced70ec7990fb03dcb3215": {
+      "type": "Yintroduced",
+      "commitMessage": "Update for existing Check: JavadocMethodCheck #319\n",
+      "commitDate": 1414021350000,
+      "commitName": "e56f3d21ee1a0e8c0eced70ec7990fb03dcb3215",
+      "commitAuthor": "maxvetrenko"
+    }
+  }
+}

@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+index ba8480cc0..a60bafb9b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+@@ -440,101 +440,101 @@ public class VariableDeclarationUsageDistanceCheck extends Check
+                                 dist++;
+                             }
+                     }
+                     variableUsageAst = currentAst;
+                     firstUsageFound = true;
+                 }
+                 else if (currentAst.getType() != TokenTypes.VARIABLE_DEF) {
+                     dist++;
+                 }
+             }
+             currentAst = currentAst.getNextSibling();
+         }
+ 
+         // If variable wasn't used after its declaration, distance is 0.
+         if (!firstUsageFound) {
+             dist = 0;
+         }
+ 
+         return new SimpleEntry<>(variableUsageAst, dist);
+     }
+ 
+     /**
+      * Calculates distance between declaration of variable and its first usage
+      * in multiple scopes.
+      * @param ast
+      *        Regular node of Ast which is checked for content of checking
+      *        variable.
+      * @param variable
+      *        Variable which distance is calculated for.
+      * @return entry which contains expression with variable usage and distance.
+      */
+     private Entry<DetailAST, Integer> calculateDistanceBetweenScopes(
+             DetailAST ast, DetailAST variable)
+     {
+         int dist = 0;
+         DetailAST currentScopeAst = ast;
+         DetailAST variableUsageAst = null;
+         while (currentScopeAst != null) {
+             final List<DetailAST> variableUsageExpressions = new ArrayList<>();
+             DetailAST currentStatementAst = currentScopeAst;
+             currentScopeAst = null;
+             while (currentStatementAst != null
+                     && currentStatementAst.getType() != TokenTypes.RCURLY)
+             {
+                 if (currentStatementAst.getFirstChild() != null) {
+                     if (isChild(currentStatementAst, variable)) {
+                         variableUsageExpressions.add(currentStatementAst);
+                     }
+                     // If expression doesn't contain variable and this variable
+                     // hasn't been met yet, than distance + 1.
+-                    else if (variableUsageExpressions.size() == 0
++                    else if (variableUsageExpressions.isEmpty()
+                             && currentStatementAst.getType() != TokenTypes.VARIABLE_DEF)
+                     {
+                         dist++;
+                     }
+                 }
+                 currentStatementAst = currentStatementAst.getNextSibling();
+             }
+             // If variable usage exists in a single scope, then look into
+             // this scope and count distance until variable usage.
+             if (variableUsageExpressions.size() == 1) {
+                 final DetailAST blockWithVariableUsage = variableUsageExpressions
+                         .get(0);
+                 DetailAST exprWithVariableUsage = null;
+                 switch (blockWithVariableUsage.getType()) {
+                     case TokenTypes.VARIABLE_DEF:
+                     case TokenTypes.EXPR:
+                         dist++;
+                         break;
+                     case TokenTypes.LITERAL_FOR:
+                     case TokenTypes.LITERAL_WHILE:
+                     case TokenTypes.LITERAL_DO:
+                         exprWithVariableUsage = getFirstNodeInsideForWhileDoWhileBlocks(
+                             blockWithVariableUsage, variable);
+                         break;
+                     case TokenTypes.LITERAL_IF:
+                         exprWithVariableUsage = getFirstNodeInsideIfBlock(
+                             blockWithVariableUsage, variable);
+                         break;
+                     case TokenTypes.LITERAL_SWITCH:
+                         exprWithVariableUsage = getFirstNodeInsideSwitchBlock(
+                             blockWithVariableUsage, variable);
+                         break;
+                     case TokenTypes.LITERAL_TRY:
+                         exprWithVariableUsage =
+                             getFirstNodeInsideTryCatchFinallyBlocks(blockWithVariableUsage,
+                                 variable);
+                         break;
+                     default:
+                         exprWithVariableUsage = blockWithVariableUsage.getFirstChild();
+                 }
+                 currentScopeAst = exprWithVariableUsage;
+                 if (exprWithVariableUsage != null) {
+                     variableUsageAst = exprWithVariableUsage;
+                 }
+                 else {
+                     variableUsageAst = blockWithVariableUsage;
+                 }
+             }
+             // If variable usage exists in different scopes, then distance =
+             // distance until variable first usage.

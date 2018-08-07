@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
+index 782f1ef16..947760370 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
+@@ -130,102 +130,102 @@ public final class JavadocUtils {
+ 
+         final boolean getBlockTags = tagType == JavadocTagType.ALL
+                                          || tagType == JavadocTagType.BLOCK;
+         final boolean getInlineTags = tagType == JavadocTagType.ALL
+                                           || tagType == JavadocTagType.INLINE;
+ 
+         final List<TagInfo> tags = new ArrayList<>();
+ 
+         if (getBlockTags) {
+             tags.addAll(BlockTagUtils.extractBlockTags(textBlock.getText()));
+         }
+ 
+         if (getInlineTags) {
+             tags.addAll(InlineTagUtils.extractInlineTags(textBlock.getText()));
+         }
+ 
+         final List<JavadocTag> validTags = new ArrayList<>();
+         final List<InvalidJavadocTag> invalidTags = new ArrayList<>();
+ 
+         for (TagInfo tag : tags) {
+             final int col = tag.getPosition().getColumn();
+ 
+             // Add the starting line of the comment to the line number to get the actual line number
+             // in the source.
+             // Lines are one-indexed, so need a off-by-one correction.
+             final int line = textBlock.getStartLineNo() + tag.getPosition().getLine() - 1;
+ 
+             if (JavadocTagInfo.isValidName(tag.getName())) {
+                 validTags.add(
+                     new JavadocTag(line, col, tag.getName(), tag.getValue()));
+             }
+             else {
+                 invalidTags.add(new InvalidJavadocTag(line, col, tag.getName()));
+             }
+         }
+ 
+         return new JavadocTags(validTags, invalidTags);
+     }
+ 
+     /**
+      * Checks that commentContent starts with '*' javadoc comment identifier.
+      * @param commentContent
+      *        content of block comment
+      * @return true if commentContent starts with '*' javadoc comment
+      *         identifier.
+      */
+     public static boolean isJavadocComment(String commentContent) {
+         boolean result = false;
+ 
+         if (!commentContent.isEmpty()) {
+-            final char docCommentIdentificator = commentContent.charAt(0);
+-            result = docCommentIdentificator == '*';
++            final char docCommentIdentifier = commentContent.charAt(0);
++            result = docCommentIdentifier == '*';
+         }
+ 
+         return result;
+     }
+ 
+     /**
+      * Checks block comment content starts with '*' javadoc comment identifier.
+      * @param blockCommentBegin
+      *        block comment AST
+      * @return true if block comment content starts with '*' javadoc comment
+      *         identifier.
+      */
+     public static boolean isJavadocComment(DetailAST blockCommentBegin) {
+         final String commentContent = getBlockCommentContent(blockCommentBegin);
+         return isJavadocComment(commentContent) && isCorrectJavadocPosition(blockCommentBegin);
+     }
+ 
+     /**
+      * Gets content of block comment.
+      * @param blockCommentBegin
+      *        block comment AST.
+      * @return content of block comment.
+      */
+     private static String getBlockCommentContent(DetailAST blockCommentBegin) {
+         final DetailAST commentContent = blockCommentBegin.getFirstChild();
+         return commentContent.getText();
+     }
+ 
+     /**
+      * Get content of Javadoc comment.
+      * @param javadocCommentBegin
+      *        Javadoc comment AST
+      * @return content of Javadoc comment.
+      */
+     public static String getJavadocCommentContent(DetailAST javadocCommentBegin) {
+         final DetailAST commentContent = javadocCommentBegin.getFirstChild();
+         return commentContent.getText().substring(1);
+     }
+ 
+     /**
+      * Returns the first child token that has a specified type.
+      * @param detailNode
+      *        Javadoc AST node
+      * @param type
+      *        the token type to match
+      * @return the matching token, or null if no match
+      */
+     public static DetailNode findFirstToken(DetailNode detailNode, int type) {
+         DetailNode returnValue = null;
+         DetailNode node = getFirstChild(detailNode);

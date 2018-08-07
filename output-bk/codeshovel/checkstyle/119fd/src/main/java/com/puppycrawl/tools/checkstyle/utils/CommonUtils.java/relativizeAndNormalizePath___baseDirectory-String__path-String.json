@@ -1,0 +1,150 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CommonUtils.java",
+  "functionName": "relativizeAndNormalizePath",
+  "functionId": "relativizeAndNormalizePath___baseDirectory-String__path-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java",
+  "functionStartLine": 373,
+  "functionEndLine": 384,
+  "changeHistory": [
+    "6098d52bc125347961fc37971fd0d9a428f2781a",
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+    "3a20dbe8edafe0cca300b7b9dfa48effa9a36a06",
+    "1c15b6a36baa68dc3f2ebdf9baac131e98bb9e04",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "e708beb537e90a913c8692174dbdf48c5277d014"
+  ],
+  "changeHistoryShort": {
+    "6098d52bc125347961fc37971fd0d9a428f2781a": "Ybodychange",
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": "Ymovefromfile",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": "Yfilerename",
+    "3a20dbe8edafe0cca300b7b9dfa48effa9a36a06": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+    "1c15b6a36baa68dc3f2ebdf9baac131e98bb9e04": "Ymovefromfile",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "e708beb537e90a913c8692174dbdf48c5277d014": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6098d52bc125347961fc37971fd0d9a428f2781a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.internal, com.puppycrawl.tools.checkstyle.utils\n",
+      "commitDate": 1493045733000,
+      "commitName": "6098d52bc125347961fc37971fd0d9a428f2781a",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1492029104000,
+      "commitNameOld": "7533f022a71e932d3fb2600c91b8463171a2caae",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 11.77,
+      "commitsBetweenForRepo": 66,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,12 @@\n     public static String relativizeAndNormalizePath(final String baseDirectory, final String path) {\n+        final String resultPath;\n         if (baseDirectory \u003d\u003d null) {\n-            return path;\n+            resultPath \u003d path;\n         }\n-        final Path pathAbsolute \u003d Paths.get(path).normalize();\n-        final Path pathBase \u003d Paths.get(baseDirectory).normalize();\n-        return pathBase.relativize(pathAbsolute).toString();\n+        else {\n+            final Path pathAbsolute \u003d Paths.get(path).normalize();\n+            final Path pathBase \u003d Paths.get(baseDirectory).normalize();\n+            resultPath \u003d pathBase.relativize(pathAbsolute).toString();\n+        }\n+        return resultPath;\n     }\n\\ No newline at end of file\n"
+    },
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": {
+      "type": "Ymovefromfile",
+      "commitMessage": "Utils class has been splitted to CommonUtils and TokenUtils. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": {
+      "type": "Yfilerename",
+      "commitMessage": "Utils classes have been moved to utils package. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440637702000,
+      "commitNameOld": "f6113bb56d695719a8803274effb3596cb82120f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.46,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "3a20dbe8edafe0cca300b7b9dfa48effa9a36a06": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+      "commitMessage": "Use use Java 7 instead of custom logic for relative paths, issue #857\n",
+      "commitDate": 1427826303000,
+      "commitName": "3a20dbe8edafe0cca300b7b9dfa48effa9a36a06",
+      "commitAuthor": "Michal Kordas",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "1c15b6a36baa68dc3f2ebdf9baac131e98bb9e04": {
+      "type": "Ymovefromfile",
+      "commitMessage": "Moved all methods from checkstyle.api.utils to checkstyle.utils, issue #661\n",
+      "commitDate": 1426454536000,
+      "commitName": "1c15b6a36baa68dc3f2ebdf9baac131e98bb9e04",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1426454223000,
+      "commitNameOld": "9c4cd707e349660cfe32f095a2a96a0a0f854e67",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425602876000,
+      "commitNameOld": "f7828693395f71a6ae99710f3fab44cb8a66ea51",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 4.87,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     public static String getStrippedFileName(\n             final String basedir, final String fileName)\n     {\n         final String stripped;\n-        if ((basedir \u003d\u003d null) || !fileName.startsWith(basedir)) {\n+        if (basedir \u003d\u003d null || !fileName.startsWith(basedir)) {\n             stripped \u003d fileName;\n         }\n         else {\n             // making the assumption that there is text after basedir\n             final int skipSep \u003d basedir.endsWith(File.separator) ? 0 : 1;\n             stripped \u003d fileName.substring(basedir.length() + skipSep);\n         }\n         return stripped;\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "e708beb537e90a913c8692174dbdf48c5277d014": {
+      "type": "Yintroduced",
+      "commitMessage": "Strip basename from reported secondary filename in StrictDuplicateCodeCheck.\nRequired moving getStrippedFileName() from Checker to Utils.\n",
+      "commitDate": 1066020096000,
+      "commitName": "e708beb537e90a913c8692174dbdf48c5277d014",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

@@ -1,0 +1,119 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java
+index 3b46850c3..9557a9db0 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java
+@@ -27,107 +27,107 @@ import antlr.collections.AST;
+ 
+ import com.puppycrawl.tools.checkstyle.utils.TokenUtils;
+ 
+ /**
+  * An extension of the CommonAST that records the line and column
+  * number.  The idea was taken from <a target="_top"
+  * href="http://www.jguru.com/faq/view.jsp?EID=62654">Java Guru
+  * FAQ: How can I include line numbers in automatically generated
+  * ASTs?</a>.
+  * @author Oliver Burn
+  * @author lkuehne
+  * @see <a href="http://www.antlr.org/">ANTLR Website</a>
+  */
+ public final class DetailAST extends CommonASTWithHiddenTokens {
+     /** For Serialisation that will never happen. */
+     private static final long serialVersionUID = -2580884815577559874L;
+ 
+     /** Constant to indicate if not calculated the child count. */
+     private static final int NOT_INITIALIZED = Integer.MIN_VALUE;
+ 
+     /** The line number. **/
+     private int lineNo = NOT_INITIALIZED;
+     /** The column number. **/
+     private int columnNo = NOT_INITIALIZED;
+ 
+     /** Number of children. */
+     private int childCount = NOT_INITIALIZED;
+     /** The parent token. */
+     private DetailAST parent;
+     /** Previous sibling. */
+     private DetailAST previousSibling;
+ 
+     /**
+      * All token types in this branch.
+      * Token 'x' (where x is an int) is in this branch
+      * if branchTokenTypes.get(x) is true.
+      */
+     private BitSet branchTokenTypes;
+ 
+     @Override
+     public void initialize(Token tok) {
+         super.initialize(tok);
+         lineNo = tok.getLine();
+ 
+         // expect columns to start @ 0
+         columnNo = tok.getColumn() - 1;
+     }
+ 
+     @Override
+     public void initialize(AST ast) {
+-        final DetailAST da = (DetailAST) ast;
+-        setText(da.getText());
+-        setType(da.getType());
+-        lineNo = da.getLineNo();
+-        columnNo = da.getColumnNo();
+-        hiddenAfter = da.getHiddenAfter();
+-        hiddenBefore = da.getHiddenBefore();
++        final DetailAST detailAst = (DetailAST) ast;
++        setText(detailAst.getText());
++        setType(detailAst.getType());
++        lineNo = detailAst.getLineNo();
++        columnNo = detailAst.getColumnNo();
++        hiddenAfter = detailAst.getHiddenAfter();
++        hiddenBefore = detailAst.getHiddenBefore();
+     }
+ 
+     @Override
+     public void setFirstChild(AST ast) {
+         childCount = NOT_INITIALIZED;
+         super.setFirstChild(ast);
+         if (ast != null) {
+             ((DetailAST) ast).setParent(this);
+         }
+     }
+ 
+     @Override
+     public void setNextSibling(AST ast) {
+         super.setNextSibling(ast);
+         if (ast != null && parent != null) {
+             ((DetailAST) ast).setParent(parent);
+         }
+         if (ast != null) {
+             ((DetailAST) ast).previousSibling = this;
+         }
+     }
+ 
+     /**
+      * Add previous sibling.
+      * @param ast
+      *        DetailAST object.
+      */
+     public void addPreviousSibling(DetailAST ast) {
+         if (ast != null) {
+             ast.setParent(parent);
+             final DetailAST previousSiblingNode = previousSibling;
+ 
+             if (previousSiblingNode != null) {
+                 ast.previousSibling = previousSiblingNode;
+                 previousSiblingNode.setNextSibling(ast);
+             }
+             else if (parent != null) {
+                 parent.setFirstChild(ast);
+             }
+ 
+             ast.setNextSibling(this);
+             previousSibling = ast;
+         }
+     }
+ 
+     /**
+      * Add next sibling.
+      * @param ast
+      *        DetailAST object.
+      */

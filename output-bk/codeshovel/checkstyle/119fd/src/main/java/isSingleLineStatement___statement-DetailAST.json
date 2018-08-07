@@ -1,0 +1,90 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "isSingleLineStatement___statement-DetailAST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 315,
+  "changeHistory": [
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d",
+    "74566f21a2298d53f9c97935542fdb630ad5da87",
+    "8a3f5bf6d5389b9e175c9c769992faece6d76ada",
+    "eb29e863de490162290425654a7fdcbd41d084df",
+    "b436b3cd9860529718b95c36dafe565fe68f6293"
+  ],
+  "changeHistoryShort": {
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d": "Ybodychange",
+    "74566f21a2298d53f9c97935542fdb630ad5da87": "Ybodychange",
+    "8a3f5bf6d5389b9e175c9c769992faece6d76ada": "Ybodychange",
+    "eb29e863de490162290425654a7fdcbd41d084df": "Ybodychange",
+    "b436b3cd9860529718b95c36dafe565fe68f6293": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d": {
+      "type": "Ybodychange",
+      "commitMessage": "minor: enforce FinalLocalVariableCheck on checkstyle code\n",
+      "commitDate": 1453646135000,
+      "commitName": "0d8e93ce79ea33b72b3e904d8796984271ee3d8d",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 19.59,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,32 +1,32 @@\n     private static boolean isSingleLineStatement(DetailAST statement) {\n-        boolean result;\n+        final boolean result;\n \n         switch (statement.getType()) {\n             case TokenTypes.LITERAL_IF:\n                 result \u003d isSingleLineIf(statement);\n                 break;\n             case TokenTypes.LITERAL_FOR:\n                 result \u003d isSingleLineFor(statement);\n                 break;\n             case TokenTypes.LITERAL_DO:\n                 result \u003d isSingleLineDoWhile(statement);\n                 break;\n             case TokenTypes.LITERAL_WHILE:\n                 result \u003d isSingleLineWhile(statement);\n                 break;\n             case TokenTypes.LAMBDA:\n                 result \u003d isSingleLineLambda(statement);\n                 break;\n             case TokenTypes.LITERAL_CASE:\n                 result \u003d isSingleLineCase(statement);\n                 break;\n             case TokenTypes.LITERAL_DEFAULT:\n                 result \u003d isSingleLineDefault(statement);\n                 break;\n             default:\n                 result \u003d isSingleLineElse(statement);\n                 break;\n         }\n \n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "74566f21a2298d53f9c97935542fdb630ad5da87": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1555: Replace if with switch\n\nFixes `IfStatementWithTooManyBranches` inspection violation.\n\nDescription:\n\u003eReports if statements with too many branches. Such statements may be confusing, and are often the sign of inadequate levels of design abstraction.\n",
+      "commitDate": 1440997958000,
+      "commitName": "74566f21a2298d53f9c97935542fdb630ad5da87",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440739668000,
+      "commitNameOld": "cb5a59fc6baf5de204e3cc99be6ba9865e44350a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 2.99,
+      "commitsBetweenForRepo": 114,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,31 +1,32 @@\n     private static boolean isSingleLineStatement(DetailAST statement) {\n         boolean result;\n-        final int type \u003d statement.getType();\n \n-        if (type \u003d\u003d TokenTypes.LITERAL_IF) {\n-            result \u003d isSingleLineIf(statement);\n-        }\n-        else if (type \u003d\u003d TokenTypes.LITERAL_FOR) {\n-            result \u003d isSingleLineFor(statement);\n-        }\n-        else if (type \u003d\u003d TokenTypes.LITERAL_DO) {\n-            result \u003d isSingleLineDoWhile(statement);\n-        }\n-        else if (type \u003d\u003d TokenTypes.LITERAL_WHILE) {\n-            result \u003d isSingleLineWhile(statement);\n-        }\n-        else if (type \u003d\u003d TokenTypes.LAMBDA) {\n-            result \u003d isSingleLineLambda(statement);\n-        }\n-        else if (type \u003d\u003d TokenTypes.LITERAL_CASE) {\n-            result \u003d isSingleLineCase(statement);\n-        }\n-        else if (type \u003d\u003d TokenTypes.LITERAL_DEFAULT) {\n-            result \u003d isSingleLineDefault(statement);\n-        }\n-        else {\n-            result \u003d isSingleLineElse(statement);\n+        switch (statement.getType()) {\n+            case TokenTypes.LITERAL_IF:\n+                result \u003d isSingleLineIf(statement);\n+                break;\n+            case TokenTypes.LITERAL_FOR:\n+                result \u003d isSingleLineFor(statement);\n+                break;\n+            case TokenTypes.LITERAL_DO:\n+                result \u003d isSingleLineDoWhile(statement);\n+                break;\n+            case TokenTypes.LITERAL_WHILE:\n+                result \u003d isSingleLineWhile(statement);\n+                break;\n+            case TokenTypes.LAMBDA:\n+                result \u003d isSingleLineLambda(statement);\n+                break;\n+            case TokenTypes.LITERAL_CASE:\n+                result \u003d isSingleLineCase(statement);\n+                break;\n+            case TokenTypes.LITERAL_DEFAULT:\n+                result \u003d isSingleLineDefault(statement);\n+                break;\n+            default:\n+                result \u003d isSingleLineElse(statement);\n+                break;\n         }\n \n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "8a3f5bf6d5389b9e175c9c769992faece6d76ada": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unused assignments. #1555\n\nFixes UnusedAssignment inspection violations.\n\nDescription:\n\u003eThis inspection points out the cases where a variable value is never used after its assignment, i.e.:\n- the variable never gets read after assignment OR\n- the value is always overwritten with another assignment before the next variable read OR\n - the variable initializer is redundant (for one of the above two reasons) OR\n - the variable is never used.\n",
+      "commitDate": 1439007161000,
+      "commitName": "8a3f5bf6d5389b9e175c9c769992faece6d76ada",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1438566092000,
+      "commitNameOld": "fd794d428cc0854ddd4d416f0208d49f1ee9cbe1",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 5.1,
+      "commitsBetweenForRepo": 43,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,31 +1,31 @@\n     private static boolean isSingleLineStatement(DetailAST statement) {\n-        boolean result \u003d false;\n+        boolean result;\n         final int type \u003d statement.getType();\n \n         if (type \u003d\u003d TokenTypes.LITERAL_IF) {\n             result \u003d isSingleLineIf(statement);\n         }\n         else if (type \u003d\u003d TokenTypes.LITERAL_FOR) {\n             result \u003d isSingleLineFor(statement);\n         }\n         else if (type \u003d\u003d TokenTypes.LITERAL_DO) {\n             result \u003d isSingleLineDoWhile(statement);\n         }\n         else if (type \u003d\u003d TokenTypes.LITERAL_WHILE) {\n             result \u003d isSingleLineWhile(statement);\n         }\n         else if (type \u003d\u003d TokenTypes.LAMBDA) {\n             result \u003d isSingleLineLambda(statement);\n         }\n         else if (type \u003d\u003d TokenTypes.LITERAL_CASE) {\n             result \u003d isSingleLineCase(statement);\n         }\n         else if (type \u003d\u003d TokenTypes.LITERAL_DEFAULT) {\n             result \u003d isSingleLineDefault(statement);\n         }\n         else {\n             result \u003d isSingleLineElse(statement);\n         }\n \n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "eb29e863de490162290425654a7fdcbd41d084df": {
+      "type": "Ybodychange",
+      "commitMessage": "Coverage has been increased to 100% in NeedBracesCheck. Issue #1291\n",
+      "commitDate": 1437888674000,
+      "commitName": "eb29e863de490162290425654a7fdcbd41d084df",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1432506514000,
+      "commitNameOld": "cc355f7e108fe222d957f1dbc8c3ba4eeb7ed941",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 62.29,
+      "commitsBetweenForRepo": 461,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,33 +1,31 @@\n     private static boolean isSingleLineStatement(DetailAST statement) {\n         boolean result \u003d false;\n-        switch (statement.getType()) {\n-            case TokenTypes.LITERAL_IF:\n-                result \u003d isSingleLineIf(statement);\n-                break;\n-            case TokenTypes.LITERAL_FOR:\n-                result \u003d isSingleLineFor(statement);\n-                break;\n-            case TokenTypes.LITERAL_DO:\n-                result \u003d isSingleLineDoWhile(statement);\n-                break;\n-            case TokenTypes.LITERAL_WHILE:\n-                result \u003d isSingleLineWhile(statement);\n-                break;\n-            case TokenTypes.LAMBDA:\n-                result \u003d isSingleLineLambda(statement);\n-                break;\n-            case TokenTypes.LITERAL_CASE:\n-                result \u003d isSingleLineCase(statement);\n-                break;\n-            case TokenTypes.LITERAL_DEFAULT:\n-                result \u003d isSingleLineDefault(statement);\n-                break;\n-            case TokenTypes.LITERAL_ELSE:\n-                result \u003d isSingleLineElse(statement);\n-                break;\n-            default:\n-                final String exceptionMsg \u003d statement.getText();\n-                throw new IllegalArgumentException(\"Unsupported token: \" + exceptionMsg);\n+        final int type \u003d statement.getType();\n+\n+        if (type \u003d\u003d TokenTypes.LITERAL_IF) {\n+            result \u003d isSingleLineIf(statement);\n         }\n+        else if (type \u003d\u003d TokenTypes.LITERAL_FOR) {\n+            result \u003d isSingleLineFor(statement);\n+        }\n+        else if (type \u003d\u003d TokenTypes.LITERAL_DO) {\n+            result \u003d isSingleLineDoWhile(statement);\n+        }\n+        else if (type \u003d\u003d TokenTypes.LITERAL_WHILE) {\n+            result \u003d isSingleLineWhile(statement);\n+        }\n+        else if (type \u003d\u003d TokenTypes.LAMBDA) {\n+            result \u003d isSingleLineLambda(statement);\n+        }\n+        else if (type \u003d\u003d TokenTypes.LITERAL_CASE) {\n+            result \u003d isSingleLineCase(statement);\n+        }\n+        else if (type \u003d\u003d TokenTypes.LITERAL_DEFAULT) {\n+            result \u003d isSingleLineDefault(statement);\n+        }\n+        else {\n+            result \u003d isSingleLineElse(statement);\n+        }\n+\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "b436b3cd9860529718b95c36dafe565fe68f6293": {
+      "type": "Yintroduced",
+      "commitMessage": "Need Braces Check, one-line statements option, issue #300\n",
+      "commitDate": 1425777806000,
+      "commitName": "b436b3cd9860529718b95c36dafe565fe68f6293",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

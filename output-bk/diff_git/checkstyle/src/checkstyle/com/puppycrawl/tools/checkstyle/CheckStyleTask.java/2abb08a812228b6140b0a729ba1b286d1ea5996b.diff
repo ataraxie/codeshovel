@@ -1,0 +1,149 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index 9ebcd6685..065da61f2 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -1,120 +1,143 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2002  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle;
+ 
+ import java.io.File;
+ import java.io.FileOutputStream;
+ import java.io.IOException;
+ import java.io.OutputStream;
+ import java.util.ArrayList;
+ import java.util.List;
++import java.util.Properties;
++import java.io.FileInputStream;
+ import org.apache.regexp.RESyntaxException;
+ import org.apache.tools.ant.BuildException;
+ import org.apache.tools.ant.DirectoryScanner;
+ import org.apache.tools.ant.Project;
+ import org.apache.tools.ant.Task;
+ import org.apache.tools.ant.taskdefs.LogOutputStream;
+ import org.apache.tools.ant.types.EnumeratedAttribute;
+ import org.apache.tools.ant.types.FileSet;
+ 
+ /**
+  * An implementation of a ANT task for calling checkstyle. See the documentation
+  * of the task for usage.
+  * @author <a href="mailto:oliver@puppycrawl.com">Oliver Burn</a>
+  **/
+ public class CheckStyleTask
+     extends Task
+ {
+     /** poor man's enum for an xml formatter **/
+     private static final String E_XML = "xml";
+     /** poor man's enum for an plain formatter **/
+     private static final String E_PLAIN = "plain";
+ 
+     /** name of file to check **/
+     private String mFileName;
+ 
+     /** whether to fail build on violations **/
+     private boolean mFailOnViolation = true;
+ 
+     /** property to set on violations **/
+     private String mFailureProperty = null;
+ 
+     /** contains the filesets to process **/
+     private final List mFileSets = new ArrayList();
+ 
+     /** contains the formatters to log to **/
+     private final List mFormatters = new ArrayList();
+ 
+     /** the configuration to pass to the checker **/
+-    private final Configuration mConfig = new Configuration();
++    private Configuration mConfig = new Configuration();
++
++    /** the properties **/
++    private Properties mProperties = null;
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Setters for attributes
+     ////////////////////////////////////////////////////////////////////////////
+ 
++    /**
++     * Sets a properties file for use instead
++     * of individually setting them
++     * @param props the properties File to use
++     */
++    public void setProperties(File props)
++    {
++        Properties mProperties = new Properties();
++        try {
++            mProperties.load(new FileInputStream(props));
++            mConfig = new Configuration(mProperties, System.out);
++        }
++        catch (Exception e) {
++            throw new BuildException(
++                "Could not find Properties file '" + props + "'", location);
++        }
++    }
++
+     /**
+      * Adds a set of files (nested fileset attribute).
+      * @param aFS the file set to add
+      */
+     public void addFileset(FileSet aFS)
+     {
+         mFileSets.add(aFS);
+     }
+ 
+     /**
+      * Add a formatter
+      * @param aFormatter the formatter to add for logging.
+      */
+     public void addFormatter(Formatter aFormatter)
+     {
+         mFormatters.add(aFormatter);
+     }
+ 
+ 
+     /** @param aFile the file to be checked **/
+     public void setFile(File aFile)
+     {
+         mFileName = aFile.getAbsolutePath();
+     }
+ 
+     /** @param aAllowed whether tabs are allowed **/
+     public void setAllowTabs(boolean aAllowed)
+     {
+         mConfig.setAllowTabs(aAllowed);
+     }
+ 
+     /** @param aAllowed whether protected data is allowed **/
+     public void setAllowProtected(boolean aAllowed)
+     {
+         mConfig.setAllowProtected(aAllowed);
+     }
+ 
+     /** @param aAllowed whether package visible data is allowed **/
+     public void setAllowPackage(boolean aAllowed)
+     {
+         mConfig.setAllowPackage(aAllowed);
+     }
+ 
+     /** @param aAllowed whether allow having no author **/
+     public void setAllowNoAuthor(boolean aAllowed)
+     {
+         mConfig.setAllowNoAuthor(aAllowed);
+     }
+ 
+     /** @param aLen max allowed line length **/

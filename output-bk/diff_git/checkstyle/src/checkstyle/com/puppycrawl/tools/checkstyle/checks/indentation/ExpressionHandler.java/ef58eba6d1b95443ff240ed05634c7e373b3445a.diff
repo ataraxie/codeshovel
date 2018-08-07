@@ -1,0 +1,227 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+index bd5225f68..4bd7aec30 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+@@ -1,213 +1,200 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2007  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.indentation;
+ 
+-import java.util.Arrays;
+-
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.Utils;
++import java.util.Arrays;
+ 
+ /**
+  * Abstract base class for all handlers.
+  *
+  * @author jrichard
+  */
+ public abstract class ExpressionHandler
+ {
+     /**
+      * The instance of <code>IndentationCheck</code> using this handler.
+      */
+-    private IndentationCheck mIndentCheck;
++    private final IndentationCheck mIndentCheck;
+ 
+     /** the AST which is handled by this handler */
+-    private DetailAST mMainAst;
++    private final DetailAST mMainAst;
+ 
+     /** name used during output to user */
+-    private String mTypeName;
++    private final String mTypeName;
+ 
+     /** containing AST handler */
+-    private ExpressionHandler mParent;
++    private final ExpressionHandler mParent;
+ 
+     /** indentation amount for this handler */
+     private IndentLevel mLevel;
+ 
+     /**
+      * Construct an instance of this handler with the given indentation check,
+      * name, abstract syntax tree, and parent handler.
+      *
+      * @param aIndentCheck   the indentation check
+      * @param aTypeName      the name of the handler
+      * @param aExpr          the abstract syntax tree
+      * @param aParent        the parent handler
+      */
+     public ExpressionHandler(IndentationCheck aIndentCheck,
+             String aTypeName, DetailAST aExpr, ExpressionHandler aParent)
+     {
+         mIndentCheck = aIndentCheck;
+         mTypeName = aTypeName;
+         mMainAst = aExpr;
+         mParent = aParent;
+     }
+ 
+     /**
+      * Get the indentation amount for this handler. For performance reasons,
+      * this value is cached. The first time this method is called, the
+      * indentation amount is computed and stored. On further calls, the stored
+      * value is returned.
+      *
+      * @return the expected indentation amount
+      */
+     public final IndentLevel getLevel()
+     {
+         if (mLevel == null) {
+             mLevel = getLevelImpl();
+         }
+         return mLevel;
+     }
+ 
+     /**
+      * Compute the indentation amount for this handler.
+      *
+      * @return the expected indentation amount
+      */
+     protected IndentLevel getLevelImpl()
+     {
+         return mParent.suggestedChildLevel(this);
+     }
+ 
+     /**
+      * Indentation level suggested for a child element. Children don't have
+      * to respect this, but most do.
+      *
+      * @param aChild  child AST (so suggestion level can differ based on child
+      *                  type)
+      *
+      * @return suggested indentation for child
+      */
+     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)
+     {
+         return new IndentLevel(getLevel(), getBasicOffset());
+     }
+ 
+     /**
+      * Log an indentation error.
+      *
+      * @param aAst           the expression that caused the error
+      * @param aSubtypeName   the type of the expression
+      * @param aActualLevel    the actual indent level of the expression
+      */
+     protected final void logError(DetailAST aAst, String aSubtypeName,
+                                   int aActualLevel)
+     {
+         logError(aAst, aSubtypeName, aActualLevel, getLevel());
+     }
+ 
+     /**
+      * Log an indentation error.
+      *
+      * @param aAst           the expression that caused the error
+      * @param aSubtypeName   the type of the expression
+      * @param aActualLevel   the actual indent level of the expression
+      * @param aExpectedLevel the expected indent level of the expression
+      */
+     protected final void logError(DetailAST aAst, String aSubtypeName,
+                                   int aActualLevel, IndentLevel aExpectedLevel)
+     {
+         final String typeStr =
+             ("".equals(aSubtypeName) ? "" : (" " + aSubtypeName));
+-        final Object[] args = new Object[] {
+-            mTypeName + typeStr,
+-            new Integer(aActualLevel),
+-            aExpectedLevel,
+-        };
+-        mIndentCheck.indentationLog(aAst.getLineNo(),
+-                                    "indentation.error",
+-                                    args);
++        mIndentCheck.indentationLog(aAst.getLineNo(), "indentation.error",
++                mTypeName + typeStr, aActualLevel, aExpectedLevel);
+     }
+ 
+     /**
+      * Log child indentation error.
+      *
+      * @param aLine           the expression that caused the error
+      * @param aActualLevel   the actual indent level of the expression
+      * @param aExpectedLevel the expected indent level of the expression
+      */
+     private void logChildError(int aLine,
+                                int aActualLevel,
+                                IndentLevel aExpectedLevel)
+     {
+-        final Object[] args = new Object[] {
+-            mTypeName,
+-            new Integer(aActualLevel),
+-            aExpectedLevel,
+-        };
+-        mIndentCheck.indentationLog(aLine,
+-                                    "indentation.child.error",
+-                                    args);
++        mIndentCheck.indentationLog(aLine, "indentation.child.error",
++                mTypeName, new Integer(aActualLevel), aExpectedLevel);
+     }
+ 
+     /**
+      * Determines if the given expression is at the start of a line.
+      *
+      * @param aAst   the expression to check
+      *
+      * @return true if it is, false otherwise
+      */
+     protected final boolean startsLine(DetailAST aAst)
+     {
+         return getLineStart(aAst) == expandedTabsColumnNo(aAst);
+     }
+ 
+     /**
+      * Determines if two expressions are on the same line.
+      *
+      * @param aAst1   the first expression
+      * @param aAst2   the second expression
+      *
+      * @return true if they are, false otherwise
+      */
+     static boolean areOnSameLine(DetailAST aAst1, DetailAST aAst2)
+     {
+         return (aAst1 != null) && (aAst2 != null)
+             && (aAst1.getLineNo() == aAst2.getLineNo());
+     }
+ 
+     /**
+      * Searchs in given sub-tree (including given node) for the token
+      * which represents first symbol for this sub-tree in file.
+      * @param aAST a root of sub-tree in which the search shoul be performed.
+      * @return a token which occurs first in the file.
+      */
+     static DetailAST getFirstToken(DetailAST aAST)
+     {
+         DetailAST first = aAST;
+         DetailAST child = (DetailAST) aAST.getFirstChild();
+ 
+         while (child != null) {
+             final DetailAST toTest = getFirstToken(child);
+             if ((toTest.getLineNo() < first.getLineNo())
+                 || ((toTest.getLineNo() == first.getLineNo())
+                     && (toTest.getColumnNo() < first.getColumnNo())))
+             {
+                 first = toTest;
+             }
+             child = (DetailAST) child.getNextSibling();
+         }
+ 

@@ -1,0 +1,91 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+index bb66ff2b5..63779539d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+@@ -421,51 +421,86 @@ public final class CommonUtils {
+      * A string is considered blank if it is null, empty or contains only  whitespace characters,
+      * as determined by {@link CharMatcher#WHITESPACE}.
+      * @param str the string to check
+      * @return true if str is either null, empty or whitespace-only.
+      */
+     public static boolean isBlank(String str) {
+         return str == null || CharMatcher.WHITESPACE.matchesAllOf(str);
+     }
+ 
+     /**
+      * Returns file name without extension.
+      * We do not use the method from Guava library to reduce Checkstyle's dependencies
+      * on external libraries.
+      * @param fullFilename file name with extension.
+      * @return file name without extension.
+      */
+     public static String getFileNameWithoutExtension(String fullFilename) {
+         final String fileName = new File(fullFilename).getName();
+         final int dotIndex = fileName.lastIndexOf('.');
+         final String fileNameWithoutExtension;
+         if (dotIndex == -1) {
+             fileNameWithoutExtension = fileName;
+         }
+         else {
+             fileNameWithoutExtension = fileName.substring(0, dotIndex);
+         }
+         return fileNameWithoutExtension;
+     }
+ 
+     /**
+      * Returns file extension for the given file name
+      * or empty string if file does not have an extension.
+      * We do not use the method from Guava library to reduce Checkstyle's dependencies
+      * on external libraries.
+      * @param fileNameWithExtension file name with extension.
+      * @return file extension for the given file name
+      *         or empty string if file does not have an extension.
+      */
+     public static String getFileExtension(String fileNameWithExtension) {
+         final String fileName = Paths.get(fileNameWithExtension).toString();
+         final int dotIndex = fileName.lastIndexOf('.');
+         final String extension;
+         if (dotIndex == -1) {
+             extension = "";
+         }
+         else {
+             extension = fileName.substring(dotIndex + 1);
+         }
+         return extension;
+     }
++
++    /**
++     * Checks whether the given string is a valid identifier.
++     * @param str A string to check.
++     * @return true when the given string contains valid identifier.
++     */
++    public static boolean isIdentifier(String str) {
++        boolean isIdentifier = !str.isEmpty();
++
++        for (int i = 0; isIdentifier && i < str.length(); i++) {
++            if (i == 0) {
++                isIdentifier = Character.isJavaIdentifierStart(str.charAt(0));
++            } else {
++                isIdentifier = Character.isJavaIdentifierPart(str.charAt(i));
++            }
++        }
++
++        return isIdentifier;
++    }
++
++    /**
++     * Checks whether the given string is a valid name.
++     * @param str A string to check.
++     * @return true when the given string contains valid name.
++     */
++    public static boolean isName(String str) {
++        boolean isName = !str.isEmpty();
++
++        final String[] identifiers = str.split("\\.", -1);
++        for (int i = 0; isName && i < identifiers.length; i++) {
++            isName = isIdentifier(identifiers[i]);
++        }
++
++        return isName;
++    }
+ }

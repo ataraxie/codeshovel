@@ -1,0 +1,82 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/MemberNameCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/MemberNameCheck.java
+index 024e22aa7..e1abaab4d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/MemberNameCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/MemberNameCheck.java
+@@ -11,74 +11,74 @@
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.naming;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+ 
+ /**
+  * <p>
+  * Checks that instance variable names conform to a format specified
+  * by the format property. The format is a
+  * {@link java.util.regex.Pattern regular expression}
+  * and defaults to
+  * <strong>^[a-z][a-zA-Z0-9]*$</strong>.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="MemberName"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check for names that begin with
+  * &quot;m&quot;, followed by an upper case letter, and then letters and
+  * digits is:
+  * </p>
+  * <pre>
+  * &lt;module name="MemberName"&gt;
+  *    &lt;property name="format" value="^m[A-Z][a-zA-Z0-9]*$"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  */
+ public class MemberNameCheck
+     extends AbstractAccessControlNameCheck {
+     /** Creates a new {@code MemberNameCheck} instance. */
+     public MemberNameCheck() {
+         super("^[a-z][a-zA-Z0-9]*$");
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return getAcceptableTokens();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return new int[] {TokenTypes.VARIABLE_DEF};
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return getAcceptableTokens();
++        return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     @Override
+     protected final boolean mustCheckName(DetailAST ast) {
+         final DetailAST modifiersAST =
+             ast.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isStatic = modifiersAST.findFirstToken(TokenTypes.LITERAL_STATIC) != null;
+ 
+         return !isStatic && !ScopeUtils.isInInterfaceOrAnnotationBlock(ast)
+             && !ScopeUtils.isLocalVariableDef(ast)
+                 && shouldCheckInScope(modifiersAST);
+     }
+ }

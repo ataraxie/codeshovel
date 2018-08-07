@@ -1,0 +1,116 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+index 205652113..1ce67de79 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+@@ -303,107 +303,107 @@ public final class LocalizedMessage
+     public int getLineNo() {
+         return lineNo;
+     }
+ 
+     /** @return the column number **/
+     public int getColumnNo() {
+         return columnNo;
+     }
+ 
+     /** @return the severity level **/
+     public SeverityLevel getSeverityLevel() {
+         return severityLevel;
+     }
+ 
+     /** @return the module identifier. */
+     public String getModuleId() {
+         return moduleId;
+     }
+ 
+     /**
+      * Returns the message key to locate the translation, can also be used
+      * in IDE plugins to map error messages to corrective actions.
+      *
+      * @return the message key
+      */
+     public String getKey() {
+         return key;
+     }
+ 
+     /** @return the name of the source for this LocalizedMessage */
+     public String getSourceName() {
+         return sourceClass.getName();
+     }
+ 
+     /** @param locale the locale to use for localization **/
+     public static void setLocale(Locale locale) {
+         if (Locale.ENGLISH.getLanguage().equals(locale.getLanguage())) {
+             sLocale = Locale.ROOT;
+         }
+         else {
+             sLocale = locale;
+         }
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Interface Comparable methods
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     @Override
+     public int compareTo(LocalizedMessage other) {
+-        int result = Integer.compare(getLineNo(), other.getLineNo());
++        int result = Integer.compare(lineNo, other.lineNo);
+ 
+-        if (getLineNo() == other.getLineNo()) {
+-            if (getColumnNo() == other.getColumnNo()) {
++        if (lineNo == other.lineNo) {
++            if (columnNo == other.columnNo) {
+                 result = getMessage().compareTo(other.getMessage());
+             }
+             else {
+-                result = Integer.compare(getColumnNo(), other.getColumnNo());
++                result = Integer.compare(columnNo, other.columnNo);
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * <p>
+      * Custom ResourceBundle.Control implementation which allows explicitly read
+      * the properties files as UTF-8
+      * </p>
+      *
+      * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+      */
+     protected static class UTF8Control extends Control {
+         @Override
+         public ResourceBundle newBundle(String aBaseName, Locale aLocale, String aFormat,
+                  ClassLoader aLoader, boolean aReload) throws IOException {
+             // The below is a copy of the default implementation.
+             final String bundleName = toBundleName(aBaseName, aLocale);
+             final String resourceName = toResourceName(bundleName, "properties");
+             InputStream stream = null;
+             if (aReload) {
+                 final URL url = aLoader.getResource(resourceName);
+                 if (url != null) {
+                     final URLConnection connection = url.openConnection();
+                     if (connection != null) {
+                         connection.setUseCaches(false);
+                         stream = connection.getInputStream();
+                     }
+                 }
+             }
+             else {
+                 stream = aLoader.getResourceAsStream(resourceName);
+             }
+             ResourceBundle resourceBundle = null;
+             if (stream != null) {
+                 final Reader streamReader = new InputStreamReader(stream, "UTF-8");
+                 try {
+                     // Only this line is changed to make it to read properties files as UTF-8.
+                     resourceBundle = new PropertyResourceBundle(streamReader);
+                 }
+                 finally {
+                     stream.close();
+                 }
+             }
+             return resourceBundle;
+         }
+     }
+ }

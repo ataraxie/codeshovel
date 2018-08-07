@@ -1,0 +1,261 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+index 19de721ef..55dab79ec 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+@@ -1,79 +1,87 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2014  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.api;
+ 
++import java.io.IOException;
++import java.io.InputStream;
++import java.io.InputStreamReader;
++import java.io.Reader;
+ import java.io.Serializable;
++import java.net.URL;
++import java.net.URLConnection;
+ import java.text.MessageFormat;
+ import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.HashMap;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.MissingResourceException;
++import java.util.PropertyResourceBundle;
+ import java.util.ResourceBundle;
++import java.util.ResourceBundle.Control;
+ 
+ 
+ /**
+  * Represents a message that can be localised. The translations come from
+  * message.properties files. The underlying implementation uses
+  * java.text.MessageFormat.
+  *
+  * @author Oliver Burn
+  * @author lkuehne
+  * @version 1.0
+  */
+ public final class LocalizedMessage
+     implements Comparable<LocalizedMessage>, Serializable
+ {
+     /** Required for serialization. */
+     private static final long serialVersionUID = 5675176836184862150L;
+ 
+     /** hash function multiplicand */
+     private static final int HASH_MULT = 29;
+ 
+     /** the locale to localise messages to **/
+     private static Locale sLocale = Locale.getDefault();
+ 
+     /**
+      * A cache that maps bundle names to RessourceBundles.
+      * Avoids repetitive calls to ResourceBundle.getBundle().
+      */
+     private static final Map<String, ResourceBundle> BUNDLE_CACHE =
+         Collections.synchronizedMap(new HashMap<String, ResourceBundle>());
+ 
+     /** the line number **/
+     private final int mLineNo;
+     /** the column number **/
+     private final int mColNo;
+ 
+     /** the severity level **/
+     private final SeverityLevel mSeverityLevel;
+ 
+     /** the id of the module generating the message. */
+     private final String mModuleId;
+ 
+     /** the default severity level if one is not specified */
+     private static final SeverityLevel DEFAULT_SEVERITY = SeverityLevel.ERROR;
+ 
+     /** key for the message format **/
+     private final String mKey;
+ 
+     /** arguments for MessageFormat **/
+     private final Object[] mArgs;
+ 
+@@ -263,122 +271,167 @@ public final class LocalizedMessage
+         if (customMessage != null) {
+             return customMessage;
+         }
+ 
+         try {
+             // Important to use the default class loader, and not the one in
+             // the GlobalProperties object. This is because the class loader in
+             // the GlobalProperties is specified by the user for resolving
+             // custom classes.
+             final ResourceBundle bundle = getBundle(mBundle);
+             final String pattern = bundle.getString(mKey);
+             return MessageFormat.format(pattern, mArgs);
+         }
+         catch (final MissingResourceException ex) {
+             // If the Check author didn't provide i18n resource bundles
+             // and logs error messages directly, this will return
+             // the author's original message
+             return MessageFormat.format(mKey, mArgs);
+         }
+     }
+ 
+     /**
+      * Returns the formatted custom message if one is configured.
+      * @return the formatted custom message or <code>null</code>
+      *          if there is no custom message
+      */
+     private String getCustomMessage()
+     {
+ 
+         if (mCustomMessage == null) {
+             return null;
+         }
+ 
+         return MessageFormat.format(mCustomMessage, mArgs);
+     }
+ 
+     /**
+      * Find a ResourceBundle for a given bundle name. Uses the classloader
+      * of the class emitting this message, to be sure to get the correct
+      * bundle.
+      * @param aBundleName the bundle name
+      * @return a ResourceBundle
+      */
+     private ResourceBundle getBundle(String aBundleName)
+     {
+         synchronized (BUNDLE_CACHE) {
+             ResourceBundle bundle = BUNDLE_CACHE
+                     .get(aBundleName);
+             if (bundle == null) {
+                 bundle = ResourceBundle.getBundle(aBundleName, sLocale,
+-                        mSourceClass.getClassLoader());
++                        mSourceClass.getClassLoader(), new UTF8Control());
+                 BUNDLE_CACHE.put(aBundleName, bundle);
+             }
+             return bundle;
+         }
+     }
+ 
+     /** @return the line number **/
+     public int getLineNo()
+     {
+         return mLineNo;
+     }
+ 
+     /** @return the column number **/
+     public int getColumnNo()
+     {
+         return mColNo;
+     }
+ 
+     /** @return the severity level **/
+     public SeverityLevel getSeverityLevel()
+     {
+         return mSeverityLevel;
+     }
+ 
+     /** @return the module identifier. */
+     public String getModuleId()
+     {
+         return mModuleId;
+     }
+ 
+     /**
+      * Returns the message key to locate the translation, can also be used
+      * in IDE plugins to map error messages to corrective actions.
+      *
+      * @return the message key
+      */
+     public String getKey()
+     {
+         return mKey;
+     }
+ 
+     /** @return the name of the source for this LocalizedMessage */
+     public String getSourceName()
+     {
+         return mSourceClass.getName();
+     }
+ 
+     /** @param aLocale the locale to use for localization **/
+     public static void setLocale(Locale aLocale)
+     {
+         sLocale = aLocale;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Interface Comparable methods
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int compareTo(LocalizedMessage aOther)
+     {
+         if (getLineNo() == aOther.getLineNo()) {
+             if (getColumnNo() == aOther.getColumnNo()) {
+                 return getMessage().compareTo(aOther.getMessage());
+             }
+             return (getColumnNo() < aOther.getColumnNo()) ? -1 : 1;
+         }
+ 
+         return (getLineNo() < aOther.getLineNo()) ? -1 : 1;
+     }
++
++    /**
++     * <p>
++     * Custom ResourceBundle.Control implementation which allows explicitly read
++     * the properties files as UTF-8
++     * </p>
++     *
++     * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
++     */
++    private static class UTF8Control extends Control
++    {
++        @Override
++        public ResourceBundle newBundle(String aBaseName, Locale aLocale, String aFormat,
++                 ClassLoader aLoader, boolean aReload) throws IllegalAccessException,
++                  InstantiationException, IOException
++        {
++            // The below is a copy of the default implementation.
++            final String bundleName = toBundleName(aBaseName, aLocale);
++            final String resourceName = toResourceName(bundleName, "properties");
++            ResourceBundle bundle = null;
++            InputStream stream = null;
++            if (aReload) {
++                final URL url = aLoader.getResource(resourceName);
++                if (url != null) {
++                    final URLConnection connection = url.openConnection();
++                    if (connection != null) {
++                        connection.setUseCaches(false);
++                        stream = connection.getInputStream();
++                    }
++                }
++            }
++            else {
++                stream = aLoader.getResourceAsStream(resourceName);
++            }
++            if (stream != null) {
++                try (Reader streamReader = new InputStreamReader(stream, "UTF-8")) {
++                    // Only this line is changed to make it to read properties files as UTF-8.
++                    bundle = new PropertyResourceBundle(streamReader);
++                } finally {
++                    stream.close();
++                }
++            }
++            return bundle;
++        }
++    }
+ }

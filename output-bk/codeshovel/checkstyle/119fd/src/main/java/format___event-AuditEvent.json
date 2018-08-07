@@ -1,0 +1,42 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "format___event-AuditEvent",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 79,
+  "changeHistory": [
+    "78de3dc771531cfee50a60ff2cee80c46b83c43b",
+    "70a6e2e6d34fa5a404e88e45cd62a20a06e19556"
+  ],
+  "changeHistoryShort": {
+    "78de3dc771531cfee50a60ff2cee80c46b83c43b": "Ybodychange",
+    "70a6e2e6d34fa5a404e88e45cd62a20a06e19556": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "78de3dc771531cfee50a60ff2cee80c46b83c43b": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4607: Added moduleId to violation messages\n",
+      "commitDate": 1502399664000,
+      "commitName": "78de3dc771531cfee50a60ff2cee80c46b83c43b",
+      "commitAuthor": "Luolc",
+      "commitDateOld": 1491395871000,
+      "commitNameOld": "3bd3a52280388520c64ec813dd1e4ffb3a0063a2",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 127.36,
+      "commitsBetweenForRepo": 580,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,36 @@\n     public String format(AuditEvent event) {\n         final String fileName \u003d event.getFileName();\n         final String message \u003d event.getMessage();\n \n         final SeverityLevel severityLevel \u003d event.getSeverityLevel();\n         final String severityLevelName;\n         if (severityLevel \u003d\u003d SeverityLevel.WARNING) {\n             // We change the name of severity level intentionally\n             // to shorten the length of the log message.\n             severityLevelName \u003d \"WARN\";\n         }\n         else {\n             severityLevelName \u003d severityLevel.getName().toUpperCase(Locale.US);\n         }\n \n         // Avoid StringBuffer.expandCapacity\n         final int bufLen \u003d calculateBufferLength(event, severityLevelName.length());\n         final StringBuilder sb \u003d new StringBuilder(bufLen);\n \n         sb.append(\u0027[\u0027).append(severityLevelName).append(\"] \")\n             .append(fileName).append(\u0027:\u0027).append(event.getLine());\n         if (event.getColumn() \u003e 0) {\n             sb.append(\u0027:\u0027).append(event.getColumn());\n         }\n-        sb.append(\": \").append(message);\n-        final String checkShortName \u003d getCheckShortName(event);\n-        sb.append(\" [\").append(checkShortName).append(\u0027]\u0027);\n+        sb.append(\": \").append(message).append(\" [\");\n+        if (event.getModuleId() \u003d\u003d null) {\n+            final String checkShortName \u003d getCheckShortName(event);\n+            sb.append(checkShortName);\n+        }\n+        else {\n+            sb.append(event.getModuleId());\n+        }\n+        sb.append(\u0027]\u0027);\n \n         return sb.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "70a6e2e6d34fa5a404e88e45cd62a20a06e19556": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2666: Print name of the Check after printing violation message\n",
+      "commitDate": 1451074818000,
+      "commitName": "70a6e2e6d34fa5a404e88e45cd62a20a06e19556",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

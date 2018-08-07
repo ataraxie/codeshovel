@@ -1,0 +1,214 @@
+diff --git a/android/guava/src/com/google/common/collect/FluentIterable.java b/android/guava/src/com/google/common/collect/FluentIterable.java
+index 2a510ef0c..52c137197 100644
+--- a/android/guava/src/com/google/common/collect/FluentIterable.java
++++ b/android/guava/src/com/google/common/collect/FluentIterable.java
+@@ -363,206 +363,206 @@ public abstract class FluentIterable<E> implements Iterable<E> {
+    * <p><b>{@code Stream} equivalent:</b> {@code stream.count()}.
+    */
+   public final int size() {
+     return Iterables.size(getDelegate());
+   }
+ 
+   /**
+    * Returns {@code true} if this fluent iterable contains any object for which
+    * {@code equals(target)} is true.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@code stream.anyMatch(Predicate.isEqual(target))}.
+    */
+   public final boolean contains(@Nullable Object target) {
+     return Iterables.contains(getDelegate(), target);
+   }
+ 
+   /**
+    * Returns a fluent iterable whose {@code Iterator} cycles indefinitely over the elements of this
+    * fluent iterable.
+    *
+    * <p>That iterator supports {@code remove()} if {@code iterable.iterator()} does. After
+    * {@code remove()} is called, subsequent cycles omit the removed element, which is no longer in
+    * this fluent iterable. The iterator's {@code hasNext()} method returns {@code true} until this
+    * fluent iterable is empty.
+    *
+    * <p><b>Warning:</b> Typical uses of the resulting iterator may produce an infinite loop. You
+    * should use an explicit {@code break} or be certain that you will eventually remove all the
+    * elements.
+    *
+    * <p><b>{@code Stream} equivalent:</b> if the source iterable has only a single element {@code
+    * e}, use {@code Stream.generate(() -> e)}. Otherwise, collect your stream into a collection and
+    * use {@code Stream.generate(() -> collection).flatMap(Collection::stream)}.
+    */
+   public final FluentIterable<E> cycle() {
+     return from(Iterables.cycle(getDelegate()));
+   }
+ 
+   /**
+    * Returns a fluent iterable whose iterators traverse first the elements of this fluent iterable,
+    * followed by those of {@code other}. The iterators are not polled until necessary.
+    *
+    * <p>The returned iterable's {@code Iterator} supports {@code remove()} when the corresponding
+    * {@code Iterator} supports it.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@link Stream#concat}.
+    *
+    * @since 18.0
+    */
+   @Beta
+   public final FluentIterable<E> append(Iterable<? extends E> other) {
+-    return from(FluentIterable.concat(getDelegate(), other));
++    return FluentIterable.concat(getDelegate(), other);
+   }
+ 
+   /**
+    * Returns a fluent iterable whose iterators traverse first the elements of this fluent iterable,
+    * followed by {@code elements}.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@code Stream.concat(thisStream, Stream.of(elements))}.
+    *
+    * @since 18.0
+    */
+   @Beta
+   public final FluentIterable<E> append(E... elements) {
+-    return from(FluentIterable.concat(getDelegate(), Arrays.asList(elements)));
++    return FluentIterable.concat(getDelegate(), Arrays.asList(elements));
+   }
+ 
+   /**
+    * Returns the elements from this fluent iterable that satisfy a predicate. The resulting fluent
+    * iterable's iterator does not support {@code remove()}.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@link Stream#filter} (same).
+    */
+   public final FluentIterable<E> filter(Predicate<? super E> predicate) {
+     return from(Iterables.filter(getDelegate(), predicate));
+   }
+ 
+   /**
+    * Returns the elements from this fluent iterable that are instances of class {@code type}.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@code stream.filter(type::isInstance).map(type::cast)}.
+    * This does perform a little more work than necessary, so another option is to insert an
+    * unchecked cast at some later point:
+    *
+    * <pre>
+    * {@code @SuppressWarnings("unchecked") // safe because of ::isInstance check
+    * ImmutableList<NewType> result =
+    *     (ImmutableList) stream.filter(NewType.class::isInstance).collect(toImmutableList());}
+    * </pre>
+    */
+   @GwtIncompatible // Class.isInstance
+   public final <T> FluentIterable<T> filter(Class<T> type) {
+     return from(Iterables.filter(getDelegate(), type));
+   }
+ 
+   /**
+    * Returns {@code true} if any element in this fluent iterable satisfies the predicate.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@link Stream#anyMatch} (same).
+    */
+   public final boolean anyMatch(Predicate<? super E> predicate) {
+     return Iterables.any(getDelegate(), predicate);
+   }
+ 
+   /**
+    * Returns {@code true} if every element in this fluent iterable satisfies the predicate. If this
+    * fluent iterable is empty, {@code true} is returned.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@link Stream#allMatch} (same).
+    */
+   public final boolean allMatch(Predicate<? super E> predicate) {
+     return Iterables.all(getDelegate(), predicate);
+   }
+ 
+   /**
+    * Returns an {@link Optional} containing the first element in this fluent iterable that satisfies
+    * the given predicate, if such an element exists.
+    *
+    * <p><b>Warning:</b> avoid using a {@code predicate} that matches {@code null}. If {@code null}
+    * is matched in this fluent iterable, a {@link NullPointerException} will be thrown.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@code stream.filter(predicate).findFirst()}.
+    */
+   public final Optional<E> firstMatch(Predicate<? super E> predicate) {
+     return Iterables.tryFind(getDelegate(), predicate);
+   }
+ 
+   /**
+    * Returns a fluent iterable that applies {@code function} to each element of this fluent
+    * iterable.
+    *
+    * <p>The returned fluent iterable's iterator supports {@code remove()} if this iterable's
+    * iterator does. After a successful {@code remove()} call, this fluent iterable no longer
+    * contains the corresponding element.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@link Stream#map}.
+    */
+   public final <T> FluentIterable<T> transform(Function<? super E, T> function) {
+     return from(Iterables.transform(getDelegate(), function));
+   }
+ 
+   /**
+    * Applies {@code function} to each element of this fluent iterable and returns a fluent iterable
+    * with the concatenated combination of results. {@code function} returns an Iterable of results.
+    *
+    * <p>The returned fluent iterable's iterator supports {@code remove()} if this function-returned
+    * iterables' iterator does. After a successful {@code remove()} call, the returned fluent
+    * iterable no longer contains the corresponding element.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@link Stream#flatMap} (using a function that produces
+    * streams, not iterables).
+    *
+    * @since 13.0 (required {@code Function<E, Iterable<T>>} until 14.0)
+    */
+   public <T> FluentIterable<T> transformAndConcat(
+       Function<? super E, ? extends Iterable<? extends T>> function) {
+-    return from(FluentIterable.concat(transform(function)));
++    return FluentIterable.concat(transform(function));
+   }
+ 
+   /**
+    * Returns an {@link Optional} containing the first element in this fluent iterable. If the
+    * iterable is empty, {@code Optional.absent()} is returned.
+    *
+    * <p><b>{@code Stream} equivalent:</b> if the goal is to obtain any element, {@link
+    * Stream#findAny}; if it must specifically be the <i>first</i> element, {@code Stream#findFirst}.
+    *
+    * @throws NullPointerException if the first element is null; if this is a possibility, use {@code
+    *     iterator().next()} or {@link Iterables#getFirst} instead.
+    */
+   public final Optional<E> first() {
+     Iterator<E> iterator = getDelegate().iterator();
+     return iterator.hasNext() ? Optional.of(iterator.next()) : Optional.<E>absent();
+   }
+ 
+   /**
+    * Returns an {@link Optional} containing the last element in this fluent iterable. If the
+    * iterable is empty, {@code Optional.absent()} is returned. If the underlying {@code iterable}
+    * is a {@link List} with {@link java.util.RandomAccess} support, then this operation is
+    * guaranteed to be {@code O(1)}.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@code stream.reduce((a, b) -> b)}.
+    *
+    * @throws NullPointerException if the last element is null; if this is a possibility, use
+    *     {@link Iterables#getLast} instead.
+    */
+   public final Optional<E> last() {
+     // Iterables#getLast was inlined here so we don't have to throw/catch a NSEE
+ 
+     // TODO(kevinb): Support a concurrently modified collection?
+     Iterable<E> iterable = getDelegate();
+     if (iterable instanceof List) {
+       List<E> list = (List<E>) iterable;
+       if (list.isEmpty()) {
+         return Optional.absent();
+       }
+       return Optional.of(list.get(list.size() - 1));
+     }
+     Iterator<E> iterator = iterable.iterator();
+     if (!iterator.hasNext()) {
+       return Optional.absent();
+     }
+ 
+     /*
+      * TODO(kevinb): consider whether this "optimization" is worthwhile. Users with SortedSets tend
+      * to know they are SortedSets and probably would not call this method.
+      */
+     if (iterable instanceof SortedSet) {

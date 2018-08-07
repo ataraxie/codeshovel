@@ -1,0 +1,195 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java
+index da242f701..f19c1ef63 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/JavadocTagInfo.java
+@@ -261,117 +261,116 @@ public enum JavadocTagInfo {
+      * {@code @see}.
+      */
+     SEE("@see", "see", Type.BLOCK) {
+         /** {@inheritDoc} */
+         @Override
+         public boolean isValidOn(final DetailAST ast) {
+             final int type = ast.getType();
+             return type == TokenTypes.PACKAGE_DEF
+                 || type == TokenTypes.CLASS_DEF
+                 || type == TokenTypes.INTERFACE_DEF
+                 || type == TokenTypes.ENUM_DEF
+                 || type == TokenTypes.ANNOTATION_DEF
+                 || type == TokenTypes.METHOD_DEF
+                 || type == TokenTypes.CTOR_DEF
+                 || type == TokenTypes.VARIABLE_DEF
+                 && !ScopeUtils.isLocalVariableDef(ast);
+         }
+     },
+ 
+     /**
+      * {@code @serial}.
+      */
+     SERIAL("@serial", "serial", Type.BLOCK) {
+         /** {@inheritDoc} */
+         @Override
+         public boolean isValidOn(final DetailAST ast) {
+             final int type = ast.getType();
+ 
+             return type == TokenTypes.VARIABLE_DEF
+                 && !ScopeUtils.isLocalVariableDef(ast);
+         }
+     },
+ 
+     /**
+      * {@code @serialData}.
+      */
+     SERIAL_DATA("@serialData", "serialData", Type.BLOCK) {
+         /** {@inheritDoc} */
+         @Override
+         public boolean isValidOn(final DetailAST ast) {
+             final int type = ast.getType();
+             final DetailAST methodNameAst = ast.findFirstToken(TokenTypes.IDENT);
+             final String methodName = methodNameAst.getText();
+ 
+             return type == TokenTypes.METHOD_DEF
+                 && ("writeObject".equals(methodName)
+                     || "readObject".equals(methodName)
+                     || "writeExternal".equals(methodName)
+                     || "readExternal".equals(methodName)
+                     || "writeReplace".equals(methodName)
+-                    || "readResolve"
+-                    .equals(methodName));
++                    || "readResolve".equals(methodName));
+         }
+     },
+ 
+     /**
+      * {@code @serialField}.
+      */
+     SERIAL_FIELD("@serialField", "serialField", Type.BLOCK) {
+         /** {@inheritDoc} */
+         @Override
+         public boolean isValidOn(final DetailAST ast) {
+             final int type = ast.getType();
+             final DetailAST varType = ast.findFirstToken(TokenTypes.TYPE);
+ 
+             return type == TokenTypes.VARIABLE_DEF
+-                && varType.getType() == TokenTypes.ARRAY_DECLARATOR
++                && varType.getFirstChild().getType() == TokenTypes.ARRAY_DECLARATOR
+                 && "ObjectStreafield".equals(varType.getFirstChild().getText());
+         }
+     },
+ 
+     /**
+      * {@code @since}.
+      */
+     SINCE("@since", "since", Type.BLOCK) {
+         /** {@inheritDoc} */
+         @Override
+         public boolean isValidOn(final DetailAST ast) {
+             final int type = ast.getType();
+             return type == TokenTypes.PACKAGE_DEF
+                 || type == TokenTypes.CLASS_DEF
+                 || type == TokenTypes.INTERFACE_DEF
+                 || type == TokenTypes.ENUM_DEF
+                 || type == TokenTypes.ANNOTATION_DEF
+                 || type == TokenTypes.METHOD_DEF
+                 || type == TokenTypes.CTOR_DEF
+                 || type == TokenTypes.VARIABLE_DEF
+                 && !ScopeUtils.isLocalVariableDef(ast);
+         }
+     },
+ 
+     /**
+      * {@code @throws}.
+      */
+     THROWS("@throws", "throws", Type.BLOCK) {
+         /** {@inheritDoc} */
+         @Override
+         public boolean isValidOn(final DetailAST ast) {
+             final int type = ast.getType();
+             return type == TokenTypes.METHOD_DEF
+                 || type == TokenTypes.CTOR_DEF;
+         }
+     },
+ 
+     /**
+      * {@code {@value}}.
+      */
+     VALUE("{@value}", "value", Type.INLINE) {
+         /** {@inheritDoc} */
+         @Override
+         public boolean isValidOn(final DetailAST ast) {
+             final int type = ast.getType();
+             return type == TokenTypes.PACKAGE_DEF
+                 || type == TokenTypes.CLASS_DEF
+                 || type == TokenTypes.INTERFACE_DEF
+                 || type == TokenTypes.ENUM_DEF
+                 || type == TokenTypes.ANNOTATION_DEF
+@@ -498,69 +497,69 @@ public enum JavadocTagInfo {
+         }
+ 
+         final JavadocTagInfo tag = TEXT_TO_TAG.get(text);
+ 
+         if (tag == null) {
+             throw new IllegalArgumentException("the text [" + text
+                 + "] is not a valid Javadoc tag text");
+         }
+ 
+         return tag;
+     }
+ 
+     /**
+      * returns a JavadocTag from the tag name.
+      * @param name String name of the tag
+      * @return Returns a JavadocTag type from a String representing the tag
+      * @throws NullPointerException if the text is null
+      * @throws IllegalArgumentException if the text is not a valid tag. The name
+      *    can be checked using {@link JavadocTagInfo#isValidName(String)}
+      */
+     public static JavadocTagInfo fromName(final String name) {
+         if (name == null) {
+             throw new IllegalArgumentException("the name is null");
+         }
+ 
+         final JavadocTagInfo tag = NAME_TO_TAG.get(name);
+ 
+         if (tag == null) {
+             throw new IllegalArgumentException("the name [" + name
+                 + "] is not a valid Javadoc tag name");
+         }
+ 
+         return tag;
+     }
+ 
+     /**
+      * Returns whether the provided name is for a valid tag.
+      * @param name the tag name to check.
+      * @return whether the provided name is for a valid tag.
+      */
+     public static boolean isValidName(final String name) {
+         return NAME_TO_TAG.containsKey(name);
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public String toString() {
+         return "text [" + this.text + "] name [" + this.name
+-            + "] type [" + this.type;
++            + "] type [" + this.type + "]";
+     }
+ 
+     /**
+      * The Javadoc Type.
+      *
+      * For example a {@code @param} tag is a block tag while a
+      * {@code {@link}} tag is a inline tag.
+      *
+      * @author Travis Schneeberger
+      */
+     public enum Type {
+         /** block type. **/
+         BLOCK,
+ 
+         /** inline type. **/
+         INLINE
+     }
+ }

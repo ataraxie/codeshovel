@@ -1,0 +1,114 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControl.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControl.java
+index dd8b8a8ff..ac86bb631 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControl.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControl.java
+@@ -201,104 +201,104 @@ class ImportControl {
+             // Check if any of the children match.
+             for (ImportControl child : children) {
+                 final ImportControl match = child.locateFinest(forPkg);
+                 if (match != null) {
+                     finestMatch = match;
+                     break;
+                 }
+             }
+         }
+         return finestMatch;
+     }
+ 
+     /**
+      * Matches other package name exactly or partially at front.
+      * @param pkg the package to compare with.
+      * @return if it matches.
+      */
+     private boolean matchesAtFront(final String pkg) {
+         final boolean result;
+         if (regex) {
+             result = patternForPartialMatch.matcher(pkg).matches();
+         }
+         else {
+             result = matchesAtFrontNoRegex(pkg);
+         }
+         return result;
+     }
+ 
+     /**
+      * Non-regex case. Ensure a trailing dot for subpackages, i.e. "com.puppy"
+      * will match "com.puppy.crawl" but not "com.puppycrawl.tools".
+      * @param pkg the package to compare with.
+      * @return if it matches.
+      */
+     private boolean matchesAtFrontNoRegex(final String pkg) {
+         return pkg.startsWith(fullPackage)
+                 && (pkg.length() == fullPackage.length()
+                     || pkg.charAt(fullPackage.length()) == '.');
+     }
+ 
+     /**
+      * Returns whether a package or class is allowed to be imported.
+      * The algorithm checks with the current node for a result, and if none is
+      * found then calls its parent looking for a match. This will recurse
+      * looking for match. If there is no clear result then
+      * {@link AccessResult#UNKNOWN} is returned.
+      * @param forImport the import to check on.
+      * @param inPkg the package doing the import.
+      * @return an {@link AccessResult}.
+      */
+-    public AccessResult checkAccess(final String forImport, final String inPkg) {
++    public AccessResult checkAccess(final String inPkg, final String forImport) {
+         final AccessResult result;
+-        final AccessResult returnValue = localCheckAccess(forImport, inPkg);
++        final AccessResult returnValue = localCheckAccess(inPkg, forImport);
+         if (returnValue != AccessResult.UNKNOWN) {
+             result = returnValue;
+         }
+         else if (parent == null) {
+             // we are the top, so default to not allowed.
+             result = AccessResult.DISALLOWED;
+         }
+         else {
+-            result = parent.checkAccess(forImport, inPkg);
++            result = parent.checkAccess(inPkg, forImport);
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks whether any of the rules for this node control access to
+      * a specified package or class.
+      * @param forImport the import to check.
+      * @param inPkg the package doing the import.
+      * @return an {@link AccessResult}.
+      */
+-    private AccessResult localCheckAccess(final String forImport,
+-        final String inPkg) {
++    private AccessResult localCheckAccess(final String inPkg,
++        final String forImport) {
+         for (AbstractImportRule r : rules) {
+             // Check if an import rule is only meant to be applied locally.
+             if (r.isLocalOnly() && !matchesExactly(inPkg)) {
+                 continue;
+             }
+             final AccessResult result = r.verifyImport(forImport);
+             if (result != AccessResult.UNKNOWN) {
+                 return result;
+             }
+         }
+         return AccessResult.UNKNOWN;
+     }
+ 
+     /**
+      * Check for equality of this with pkg
+      * @param pkg the package to compare with.
+      * @return if it matches.
+      */
+     private boolean matchesExactly(final String pkg) {
+         final boolean result;
+         if (regex) {
+             result = patternForExactMatch.matcher(pkg).matches();
+         }
+         else {
+             result = fullPackage.equals(pkg);
+         }
+         return result;
+     }
+ }

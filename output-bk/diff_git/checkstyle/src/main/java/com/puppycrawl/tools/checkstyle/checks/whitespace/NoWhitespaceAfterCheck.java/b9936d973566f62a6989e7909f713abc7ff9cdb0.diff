@@ -1,0 +1,147 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java
+index d18b6ebee..db10bbbf0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java
+@@ -59,133 +59,128 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  * @author lkuehne
+  * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+  */
+ public class NoWhitespaceAfterCheck extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "ws.followed";
+ 
+     /** Whether whitespace is allowed if the AST is at a linebreak */
+     private boolean allowLineBreaks = true;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.ARRAY_INIT,
+             TokenTypes.INC,
+             TokenTypes.DEC,
+             TokenTypes.UNARY_MINUS,
+             TokenTypes.UNARY_PLUS,
+             TokenTypes.BNOT,
+             TokenTypes.LNOT,
+             TokenTypes.DOT,
+             TokenTypes.ARRAY_DECLARATOR,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.ARRAY_INIT,
+             TokenTypes.INC,
+             TokenTypes.DEC,
+             TokenTypes.UNARY_MINUS,
+             TokenTypes.UNARY_PLUS,
+             TokenTypes.BNOT,
+             TokenTypes.LNOT,
+             TokenTypes.DOT,
+             TokenTypes.TYPECAST,
+             TokenTypes.ARRAY_DECLARATOR,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+-        DetailAST astNode = ast;
+-        if (ast.getType() == TokenTypes.ARRAY_DECLARATOR
+-                 || ast.getType() == TokenTypes.TYPECAST) {
+-            astNode = getPreceded(ast);
+-        }
+-
++        final DetailAST astNode = getPreceded(ast);
+         final String line = getLine(ast.getLineNo() - 1);
+         final int after = getPositionAfter(astNode);
+ 
+         if ((after >= line.length() || Character.isWhitespace(line.charAt(after)))
+                  && hasRedundantWhitespace(line, after)) {
+             log(astNode.getLineNo(), after,
+                 MSG_KEY, astNode.getText());
+         }
+     }
+ 
+     /**
+      * Gets possible place where redundant whitespace could be.
+-     * @param arrayOrTypeCast {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR}
+-     *  or {@link TokenTypes#TYPECAST TYPECAST}.
++     * @param ast Node representing token.
+      * @return possible place of redundant whitespace.
+      */
+-    private static DetailAST getPreceded(DetailAST arrayOrTypeCast) {
+-        DetailAST preceded = arrayOrTypeCast;
+-        switch (arrayOrTypeCast.getType()) {
++    private static DetailAST getPreceded(DetailAST ast) {
++        DetailAST preceded;
++
++        switch (ast.getType()) {
+             case TokenTypes.TYPECAST:
+-                preceded = arrayOrTypeCast.findFirstToken(TokenTypes.RPAREN);
++                preceded = ast.findFirstToken(TokenTypes.RPAREN);
+                 break;
+             case TokenTypes.ARRAY_DECLARATOR:
+-                preceded = getArrayTypeOrIdentifier(arrayOrTypeCast);
++                preceded = getArrayTypeOrIdentifier(ast);
+                 break;
+             default:
+-                throw new IllegalStateException(arrayOrTypeCast.toString());
++                preceded = ast;
+         }
+         return preceded;
+     }
+ 
+     /**
+      * Gets position after token (place of possible redundant whitespace).
+      * @param ast Node representing token.
+      * @return position after token.
+      */
+     private static int getPositionAfter(DetailAST ast) {
+         int after;
+         //If target of possible redundant whitespace is in method definition
+         if (ast.getType() == TokenTypes.IDENT
+                 && ast.getNextSibling() != null
+                 && ast.getNextSibling().getType() == TokenTypes.LPAREN) {
+             final DetailAST methodDef = ast.getParent();
+             final DetailAST endOfParams = methodDef.findFirstToken(TokenTypes.RPAREN);
+             after = endOfParams.getColumnNo() + 1;
+         }
+         else {
+             after = ast.getColumnNo() + ast.getText().length();
+         }
+         return after;
+     }
+ 
+     /**
+      * Gets target place of possible redundant whitespace (array's type or identifier)
+      *  after which {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR} is set.
+      * @param arrayDeclarator {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR}
+      * @return target place before possible redundant whitespace.
+      */
+     private static DetailAST getArrayTypeOrIdentifier(DetailAST arrayDeclarator) {
+         DetailAST typeOrIdent = arrayDeclarator;
+         if (isArrayInstantiation(arrayDeclarator)) {
+             typeOrIdent = arrayDeclarator.getParent().getFirstChild();
+         }
+         else if (isMultiDimensionalArray(arrayDeclarator)) {
+             if (isCstyleMultiDimensionalArrayDeclaration(arrayDeclarator)) {
+                 if (arrayDeclarator.getParent().getType() != TokenTypes.ARRAY_DECLARATOR) {
+                     typeOrIdent = getArrayIdentifier(arrayDeclarator);
+                 }
+             }
+             else {
+                 DetailAST arrayIdentifier = arrayDeclarator.getFirstChild();
+                 while (arrayIdentifier != null) {
+                     typeOrIdent = arrayIdentifier;
+                     arrayIdentifier = arrayIdentifier.getFirstChild();
+                 }
+             }
+         }

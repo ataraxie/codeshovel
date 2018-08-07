@@ -1,0 +1,110 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index e92d5cf5d..4585c2c3f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -356,104 +356,101 @@ public class SuppressionCommentFilter
+ 
+     /**
+      * Set the format for a message.
+      * @param format a <code>String</code> value
+      * @throws ConversionException unable to parse format
+      */
+     public void setMessageFormat(String format)
+         throws ConversionException {
+         if (!Utils.isPatternValid(format)) {
+             throw new ConversionException("Unable to parse format: " + format);
+         }
+         messageFormat = format;
+     }
+ 
+ 
+     /**
+      * Set whether to look in C++ comments.
+      * @param checkCPP <code>true</code> if C++ comments are checked.
+      */
+     public void setCheckCPP(boolean checkCPP) {
+         this.checkCPP = checkCPP;
+     }
+ 
+     /**
+      * Set whether to look in C comments.
+      * @param checkC <code>true</code> if C comments are checked.
+      */
+     public void setCheckC(boolean checkC) {
+         this.checkC = checkC;
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public boolean accept(AuditEvent event) {
+         if (event.getLocalizedMessage() == null) {
+             return true;        // A special event.
+         }
+ 
+         // Lazy update. If the first event for the current file, update file
+         // contents and tag suppressions
+         final FileContents currentContents = FileContentsHolder.getContents();
+         if (currentContents == null) {
+             // we have no contents, so we can not filter.
+             return true;
+         }
+         if (getFileContents() != currentContents) {
+             setFileContents(currentContents);
+             tagSuppressions();
+         }
+         final Tag matchTag = findNearestMatch(event);
+-        if (matchTag != null && !matchTag.isOn()) {
+-            return false;
+-        }
+-        return true;
++        return matchTag == null || matchTag.isOn();
+     }
+ 
+     /**
+      * Finds the nearest comment text tag that matches an audit event.
+      * The nearest tag is before the line and column of the event.
+      * @param event the <code>AuditEvent</code> to match.
+      * @return The <code>Tag</code> nearest event.
+      */
+     private Tag findNearestMatch(AuditEvent event) {
+         Tag result = null;
+         for (Tag tag : tags) {
+             if (tag.getLine() > event.getLine()
+                 || tag.getLine() == event.getLine()
+                     && tag.getColumn() > event.getColumn()) {
+                 break;
+             }
+             if (tag.isMatch(event)) {
+                 result = tag;
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Collects all the suppression tags for all comments into a list and
+      * sorts the list.
+      */
+     private void tagSuppressions() {
+         tags.clear();
+         final FileContents contents = getFileContents();
+         if (checkCPP) {
+             tagSuppressions(contents.getCppComments().values());
+         }
+         if (checkC) {
+             final Collection<List<TextBlock>> cCoonts = contents
+                     .getCComments().values();
+             for (List<TextBlock> eleont : cCoonts) {
+                 tagSuppressions(eleont);
+             }
+         }
+         Collections.sort(tags);
+     }
+ 
+     /**
+      * Appends the suppressions in a collection of comments to the full
+      * set of suppression tags.
+      * @param comments the set of comments.
+      */
+     private void tagSuppressions(Collection<TextBlock> comments) {
+         for (TextBlock comment : comments) {

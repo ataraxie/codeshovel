@@ -1,0 +1,143 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index 55c68652d..1da9d2318 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -500,136 +500,132 @@ public class CheckStyleTask
+     }
+ 
+     /**
+      * Details about a formatter to be used.
+      * @author Oliver Burn
+      */
+     public static class Formatter
+     {
+         /** the formatter type */
+         private FormatterType mFormatterType;
+         /** the file to output to */
+         private File mToFile;
+ 
+         /**
+          * Set the type of the formatter.
+          * @param aType the type
+          */
+         public void setType(FormatterType aType)
+         {
+             final String val = aType.getValue();
+             if (!E_XML.equals(val) && !E_PLAIN.equals(val)) {
+                 throw new BuildException("Invalid formatter type: " + val);
+             }
+ 
+             mFormatterType = aType;
+         }
+ 
+         /**
+          * Set the file to output to.
+          * @param aTo the file to output to
+          */
+         public void setTofile(File aTo)
+         {
+             mToFile = aTo;
+         }
+ 
+         /**
+          * Creates a listener for the formatter.
+          * @param aTask the task running
+          * @return a listener
+          * @throws IOException if an error occurs
+          */
+         public AuditListener createListener(Task aTask)
+             throws IOException
+         {
+             if ((mFormatterType != null)
+                 && E_XML.equals(mFormatterType.getValue()))
+             {
+                 return createXMLLogger(aTask);
+             }
+-            else {
+-                return createDefaultLogger(aTask);
+-            }
++			return createDefaultLogger(aTask);
+         }
+ 
+         /**
+          * @return a DefaultLogger instance
+          * @param aTask the task to possibly log to
+          * @throws IOException if an error occurs
+          */
+         private AuditListener createDefaultLogger(Task aTask)
+             throws IOException
+         {
+             if (mToFile == null) {
+                 return new DefaultLogger(
+                     new LogOutputStream(aTask, Project.MSG_DEBUG), true,
+                     new LogOutputStream(aTask, Project.MSG_ERR), true);
+             }
+             return new DefaultLogger(new FileOutputStream(mToFile), true);
+         }
+ 
+         /**
+          * @return an XMLLogger instance
+          * @param aTask the task to possibly log to
+          * @throws IOException if an error occurs
+          */
+         private AuditListener createXMLLogger(Task aTask)
+             throws IOException
+         {
+             if (mToFile == null) {
+                 return new XMLLogger(
+                     new LogOutputStream(aTask, Project.MSG_INFO), true);
+             }
+-            else {
+-                return new XMLLogger(new FileOutputStream(mToFile), true);
+-            }
++			return new XMLLogger(new FileOutputStream(mToFile), true);
+         }
+     }
+ 
+     /**
+      * Represents a property that consists of a key and value.
+      */
+     public static class Property
+     {
+         /** the property key */
+         private String mKey;
+         /** the property value */
+         private String mValue;
+ 
+         /** @return the property key */
+         public String getKey()
+         {
+             return mKey;
+         }
+ 
+         /** @param aKey sets the property key */
+         public void setKey(String aKey)
+         {
+             mKey = aKey;
+         }
+ 
+         /** @return the property value */
+         public String getValue()
+         {
+             return mValue;
+         }
+ 
+         /** @param aValue set the property value */
+         public void setValue(String aValue)
+         {
+             mValue = aValue;
+         }
+ 
+         /** @param aValue set the property value from a File */
+         public void setFile(File aValue)
+         {
+             setValue(aValue.getAbsolutePath());
+         }
+     }
+ 
+     /** Represents a custom listener. */
+     public static class Listener
+     {
+         /** classname of the listener class */
+         private String mClassname;
+ 

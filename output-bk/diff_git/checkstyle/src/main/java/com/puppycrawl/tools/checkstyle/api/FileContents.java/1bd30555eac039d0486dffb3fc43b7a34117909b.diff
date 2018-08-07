@@ -1,0 +1,177 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/FileContents.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/FileContents.java
+index 69349ce44..5cdd084a9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/FileContents.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/FileContents.java
+@@ -168,170 +168,170 @@ public final class FileContents implements CommentListener
+      * value is a {@link List} of C style comment {@link TextBlock}s
+      * that start at that line.
+      * @return the map of comments
+      */
+     public ImmutableMap<Integer, List<TextBlock>> getCComments()
+     {
+         return ImmutableMap.copyOf(clangComments);
+     }
+ 
+     /**
+      * Returns the specified C comment as a String array.
+      * @return C comment as a array
+      * @param startLineNo the starting line number
+      * @param startColNo the starting column number
+      * @param endLineNo the ending line number
+      * @param endColNo the ending column number
+      **/
+     private String[] extractCComment(int startLineNo, int startColNo,
+             int endLineNo, int endColNo)
+     {
+         String[] retVal;
+         if (startLineNo == endLineNo) {
+             retVal = new String[1];
+             retVal[0] = line(startLineNo - 1).substring(startColNo,
+                     endColNo + 1);
+         }
+         else {
+             retVal = new String[endLineNo - startLineNo + 1];
+             retVal[0] = line(startLineNo - 1).substring(startColNo);
+             for (int i = startLineNo; i < endLineNo; i++) {
+                 retVal[i - startLineNo + 1] = line(i);
+             }
+             retVal[retVal.length - 1] = line(endLineNo - 1).substring(0,
+                     endColNo + 1);
+         }
+         return retVal;
+     }
+ 
+     /**
+      * Returns the Javadoc comment before the specified line.
+      * A return value of <code>null</code> means there is no such comment.
+      * @return the Javadoc comment, or <code>null</code> if none
+      * @param lineNoBefore the line number to check before
+      **/
+     public TextBlock getJavadocBefore(int lineNoBefore)
+     {
+         // Lines start at 1 to the callers perspective, so need to take off 2
+         int lineNo = lineNoBefore - 2;
+ 
+         // skip blank lines
+-        while ((lineNo > 0) && (lineIsBlank(lineNo) || lineIsComment(lineNo))) {
++        while (lineNo > 0 && (lineIsBlank(lineNo) || lineIsComment(lineNo))) {
+             lineNo--;
+         }
+ 
+         return javadocComments.get(lineNo);
+     }
+ 
+     /**
+      * Get a single line.
+      * For internal use only, as getText().get(lineNo) is just as
+      * suitable for external use and avoids method duplication.
+      * @param lineNo the number of the line to get
+      * @return the corresponding line, without terminator
+      * @throws IndexOutOfBoundsException if lineNo is invalid
+      */
+     private String line(int lineNo)
+     {
+         return text.get(lineNo);
+     }
+ 
+     /**
+      * Get the full text of the file.
+      * @return an object containing the full text of the file
+      */
+     public FileText getText()
+     {
+         return text;
+     }
+ 
+     /** @return the lines in the file */
+     public String[] getLines()
+     {
+         return text.toLinesArray();
+     }
+ 
+     /**
+      * Get the line from text of the file.
+      * @param index index of the line
+      * @return line from text of the file
+      */
+     public String getLine(int index)
+     {
+         return text.get(index);
+     }
+ 
+     /** @return the name of the file */
+     public String getFilename()
+     {
+         return filename;
+     }
+ 
+     /**
+      * Checks if the specified line is blank.
+      * @param lineNo the line number to check
+      * @return if the specified line consists only of tabs and spaces.
+      **/
+     public boolean lineIsBlank(int lineNo)
+     {
+         // possible improvement: avoid garbage creation in trim()
+         return "".equals(line(lineNo).trim());
+     }
+ 
+     /**
+      * Checks if the specified line is a single-line comment without code.
+      * @param lineNo  the line number to check
+      * @return if the specified line consists of only a single line comment
+      *         without code.
+      **/
+     public boolean lineIsComment(int lineNo)
+     {
+         return MATCH_SINGLELINE_COMMENT.matcher(line(lineNo)).matches();
+     }
+ 
+     /**
+      * Checks if the specified position intersects with a comment.
+      * @param startLineNo the starting line number
+      * @param startColNo the starting column number
+      * @param endLineNo the ending line number
+      * @param endColNo the ending column number
+      * @return true if the positions intersects with a comment.
+      **/
+     public boolean hasIntersectionWithComment(int startLineNo,
+             int startColNo, int endLineNo, int endColNo)
+     {
+         // Check C comments (all comments should be checked)
+         final Collection<List<TextBlock>> values = clangComments.values();
+         for (final List<TextBlock> row : values) {
+             for (final TextBlock comment : row) {
+                 if (comment.intersects(startLineNo, startColNo, endLineNo,
+                         endColNo))
+                 {
+                     return true;
+                 }
+             }
+         }
+ 
+         // Check CPP comments (line searching is possible)
+         for (int lineNumber = startLineNo; lineNumber <= endLineNo;
+              lineNumber++)
+         {
+             final TextBlock comment = cppComments.get(lineNumber);
+-            if ((comment != null)
++            if (comment != null
+                     && comment.intersects(startLineNo, startColNo,
+                             endLineNo, endColNo))
+             {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Checks if the current file is a package-info.java file.
+      * @return true if the package file.
+      */
+     public boolean inPackageInfo()
+     {
+         return this.getFilename().endsWith("package-info.java");
+     }
+ }

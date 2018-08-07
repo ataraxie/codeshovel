@@ -1,0 +1,164 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "getBundle___bundleName-String",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 377,
+  "changeHistory": [
+    "1003092f9eb986231ab539d0e40f27e1314f47de",
+    "bf9325be913ce46a1427232c455f4830b574ba44",
+    "3bd699bd593414d63c7139aa410f13ec8341a027",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "dcb3029c008907edf6aa4b59a51349f0ca94f54b",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "f1afaf83f39b83cc3bd07a2388448b262652a76b",
+    "f4a92dad02a3a36b5e2e988bba04debb1e2c9db9",
+    "d9f789a649da036865f9bf0c6d48f35753881abe",
+    "7e083cf6cbbe2b1590b92bf3feae547e5f58d6ac"
+  ],
+  "changeHistoryShort": {
+    "1003092f9eb986231ab539d0e40f27e1314f47de": "Ybodychange",
+    "bf9325be913ce46a1427232c455f4830b574ba44": "Ybodychange",
+    "3bd699bd593414d63c7139aa410f13ec8341a027": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "dcb3029c008907edf6aa4b59a51349f0ca94f54b": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "f1afaf83f39b83cc3bd07a2388448b262652a76b": "Ybodychange",
+    "f4a92dad02a3a36b5e2e988bba04debb1e2c9db9": "Ybodychange",
+    "d9f789a649da036865f9bf0c6d48f35753881abe": "Ymultichange(Ymodifierchange,Ybodychange)",
+    "7e083cf6cbbe2b1590b92bf3feae547e5f58d6ac": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "1003092f9eb986231ab539d0e40f27e1314f47de": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4700: Remove redundant sync for synchronizedMap\n",
+      "commitDate": 1499955506000,
+      "commitName": "1003092f9eb986231ab539d0e40f27e1314f47de",
+      "commitAuthor": "Andrew Kuchev",
+      "commitDateOld": 1497287515000,
+      "commitNameOld": "4a087c020c2b97130e94f9292b94cb4bc1f6ed93",
+      "commitAuthorOld": "sagar-shah94",
+      "daysBetweenCommits": 30.88,
+      "commitsBetweenForRepo": 194,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,4 @@\n     private ResourceBundle getBundle(String bundleName) {\n-        synchronized (BUNDLE_CACHE) {\n-            ResourceBundle resourceBundle \u003d BUNDLE_CACHE\n-                    .get(bundleName);\n-            if (resourceBundle \u003d\u003d null) {\n-                resourceBundle \u003d ResourceBundle.getBundle(bundleName, sLocale,\n-                        sourceClass.getClassLoader(), new Utf8Control());\n-                BUNDLE_CACHE.put(bundleName, resourceBundle);\n-            }\n-            return resourceBundle;\n-        }\n+        return BUNDLE_CACHE.computeIfAbsent(bundleName, name -\u003e ResourceBundle.getBundle(\n+                name, sLocale, sourceClass.getClassLoader(), new Utf8Control()));\n     }\n\\ No newline at end of file\n"
+    },
+    "bf9325be913ce46a1427232c455f4830b574ba44": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2639: adjust AbbreviationAsWordInName in checkstyle_checks.xml to catch unexpected abbreviations\n",
+      "commitDate": 1448157067000,
+      "commitName": "bf9325be913ce46a1427232c455f4830b574ba44",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1445806205000,
+      "commitNameOld": "66ed32ae55811c22434e7296566915759e921305",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 27.21,
+      "commitsBetweenForRepo": 165,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private ResourceBundle getBundle(String bundleName) {\n         synchronized (BUNDLE_CACHE) {\n             ResourceBundle resourceBundle \u003d BUNDLE_CACHE\n                     .get(bundleName);\n             if (resourceBundle \u003d\u003d null) {\n                 resourceBundle \u003d ResourceBundle.getBundle(bundleName, sLocale,\n-                        sourceClass.getClassLoader(), new UTF8Control());\n+                        sourceClass.getClassLoader(), new Utf8Control());\n                 BUNDLE_CACHE.put(bundleName, resourceBundle);\n             }\n             return resourceBundle;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "3bd699bd593414d63c7139aa410f13ec8341a027": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: HiddenField violations fixed\n",
+      "commitDate": 1439356761000,
+      "commitName": "3bd699bd593414d63c7139aa410f13ec8341a027",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439295751000,
+      "commitNameOld": "f5f1d754e28ee1e3c5472fd4d5292f24a335e64e",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.71,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private ResourceBundle getBundle(String bundleName) {\n         synchronized (BUNDLE_CACHE) {\n-            ResourceBundle bundle \u003d BUNDLE_CACHE\n+            ResourceBundle resourceBundle \u003d BUNDLE_CACHE\n                     .get(bundleName);\n-            if (bundle \u003d\u003d null) {\n-                bundle \u003d ResourceBundle.getBundle(bundleName, sLocale,\n+            if (resourceBundle \u003d\u003d null) {\n+                resourceBundle \u003d ResourceBundle.getBundle(bundleName, sLocale,\n                         sourceClass.getClassLoader(), new UTF8Control());\n-                BUNDLE_CACHE.put(bundleName, bundle);\n+                BUNDLE_CACHE.put(bundleName, resourceBundle);\n             }\n-            return bundle;\n+            return resourceBundle;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "dcb3029c008907edf6aa4b59a51349f0ca94f54b": {
+      "type": "Ybodychange",
+      "commitMessage": "Switched Checkstyle and all resources to UTF-8 encoding, issue #489\n",
+      "commitDate": 1420821881000,
+      "commitName": "dcb3029c008907edf6aa4b59a51349f0ca94f54b",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1418625204000,
+      "commitNameOld": "7aa061665c2b005f97b0c05bf03604636175dc9a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 25.42,
+      "commitsBetweenForRepo": 63,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private ResourceBundle getBundle(String aBundleName)\n     {\n         synchronized (BUNDLE_CACHE) {\n             ResourceBundle bundle \u003d BUNDLE_CACHE\n                     .get(aBundleName);\n             if (bundle \u003d\u003d null) {\n                 bundle \u003d ResourceBundle.getBundle(aBundleName, sLocale,\n-                        mSourceClass.getClassLoader());\n+                        mSourceClass.getClassLoader(), new UTF8Control());\n                 BUNDLE_CACHE.put(aBundleName, bundle);\n             }\n             return bundle;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "f1afaf83f39b83cc3bd07a2388448b262652a76b": {
+      "type": "Ybodychange",
+      "commitMessage": "Finish of adding generics.\n",
+      "commitDate": 1197706480000,
+      "commitName": "f1afaf83f39b83cc3bd07a2388448b262652a76b",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1169909494000,
+      "commitNameOld": "1efc394250b8f1c79bd7f8344b738a7d13396ed3",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 321.72,
+      "commitsBetweenForRepo": 33,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private ResourceBundle getBundle(String aBundleName)\n     {\n         synchronized (BUNDLE_CACHE) {\n-            ResourceBundle bundle \u003d (ResourceBundle) BUNDLE_CACHE\n+            ResourceBundle bundle \u003d BUNDLE_CACHE\n                     .get(aBundleName);\n             if (bundle \u003d\u003d null) {\n                 bundle \u003d ResourceBundle.getBundle(aBundleName, sLocale,\n                         mSourceClass.getClassLoader());\n                 BUNDLE_CACHE.put(aBundleName, bundle);\n             }\n             return bundle;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "f4a92dad02a3a36b5e2e988bba04debb1e2c9db9": {
+      "type": "Ybodychange",
+      "commitMessage": "Make member variables final where appropriate.\n",
+      "commitDate": 1152243235000,
+      "commitName": "f4a92dad02a3a36b5e2e988bba04debb1e2c9db9",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1135859700000,
+      "commitNameOld": "788b41973d5747c7b4699a853b62168cf0001df6",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 189.62,
+      "commitsBetweenForRepo": 22,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private ResourceBundle getBundle(String aBundleName)\n     {\n-        synchronized (sBundleCache) {\n-            ResourceBundle bundle \u003d (ResourceBundle) sBundleCache\n+        synchronized (BUNDLE_CACHE) {\n+            ResourceBundle bundle \u003d (ResourceBundle) BUNDLE_CACHE\n                     .get(aBundleName);\n             if (bundle \u003d\u003d null) {\n                 bundle \u003d ResourceBundle.getBundle(aBundleName, sLocale,\n                         mSourceClass.getClassLoader());\n-                sBundleCache.put(aBundleName, bundle);\n+                BUNDLE_CACHE.put(aBundleName, bundle);\n             }\n             return bundle;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d9f789a649da036865f9bf0c6d48f35753881abe": {
+      "type": "Ymultichange(Ymodifierchange,Ybodychange)",
+      "commitMessage": "Applied patch 1309516.\n",
+      "commitDate": 1128608294000,
+      "commitName": "d9f789a649da036865f9bf0c6d48f35753881abe",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "7e083cf6cbbe2b1590b92bf3feae547e5f58d6ac": {
+      "type": "Yintroduced",
+      "commitMessage": "cache ResourceBundles, approx 8% perf improvement\n",
+      "commitDate": 1036965514000,
+      "commitName": "7e083cf6cbbe2b1590b92bf3feae547e5f58d6ac",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "PackageAnnotationCheck.java",
+  "functionName": "visitToken",
+  "functionId": "visitToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/PackageAnnotationCheck.java",
+  "functionStartLine": 75,
+  "functionEndLine": 84,
+  "changeHistory": [
+    "cd8f1c3183f391e13f409d8e9b71d842e7a164bc",
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "8a7713b4f7890e2f6493eacc5806b5eb8cfbe767"
+  ],
+  "changeHistoryShort": {
+    "cd8f1c3183f391e13f409d8e9b71d842e7a164bc": "Ybodychange",
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86": "Ybodychange",
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "8a7713b4f7890e2f6493eacc5806b5eb8cfbe767": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "cd8f1c3183f391e13f409d8e9b71d842e7a164bc": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2836: moved inline strings to error message fields",
+      "commitDate": 1453387259000,
+      "commitName": "cd8f1c3183f391e13f409d8e9b71d842e7a164bc",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 16.59,
+      "commitsBetweenForRepo": 20,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public void visitToken(final DetailAST ast) {\n         final boolean containsAnnotation \u003d\n             AnnotationUtility.containsAnnotation(ast);\n         final boolean inPackageInfo \u003d\n             getFileContents().inPackageInfo();\n \n         if (containsAnnotation \u0026\u0026 !inPackageInfo) {\n-            log(ast.getLine(), \"annotation.package.location\");\n+            log(ast.getLine(), MSG_KEY);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary this keyword. #1555\n\nFixes `UnnecessaryThis` inspection violations.\n\nDescription:\n\u003eReports on any unnecessary uses of this in the code. Using this to disambiguate a code reference may easily become unnecessary via automatic refactorings, and is discouraged by many coding styles.\n For example:\n ```\n this.a \u003d 3;\n ```\n",
+      "commitDate": 1439131302000,
+      "commitName": "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 84.12,
+      "commitsBetweenForRepo": 676,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public void visitToken(final DetailAST ast) {\n         final boolean containsAnnotation \u003d\n             AnnotationUtility.containsAnnotation(ast);\n         final boolean inPackageInfo \u003d\n-            this.getFileContents().inPackageInfo();\n+            getFileContents().inPackageInfo();\n \n         if (containsAnnotation \u0026\u0026 !inPackageInfo) {\n-            this.log(ast.getLine(), \"annotation.package.location\");\n+            log(ast.getLine(), \"annotation.package.location\");\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, annotation, #512\n",
+      "commitDate": 1421678156000,
+      "commitName": "1bd7f9bdf3dc678b70e79481971aebc50db69dc7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "8a7713b4f7890e2f6493eacc5806b5eb8cfbe767": {
+      "type": "Yintroduced",
+      "commitMessage": "record work on patch #2534038 from Travis for new annotation checks. Very good patch as usual from Travis. Shame on me for taking so long to apply it.\n",
+      "commitDate": 1237805379000,
+      "commitName": "8a7713b4f7890e2f6493eacc5806b5eb8cfbe767",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

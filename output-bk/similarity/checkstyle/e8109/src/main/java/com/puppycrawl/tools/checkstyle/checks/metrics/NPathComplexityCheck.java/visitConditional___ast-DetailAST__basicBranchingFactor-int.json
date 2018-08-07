@@ -1,0 +1,22 @@
+{
+  "function": {
+    "commitName": "e810918205ff8e99a5cd692d6a99b899f5337eef",
+    "name": "visitConditional",
+    "path": "visitConditional___ast-DetailAST__basicBranchingFactor-int",
+    "body": "{\n    int expressionValue \u003d basicBranchingFactor;\n    DetailAST bracketed;\n    for (bracketed \u003d ast.findFirstToken(TokenTypes.LPAREN).getNextSibling(); bracketed.getType() !\u003d TokenTypes.RPAREN; bracketed \u003d bracketed.getNextSibling()) {\n        expressionValue +\u003d countConditionalOperators(bracketed);\n    }\n    processingTokenEnd.setToken(bracketed);\n    pushValue(expressionValue);\n}"
+  },
+  "mostSimilarFunction": {
+    "commitName": "6e8d1e06728b7defbd734253b3818a33676b62bc",
+    "name": "visitAddingConditional",
+    "path": "visitAddingConditional",
+    "body": "{\n    pushValue();\n}"
+  },
+  "similarity": {
+    "crossFile": false,
+    "bodySimilarity": 0.5563657407407407,
+    "lineNumberSimilarity": 0.8755186721991701,
+    "scopeSimilarity": 1.0,
+    "overallSimilarity": 0.6094555880777472,
+    "nameSimilarity": 0.881456611570248
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RequireThisCheck.java",
+  "functionName": "getMethodWithoutThis",
+  "functionId": "getMethodWithoutThis___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java",
+  "functionStartLine": 853,
+  "functionEndLine": 864,
+  "changeHistory": [
+    "1efd7acd6ca48569fd09a2a00e5a78505d772743",
+    "1a49cdac6fca0c130e212b49f790865f9ad2c267",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+    "425fd5a27cd567d5784bd246729c55cf8cda3dbd",
+    "6c04cd63af392376159dc7aae41d85bbc348e96d",
+    "11639b8437306390798d85fc54422b4559f553c3",
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+    "4424370783f1c41fc1e146f554468f89e8f0e88b"
+  ],
+  "changeHistoryShort": {
+    "1efd7acd6ca48569fd09a2a00e5a78505d772743": "Ybodychange",
+    "1a49cdac6fca0c130e212b49f790865f9ad2c267": "Ybodychange",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": "Ymultichange(Yrename,Ybodychange)",
+    "425fd5a27cd567d5784bd246729c55cf8cda3dbd": "Ybodychange",
+    "6c04cd63af392376159dc7aae41d85bbc348e96d": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+    "11639b8437306390798d85fc54422b4559f553c3": "Ymodifierchange",
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a": "Ymultichange(Yparameterchange,Ybodychange)",
+    "4424370783f1c41fc1e146f554468f89e8f0e88b": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "1efd7acd6ca48569fd09a2a00e5a78505d772743": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4856: fixed NPE in RequireThisCheck for methods from base class",
+      "commitDate": 1501588758000,
+      "commitName": "1efd7acd6ca48569fd09a2a00e5a78505d772743",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1501482903000,
+      "commitNameOld": "257f0900d929a5a24951d76d30780439404588c5",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 1.23,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,12 @@\n     private AbstractFrame getMethodWithoutThis(DetailAST ast) {\n         AbstractFrame result \u003d null;\n-        final AbstractFrame frame \u003d findFrame(ast, true);\n-        if (!validateOnlyOverlapping\n-                \u0026\u0026 ((ClassFrame) frame).hasInstanceMethod(ast)\n-                \u0026\u0026 !((ClassFrame) frame).hasStaticMethod(ast)) {\n-            result \u003d frame;\n+        if (!validateOnlyOverlapping) {\n+            final AbstractFrame frame \u003d findFrame(ast, true);\n+            if (frame !\u003d null\n+                    \u0026\u0026 ((ClassFrame) frame).hasInstanceMethod(ast)\n+                    \u0026\u0026 !((ClassFrame) frame).hasStaticMethod(ast)) {\n+                result \u003d frame;\n+            }\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "1a49cdac6fca0c130e212b49f790865f9ad2c267": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3848: Increase code coverage of RequireThisCheck\n",
+      "commitDate": 1488307797000,
+      "commitName": "1a49cdac6fca0c130e212b49f790865f9ad2c267",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1488131009000,
+      "commitNameOld": "e4d90d68f56a67ea79fbafd09dba4ace1f7f023c",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 2.05,
+      "commitsBetweenForRepo": 14,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,10 @@\n     private AbstractFrame getMethodWithoutThis(DetailAST ast) {\n         AbstractFrame result \u003d null;\n         final AbstractFrame frame \u003d findFrame(ast, true);\n-        if (frame !\u003d null\n-                \u0026\u0026 !validateOnlyOverlapping\n+        if (!validateOnlyOverlapping\n                 \u0026\u0026 ((ClassFrame) frame).hasInstanceMethod(ast)\n                 \u0026\u0026 !((ClassFrame) frame).hasStaticMethod(ast)) {\n             result \u003d frame;\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "Issue #2362: Add \u0027validateOnlyOverlapping\u0027 option for RequireThisCheck\n",
+      "commitDate": 1457102074000,
+      "commitName": "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "425fd5a27cd567d5784bd246729c55cf8cda3dbd": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2539: Fix RequireThis check false-positive on methods\n",
+      "commitDate": 1451598097000,
+      "commitName": "425fd5a27cd567d5784bd246729c55cf8cda3dbd",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1450994205000,
+      "commitNameOld": "6c04cd63af392376159dc7aae41d85bbc348e96d",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 6.99,
+      "commitsBetweenForRepo": 26,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,9 @@\n     private AbstractFrame checkMethod(DetailAST ast) {\n         final AbstractFrame frame \u003d findFrame(ast, true);\n         if (frame !\u003d null\n-                \u0026\u0026 ((ClassFrame) frame).hasInstanceMethod(ast)) {\n+            \u0026\u0026 ((ClassFrame) frame).hasInstanceMethod(ast)\n+            \u0026\u0026 !((ClassFrame) frame).hasStaticMethod(ast)) {\n             return frame;\n         }\n         return null;\n     }\n\\ No newline at end of file\n"
+    },
+    "6c04cd63af392376159dc7aae41d85bbc348e96d": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+      "commitMessage": "Issue #2239: Extend RequireThis check message\n",
+      "commitDate": 1450994205000,
+      "commitName": "6c04cd63af392376159dc7aae41d85bbc348e96d",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "11639b8437306390798d85fc54422b4559f553c3": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Pull #2605: Make methods private in RequireThisCheck\n",
+      "commitDate": 1447657308000,
+      "commitName": "11639b8437306390798d85fc54422b4559f553c3",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1447597420000,
+      "commitNameOld": "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 0.69,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    protected final boolean isClassMethod(DetailAST ident) {\n+    private boolean isClassMethod(DetailAST ident) {\n         final LexicalFrame frame \u003d findFrame(ident, true);\n         return frame instanceof ClassFrame\n                 \u0026\u0026 ((ClassFrame) frame).hasInstanceMethod(ident);\n     }\n\\ No newline at end of file\n"
+    },
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #2240: Fix false negative in RequireThisCheck\n",
+      "commitDate": 1447597420000,
+      "commitName": "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "4424370783f1c41fc1e146f554468f89e8f0e88b": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2451: removed excess hierarchy from RequireThisCheck",
+      "commitDate": 1446945172000,
+      "commitName": "4424370783f1c41fc1e146f554468f89e8f0e88b",
+      "commitAuthor": "rnveach"
+    }
+  }
+}

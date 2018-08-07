@@ -1,0 +1,78 @@
+diff --git a/benchmarks/src/main/java/org/elasticsearch/benchmark/routing/allocation/AllocationBenchmark.java b/benchmarks/src/main/java/org/elasticsearch/benchmark/routing/allocation/AllocationBenchmark.java
+index d5bb0916eca..5e5f35f6040 100644
+--- a/benchmarks/src/main/java/org/elasticsearch/benchmark/routing/allocation/AllocationBenchmark.java
++++ b/benchmarks/src/main/java/org/elasticsearch/benchmark/routing/allocation/AllocationBenchmark.java
+@@ -100,71 +100,72 @@ public class AllocationBenchmark {
+         "       10,     10,        1,    50",
+         "      100,      1,        1,    50",
+         "      100,      3,        1,    50",
+         "      100,     10,        1,    50",
+ 
+         "       10,      1,        2,    50",
+         "       10,      3,        2,    50",
+         "       10,     10,        2,    50",
+         "      100,      1,        2,    50",
+         "      100,      3,        2,    50",
+         "      100,     10,        2,    50"
+     })
+     public String indicesShardsReplicasNodes = "10,1,0,1";
+ 
+     public int numTags = 2;
+ 
+     private AllocationService strategy;
+     private ClusterState initialClusterState;
+ 
+     @Setup
+     public void setUp() throws Exception {
+         final String[] params = indicesShardsReplicasNodes.split(",");
+ 
+         int numIndices = toInt(params[0]);
+         int numShards = toInt(params[1]);
+         int numReplicas = toInt(params[2]);
+         int numNodes = toInt(params[3]);
+ 
+         strategy = Allocators.createAllocationService(Settings.builder()
+                 .put("cluster.routing.allocation.awareness.attributes", "tag")
+                 .build());
+ 
+         MetaData.Builder mb = MetaData.builder();
+         for (int i = 1; i <= numIndices; i++) {
+             mb.put(IndexMetaData.builder("test_" + i)
+                     .settings(Settings.builder().put("index.version.created", Version.CURRENT))
+                     .numberOfShards(numShards)
+                     .numberOfReplicas(numReplicas)
+             );
+         }
+         MetaData metaData = mb.build();
+         RoutingTable.Builder rb = RoutingTable.builder();
+         for (int i = 1; i <= numIndices; i++) {
+             rb.addAsNew(metaData.index("test_" + i));
+         }
+         RoutingTable routingTable = rb.build();
+         DiscoveryNodes.Builder nb = DiscoveryNodes.builder();
+         for (int i = 1; i <= numNodes; i++) {
+             nb.put(Allocators.newNode("node" + i, Collections.singletonMap("tag", "tag_" + (i % numTags))));
+         }
+-        initialClusterState = ClusterState.builder(ClusterName.DEFAULT).metaData(metaData).routingTable(routingTable).nodes
++        initialClusterState = ClusterState.builder(ClusterName.CLUSTER_NAME_SETTING.getDefault(Settings.EMPTY))
++            .metaData(metaData).routingTable(routingTable).nodes
+                 (nb).build();
+     }
+ 
+     private int toInt(String v) {
+         return Integer.valueOf(v.trim());
+     }
+ 
+     @Benchmark
+     public ClusterState measureAllocation() {
+         ClusterState clusterState = initialClusterState;
+         while (clusterState.getRoutingNodes().hasUnassignedShards()) {
+             RoutingAllocation.Result result = strategy.applyStartedShards(clusterState, clusterState.getRoutingNodes()
+                     .shardsWithState(ShardRoutingState.INITIALIZING));
+             clusterState = ClusterState.builder(clusterState).routingResult(result).build();
+             result = strategy.reroute(clusterState, "reroute");
+             clusterState = ClusterState.builder(clusterState).routingResult(result).build();
+         }
+         return clusterState;
+     }
+ }

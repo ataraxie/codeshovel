@@ -1,0 +1,161 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/VisibilityModifierCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/VisibilityModifierCheck.java
+index 969b054fb..fa4269f7a 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/VisibilityModifierCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/VisibilityModifierCheck.java
+@@ -1,93 +1,93 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2002  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks;
+ 
+ import java.util.HashSet;
+ import java.util.Set;
+ 
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.Utils;
+ import org.apache.commons.beanutils.ConversionException;
+ import org.apache.regexp.RE;
+ import org.apache.regexp.RESyntaxException;
+ import antlr.collections.AST;
+ 
+ /**
+  * Checks visibility of class members. Only static final members may be public,
+  * other class members must be private unless allowProtected/Package is set.
+  * <p>
+  * Public members are not flagged if they are in the set of allowed public
+  * members, (contains "serialVersionUID" by default) or if the name matches
+  * the public member regular expression.
+  * </p>
+  * Rationale: Enforce encapsulation.
+  *
+- * @author Lars K�hne
++ * @author lkuehne
+  */
+ public class VisibilityModifierCheck
+         extends Check
+ {
+     /** whether protected members are allowed */
+     private boolean mProtectedAllowed = false;
+ 
+     /** whether package visible members are allowed */
+     private boolean mPackageAllowed = false;
+ 
+     // TODO: we should change the default to "^$"
+     // as EJB 1.1 is becoming obsolete (is it?)
+     /** pattern for public members that should be ignored */
+     private String mPublicMemberPattern = "^f[A-Z][a-zA-Z0-9]*$";
+ 
+     /** regexp for public members that should be ignored */
+     private RE mPublicMemberRE = null;
+ 
+     /** Constructor */
+     public VisibilityModifierCheck()
+     {
+         setPublicMemberPattern(mPublicMemberPattern);
+     }
+ 
+     /** @return whether protected members are allowed */
+     public boolean isProtectedAllowed()
+     {
+         return mProtectedAllowed;
+     }
+ 
+     /**
+      * Set whether protected members are allowed.
+      * @param aProtectedAllowed whether protected members are allowed
+      */
+     public void setProtectedAllowed(boolean aProtectedAllowed)
+     {
+         mProtectedAllowed = aProtectedAllowed;
+     }
+ 
+     /** @return whether package visible members are allowed */
+     public boolean isPackageAllowed()
+     {
+         return mPackageAllowed;
+     }
+ 
+     /**
+      * Set whether package visible members are allowed
+      * @param aPackageAllowed whether package visible members are allowed
+      */
+     public void setPackageAllowed(boolean aPackageAllowed)
+@@ -174,60 +174,60 @@ public class VisibilityModifierCheck
+ 
+     /**
+      * Returns whether an AST is in an interface block.
+      * @param aAST the AST to check for
+      * @return true iff aAST is in an interface def with no class def in between
+      */
+     private boolean inInterfaceBlock(DetailAST aAST)
+     {
+         DetailAST ast = aAST.getParent();
+         while (ast != null) {
+             switch (ast.getType()) {
+                 case TokenTypes.INTERFACE_DEF:
+                     return true;
+                 case TokenTypes.CLASS_DEF:
+                     return false;
+                 default:
+                     ast = ast.getParent();
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Returns the set of modifier Strings for a VARIABLE_DEF AST.
+      * @param variableDefAST AST for a vraiable definition
+      * @return the set of modifier Strings for variableDefAST
+      */
+     private Set getModifiers(DetailAST variableDefAST)
+     {
+         final AST modifiersAST = variableDefAST.getFirstChild();
+         if (modifiersAST.getType() != TokenTypes.MODIFIERS) {
+             throw new IllegalStateException("Strange parse tree");
+         }
+         final Set retVal = new HashSet();
+         AST modifier = modifiersAST.getFirstChild();
+         while (modifier != null) {
+             retVal.add(modifier.getText());
+             modifier = modifier.getNextSibling();
+         }
+         return retVal;
+ 
+     }
+ 
+     /**
+      * Returns the visibility scope specified with a set of modifiers.
+      * @param aModifiers the set of modifier Strings
+      * @return one of "public", "private", "protected", "package"
+      */
+     private String getVisibilityScope(Set aModifiers)
+     {
+-        String[] explicitModifiers = {"public", "private", "protected"};
++        final String[] explicitModifiers = {"public", "private", "protected"};
+         for (int i = 0; i < explicitModifiers.length; i++) {
+             String candidate = explicitModifiers[i];
+             if (aModifiers.contains(candidate)) {
+                 return candidate;
+             }
+         }
+         return "package";
+     }
+ }

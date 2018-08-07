@@ -1,0 +1,151 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "addChild___ast-AST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 162,
+  "changeHistory": [
+    "d4f3c181fdd56d73d8b6efcd0f02db73b70729fd",
+    "4b7adec5ae396e24d3d0bf0d790919a45bac5421",
+    "2577c4121ca5a1f4809d2f705123a577dfb08d71",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+    "e3929c641ca2c2ef08d90ee506db556529088326",
+    "3925906faee1cf9310942708e2946d3e598f5f71"
+  ],
+  "changeHistoryShort": {
+    "d4f3c181fdd56d73d8b6efcd0f02db73b70729fd": "Ybodychange",
+    "4b7adec5ae396e24d3d0bf0d790919a45bac5421": "Ybodychange",
+    "2577c4121ca5a1f4809d2f705123a577dfb08d71": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": "Ybodychange",
+    "e3929c641ca2c2ef08d90ee506db556529088326": "Ybodychange",
+    "3925906faee1cf9310942708e2946d3e598f5f71": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "d4f3c181fdd56d73d8b6efcd0f02db73b70729fd": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3491: DetailAst class unclear logic in addChild method\n",
+      "commitDate": 1489946761000,
+      "commitName": "d4f3c181fdd56d73d8b6efcd0f02db73b70729fd",
+      "commitAuthor": "GitToasterhub",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 51.15,
+      "commitsBetweenForRepo": 168,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public void addChild(AST ast) {\n         clearBranchTokenTypes();\n         clearChildCountCache(this);\n-        super.addChild(ast);\n         if (ast !\u003d null) {\n             ((DetailAST) ast).setParent(this);\n-            getFirstChild().setParent(this);\n+            ((DetailAST) ast).previousSibling \u003d getLastChild();\n         }\n+        super.addChild(ast);\n     }\n\\ No newline at end of file\n"
+    },
+    "4b7adec5ae396e24d3d0bf0d790919a45bac5421": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3486: clear childCount field cache in DetailAST",
+      "commitDate": 1475368053000,
+      "commitName": "4b7adec5ae396e24d3d0bf0d790919a45bac5421",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1475273624000,
+      "commitNameOld": "2577c4121ca5a1f4809d2f705123a577dfb08d71",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 1.09,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,9 @@\n     public void addChild(AST ast) {\n-        clearBranchTokenTypesCache();\n+        clearBranchTokenTypes();\n+        clearChildCountCache(this);\n         super.addChild(ast);\n         if (ast !\u003d null) {\n             ((DetailAST) ast).setParent(this);\n             getFirstChild().setParent(this);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "2577c4121ca5a1f4809d2f705123a577dfb08d71": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3466: Clear branchTokenTypes field cache in DetailAST before changing its structure\n",
+      "commitDate": 1475273624000,
+      "commitName": "2577c4121ca5a1f4809d2f705123a577dfb08d71",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1455999924000,
+      "commitNameOld": "8ad9441bbb78695a924be63444222ae80cfcf114",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 223.08,
+      "commitsBetweenForRepo": 441,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,8 @@\n     public void addChild(AST ast) {\n+        clearBranchTokenTypesCache();\n         super.addChild(ast);\n         if (ast !\u003d null) {\n             ((DetailAST) ast).setParent(this);\n             getFirstChild().setParent(this);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425602876000,
+      "commitNameOld": "f7828693395f71a6ae99710f3fab44cb8a66ea51",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 4.87,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     public void addChild(AST ast)\n     {\n         super.addChild(ast);\n         if (ast !\u003d null) {\n             ((DetailAST) ast).setParent(this);\n-            (getFirstChild()).setParent(this);\n+            getFirstChild().setParent(this);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": {
+      "type": "Ybodychange",
+      "commitMessage": "Inspired by patch# 2111354 - changes to remove casting. Neat trick\n",
+      "commitDate": 1221737656000,
+      "commitName": "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200352313000,
+      "commitNameOld": "315033ff5647ef9896130573d9212fee6fe141db",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 247.52,
+      "commitsBetweenForRepo": 67,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     public void addChild(AST aAST)\n     {\n         super.addChild(aAST);\n         if (aAST !\u003d null) {\n             ((DetailAST) aAST).setParent(this);\n-            ((DetailAST) getFirstChild()).setParent(this);\n+            (getFirstChild()).setParent(this);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "e3929c641ca2c2ef08d90ee506db556529088326": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed implementation of DetailAST so getPreviousSibling() works for\nall nodes in AST tree (bug 1244994)\nNow we set next sibling during tree creation, instead of calculating\nit (the calculation doesn\u0027t work if parent is null as for toplevel\nnodes such as package, import and class definition).\nAdded test which verify correct tree structure for all testinputs.\n",
+      "commitDate": 1122418580000,
+      "commitName": "e3929c641ca2c2ef08d90ee506db556529088326",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1121777024000,
+      "commitNameOld": "cbabd6b314a5523a5557e089858d3a3596426d56",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 7.43,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,8 @@\n     public void addChild(AST aAST)\n     {\n         super.addChild(aAST);\n         if (aAST !\u003d null) {\n             ((DetailAST) aAST).setParent(this);\n+            ((DetailAST) getFirstChild()).setParent(this);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "3925906faee1cf9310942708e2946d3e598f5f71": {
+      "type": "Yintroduced",
+      "commitMessage": "fix for DetailAST\u0027s parent problem\n",
+      "commitDate": 1053604084000,
+      "commitName": "3925906faee1cf9310942708e2946d3e598f5f71",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

@@ -1,0 +1,112 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+index 44bb5c175..546642158 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+@@ -242,104 +242,106 @@ public final class CommonUtils {
+         final Path pathBase = Paths.get(baseDirectory).normalize();
+         return pathBase.relativize(pathAbsolute).toString();
+     }
+ 
+     /**
+      * Tests if this string starts with the specified prefix.
+      * <p>
+      * It is faster version of {@link String#startsWith(String)} optimized for
+      *  one-character prefixes at the expense of
+      * some readability. Suggested by SimplifyStartsWith PMD rule:
+      * http://pmd.sourceforge.net/pmd-5.3.1/pmd-java/rules/java/optimizations.html#SimplifyStartsWith
+      * </p>
+      *
+      * @param value
+      *            the {@code String} to check
+      * @param prefix
+      *            the prefix to find
+      * @return {@code true} if the {@code char} is a prefix of the given {@code String};
+      *  {@code false} otherwise.
+      */
+     public static boolean startsWithChar(String value, char prefix) {
+         return !value.isEmpty() && value.charAt(0) == prefix;
+     }
+ 
+     /**
+      * Tests if this string ends with the specified suffix.
+      * <p>
+      * It is faster version of {@link String#endsWith(String)} optimized for
+      *  one-character suffixes at the expense of
+      * some readability. Suggested by SimplifyStartsWith PMD rule:
+      * http://pmd.sourceforge.net/pmd-5.3.1/pmd-java/rules/java/optimizations.html#SimplifyStartsWith
+      * </p>
+      *
+      * @param value
+      *            the {@code String} to check
+      * @param suffix
+      *            the suffix to find
+      * @return {@code true} if the {@code char} is a suffix of the given {@code String};
+      *  {@code false} otherwise.
+      */
+     public static boolean endsWithChar(String value, char suffix) {
+         return !value.isEmpty() && value.charAt(value.length() - 1) == suffix;
+     }
+ 
+     /**
+      * Gets constructor of targetClass.
+      * @param targetClass
+      *            from which constructor is returned
+      * @param parameterTypes
+      *            of constructor
++     * @param <T> type of the target class object.
+      * @return constructor of targetClass or {@link IllegalStateException} if any exception occurs
+      * @see Class#getConstructor(Class[])
+      */
+-    public static Constructor<?> getConstructor(Class<?> targetClass, Class<?>... parameterTypes) {
++    public static <T> Constructor<T> getConstructor(Class<T> targetClass,
++                                                    Class<?>... parameterTypes) {
+         try {
+             return targetClass.getConstructor(parameterTypes);
+         }
+         catch (NoSuchMethodException ex) {
+             throw new IllegalStateException(ex);
+         }
+     }
+ 
+     /**
+      * @param constructor
+      *            to invoke
+      * @param parameters
+      *            to pass to constructor
+      * @param <T>
+      *            type of constructor
+      * @return new instance of class or {@link IllegalStateException} if any exception occurs
+      * @see Constructor#newInstance(Object...)
+      */
+     public static <T> T invokeConstructor(Constructor<T> constructor, Object... parameters) {
+         try {
+             return constructor.newInstance(parameters);
+         }
+         catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+             throw new IllegalStateException(ex);
+         }
+     }
+ 
+     /**
+      * Closes a stream re-throwing IOException as IllegalStateException.
+      *
+      * @param closeable
+      *            Closeable object
+      */
+     public static void close(Closeable closeable) {
+         if (closeable == null) {
+             return;
+         }
+         try {
+             closeable.close();
+         }
+         catch (IOException ex) {
+             throw new IllegalStateException("Cannot close the stream", ex);
+         }
+     }
+ 
+     /**
+      * Resolve the specified filename to a URI.
+      * @param filename name os the file
+      * @return resolved header file URI
+      * @throws CheckstyleException on failure

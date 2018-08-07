@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+index 7112ca330..83c073fcb 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+@@ -406,101 +406,101 @@ public abstract class AbstractTypeAwareCheck extends Check {
+             return name;
+         }
+ 
+         /** @return {@code Class} associated with an object. */
+         public abstract Class<?> getClazz();
+     }
+ 
+     /** Represents regular classes/enumes. */
+     @SuppressWarnings("deprecation")
+     private static final class RegularClass extends AbstractClassInfo {
+         /** name of surrounding class. */
+         private final String surroundingClass;
+         /** is class loadable. */
+         private boolean loadable = true;
+         /** {@code Class} object of this class if it's loadable. */
+         private Class<?> classObj;
+         /** the check we use to resolve classes. */
+         private final AbstractTypeAwareCheck check;
+ 
+         /**
+          * Creates new instance of of class information object.
+          * @param name {@code FullIdent} associated with new object.
+          * @param surroundingClass name of current surrounding class.
+          * @param check the check we use to load class.
+          */
+         public RegularClass(final Token name,
+                              final String surroundingClass,
+                              final AbstractTypeAwareCheck check) {
+             super(name);
+             this.surroundingClass = surroundingClass;
+             this.check = check;
+         }
+         /** @return if class is loadable ot not. */
+         private boolean isLoadable() {
+             return loadable;
+         }
+ 
+         @Override
+         public Class<?> getClazz() {
+             if (isLoadable() && classObj == null) {
+                 setClazz(check.tryLoadClass(getName(), surroundingClass));
+             }
+             return classObj;
+         }
+ 
+         /**
+          * Associates {@code Class} with an object.
+          * @param clazz {@code Class} to associate with.
+          */
+         private void setClazz(Class<?> clazz) {
+-            this.classObj = clazz;
++            classObj = clazz;
+             loadable = clazz != null;
+         }
+ 
+         @Override
+         public String toString() {
+             return "RegularClass[name=" + getName()
+                 + ", in class=" + surroundingClass
+                 + ", loadable=" + loadable
+                 + ", class=" + classObj + "]";
+         }
+     }
+ 
+     /** Represents type param which is "alias" for real type. */
+     private static class ClassAlias extends AbstractClassInfo {
+         /** Class information associated with the alias. */
+         private final AbstractClassInfo classInfo;
+ 
+         /**
+          * Creates nnew instance of the class.
+          * @param name token which represents name of class alias.
+          * @param classInfo class information associated with the alias.
+          */
+         ClassAlias(final Token name, AbstractClassInfo classInfo) {
+             super(name);
+             this.classInfo = classInfo;
+         }
+ 
+         @Override
+         public final Class<?> getClazz() {
+             return classInfo.getClazz();
+         }
+ 
+         @Override
+         public String toString() {
+             return "ClassAlias[alias " + getName()
+                 + " for " + classInfo + "]";
+         }
+     }
+ 
+     /**
+      * Represents text element with location in the text.
+      */
+     protected static class Token {
+         /** token's column number. */
+         private final int column;
+         /** token's line number. */
+         private final int line;
+         /** token's text. */
+         private final String text;
+ 

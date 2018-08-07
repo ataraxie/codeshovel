@@ -1,0 +1,76 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java
+index f7feb429d..223d6356d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java
+@@ -314,65 +314,63 @@ public class LeftCurlyCheck
+                 log(brace.getLineNo(), brace.getColumnNo(),
+                     MSG_KEY_LINE_NEW, "{");
+             }
+         }
+         else if (getAbstractOption() == LeftCurlyOption.EOL) {
+             if (Utils.whitespaceBefore(brace.getColumnNo(), braceLine)
+                 && prevLineLen + 2 <= maxLineLength)
+             {
+                 log(brace.getLineNo(), brace.getColumnNo(),
+                     MSG_KEY_LINE_PREVIOUS, "{");
+             }
+             if (!hasLineBreakAfter(brace)) {
+                 log(brace.getLineNo(), brace.getColumnNo(), MSG_KEY_LINE_BREAK_AFTER);
+             }
+         }
+         else if (getAbstractOption() == LeftCurlyOption.NLOW) {
+             if (startToken.getLineNo() == brace.getLineNo()) {
+                 // all ok as on the same line
+             }
+             else if (startToken.getLineNo() + 1 == brace.getLineNo()) {
+                 if (!Utils.whitespaceBefore(brace.getColumnNo(), braceLine)) {
+                     log(brace.getLineNo(), brace.getColumnNo(),
+                         MSG_KEY_LINE_NEW, "{");
+                 }
+                 else if (prevLineLen + 2 <= maxLineLength) {
+                     log(brace.getLineNo(), brace.getColumnNo(),
+                         MSG_KEY_LINE_PREVIOUS, "{");
+                 }
+             }
+             else if (!Utils.whitespaceBefore(brace.getColumnNo(), braceLine)) {
+                 log(brace.getLineNo(), brace.getColumnNo(),
+                     MSG_KEY_LINE_NEW, "{");
+             }
+         }
+     }
+ 
+     /**
+      * Checks if left curly has line break after.
+      * @param leftCurly
+      *        Left curly token.
+      * @return
+      *        True, left curly has line break after.
+      */
+     private boolean hasLineBreakAfter(DetailAST leftCurly)
+     {
+         DetailAST nextToken = null;
+         if (leftCurly.getType() == TokenTypes.SLIST) {
+             nextToken = leftCurly.getFirstChild();
+         }
+         else {
+-            if (leftCurly.getParent().getParent().getType() == TokenTypes.ENUM_DEF)
++            if (leftCurly.getParent().getParent().getType() == TokenTypes.ENUM_DEF && !ignoreEnums)
+             {
+-                if (!ignoreEnums) {
+-                    nextToken = leftCurly.getNextSibling();
+-                }
++                nextToken = leftCurly.getNextSibling();
+             }
+         }
+-        if (nextToken != null && nextToken.getType() != TokenTypes.RCURLY) {
+-            if (leftCurly.getLineNo() == nextToken.getLineNo()) {
+-                return false;
+-            }
++        if (nextToken != null && nextToken.getType() != TokenTypes.RCURLY
++                && leftCurly.getLineNo() == nextToken.getLineNo())
++        {
++            return false;
+         }
+         return true;
+     }
+ }

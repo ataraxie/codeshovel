@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "CollapsingDocValuesSource.java",
+  "functionName": "ordValue",
+  "functionId": "ordValue",
+  "sourceFilePath": "server/src/main/java/org/apache/lucene/search/grouping/CollapsingDocValuesSource.java",
+  "functionStartLine": 231,
+  "functionEndLine": 233,
+  "changeHistory": [
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+    "4632661bc71bb22fc577df476e70e9dfabaaae66"
+  ],
+  "changeHistoryShort": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": "Yfilerename",
+    "4632661bc71bb22fc577df476e70e9dfabaaae66": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": {
+      "type": "Yfilerename",
+      "commitMessage": "Rename core module to server (#28180)\n\nThis is related to #27933. It renames the core module to server. This is\r\nthe first step towards introducing an elasticsearch-core jar.",
+      "commitDate": 1515695443000,
+      "commitName": "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+      "commitAuthor": "Tim Brooks",
+      "commitDateOld": 1515688270000,
+      "commitNameOld": "7d0eb3292b8f8ba27ef50dbbf38783dc68c70728",
+      "commitAuthorOld": "Martijn van Groningen",
+      "daysBetweenCommits": 0.08,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "4632661bc71bb22fc577df476e70e9dfabaaae66": {
+      "type": "Yintroduced",
+      "commitMessage": "Upgrade to a Lucene 7 snapshot (#24089)\n\nWe want to upgrade to Lucene 7 ahead of time in order to be able to check whether it causes any trouble to Elasticsearch before Lucene 7.0 gets released. From a user perspective, the main benefit of this upgrade is the enhanced support for sparse fields, whose resource consumption is now function of the number of docs that have a value rather than the total number of docs in the index.\r\n\r\nSome notes about the change:\r\n - it includes the deprecation of the `disable_coord` parameter of the `bool` and `common_terms` queries: Lucene has removed support for coord factors\r\n - it includes the deprecation of the `index.similarity.base` expert setting, since it was only useful to configure coords and query norms, which have both been removed\r\n - two tests have been marked with `@AwaitsFix` because of #23966, which we intend to address after the merge",
+      "commitDate": 1492521441000,
+      "commitName": "4632661bc71bb22fc577df476e70e9dfabaaae66",
+      "commitAuthor": "Adrien Grand"
+    }
+  }
+}

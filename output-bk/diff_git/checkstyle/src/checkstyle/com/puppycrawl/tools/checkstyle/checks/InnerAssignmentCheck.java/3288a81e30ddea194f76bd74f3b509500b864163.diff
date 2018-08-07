@@ -1,0 +1,73 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/InnerAssignmentCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/InnerAssignmentCheck.java
+index 80fe21489..c6cfe5ef0 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/InnerAssignmentCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/InnerAssignmentCheck.java
+@@ -34,66 +34,67 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+  *
+  * @author lkuehne
+  */
+ public class InnerAssignmentCheck
+         extends Check
+ {
+     /**
+      * The default tokens.
+      * TODO: this has to be tweaked with |= and friends
+      */
+     private static final int[] DEFAULT_TOKENS = new int[] {
+         TokenTypes.ASSIGN,
+         TokenTypes.PLUS_ASSIGN,
+         TokenTypes.MINUS_ASSIGN
+     };
+ 
+     /** @see Check */
+     public int[] getDefaultTokens()
+     {
+         return DEFAULT_TOKENS;
+     }
+ 
+     /** @see Check */
+     public void visitToken(DetailAST aAST)
+     {
+         final DetailAST parent1 = aAST.getParent();
+         final DetailAST parent2 = parent1.getParent();
+         final DetailAST parent3 = parent2.getParent();
+ 
+         final boolean assigment = isAssignment(parent1);
+         final boolean expr = parent1.getType() == TokenTypes.EXPR;
+         final boolean exprList =
+                 expr && parent2.getType() == TokenTypes.ELIST;
+         final boolean methodCall =
+                 exprList && parent3.getType() == TokenTypes.METHOD_CALL;
+         final boolean ctorCall =
+                 exprList && parent3.getType() == TokenTypes.LITERAL_NEW;
+ 
+         if (assigment || methodCall || ctorCall) {
+             log(aAST.getLineNo(), aAST.getColumnNo(), "assignment.inner.avoid");
+         }
+     }
+ 
+     /**
+      * Checks if an AST is an assignment operator.
+      * @param aAST the AST to check
+      * @return true iff aAST is an assignment operator.
+      */
+     private boolean isAssignment(DetailAST aAST)
+     {
+-        // TODO: make actual tokens available to Check and loop over actual tokens here?
++        // TODO: make actual tokens available to Check and loop over actual
++        // tokens here?
+         final int[] tokens = getDefaultTokens();
+ 
+         final int astType = aAST.getType();
+ 
+         for (int i = 0; i < tokens.length; i++) {
+             int tokenType = tokens[i];
+             if (astType == tokenType) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+ 
+ }

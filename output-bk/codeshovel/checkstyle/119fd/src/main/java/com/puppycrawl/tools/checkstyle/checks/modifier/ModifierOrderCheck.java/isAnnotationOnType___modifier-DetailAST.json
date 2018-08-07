@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ModifierOrderCheck.java",
+  "functionName": "isAnnotationOnType",
+  "functionId": "isAnnotationOnType___modifier-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java",
+  "functionStartLine": 205,
+  "functionEndLine": 223,
+  "changeHistory": [
+    "63c85593a57d75e82ed076576d0f3718c1fb4833",
+    "4c3a5dcdd0e264fe708cfcc65bd2f36092c5bfa4"
+  ],
+  "changeHistoryShort": {
+    "63c85593a57d75e82ed076576d0f3718c1fb4833": "Ybodychange",
+    "4c3a5dcdd0e264fe708cfcc65bd2f36092c5bfa4": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "63c85593a57d75e82ed076576d0f3718c1fb4833": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #903: Skip type annotations from validation of ModifierOrderCheck (part 2)\n",
+      "commitDate": 1456074153000,
+      "commitName": "63c85593a57d75e82ed076576d0f3718c1fb4833",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1455544090000,
+      "commitNameOld": "4c3a5dcdd0e264fe708cfcc65bd2f36092c5bfa4",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 6.13,
+      "commitsBetweenForRepo": 32,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,19 @@\n     private static boolean isAnnotationOnType(DetailAST modifier) {\n         boolean annotationOnType \u003d false;\n         final DetailAST modifiers \u003d modifier.getParent();\n-        final int definitionTokenType \u003d modifiers.getParent().getType();\n-        if (definitionTokenType \u003d\u003d TokenTypes.VARIABLE_DEF\n-                || definitionTokenType \u003d\u003d TokenTypes.PARAMETER_DEF) {\n+        final DetailAST definition \u003d modifiers.getParent();\n+        final int definitionType \u003d definition.getType();\n+        if (definitionType \u003d\u003d TokenTypes.VARIABLE_DEF\n+                || definitionType \u003d\u003d TokenTypes.PARAMETER_DEF\n+                || definitionType \u003d\u003d TokenTypes.CTOR_DEF) {\n             annotationOnType \u003d true;\n         }\n+        else if (definitionType \u003d\u003d TokenTypes.METHOD_DEF) {\n+            final DetailAST typeToken \u003d definition.findFirstToken(TokenTypes.TYPE);\n+            final int methodReturnType \u003d typeToken.getLastChild().getType();\n+            if (methodReturnType !\u003d TokenTypes.LITERAL_VOID) {\n+                annotationOnType \u003d true;\n+            }\n+        }\n         return annotationOnType;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c3a5dcdd0e264fe708cfcc65bd2f36092c5bfa4": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #903: Skip type annotations from validation of ModifierOrderCheck\n",
+      "commitDate": 1455544090000,
+      "commitName": "4c3a5dcdd0e264fe708cfcc65bd2f36092c5bfa4",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

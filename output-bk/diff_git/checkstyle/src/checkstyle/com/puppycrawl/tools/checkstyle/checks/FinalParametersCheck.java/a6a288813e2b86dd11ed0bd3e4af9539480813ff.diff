@@ -1,0 +1,85 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/FinalParametersCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/FinalParametersCheck.java
+index 6d0fb4af1..67cdc6080 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/FinalParametersCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/FinalParametersCheck.java
+@@ -63,79 +63,56 @@ public class FinalParametersCheck extends Check
+         }
+ 
+         if (aAST.getType() == TokenTypes.LITERAL_CATCH) {
+             visitCatch(aAST);
+         }
+         else {
+             visitMethod(aAST);
+         }
+     }
+ 
+     /**
+      * Checks prarmeters of the method or ctor.
+      * @param aMethod method or ctor to check.
+      */
+     private void visitMethod(final DetailAST aMethod)
+     {
+         // exit on fast lane if there is nothing to check here
+         if (!aMethod.branchContains(TokenTypes.PARAMETER_DEF)) {
+             return;
+         }
+ 
+         // we can now be sure that there is at least one parameter
+         DetailAST parameters = aMethod.findFirstToken(TokenTypes.PARAMETERS);
+         DetailAST child = (DetailAST) parameters.getFirstChild();
+         while (child != null) {
+             // childs are PARAMETER_DEF and COMMA
+             if (child.getType() == TokenTypes.PARAMETER_DEF) {
+                 checkParam(child);
+             }
+             child = (DetailAST) child.getNextSibling();
+         }
+     }
+ 
+     /**
+      * Checks parameter of the catch block.
+      * @param aCatch catch block to check.
+      */
+     private void visitCatch(final DetailAST aCatch)
+     {
+         checkParam(aCatch.findFirstToken(TokenTypes.PARAMETER_DEF));
+     }
+ 
+     /**
+      * Checks if the given parameter is final.
+      * @param aParam parameter to check.
+      */
+     private void checkParam(final DetailAST aParam)
+     {
+         if (!aParam.branchContains(TokenTypes.FINAL)) {
+             final DetailAST paramName = aParam.findFirstToken(TokenTypes.IDENT);
+-            final DetailAST firstNode = getFirstNode(aParam);
++            final DetailAST firstNode = CheckUtils.getFirstNode(aParam);
+             log(firstNode.getLineNo(), firstNode.getColumnNo(),
+                 "final.parameter", paramName.getText());
+         }
+     }
+-
+-    /**
+-     * Finds sub-node for given node minimal (line, column) pair.
+-     * @param aNode the root of tree for search.
+-     * @return sub-node with minimal (line, column) pair.
+-     */
+-    private DetailAST getFirstNode(final DetailAST aNode)
+-    {
+-        DetailAST currentNode = aNode;
+-        DetailAST child = (DetailAST) aNode.getFirstChild();
+-        while (child != null) {
+-            final DetailAST newNode = getFirstNode(child);
+-            if (newNode.getLineNo() < currentNode.getLineNo()
+-                || (newNode.getLineNo() == currentNode.getLineNo()
+-                    && newNode.getColumnNo() < currentNode.getColumnNo()))
+-            {
+-                currentNode = newNode;
+-            }
+-            child = (DetailAST) child.getNextSibling();
+-        }
+-
+-        return currentNode;
+-    }
+ }

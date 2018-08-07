@@ -1,0 +1,73 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbstractModuleTestSupport.java",
+  "functionName": "getModuleConfig",
+  "functionId": "getModuleConfig___moduleName-String__moduleId-String",
+  "sourceFilePath": "src/it/java/com/google/checkstyle/test/base/AbstractModuleTestSupport.java",
+  "functionStartLine": 334,
+  "functionEndLine": 356,
+  "changeHistory": [
+    "9bcb6bffd03dc4f42f402bd126f22c730007861a",
+    "cf436f1d9806016cb1886b5d7ec397f56aedc824",
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba",
+    "3f3a80714e9c61ddb105fd799cbb89d74b333e8d"
+  ],
+  "changeHistoryShort": {
+    "9bcb6bffd03dc4f42f402bd126f22c730007861a": "Yexceptionschange",
+    "cf436f1d9806016cb1886b5d7ec397f56aedc824": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba": "Yfilerename",
+    "3f3a80714e9c61ddb105fd799cbb89d74b333e8d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "9bcb6bffd03dc4f42f402bd126f22c730007861a": {
+      "type": "Yexceptionschange",
+      "commitMessage": "Issue #5409: fixed remaining intellij 2017.3 violations",
+      "commitDate": 1516672490000,
+      "commitName": "9bcb6bffd03dc4f42f402bd126f22c730007861a",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1515190792000,
+      "commitNameOld": "21674f2e9764d253aa1be8e40783c5ab5ce02ad5",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 17.15,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,23 @@\n-    protected static Configuration getModuleConfig(String moduleName, String moduleId)\n-            throws CheckstyleException {\n+    protected static Configuration getModuleConfig(String moduleName, String moduleId) {\n         final Configuration result;\n         final List\u003cConfiguration\u003e configs \u003d getModuleConfigs(moduleName);\n         if (configs.size() \u003d\u003d 1) {\n             result \u003d configs.get(0);\n         }\n         else if (moduleId \u003d\u003d null) {\n             throw new IllegalStateException(\"multiple instances of the same Module are detected\");\n         }\n         else {\n             result \u003d configs.stream().filter(conf -\u003e {\n                 try {\n                     return conf.getAttribute(\"id\").equals(moduleId);\n                 }\n                 catch (CheckstyleException ex) {\n                     throw new IllegalStateException(\"problem to get ID attribute from \" + conf, ex);\n                 }\n             })\n             .findFirst().orElseGet(null);\n         }\n \n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "cf436f1d9806016cb1886b5d7ec397f56aedc824": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #4592: merged module test support and fileset test support",
+      "commitDate": 1501657005000,
+      "commitName": "cf436f1d9806016cb1886b5d7ec397f56aedc824",
+      "commitAuthor": "rnveach",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba": {
+      "type": "Yfilerename",
+      "commitMessage": "Issue #4592: Added AbstractPathTestSupport, AbstractModuleTestSupport, AbstractIndentationTestSupport and all tests in ITs extend them\n",
+      "commitDate": 1501610201000,
+      "commitName": "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba",
+      "commitAuthor": "Subbu Dantu",
+      "commitDateOld": 1501592797000,
+      "commitNameOld": "29e131f949950d26e7880da5891d1754776fdeee",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.2,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "3f3a80714e9c61ddb105fd799cbb89d74b333e8d": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #3678: RightCurly with DO-WHILE demands WHILE to be on new line (configuration problem with RightCurly check in google_checks.xml). Update for ITs.\n",
+      "commitDate": 1483113549000,
+      "commitName": "3f3a80714e9c61ddb105fd799cbb89d74b333e8d",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

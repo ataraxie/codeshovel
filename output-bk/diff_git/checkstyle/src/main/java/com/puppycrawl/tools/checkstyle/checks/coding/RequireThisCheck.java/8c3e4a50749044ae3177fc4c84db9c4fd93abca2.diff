@@ -1,0 +1,118 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+index 6a803ce24..f6de633ee 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+@@ -94,111 +94,111 @@ public class RequireThisCheck extends AbstractDeclarationCollector {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.IDENT,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.SLIST,
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getDefaultTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         super.visitToken(ast);
+         if (ast.getType() == TokenTypes.IDENT) {
+             processIdent(ast);
+         }
+     }
+ 
+     /**
+      * Checks if a given IDENT is method call or field name which
+      * require explicit {@code this} qualifier.
+      *
+      * @param ast IDENT to check.
+      */
+     private void processIdent(DetailAST ast) {
+         final int parentType = ast.getParent().getType();
+         switch (parentType) {
+             case TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR:
+             case TokenTypes.ANNOTATION:
+             case TokenTypes.ANNOTATION_FIELD_DEF:
+                 // no need to check annotations content
+                 break;
+             case TokenTypes.METHOD_CALL:
+                 // let's check method calls
+                 if (checkMethods && isClassMethod(ast.getText())) {
+-                    log(ast, "require.this.method", ast.getText());
++                    log(ast, MSG_METHOD, ast.getText());
+                 }
+                 break;
+             default:
+                 if (checkFields) {
+                     processField(ast, parentType);
+                 }
+                 break;
+         }
+     }
+ 
+     /**
+      * Process validation of Field
+      * @param ast field definition ast token
+      * @param parentType type of the parrent
+      */
+     private void processField(DetailAST ast, int parentType) {
+         if (ScopeUtils.getSurroundingScope(ast) == null) {
+             // it is not a class or interface it's
+             // either import or package
+             // we shouldn't checks this
+             return;
+         }
+ 
+         if (parentType == TokenTypes.DOT
+                 && ast.getPreviousSibling() != null) {
+             // it's the method name in a method call; no problem
+             return;
+         }
+         if (parentType == TokenTypes.TYPE
+                 || parentType == TokenTypes.LITERAL_NEW) {
+             // it's a type name; no problem
+             return;
+         }
+         if (isDeclarationToken(parentType)) {
+             // it's being declared; no problem
+             return;
+         }
+ 
+         final String name = ast.getText();
+         if (isClassField(name)) {
+-            log(ast, "require.this.variable", name);
++            log(ast, MSG_VARIABLE, name);
+         }
+     }
+ 
+     /**
+      * Check that token is related to Definition tokens
+      * @param parentType token Type
+      * @return true if token is related to Definition Tokens
+      */
+     private static boolean isDeclarationToken(int parentType) {
+         return parentType == TokenTypes.VARIABLE_DEF
+             || parentType == TokenTypes.CTOR_DEF
+             || parentType == TokenTypes.METHOD_DEF
+             || parentType == TokenTypes.CLASS_DEF
+             || parentType == TokenTypes.ENUM_DEF
+             || parentType == TokenTypes.INTERFACE_DEF
+             || parentType == TokenTypes.PARAMETER_DEF
+             || parentType == TokenTypes.TYPE_ARGUMENT;
+     }
+ }

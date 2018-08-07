@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java
+index c4d59c05d..03aa97456 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java
+@@ -15,97 +15,97 @@
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.indentation;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Handler for inner classes.
+  *
+  * @author jrichard
+  */
+ public class ObjectBlockHandler extends BlockParentHandler {
+     /**
+      * Construct an instance of this handler with the given indentation check,
+      * abstract syntax tree, and parent handler.
+      *
+      * @param indentCheck   the indentation check
+      * @param ast           the abstract syntax tree
+      * @param parent        the parent handler
+      */
+     public ObjectBlockHandler(IndentationCheck indentCheck,
+         DetailAST ast, AbstractExpressionHandler parent) {
+         super(indentCheck, "object def", ast, parent);
+     }
+ 
+     @Override
+     protected DetailAST getTopLevelAst() {
+         return null;
+     }
+ 
+     @Override
+     protected DetailAST getLCurly() {
+         return getMainAst().findFirstToken(TokenTypes.LCURLY);
+     }
+ 
+     @Override
+     protected DetailAST getRCurly() {
+         return getMainAst().findFirstToken(TokenTypes.RCURLY);
+     }
+ 
+     @Override
+     protected DetailAST getListChild() {
+         return getMainAst();
+     }
+ 
+     @Override
+-    protected IndentLevel getLevelImpl() {
++    protected IndentLevel getIndentImpl() {
+         final DetailAST parentAST = getMainAst().getParent();
+-        IndentLevel indent = getParent().getLevel();
++        IndentLevel indent = getParent().getIndent();
+         if (parentAST.getType() == TokenTypes.LITERAL_NEW) {
+-            indent.addAcceptedIndent(super.getLevelImpl());
++            indent.addAcceptedIndent(super.getIndentImpl());
+         }
+         else if (parentAST.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+-            indent = super.getLevelImpl();
++            indent = super.getIndentImpl();
+         }
+         return indent;
+     }
+ 
+     @Override
+     public void checkIndentation() {
+         // if we have a class or interface as a parent, don't do anything,
+         // as this is checked by class def; so
+         // only do this if we have a new for a parent (anonymous inner
+         // class)
+         final DetailAST parentAST = getMainAst().getParent();
+         if (parentAST.getType() != TokenTypes.LITERAL_NEW) {
+             return;
+         }
+ 
+         super.checkIndentation();
+     }
+ 
+     @Override
+     protected void checkRCurly() {
+         final DetailAST rcurly = getRCurly();
+         final int rcurlyPos = expandedTabsColumnNo(rcurly);
+-        final IndentLevel level = curlyLevel();
++        final IndentLevel level = curlyIndent();
+         level.addAcceptedIndent(level.getFirstIndentLevel() + getLineWrappingIndentation());
+ 
+         if (!level.isAcceptable(rcurlyPos) && isOnStartOfLine(rcurly)) {
+-            logError(rcurly, "rcurly", rcurlyPos, curlyLevel());
++            logError(rcurly, "rcurly", rcurlyPos, curlyIndent());
+         }
+     }
+ 
+     /**
+      * A shortcut for {@code IndentationCheck} property.
+      * @return value of lineWrappingIndentation property
+      *         of {@code IndentationCheck}
+      */
+     private int getLineWrappingIndentation() {
+         return getIndentCheck().getLineWrappingIndentation();
+     }
+ }

@@ -1,0 +1,156 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/CovariantEqualsCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/CovariantEqualsCheck.java
+index 52eef48b2..b5b1c553d 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/CovariantEqualsCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/CovariantEqualsCheck.java
+@@ -23,126 +23,128 @@ import java.util.Iterator;
+ import java.util.Set;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * <p>Checks that if a class defines a covariant method equals,
+  * then it defines method equals(java.lang.Object).
+  * Inspired by findbugs,
+  * http://www.cs.umd.edu/~pugh/java/bugs/docs/findbugsPaper.pdf
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="CovariantEquals"/&gt;
+  * </pre>
+  * @author Rick Giles
+  * @version 1.0
+  */
+ public class CovariantEqualsCheck extends Check
+ {
+     /** Set of equals method definitions */
+     private Set mEqualsMethods = new HashSet();
+ 
+     /** true if class defines method equals(java.lang.Object) */
+     private boolean mHasEqualsObject;
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.CLASS_DEF, TokenTypes.LITERAL_NEW, };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void visitToken(DetailAST aAST)
+     {
+         mEqualsMethods.clear();
+         mHasEqualsObject = false;
+ 
+         // examine method definitions for equals methods
+         final DetailAST objBlock = aAST.findFirstToken(TokenTypes.OBJBLOCK);
+-        DetailAST child = (DetailAST) objBlock.getFirstChild();
+-        while (child != null) {
+-            if (child.getType() == TokenTypes.METHOD_DEF) {
+-                if (isEqualsMethod(child)) {
+-                    if (hasObjectParameter(child)) {
+-                        mHasEqualsObject = true;
+-                    }
+-                    else {
+-                        mEqualsMethods.add(child);
++        if (objBlock != null) {
++            DetailAST child = (DetailAST) objBlock.getFirstChild();
++            while (child != null) {
++                if (child.getType() == TokenTypes.METHOD_DEF) {
++                    if (isEqualsMethod(child)) {
++                        if (hasObjectParameter(child)) {
++                            mHasEqualsObject = true;
++                        }
++                        else {
++                            mEqualsMethods.add(child);
++                        }
+                     }
+                 }
++                child = (DetailAST) child.getNextSibling();
+             }
+-            child = (DetailAST) child.getNextSibling();
+-        }
+-
+-        // report equals method definitions
+-        if (!mHasEqualsObject) {
+-            final Iterator it = mEqualsMethods.iterator();
+-            while (it.hasNext()) {
+-                final DetailAST equalsAST = (DetailAST) it.next();
+-                final DetailAST nameNode =
+-                    equalsAST.findFirstToken(TokenTypes.IDENT);
+-                log(
+-                    nameNode.getLineNo(),
+-                    nameNode.getColumnNo(),
+-                    "covariant.equals");
++    
++            // report equals method definitions
++            if (!mHasEqualsObject) {
++                final Iterator it = mEqualsMethods.iterator();
++                while (it.hasNext()) {
++                    final DetailAST equalsAST = (DetailAST) it.next();
++                    final DetailAST nameNode =
++                        equalsAST.findFirstToken(TokenTypes.IDENT);
++                    log(
++                        nameNode.getLineNo(),
++                        nameNode.getColumnNo(),
++                        "covariant.equals");
++                }
+             }
+         }
+     }
+ 
+     /**
+      * Tests whether a method definition AST defines an equals covariant.
+      * @param aAST the method definition AST to test.
+      * Precondition: aAST is a TokenTypes.METHOD_DEF node.
+      * @return true if aAST defines an equals covariant.
+      */
+     private boolean isEqualsMethod(DetailAST aAST)
+     {
+         // non-static, non-abstract?
+         final DetailAST modifiers = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         if (modifiers.branchContains(TokenTypes.LITERAL_STATIC)
+             || modifiers.branchContains(TokenTypes.ABSTRACT))
+         {
+             return false;
+         }
+ 
+         // named "equals"?
+         final DetailAST nameNode = aAST.findFirstToken(TokenTypes.IDENT);
+         final String name = nameNode.getText();
+         if (!name.equals("equals")) {
+             return false;
+         }
+ 
+         // one parameter?
+         final DetailAST paramsNode = aAST.findFirstToken(TokenTypes.PARAMETERS);
+         return (paramsNode.getChildCount() == 1);
+     }
+ 
+     /**
+      * Tests whether a method definition AST has exactly one
+      * parameter of type Object.
+      * @param aAST the method definition AST to test.
+      * Precondition: aAST is a TokenTypes.METHOD_DEF node.
+      * @return true if aAST has exactly one parameter of type Object.
+      */
+     private boolean hasObjectParameter(DetailAST aAST)
+     {
+         // one parameter?
+         final DetailAST paramsNode = aAST.findFirstToken(TokenTypes.PARAMETERS);
+         if (paramsNode.getChildCount() != 1) {
+             return false;
+         }
+ 
+         // parameter type "Object"?
+         final DetailAST paramNode =
+             paramsNode.findFirstToken(TokenTypes.PARAMETER_DEF);

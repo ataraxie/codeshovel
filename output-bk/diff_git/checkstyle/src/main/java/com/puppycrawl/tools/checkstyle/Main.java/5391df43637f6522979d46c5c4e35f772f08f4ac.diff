@@ -1,0 +1,130 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+index 1dd68dda5..79491edfe 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+@@ -84,113 +84,124 @@ public final class Main {
+      * @throws FileNotFoundException if there is a problem with files access
+      **/
+     public static void main(String... args) throws FileNotFoundException {
+         int errorCounter = 0;
+         boolean cliViolations = false;
+         // provide proper exit code based on results.
+         final int exitWithCliViolation = -1;
+         int exitStatus = 0;
+ 
+         try {
+             //parse CLI arguments
+             final CommandLine commandLine = parseCli(args);
+ 
+             // show version and exit if it is requested
+             if (commandLine.hasOption(OPTION_V_NAME)) {
+                 System.out.println("Checkstyle version: "
+                         + Main.class.getPackage().getImplementationVersion());
+                 exitStatus = 0;
+             }
+             else {
+                 // return error if something is wrong in arguments
+                 final List<String> messages = validateCli(commandLine);
+                 cliViolations = !messages.isEmpty();
+                 if (cliViolations) {
+                     exitStatus = exitWithCliViolation;
+                     errorCounter = 1;
+                     for (String message : messages) {
+                         System.out.println(message);
+                     }
+                 }
+                 else {
+                     // create config helper object
+                     final CliOptions config = convertCliToPojo(commandLine);
+                     // run Checker
+                     errorCounter = runCheckstyle(config);
+                     exitStatus = errorCounter;
+                 }
+             }
+         }
+         catch (ParseException pex) {
+             // something wrong with arguments - print error and manual
+             cliViolations = true;
+             exitStatus = exitWithCliViolation;
+             errorCounter = 1;
+             System.out.println(pex.getMessage());
+             printUsage();
+         }
+         catch (CheckstyleException e) {
+             exitStatus = EXIT_WITH_CHECKSTYLE_EXCEPTION_CODE;
+             errorCounter = 1;
+-            System.out.println(e.getMessage());
++            printMessageAndCause(e);
+         }
+         finally {
+             // return exit code base on validation of Checker
+             if (errorCounter != 0 && !cliViolations) {
+                 System.out.println(String.format("Checkstyle ends with %d errors.", errorCounter));
+             }
+             if (exitStatus != 0) {
+                 System.exit(exitStatus);
+             }
+         }
+     }
+ 
++    /**
++     * Prints message of exception to the first line and cause of exception to the second line.
++     * @param exception to be written to console
++   */
++    private static void printMessageAndCause(CheckstyleException exception) {
++        System.out.println(exception.getMessage());
++        if (exception.getCause() != null) {
++            System.out.println("Cause: " + exception.getCause());
++        }
++    }
++
+     /**
+      * Parses and executes Checkstyle based on passed arguments.
+      * @param args
+      *        command line parameters
+      * @return parsed information about passed parameters
+      * @throws ParseException
+      *         when passed arguments are not valid
+      */
+     private static CommandLine parseCli(String... args)
+             throws ParseException {
+         // parse the parameters
+         final CommandLineParser clp = new DefaultParser();
+         // always returns not null value
+         return clp.parse(buildOptions(), args);
+     }
+ 
+     /**
+      * Do validation of Command line options.
+      * @param cmdLine command line object
+      * @return list of violations
+      */
+     private static List<String> validateCli(CommandLine cmdLine) {
+         final List<String> result = new ArrayList<>();
+         // ensure a configuration file is specified
+         if (cmdLine.hasOption(OPTION_C_NAME)) {
+             // validate optional parameters
+             if (cmdLine.hasOption(OPTION_F_NAME)) {
+                 final String format = cmdLine.getOptionValue(OPTION_F_NAME);
+                 if (!PLAIN_FORMAT_NAME.equals(format) && !XML_FORMAT_NAME.equals(format)) {
+                     result.add(String.format("Invalid output format."
+                             + " Found '%s' but expected '%s' or '%s'.",
+                             format, PLAIN_FORMAT_NAME, XML_FORMAT_NAME));
+                 }
+             }
+             if (cmdLine.hasOption(OPTION_P_NAME)) {
+                 final String propertiesLocation = cmdLine.getOptionValue(OPTION_P_NAME);
+                 final File file = new File(propertiesLocation);
+                 if (!file.exists()) {
+                     result.add(String.format("Could not find file '%s'.", propertiesLocation));
+                 }
+             }
+             if (cmdLine.hasOption(OPTION_O_NAME)) {
+                 final String outputLocation = cmdLine.getOptionValue(OPTION_O_NAME);
+                 final File file = new File(outputLocation);
+                 if (file.exists() && !file.canWrite()) {
+                     result.add(String.format("Permission denied : '%s'.", outputLocation));
+                 }
+             }
+             final List<File> files = getFilesToProcess(cmdLine.getArgs());
+             if (files.isEmpty()) {

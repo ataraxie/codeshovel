@@ -1,0 +1,107 @@
+diff --git a/android/guava/src/com/google/common/base/Throwables.java b/android/guava/src/com/google/common/base/Throwables.java
+index bd4b5cb4f..4cc913d3a 100644
+--- a/android/guava/src/com/google/common/base/Throwables.java
++++ b/android/guava/src/com/google/common/base/Throwables.java
+@@ -244,101 +244,101 @@ public final class Throwables {
+   /**
+    * Returns the innermost cause of {@code throwable}. The first throwable in a chain provides
+    * context from when the error or exception was initially detected. Example usage:
+    *
+    * <pre>
+    * assertEquals("Unable to assign a customer id", Throwables.getRootCause(e).getMessage());
+    * </pre>
+    *
+    * @throws IllegalArgumentException if there is a loop in the causal chain
+    */
+   public static Throwable getRootCause(Throwable throwable) {
+     // Keep a second pointer that slowly walks the causal chain. If the fast pointer ever catches
+     // the slower pointer, then there's a loop.
+     Throwable slowPointer = throwable;
+     boolean advanceSlowPointer = false;
+ 
+     Throwable cause;
+     while ((cause = throwable.getCause()) != null) {
+       throwable = cause;
+ 
+       if (throwable == slowPointer) {
+         throw new IllegalArgumentException("Loop in causal chain detected @ " + throwable);
+       }
+       if (advanceSlowPointer) {
+         slowPointer = slowPointer.getCause();
+       }
+       advanceSlowPointer = !advanceSlowPointer; // only advance every other iteration
+     }
+     return throwable;
+   }
+ 
+   /**
+    * Gets a {@code Throwable} cause chain as a list. The first entry in the list will be {@code
+    * throwable} followed by its cause hierarchy. Note that this is a snapshot of the cause chain and
+    * will not reflect any subsequent changes to the cause chain.
+    *
+    * <p>Here's an example of how it can be used to find specific types of exceptions in the cause
+    * chain:
+    *
+    * <pre>
+    * Iterables.filter(Throwables.getCausalChain(e), IOException.class));
+    * </pre>
+    *
+    * @param throwable the non-null {@code Throwable} to extract causes from
+    * @return an unmodifiable list containing the cause chain starting with {@code throwable}
+    * @throws IllegalArgumentException if there is a loop in the causal chain
+    */
+   @Beta // TODO(kevinb): decide best return type
+   public static List<Throwable> getCausalChain(Throwable throwable) {
+     checkNotNull(throwable);
+-    List<Throwable> causes = new ArrayList<Throwable>(4);
++    List<Throwable> causes = new ArrayList<>(4);
+     causes.add(throwable);
+ 
+     // Keep a second pointer that slowly walks the causal chain. If the fast pointer ever catches
+     // the slower pointer, then there's a loop.
+     Throwable slowPointer = throwable;
+     boolean advanceSlowPointer = false;
+ 
+     Throwable cause;
+     while ((cause = throwable.getCause()) != null) {
+       throwable = cause;
+       causes.add(throwable);
+ 
+       if (throwable == slowPointer) {
+         throw new IllegalArgumentException("Loop in causal chain detected @ " + throwable);
+       }
+       if (advanceSlowPointer) {
+         slowPointer = slowPointer.getCause();
+       }
+       advanceSlowPointer = !advanceSlowPointer; // only advance every other iteration
+     }
+     return Collections.unmodifiableList(causes);
+   }
+ 
+   /**
+    * Returns {@code throwable}'s cause, cast to {@code expectedCauseType}.
+    *
+    * <p>Prefer this method instead of manually casting an exception's cause. For example, {@code
+    * (IOException) e.getCause()} throws a {@link ClassCastException} that discards the original
+    * exception {@code e} if the cause is not an {@link IOException}, but {@code
+    * Throwables.getCauseAs(e, IOException.class)} keeps {@code e} as the {@link
+    * ClassCastException}'s cause.
+    *
+    * @throws ClassCastException if the cause cannot be cast to the expected type. The {@code
+    *     ClassCastException}'s cause is {@code throwable}.
+    * @since 22.0
+    */
+   @Beta
+   @GwtIncompatible // Class.cast(Object)
+   public static <X extends Throwable> X getCauseAs(
+       Throwable throwable, Class<X> expectedCauseType) {
+     try {
+       return expectedCauseType.cast(throwable.getCause());
+     } catch (ClassCastException e) {
+       e.initCause(throwable);
+       throw e;
+     }
+   }
+ 
+   /**
+    * Returns a string containing the result of {@link Throwable#toString() toString()}, followed by

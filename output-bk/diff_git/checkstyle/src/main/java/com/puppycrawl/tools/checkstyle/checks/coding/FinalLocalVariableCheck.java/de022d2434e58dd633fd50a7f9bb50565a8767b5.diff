@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+index a9cc104c4..355be8fb2 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+@@ -267,103 +267,101 @@ public class FinalLocalVariableCheck extends AbstractCheck {
+             if (!isInSpecificCodeBlock(ident, TokenTypes.LITERAL_ELSE)
+                     && !isInSpecificCodeBlock(ident, TokenTypes.CASE_GROUP)) {
+                 candidate.alreadyAssigned = true;
+             }
+         }
+         else {
+             candidate.assigned = true;
+         }
+     }
+ 
+     /**
+      * Checks whether the scope of a node is restricted to a specific code block.
+      * @param node node.
+      * @param blockType block type.
+      * @return true if the scope of a node is restricted to a specific code block.
+      */
+     private static boolean isInSpecificCodeBlock(DetailAST node, int blockType) {
+         boolean returnValue = false;
+         for (DetailAST token = node.getParent(); token != null; token = token.getParent()) {
+             final int type = token.getType();
+             if (type == blockType) {
+                 returnValue = true;
+                 break;
+             }
+         }
+         return returnValue;
+     }
+ 
+     /**
+      * Gets final variable candidate for ast.
+      * @param ast ast.
+      * @return Optional of {@link FinalVariableCandidate} for ast from scopeStack.
+      */
+     private Optional<FinalVariableCandidate> getFinalCandidate(DetailAST ast) {
+         Optional<FinalVariableCandidate> result = Optional.empty();
+         final Iterator<ScopeData> iterator = scopeStack.descendingIterator();
+         while (iterator.hasNext() && !result.isPresent()) {
+             final ScopeData scopeData = iterator.next();
+             result = scopeData.findFinalVariableCandidateForAst(ast);
+         }
+         return result;
+     }
+ 
+     /**
+      * Store un-initialized variables in a temporary stack for future use.
+      */
+     private void storePrevScopeUninitializedVariableData() {
+         final ScopeData scopeData = scopeStack.peek();
+         final Deque<DetailAST> prevScopeUnitializedVariableData =
+                 new ArrayDeque<>();
+-        for (DetailAST variable : scopeData.uninitializedVariables) {
+-            prevScopeUnitializedVariableData.push(variable);
+-        }
++        scopeData.uninitializedVariables.forEach(prevScopeUnitializedVariableData::push);
+         prevScopeUninitializedVariables.push(prevScopeUnitializedVariableData);
+     }
+ 
+     /**
+      * Update current scope data uninitialized variable according to the previous scope data.
+      * @param prevScopeUnitializedVariableData variable for previous stack of uninitialized
+      *     variables
+      */
+     private void updateUninitializedVariables(Deque<DetailAST> prevScopeUnitializedVariableData) {
+         // Check for only previous scope
+         for (DetailAST variable : prevScopeUnitializedVariableData) {
+             for (ScopeData scopeData : scopeStack) {
+                 final FinalVariableCandidate candidate = scopeData.scope.get(variable.getText());
+                 DetailAST storedVariable = null;
+                 if (candidate != null) {
+                     storedVariable = candidate.variableIdent;
+                 }
+                 if (storedVariable != null && isSameVariables(storedVariable, variable)
+                         && !scopeData.uninitializedVariables.contains(storedVariable)) {
+                     scopeData.uninitializedVariables.push(variable);
+                 }
+             }
+         }
+         // Check for rest of the scope
+         for (Deque<DetailAST> unitializedVariableData : prevScopeUninitializedVariables) {
+             for (DetailAST variable : unitializedVariableData) {
+                 for (ScopeData scopeData : scopeStack) {
+                     final FinalVariableCandidate candidate =
+                         scopeData.scope.get(variable.getText());
+                     DetailAST storedVariable = null;
+                     if (candidate != null) {
+                         storedVariable = candidate.variableIdent;
+                     }
+                     if (storedVariable != null
+                             && isSameVariables(storedVariable, variable)
+                             && !scopeData.uninitializedVariables.contains(storedVariable)) {
+                         scopeData.uninitializedVariables.push(variable);
+                     }
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * If token is LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, or LITERAL_ELSE, then do not
+      * update the uninitialized variables.
+      * @param ast token to be checked
+      * @return true if should be updated, else false
+      */
+     private static boolean shouldUpdateUninitializedVariables(DetailAST ast) {

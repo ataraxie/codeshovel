@@ -1,0 +1,70 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SwitchHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SwitchHandler.java
+index 0243e6844..ba28f26f9 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SwitchHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SwitchHandler.java
+@@ -48,62 +48,64 @@ public class SwitchHandler extends BlockParentHandler
+      *
+      * @return the left curly brace expression
+      */
+     protected DetailAST getLCurly()
+     {
+         return getMainAst().findFirstToken(TokenTypes.LCURLY);
+     }
+ 
+     /**
+      * Get the right curly brace portion of the expression we are handling.
+      *
+      * @return the right curly brace expression
+      */
+     protected DetailAST getRCurly()
+     {
+         return getMainAst().findFirstToken(TokenTypes.RCURLY);
+     }
+ 
+     /**
+      * There is no list of statements child for this handler.
+      *
+      * @return null
+      */
+     protected DetailAST getListChild()
+     {
+         // all children should be taken care of by case handler (plus
+         // there is no parent of just the cases, if checking is needed
+         // here in the future, an additional way beyond checkChildren()
+         // will have to be devised to get children)
+         return null;
+     }
+ 
+     /**
+      * There is no child element that is not a list of statements.
+      *
+      * @return null
+      */
+     protected DetailAST getNonlistChild()
+     {
+         return null;
+     }
+ 
+     /**
+      * Check the indentation of the switch expression.
+      */
+     private void checkSwitchExpr()
+     {
+         checkExpressionSubtree(
+             (DetailAST) getMainAst().findFirstToken(TokenTypes.LPAREN).
+                 getNextSibling(),
+-            getLevel());
++            getLevel(),
++            false,
++            false);
+     }
+ 
+     /**
+      * Check the indentation of the expression we are handling.
+      */
+     public void checkIndentation()
+     {
+         checkSwitchExpr();
+         super.checkIndentation();
+     }
+ }

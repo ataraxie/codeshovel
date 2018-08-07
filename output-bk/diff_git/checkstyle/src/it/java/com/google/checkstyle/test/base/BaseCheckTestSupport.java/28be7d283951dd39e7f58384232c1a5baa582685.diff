@@ -1,0 +1,107 @@
+diff --git a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+index 978867201..a939b07b5 100644
+--- a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
++++ b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+@@ -82,101 +82,101 @@ public class BaseCheckTestSupport {
+         // make sure the tests always run with English error messages
+         // so the tests don't fail in supported locales like German
+         final Locale locale = Locale.ENGLISH;
+         checker.setLocaleCountry(locale.getCountry());
+         checker.setLocaleLanguage(locale.getLanguage());
+         checker.setModuleClassLoader(Thread.currentThread().getContextClassLoader());
+         checker.configure(dc);
+         checker.addListener(new BriefUtLogger(stream));
+         return checker;
+     }
+ 
+     protected DefaultConfiguration createCheckerConfig(Configuration config) {
+         final DefaultConfiguration dc =
+                 new DefaultConfiguration("configuration");
+         final DefaultConfiguration twConf = createCheckConfig(TreeWalker.class);
+         // make sure that the tests always run with this charset
+         dc.addAttribute("charset", "iso-8859-1");
+         dc.addChild(twConf);
+         twConf.addChild(config);
+         return dc;
+     }
+ 
+     protected String getPath(String fileName) throws IOException {
+         return new File("src/it/resources/com/google/checkstyle/test/" + fileName)
+                 .getCanonicalPath();
+     }
+ 
+     protected void verify(Configuration config, String fileName, String[] expected,
+             Integer... warnsExpected) throws Exception {
+         verify(createChecker(config),
+                 new File[] {new File(fileName)},
+                 fileName, expected, warnsExpected);
+     }
+ 
+     protected void verify(Checker checker,
+             File[] processedFiles,
+             String messageFileName,
+             String[] expected,
+             Integer... warnsExpected)
+             throws Exception {
+         stream.flush();
+         final List<File> theFiles = Lists.newArrayList();
+         Collections.addAll(theFiles, processedFiles);
+         final List<Integer> theWarnings = Lists.newArrayList();
+         Collections.addAll(theWarnings, warnsExpected);
+         final int errs = checker.process(theFiles);
+ 
+         // process each of the lines
+         final ByteArrayInputStream inputStream =
+                 new ByteArrayInputStream(stream.toByteArray());
+-        try (final LineNumberReader lnr = new LineNumberReader(
++        try (LineNumberReader lnr = new LineNumberReader(
+                 new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+ 
+             int previousLineNumber = 0;
+             for (int i = 0; i < expected.length; i++) {
+                 final String expectedResult = messageFileName + ":" + expected[i];
+                 final String actual = lnr.readLine();
+                 assertEquals("error message " + i, expectedResult, actual);
+ 
+                 String parseInt = removeDeviceFromPathOnWindows(actual);
+                 parseInt = parseInt.substring(parseInt.indexOf(':') + 1);
+                 parseInt = parseInt.substring(0, parseInt.indexOf(':'));
+                 final int lineNumber = Integer.parseInt(parseInt);
+                 assertTrue("input file is expected to have a warning comment on line number "
+                         + lineNumber, previousLineNumber == lineNumber
+                             || theWarnings.remove((Integer) lineNumber));
+                 previousLineNumber = lineNumber;
+             }
+ 
+             assertEquals("unexpected output: " + lnr.readLine(),
+                     expected.length, errs);
+             assertEquals("unexpected warnings " + theWarnings, 0, theWarnings.size());
+         }
+ 
+         checker.destroy();
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties'
+      * file.
+      *
+      * @param messageKey the key of message in 'messages.properties' file.
+      * @param arguments  the arguments of message in 'messages.properties' file.
+      */
+     protected String getCheckMessage(Class<? extends AbstractViolationReporter> aClass,
+             String messageKey, Object... arguments) {
+         final Properties pr = new Properties();
+         try {
+             pr.load(aClass.getResourceAsStream("messages.properties"));
+         }
+         catch (IOException ex) {
+             return null;
+         }
+         final MessageFormat formatter = new MessageFormat(pr.getProperty(messageKey),
+                 Locale.ROOT);
+         return formatter.format(arguments);
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties' file.
+      * @param messageKey the key of message in 'messages.properties' file.

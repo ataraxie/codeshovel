@@ -1,0 +1,129 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+index a722e084c..8b142723a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+@@ -166,122 +166,122 @@ public class TranslationCheck
+     private static Map<String, Set<File>> arrangePropertyFiles(
+         List<File> propFiles, String basenameSeparator) {
+         final Map<String, Set<File>> propFileMap = Maps.newHashMap();
+ 
+         for (final File file : propFiles) {
+             final String identifier = extractPropertyIdentifier(file,
+                 basenameSeparator);
+ 
+             Set<File> fileSet = propFileMap.get(identifier);
+             if (fileSet == null) {
+                 fileSet = Sets.newHashSet();
+                 propFileMap.put(identifier, fileSet);
+             }
+             fileSet.add(file);
+         }
+         return propFileMap;
+     }
+ 
+     /**
+      * Loads the keys of the specified property file into a set.
+      * @param file the property file
+      * @return a Set object which holds the loaded keys
+      */
+     private Set<Object> loadKeys(File file) {
+         final Set<Object> keys = Sets.newHashSet();
+         InputStream inStream = null;
+ 
+         try {
+             // Load file and properties.
+             inStream = new FileInputStream(file);
+             final Properties props = new Properties();
+             props.load(inStream);
+ 
+             // Gather the keys and put them into a set
+             final Enumeration<?> e = props.propertyNames();
+             while (e.hasMoreElements()) {
+                 keys.add(e.nextElement());
+             }
+         }
+         catch (final IOException e) {
+             logIOException(e, file);
+         }
+         finally {
+             Closeables.closeQuietly(inStream);
+         }
+         return keys;
+     }
+ 
+     /**
+      * Helper method to log an io exception.
+-     * @param ex the exception that occured
++     * @param ex the exception that occurred
+      * @param file the file that could not be processed
+      */
+     private void logIOException(IOException ex, File file) {
+         String[] args = null;
+         String key = "general.fileNotFound";
+         if (!(ex instanceof FileNotFoundException)) {
+             args = new String[] {ex.getMessage()};
+             key = "general.exception";
+         }
+         final LocalizedMessage message =
+             new LocalizedMessage(
+                 0,
+                 Definitions.CHECKSTYLE_BUNDLE,
+                 key,
+                 args,
+                 getId(),
+                 getClass(), null);
+         final SortedSet<LocalizedMessage> messages = Sets.newTreeSet();
+         messages.add(message);
+         getMessageDispatcher().fireErrors(file.getPath(), messages);
+-        LOG.debug("IOException occured.", ex);
++        LOG.debug("IOException occurred.", ex);
+     }
+ 
+     /**
+      * Compares the key sets of the given property files (arranged in a map)
+      * with the specified key set. All missing keys are reported.
+      * @param keys the set of keys to compare with
+      * @param fileMap a Map from property files to their key sets
+      */
+     private void compareKeySets(Set<Object> keys,
+             Map<File, Set<Object>> fileMap) {
+         final Set<Entry<File, Set<Object>>> fls = fileMap.entrySet();
+ 
+         for (Entry<File, Set<Object>> entry : fls) {
+             final File currentFile = entry.getKey();
+             final MessageDispatcher dispatcher = getMessageDispatcher();
+             final String path = currentFile.getPath();
+             dispatcher.fireFileStarted(path);
+             final Set<Object> currentKeys = entry.getValue();
+ 
+             // Clone the keys so that they are not lost
+             final Set<Object> keysClone = Sets.newHashSet(keys);
+             keysClone.removeAll(currentKeys);
+ 
+             // Remaining elements in the key set are missing in the current file
+             if (!keysClone.isEmpty()) {
+                 for (Object key : keysClone) {
+                     log(0, MSG_KEY, key);
+                 }
+             }
+             fireErrors(path);
+             dispatcher.fireFileFinished(path);
+         }
+     }
+ 
+     /**
+      * Tests whether the given property files (arranged by their prefixes
+      * in a Map) contain the proper keys.
+      *
+      * <p>Each group of files must have the same keys. If this is not the case
+      * an error message is posted giving information which key misses in
+      * which file.
+      *
+      * @param propFiles the property files organized as Map
+      */
+     private void checkPropertyFileSets(Map<String, Set<File>> propFiles) {
+         final Set<Entry<String, Set<File>>> entrySet = propFiles.entrySet();
+ 
+         for (Entry<String, Set<File>> entry : entrySet) {
+             final Set<File> files = entry.getValue();
+ 

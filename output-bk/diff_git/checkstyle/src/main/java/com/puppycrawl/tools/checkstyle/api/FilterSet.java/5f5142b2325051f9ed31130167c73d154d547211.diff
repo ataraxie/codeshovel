@@ -1,0 +1,90 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/FilterSet.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/FilterSet.java
+index f96c406e9..6e57b8251 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/FilterSet.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/FilterSet.java
+@@ -19,81 +19,81 @@
+ 
+ package com.puppycrawl.tools.checkstyle.api;
+ 
+ import java.util.Collections;
+ import java.util.Objects;
+ import java.util.Set;
+ 
+ import com.google.common.collect.Sets;
+ 
+ /**
+  * A filter set applies filters to AuditEvents.
+  * If a filter in the set rejects an AuditEvent, then the
+  * AuditEvent is rejected. Otherwise, the AuditEvent is accepted.
+  * @author Rick Giles
+  */
+ public class FilterSet
+     implements Filter {
+     /** Filter set. */
+     private final Set<Filter> filters = Sets.newHashSet();
+ 
+     /**
+      * Adds a Filter to the set.
+      * @param filter the Filter to add.
+      */
+     public void addFilter(Filter filter) {
+         filters.add(filter);
+     }
+ 
+     /**
+      * Removes filter.
+      * @param filter filter to remove.
+      */
+     public void removeFilter(Filter filter) {
+         filters.remove(filter);
+     }
+ 
+     /**
+      * Returns the Filters of the filter set.
+      * @return the Filters of the filter set.
+      */
+     public Set<Filter> getFilters() {
+         return Collections.unmodifiableSet(filters);
+     }
+ 
+     @Override
+     public String toString() {
+         return filters.toString();
+     }
+ 
+     @Override
+-    public boolean equals(Object o) {
+-        if (this == o) {
++    public boolean equals(Object other) {
++        if (this == other) {
+             return true;
+         }
+-        if (o == null || getClass() != o.getClass()) {
++        if (other == null || getClass() != other.getClass()) {
+             return false;
+         }
+-        final FilterSet filterSet = (FilterSet) o;
++        final FilterSet filterSet = (FilterSet) other;
+         return Objects.equals(filters, filterSet.filters);
+     }
+ 
+     @Override
+     public int hashCode() {
+         return Objects.hash(filters);
+     }
+ 
+     @Override
+     public boolean accept(AuditEvent event) {
+         for (Filter filter : filters) {
+             if (!filter.accept(event)) {
+                 return false;
+             }
+         }
+         return true;
+     }
+ 
+     /** Clears the FilterSet. */
+     public void clear() {
+         filters.clear();
+     }
+ }

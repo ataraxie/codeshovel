@@ -1,0 +1,167 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index 4a92f464c..16bd01259 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -331,156 +331,156 @@ public class CheckStyleTask extends Task
+             if (!ok && (mFailureProperty != null)) {
+                 getProject().setProperty(mFailureProperty, "true");
+             }
+ 
+             if (!ok && mFailOnViolation) {
+                 throw new BuildException("Got " + numErrs + " errors and "
+                         + numWarnings + " warnings.", getLocation());
+             }
+         }
+         finally {
+             if (c != null) {
+                 c.destroy();
+             }
+         }
+     }
+ 
+     /**
+      * Creates new instance of <code>Checker</code>.
+      * @return new instance of <code>Checker</code>
+      */
+     private Checker createChecker()
+     {
+         Checker c = null;
+         try {
+             final Properties props = createOverridingProperties();
+             final Configuration config = ConfigurationLoader.loadConfiguration(
+                     mConfigLocation, new PropertiesExpander(props), true);
+ 
+             final DefaultContext context = new DefaultContext();
+             final ClassLoader loader = new AntClassLoader(getProject(),
+                     mClasspath);
+             context.add("classloader", loader);
+ 
+             c = new Checker();
+ 
+             //load the set of package names
+             if (mPackageNamesFile != null) {
+                 final ModuleFactory moduleFactory = PackageNamesLoader
+                         .loadModuleFactory(mPackageNamesFile.getAbsolutePath());
+                 c.setModuleFactory(moduleFactory);
+             }
+             c.contextualize(context);
+             c.configure(config);
+ 
+             // setup the listeners
+             final AuditListener[] listeners = getListeners();
+             for (int i = 0; i < listeners.length; i++) {
+                 c.addListener(listeners[i]);
+             }
+         }
+-        catch (Exception e) {
++        catch (final Exception e) {
+             throw new BuildException("Unable to create a Checker: "
+                     + e.getMessage(), e);
+         }
+ 
+         return c;
+     }
+ 
+     /**
+      * Create the Properties object based on the arguments specified
+      * to the ANT task.
+      * @return the properties for property expansion expansion
+      * @throws BuildException if an error occurs
+      */
+     private Properties createOverridingProperties()
+     {
+         final Properties retVal = new Properties();
+ 
+         // Load the properties file if specified
+         if (mPropertiesFile != null) {
+             FileInputStream inStream = null;
+             try {
+                 inStream = new FileInputStream(mPropertiesFile);
+                 retVal.load(inStream);
+             }
+-            catch (FileNotFoundException e) {
++            catch (final FileNotFoundException e) {
+                 throw new BuildException("Could not find Properties file '"
+                         + mPropertiesFile + "'", e, getLocation());
+             }
+-            catch (IOException e) {
++            catch (final IOException e) {
+                 throw new BuildException("Error loading Properties file '"
+                         + mPropertiesFile + "'", e, getLocation());
+             }
+             finally {
+                 try {
+                     if (inStream != null) {
+                         inStream.close();
+                     }
+                 }
+-                catch (IOException e) {
++                catch (final IOException e) {
+                     throw new BuildException("Error closing Properties file '"
+                             + mPropertiesFile + "'", e, getLocation());
+                 }
+             }
+         }
+ 
+         // override with Ant properties like ${basedir}
+         final Hashtable antProps = this.getProject().getProperties();
+-        for (Iterator it = antProps.keySet().iterator(); it.hasNext();) {
++        for (final Iterator it = antProps.keySet().iterator(); it.hasNext();) {
+             final String key = (String) it.next();
+             final String value = String.valueOf(antProps.get(key));
+             retVal.put(key, value);
+         }
+ 
+         // override with properties specified in subelements
+-        for (Iterator it = mOverrideProps.iterator(); it.hasNext();) {
++        for (final Iterator it = mOverrideProps.iterator(); it.hasNext();) {
+             final Property p = (Property) it.next();
+             retVal.put(p.getKey(), p.getValue());
+         }
+ 
+         return retVal;
+     }
+ 
+     /**
+      * Return the list of listeners set in this task.
+      * @return the list of listeners.
+      * @throws ClassNotFoundException if an error occurs
+      * @throws InstantiationException if an error occurs
+      * @throws IllegalAccessException if an error occurs
+      * @throws IOException if an error occurs
+      */
+     protected AuditListener[] getListeners() throws ClassNotFoundException,
+             InstantiationException, IllegalAccessException, IOException
+     {
+         final int formatterCount = Math.max(1, mFormatters.size());
+ 
+         final AuditListener[] listeners = new AuditListener[formatterCount];
+ 
+         // formatters
+         if (mFormatters.size() == 0) {
+             final OutputStream debug = new LogOutputStream(this,
+                     Project.MSG_DEBUG);
+             final OutputStream err = new LogOutputStream(this, Project.MSG_ERR);
+             listeners[0] = new DefaultLogger(debug, true, err, true);
+         }
+         else {
+             for (int i = 0; i < formatterCount; i++) {
+                 final Formatter f = (Formatter) mFormatters.get(i);
+                 listeners[i] = f.createListener(this);
+             }
+         }
+         return listeners;
+     }
+ 
+     /**
+      * returns the list of files (full path name) to process.
+      * @return the list of files included via the filesets.
+      */
+     protected File[] scanFileSets()
+     {
+         final ArrayList list = new ArrayList();
+         if (mFileName != null) {
+             // oops we've got an additional one to process, don't
+             // forget it. No sweat, it's fully resolved via the setter.
+             log("Adding standalone file for audit", Project.MSG_VERBOSE);
+             list.add(new File(mFileName));

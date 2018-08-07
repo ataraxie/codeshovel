@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java
+index 381b4a797..4518f3d6a 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java
+@@ -181,101 +181,101 @@ public class BlockParentHandler extends ExpressionHandler
+     }
+ 
+     /**
+      * Determines if the right curly brace must be at the start of the line.
+      *
+      * @return true
+      */
+     protected boolean rcurlyMustStart()
+     {
+         return true;
+     }
+ 
+     /**
+      * Determines if child elements within the expression may be nested.
+      *
+      * @return false
+      */
+     protected boolean childrenMayNest()
+     {
+         return false;
+     }
+ 
+     /**
+      * Check the indentation of the right curly brace.
+      */
+     protected void checkRCurly()
+     {
+         // the rcurly can either be at the correct indentation, or
+         // on the same line as the lcurly
+         final DetailAST lcurly = getLCurly();
+         final DetailAST rcurly = getRCurly();
+         final int rcurlyPos = expandedTabsColumnNo(rcurly);
+ 
+         if ((rcurly == null)
+             || curlyLevel().accept(rcurlyPos)
+             || (!rcurlyMustStart() && !startsLine(rcurly))
+             || areOnSameLine(rcurly, lcurly))
+         {
+             return;
+         }
+         logError(rcurly, "rcurly", rcurlyPos, curlyLevel());
+     }
+ 
+     /**
+      * Get the child element that is not a list of statements.
+      *
+      * @return the non-list child element
+      */
+     protected DetailAST getNonlistChild()
+     {
+-        return (DetailAST) getMainAst().findFirstToken(
++        return getMainAst().findFirstToken(
+             TokenTypes.RPAREN).getNextSibling();
+     }
+ 
+     /**
+      * Check the indentation level of a child that is not a list of statements.
+      */
+     private void checkNonlistChild()
+     {
+         // TODO: look for SEMI and check for it here?
+         final DetailAST nonlist = getNonlistChild();
+         if (nonlist == null) {
+             return;
+         }
+ 
+         final IndentLevel expected =
+             new IndentLevel(getLevel(), getBasicOffset());
+         checkExpressionSubtree(nonlist, expected, false, false);
+     }
+ 
+     /**
+      * Get the child element representing the list of statements.
+      *
+      * @return the statement list child
+      */
+     protected DetailAST getListChild()
+     {
+         return getMainAst().findFirstToken(TokenTypes.SLIST);
+     }
+ 
+     /**
+      * Get the right parenthesis portion of the expression we are handling.
+      *
+      * @return the right parenthis expression
+      */
+     protected DetailAST getRParen()
+     {
+         return getMainAst().findFirstToken(TokenTypes.RPAREN);
+     }
+ 
+     /**
+      * Get the left parenthesis portion of the expression we are handling.
+      *
+      * @return the left parenthis expression
+      */
+     protected DetailAST getLParen()
+     {
+         return getMainAst().findFirstToken(TokenTypes.LPAREN);
+     }
+ 
+     @Override

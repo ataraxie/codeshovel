@@ -1,0 +1,134 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+index 1515fcfc0..795518114 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+@@ -185,126 +185,126 @@ public abstract class AbstractClassCouplingCheck extends Check
+                                aClassDef.getColumnNo());
+     }
+ 
+     /** Restores previous context. */
+     private void leaveClassDef()
+     {
+         mContext.checkCoupling();
+         mContext = mContextStack.pop();
+     }
+ 
+     /**
+      * Incapsulates information about class coupling.
+      *
+      * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+      * @author o_sukhodolsky
+      */
+     private class Context
+     {
+         /**
+          * Set of referenced classes.
+          * Sorted by name for predictable error messages in unit tests.
+          */
+         private final Set<String> mReferencedClassNames = Sets.newTreeSet();
+         /** Own class name. */
+         private final String mClassName;
+         /* Location of own class. (Used to log violations) */
+         /** Line number of class definition. */
+         private final int mLineNo;
+         /** Column number of class definition. */
+         private final int mColumnNo;
+ 
+         /**
+          * Create new context associated with given class.
+          * @param aClassName name of the given class.
+          * @param aLineNo line of class definition.
+          * @param aColumnNo column of class definition.
+          */
+         public Context(String aClassName, int aLineNo, int aColumnNo)
+         {
+             mClassName = aClassName;
+             mLineNo = aLineNo;
+             mColumnNo = aColumnNo;
+         }
+ 
+         /**
+          * Visits throws clause and collects all exceptions we throw.
+          * @param aThrows throws to process.
+          */
+         public void visitLiteralThrows(DetailAST aThrows)
+         {
+-            for (DetailAST childAST = (DetailAST) aThrows.getFirstChild();
++            for (DetailAST childAST = aThrows.getFirstChild();
+                  childAST != null;
+-                 childAST = (DetailAST) childAST.getNextSibling())
++                 childAST = childAST.getNextSibling())
+             {
+                 if (childAST.getType() != TokenTypes.COMMA) {
+                     addReferencedClassName(childAST);
+                 }
+             }
+         }
+ 
+         /**
+          * Visits type.
+          * @param aAST type to process.
+          */
+         public void visitType(DetailAST aAST)
+         {
+             final String className = CheckUtils.createFullType(aAST).getText();
+             mContext.addReferencedClassName(className);
+         }
+ 
+         /**
+          * Visits NEW.
+          * @param aAST NEW to process.
+          */
+         public void visitLiteralNew(DetailAST aAST)
+         {
+-            mContext.addReferencedClassName((DetailAST) aAST.getFirstChild());
++            mContext.addReferencedClassName(aAST.getFirstChild());
+         }
+ 
+         /**
+          * Adds new referenced class.
+          * @param aAST a node which represents referenced class.
+          */
+         private void addReferencedClassName(DetailAST aAST)
+         {
+             final String className = FullIdent.createFullIdent(aAST).getText();
+             addReferencedClassName(className);
+         }
+ 
+         /**
+          * Adds new referenced class.
+          * @param aClassName class name of the referenced class.
+          */
+         private void addReferencedClassName(String aClassName)
+         {
+             if (isSignificant(aClassName)) {
+                 mReferencedClassNames.add(aClassName);
+             }
+         }
+ 
+         /** Checks if coupling less than allowed or not. */
+         public void checkCoupling()
+         {
+             mReferencedClassNames.remove(mClassName);
+             mReferencedClassNames.remove(mPackageName + "." + mClassName);
+ 
+             if (mReferencedClassNames.size() > mMax) {
+                 log(mLineNo, mColumnNo, getLogMessageId(),
+                         mReferencedClassNames.size(), getMax(),
+                         mReferencedClassNames.toString());
+             }
+         }
+ 
+         /**
+          * Checks if given class shouldn't be ignored and not from java.lang.
+          * @param aClassName class to check.
+          * @return true if we should count this class.
+          */
+         private boolean isSignificant(String aClassName)
+         {
+             return (aClassName.length() > 0)
+                     && !mIgnoredClassNames.contains(aClassName)
+                     && !aClassName.startsWith("java.lang.");
+         }
+     }
+ }

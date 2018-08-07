@@ -1,0 +1,72 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SummaryJavadocCheck.java",
+  "functionName": "containsForbiddenFragment",
+  "functionId": "containsForbiddenFragment___firstSentence-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/SummaryJavadocCheck.java",
+  "functionStartLine": 259,
+  "functionEndLine": 264,
+  "changeHistory": [
+    "475ec106d6192f311758471b7fed4359bf9eb180",
+    "3fca3c9250864912e36783302ebe8f04f17ec262",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "d3b013d07359eb5ebcbcbb1daa34722d7e28e763"
+  ],
+  "changeHistoryShort": {
+    "475ec106d6192f311758471b7fed4359bf9eb180": "Ybodychange",
+    "3fca3c9250864912e36783302ebe8f04f17ec262": "Ybodychange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "d3b013d07359eb5ebcbcbb1daa34722d7e28e763": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "475ec106d6192f311758471b7fed4359bf9eb180": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4708: fixed part of idea violations\n",
+      "commitDate": 1500126269000,
+      "commitName": "475ec106d6192f311758471b7fed4359bf9eb180",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1498951068000,
+      "commitNameOld": "dfa3cee94273bf210acc39c3910a5b936f9be42f",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 13.6,
+      "commitsBetweenForRepo": 106,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     private boolean containsForbiddenFragment(String firstSentence) {\n         String javadocText \u003d JAVADOC_MULTILINE_TO_SINGLELINE_PATTERN\n                 .matcher(firstSentence).replaceAll(\" \");\n-        javadocText \u003d CharMatcher.WHITESPACE.trimAndCollapseFrom(javadocText, \u0027 \u0027);\n+        javadocText \u003d CharMatcher.whitespace().trimAndCollapseFrom(javadocText, \u0027 \u0027);\n         return forbiddenSummaryFragments.matcher(javadocText).find();\n     }\n\\ No newline at end of file\n"
+    },
+    "3fca3c9250864912e36783302ebe8f04f17ec262": {
+      "type": "Ybodychange",
+      "commitMessage": "Use compiled pattern instead of dynamic regexp in checks. #1555\n\nFixes some `SpellDynamicRegexReplaceableByCompiledPattern` inspection violations.\n\nDescription:\n\u003eReports calls to the regular expression methods of java.lang.String using constants arguments. Such calls may be profitably replaced with a private static final Pattern field so that the regular expression does not have to be compiled each time it is used.\n",
+      "commitDate": 1440606516000,
+      "commitName": "3fca3c9250864912e36783302ebe8f04f17ec262",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440543609000,
+      "commitNameOld": "085ce12db0983590844ccc24ea49f91686a30ed8",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 0.73,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     private boolean containsForbiddenFragment(String firstSentence) {\n-        // This regexp is used to convert multiline javdoc to single line without stars.\n-        String javadocText \u003d firstSentence.replaceAll(\"\\n[ ]+(\\\\*)|^[ ]+(\\\\*)\", \" \");\n+        String javadocText \u003d JAVADOC_MULTILINE_TO_SINGLELINE_PATTERN\n+                .matcher(firstSentence).replaceAll(\" \");\n         javadocText \u003d CharMatcher.WHITESPACE.trimAndCollapseFrom(javadocText, \u0027 \u0027);\n         return forbiddenSummaryFragments.matcher(javadocText).find();\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "d3b013d07359eb5ebcbcbb1daa34722d7e28e763": {
+      "type": "Yintroduced",
+      "commitMessage": "SummaryJavaDocCheck #307 by Max Vetrenko\n",
+      "commitDate": 1413871948000,
+      "commitName": "d3b013d07359eb5ebcbcbb1daa34722d7e28e763",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

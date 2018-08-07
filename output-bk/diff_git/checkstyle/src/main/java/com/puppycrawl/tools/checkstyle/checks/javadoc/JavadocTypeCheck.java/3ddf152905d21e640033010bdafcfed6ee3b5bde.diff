@@ -1,0 +1,123 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+index 2c00c772d..ec817a159 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+@@ -67,112 +67,112 @@ public class JavadocTypeCheck
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_MISSING_TAG = "type.missingTag";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_UNUSED_TAG = "javadoc.unusedTag";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_UNUSED_TAG_GENERAL = "javadoc.unusedTagGeneral";
+ 
+     /** Open angle bracket literal. */
+     private static final String OPEN_ANGLE_BRACKET = "<";
+ 
+     /** Close angle bracket literal. */
+     private static final String CLOSE_ANGLE_BRACKET = ">";
+ 
+     /** Pattern to match type name within angle brackets in javadoc param tag. */
+     private static final Pattern TYPE_NAME_IN_JAVADOC_TAG =
+             Pattern.compile("\\s*<([^>]+)>.*");
+ 
+     /** Pattern to split type name field in javadoc param tag. */
+     private static final Pattern TYPE_NAME_IN_JAVADOC_TAG_SPLITTER =
+             Pattern.compile("\\s+");
+ 
+     /** The scope to check for. */
+     private Scope scope = Scope.PRIVATE;
+     /** The visibility scope where Javadoc comments shouldn't be checked. **/
+     private Scope excludeScope;
+     /** Compiled regexp to match author tag content. **/
+     private Pattern authorFormat;
+     /** Compiled regexp to match version tag content. **/
+     private Pattern versionFormat;
+     /**
+      * Controls whether to ignore errors when a method has type parameters but
+      * does not have matching param tags in the javadoc. Defaults to false.
+      */
+     private boolean allowMissingParamTags;
+     /** Controls whether to flag errors for unknown tags. Defaults to false. */
+     private boolean allowUnknownTags;
+ 
+     /**
+      * Sets the scope to check.
+-     * @param from string to set scope from
++     * @param scope a scope.
+      */
+-    public void setScope(String from) {
+-        scope = Scope.getInstance(from);
++    public void setScope(Scope scope) {
++        this.scope = scope;
+     }
+ 
+     /**
+      * Set the excludeScope.
+-     * @param excludeScope a {@code String} value
++     * @param excludeScope a scope.
+      */
+-    public void setExcludeScope(String excludeScope) {
+-        this.excludeScope = Scope.getInstance(excludeScope);
++    public void setExcludeScope(Scope excludeScope) {
++        this.excludeScope = excludeScope;
+     }
+ 
+     /**
+      * Set the author tag pattern.
+      * @param pattern a pattern.
+      */
+     public void setAuthorFormat(Pattern pattern) {
+         authorFormat = pattern;
+     }
+ 
+     /**
+      * Set the version format pattern.
+      * @param pattern a pattern.
+      */
+     public void setVersionFormat(Pattern pattern) {
+         versionFormat = pattern;
+     }
+ 
+     /**
+      * Controls whether to allow a type which has type parameters to
+      * omit matching param tags in the javadoc. Defaults to false.
+      *
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowMissingParamTags(boolean flag) {
+         allowMissingParamTags = flag;
+     }
+ 
+     /**
+      * Controls whether to flag errors for unknown tags. Defaults to false.
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowUnknownTags(boolean flag) {
+         allowUnknownTags = flag;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ANNOTATION_DEF,
+         };
+     }

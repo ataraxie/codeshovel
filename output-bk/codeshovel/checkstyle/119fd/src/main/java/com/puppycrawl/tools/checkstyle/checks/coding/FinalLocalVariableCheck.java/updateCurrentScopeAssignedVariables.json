@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "FinalLocalVariableCheck.java",
+  "functionName": "updateCurrentScopeAssignedVariables",
+  "functionId": "updateCurrentScopeAssignedVariables",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java",
+  "functionStartLine": 284,
+  "functionEndLine": 293,
+  "changeHistory": [
+    "073c370de2e65fc346b51ef09763ecb30b5cd14f",
+    "5e0ab75777985f056715f6d9dc5e4667b1a0dfa2"
+  ],
+  "changeHistoryShort": {
+    "073c370de2e65fc346b51ef09763ecb30b5cd14f": "Ybodychange",
+    "5e0ab75777985f056715f6d9dc5e4667b1a0dfa2": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "073c370de2e65fc346b51ef09763ecb30b5cd14f": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #4343: moved more variables inside if blocks to reduce execution",
+      "commitDate": 1494539783000,
+      "commitName": "073c370de2e65fc346b51ef09763ecb30b5cd14f",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1492545245000,
+      "commitNameOld": "5e0ab75777985f056715f6d9dc5e4667b1a0dfa2",
+      "commitAuthorOld": "Luolc",
+      "daysBetweenCommits": 23.08,
+      "commitsBetweenForRepo": 122,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,10 @@\n     private void updateCurrentScopeAssignedVariables() {\n+        // -@cs[MoveVariableInsideIf] assignment value is a modification call so it can\u0027t be moved\n         final Deque\u003cDetailAST\u003e poppedScopeAssignedVariableData \u003d\n                 currentScopeAssignedVariables.pop();\n         final Deque\u003cDetailAST\u003e currentScopeAssignedVariableData \u003d\n                 currentScopeAssignedVariables.peek();\n         if (currentScopeAssignedVariableData !\u003d null) {\n             currentScopeAssignedVariableData.addAll(poppedScopeAssignedVariableData);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "5e0ab75777985f056715f6d9dc5e4667b1a0dfa2": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #4082: Take \"break\" into consideration in FinalLocalVariable\n",
+      "commitDate": 1492545245000,
+      "commitName": "5e0ab75777985f056715f6d9dc5e4667b1a0dfa2",
+      "commitAuthor": "Luolc"
+    }
+  }
+}

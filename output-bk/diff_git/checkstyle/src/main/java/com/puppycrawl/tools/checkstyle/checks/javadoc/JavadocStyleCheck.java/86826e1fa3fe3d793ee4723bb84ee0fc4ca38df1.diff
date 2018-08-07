@@ -1,0 +1,133 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index 0bd4b5dd3..89e70d517 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -318,121 +318,121 @@ public class JavadocStyleCheck
+     private static void trimTail(StringBuilder builder) {
+         int i = builder.length() - 1;
+         while (true) {
+             if (Character.isWhitespace(builder.charAt(i))) {
+                 builder.deleteCharAt(i);
+             }
+             else if (builder.charAt(i - 1) == '*') {
+                 builder.deleteCharAt(i);
+                 builder.deleteCharAt(i - 1);
+                 i--;
+                 while (builder.charAt(i - 1) == '*') {
+                     builder.deleteCharAt(i - 1);
+                     i--;
+                 }
+             }
+             else {
+                 break;
+             }
+             i--;
+         }
+     }
+ 
+     /**
+      * Checks the comment for HTML tags that do not have a corresponding close
+      * tag or a close tag that has no previous open tag.  This code was
+      * primarily copied from the DocCheck checkHtml method.
+      *
+      * @param ast the node with the Javadoc
+      * @param comment the <code>TextBlock</code> which represents
+      *                 the Javadoc comment.
+      */
+     private void checkHtml(final DetailAST ast, final TextBlock comment) {
+         final int lineno = comment.getStartLineNo();
+         final Deque<HtmlTag> htmlStack = new ArrayDeque<>();
+         final String[] text = comment.getText();
+ 
+         final TagParser parser = new TagParser(text, lineno);
+ 
+         while (parser.hasNextTag()) {
+             final HtmlTag tag = parser.nextTag();
+ 
+             if (tag.isIncompleteTag()) {
+                 log(tag.getLineNo(), INCOMPLETE_TAG,
+                     text[tag.getLineNo() - lineno]);
+                 return;
+             }
+             if (tag.isClosedTag()) {
+                 //do nothing
+                 continue;
+             }
+-            if (!tag.isCloseTag()) {
+-                //We only push html tags that are allowed
+-                if (isAllowedTag(tag)) {
+-                    htmlStack.push(tag);
+-                }
+-            }
+-            else {
++            if (tag.isCloseTag()) {
+                 // We have found a close tag.
+                 if (isExtraHtml(tag.getId(), htmlStack)) {
+                     // No corresponding open tag was found on the stack.
+                     log(tag.getLineNo(),
+                         tag.getPosition(),
+                         EXTRA_HTML,
+                         tag);
+                 }
+                 else {
+                     // See if there are any unclosed tags that were opened
+                     // after this one.
+                     checkUnclosedTags(htmlStack, tag.getId());
+                 }
+             }
++            else {
++                //We only push html tags that are allowed
++                if (isAllowedTag(tag)) {
++                    htmlStack.push(tag);
++                }
++            }
+         }
+ 
+         // Identify any tags left on the stack.
+         String lastFound = ""; // Skip multiples, like <b>...<b>
+         final List<String> typeParameters = CheckUtils.getTypeParameterNames(ast);
+         for (final HtmlTag htag : htmlStack) {
+             if (!isSingleTag(htag)
+                 && !htag.getId().equals(lastFound)
+                 && !typeParameters.contains(htag.getId())) {
+                 log(htag.getLineNo(), htag.getPosition(), UNCLOSED_HTML, htag);
+                 lastFound = htag.getId();
+             }
+         }
+     }
+ 
+     /**
+      * Checks to see if there are any unclosed tags on the stack.  The token
+      * represents a html tag that has been closed and has a corresponding open
+      * tag on the stack.  Any tags, except single tags, that were opened
+      * (pushed on the stack) after the token are missing a close.
+      *
+      * @param htmlStack the stack of opened HTML tags.
+      * @param token the current HTML tag name that has been closed.
+      */
+     private void checkUnclosedTags(Deque<HtmlTag> htmlStack, String token) {
+         final Deque<HtmlTag> unclosedTags = new ArrayDeque<>();
+         HtmlTag lastOpenTag = htmlStack.pop();
+         while (!token.equalsIgnoreCase(lastOpenTag.getId())) {
+             // Find unclosed elements. Put them on a stack so the
+             // output order won't be back-to-front.
+             if (isSingleTag(lastOpenTag)) {
+                 lastOpenTag = htmlStack.pop();
+             }
+             else {
+                 unclosedTags.push(lastOpenTag);
+                 lastOpenTag = htmlStack.pop();
+             }
+         }
+ 
+         // Output the unterminated tags, if any
+         String lastFound = ""; // Skip multiples, like <b>..<b>
+         for (final HtmlTag htag : unclosedTags) {
+             lastOpenTag = htag;
+             if (lastOpenTag.getId().equals(lastFound)) {
+                 continue;
+             }
+             lastFound = lastOpenTag.getId();
+             log(lastOpenTag.getLineNo(),
+                 lastOpenTag.getPosition(),
+                 UNCLOSED_HTML,

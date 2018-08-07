@@ -1,0 +1,253 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java
+index 55bdd5516..3335ecd0f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java
+@@ -143,101 +143,101 @@ public abstract class AbstractExpressionHandler {
+      * Log an indentation error.
+      *
+      * @param ast           the expression that caused the error
+      * @param subtypeName   the type of the expression
+      * @param actualLevel   the actual indent level of the expression
+      * @param expectedLevel the expected indent level of the expression
+      */
+     protected final void logError(DetailAST ast, String subtypeName,
+                                   int actualLevel, IndentLevel expectedLevel) {
+         final String typeStr;
+ 
+         if (subtypeName.isEmpty()) {
+             typeStr = "";
+         }
+         else {
+             typeStr = " " + subtypeName;
+         }
+         String messageKey = MSG_ERROR;
+         if (expectedLevel.isMultiLevel()) {
+             messageKey = MSG_ERROR_MULTI;
+         }
+         indentCheck.indentationLog(ast.getLineNo(), messageKey,
+             typeName + typeStr, actualLevel, expectedLevel);
+     }
+ 
+     /**
+      * Log child indentation error.
+      *
+      * @param line           the expression that caused the error
+      * @param actualLevel   the actual indent level of the expression
+      * @param expectedLevel the expected indent level of the expression
+      */
+     private void logChildError(int line,
+                                int actualLevel,
+                                IndentLevel expectedLevel) {
+         String messageKey = MSG_CHILD_ERROR;
+         if (expectedLevel.isMultiLevel()) {
+             messageKey = MSG_CHILD_ERROR_MULTI;
+         }
+         indentCheck.indentationLog(line, messageKey,
+             typeName, actualLevel, expectedLevel);
+     }
+ 
+     /**
+      * Determines if the given expression is at the start of a line.
+      *
+      * @param ast   the expression to check
+      *
+      * @return true if it is, false otherwise
+      */
+-    protected final boolean startsLine(DetailAST ast) {
++    protected final boolean isOnStartOfLine(DetailAST ast) {
+         return getLineStart(ast) == expandedTabsColumnNo(ast);
+     }
+ 
+     /**
+      * Determines if two expressions are on the same line.
+      *
+      * @param ast1   the first expression
+      * @param ast2   the second expression
+      *
+      * @return true if they are, false otherwise
+      */
+     static boolean areOnSameLine(DetailAST ast1, DetailAST ast2) {
+         return ast1.getLineNo() == ast2.getLineNo();
+     }
+ 
+     /**
+      * Searches in given sub-tree (including given node) for the token
+      * which represents first symbol for this sub-tree in file.
+      * @param ast a root of sub-tree in which the search should be performed.
+      * @return a token which occurs first in the file.
+      */
+     static DetailAST getFirstToken(DetailAST ast) {
+         DetailAST first = ast;
+         DetailAST child = ast.getFirstChild();
+ 
+         while (child != null) {
+             final DetailAST toTest = getFirstToken(child);
+             if (toTest.getColumnNo() < first.getColumnNo()) {
+                 first = toTest;
+             }
+             child = child.getNextSibling();
+         }
+ 
+         return first;
+     }
+ 
+     /**
+      * Get the start of the line for the given expression.
+      *
+      * @param ast   the expression to find the start of the line for
+      *
+      * @return the start of the line for the given expression
+      */
+     protected final int getLineStart(DetailAST ast) {
+         final String line = indentCheck.getLine(ast.getLineNo() - 1);
+         return getLineStart(line);
+     }
+ 
+     /**
+      * Get the start of the specified line.
+@@ -460,142 +460,142 @@ public abstract class AbstractExpressionHandler {
+      * @param ast   the expression to find the start of
+      *
+      * @return the column number for the start of the expression
+      */
+     protected final int expandedTabsColumnNo(DetailAST ast) {
+         final String line =
+             indentCheck.getLine(ast.getLineNo() - 1);
+ 
+         return CommonUtils.lengthExpandedTabs(line, ast.getColumnNo(),
+             indentCheck.getIndentationTabWidth());
+     }
+ 
+     /**
+      * Find the set of lines for a given subtree.
+      *
+      * @param lines          the set of lines to add to
+      * @param tree           the subtree to examine
+      * @param allowNesting   whether or not to allow nested subtrees
+      */
+     protected final void findSubtreeLines(LineSet lines, DetailAST tree,
+         boolean allowNesting) {
+         if (indentCheck.getHandlerFactory().isHandledType(tree.getType())) {
+             return;
+         }
+ 
+         final int lineNum = tree.getLineNo();
+         final Integer colNum = lines.getStartColumn(lineNum);
+ 
+         final int thisLineColumn = expandedTabsColumnNo(tree);
+         if (colNum == null || thisLineColumn < colNum) {
+             lines.addLineAndCol(lineNum, thisLineColumn);
+         }
+ 
+         // check children
+         for (DetailAST node = tree.getFirstChild();
+             node != null;
+             node = node.getNextSibling()) {
+             findSubtreeLines(lines, node, allowNesting);
+         }
+     }
+ 
+     /**
+      * Check the indentation level of modifiers.
+      */
+     protected void checkModifiers() {
+         final DetailAST modifiers =
+             mainAst.findFirstToken(TokenTypes.MODIFIERS);
+         for (DetailAST modifier = modifiers.getFirstChild();
+              modifier != null;
+              modifier = modifier.getNextSibling()) {
+-            if (startsLine(modifier)
++            if (isOnStartOfLine(modifier)
+                 && !getLevel().isAcceptable(expandedTabsColumnNo(modifier))) {
+                 logError(modifier, "modifier",
+                     expandedTabsColumnNo(modifier));
+             }
+         }
+     }
+ 
+     /**
+      * Check the indentation of the expression we are handling.
+      */
+     public abstract void checkIndentation();
+ 
+     /**
+      * Accessor for the IndentCheck attribute.
+      *
+      * @return the IndentCheck attribute
+      */
+     protected final IndentationCheck getIndentCheck() {
+         return indentCheck;
+     }
+ 
+     /**
+      * Accessor for the MainAst attribute.
+      *
+      * @return the MainAst attribute
+      */
+     protected final DetailAST getMainAst() {
+         return mainAst;
+     }
+ 
+     /**
+      * Accessor for the Parent attribute.
+      *
+      * @return the Parent attribute
+      */
+     protected final AbstractExpressionHandler getParent() {
+         return parent;
+     }
+ 
+     /**
+      * A shortcut for {@code IndentationCheck} property.
+      * @return value of basicOffset property of {@code IndentationCheck}
+      */
+     protected final int getBasicOffset() {
+         return indentCheck.getBasicOffset();
+     }
+ 
+     /**
+      * A shortcut for {@code IndentationCheck} property.
+      * @return value of braceAdjustment property
+      *         of {@code IndentationCheck}
+      */
+     protected final int getBraceAdjustment() {
+         return indentCheck.getBraceAdjustment();
+     }
+ 
+     /**
+      * Check the indentation of the right parenthesis.
+      * @param rparen parenthesis to check
+      * @param lparen left parenthesis associated with aRparen
+      */
+     protected final void checkRParen(DetailAST lparen, DetailAST rparen) {
+         if (rparen != null) {
+             // the rcurly can either be at the correct indentation,
+             // or not first on the line
+             final int rparenLevel = expandedTabsColumnNo(rparen);
+             // or has <lparen level> + 1 indentation
+             final int lparenLevel = expandedTabsColumnNo(lparen);
+ 
+-            if (!getLevel().isAcceptable(rparenLevel) && startsLine(rparen)
++            if (!getLevel().isAcceptable(rparenLevel) && isOnStartOfLine(rparen)
+                     && rparenLevel != lparenLevel + 1) {
+                 logError(rparen, "rparen", rparenLevel);
+             }
+         }
+     }
+ 
+     /**
+      * Check the indentation of the left parenthesis.
+      * @param lparen parenthesis to check
+      */
+     protected final void checkLParen(final DetailAST lparen) {
+         // the rcurly can either be at the correct indentation, or on the
+         // same line as the lcurly
+         if (lparen == null
+             || getLevel().isAcceptable(expandedTabsColumnNo(lparen))
+-            || !startsLine(lparen)) {
++            || !isOnStartOfLine(lparen)) {
+             return;
+         }
+         logError(lparen, "lparen", expandedTabsColumnNo(lparen));
+     }
+ }

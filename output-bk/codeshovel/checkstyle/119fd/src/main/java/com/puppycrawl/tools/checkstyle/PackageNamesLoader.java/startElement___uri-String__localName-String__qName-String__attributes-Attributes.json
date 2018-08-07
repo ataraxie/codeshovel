@@ -1,0 +1,149 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "PackageNamesLoader.java",
+  "functionName": "startElement",
+  "functionId": "startElement___uri-String__localName-String__qName-String__attributes-Attributes",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java",
+  "functionStartLine": 84,
+  "functionEndLine": 93,
+  "changeHistory": [
+    "26513d52336c42432ee21565b253297ba4174530",
+    "b43c32ad0a3674fcda782d2e28d0975b72382470",
+    "9a582720939c1b4098430d1ab439b9ce045eaf06",
+    "e689662e9d47347cb2f326e1c16901ee1c4c6367",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "6abdc24080fe87995f39bd54bed99976dace4652",
+    "987da3a4c5fac3476a4461892c919c0f6d9248bd",
+    "16ba5b35f9f346e7cea294afaad7f9211605ecaa"
+  ],
+  "changeHistoryShort": {
+    "26513d52336c42432ee21565b253297ba4174530": "Ybodychange",
+    "b43c32ad0a3674fcda782d2e28d0975b72382470": "Ymultichange(Yparameterchange,Ybodychange)",
+    "9a582720939c1b4098430d1ab439b9ce045eaf06": "Yexceptionschange",
+    "e689662e9d47347cb2f326e1c16901ee1c4c6367": "Ybodychange",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "6abdc24080fe87995f39bd54bed99976dace4652": "Ybodychange",
+    "987da3a4c5fac3476a4461892c919c0f6d9248bd": "Ybodychange",
+    "16ba5b35f9f346e7cea294afaad7f9211605ecaa": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "26513d52336c42432ee21565b253297ba4174530": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: MultipleStringLiterals violations partial fix\n",
+      "commitDate": 1440505228000,
+      "commitName": "26513d52336c42432ee21565b253297ba4174530",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440499720000,
+      "commitNameOld": "b43c32ad0a3674fcda782d2e28d0975b72382470",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.06,
+      "commitsBetweenForRepo": 21,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public void startElement(String uri,\n                              String localName,\n                              String qName,\n                              Attributes attributes) {\n-        if (\"package\".equals(qName)) {\n+        if (PACKAGE_ELEMENT_NAME.equals(qName)) {\n             //push package name, name is mandatory attribute with not empty value by DTD\n             final String name \u003d attributes.getValue(\"name\");\n             packageStack.push(name);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b43c32ad0a3674fcda782d2e28d0975b72382470": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Use same parameter names in overridden methods. #1555\n\nFixes some `ParameterNameDiffersFromOverriddenParameter` inspection violations.\n\nDescription:\n\u003eReports parameters that have different names from the corresponding parameters in the methods they override. While legal in Java, such inconsistent names may be confusing, and lessen the documentation benefits of good naming practices.\n",
+      "commitDate": 1440499720000,
+      "commitName": "b43c32ad0a3674fcda782d2e28d0975b72382470",
+      "commitAuthor": "Michal Kordas",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "9a582720939c1b4098430d1ab439b9ce045eaf06": {
+      "type": "Yexceptionschange",
+      "commitMessage": "Remove redundant throws declarations. #1555\n\nFixes `RedundantThrowsDeclaration` inspection violations.\n\nDescription:\n\u003eThis inspection reports exceptions that are declared in a method\u0027s signature but never thrown by the method itself.\n",
+      "commitDate": 1439437448000,
+      "commitName": "9a582720939c1b4098430d1ab439b9ce045eaf06",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439295539000,
+      "commitNameOld": "1935bed5772c0a939b9168b81acd2ab5aa800538",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 1.64,
+      "commitsBetweenForRepo": 18,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,10 @@\n     public void startElement(String namespaceURI,\n                              String localName,\n                              String qName,\n-                             Attributes atts)\n-        throws SAXException {\n+                             Attributes atts) {\n         if (\"package\".equals(qName)) {\n             //push package name, name is mandatory attribute with not empty value by DTD\n             final String name \u003d atts.getValue(\"name\");\n             packageStack.push(name);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "e689662e9d47347cb2f326e1c16901ee1c4c6367": {
+      "type": "Ybodychange",
+      "commitMessage": "100% coverage for PackageNamesLoader. #1294\n",
+      "commitDate": 1437890095000,
+      "commitName": "e689662e9d47347cb2f326e1c16901ee1c4c6367",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 3.0,
+      "commitsBetweenForRepo": 46,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,11 @@\n     public void startElement(String namespaceURI,\n                              String localName,\n                              String qName,\n                              Attributes atts)\n         throws SAXException {\n         if (\"package\".equals(qName)) {\n-            //push package name\n+            //push package name, name is mandatory attribute with not empty value by DTD\n             final String name \u003d atts.getValue(\"name\");\n-            if (name \u003d\u003d null) {\n-                throw new SAXException(\"missing package name\");\n-            }\n             packageStack.push(name);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checkstyle, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java\n",
+      "commitDate": 1421678312000,
+      "commitName": "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "6abdc24080fe87995f39bd54bed99976dace4652": {
+      "type": "Ybodychange",
+      "commitMessage": "make local variables final.\n",
+      "commitDate": 1207478230000,
+      "commitName": "6abdc24080fe87995f39bd54bed99976dace4652",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200296548000,
+      "commitNameOld": "fd90bd5aa5cd623b08a2e44ef05e8fac8045d333",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 83.12,
+      "commitsBetweenForRepo": 21,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     public void startElement(String aNamespaceURI,\n                              String aLocalName,\n                              String aQName,\n                              Attributes aAtts)\n         throws SAXException\n     {\n-        if (aQName.equals(\"package\")) {\n+        if (\"package\".equals(aQName)) {\n             //push package name\n             final String name \u003d aAtts.getValue(\"name\");\n             if (name \u003d\u003d null) {\n                 throw new SAXException(\"missing package name\");\n             }\n             mPackageStack.push(name);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "987da3a4c5fac3476a4461892c919c0f6d9248bd": {
+      "type": "Ybodychange",
+      "commitMessage": "removed redundant type cast (the magic of InelliJ IDEA)\n",
+      "commitDate": 1039543441000,
+      "commitName": "987da3a4c5fac3476a4461892c919c0f6d9248bd",
+      "commitAuthor": "Lars Kühne",
+      "commitDateOld": 1039347941000,
+      "commitNameOld": "4b8027bef72b54b8163f93e5c37c05d5c5368611",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 2.26,
+      "commitsBetweenForRepo": 28,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     public void startElement(String aNamespaceURI,\n                              String aLocalName,\n                              String aQName,\n                              Attributes aAtts)\n             throws SAXException\n     {\n         if (aQName.equals(\"package\")) {\n             //push package name\n-            final String name \u003d (String) aAtts.getValue(\"name\");\n+            final String name \u003d aAtts.getValue(\"name\");\n             if (name \u003d\u003d null) {\n                 throw new SAXException(\"missing package name\");\n             }\n             mPackageStack.push(name);\n         }\n    }\n\\ No newline at end of file\n"
+    },
+    "16ba5b35f9f346e7cea294afaad7f9211605ecaa": {
+      "type": "Yintroduced",
+      "commitMessage": "modified for config XML and mapping names to full class names - see\nposting to checkstyle-devel@lists.sourceforge.net\n",
+      "commitDate": 1039114468000,
+      "commitName": "16ba5b35f9f346e7cea294afaad7f9211605ecaa",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

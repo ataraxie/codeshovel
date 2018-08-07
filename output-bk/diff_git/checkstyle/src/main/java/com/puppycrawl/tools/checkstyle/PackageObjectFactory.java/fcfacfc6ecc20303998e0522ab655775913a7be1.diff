@@ -1,0 +1,203 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/PackageObjectFactory.java b/src/main/java/com/puppycrawl/tools/checkstyle/PackageObjectFactory.java
+index 70acf1284..2c123a818 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/PackageObjectFactory.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/PackageObjectFactory.java
+@@ -99,174 +99,189 @@ public class PackageObjectFactory implements ModuleFactory {
+      * @param moduleClassLoader class loader used to load Checkstyle
+      *          core and custom modules
+      */
+     public PackageObjectFactory(String packageName, ClassLoader moduleClassLoader) {
+         if (moduleClassLoader == null) {
+             throw new IllegalArgumentException(NULL_LOADER_MESSAGE);
+         }
+ 
+         packages = new LinkedHashSet<>(1);
+         packages.add(packageName);
+         this.moduleClassLoader = moduleClassLoader;
+     }
+ 
+     /**
+      * Creates a new instance of a class from a given name, or that name
+      * concatenated with &quot;Check&quot;. If the name is
+      * a class name, creates an instance of the named class. Otherwise, creates
+      * an instance of a class name obtained by concatenating the given name
+      * to a package name from a given list of package names.
+      * @param name the name of a class.
+      * @return the {@code Object} created by loader.
+      * @throws CheckstyleException if an error occurs.
+      */
+     @Override
+     public Object createModule(String name) throws CheckstyleException {
+         Object instance = createObjectFromMap(name);
+         if (instance == null) {
+             instance = createObjectWithIgnoringProblems(name, getAllPossibleNames(name));
+         }
+         if (instance == null) {
+             final String nameCheck = name + CHECK_SUFFIX;
+             instance = createObjectWithIgnoringProblems(nameCheck, getAllPossibleNames(nameCheck));
+             if (instance == null) {
+ 
+                 final String attemptedNames = joinPackageNamesWithClassName(name, packages)
+                         + STRING_SEPARATOR + nameCheck + STRING_SEPARATOR
+                         + joinPackageNamesWithClassName(nameCheck, packages);
+                 final LocalizedMessage exceptionMessage = new LocalizedMessage(0,
+                     Definitions.CHECKSTYLE_BUNDLE, UNABLE_TO_INSTANTIATE_EXCEPTION_MESSAGE,
+                     new String[] {name, attemptedNames}, null, getClass(), null);
+                 throw new CheckstyleException(exceptionMessage.getMessage());
+             }
+         }
+         return instance;
+     }
+ 
+     /**
+      * Create object with the help of Checkstyle NAME_TO_FULL_MODULE_NAME map.
+      * @param name name of module.
+      * @return instance of module if it is found in modules map.
++     * @throws CheckstyleException if the class fails to instantiate.
+      */
+-    private Object createObjectFromMap(String name) {
++    private Object createObjectFromMap(String name) throws CheckstyleException {
+         final String fullModuleName = NAME_TO_FULL_MODULE_NAME.get(name);
+         Object instance = null;
+         if (fullModuleName == null) {
+             final String fullCheckModuleName = NAME_TO_FULL_MODULE_NAME.get(name + CHECK_SUFFIX);
+             if (fullCheckModuleName != null) {
+                 instance = createObject(fullCheckModuleName);
+             }
+         }
+         else {
+             instance = createObject(fullModuleName);
+         }
+         return instance;
+     }
+ 
+     /**
+      * Create a new instance of a named class.
+      * @param className the name of the class to instantiate.
+      * @param secondAttempt the set of names to attempt instantiation
+      *                      if usage of the className was not successful.
+      * @return the {@code Object} created by loader or null.
++     * @throws CheckstyleException if the class fails to instantiate.
+      */
+-    private Object createObjectWithIgnoringProblems(String className,
+-                                                    Set<String> secondAttempt) {
++    private Object createObjectWithIgnoringProblems(String className, Set<String> secondAttempt)
++            throws CheckstyleException {
+         Object instance = createObject(className);
+         if (instance == null) {
+             final Iterator<String> ite = secondAttempt.iterator();
+             while (instance == null && ite.hasNext()) {
+                 instance = createObject(ite.next());
+             }
+         }
+         return instance;
+     }
+ 
+     /**
+      * Generate the set of all possible names for a class name.
+      * @param name the name of the class get possible names for.
+      * @return all possible name for a class.
+      */
+     private Set<String> getAllPossibleNames(String name) {
+         final Set<String> names = new HashSet<>();
+         names.addAll(packages.stream().map(packageName -> packageName + name)
+             .collect(Collectors.toList()));
+         return names;
+     }
+ 
+     /**
+      * Creates a string by joining package names with a class name.
+      * @param className name of the class for joining.
+      * @param packages packages names.
+      * @return a string which is obtained by joining package names with a class name.
+      */
+     private static String joinPackageNamesWithClassName(String className, Set<String> packages) {
+         return packages.stream().filter(name -> name != null)
+             .collect(Collectors.joining(className + STRING_SEPARATOR, "", className));
+     }
+ 
+     /**
+      * Creates a new instance of a named class.
+      * @param className the name of the class to instantiate.
+      * @return the {@code Object} created by loader or null.
++     * @throws CheckstyleException if the class fails to instantiate.
+      */
+-    private Object createObject(String className) {
+-        Object instance = null;
++    private Object createObject(String className) throws CheckstyleException {
++        Class<?> clazz = null;
++
+         try {
+-            final Class<?> clazz = Class.forName(className, true, moduleClassLoader);
+-            final Constructor<?> declaredConstructor = clazz.getDeclaredConstructor();
+-            declaredConstructor.setAccessible(true);
+-            instance = declaredConstructor.newInstance();
++            clazz = Class.forName(className, true, moduleClassLoader);
+         }
+         catch (final ReflectiveOperationException | NoClassDefFoundError ignored) {
+             // keep looking, ignoring exception
+         }
++
++        Object instance = null;
++
++        if (clazz != null) {
++            try {
++                final Constructor<?> declaredConstructor = clazz.getDeclaredConstructor();
++                declaredConstructor.setAccessible(true);
++                instance = declaredConstructor.newInstance();
++            }
++            catch (final ReflectiveOperationException ex) {
++                throw new CheckstyleException("Unable to instatiate " + className, ex);
++            }
++        }
++
+         return instance;
+     }
+ 
+     /**
+      * Fill short-to-full module names map.
+      */
+     private static void fillShortToFullModuleNamesMap() {
+         fillChecksFromAnnotationPackage();
+         fillChecksFromBlocksPackage();
+         fillChecksFromCodingPackage();
+         fillChecksFromDesingPackage();
+         fillChecksFromHeaderPackage();
+         fillChecksFromImportsPackage();
+         fillChecksFromIndentationPackage();
+         fillChecksFromJavadocPackage();
+         fillChecksFromMetricsPackage();
+         fillChecksFromModifierPackage();
+         fillChecksFromNamingPackage();
+         fillChecksFromRegexpPackage();
+         fillChecksFromSizesPackage();
+         fillChecksFromWhitespacePackage();
+         fillModulesFromChecksPackage();
+         fillModulesFromFilefiltersPackage();
+         fillModulesFromFiltersPackage();
+         fillModulesFromCheckstylePackage();
+     }
+ 
+     /**
+      * Fill short-to-full module names map with Checks from annotation package.
+      */
+     private static void fillChecksFromAnnotationPackage() {
+         NAME_TO_FULL_MODULE_NAME.put("AnnotationLocationCheck",
+                 BASE_PACKAGE + ".checks.annotation.AnnotationLocationCheck");
+         NAME_TO_FULL_MODULE_NAME.put("AnnotationUseStyleCheck",
+                 BASE_PACKAGE + ".checks.annotation.AnnotationUseStyleCheck");
+         NAME_TO_FULL_MODULE_NAME.put("MissingDeprecatedCheck",
+                 BASE_PACKAGE + ".checks.annotation.MissingDeprecatedCheck");
+         NAME_TO_FULL_MODULE_NAME.put("MissingOverrideCheck",
+                 BASE_PACKAGE + ".checks.annotation.MissingOverrideCheck");
+         NAME_TO_FULL_MODULE_NAME.put("PackageAnnotationCheck",
+                 BASE_PACKAGE + ".checks.annotation.PackageAnnotationCheck");
+         NAME_TO_FULL_MODULE_NAME.put("SuppressWarningsCheck",
+                 BASE_PACKAGE + ".checks.annotation.SuppressWarningsCheck");
+     }
+ 
+     /**
+      * Fill short-to-full module names map with Checks from blocks package.
+      */
+     private static void fillChecksFromBlocksPackage() {
+         NAME_TO_FULL_MODULE_NAME.put("AvoidNestedBlocksCheck",

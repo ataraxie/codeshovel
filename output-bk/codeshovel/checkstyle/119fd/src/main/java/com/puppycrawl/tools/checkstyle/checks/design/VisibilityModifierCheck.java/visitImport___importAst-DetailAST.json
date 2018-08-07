@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "VisibilityModifierCheck.java",
+  "functionName": "visitImport",
+  "functionId": "visitImport___importAst-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java",
+  "functionStartLine": 494,
+  "functionEndLine": 512,
+  "changeHistory": [
+    "5f68bb50fd191fec409f5edb90755a18fce3e0ac",
+    "f9f60d3142533c3eebff775e8eb1159935faaba1"
+  ],
+  "changeHistoryShort": {
+    "5f68bb50fd191fec409f5edb90755a18fce3e0ac": "Ybodychange",
+    "f9f60d3142533c3eebff775e8eb1159935faaba1": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "5f68bb50fd191fec409f5edb90755a18fce3e0ac": {
+      "type": "Ybodychange",
+      "commitMessage": "Visibility Modifier Check, ignore annotated fields\n",
+      "commitDate": 1425777291000,
+      "commitName": "5f68bb50fd191fec409f5edb90755a18fce3e0ac",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1425417238000,
+      "commitNameOld": "de4485a22bfe8eafc3c2e273fd328a0221d0ff9e",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 4.17,
+      "commitsBetweenForRepo": 21,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,22 @@\n     private void visitImport(DetailAST importAst)\n     {\n         if (!isStarImport(importAst)) {\n             final DetailAST type \u003d importAst.getFirstChild();\n             final String canonicalName \u003d getCanonicalName(type);\n             final String shortName \u003d getClassShortName(canonicalName);\n \n             // If imported canonical class name is not specified as allowed immutable class,\n             // but its short name collides with one of specified class - removes the short name\n             // from list to avoid names collision\n             if (!immutableClassCanonicalNames.contains(canonicalName)\n                      \u0026\u0026 immutableClassShortNames.contains(shortName))\n             {\n                 immutableClassShortNames.remove(shortName);\n             }\n+            if (!ignoreAnnotationCanonicalNames.contains(canonicalName)\n+                     \u0026\u0026 ignoreAnnotationShortNames.contains(shortName))\n+            {\n+                ignoreAnnotationShortNames.remove(shortName);\n+            }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "f9f60d3142533c3eebff775e8eb1159935faaba1": {
+      "type": "Yintroduced",
+      "commitMessage": "Visibility Modifier Check, added option allows public immutable fields, issue #61\n",
+      "commitDate": 1424982930000,
+      "commitName": "f9f60d3142533c3eebff775e8eb1159935faaba1",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

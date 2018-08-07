@@ -1,0 +1,173 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java
+index 336f64cdb..cb8e74088 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java
+@@ -95,166 +95,166 @@ public final class IllegalTypeCheck extends AbstractFormatCheck
+         setIgnoredMethodNames(DEFAULT_IGNORED_METHOD_NAMES);
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.METHOD_DEF,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.METHOD_DEF:
+             visitMethodDef(aAST);
+             break;
+         case TokenTypes.VARIABLE_DEF:
+             visitVariableDef(aAST);
+             break;
+         case TokenTypes.PARAMETER_DEF:
+             visitParameterDef(aAST);
+             break;
+         default:
+             throw new IllegalStateException(aAST.toString());
+         }
+     }
+ 
+     /**
+      * Checks return type of a given method.
+      * @param aAST method for check.
+      */
+     private void visitMethodDef(DetailAST aAST)
+     {
+         if (isCheckedMethod(aAST)) {
+             checkClassName(aAST);
+         }
+     }
+ 
+     /**
+      * Checks type of parameters.
+      * @param aAST parameter list for check.
+      */
+     private void visitParameterDef(DetailAST aAST)
+     {
+         final DetailAST grandParentAST = aAST.getParent().getParent();
+ 
+-        if (grandParentAST.getType() == TokenTypes.METHOD_DEF
++        if ((grandParentAST.getType() == TokenTypes.METHOD_DEF)
+             && isCheckedMethod(grandParentAST))
+         {
+             checkClassName(aAST);
+         }
+     }
+ 
+     /**
+      * Checks type of given variable.
+      * @param aAST variable to check.
+      */
+     private void visitVariableDef(DetailAST aAST)
+     {
+         checkClassName(aAST);
+     }
+ 
+     /**
+      * Checks type of given method, parameter or variable.
+      * @param aAST node to check.
+      */
+     private void checkClassName(DetailAST aAST)
+     {
+         final DetailAST type = aAST.findFirstToken(TokenTypes.TYPE);
+         final FullIdent ident = CheckUtils.createFullType(type);
+ 
+         if (isMatchingClassName(ident.getText())) {
+             log(ident.getLineNo(), ident.getColumnNo(),
+                 "illegal.type", ident.getText());
+         }
+     }
+ 
+     /**
+      * @param aClassName class name to check.
+      * @return true if given class name is one of illegal classes
+      *         or if it matches to abstract class names pattern.
+      */
+     private boolean isMatchingClassName(String aClassName)
+     {
+         return mIllegalClassNames.contains(aClassName)
+             || (!mLegalAbstractClassNames.contains(aClassName)
+                 && getRegexp().matcher(aClassName).find());
+     }
+ 
+     /**
+      * @param aAST method def to check.
+      * @return true if we should check this method.
+      */
+     private boolean isCheckedMethod(DetailAST aAST)
+     {
+         final String methodName =
+             aAST.findFirstToken(TokenTypes.IDENT).getText();
+         return !mIgnoredMethodNames.contains(methodName);
+     }
+ 
+     /**
+      * Set the list of illegal variable types.
+      * @param aClassNames array of illegal variable types
+      */
+     public void setIllegalClassNames(String[] aClassNames)
+     {
+         mIllegalClassNames.clear();
+         for (int i = 0; i < aClassNames.length; i++) {
+             final String name = aClassNames[i];
+             mIllegalClassNames.add(name);
+             final int lastDot = name.lastIndexOf(".");
+-            if (lastDot > 0 && lastDot < (name.length() - 1)) {
++            if ((lastDot > 0) && (lastDot < (name.length() - 1))) {
+                 final String shortName =
+                     name.substring(name.lastIndexOf(".") + 1);
+                 mIllegalClassNames.add(shortName);
+             }
+         }
+     }
+ 
+     /**
+      * Get the list of illegal variable types.
+      * @return array of illegal variable types
+      */
+     public String[] getIllegalClassNames()
+     {
+         return (String[]) mIllegalClassNames.toArray(new String[0]);
+     }
+ 
+     /**
+      * Set the list of ignore method names.
+      * @param aMethodNames array of ignored method names
+      */
+     public void setIgnoredMethodNames(String[] aMethodNames)
+     {
+         mIgnoredMethodNames.clear();
+         for (int i = 0; i < aMethodNames.length; i++) {
+             mIgnoredMethodNames.add(aMethodNames[i]);
+         }
+     }
+ 
+     /**
+      * Get the list of ignored method names.
+      * @return array of ignored method names
+      */
+     public String[] getIgnoredMethodNames()
+     {
+         return (String[]) mIgnoredMethodNames.toArray(new String[0]);
+     }
+ 
+     /**
+      * Set the list of legal abstract class names.
+      * @param aClassNames array of legal abstract class names
+      */
+     public void setLegalAbstractClassNames(String[] aClassNames)
+     {
+         mLegalAbstractClassNames.clear();
+         for (int i = 0; i < aClassNames.length; i++) {
+             mLegalAbstractClassNames.add(aClassNames[i]);
+         }
+     }
+ 
+     /**

@@ -1,0 +1,226 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index 6ff17469f..ddd648da4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -205,104 +205,104 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck {
+      * Set regex for matching method names to ignore.
+      * @param regex regex for matching method names.
+      */
+     public void setIgnoreMethodNamesRegex(String regex) {
+         ignoreMethodNamesRegex = Utils.createPattern(regex);
+     }
+ 
+     /**
+      * Sets minimal amount of lines in method.
+      * @param value user's value.
+      */
+     public void setMinLineCount(int value) {
+         minLineCount = value;
+     }
+ 
+     /**
+      * Allow validating throws tag.
+      * @param value user's value.
+      */
+     public void setValidateThrows(boolean value) {
+         validateThrows = value;
+     }
+ 
+     /**
+      * Sets list of annotations.
+      * @param userAnnotations user's value.
+      */
+     public void setAllowedAnnotations(String userAnnotations) {
+         final List<String> annotations = new ArrayList<>();
+         final String[] sAnnotations = userAnnotations.split(",");
+         for (int i = 0; i < sAnnotations.length; i++) {
+             sAnnotations[i] = sAnnotations[i].trim();
+         }
+ 
+         Collections.addAll(annotations, sAnnotations);
+         allowedAnnotations = annotations;
+     }
+ 
+     /**
+      * Set the scope.
+      *
+      * @param from a {@code String} value
+      */
+     public void setScope(String from) {
+         scope = Scope.getInstance(from);
+     }
+ 
+     /**
+      * Set the excludeScope.
+      *
+-     * @param scope a {@code String} value
++     * @param excludeScope a {@code String} value
+      */
+-    public void setExcludeScope(String scope) {
+-        excludeScope = Scope.getInstance(scope);
++    public void setExcludeScope(String excludeScope) {
++        this.excludeScope = Scope.getInstance(excludeScope);
+     }
+ 
+     /**
+      * controls whether to allow documented exceptions that are not declared if
+      * they are a subclass of java.lang.RuntimeException.
+      *
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowUndeclaredRTE(boolean flag) {
+         allowUndeclaredRTE = flag;
+     }
+ 
+     /**
+      * controls whether to allow documented exception that are subclass of one
+      * of declared exceptions.
+      *
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowThrowsTagsForSubclasses(boolean flag) {
+         allowThrowsTagsForSubclasses = flag;
+     }
+ 
+     /**
+      * controls whether to allow a method which has parameters to omit matching
+      * param tags in the javadoc. Defaults to false.
+      *
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowMissingParamTags(boolean flag) {
+         allowMissingParamTags = flag;
+     }
+ 
+     /**
+      * controls whether to allow a method which declares that it throws
+      * exceptions to omit matching throws tags in the javadoc. Defaults to
+      * false.
+      *
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowMissingThrowsTags(boolean flag) {
+         allowMissingThrowsTags = flag;
+     }
+ 
+     /**
+      * controls whether to allow a method which returns non-void type to omit
+      * the return tag in the javadoc. Defaults to false.
+      *
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowMissingReturnTag(boolean flag) {
+@@ -416,109 +416,109 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck {
+     }
+ 
+     @Override
+     protected final void logLoadError(Token ident) {
+         logLoadErrorImpl(ident.getLineNo(), ident.getColumnNo(),
+             MSG_CLASS_INFO,
+             JavadocTagInfo.THROWS.getText(), ident.getText());
+     }
+ 
+     /**
+      * The JavadocMethodCheck is about to report a missing Javadoc.
+      * This hook can be used by derived classes to allow a missing javadoc
+      * in some situations.  The default implementation checks
+      * {@code allowMissingJavadoc} and
+      * {@code allowMissingPropertyJavadoc} properties, do not forget
+      * to call {@code super.isMissingJavadocAllowed(ast)} in case
+      * you want to keep this logic.
+      * @param ast the tree node for the method or constructor.
+      * @return True if this method or constructor doesn't need Javadoc.
+      */
+     protected boolean isMissingJavadocAllowed(final DetailAST ast) {
+         return allowMissingJavadoc
+             || allowMissingPropertyJavadoc
+                 && (isSetterMethod(ast) || isGetterMethod(ast))
+             || matchesSkipRegex(ast);
+     }
+ 
+     /**
+      * Checks if the given method name matches the regex. In that case
+      * we skip enforcement of javadoc for this method
+      * @param methodDef {@link TokenTypes#METHOD_DEF METHOD_DEF}
+      * @return true if given method name matches the regex.
+      */
+     private boolean matchesSkipRegex(DetailAST methodDef) {
+         if (ignoreMethodNamesRegex != null) {
+             final DetailAST ident = methodDef.findFirstToken(TokenTypes.IDENT);
+             final String methodName = ident.getText();
+ 
+             final Matcher matcher = ignoreMethodNamesRegex.matcher(methodName);
+             if (matcher.matches()) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Whether we should check this node.
+      *
+      * @param ast a given node.
+-     * @param scope the scope of the node.
++     * @param nodeScope the scope of the node.
+      * @return whether we should check a given node.
+      */
+-    private boolean shouldCheck(final DetailAST ast, final Scope scope) {
++    private boolean shouldCheck(final DetailAST ast, final Scope nodeScope) {
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(ast);
+ 
+-        return scope.isIn(this.scope)
++        return nodeScope.isIn(this.scope)
+                 && surroundingScope.isIn(this.scope)
+-                && (excludeScope == null || !scope.isIn(excludeScope)
++                && (excludeScope == null || !nodeScope.isIn(excludeScope)
+                     || !surroundingScope.isIn(excludeScope));
+     }
+ 
+     /**
+      * Checks the Javadoc for a method.
+      *
+      * @param ast the token for the method
+      * @param comment the Javadoc comment
+      */
+     private void checkComment(DetailAST ast, TextBlock comment) {
+         final List<JavadocTag> tags = getMethodTags(comment);
+ 
+         if (hasShortCircuitTag(ast, tags)) {
+             return;
+         }
+ 
+         Iterator<JavadocTag> it = tags.iterator();
+         if (ast.getType() != TokenTypes.ANNOTATION_FIELD_DEF) {
+             // Check for inheritDoc
+             boolean hasInheritDocTag = false;
+             while (it.hasNext() && !hasInheritDocTag) {
+                 hasInheritDocTag |= it.next().isInheritDocTag();
+             }
+ 
+             checkParamTags(tags, ast, !hasInheritDocTag);
+             checkThrowsTags(tags, getThrows(ast), !hasInheritDocTag);
+             if (isFunction(ast)) {
+                 checkReturnTag(tags, ast.getLineNo(), !hasInheritDocTag);
+             }
+         }
+ 
+         // Dump out all unused tags
+         it = tags.iterator();
+         while (it.hasNext()) {
+             final JavadocTag jt = it.next();
+             if (!jt.isSeeOrInheritDocTag()) {
+                 log(jt.getLineNo(), MSG_UNUSED_TAG_GENERAL);
+             }
+         }
+     }
+ 
+     /**
+      * Validates whether the Javadoc has a short circuit tag. Currently this is
+      * the inheritTag. Any errors are logged.
+      *
+      * @param ast the construct being checked
+      * @param tags the list of Javadoc tags associated with the construct
+      * @return true if the construct has a short circuit tag.
+      */
+     private boolean hasShortCircuitTag(final DetailAST ast,

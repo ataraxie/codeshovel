@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DesignForExtensionCheck.java",
+  "functionName": "getRequiredTokens",
+  "functionId": "getRequiredTokens",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java",
+  "functionStartLine": 128,
+  "functionEndLine": 133,
+  "changeHistory": [
+    "3a65e99d742e62bd5c335474f515cb2c73938533",
+    "d56a2a366c6f9e3e8639d492d548ae562b75dc81"
+  ],
+  "changeHistoryShort": {
+    "3a65e99d742e62bd5c335474f515cb2c73938533": "Ybodychange",
+    "d56a2a366c6f9e3e8639d492d548ae562b75dc81": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3a65e99d742e62bd5c335474f515cb2c73938533": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4581: Reorganize token methods in blocks, design, metrics folders\n",
+      "commitDate": 1510623322000,
+      "commitName": "3a65e99d742e62bd5c335474f515cb2c73938533",
+      "commitAuthor": "Subbu Dantu",
+      "commitDateOld": 1510054146000,
+      "commitNameOld": "dd1b10bd346aa22e4867dd53c22c5052b54e1722",
+      "commitAuthorOld": "Jake Gage",
+      "daysBetweenCommits": 6.59,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,6 @@\n     public int[] getRequiredTokens() {\n-        return getAcceptableTokens();\n+        // The check does not subscribe to CLASS_DEF token as now it is stateless. If the check\n+        // subscribes to CLASS_DEF token it will become stateful, since we need to have additional\n+        // stack to hold CLASS_DEF tokens.\n+        return new int[] {TokenTypes.METHOD_DEF};\n     }\n\\ No newline at end of file\n"
+    },
+    "d56a2a366c6f9e3e8639d492d548ae562b75dc81": {
+      "type": "Yintroduced",
+      "commitMessage": "Updated all checks to have getRequiredTokens and getAcceptableTokens, issue #655\n",
+      "commitDate": 1439782863000,
+      "commitName": "d56a2a366c6f9e3e8639d492d548ae562b75dc81",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

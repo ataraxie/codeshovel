@@ -1,0 +1,67 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+index 204f0af0e..3c3e1e416 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+@@ -454,58 +454,58 @@ public final class AnnotationUseStyleCheck extends Check {
+             if (arrayInit != null) {
+                 logCommaViolation(arrayInit);
+             }
+             child = child.getNextSibling();
+         }
+     }
+ 
+     /**
+      * Logs a trailing array comma violation if one exists.
+      *
+      * @param ast the array init
+      * {@link TokenTypes#ANNOTATION_ARRAY_INIT ANNOTATION_ARRAY_INIT}.
+      */
+     private void logCommaViolation(final DetailAST ast) {
+         final DetailAST rCurly = ast.findFirstToken(TokenTypes.RCURLY);
+ 
+         //comma can be null if array is empty
+         final DetailAST comma = rCurly.getPreviousSibling();
+ 
+         if (trailingArrayComma == TrailingArrayComma.ALWAYS
+             && (comma == null || comma.getType() != TokenTypes.COMMA)) {
+             log(rCurly.getLineNo(),
+                 rCurly.getColumnNo(), MSG_KEY_ANNOTATION_TRAILING_COMMA_MISSING);
+         }
+         else if (trailingArrayComma == TrailingArrayComma.NEVER
+             && comma != null && comma.getType() == TokenTypes.COMMA) {
+             log(comma.getLineNo(),
+                 comma.getColumnNo(), MSG_KEY_ANNOTATION_TRAILING_COMMA_PRESENT);
+         }
+     }
+ 
+     /**
+      * Checks to see if the closing parenthesis are present if required or
+      * prohibited.
+      *
+      * @param ast the annotation token
+      */
+     private void checkCheckClosingParens(final DetailAST ast) {
+         if (closingParens == ClosingParens.IGNORE) {
+             return;
+         }
+ 
+         final DetailAST paren = ast.getLastChild();
+         final boolean parenExists = paren.getType() == TokenTypes.RPAREN;
+ 
+         if (closingParens == ClosingParens.ALWAYS
+             && !parenExists) {
+             log(ast.getLineNo(), MSG_KEY_ANNOTATION_PARENS_MISSING);
+         }
+         else if (closingParens == ClosingParens.NEVER
+-            && !ast.branchContains(TokenTypes.EXPR)
+-            && !ast.branchContains(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR)
+-            && !ast.branchContains(TokenTypes.ANNOTATION_ARRAY_INIT)
+-            && parenExists) {
++                 && parenExists
++                 && !ast.branchContains(TokenTypes.EXPR)
++                 && !ast.branchContains(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR)
++                 && !ast.branchContains(TokenTypes.ANNOTATION_ARRAY_INIT)) {
+             log(ast.getLineNo(), MSG_KEY_ANNOTATION_PARENS_PRESENT);
+         }
+     }
+ }

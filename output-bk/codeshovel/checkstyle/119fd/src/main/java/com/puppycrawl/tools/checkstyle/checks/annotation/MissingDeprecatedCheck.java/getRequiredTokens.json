@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MissingDeprecatedCheck.java",
+  "functionName": "getRequiredTokens",
+  "functionId": "getRequiredTokens",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/MissingDeprecatedCheck.java",
+  "functionStartLine": 168,
+  "functionEndLine": 180,
+  "changeHistory": [
+    "41952ecfe86ae39c56c59d10e50c5d9693f6c1f0",
+    "d56a2a366c6f9e3e8639d492d548ae562b75dc81"
+  ],
+  "changeHistoryShort": {
+    "41952ecfe86ae39c56c59d10e50c5d9693f6c1f0": "Ybodychange",
+    "d56a2a366c6f9e3e8639d492d548ae562b75dc81": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "41952ecfe86ae39c56c59d10e50c5d9693f6c1f0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4581: Reorganize token methods in remaining checks\n",
+      "commitDate": 1515201635000,
+      "commitName": "41952ecfe86ae39c56c59d10e50c5d9693f6c1f0",
+      "commitAuthor": "Subbu Dantu",
+      "commitDateOld": 1515079236000,
+      "commitNameOld": "746a9d69125211ff44af1cb37732e919368ba620",
+      "commitAuthorOld": "Pavel Bludov",
+      "daysBetweenCommits": 1.42,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,13 @@\n     public int[] getRequiredTokens() {\n-        return getAcceptableTokens();\n+        return new int[] {\n+            TokenTypes.INTERFACE_DEF,\n+            TokenTypes.CLASS_DEF,\n+            TokenTypes.ANNOTATION_DEF,\n+            TokenTypes.ENUM_DEF,\n+            TokenTypes.METHOD_DEF,\n+            TokenTypes.CTOR_DEF,\n+            TokenTypes.VARIABLE_DEF,\n+            TokenTypes.ENUM_CONSTANT_DEF,\n+            TokenTypes.ANNOTATION_FIELD_DEF,\n+        };\n     }\n\\ No newline at end of file\n"
+    },
+    "d56a2a366c6f9e3e8639d492d548ae562b75dc81": {
+      "type": "Yintroduced",
+      "commitMessage": "Updated all checks to have getRequiredTokens and getAcceptableTokens, issue #655\n",
+      "commitDate": 1439782863000,
+      "commitName": "d56a2a366c6f9e3e8639d492d548ae562b75dc81",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

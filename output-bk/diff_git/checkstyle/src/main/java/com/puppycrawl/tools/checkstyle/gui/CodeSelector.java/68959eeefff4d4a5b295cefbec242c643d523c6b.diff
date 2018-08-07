@@ -1,0 +1,77 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/CodeSelector.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/CodeSelector.java
+index fc9fb1c28..abd7e2636 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/CodeSelector.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/CodeSelector.java
+@@ -7,70 +7,70 @@
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.gui;
+ 
+ import java.awt.Color;
+ import java.util.List;
+ 
+ import javax.swing.JTextArea;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ 
+ /**
+  * Helper class to select a code.
+  */
+ public class CodeSelector {
+     /** DetailAST node*/
+     private final DetailAST ast;
+     /** editor */
+     private final JTextArea editor;
+     /** mapping */
+     private final List<Integer> lines2position;
+ 
+     /**
+      * Constructor
+      * @param ast
+      * @param editor
+      * @param lines2position
+      */
+     public CodeSelector(final DetailAST ast, final JTextArea editor,
+                         final List<Integer> lines2position) {
+         this.ast = ast;
+         this.editor = editor;
+         this.lines2position = lines2position;
+     }
+ 
+     /**
+      * Set a selection position from AST line and Column
+      */
+     public void select() {
+-        int start = lines2position.get(ast.getLineNo()) + ast.getColumnNo();
+-        int end = findLastPosition(ast);
++        final int start = lines2position.get(ast.getLineNo()) + ast.getColumnNo();
++        final int end = findLastPosition(ast);
+ 
+         editor.setSelectedTextColor(Color.blue);
+         editor.requestFocusInWindow();
+         editor.setSelectionStart(start);
+         editor.setSelectionEnd(end);
+         editor.transferFocusBackward();
+     }
+ 
+     private int findLastPosition(final DetailAST ast) {
+         if (ast.getChildCount() == 0) {
+             return lines2position.get(ast.getLineNo()) + ast.getColumnNo()
+                 + ast.getText().length();
+         }
+         else {
+             return findLastPosition(ast.getLastChild());
+         }
+     }
+ }

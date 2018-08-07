@@ -1,0 +1,110 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenTextCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenTextCheck.java
+index bf5dac58b..1c544e24c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenTextCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenTextCheck.java
+@@ -43,100 +43,105 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtils;
+  * integer literal, other than zero and a hex literal is:
+  * </p>
+  * <pre>
+  * &lt;module name="IllegalTokenText"&gt;
+  *     &lt;property name="tokens" value="NUM_INT,NUM_LONG"/&gt;
+  *     &lt;property name="format" value="^0[^lx]"/&gt;
+  *     &lt;property name="ignoreCase" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  */
+ public class IllegalTokenTextCheck
+     extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "illegal.token.text";
+ 
+     /**
+      * Custom message for report if illegal regexp found
+      * ignored if empty.
+      */
+     private String message = "";
+ 
+     /** The format string of the regexp. */
+     private String format = "$^";
+ 
+     /** The regexp to match against. */
+     private Pattern regexp = Pattern.compile(format);
+ 
+     /** The flags to use with the regexp. */
+     private int compileFlags;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return TokenUtils.getAllTokenIds();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
++    @Override
++    public boolean isCommentNodesRequired() {
++        return true;
++    }
++
+     @Override
+     public void visitToken(DetailAST ast) {
+         final String text = ast.getText();
+         if (regexp.matcher(text).find()) {
+             String customMessage = message;
+             if (customMessage.isEmpty()) {
+                 customMessage = MSG_KEY;
+             }
+             log(
+                 ast.getLineNo(),
+                 ast.getColumnNo(),
+                 customMessage,
+                 format);
+         }
+     }
+ 
+     /**
+      * Setter for message property.
+      * @param message custom message which should be used
+      *                 to report about violations.
+      */
+     public void setMessage(String message) {
+         if (message == null) {
+             this.message = "";
+         }
+         else {
+             this.message = message;
+         }
+     }
+ 
+     /**
+      * Set the format to the specified regular expression.
+      * @param format a {@code String} value
+      * @throws org.apache.commons.beanutils.ConversionException unable to parse format
+      */
+     public void setFormat(String format) {
+         this.format = format;
+         updateRegexp();
+     }
+ 
+     /**
+      * Set whether or not the match is case sensitive.
+      * @param caseInsensitive true if the match is case insensitive.
+      */
+     public void setIgnoreCase(boolean caseInsensitive) {
+         if (caseInsensitive) {
+             compileFlags = Pattern.CASE_INSENSITIVE;
+         }
+         else {
+             compileFlags = 0;

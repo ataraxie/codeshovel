@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "ImmutableSet.java",
+  "functionName": "build",
+  "functionId": "build",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/ImmutableSet.java",
+  "functionStartLine": 546,
+  "functionEndLine": 570,
+  "changeHistory": [
+    "d7501abccbd666a8db4dff77fa110c801a094c75",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "d7501abccbd666a8db4dff77fa110c801a094c75": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "d7501abccbd666a8db4dff77fa110c801a094c75": {
+      "type": "Ybodychange",
+      "commitMessage": "Add ImmutableSet.builderForExpectedSize.  Currently, the implementation is that if and only if a size is specified up front, the builder starts generating the hash table online and deduping elements.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d165233245\n",
+      "commitDate": 1502806127000,
+      "commitName": "d7501abccbd666a8db4dff77fa110c801a094c75",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1499696868000,
+      "commitNameOld": "bae9a59c562acacd1be81c4421fb2c96b6efcc18",
+      "commitAuthorOld": "lowasser",
+      "daysBetweenCommits": 35.99,
+      "commitsBetweenForRepo": 58,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,25 @@\n     public ImmutableSet\u003cE\u003e build() {\n-      ImmutableSet\u003cE\u003e result \u003d construct(size, contents);\n-      // construct has the side effect of deduping contents, so we update size\n-      // accordingly.\n-      size \u003d result.size();\n-      forceCopy \u003d true;\n-      return result;\n+      switch (size) {\n+        case 0:\n+          return of();\n+        case 1:\n+          return (ImmutableSet\u003cE\u003e) of(contents[0]);\n+        default:\n+          ImmutableSet\u003cE\u003e result;\n+          if (hashTable !\u003d null \u0026\u0026 chooseTableSize(size) \u003d\u003d hashTable.length) {\n+            Object[] uniqueElements \u003d\n+                shouldTrim(size, contents.length) ? Arrays.copyOf(contents, size) : contents;\n+            result \u003d\n+                new RegularImmutableSet\u003cE\u003e(\n+                    uniqueElements, hashCode, hashTable, hashTable.length - 1, size);\n+          } else {\n+            result \u003d construct(size, contents);\n+            // construct has the side effect of deduping contents, so we update size\n+            // accordingly.\n+            size \u003d result.size();\n+          }\n+          forceCopy \u003d true;\n+          hashTable \u003d null;\n+          return result;\n+      }\n     }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

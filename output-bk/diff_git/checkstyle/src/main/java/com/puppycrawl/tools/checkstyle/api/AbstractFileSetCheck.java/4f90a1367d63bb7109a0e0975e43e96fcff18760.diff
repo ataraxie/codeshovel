@@ -1,0 +1,59 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
+index 0f7780004..54541f050 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
+@@ -124,53 +124,53 @@ public abstract class AbstractFileSetCheck
+ 
+         fileExtensions = new String[extensions.length];
+         for (int i = 0; i < extensions.length; i++) {
+             final String extension = extensions[i];
+             if (CommonUtils.startsWithChar(extension, '.')) {
+                 fileExtensions[i] = extension;
+             }
+             else {
+                 fileExtensions[i] = "." + extension;
+             }
+         }
+     }
+ 
+     /**
+      * Adds the sorted set of {@link LocalizedMessage} to the message collector.
+      * @param messages the sorted set of {@link LocalizedMessage}.
+      */
+     protected final void addMessages(SortedSet<LocalizedMessage> messages) {
+         messageCollector.addAll(messages);
+     }
+ 
+     @Override
+     public final void log(int line, String key, Object... args) {
+         log(line, 0, key, args);
+     }
+ 
+     @Override
+     public final void log(int lineNo, int colNo, String key,
+             Object... args) {
+         messageCollector.add(
+                 new LocalizedMessage(lineNo,
+                         colNo,
+                         getMessageBundle(),
+                         key,
+                         args,
+                         getSeverityLevel(),
+                         getId(),
+                         getClass(),
+                         getCustomMessages().get(key)));
+     }
+ 
+     /**
+      * Notify all listeners about the errors in a file.
+      * Calls {@code MessageDispatcher.fireErrors()} with
+      * all logged errors and than clears errors' list.
+      * @param fileName the audited file
+      */
+     protected final void fireErrors(String fileName) {
+         final SortedSet<LocalizedMessage> errors = new TreeSet<>(messageCollector);
+         messageCollector.clear();
+-        getMessageDispatcher().fireErrors(fileName, errors);
++        messageDispatcher.fireErrors(fileName, errors);
+     }
+ }

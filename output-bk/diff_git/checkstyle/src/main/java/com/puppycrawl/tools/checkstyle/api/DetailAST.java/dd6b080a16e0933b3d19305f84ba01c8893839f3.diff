@@ -1,0 +1,111 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java
+index f671cf521..c75619e2d 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java
+@@ -144,106 +144,102 @@ public final class DetailAST extends CommonASTWithHiddenTokens
+             }
+ 
+             ast.setPreviousSibling(this);
+             this.setNextSibling(ast);
+         }
+     }
+ 
+     /**
+      * Sets previous sibling.
+      * @param ast a previous sibling
+      */
+     void setPreviousSibling(DetailAST ast)
+     {
+         previousSibling = ast;
+     }
+ 
+     @Override
+     public void addChild(AST ast)
+     {
+         super.addChild(ast);
+         if (ast != null) {
+             ((DetailAST) ast).setParent(this);
+             getFirstChild().setParent(this);
+         }
+     }
+ 
+     /**
+      * Returns the number of child nodes one level below this node. That is is
+      * does not recurse down the tree.
+      * @return the number of child nodes
+      */
+     public int getChildCount()
+     {
+         // lazy init
+         if (childCount == NOT_INITIALIZED) {
+             childCount = 0;
+             AST child = getFirstChild();
+ 
+             while (child != null) {
+                 childCount += 1;
+                 child = child.getNextSibling();
+             }
+         }
+         return childCount;
+     }
+ 
+     /**
+      * Set the parent token.
+      * @param parent the parent token
+      */
+-    // TODO: should be private but that breaks the DetailASTTest
+-    // until we manage parent in DetailAST instead of externally
+     void setParent(DetailAST parent)
+     {
+-        // TODO: Check visibility, could be private
+-        // if set in setFirstChild() and friends
+         this.parent = parent;
+         final DetailAST nextSibling = getNextSibling();
+         if (nextSibling != null) {
+             nextSibling.setParent(parent);
+             nextSibling.setPreviousSibling(this);
+         }
+     }
+ 
+     /**
+      * Returns the parent token.
+      * @return the parent token
+      */
+     public DetailAST getParent()
+     {
+         return parent;
+     }
+ 
+     /** @return the line number **/
+     public int getLineNo()
+     {
+         if (lineNo == NOT_INITIALIZED) {
+             // an inner AST that has been initialized
+             // with initialize(String text)
+             DetailAST child = getFirstChild();
+             while (child != null) {
+                 // comment node can't be start of any java statement/definition
+                 if (TokenTypes.isCommentType(child.getType())) {
+                     child = child.getNextSibling();
+                 }
+                 else {
+                     return child.getLineNo();
+                 }
+             }
+ 
+             DetailAST sibling = getNextSibling();
+             while (sibling != null) {
+                 // comment node can't be start of any java statement/definition
+                 if (TokenTypes.isCommentType(sibling.getType())) {
+                     sibling = sibling.getNextSibling();
+                 }
+                 else {
+                     return sibling.getLineNo();
+                 }
+             }
+         }
+         return lineNo;
+     }
+ 
+     /**
+      * Set line number.

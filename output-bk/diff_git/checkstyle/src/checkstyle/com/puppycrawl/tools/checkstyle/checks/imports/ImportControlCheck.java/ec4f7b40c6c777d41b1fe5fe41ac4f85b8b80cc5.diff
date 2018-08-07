@@ -1,0 +1,99 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
+index e03a56fee..141f93687 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
+@@ -33,90 +33,94 @@ import org.apache.commons.beanutils.ConversionException;
+  * <li>Having guards for importing of classes.
+  *
+  * <li>Guards that only apply locally. That is, the Guard does not apply to
+  *     subpackages. For example, allow the package "com.foo" to import the
+  *     package "java.swing", but not allow subpackages like "com.foo.bar".
+  *     Currently you can work around this by having disallow guards specified
+  *     in the subpackages.
+  *
+  * <li>Guards that match packages exactly. For example, only match imports
+  *     from the "com.foo" package, and not from subpackages like
+  *     "com.foo.bar".
+  *
+  * <li>Change the default policy that if a package being checked does not
+  *     match any guards, then it is allowed. Currently defaults to disallowed.
+  *
+  * </ul>
+  * @author Oliver Burn
+  */
+ public class ImportControlCheck extends Check
+ {
+     /** The root package controller. */
+     private PkgControl mRoot;
+     /** The package doing the import. */
+     private String mInPkg;
+ 
+     /**
+      * The package controller for the current file. Used for performance
+      * optimisation.
+      */
+     private PkgControl mCurrentLeaf;
+ 
+     /** {@inheritDoc} */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT,
+                           TokenTypes.STATIC_IMPORT, };
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(final DetailAST aAST)
+     {
+         if (aAST.getType() == TokenTypes.PACKAGE_DEF) {
+             final DetailAST nameAST = aAST.getLastChild().getPreviousSibling();
+             final FullIdent full = FullIdent.createFullIdent(nameAST);
+             if (mRoot == null) {
+                 log(nameAST, "import.control.missing.file");
+             }
+             else {
+                 mInPkg = full.getText();
+                 mCurrentLeaf = mRoot.locateFinest(mInPkg);
++                if (mCurrentLeaf == null) {
++                    log(nameAST, "import.control.unknown.pkg");
++                }
+             }
+         }
+         else if (mCurrentLeaf != null) {
+             final FullIdent imp;
+             if (aAST.getType() == TokenTypes.IMPORT) {
+                 imp = FullIdent.createFullIdentBelow(aAST);
+             }
+             else {
++                // know it is a static import
+                 imp = FullIdent.createFullIdent((DetailAST) aAST
+                         .getFirstChild().getNextSibling());
+             }
+             final AccessResult access = mCurrentLeaf.checkAccess(imp.getText(),
+                     mInPkg);
+             if (!AccessResult.ALLOWED.equals(access)) {
+                 log(aAST, "import.control.disallowed", imp.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Set the parameter for the file containing the import control
+      * configuration. It will cause the file to be loaded.
+      * @param aName the name of the file to load.
+      * @throws ConversionException on error loading the file.
+      */
+     public void setFile(final String aName)
+     {
+         // Handle empty param
+         if ((aName == null) || (aName.trim().length() == 0)) {
+             return;
+         }
+ 
+         try {
+             mRoot = ImportControlLoader.load(aName);
+         }
+         catch (CheckstyleException ex) {
+             throw new ConversionException("Unable to load " + aName, ex);
+         }
+     }
+ }

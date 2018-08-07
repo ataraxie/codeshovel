@@ -1,0 +1,67 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/IllegalImportCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/IllegalImportCheck.java
+index 7e247f441..4c53ccc8a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/IllegalImportCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/IllegalImportCheck.java
+@@ -76,58 +76,60 @@ public class IllegalImportCheck
+         setIllegalPkgs("sun");
+     }
+ 
+     /**
+      * Set the list of illegal packages.
+      * @param from array of illegal packages
+      */
+     public final void setIllegalPkgs(String... from) {
+         illegalPkgs = from.clone();
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final FullIdent imp;
+         if (ast.getType() == TokenTypes.IMPORT) {
+             imp = FullIdent.createFullIdentBelow(ast);
+         }
+         else {
+             imp = FullIdent.createFullIdent(
+                 ast.getFirstChild().getNextSibling());
+         }
+         if (isIllegalImport(imp.getText())) {
+             log(ast.getLineNo(),
+                 ast.getColumnNo(),
+                 MSG_KEY,
+                 imp.getText());
+         }
+     }
+ 
+     /**
+      * Checks if an import is from a package that must not be used.
+      * @param importText the argument of the import keyword
+      * @return if {@code importText} contains an illegal package prefix
+      */
+     private boolean isIllegalImport(String importText) {
++        boolean isIllegal = false;
+         for (String element : illegalPkgs) {
+             if (importText.startsWith(element + ".")) {
+-                return true;
++                isIllegal = true;
++                break;
+             }
+         }
+-        return false;
++        return isIllegal;
+     }
+ }

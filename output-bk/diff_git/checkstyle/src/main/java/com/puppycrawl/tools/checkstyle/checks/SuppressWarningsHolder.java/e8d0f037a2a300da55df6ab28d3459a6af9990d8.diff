@@ -1,0 +1,363 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
+index 1de978d83..9210986f3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
+@@ -178,309 +178,302 @@ public class SuppressWarningsHolder
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         ENTRIES.set(new LinkedList<Entry>());
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         // check whether annotation is SuppressWarnings
+         // expected children: AT ( IDENT | DOT ) LPAREN <values> RPAREN
+         String identifier = getIdentifier(getNthChild(ast, 1));
+         if (identifier.startsWith(JAVA_LANG_PREFIX)) {
+             identifier = identifier.substring(JAVA_LANG_PREFIX.length());
+         }
+         if ("SuppressWarnings".equals(identifier)) {
+ 
+             final List<String> values = getAllAnnotationValues(ast);
+             if (isAnnotationEmpty(values)) {
+                 return;
+             }
+ 
+             final DetailAST targetAST = getAnnotationTarget(ast);
+ 
+             if (targetAST == null) {
+                 log(ast.getLineNo(), MSG_KEY);
+                 return;
+             }
+ 
+             // get text range of target
+             final int firstLine = targetAST.getLineNo();
+             final int firstColumn = targetAST.getColumnNo();
+             final DetailAST nextAST = targetAST.getNextSibling();
+             final int lastLine;
+             final int lastColumn;
+             if (nextAST != null) {
+                 lastLine = nextAST.getLineNo();
+                 lastColumn = nextAST.getColumnNo() - 1;
+             }
+             else {
+                 lastLine = Integer.MAX_VALUE;
+                 lastColumn = Integer.MAX_VALUE;
+             }
+ 
+             // add suppression entries for listed checks
+             final List<Entry> entries = ENTRIES.get();
+-            if (entries != null) {
+-                for (String value : values) {
+-                    String checkName = value;
+-                    // strip off the checkstyle-only prefix if present
+-                    checkName = removeCheckstylePrefixIfExists(checkName);
+-                    entries.add(new Entry(checkName, firstLine, firstColumn,
++            for (String value : values) {
++                String checkName = value;
++                // strip off the checkstyle-only prefix if present
++                checkName = removeCheckstylePrefixIfExists(checkName);
++                entries.add(new Entry(checkName, firstLine, firstColumn,
+                         lastLine, lastColumn));
+-                }
+             }
+         }
+     }
+ 
+     /**
+      * Method removes checkstyle prefix (checkstyle:) from check name if exists.
+      *
+      * @param checkName
+      *            - name of the check
+      * @return check name without prefix
+      */
+     private static String removeCheckstylePrefixIfExists(String checkName) {
+         String result = checkName;
+         if (checkName.startsWith(CHECKSTYLE_PREFIX)) {
+             result = checkName.substring(CHECKSTYLE_PREFIX.length());
+         }
+         return result;
+     }
+ 
+     /**
+      * Get all annotation values.
+      * @param ast annotation token
+      * @return list values
+      */
+     private static List<String> getAllAnnotationValues(DetailAST ast) {
+         // get values of annotation
+         List<String> values = null;
+         final DetailAST lparenAST = ast.findFirstToken(TokenTypes.LPAREN);
+         if (lparenAST != null) {
+             final DetailAST nextAST = lparenAST.getNextSibling();
+-            if (nextAST != null) {
+-                final int nextType = nextAST.getType();
+-                switch (nextType) {
+-                    case TokenTypes.EXPR:
+-                    case TokenTypes.ANNOTATION_ARRAY_INIT:
+-                        values = getAnnotationValues(nextAST);
+-                        break;
++            final int nextType = nextAST.getType();
++            switch (nextType) {
++                case TokenTypes.EXPR:
++                case TokenTypes.ANNOTATION_ARRAY_INIT:
++                    values = getAnnotationValues(nextAST);
++                    break;
+ 
+-                    case TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR:
+-                        // expected children: IDENT ASSIGN ( EXPR |
+-                        // ANNOTATION_ARRAY_INIT )
+-                        values = getAnnotationValues(getNthChild(nextAST, 2));
+-                        break;
++                case TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR:
++                    // expected children: IDENT ASSIGN ( EXPR |
++                    // ANNOTATION_ARRAY_INIT )
++                    values = getAnnotationValues(getNthChild(nextAST, 2));
++                    break;
+ 
+-                    case TokenTypes.RPAREN:
+-                        // no value present (not valid Java)
+-                        break;
++                case TokenTypes.RPAREN:
++                    // no value present (not valid Java)
++                    break;
+ 
+-                    default:
+-                        // unknown annotation value type (new syntax?)
+-                }
++                default:
++                    // unknown annotation value type (new syntax?)
++                    throw new IllegalArgumentException("Unexpected AST: " + nextAST);
+             }
+         }
+         return values;
+     }
+ 
+     /**
+      * Checks that annotation is empty.
+      * @param values list of values in the annotation
+      * @return whether annotation is empty or contains some values
+      */
+     private static boolean isAnnotationEmpty(List<String> values) {
+         return values == null;
+     }
+ 
+     /**
+      * Get target of annotation.
+      * @param ast the AST node to get the child of
+      * @return get target of annotation
+      */
+     private static DetailAST getAnnotationTarget(DetailAST ast) {
+         DetailAST targetAST = null;
+         DetailAST parentAST = ast.getParent();
+         switch (parentAST.getType()) {
+             case TokenTypes.MODIFIERS:
+             case TokenTypes.ANNOTATIONS:
+                 parentAST = parentAST.getParent();
+                 switch (parentAST.getType()) {
+                     case TokenTypes.ANNOTATION_DEF:
+                     case TokenTypes.PACKAGE_DEF:
+                     case TokenTypes.CLASS_DEF:
+                     case TokenTypes.INTERFACE_DEF:
+                     case TokenTypes.ENUM_DEF:
+                     case TokenTypes.ENUM_CONSTANT_DEF:
+                     case TokenTypes.CTOR_DEF:
+                     case TokenTypes.METHOD_DEF:
+                     case TokenTypes.PARAMETER_DEF:
+                     case TokenTypes.VARIABLE_DEF:
+                     case TokenTypes.ANNOTATION_FIELD_DEF:
+                     case TokenTypes.TYPE:
+                     case TokenTypes.LITERAL_NEW:
+                     case TokenTypes.LITERAL_THROWS:
+                     case TokenTypes.TYPE_ARGUMENT:
+                     case TokenTypes.IMPLEMENTS_CLAUSE:
+                     case TokenTypes.DOT:
+                         targetAST = parentAST;
+                         break;
+                     default:
+-                        // unexpected target type
++                        // it's possible case, but shouldn't be processed here
+                 }
+                 break;
+             default:
+                 // unexpected container type
++                throw new IllegalArgumentException("Unexpected container AST: " + parentAST);
+         }
+         return targetAST;
+     }
+ 
+     /**
+      * Returns the n'th child of an AST node.
+      * @param ast the AST node to get the child of
+      * @param index the index of the child to get
+      * @return the n'th child of the given AST node, or {@code null} if none
+      */
+     private static DetailAST getNthChild(DetailAST ast, int index) {
+         DetailAST child = ast.getFirstChild();
+-        if (child != null) {
+-            for (int i = 0; i < index && child != null; ++i) {
+-                child = child.getNextSibling();
+-            }
++        for (int i = 0; i < index && child != null; ++i) {
++            child = child.getNextSibling();
+         }
+         return child;
+     }
+ 
+     /**
+      * Returns the Java identifier represented by an AST.
+      * @param ast an AST node for an IDENT or DOT
+      * @return the Java identifier represented by the given AST subtree
+      * @throws IllegalArgumentException if the AST is invalid
+      */
+     private static String getIdentifier(DetailAST ast) {
+         if (ast != null) {
+             if (ast.getType() == TokenTypes.IDENT) {
+                 return ast.getText();
+             }
+-            else if (ast.getType() == TokenTypes.DOT) {
++            else {
+                 return getIdentifier(ast.getFirstChild()) + "."
+-                    + getIdentifier(ast.getLastChild());
++                        + getIdentifier(ast.getLastChild());
+             }
+         }
+-        throw new IllegalArgumentException("Identifier AST expected: " + ast);
++        throw new IllegalArgumentException("Identifier AST expected, but get null.");
+     }
+ 
+     /**
+      * Returns the literal string expression represented by an AST.
+      * @param ast an AST node for an EXPR
+      * @return the Java string represented by the given AST expression
+      *         or empty string if expression is too complex
+      * @throws IllegalArgumentException if the AST is invalid
+      */
+     private static String getStringExpr(DetailAST ast) {
+-        if (ast != null && ast.getType() == TokenTypes.EXPR) {
+-            final DetailAST firstChild = ast.getFirstChild();
+-            String expr = "";
+-
+-            switch (firstChild.getType()) {
+-                case TokenTypes.STRING_LITERAL:
+-                    // NOTE: escaped characters are not unescaped
+-                    final String quotedText = firstChild.getText();
+-                    expr = quotedText.substring(1, quotedText.length() - 1);
+-                    break;
+-                case TokenTypes.IDENT:
+-                    expr = firstChild.getText();
+-                    break;
+-                case TokenTypes.DOT:
+-                    expr = firstChild.getLastChild().getText();
+-                    break;
+-                default:
+-                    // annotations with complex expressions cannot suppress warnings
+-            }
+-            return expr;
++        final DetailAST firstChild = ast.getFirstChild();
++        String expr = "";
++
++        switch (firstChild.getType()) {
++            case TokenTypes.STRING_LITERAL:
++                // NOTE: escaped characters are not unescaped
++                final String quotedText = firstChild.getText();
++                expr = quotedText.substring(1, quotedText.length() - 1);
++                break;
++            case TokenTypes.IDENT:
++                expr = firstChild.getText();
++                break;
++            case TokenTypes.DOT:
++                expr = firstChild.getLastChild().getText();
++                break;
++            default:
++                // annotations with complex expressions cannot suppress warnings
+         }
+-        throw new IllegalArgumentException("Expression AST expected: " + ast);
++        return expr;
+     }
+ 
+     /**
+      * Returns the annotation values represented by an AST.
+      * @param ast an AST node for an EXPR or ANNOTATION_ARRAY_INIT
+      * @return the list of Java string represented by the given AST for an
+      *         expression or annotation array initializer
+      * @throws IllegalArgumentException if the AST is invalid
+      */
+     private static List<String> getAnnotationValues(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.EXPR:
+                 return ImmutableList.of(getStringExpr(ast));
+ 
+             case TokenTypes.ANNOTATION_ARRAY_INIT:
+                 final List<String> valueList = Lists.newLinkedList();
+                 DetailAST childAST = ast.getFirstChild();
+                 while (childAST != null) {
+                     if (childAST.getType() == TokenTypes.EXPR) {
+                         valueList.add(getStringExpr(childAST));
+                     }
+                     childAST = childAST.getNextSibling();
+                 }
+                 return valueList;
+ 
+             default:
++                throw new IllegalArgumentException(
++                        "Expression or annotation array initializer AST expected: " + ast);
+         }
+-        throw new IllegalArgumentException(
+-            "Expression or annotation array initializer AST expected: " + ast);
+     }
+ 
+     /** Records a particular suppression for a region of a file. */
+     private static class Entry {
+         /** The source name of the suppressed check. */
+         private final String checkName;
+         /** The suppression region for the check - first line. */
+         private final int firstLine;
+         /** The suppression region for the check - first column. */
+         private final int firstColumn;
+         /** The suppression region for the check - last line. */
+         private final int lastLine;
+         /** The suppression region for the check - last column. */
+         private final int lastColumn;
+ 
+         /**
+          * Constructs a new suppression region entry.
+          * @param checkName the source name of the suppressed check
+          * @param firstLine the first line of the suppression region
+          * @param firstColumn the first column of the suppression region
+          * @param lastLine the last line of the suppression region
+          * @param lastColumn the last column of the suppression region
+          */
+         Entry(String checkName, int firstLine, int firstColumn,
+             int lastLine, int lastColumn) {
+             this.checkName = checkName;
+             this.firstLine = firstLine;
+             this.firstColumn = firstColumn;
+             this.lastLine = lastLine;
+             this.lastColumn = lastColumn;
+         }
+ 
+         /**
+          * Gets he source name of the suppressed check.
+          * @return the source name of the suppressed check
+          */
+         public String getCheckName() {
+             return checkName;
+         }
+ 
+         /**
+          * Gets the first line of the suppression region.
+          * @return the first line of the suppression region
+          */
+         public int getFirstLine() {
+             return firstLine;
+         }
+ 
+         /**
+          * Gets the first column of the suppression region.

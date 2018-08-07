@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "ImmutableListMultimap.java",
+  "functionName": "copyOf",
+  "functionId": "copyOf___multimap-Multimap__? extends K,? extends V__",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/ImmutableListMultimap.java",
+  "functionStartLine": 234,
+  "functionEndLine": 250,
+  "changeHistory": [
+    "d181e111ada75de243598c2522e725905adcdcc3",
+    "0c81386a239370c073572212079efc727c911d0b",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "d181e111ada75de243598c2522e725905adcdcc3": "Ybodychange",
+    "0c81386a239370c073572212079efc727c911d0b": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "d181e111ada75de243598c2522e725905adcdcc3": {
+      "type": "Ybodychange",
+      "commitMessage": "Use maps directly in ImmutableMultimap.Builder, instead of delegating to a mutable multimap.\n\nEffects on ImmutableListMultimapProGuard:\n135061 bytes \u003d\u003e 80938 bytes\n122 classes \u003d\u003e 74 classes\n963 methods \u003d\u003e 546 methods\n\nEffects on ImmutableSetMultimapProGuard:\n147668 bytes \u003d\u003e 102365 bytes\n131 classes \u003d\u003e 91 classes\n1024 methods \u003d\u003e 693 methods\n\nRELNOTES\u003dn/a\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d179487542\n",
+      "commitDate": 1513696020000,
+      "commitName": "d181e111ada75de243598c2522e725905adcdcc3",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1512679066000,
+      "commitNameOld": "6f22af40e1526b8c194e9e36d457bcd37680c6a3",
+      "commitAuthorOld": "cpovirk",
+      "daysBetweenCommits": 11.77,
+      "commitsBetweenForRepo": 18,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,17 @@\n   public static \u003cK, V\u003e ImmutableListMultimap\u003cK, V\u003e copyOf(\n       Multimap\u003c? extends K, ? extends V\u003e multimap) {\n     if (multimap.isEmpty()) {\n       return of();\n     }\n \n     // TODO(lowasser): copy ImmutableSetMultimap by using asList() on the sets\n     if (multimap instanceof ImmutableListMultimap) {\n       @SuppressWarnings(\"unchecked\") // safe since multimap is not writable\n       ImmutableListMultimap\u003cK, V\u003e kvMultimap \u003d (ImmutableListMultimap\u003cK, V\u003e) multimap;\n       if (!kvMultimap.isPartialView()) {\n         return kvMultimap;\n       }\n     }\n \n-    ImmutableMap.Builder\u003cK, ImmutableList\u003cV\u003e\u003e builder \u003d\n-        new ImmutableMap.Builder\u003c\u003e(multimap.asMap().size());\n-    int size \u003d 0;\n-\n-    for (Entry\u003c? extends K, ? extends Collection\u003c? extends V\u003e\u003e entry :\n-        multimap.asMap().entrySet()) {\n-      ImmutableList\u003cV\u003e list \u003d ImmutableList.copyOf(entry.getValue());\n-      if (!list.isEmpty()) {\n-        builder.put(entry.getKey(), list);\n-        size +\u003d list.size();\n-      }\n-    }\n-\n-    return new ImmutableListMultimap\u003c\u003e(builder.build(), size);\n+    return fromMapEntries(multimap.asMap().entrySet(), null);\n   }\n\\ No newline at end of file\n"
+    },
+    "0c81386a239370c073572212079efc727c911d0b": {
+      "type": "Ybodychange",
+      "commitMessage": "Use diamond operator in collect\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d165450412\n",
+      "commitDate": 1502905310000,
+      "commitName": "0c81386a239370c073572212079efc727c911d0b",
+      "commitAuthor": "jijiang",
+      "commitDateOld": 1492741671000,
+      "commitNameOld": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthorOld": "zhenghua",
+      "daysBetweenCommits": 117.63,
+      "commitsBetweenForRepo": 211,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,30 @@\n   public static \u003cK, V\u003e ImmutableListMultimap\u003cK, V\u003e copyOf(\n       Multimap\u003c? extends K, ? extends V\u003e multimap) {\n     if (multimap.isEmpty()) {\n       return of();\n     }\n \n     // TODO(lowasser): copy ImmutableSetMultimap by using asList() on the sets\n     if (multimap instanceof ImmutableListMultimap) {\n       @SuppressWarnings(\"unchecked\") // safe since multimap is not writable\n       ImmutableListMultimap\u003cK, V\u003e kvMultimap \u003d (ImmutableListMultimap\u003cK, V\u003e) multimap;\n       if (!kvMultimap.isPartialView()) {\n         return kvMultimap;\n       }\n     }\n \n     ImmutableMap.Builder\u003cK, ImmutableList\u003cV\u003e\u003e builder \u003d\n-        new ImmutableMap.Builder\u003cK, ImmutableList\u003cV\u003e\u003e(multimap.asMap().size());\n+        new ImmutableMap.Builder\u003c\u003e(multimap.asMap().size());\n     int size \u003d 0;\n \n     for (Entry\u003c? extends K, ? extends Collection\u003c? extends V\u003e\u003e entry :\n         multimap.asMap().entrySet()) {\n       ImmutableList\u003cV\u003e list \u003d ImmutableList.copyOf(entry.getValue());\n       if (!list.isEmpty()) {\n         builder.put(entry.getKey(), list);\n         size +\u003d list.size();\n       }\n     }\n \n-    return new ImmutableListMultimap\u003cK, V\u003e(builder.build(), size);\n+    return new ImmutableListMultimap\u003c\u003e(builder.build(), size);\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

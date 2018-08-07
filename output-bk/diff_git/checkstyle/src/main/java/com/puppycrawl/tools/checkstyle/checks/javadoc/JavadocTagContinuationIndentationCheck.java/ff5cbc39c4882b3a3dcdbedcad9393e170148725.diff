@@ -1,0 +1,84 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTagContinuationIndentationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTagContinuationIndentationCheck.java
+index 0fe366842..4500eeb25 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTagContinuationIndentationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTagContinuationIndentationCheck.java
+@@ -49,78 +49,78 @@ public class JavadocTagContinuationIndentationCheck extends AbstractJavadocCheck
+     /**
+      * How many spaces to use for new indentation level.
+      */
+     private int offset = DEFAULT_INDENTATION;
+ 
+     /**
+      * Sets custom indentation level.
+      * @param offset custom value.
+      */
+     public void setOffset(int offset)
+     {
+         this.offset = offset;
+     }
+ 
+     @Override
+     public int[] getDefaultJavadocTokens()
+     {
+         return new int[] {JavadocTokenTypes.DESCRIPTION };
+     }
+ 
+     @Override
+     public void visitJavadocToken(DetailNode ast)
+     {
+         final List<DetailNode> textNodes = getAllNewlineNodes(ast);
+         if (isInlineDescription(ast)) {
+             return;
+         }
+         for (DetailNode newlineNode : textNodes) {
+             final DetailNode textNode = JavadocUtils.getNextSibling(JavadocUtils
+                     .getNextSibling(newlineNode));
+             if (textNode != null && textNode.getType() == JavadocTokenTypes.TEXT
+                     && textNode.getChildren().length > 1)
+             {
+                 final DetailNode whitespace = JavadocUtils.getFirstChild(textNode);
+                 if (whitespace.getType() == JavadocTokenTypes.WS
+                         && whitespace.getText().length() - 1 < offset)
+                 {
+                     log(textNode.getLineNumber(), "tag.continuation.indent", offset);
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Finds and collects all NEWLINE nodes inside DESCRIPTION node.
+      * @param descriptionNode DESCRIPTION node.
+      * @return List with NEWLINE nodes.
+      */
+     private List<DetailNode> getAllNewlineNodes(DetailNode descriptionNode)
+     {
+-        final List<DetailNode> textNodes = new ArrayList<DetailNode>();
++        final List<DetailNode> textNodes = new ArrayList<>();
+         DetailNode node = JavadocUtils.getFirstChild(descriptionNode);
+         while (JavadocUtils.getNextSibling(node) != null) {
+             if (node.getType() == JavadocTokenTypes.NEWLINE) {
+                 textNodes.add(node);
+             }
+             node = JavadocUtils.getNextSibling(node);
+         }
+         return textNodes;
+     }
+ 
+     /**
+      * Checks, if description node is a description of in-line tag.
+      * @param description DESCRIPTION node.
+      * @return true, if description node is a description of in-line tag.
+      */
+     private boolean isInlineDescription(DetailNode description)
+     {
+         DetailNode inlineTag = description.getParent();
+         while (inlineTag != null) {
+             if (inlineTag.getType() == JavadocTokenTypes.JAVADOC_INLINE_TAG) {
+                 return true;
+             }
+             inlineTag = inlineTag.getParent();
+         }
+         return false;
+     }
+ }

@@ -1,0 +1,95 @@
+diff --git a/android/guava/src/com/google/common/base/Throwables.java b/android/guava/src/com/google/common/base/Throwables.java
+index 81dacba4c..984bfcd88 100644
+--- a/android/guava/src/com/google/common/base/Throwables.java
++++ b/android/guava/src/com/google/common/base/Throwables.java
+@@ -458,74 +458,88 @@ public final class Throwables {
+   @GwtIncompatible // java.lang.reflect
+   @Nullable
+   private static final Method getStackTraceElementMethod = (jla == null) ? null : getGetMethod();
+ 
+   /**
+    * The "getStackTraceDepth" method, only available on some JDKs so we use reflection to find it
+    * when available. When this is null, use the slow way.
+    */
+   @GwtIncompatible // java.lang.reflect
+   @Nullable
+   private static final Method getStackTraceDepthMethod = (jla == null) ? null : getSizeMethod();
+ 
+   /**
+    * Returns the JavaLangAccess class that is present in all Sun JDKs. It is not whitelisted for
+    * AppEngine, and not present in non-Sun JDKs.
+    */
+   @GwtIncompatible // java.lang.reflect
+   @Nullable
+   private static Object getJLA() {
+     try {
+       /*
+        * We load sun.misc.* classes using reflection since Android doesn't support these classes and
+        * would result in compilation failure if we directly refer to these classes.
+        */
+       Class<?> sharedSecrets = Class.forName(SHARED_SECRETS_CLASSNAME, false, null);
+       Method langAccess = sharedSecrets.getMethod("getJavaLangAccess");
+       return langAccess.invoke(null);
+     } catch (ThreadDeath death) {
+       throw death;
+     } catch (Throwable t) {
+       /*
+        * This is not one of AppEngine's whitelisted classes, so even in Sun JDKs, this can fail with
+        * a NoClassDefFoundError. Other apps might deny access to sun.misc packages.
+        */
+       return null;
+     }
+   }
+ 
+   /**
+    * Returns the Method that can be used to resolve an individual StackTraceElement, or null if that
+    * method cannot be found (it is only to be found in fairly recent JDKs).
+    */
+   @GwtIncompatible // java.lang.reflect
+   @Nullable
+   private static Method getGetMethod() {
+     return getJlaMethod("getStackTraceElement", Throwable.class, int.class);
+   }
+ 
+   /**
+    * Returns the Method that can be used to return the size of a stack, or null if that method
+-   * cannot be found (it is only to be found in fairly recent JDKs).
++   * cannot be found (it is only to be found in fairly recent JDKs). Tries to test method {@link
++   * sun.misc.JavaLangAccess#getStackTraceDepth(Throwable)} getStackTraceDepth} prior to return it
++   * (might fail some JDKs).
++   *
++   * <p>See <a href="https://github.com/google/guava/issues/2887">Throwables#lazyStackTrace throws
++   * UnsupportedOperationException</a>.
+    */
+   @GwtIncompatible // java.lang.reflect
+   @Nullable
+   private static Method getSizeMethod() {
+-    return getJlaMethod("getStackTraceDepth", Throwable.class);
++    try {
++      Method getStackTraceDepth = getJlaMethod("getStackTraceDepth", Throwable.class);
++      if (getStackTraceDepth == null) {
++        return null;
++      }
++      getStackTraceDepth.invoke(getJLA(), new Throwable());
++      return getStackTraceDepth;
++    } catch (UnsupportedOperationException | IllegalAccessException | InvocationTargetException e) {
++      return null;
++    }
+   }
+ 
+   @GwtIncompatible // java.lang.reflect
+   @Nullable
+   private static Method getJlaMethod(String name, Class<?>... parameterTypes) throws ThreadDeath {
+     try {
+       return Class.forName(JAVA_LANG_ACCESS_CLASSNAME, false, null).getMethod(name, parameterTypes);
+     } catch (ThreadDeath death) {
+       throw death;
+     } catch (Throwable t) {
+       /*
+        * Either the JavaLangAccess class itself is not found, or the method is not supported on the
+        * JVM.
+        */
+       return null;
+     }
+   }
+ }

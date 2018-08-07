@@ -1,0 +1,181 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 827e9c166..74410e83c 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -329,147 +329,149 @@ public final class TreeWalker
+ 
+     /**
+      * Notify checks that we are about to begin walking a tree.
+      * @param rootAST the root of the tree.
+      * @param contents the contents of the file the AST was generated from.
+      * @param astState state of AST.
+      */
+     private void notifyBegin(DetailAST rootAST, FileContents contents,
+             AstState astState) {
+         Set<Check> checks;
+ 
+         if (astState == AstState.WITH_COMMENTS) {
+             checks = commentChecks;
+         }
+         else {
+             checks = ordinaryChecks;
+         }
+ 
+         for (Check check : checks) {
+             check.setFileContents(contents);
+             check.beginTree(rootAST);
+         }
+     }
+ 
+     /**
+      * Notify checks that we have finished walking a tree.
+      * @param rootAST the root of the tree.
+      * @param astState state of AST.
+      */
+     private void notifyEnd(DetailAST rootAST, AstState astState) {
+         Set<Check> checks;
+ 
+         if (astState == AstState.WITH_COMMENTS) {
+             checks = commentChecks;
+         }
+         else {
+             checks = ordinaryChecks;
+         }
+ 
+         for (Check check : checks) {
+             check.finishTree(rootAST);
+         }
+     }
+ 
+     /**
+      * Notify checks that visiting a node.
+      * @param ast the node to notify for.
+      * @param astState state of AST.
+      */
+     private void notifyVisit(DetailAST ast, AstState astState) {
+-        Collection<Check> visitors;
+-        final String tokenType = Utils.getTokenName(ast.getType());
++        final Collection<Check> visitors = getListOfChecks(ast, astState);
+ 
+-        if (astState == AstState.WITH_COMMENTS) {
+-            if (!tokenToCommentChecks.containsKey(tokenType)) {
+-                return;
+-            }
+-            visitors = tokenToCommentChecks.get(tokenType);
+-        }
+-        else {
+-            if (!tokenToOrdinaryChecks.containsKey(tokenType)) {
+-                return;
++        if (visitors != null) {
++            for (Check check : visitors) {
++                check.visitToken(ast);
+             }
+-            visitors = tokenToOrdinaryChecks.get(tokenType);
+-        }
+-
+-        for (Check check : visitors) {
+-            check.visitToken(ast);
+         }
+     }
+ 
+     /**
+      * Notify checks that leaving a node.
+      * @param ast
+      *        the node to notify for
+      * @param astState state of AST.
+      */
+     private void notifyLeave(DetailAST ast, AstState astState) {
+-        Collection<Check> visitors;
++        final Collection<Check> visitors = getListOfChecks(ast, astState);
++
++        if (visitors != null) {
++            for (Check check : visitors) {
++                check.leaveToken(ast);
++            }
++        }
++    }
++
++    /**
++     * Method returns list of checks
++     *
++     * @param ast
++     *            the node to notify for
++     * @param astState
++     *            state of AST.
++     * @return list of visitors
++     */
++    private Collection<Check> getListOfChecks(DetailAST ast, AstState astState) {
++        Collection<Check> visitors = null;
+         final String tokenType = Utils.getTokenName(ast.getType());
+ 
+         if (astState == AstState.WITH_COMMENTS) {
+-            if (!tokenToCommentChecks.containsKey(tokenType)) {
+-                return;
++            if (tokenToCommentChecks.containsKey(tokenType)) {
++                visitors = tokenToCommentChecks.get(tokenType);
+             }
+-            visitors = tokenToCommentChecks.get(tokenType);
+         }
+         else {
+-            if (!tokenToOrdinaryChecks.containsKey(tokenType)) {
+-                return;
++            if (tokenToOrdinaryChecks.containsKey(tokenType)) {
++                visitors = tokenToOrdinaryChecks.get(tokenType);
+             }
+-            visitors = tokenToOrdinaryChecks.get(tokenType);
+-        }
+-
+-        for (Check check : visitors) {
+-            check.leaveToken(ast);
+         }
++        return visitors;
+     }
+ 
+     /**
+      * Static helper method to parses a Java source file.
+      *
+      * @param contents
+      *                contains the contents of the file
+      * @return the root of the AST
+      * @throws TokenStreamException
+      *                 if lexing failed
+      * @throws RecognitionException
+      *                 if parsing failed
+      */
+     public static DetailAST parse(FileContents contents)
+         throws RecognitionException, TokenStreamException {
+         final String fullText = contents.getText().getFullText().toString();
+         final Reader sr = new StringReader(fullText);
+         final GeneratedJavaLexer lexer = new GeneratedJavaLexer(sr);
+         lexer.setFilename(contents.getFileName());
+         lexer.setCommentListener(contents);
+         lexer.setTreatAssertAsKeyword(true);
+         lexer.setTreatEnumAsKeyword(true);
+         lexer.setTokenObjectClass("antlr.CommonHiddenStreamToken");
+ 
+         final TokenStreamHiddenTokenFilter filter =
+                 new TokenStreamHiddenTokenFilter(lexer);
+         filter.hide(TokenTypes.SINGLE_LINE_COMMENT);
+         filter.hide(TokenTypes.BLOCK_COMMENT_BEGIN);
+ 
+         final GeneratedJavaRecognizer parser =
+             new GeneratedJavaRecognizer(filter);
+         parser.setFilename(contents.getFileName());
+         parser.setASTNodeClass(DetailAST.class.getName());
+         parser.compilationUnit();
+ 
+         return (DetailAST) parser.getAST();
+     }
+ 
+     @Override
+     public void destroy() {
+         for (Check check : ordinaryChecks) {
+             check.destroy();
+         }
+         for (Check check : commentChecks) {
+             check.destroy();
+         }
+         if (cache != null) {
+             try {
+                 cache.persist();
+             }

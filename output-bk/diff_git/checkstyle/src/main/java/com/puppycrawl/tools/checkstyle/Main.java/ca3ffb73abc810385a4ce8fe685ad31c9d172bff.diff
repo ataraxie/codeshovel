@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+index d34f8a045..554e23ba0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+@@ -153,101 +153,101 @@ public final class Main
+         catch (final Exception e) {
+             System.out.println("Unable to create Checker: "
+                                + e.getMessage());
+             e.printStackTrace(System.out);
+             System.exit(1);
+         }
+         return c;
+     }
+ 
+     /**
+      * Determines the files to process.
+      *
+      * @param line the command line options specifying what files to process
+      * @return list of files to process
+      */
+     private static List<File> getFilesToProcess(CommandLine line)
+     {
+         final List<File> files = Lists.newLinkedList();
+         final String[] remainingArgs = line.getArgs();
+         for (String element : remainingArgs) {
+             traverse(new File(element), files);
+         }
+ 
+         if (files.isEmpty()) {
+             System.out.println("Must specify files to process");
+             usage();
+         }
+         return files;
+     }
+ 
+     /**
+      * Create the audit listener
+      *
+      * @param line command line options supplied
+      * @param out the stream to log to
+      * @param closeOut whether the stream should be closed
+      * @return a fresh new <code>AuditListener</code>
+      */
+     private static AuditListener createListener(CommandLine line,
+                                                 OutputStream out,
+                                                 boolean closeOut)
+     {
+         final String format =
+             line.hasOption("f") ? line.getOptionValue("f") : "plain";
+ 
+         AuditListener listener = null;
+         if ("xml".equals(format)) {
+             listener = new XMLLogger(out, closeOut);
+         }
+         else if ("plain".equals(format)) {
+-            listener = new DefaultLogger(out, closeOut);
++            listener = new DefaultLogger(out, closeOut, true);
+         }
+         else {
+             System.out.println("Invalid format: (" + format
+                                + "). Must be 'plain' or 'xml'.");
+             usage();
+         }
+         return listener;
+     }
+ 
+     /**
+      * Loads the configuration file. Will exit if unable to load.
+      *
+      * @param line specifies the location of the configuration
+      * @param props the properties to resolve with the configuration
+      * @return a fresh new configuration
+      */
+     private static Configuration loadConfig(CommandLine line,
+                                             Properties props)
+     {
+         try {
+             return ConfigurationLoader.loadConfiguration(
+                     line.getOptionValue("c"), new PropertiesExpander(props));
+         }
+         catch (final CheckstyleException e) {
+             System.out.println("Error loading configuration file");
+             e.printStackTrace(System.out);
+             System.exit(1);
+             return null; // can never get here
+         }
+     }
+ 
+     /** Prints the usage information. **/
+     private static void usage()
+     {
+         final HelpFormatter hf = new HelpFormatter();
+         hf.printHelp(
+             "java "
+                 + Main.class.getName()
+                 + " [options] -c <config.xml> file...",
+             OPTS);
+         System.exit(1);
+     }
+ 
+     /**
+      * Traverses a specified node looking for files to check. Found
+      * files are added to a specified list. Subdirectories are also
+      * traversed.
+      *
+      * @param node the node to process
+      * @param files list to add found files to

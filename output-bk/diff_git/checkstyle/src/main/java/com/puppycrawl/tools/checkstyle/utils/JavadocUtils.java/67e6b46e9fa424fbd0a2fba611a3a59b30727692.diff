@@ -1,0 +1,176 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
+index e035c79d1..d07962871 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
+@@ -32,100 +32,109 @@ import com.puppycrawl.tools.checkstyle.api.DetailNode;
+ import com.puppycrawl.tools.checkstyle.api.JavadocTokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.TextBlock;
+ import com.puppycrawl.tools.checkstyle.checks.javadoc.InvalidJavadocTag;
+ import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTag;
+ import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTagInfo;
+ import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTags;
+ 
+ /**
+  * Contains utility methods for working with Javadoc.
+  * @author Lyle Hanson
+  */
+ public final class JavadocUtils {
+ 
+     /**
+      * The type of Javadoc tag we want returned.
+      */
+     public enum JavadocTagType {
+         /** Block type. */
+         BLOCK,
+         /** Inline type. */
+         INLINE,
+         /** All validTags. */
+         ALL
+     }
+ 
+     /** Maps from a token name to value. */
+     private static final ImmutableMap<String, Integer> TOKEN_NAME_TO_VALUE;
+     /** Maps from a token value to name. */
+     private static final String[] TOKEN_VALUE_TO_NAME;
+ 
+     /** Exception message for unknown JavaDoc token id. */
+     private static final String UNKNOWN_JAVADOC_TOKEN_ID_EXCEPTION_MESSAGE = "Unknown javadoc"
+             + " token id. Given id: ";
+ 
+     /** Comment pattern. */
+     private static final Pattern COMMENT_PATTERN = Pattern.compile(
+         "^\\s*(?:/\\*{2,}|\\*+)\\s*(.*)");
+ 
+     /** Block tag pattern for a first line. */
+     private static final Pattern BLOCK_TAG_PATTERN_FIRST_LINE = Pattern.compile(
+         "/\\*{2,}\\s*@(\\p{Alpha}+)\\s");
+ 
+     /** Block tag pattern. */
+     private static final Pattern BLOCK_TAG_PATTERN = Pattern.compile(
+         "^\\s*\\**\\s*@(\\p{Alpha}+)\\s");
+ 
+     /** Inline tag pattern. */
+     private static final Pattern INLINE_TAG_PATTERN = Pattern.compile(
+         ".*?\\{@(\\p{Alpha}+)\\s+(.*?)\\}");
+ 
++    /** Newline pattern. */
++    private static final Pattern NEWLINE = Pattern.compile("\n");
++
++    /** Return pattern. */
++    private static final Pattern RETURN = Pattern.compile("\r");
++
++    /** Tab pattern. */
++    private static final Pattern TAB = Pattern.compile("\t");
++
+     // Using reflection gets all token names and values from JavadocTokenTypes class
+     // and saves to TOKEN_NAME_TO_VALUE and TOKEN_VALUE_TO_NAME collections.
+     static {
+         final ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
+ 
+         final Field[] fields = JavadocTokenTypes.class.getDeclaredFields();
+ 
+         String[] tempTokenValueToName = CommonUtils.EMPTY_STRING_ARRAY;
+ 
+         for (final Field field : fields) {
+ 
+             // Only process public int fields.
+             if (!Modifier.isPublic(field.getModifiers())
+                     || field.getType() != Integer.TYPE) {
+                 continue;
+             }
+ 
+             final String name = field.getName();
+ 
+             final int tokenValue = TokenUtils.getIntFromField(field, name);
+             builder.put(name, tokenValue);
+             if (tokenValue > tempTokenValueToName.length - 1) {
+                 final String[] temp = new String[tokenValue + 1];
+                 System.arraycopy(tempTokenValueToName, 0, temp, 0, tempTokenValueToName.length);
+                 tempTokenValueToName = temp;
+             }
+             if (tokenValue == -1) {
+                 tempTokenValueToName[0] = name;
+             }
+             else {
+                 tempTokenValueToName[tokenValue] = name;
+             }
+         }
+ 
+         TOKEN_NAME_TO_VALUE = builder.build();
+         TOKEN_VALUE_TO_NAME = tempTokenValueToName;
+     }
+ 
+     /** Prevent instantiation. */
+     private JavadocUtils() {
+     }
+ 
+     /**
+      * Gets validTags from a given piece of Javadoc.
+      * @param textBlock
+      *        the Javadoc comment to process.
+      * @param tagType
+      *        the type of validTags we're interested in
+      * @return all standalone validTags from the given javadoc.
+      */
+@@ -401,51 +410,61 @@ public final class JavadocUtils {
+      * @param id
+      *        the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int id) {
+         if (id == JavadocTokenTypes.EOF) {
+             return "EOF";
+         }
+         if (id > TOKEN_VALUE_TO_NAME.length - 1) {
+             throw new IllegalArgumentException(UNKNOWN_JAVADOC_TOKEN_ID_EXCEPTION_MESSAGE + id);
+         }
+         final String name = TOKEN_VALUE_TO_NAME[id];
+         if (name == null) {
+             throw new IllegalArgumentException(UNKNOWN_JAVADOC_TOKEN_ID_EXCEPTION_MESSAGE + id);
+         }
+         return name;
+     }
+ 
+     /**
+      * Returns the ID of a token for a given name.
+      * @param name
+      *        the name of the token ID to get
+      * @return a token ID
+      */
+     public static int getTokenId(String name) {
+         final Integer id = TOKEN_NAME_TO_VALUE.get(name);
+         if (id == null) {
+             throw new IllegalArgumentException("Unknown javadoc token name. Given name " + name);
+         }
+         return id;
+     }
+ 
+     /**
+      * Gets tag name from javadocTagSection.
+      *
+      * @param javadocTagSection to get tag name from.
+      * @return name, of the javadocTagSection's tag.
+      */
+     public static String getTagName(DetailNode javadocTagSection) {
+         final String javadocTagName;
+         if (javadocTagSection.getType() == JavadocTokenTypes.JAVADOC_INLINE_TAG) {
+             javadocTagName = getNextSibling(
+                     getFirstChild(javadocTagSection)).getText();
+         }
+         else {
+             javadocTagName = getFirstChild(javadocTagSection).getText();
+         }
+         return javadocTagName;
+     }
+ 
++    /**
++     * Replace all control chars with excaped symbols.
++     * @param text the String to process.
++     * @return the processed String with all control chars excaped.
++     */
++    public static String excapeAllControlChars(String text) {
++        final String textWithoutNewlines = NEWLINE.matcher(text).replaceAll("\\\\n");
++        final String textWithoutReturns = RETURN.matcher(textWithoutNewlines).replaceAll("\\\\r");
++        return TAB.matcher(textWithoutReturns).replaceAll("\\\\t");
++    }
+ }

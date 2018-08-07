@@ -1,0 +1,150 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RequireThisCheck.java",
+  "functionName": "canBeReferencedFromStaticContext",
+  "functionId": "canBeReferencedFromStaticContext___ident-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java",
+  "functionStartLine": 626,
+  "functionEndLine": 661,
+  "changeHistory": [
+    "253de634b108f3869a0136d33049e28877fea038",
+    "f0ed29b5cfef6adcec791cfdc236a5b850b685ee",
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+    "425fd5a27cd567d5784bd246729c55cf8cda3dbd",
+    "6c04cd63af392376159dc7aae41d85bbc348e96d",
+    "11639b8437306390798d85fc54422b4559f553c3",
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+    "4424370783f1c41fc1e146f554468f89e8f0e88b"
+  ],
+  "changeHistoryShort": {
+    "253de634b108f3869a0136d33049e28877fea038": "Ybodychange",
+    "f0ed29b5cfef6adcec791cfdc236a5b850b685ee": "Ybodychange",
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+    "425fd5a27cd567d5784bd246729c55cf8cda3dbd": "Ybodychange",
+    "6c04cd63af392376159dc7aae41d85bbc348e96d": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+    "11639b8437306390798d85fc54422b4559f553c3": "Ymodifierchange",
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a": "Ymultichange(Yparameterchange,Ybodychange)",
+    "4424370783f1c41fc1e146f554468f89e8f0e88b": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "253de634b108f3869a0136d33049e28877fea038": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #5392: fixed RequireThisCheck and for loop variable handling",
+      "commitDate": 1514325116000,
+      "commitName": "253de634b108f3869a0136d33049e28877fea038",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1514243814000,
+      "commitNameOld": "36fdb1ba18843c9e5a6e3a7e3bbacfad7fde7369",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 0.94,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,35 +1,36 @@\n     private boolean canBeReferencedFromStaticContext(DetailAST ident) {\n         AbstractFrame variableDeclarationFrame \u003d findFrame(ident, false);\n         boolean staticInitializationBlock \u003d false;\n-        while (variableDeclarationFrame.getType() \u003d\u003d FrameType.BLOCK_FRAME) {\n+        while (variableDeclarationFrame.getType() \u003d\u003d FrameType.BLOCK_FRAME\n+                || variableDeclarationFrame.getType() \u003d\u003d FrameType.FOR_FRAME) {\n             final DetailAST blockFrameNameIdent \u003d variableDeclarationFrame.getFrameNameIdent();\n             final DetailAST definitionToken \u003d blockFrameNameIdent.getParent();\n             if (definitionToken.getType() \u003d\u003d TokenTypes.STATIC_INIT) {\n                 staticInitializationBlock \u003d true;\n                 break;\n             }\n             variableDeclarationFrame \u003d variableDeclarationFrame.getParent();\n         }\n \n         boolean staticContext \u003d false;\n         if (staticInitializationBlock) {\n             staticContext \u003d true;\n         }\n         else {\n             if (variableDeclarationFrame.getType() \u003d\u003d FrameType.CLASS_FRAME) {\n                 final DetailAST codeBlockDefinition \u003d getCodeBlockDefinitionToken(ident);\n                 if (codeBlockDefinition !\u003d null) {\n                     final DetailAST modifiers \u003d codeBlockDefinition.getFirstChild();\n                     staticContext \u003d codeBlockDefinition.getType() \u003d\u003d TokenTypes.STATIC_INIT\n                         || modifiers.findFirstToken(TokenTypes.LITERAL_STATIC) !\u003d null;\n                 }\n             }\n             else {\n                 final DetailAST frameNameIdent \u003d variableDeclarationFrame.getFrameNameIdent();\n                 final DetailAST definitionToken \u003d frameNameIdent.getParent();\n                 staticContext \u003d definitionToken.findFirstToken(TokenTypes.MODIFIERS)\n                         .findFirstToken(TokenTypes.LITERAL_STATIC) !\u003d null;\n             }\n         }\n         return !staticContext;\n     }\n\\ No newline at end of file\n"
+    },
+    "f0ed29b5cfef6adcec791cfdc236a5b850b685ee": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for simple cases",
+      "commitDate": 1510238731000,
+      "commitName": "f0ed29b5cfef6adcec791cfdc236a5b850b685ee",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1509412562000,
+      "commitNameOld": "5cdbb191a17c65c2956b35d71513e9b59b6d2166",
+      "commitAuthorOld": "Andrew Kuchev",
+      "daysBetweenCommits": 9.56,
+      "commitsBetweenForRepo": 9,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,34 +1,35 @@\n     private boolean canBeReferencedFromStaticContext(DetailAST ident) {\n         AbstractFrame variableDeclarationFrame \u003d findFrame(ident, false);\n         boolean staticInitializationBlock \u003d false;\n         while (variableDeclarationFrame.getType() \u003d\u003d FrameType.BLOCK_FRAME) {\n             final DetailAST blockFrameNameIdent \u003d variableDeclarationFrame.getFrameNameIdent();\n             final DetailAST definitionToken \u003d blockFrameNameIdent.getParent();\n             if (definitionToken.getType() \u003d\u003d TokenTypes.STATIC_INIT) {\n                 staticInitializationBlock \u003d true;\n                 break;\n             }\n             variableDeclarationFrame \u003d variableDeclarationFrame.getParent();\n         }\n \n         boolean staticContext \u003d false;\n         if (staticInitializationBlock) {\n             staticContext \u003d true;\n         }\n         else {\n             if (variableDeclarationFrame.getType() \u003d\u003d FrameType.CLASS_FRAME) {\n                 final DetailAST codeBlockDefinition \u003d getCodeBlockDefinitionToken(ident);\n                 if (codeBlockDefinition !\u003d null) {\n                     final DetailAST modifiers \u003d codeBlockDefinition.getFirstChild();\n                     staticContext \u003d codeBlockDefinition.getType() \u003d\u003d TokenTypes.STATIC_INIT\n                         || modifiers.findFirstToken(TokenTypes.LITERAL_STATIC) !\u003d null;\n                 }\n             }\n             else {\n                 final DetailAST frameNameIdent \u003d variableDeclarationFrame.getFrameNameIdent();\n                 final DetailAST definitionToken \u003d frameNameIdent.getParent();\n-                staticContext \u003d definitionToken.branchContains(TokenTypes.LITERAL_STATIC);\n+                staticContext \u003d definitionToken.findFirstToken(TokenTypes.MODIFIERS)\n+                        .findFirstToken(TokenTypes.LITERAL_STATIC) !\u003d null;\n             }\n         }\n         return !staticContext;\n     }\n\\ No newline at end of file\n"
+    },
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1501588758000,
+      "commitNameOld": "1efd7acd6ca48569fd09a2a00e5a78505d772743",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 85.62,
+      "commitsBetweenForRepo": 255,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,34 +1,34 @@\n     private boolean canBeReferencedFromStaticContext(DetailAST ident) {\n         AbstractFrame variableDeclarationFrame \u003d findFrame(ident, false);\n         boolean staticInitializationBlock \u003d false;\n         while (variableDeclarationFrame.getType() \u003d\u003d FrameType.BLOCK_FRAME) {\n             final DetailAST blockFrameNameIdent \u003d variableDeclarationFrame.getFrameNameIdent();\n             final DetailAST definitionToken \u003d blockFrameNameIdent.getParent();\n             if (definitionToken.getType() \u003d\u003d TokenTypes.STATIC_INIT) {\n                 staticInitializationBlock \u003d true;\n                 break;\n             }\n             variableDeclarationFrame \u003d variableDeclarationFrame.getParent();\n         }\n \n         boolean staticContext \u003d false;\n         if (staticInitializationBlock) {\n             staticContext \u003d true;\n         }\n         else {\n             if (variableDeclarationFrame.getType() \u003d\u003d FrameType.CLASS_FRAME) {\n                 final DetailAST codeBlockDefinition \u003d getCodeBlockDefinitionToken(ident);\n                 if (codeBlockDefinition !\u003d null) {\n                     final DetailAST modifiers \u003d codeBlockDefinition.getFirstChild();\n                     staticContext \u003d codeBlockDefinition.getType() \u003d\u003d TokenTypes.STATIC_INIT\n-                        || modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n+                        || modifiers.findFirstToken(TokenTypes.LITERAL_STATIC) !\u003d null;\n                 }\n             }\n             else {\n                 final DetailAST frameNameIdent \u003d variableDeclarationFrame.getFrameNameIdent();\n                 final DetailAST definitionToken \u003d frameNameIdent.getParent();\n                 staticContext \u003d definitionToken.branchContains(TokenTypes.LITERAL_STATIC);\n             }\n         }\n         return !staticContext;\n     }\n\\ No newline at end of file\n"
+    },
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+      "commitMessage": "Issue #2362: Add \u0027validateOnlyOverlapping\u0027 option for RequireThisCheck\n",
+      "commitDate": 1457102074000,
+      "commitName": "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "425fd5a27cd567d5784bd246729c55cf8cda3dbd": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2539: Fix RequireThis check false-positive on methods\n",
+      "commitDate": 1451598097000,
+      "commitName": "425fd5a27cd567d5784bd246729c55cf8cda3dbd",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1450994205000,
+      "commitNameOld": "6c04cd63af392376159dc7aae41d85bbc348e96d",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 6.99,
+      "commitsBetweenForRepo": 26,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,9 @@\n     private AbstractFrame checkMethod(DetailAST ast) {\n         final AbstractFrame frame \u003d findFrame(ast, true);\n         if (frame !\u003d null\n-                \u0026\u0026 ((ClassFrame) frame).hasInstanceMethod(ast)) {\n+            \u0026\u0026 ((ClassFrame) frame).hasInstanceMethod(ast)\n+            \u0026\u0026 !((ClassFrame) frame).hasStaticMethod(ast)) {\n             return frame;\n         }\n         return null;\n     }\n\\ No newline at end of file\n"
+    },
+    "6c04cd63af392376159dc7aae41d85bbc348e96d": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+      "commitMessage": "Issue #2239: Extend RequireThis check message\n",
+      "commitDate": 1450994205000,
+      "commitName": "6c04cd63af392376159dc7aae41d85bbc348e96d",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "11639b8437306390798d85fc54422b4559f553c3": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Pull #2605: Make methods private in RequireThisCheck\n",
+      "commitDate": 1447657308000,
+      "commitName": "11639b8437306390798d85fc54422b4559f553c3",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1447597420000,
+      "commitNameOld": "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 0.69,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    protected final boolean isClassMethod(DetailAST ident) {\n+    private boolean isClassMethod(DetailAST ident) {\n         final LexicalFrame frame \u003d findFrame(ident, true);\n         return frame instanceof ClassFrame\n                 \u0026\u0026 ((ClassFrame) frame).hasInstanceMethod(ident);\n     }\n\\ No newline at end of file\n"
+    },
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #2240: Fix false negative in RequireThisCheck\n",
+      "commitDate": 1447597420000,
+      "commitName": "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "4424370783f1c41fc1e146f554468f89e8f0e88b": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2451: removed excess hierarchy from RequireThisCheck",
+      "commitDate": 1446945172000,
+      "commitName": "4424370783f1c41fc1e146f554468f89e8f0e88b",
+      "commitAuthor": "rnveach"
+    }
+  }
+}

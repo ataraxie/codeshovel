@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+index 1c8cac311..b9fc33af9 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+@@ -119,101 +119,101 @@ public final class Main
+     /**
+      * Creates the Checker object.
+      *
+      * @param aConfig the configuration to use
+      * @param aNosy the sticky beak to track what happens
+      * @return a nice new fresh Checker
+      */
+     private static Checker createChecker(Configuration aConfig,
+                                          AuditListener aNosy)
+     {
+         Checker c = null;
+         try {
+             c = new Checker();
+ 
+             final ClassLoader moduleClassLoader =
+                 Checker.class.getClassLoader();
+             c.setModuleClassLoader(moduleClassLoader);
+             c.configure(aConfig);
+             c.addListener(aNosy);
+         }
+         catch (final Exception e) {
+             System.out.println("Unable to create Checker: "
+                                + e.getMessage());
+             e.printStackTrace(System.out);
+             System.exit(1);
+         }
+         return c;
+     }
+ 
+     /**
+      * Determines the files to process.
+      *
+      * @param aLine the command line options specifying what files to process
+      * @return list of files to process
+      */
+     private static List<File> getFilesToProcess(CommandLine aLine)
+     {
+         final List<File> files = Lists.newLinkedList();
+         if (aLine.hasOption("r")) {
+             final String[] values = aLine.getOptionValues("r");
+             for (String element : values) {
+                 traverse(new File(element), files);
+             }
+         }
+ 
+         final String[] remainingArgs = aLine.getArgs();
+         for (String element : remainingArgs) {
+             files.add(new File(element));
+         }
+ 
+-        if (files.isEmpty()) {
++        if (files.isEmpty() && !aLine.hasOption("r")) {
+             System.out.println("Must specify files to process");
+             usage();
+         }
+         return files;
+     }
+ 
+     /**
+      * Create the audit listener
+      *
+      * @param aLine command line options supplied
+      * @param aOut the stream to log to
+      * @param aCloseOut whether the stream should be closed
+      * @return a fresh new <code>AuditListener</code>
+      */
+     private static AuditListener createListener(CommandLine aLine,
+                                                 OutputStream aOut,
+                                                 boolean aCloseOut)
+     {
+         final String format =
+             aLine.hasOption("f") ? aLine.getOptionValue("f") : "plain";
+ 
+         AuditListener listener = null;
+         if ("xml".equals(format)) {
+             listener = new XMLLogger(aOut, aCloseOut);
+         }
+         else if ("plain".equals(format)) {
+             listener = new DefaultLogger(aOut, aCloseOut);
+         }
+         else {
+             System.out.println("Invalid format: (" + format
+                                + "). Must be 'plain' or 'xml'.");
+             usage();
+         }
+         return listener;
+     }
+ 
+     /**
+      * Loads the configuration file. Will exit if unable to load.
+      *
+      * @param aLine specifies the location of the configuration
+      * @param aProps the properties to resolve with the configuration
+      * @return a fresh new configuration
+      */
+     private static Configuration loadConfig(CommandLine aLine,
+                                             Properties aProps)
+     {
+         try {
+             return ConfigurationLoader.loadConfiguration(
+                     aLine.getOptionValue("c"), new PropertiesExpander(aProps));
+         }

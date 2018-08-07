@@ -1,0 +1,86 @@
+diff --git a/android/guava/src/com/google/common/collect/MapMaker.java b/android/guava/src/com/google/common/collect/MapMaker.java
+index d1df166ad..a7165d5cc 100644
+--- a/android/guava/src/com/google/common/collect/MapMaker.java
++++ b/android/guava/src/com/google/common/collect/MapMaker.java
+@@ -229,80 +229,80 @@ public final class MapMaker {
+    * methods {@link Map#containsValue containsValue}, {@link ConcurrentMap#remove(Object, Object)
+    * remove(Object, Object)} and {@link ConcurrentMap#replace(Object, Object, Object) replace(K, V,
+    * V)}, and may not be what you expect.
+    *
+    * @throws IllegalStateException if the value strength was already set
+    * @see WeakReference
+    */
+   @CanIgnoreReturnValue
+   @GwtIncompatible // java.lang.ref.WeakReference
+   public MapMaker weakValues() {
+     return setValueStrength(Strength.WEAK);
+   }
+ 
+   /**
+    * A dummy singleton value type used by {@link Interners}.
+    *
+    * <p>{@link MapMakerInternalMap} can optimize for memory usage in this case; see
+    * {@link MapMakerInternalMap#createWithDummyValues}.
+    */
+   enum Dummy {
+     VALUE
+   }
+ 
+   MapMaker setValueStrength(Strength strength) {
+     checkState(valueStrength == null, "Value strength was already set to %s", valueStrength);
+     valueStrength = checkNotNull(strength);
+     if (strength != Strength.STRONG) {
+       // STRONG could be used during deserialization.
+       useCustomMap = true;
+     }
+     return this;
+   }
+ 
+   Strength getValueStrength() {
+     return MoreObjects.firstNonNull(valueStrength, Strength.STRONG);
+   }
+ 
+   /**
+    * Builds a thread-safe map. This method does not alter the state of this {@code MapMaker}
+    * instance, so it can be invoked again to create multiple independent maps.
+    *
+    * <p>The bulk operations {@code putAll}, {@code equals}, and {@code clear} are not guaranteed to
+    * be performed atomically on the returned map. Additionally, {@code size} and
+    * {@code containsValue} are implemented as bulk read operations, and thus may fail to observe
+    * concurrent writes.
+    *
+    * @return a serializable concurrent map having the requested features
+    */
+   public <K, V> ConcurrentMap<K, V> makeMap() {
+     if (!useCustomMap) {
+-      return new ConcurrentHashMap<K, V>(getInitialCapacity(), 0.75f, getConcurrencyLevel());
++      return new ConcurrentHashMap<>(getInitialCapacity(), 0.75f, getConcurrencyLevel());
+     }
+     return MapMakerInternalMap.create(this);
+   }
+ 
+   /**
+    * Returns a string representation for this MapMaker instance. The exact form of the returned
+    * string is not specified.
+    */
+   @Override
+   public String toString() {
+     MoreObjects.ToStringHelper s = MoreObjects.toStringHelper(this);
+     if (initialCapacity != UNSET_INT) {
+       s.add("initialCapacity", initialCapacity);
+     }
+     if (concurrencyLevel != UNSET_INT) {
+       s.add("concurrencyLevel", concurrencyLevel);
+     }
+     if (keyStrength != null) {
+       s.add("keyStrength", Ascii.toLowerCase(keyStrength.toString()));
+     }
+     if (valueStrength != null) {
+       s.add("valueStrength", Ascii.toLowerCase(valueStrength.toString()));
+     }
+     if (keyEquivalence != null) {
+       s.addValue("keyEquivalence");
+     }
+     return s.toString();
+   }
+ }

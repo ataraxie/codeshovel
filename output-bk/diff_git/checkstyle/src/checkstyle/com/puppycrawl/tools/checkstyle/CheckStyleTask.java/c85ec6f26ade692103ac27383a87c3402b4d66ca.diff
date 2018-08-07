@@ -1,0 +1,78 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index d55050150..85c79dacd 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -457,72 +457,69 @@ public class CheckStyleTask
+          * Set the type of the formatter.
+          * @param aType the type
+          */
+         public void setType(FormatterType aType)
+         {
+             final String val = aType.getValue();
+             if (E_XML.equals(val)) {
+                 setClassname(XMLLogger.class.getName());
+             }
+             else if (E_PLAIN.equals(val)) {
+                 setClassname(DefaultLogger.class.getName());
+             }
+             else {
+                 throw new BuildException("Invalid formatter type: " + val);
+             }
+         }
+ 
+         /**
+          * Set the class name of the formatter.
+          * @param aTo the formatter class name
+          */
+         public void setClassname(String aTo)
+         {
+             mClassName = aTo;
+         }
+ 
+         /**
+          * Set the file to output to.
+          * @param aTo the file to output to
+          */
+         public void setTofile(File aTo)
+         {
+             mToFile = aTo;
+         }
+ 
+         /**
+          * Creates a listener for the formatter.
+          * @param aTask the task running
+          * @return a listener
+          * @throws ClassNotFoundException if an error occurs
+          * @throws InstantiationException if an error occurs
+          * @throws IllegalAccessException if an error occurs
+          * @throws IOException if an error occurs
+          */
+         public AuditListener createListener(Task aTask)
+             throws ClassNotFoundException, InstantiationException,
+             IllegalAccessException, IOException
+         {
+             final Class clazz = Class.forName(mClassName);
+             final AuditListener listener = (AuditListener) clazz.newInstance();
+-            if (listener instanceof Streamable) {
+-                final Streamable o = (Streamable) listener;
+-                o.setOutputStream(createOutputStream(aTask));
+-            }
++            listener.setOutputStream(createOutputStream(aTask));
+             return listener;
+         }
+ 
+         /**
+          * @return an output stream to log with
+          * @param aTask the task to possibly log to
+          * @throws IOException if an error occurs
+          */
+         protected OutputStream createOutputStream(Task aTask)
+             throws IOException
+         {
+             if (mToFile == null) {
+                 return new LogOutputStream(aTask, Project.MSG_INFO);
+             }
+             return new FileOutputStream(mToFile);
+         }
+     }
+ }

@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+index a1120d220..73f34378e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+@@ -223,101 +223,101 @@ public class RightCurlyCheck extends AbstractOptionCheck<RightCurlyOption>
+                     shouldCheckLastRcurly = true;
+                     nextToken = getNextToken(ast);
+                 }
+                 break;
+             case TokenTypes.LITERAL_IF:
+                 nextToken = ast.findFirstToken(TokenTypes.LITERAL_ELSE);
+                 if (nextToken != null) {
+                     lcurly = nextToken.getPreviousSibling();
+                     rcurly = lcurly.getLastChild();
+                 }
+                 else {
+                     shouldCheckLastRcurly = true;
+                     nextToken = getNextToken(ast);
+                     lcurly = ast.getLastChild();
+                     rcurly = lcurly.getLastChild();
+                 }
+                 break;
+             case TokenTypes.LITERAL_ELSE:
+             case TokenTypes.LITERAL_FINALLY:
+                 shouldCheckLastRcurly = true;
+                 nextToken = getNextToken(ast);
+                 lcurly = ast.getFirstChild();
+                 rcurly = lcurly.getLastChild();
+                 break;
+             case TokenTypes.CLASS_DEF:
+                 final DetailAST child = ast.getLastChild();
+                 lcurly = child.getFirstChild();
+                 rcurly = child.getLastChild();
+                 nextToken = ast;
+                 break;
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.STATIC_INIT:
+             case TokenTypes.INSTANCE_INIT:
+                 lcurly = ast.findFirstToken(TokenTypes.SLIST);
+                 rcurly = lcurly.getLastChild();
+                 nextToken = ast;
+                 break;
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.LITERAL_WHILE:
+             case TokenTypes.LITERAL_DO:
+                 lcurly = ast.findFirstToken(TokenTypes.SLIST);
+                 if (lcurly != null) {
+                     //SLIST could be absent if method is abstract, and code like "while(true);"
+                     rcurly = lcurly.getLastChild();
+                 }
+                 nextToken = ast;
+                 break;
+             default:
+                 throw new RuntimeException("Unexpected token type ("
+-                        + TokenTypes.getTokenName(ast.getType()) + ")");
++                        + Utils.getTokenName(ast.getType()) + ")");
+         }
+ 
+         final Details details = new Details();
+         details.rcurly = rcurly;
+         details.lcurly = lcurly;
+         details.nextToken = nextToken;
+         details.shouldCheckLastRcurly = shouldCheckLastRcurly;
+ 
+         return details;
+     }
+ 
+     /**
+      * Checks if definition body is empty.
+      * @param lcurly left curly.
+      * @return true if definition body is empty.
+      */
+     private boolean isEmptyBody(DetailAST lcurly)
+     {
+         boolean result = false;
+         if (lcurly.getParent().getType() == TokenTypes.OBJBLOCK) {
+             if (lcurly.getNextSibling().getType() == TokenTypes.RCURLY) {
+                 result = true;
+             }
+         }
+         else if (lcurly.getFirstChild().getType() == TokenTypes.RCURLY) {
+             result = true;
+         }
+         return result;
+     }
+ 
+     /**
+      * Finds next token after the given one.
+      * @param ast the given node.
+      * @return the token which represents next lexical item.
+      */
+     private DetailAST getNextToken(DetailAST ast)
+     {
+         DetailAST next = null;
+         DetailAST parent = ast;
+         while (parent != null && next == null) {
+             next = parent.getNextSibling();
+             parent = parent.getParent();
+         }
+         return CheckUtils.getFirstNode(next);
+     }
+ 
+     /**
+      * Checks if right curly has line break before.
+      * @param rightCurly
+      *        Right curly token.

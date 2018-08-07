@@ -1,0 +1,172 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractViolationReporter.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractViolationReporter.java
+index fab27a9e6..aa0193f48 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractViolationReporter.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractViolationReporter.java
+@@ -69,129 +69,167 @@ public abstract class AbstractViolationReporter
+ 
+     /**
+      * Log a message.
+      *
+      * @param aLine the line number where the error was found
+      * @param aKey the message that describes the error
+      */
+     protected final void log(int aLine, String aKey)
+     {
+         log(aLine, aKey, EMPTY_OBJECT_ARRAY);
+     }
+ 
+     /**
+      * Helper method to log a LocalizedMessage. Column defaults to 0.
+      *
+      * @param aLineNo line number to associate with the message
+      * @param aKey key to locale message format
+      * @param aArg0 first argument
+      */
+     protected final void log(int aLineNo, String aKey, Object aArg0)
+     {
+         log(aLineNo, aKey, new Object[] {aArg0});
+     }
+ 
+     /**
+      * Helper method to log a LocalizedMessage. Column defaults to 0.
+      *
+      * @param aLineNo line number to associate with the message
+      * @param aKey key to locale message format
+      * @param aArg0 first argument
+      * @param aArg1 second argument
+      */
+     protected final void log(int aLineNo, String aKey,
+                              Object aArg0, Object aArg1)
+     {
+         log(aLineNo, aKey, new Object[] {aArg0, aArg1});
+     }
+ 
+     /**
+      * Helper method to log a LocalizedMessage.
+      *
+      * @param aLineNo line number to associate with the message
+      * @param aColNo column number to associate with the message
+      * @param aKey key to locale message format
+      */
+     protected final void log(int aLineNo, int aColNo, String aKey)
+     {
+         log(aLineNo, aColNo, aKey, EMPTY_OBJECT_ARRAY);
+     }
+ 
++    /**
++     * Helper method to log a LocalizedMessage.
++     *
++     * @param aAST a node to get line and column numbers associated
++     *             with the message
++     * @param aKey key to locale message format
++     */
++    protected final void log(DetailAST aAST, String aKey)
++    {
++        log(aAST.getLineNo(), aAST.getColumnNo(), aKey);
++    }
++
+     /**
+      * Helper method to log a LocalizedMessage.
+      *
+      * @param aLineNo line number to associate with the message
+      * @param aColNo column number to associate with the message
+      * @param aKey key to locale message format
+      * @param aArg0 an <code>Object</code> value
+      */
+     protected final void log(int aLineNo, int aColNo, String aKey,
+                     Object aArg0)
+     {
+         log(aLineNo, aColNo, aKey, new Object[] {aArg0});
+     }
+ 
++    /**
++     * Helper method to log a LocalizedMessage.
++     *
++     * @param aAST a node to get line and column numbers associated
++     *             with the message
++     * @param aKey key to locale message format
++     * @param aArg0 an <code>Object</code> value
++     */
++    protected final void log(DetailAST aAST, String aKey, Object aArg0)
++    {
++        log(aAST.getLineNo(), aAST.getColumnNo(), aKey, aArg0);
++    }
+     /**
+      * Helper method to log a LocalizedMessage.
+      *
+      * @param aLineNo line number to associate with the message
+      * @param aColNo column number to associate with the message
+      * @param aKey key to locale message format
+      * @param aArg0 an <code>Object</code> value
+      * @param aArg1 an <code>Object</code> value
+      */
+     protected final void log(int aLineNo, int aColNo, String aKey,
+                     Object aArg0, Object aArg1)
+     {
+         log(aLineNo, aColNo, aKey, new Object[] {aArg0, aArg1});
+     }
+ 
++    /**
++     * Helper method to log a LocalizedMessage.
++     *
++     * @param aAST a node to get line and column numbers associated
++     *             with the message
++     * @param aKey key to locale message format
++     * @param aArg0 an <code>Object</code> value
++     * @param aArg1 an <code>Object</code> value
++     */
++    protected final void log(DetailAST aAST, String aKey,
++                             Object aArg0, Object aArg1)
++    {
++        log(aAST.getLineNo(), aAST.getColumnNo(), aKey, aArg0, aArg1);
++    }
+ 
+     /**
+      * Returns the message bundle name resourcebundle that contains the messages
+      * used by this module.
+      * <p>
+      * The default implementation expects the resource files to be named
+      * messages.properties, messages_de.properties, etc. The file must
+      * be placed in the same package as the module implementation.
+      * </p>
+      * <p>
+      * Example: If you write com/foo/MyCoolCheck, create resource files
+      * com/foo/messages.properties, com/foo/messages_de.properties, etc.
+      * </p>
+      *
+      * @return name of a resource bundle that contains the messages
+      * used by this module.
+      */
+     protected String getMessageBundle()
+     {
+         final String className = this.getClass().getName();
+         return getMessageBundle(className);
+     }
+ 
+     /**
+      * for unit tests, especially with a class with no package name.
+      * @param aClassName class name of the module.
+      * @return name of a resource bundle that contains the messages
+      * used by the module.
+      */
+     String getMessageBundle(final String aClassName)
+     {
+         final int endIndex = aClassName.lastIndexOf('.');
+         final String messages = "messages";
+         if (endIndex < 0) {
+             return messages;
+         }
+         final String packageName = aClassName.substring(0, endIndex);
+         return packageName + "." + messages;
+     }
+ 
+     /**
+      * Log a message that has no column information.
+      *
+      * @param aLine the line number where the error was found
+      * @param aKey the message that describes the error
+      * @param aArgs the details of the message
+      *
+      * @see java.text.MessageFormat
+      */
+     protected abstract void log(int aLine, String aKey, Object aArgs[]);

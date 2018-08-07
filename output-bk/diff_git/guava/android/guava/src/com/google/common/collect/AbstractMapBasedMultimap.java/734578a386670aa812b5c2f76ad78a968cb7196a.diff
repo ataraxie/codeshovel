@@ -1,0 +1,109 @@
+diff --git a/android/guava/src/com/google/common/collect/AbstractMapBasedMultimap.java b/android/guava/src/com/google/common/collect/AbstractMapBasedMultimap.java
+index 9ea6bcaef..707abcc86 100644
+--- a/android/guava/src/com/google/common/collect/AbstractMapBasedMultimap.java
++++ b/android/guava/src/com/google/common/collect/AbstractMapBasedMultimap.java
+@@ -863,100 +863,104 @@ abstract class AbstractMapBasedMultimap<K, V> extends AbstractMultimap<K, V>
+       @Override
+       public boolean hasPrevious() {
+         return getDelegateListIterator().hasPrevious();
+       }
+ 
+       @Override
+       public V previous() {
+         return getDelegateListIterator().previous();
+       }
+ 
+       @Override
+       public int nextIndex() {
+         return getDelegateListIterator().nextIndex();
+       }
+ 
+       @Override
+       public int previousIndex() {
+         return getDelegateListIterator().previousIndex();
+       }
+ 
+       @Override
+       public void set(V value) {
+         getDelegateListIterator().set(value);
+       }
+ 
+       @Override
+       public void add(V value) {
+         boolean wasEmpty = isEmpty();
+         getDelegateListIterator().add(value);
+         totalSize++;
+         if (wasEmpty) {
+           addToMap();
+         }
+       }
+     }
+   }
+ 
+   /**
+    * List decorator that stays in sync with the multimap values for a key and supports rapid random
+    * access.
+    */
+   private class RandomAccessWrappedList extends WrappedList implements RandomAccess {
+     RandomAccessWrappedList(
+         @NullableDecl K key, List<V> delegate, @NullableDecl WrappedCollection ancestor) {
+       super(key, delegate, ancestor);
+     }
+   }
+ 
+   @Override
+   Set<K> createKeySet() {
++    return new KeySet(map);
++  }
++  
++  final Set<K> createMaybeNavigableKeySet() {
+     if (map instanceof NavigableMap) {
+       return new NavigableKeySet((NavigableMap<K, Collection<V>>) map);
+     } else if (map instanceof SortedMap) {
+       return new SortedKeySet((SortedMap<K, Collection<V>>) map);
+     } else {
+       return new KeySet(map);
+     }
+   }
+ 
+   @WeakOuter
+   private class KeySet extends Maps.KeySet<K, Collection<V>> {
+     KeySet(final Map<K, Collection<V>> subMap) {
+       super(subMap);
+     }
+ 
+     @Override
+     public Iterator<K> iterator() {
+       final Iterator<Entry<K, Collection<V>>> entryIterator = map().entrySet().iterator();
+       return new Iterator<K>() {
+         Entry<K, Collection<V>> entry;
+ 
+         @Override
+         public boolean hasNext() {
+           return entryIterator.hasNext();
+         }
+ 
+         @Override
+         public K next() {
+           entry = entryIterator.next();
+           return entry.getKey();
+         }
+ 
+         @Override
+         public void remove() {
+           checkRemove(entry != null);
+           Collection<V> collection = entry.getValue();
+           entryIterator.remove();
+           totalSize -= collection.size();
+           collection.clear();
+         }
+       };
+     }
+ 
+     // The following methods are included for better performance.
+ 
+     @Override
+     public boolean remove(Object key) {
+       int count = 0;
+       Collection<V> collection = map().remove(key);
+       if (collection != null) {

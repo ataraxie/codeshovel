@@ -1,0 +1,204 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MethodCallHandler.java",
+  "functionName": "getSuggestedChildIndent",
+  "functionId": "getSuggestedChildIndent___child-AbstractExpressionHandler",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java",
+  "functionStartLine": 145,
+  "functionEndLine": 172,
+  "changeHistory": [
+    "8c891372187779376158becd95fcaf4e28b8bb8d",
+    "ab74399c2d18b8881c4a0c13155b7afce869eebf",
+    "eeec3dc1d23916462560403a27a4ae94260d61f3",
+    "eb5896a4a1d66552f5100046413f15d62b485b62",
+    "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "5a4f991d2738c824f70f361b21d9da193ff3751c",
+    "7f7db38a097a95c264307123924779380fb40077",
+    "092e1f69476fc715852035a25b23a11804183a23",
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b",
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955"
+  ],
+  "changeHistoryShort": {
+    "8c891372187779376158becd95fcaf4e28b8bb8d": "Ymultichange(Yrename,Ybodychange)",
+    "ab74399c2d18b8881c4a0c13155b7afce869eebf": "Ymultichange(Yrename,Ybodychange)",
+    "eeec3dc1d23916462560403a27a4ae94260d61f3": "Ybodychange",
+    "eb5896a4a1d66552f5100046413f15d62b485b62": "Yparameterchange",
+    "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": "Ybodychange",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "5a4f991d2738c824f70f361b21d9da193ff3751c": "Ybodychange",
+    "7f7db38a097a95c264307123924779380fb40077": "Ymultichange(Yreturntypechange,Ybodychange)",
+    "092e1f69476fc715852035a25b23a11804183a23": "Ybodychange",
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "8c891372187779376158becd95fcaf4e28b8bb8d": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "minor: renaming indentation methods to more natural name",
+      "commitDate": 1450282560000,
+      "commitName": "8c891372187779376158becd95fcaf4e28b8bb8d",
+      "commitAuthor": "rnveach",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "ab74399c2d18b8881c4a0c13155b7afce869eebf": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "minor: renaming indentation methods to more natural name",
+      "commitDate": 1449255189000,
+      "commitName": "ab74399c2d18b8881c4a0c13155b7afce869eebf",
+      "commitAuthor": "rnveach",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "eeec3dc1d23916462560403a27a4ae94260d61f3": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1548: Add lambda support to indentation check (see #281)\n",
+      "commitDate": 1443707601000,
+      "commitName": "eeec3dc1d23916462560403a27a4ae94260d61f3",
+      "commitAuthor": "Pieter Noordhuis",
+      "commitDateOld": 1441045466000,
+      "commitNameOld": "2b861bd6e16584e22bb115ff7abd65c35072eb92",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 30.81,
+      "commitsBetweenForRepo": 191,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,28 @@\n     public IndentLevel suggestedChildLevel(AbstractExpressionHandler child) {\n         // for whatever reason a method that crosses lines, like asList\n         // here:\n         //            System.out.println(\"methods are: \" + Arrays.asList(\n         //                new String[] {\"method\"}).toString());\n         // will not have the right line num, so just get the child name\n \n         final DetailAST first \u003d getMainAst().getFirstChild();\n-        int indentLevel \u003d getLineStart(first);\n+        IndentLevel suggestedLevel \u003d new IndentLevel(getLineStart(first));\n         if (!areOnSameLine(child.getMainAst().getFirstChild(),\n                            getMainAst().getFirstChild())) {\n-            indentLevel +\u003d getBasicOffset();\n+            suggestedLevel \u003d new IndentLevel(suggestedLevel,\n+                    getBasicOffset(),\n+                    getIndentCheck().getLineWrappingIndentation());\n         }\n-        return new IndentLevel(indentLevel);\n+\n+        // If the right parenthesis is at the start of a line;\n+        // include line wrapping in suggested indent level.\n+        final DetailAST rparen \u003d getMainAst().findFirstToken(TokenTypes.RPAREN);\n+        if (getLineStart(rparen) \u003d\u003d rparen.getColumnNo()) {\n+            suggestedLevel.addAcceptedIndent(new IndentLevel(\n+                    getParent().suggestedChildLevel(this),\n+                    getIndentCheck().getLineWrappingIndentation()\n+            ));\n+        }\n+\n+        return suggestedLevel;\n     }\n\\ No newline at end of file\n"
+    },
+    "eb5896a4a1d66552f5100046413f15d62b485b62": {
+      "type": "Yparameterchange",
+      "commitMessage": "Fix PMD violations for AbstractNaming rule #983\n",
+      "commitDate": 1434649920000,
+      "commitName": "eb5896a4a1d66552f5100046413f15d62b485b62",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 32.25,
+      "commitsBetweenForRepo": 181,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n-    public IndentLevel suggestedChildLevel(ExpressionHandler child) {\n+    public IndentLevel suggestedChildLevel(AbstractExpressionHandler child) {\n         // for whatever reason a method that crosses lines, like asList\n         // here:\n         //            System.out.println(\"methods are: \" + Arrays.asList(\n         //                new String[] {\"method\"}).toString());\n         // will not have the right line num, so just get the child name\n \n         final DetailAST first \u003d getMainAst().getFirstChild();\n         int indentLevel \u003d getLineStart(first);\n         if (!areOnSameLine(child.getMainAst().getFirstChild(),\n                            getMainAst().getFirstChild())) {\n             indentLevel +\u003d getBasicOffset();\n         }\n         return new IndentLevel(indentLevel);\n     }\n\\ No newline at end of file\n"
+    },
+    "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, indentation, #512\n",
+      "commitDate": 1421678099000,
+      "commitName": "d84869bcff9a2f0ad8d6f1d7741e07d22a78e4a6",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": {
+      "type": "Ybodychange",
+      "commitMessage": "Inspired by patch# 2111354 - changes to remove casting. Neat trick\n",
+      "commitDate": 1221737656000,
+      "commitName": "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200352313000,
+      "commitNameOld": "315033ff5647ef9896130573d9212fee6fe141db",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 247.52,
+      "commitsBetweenForRepo": 67,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)\n     {\n         // for whatever reason a method that crosses lines, like asList\n         // here:\n         //            System.out.println(\"methods are: \" + Arrays.asList(\n         //                new String[] {\"method\"}).toString());\n         // will not have the right line num, so just get the child name\n \n-        final DetailAST first \u003d (DetailAST) getMainAst().getFirstChild();\n+        final DetailAST first \u003d getMainAst().getFirstChild();\n         int indentLevel \u003d getLineStart(first);\n-        if (!areOnSameLine((DetailAST) aChild.getMainAst().getFirstChild(),\n-                           (DetailAST) getMainAst().getFirstChild()))\n+        if (!areOnSameLine(aChild.getMainAst().getFirstChild(),\n+                           getMainAst().getFirstChild()))\n         {\n             indentLevel +\u003d getBasicOffset();\n         }\n         return new IndentLevel(indentLevel);\n     }\n\\ No newline at end of file\n"
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1152242806000,
+      "commitNameOld": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)\n     {\n         // for whatever reason a method that crosses lines, like asList\n         // here:\n         //            System.out.println(\"methods are: \" + Arrays.asList(\n         //                new String[] {\"method\"}).toString());\n         // will not have the right line num, so just get the child name\n \n-        DetailAST first \u003d (DetailAST) getMainAst().getFirstChild();\n+        final DetailAST first \u003d (DetailAST) getMainAst().getFirstChild();\n         int indentLevel \u003d getLineStart(first);\n         if (!areOnSameLine((DetailAST) aChild.getMainAst().getFirstChild(),\n                            (DetailAST) getMainAst().getFirstChild()))\n         {\n             indentLevel +\u003d getBasicOffset();\n         }\n         return new IndentLevel(indentLevel);\n     }\n\\ No newline at end of file\n"
+    },
+    "5a4f991d2738c824f70f361b21d9da193ff3751c": {
+      "type": "Ybodychange",
+      "commitMessage": "partitial fix for 1089128(Bugs in Indentation check)\n",
+      "commitDate": 1105458230000,
+      "commitName": "5a4f991d2738c824f70f361b21d9da193ff3751c",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1105267857000,
+      "commitNameOld": "0d887cde58e54d920644ee543dab346b93e8aae9",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 2.2,
+      "commitsBetweenForRepo": 18,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,17 @@\n     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)\n     {\n         // for whatever reason a method that crosses lines, like asList\n         // here:\n         //            System.out.println(\"methods are: \" + Arrays.asList(\n         //                new String[] {\"method\"}).toString());\n         // will not have the right line num, so just get the child name\n \n         DetailAST first \u003d (DetailAST) getMainAst().getFirstChild();\n         int indentLevel \u003d getLineStart(first);\n-        if (aChild instanceof MethodCallHandler) {\n-            if (!areOnSameLine((DetailAST) aChild.getMainAst().getFirstChild(),\n-                (DetailAST) getMainAst().getFirstChild()))\n-            {\n-                indentLevel +\u003d getBasicOffset();\n-            }\n+        if (!areOnSameLine((DetailAST) aChild.getMainAst().getFirstChild(),\n+                           (DetailAST) getMainAst().getFirstChild()))\n+        {\n+            indentLevel +\u003d getBasicOffset();\n         }\n         return new IndentLevel(indentLevel);\n     }\n\\ No newline at end of file\n"
+    },
+    "7f7db38a097a95c264307123924779380fb40077": {
+      "type": "Ymultichange(Yreturntypechange,Ybodychange)",
+      "commitMessage": "IndentationCheck: Some refactoring and fixes for some TODOs and bugs.\n",
+      "commitDate": 1060715940000,
+      "commitName": "7f7db38a097a95c264307123924779380fb40077",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "subchanges": [
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "092e1f69476fc715852035a25b23a11804183a23": {
+      "type": "Ybodychange",
+      "commitMessage": "indentationAmount property renamed to basicOffset\n",
+      "commitDate": 1053014089000,
+      "commitName": "092e1f69476fc715852035a25b23a11804183a23",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1052899909000,
+      "commitNameOld": "a4d63db21d57ab53aff8a467f89df3867518ab91",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 1.32,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     public int suggestedChildLevel(ExpressionHandler aChild)\n     {\n         // for whatever reason a method that crosses lines, like asList\n         // here:\n         //            System.out.println(\"methods are: \" + Arrays.asList(\n         //                new String[] {\"method\"}).toString());\n         // will not have the right line num, so just get the child name\n \n         DetailAST first \u003d (DetailAST) getMainAst().getFirstChild();\n         int indentLevel \u003d getLineStart(first);\n         if (aChild instanceof MethodCallHandler) {\n             if (!areOnSameLine((DetailAST) aChild.getMainAst().getFirstChild(),\n                 (DetailAST) getMainAst().getFirstChild()))\n             {\n-                indentLevel +\u003d getIndentCheck().getIndentationAmount();\n+                indentLevel +\u003d getIndentCheck().getBasicOffset();\n             }\n         }\n         return indentLevel;\n     }\n\\ No newline at end of file\n"
+    },
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Refactoring of original IndentationCheck made by Jeff Weston (Sir Toby) applied.\nFixed two know problems:\n - with static init block (catched by testValidBlockWithChecker())\n - with throws in method definition.\n   unit-test (testInvalidMethodWithChecker()) fixed too.\n",
+      "commitDate": 1052639583000,
+      "commitName": "eaad55fdba73e17e103dc6600867f26fd6a3896b",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955": {
+      "type": "Yintroduced",
+      "commitMessage": "added IndentationCheck, contributed by John Richardson\nThis check currently fails to pass checkstyle.checkstyle\nbecause most methods are missing javadoc, I hope somebody\ncan help me adding it\n",
+      "commitDate": 1051248087000,
+      "commitName": "9aab61241e7970ccfb4a9ee66c8eb7f062d31955",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

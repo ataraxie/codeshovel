@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+index b99317967..eaa79f209 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -173,101 +173,101 @@ public class Checker extends AutomaticBean implements MessageDispatcher
+                         + " is not allowed as a child in Checker");
+             }
+         }
+         catch (final Exception ex) {
+             // TODO i18n
+             throw new CheckstyleException("cannot initialize module " + name
+                     + " - " + ex.getMessage(), ex);
+         }
+     }
+ 
+     /**
+      * Adds a FileSetCheck to the list of FileSetChecks
+      * that is executed in process().
+      * @param aFileSetCheck the additional FileSetCheck
+      */
+     public void addFileSetCheck(FileSetCheck aFileSetCheck)
+     {
+         aFileSetCheck.setMessageDispatcher(this);
+         mFileSetChecks.add(aFileSetCheck);
+     }
+ 
+     /**
+      * Adds a filter to the end of the audit event filter chain.
+      * @param aFilter the additional filter
+      */
+     public void addFilter(Filter aFilter)
+     {
+         mFilters.addFilter(aFilter);
+     }
+ 
+     /**
+      * Removes filter.
+      * @param aFilter filter to remove.
+      */
+     public void removeFilter(Filter aFilter)
+     {
+         mFilters.removeFilter(aFilter);
+     }
+ 
+     /** Cleans up the object. **/
+     public void destroy()
+     {
+         mListeners.clear();
+         mFilters.clear();
+     }
+ 
+     /**
+      * Add the listener that will be used to receive events from the audit.
+      * @param aListener the nosy thing
+      */
+-    public void addListener(AuditListener aListener)
++    public final void addListener(AuditListener aListener)
+     {
+         mListeners.add(aListener);
+     }
+ 
+     /**
+      * Removes a given listener.
+      * @param aListener a listener to remove
+      */
+     public void removeListener(AuditListener aListener)
+     {
+         mListeners.remove(aListener);
+     }
+ 
+     /**
+      * Processes a set of files with all FileSetChecks.
+      * Once this is done, it is highly recommended to call for
+      * the destroy method to close and remove the listeners.
+      * @param aFiles the list of files to be audited.
+      * @return the total number of errors found
+      * @see #destroy()
+      */
+     public int process(List<File> aFiles)
+     {
+         // Prepare to start
+         fireAuditStarted();
+         for (FileSetCheck fsc : mFileSetChecks) {
+             fsc.beginProcessing(mCharset);
+         }
+ 
+         // Process each file
+         for (File f : aFiles) {
+             final String fileName = f.getAbsolutePath();
+             fireFileStarted(fileName);
+             final TreeSet<LocalizedMessage> fileMessages = Sets.newTreeSet();
+             try {
+                 final FileText theText = new FileText(f.getAbsoluteFile(),
+                         mCharset);
+                 for (FileSetCheck fsc : mFileSetChecks) {
+                     fileMessages.addAll(fsc.process(f, theText));
+                 }
+             }
+             catch (final FileNotFoundException fnfe) {
+                 Utils.getExceptionLogger().debug(
+                         "FileNotFoundException occured.", fnfe);
+                 fileMessages.add(new LocalizedMessage(0,
+                         Defn.CHECKSTYLE_BUNDLE, "general.fileNotFound", null,
+                         null, this.getClass(), null));
+             }
+             catch (final IOException ioe) {
+                 Utils.getExceptionLogger().debug("IOException occured.", ioe);

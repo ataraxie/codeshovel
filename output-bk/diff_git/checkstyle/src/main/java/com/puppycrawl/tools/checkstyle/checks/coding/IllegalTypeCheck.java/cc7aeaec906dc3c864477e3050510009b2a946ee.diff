@@ -1,0 +1,117 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java
+index dbf38ab61..dd8ba69e2 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java
+@@ -180,108 +180,108 @@ public final class IllegalTypeCheck extends AbstractFormatCheck {
+                     visitVariableDef(ast);
+                 }
+                 break;
+             case TokenTypes.PARAMETER_DEF:
+                 visitParameterDef(ast);
+                 break;
+             case TokenTypes.IMPORT:
+                 visitImport(ast);
+                 break;
+             default:
+                 throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
+     /**
+      * Checks if current method's return type or variable's type is verifiable
+      * according to <b>memberModifiers</b> option.
+      * @param methodOrVariableDef METHOD_DEF or VARIABLE_DEF ast node.
+      * @return true if member is verifiable according to <b>memberModifiers</b> option.
+      */
+     private boolean isVerifiable(DetailAST methodOrVariableDef) {
+         boolean result = true;
+         if (memberModifiers != null) {
+             result = false;
+             final DetailAST modifiersAst = methodOrVariableDef
+                     .findFirstToken(TokenTypes.MODIFIERS);
+             if (modifiersAst.getFirstChild() != null) {
+                 for (DetailAST modifier = modifiersAst.getFirstChild(); modifier != null;
+                          modifier = modifier.getNextSibling()) {
+                     if (memberModifiers.contains(modifier.getType())) {
+                         result = true;
+                     }
+                 }
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks return type of a given method.
+      * @param methodDef method for check.
+      */
+     private void visitMethodDef(DetailAST methodDef) {
+         if (isCheckedMethod(methodDef)) {
+             checkClassName(methodDef);
+         }
+     }
+ 
+     /**
+      * Checks type of parameters.
+-     * @param paradef parameter list for check.
++     * @param parameterDef parameter list for check.
+      */
+-    private void visitParameterDef(DetailAST paradef) {
+-        final DetailAST grandParentAST = paradef.getParent().getParent();
++    private void visitParameterDef(DetailAST parameterDef) {
++        final DetailAST grandParentAST = parameterDef.getParent().getParent();
+ 
+         if (grandParentAST.getType() == TokenTypes.METHOD_DEF
+             && isCheckedMethod(grandParentAST)) {
+-            checkClassName(paradef);
++            checkClassName(parameterDef);
+         }
+     }
+ 
+     /**
+      * Checks type of given variable.
+      * @param variableDef variable to check.
+      */
+     private void visitVariableDef(DetailAST variableDef) {
+         checkClassName(variableDef);
+     }
+ 
+     /**
+      * Checks imported type (as static and star imports are not supported by Check,
+      *  only type is in the consideration).<br>
+      * If this type is illegal due to Check's options - puts violation on it.
+      * @param importAst {@link TokenTypes#IMPORT Import}
+      */
+     private void visitImport(DetailAST importAst) {
+         if (!isStarImport(importAst)) {
+             final String canonicalName = getImportedTypeCanonicalName(importAst);
+             extendIllegalClassNamesWithShortName(canonicalName);
+         }
+     }
+ 
+     /**
+      * Checks if current import is star import. E.g.:
+      * <p>
+      * {@code
+      * import java.util.*;
+      * }
+      * </p>
+      * @param importAst {@link TokenTypes#IMPORT Import}
+      * @return true if it is star import
+      */
+     private static boolean isStarImport(DetailAST importAst) {
+         boolean result = false;
+         DetailAST toVisit = importAst;
+         while (toVisit != null) {
+             toVisit = getNextSubTreeNode(toVisit, importAst);
+             if (toVisit != null && toVisit.getType() == TokenTypes.STAR) {
+                 result = true;
+                 break;
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks type of given method, parameter or variable.
+      * @param ast node to check.

@@ -1,0 +1,114 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+index fbd857b42..ca2886d3f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+@@ -316,106 +316,107 @@ public class CustomImportOrderCheck extends Check
+                     }
+                     else {
+                         logWrongImportGroupOrder(importObject.getLineNumber(),
+                                 importGroup);
+                     }
+                 }
+                 else {
+                     logWrongImportGroupOrder(importObject.getLineNumber(),
+                             importGroup);
+                 }
+             }
+             else if (mSortImportsInGroupAlphabetically
+                     && previousImport != null
+                     && matchesImportGroup(importObject.isStatic(),
+                             fullImportIdent, currentGroup)
+                     && !(compare(fullImportIdent, previousImport) >= 0))
+             {
+                 log(importObject.getLineNumber(), "custom.import.order.lex", fullImportIdent);
+             }
+             previousImport = fullImportIdent;
+         }
+     }
+ 
+     /**
+      * Log wrong import group order.
+      * @param aCurrentImportLine
+      *        line number of current import current import.
+      * @param aImportGroup
+      *        import group.
+      */
+     private void logWrongImportGroupOrder(int aCurrentImportLine, String aImportGroup)
+     {
+         if (NON_GROUP_RULE_GROUP.equals(aImportGroup)) {
+             log(aCurrentImportLine, "custom.import.order.nongroup.import");
+         }
+         else {
+             log(aCurrentImportLine, "custom.import.order", aImportGroup);
+         }
+     }
+ 
+     /**
+      * Get next import group.
+      * @param aCurrentGroupNumber
+      *        current group number.
+      * @return
+      *        next import group.
+      */
+     private String getNextImportGroup(int aCurrentGroupNumber)
+     {
+         int nextGroupNumber = aCurrentGroupNumber;
+-        for (; mCustomImportOrderRules.size() > nextGroupNumber; nextGroupNumber++)
+-        {
++
++        while (mCustomImportOrderRules.size() > nextGroupNumber + 1) {
+             if (hasAnyImportInCurrentGroup(mCustomImportOrderRules.get(nextGroupNumber)))
+             {
+                 break;
+             }
++            nextGroupNumber++;
+         }
+         return mCustomImportOrderRules.get(nextGroupNumber);
+     }
+ 
+     /**
+      * Checks if current group contains any import.
+      * @param aCurrentGroup
+      *        current group.
+      * @return
+      *        true, if current group contains at least one import.
+      */
+     private boolean hasAnyImportInCurrentGroup(String aCurrentGroup)
+     {
+         for (ImportDetails currentImport : mImportToGroupList) {
+             if (aCurrentGroup.equals(currentImport.getImportGroup())) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Get import valid group.
+      * @param aStatic
+      *        is static import.
+      * @param aImportPath
+      *        full import path.
+      * @return import valid group.
+      */
+     private String getImportGroup(boolean aStatic, String aImportPath)
+     {
+         for (String group : mCustomImportOrderRules) {
+             if (matchesImportGroup(aStatic, aImportPath, group)) {
+                 return group;
+             }
+         }
+         return NON_GROUP_RULE_GROUP;
+     }
+ 
+     /**
+      * Checks if the import is placed in the correct group.
+      * @param aStatic
+      *        if import is static.
+      * @param aImportPath
+      *        import full path.
+      * @param aCurrentGroup
+      *        current group.
+      * @return true, if import placed in the correct group.
+      */
+     private boolean matchesImportGroup(boolean aStatic, String aImportPath, String aCurrentGroup)

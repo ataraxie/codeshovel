@@ -1,0 +1,118 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
+index 84437bdc6..c6df460fa 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
+@@ -50,111 +50,108 @@ public final class PackageNamesLoader
+     /** Name of default checkstyle package names resource file.
+      * The file must be in the classpath.
+      */
+     private static final String DEFAULT_PACKAGES =
+         "com/puppycrawl/tools/checkstyle/checkstyle_packages.xml";
+ 
+     /**
+      * the factory to return in getModuleFactory(),
+      * configured during parsing
+      */
+     private final PackageObjectFactory mModuleFactory =
+             new PackageObjectFactory();
+ 
+     /** The loaded package names */
+     private Stack mPackageStack = new Stack();
+ 
+     /**
+      * Creates a new <code>PackageNameLoader</code> instance.
+      * @throws ParserConfigurationException if an error occurs
+      * @throws SAXException if an error occurs
+      */
+     private PackageNamesLoader()
+         throws ParserConfigurationException, SAXException
+     {
+         super(DTD_PUBLIC_ID, DTD_RESOURCE_NAME);
+     }
+ 
+     /** @see org.xml.sax.helpers.DefaultHandler **/
+     public void startElement(String aNamespaceURI,
+                              String aLocalName,
+                              String aQName,
+                              Attributes aAtts)
+         throws SAXException
+     {
+         if (aQName.equals("package")) {
+             //push package name
+             final String name = aAtts.getValue("name");
+             if (name == null) {
+                 throw new SAXException("missing package name");
+             }
+             mPackageStack.push(name);
+         }
+     }
+ 
+     /**
+      * Creates a full package name from the package names on the stack.
+      * @return the full name of the current package.
+      */
+     private String getPackageName()
+     {
+-        if (mPackageStack.isEmpty()) {
+-            return "";
+-        }
+         final StringBuffer buf = new StringBuffer();
+         final Iterator it = mPackageStack.iterator();
+         while (it.hasNext()) {
+             String subPackage = (String) it.next();
++            buf.append(subPackage);
+             if (!subPackage.endsWith(".")) {
+-                subPackage += ".";
++                buf.append(".");
+             }
+-            buf.append(subPackage);
+         }
+         return buf.toString();
+     }
+ 
+     /**
+      * Returns the module factory that has just been configured.
+      * @return the module factory, never null
+      */
+     private ModuleFactory getModuleFactory()
+     {
+         return mModuleFactory;
+     }
+ 
+     /** @see org.xml.sax.helpers.DefaultHandler **/
+     public void endElement(String aNamespaceURI,
+                            String aLocalName,
+                            String aQName)
+     {
+         if (aQName.equals("package")) {
+             mModuleFactory.addPackage(getPackageName());
+             mPackageStack.pop();
+         }
+     }
+ 
+     /**
+      * Returns the default list of package names.
+      * @param aClassLoader the class loader that gets the
+      * default package names.
+      * @return the default list of package names.
+      * @throws CheckstyleException if an error occurs.
+      */
+     public static ModuleFactory loadModuleFactory(ClassLoader aClassLoader)
+         throws CheckstyleException
+     {
+ 
+         final InputStream stream =
+             aClassLoader.getResourceAsStream(DEFAULT_PACKAGES);
+         final InputSource source = new InputSource(stream);
+         return loadModuleFactory(source, "default package names");
+     }
+ 
+     /**
+      * Returns the package names in a specified file.
+      * @param aFilename name of the package file.
+      * @return the list of package names stored in the
+      *  package file.
+      * @throws CheckstyleException if an error occurs.
+      */
+     public static ModuleFactory loadModuleFactory(String aFilename)
+         throws CheckstyleException

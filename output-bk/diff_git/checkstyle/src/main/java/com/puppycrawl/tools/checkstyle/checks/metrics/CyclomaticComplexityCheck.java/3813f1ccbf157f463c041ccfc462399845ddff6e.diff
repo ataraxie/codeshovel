@@ -1,0 +1,84 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java
+index dfee755db..e5c7cd393 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java
+@@ -154,76 +154,76 @@ public class CyclomaticComplexityCheck
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.INSTANCE_INIT:
+             case TokenTypes.STATIC_INIT:
+                 leaveMethodDef(ast);
+                 break;
+             default:
+                 break;
+         }
+     }
+ 
+     /**
+      * Hook called when visiting a token. Will not be called the method
+      * definition tokens.
+      *
+      * @param ast the token being visited
+      */
+     protected final void visitTokenHook(DetailAST ast) {
+         if (switchBlockAsSingleDecisionPoint) {
+             if (ast.getType() != TokenTypes.LITERAL_CASE) {
+                 incrementCurrentValue(BigInteger.ONE);
+             }
+         }
+         else if (ast.getType() != TokenTypes.LITERAL_SWITCH) {
+             incrementCurrentValue(BigInteger.ONE);
+         }
+     }
+ 
+     /**
+      * Process the end of a method definition.
+      *
+      * @param ast the token representing the method definition
+      */
+     private void leaveMethodDef(DetailAST ast) {
+         final BigInteger bigIntegerMax = BigInteger.valueOf(max);
+         if (currentValue.compareTo(bigIntegerMax) > 0) {
+             log(ast, MSG_KEY, currentValue, bigIntegerMax);
+         }
+         popValue();
+     }
+ 
+     /**
+      * Increments the current value by a specified amount.
+      *
+-     * @param by the amount to increment by
++     * @param amount the amount to increment by
+      */
+-    protected final void incrementCurrentValue(BigInteger by) {
+-        currentValue = currentValue.add(by);
++    protected final void incrementCurrentValue(BigInteger amount) {
++        currentValue = currentValue.add(amount);
+     }
+ 
+     /** Push the current value on the stack. */
+     protected final void pushValue() {
+         valueStack.push(currentValue);
+         currentValue = INITIAL_VALUE;
+     }
+ 
+     /**
+      * Pops a value off the stack and makes it the current value.
+      * @return pop a value off the stack and make it the current value
+      */
+     protected final BigInteger popValue() {
+         currentValue = valueStack.pop();
+         return currentValue;
+     }
+ 
+     /** Process the start of the method definition. */
+     private void visitMethodDef() {
+         pushValue();
+     }
+ }

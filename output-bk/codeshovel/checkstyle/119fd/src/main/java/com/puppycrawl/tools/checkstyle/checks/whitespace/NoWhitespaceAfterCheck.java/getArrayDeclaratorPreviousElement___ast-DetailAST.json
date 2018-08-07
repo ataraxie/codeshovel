@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "NoWhitespaceAfterCheck.java",
+  "functionName": "getArrayDeclaratorPreviousElement",
+  "functionId": "getArrayDeclaratorPreviousElement___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java",
+  "functionStartLine": 243,
+  "functionEndLine": 294,
+  "changeHistory": [
+    "123fcc99dd4bdb9a7d671cd6749c313671976e46",
+    "c56dce9222a819b4741b4c0cd664d38c58b31050"
+  ],
+  "changeHistoryShort": {
+    "123fcc99dd4bdb9a7d671cd6749c313671976e46": "Ybodychange",
+    "c56dce9222a819b4741b4c0cd664d38c58b31050": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "123fcc99dd4bdb9a7d671cd6749c313671976e46": {
+      "type": "Ybodychange",
+      "commitMessage": "spelling: fix typos in tests\n",
+      "commitDate": 1491396166000,
+      "commitName": "123fcc99dd4bdb9a7d671cd6749c313671976e46",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 67.92,
+      "commitsBetweenForRepo": 210,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,52 +1,52 @@\n     private static DetailAST getArrayDeclaratorPreviousElement(DetailAST ast) {\n         final DetailAST previousElement;\n         final DetailAST firstChild \u003d ast.getFirstChild();\n         if (firstChild.getType() \u003d\u003d TokenTypes.ARRAY_DECLARATOR) {\n             // second or higher array index\n             previousElement \u003d firstChild.findFirstToken(TokenTypes.RBRACK);\n         }\n         else {\n             // first array index, is preceded with identifier or type\n             final DetailAST parent \u003d getFirstNonArrayDeclaratorParent(ast);\n             switch (parent.getType()) {\n                 // generics\n                 case TokenTypes.TYPE_ARGUMENT:\n                     final DetailAST wildcard \u003d parent.findFirstToken(TokenTypes.WILDCARD_TYPE);\n                     if (wildcard \u003d\u003d null) {\n                         // usual generic type argument like \u003cchar[]\u003e\n                         previousElement \u003d getTypeLastNode(ast);\n                     }\n                     else {\n                         // constructions with wildcard like \u003c? extends String[]\u003e\n                         previousElement \u003d getTypeLastNode(ast.getFirstChild());\n                     }\n                     break;\n                 // \u0027new\u0027 is a special case with its own subtree structure\n                 case TokenTypes.LITERAL_NEW:\n                     previousElement \u003d getTypeLastNode(parent);\n                     break;\n                 // mundane array declaration, can be either java style or C style\n                 case TokenTypes.TYPE:\n                     previousElement \u003d getPreviousNodeWithParentOfTypeAst(ast, parent);\n                     break;\n                 // i.e. boolean[].class\n                 case TokenTypes.DOT:\n                     previousElement \u003d getTypeLastNode(ast);\n                     break;\n                 // java 8 method reference\n                 case TokenTypes.METHOD_REF:\n                     final DetailAST ident \u003d getIdentLastToken(ast);\n                     if (ident \u003d\u003d null) {\n                         //i.e. int[]::new\n                         previousElement \u003d ast.getFirstChild();\n                     }\n                     else {\n                         previousElement \u003d ident;\n                     }\n                     break;\n                 default:\n-                    throw new IllegalStateException(\"unexpected ast syntax\" + parent);\n+                    throw new IllegalStateException(\"unexpected ast syntax \" + parent);\n             }\n         }\n         return previousElement;\n     }\n\\ No newline at end of file\n"
+    },
+    "c56dce9222a819b4741b4c0cd664d38c58b31050": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1013: Fix NoWhitespaceAfterCheck\n",
+      "commitDate": 1446329775000,
+      "commitName": "c56dce9222a819b4741b4c0cd664d38c58b31050",
+      "commitAuthor": "attatrol"
+    }
+  }
+}

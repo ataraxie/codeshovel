@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "SearchAfterSortedDocQuery.java",
+  "functionName": "createWeight",
+  "functionId": "createWeight___searcher-IndexSearcher__needsScores-boolean__boost-float",
+  "sourceFilePath": "server/src/main/java/org/apache/lucene/queries/SearchAfterSortedDocQuery.java",
+  "functionStartLine": 73,
+  "functionEndLine": 100,
+  "changeHistory": [
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+    "996990ad1f68d25a219364109e4cafde9bd8a6bb",
+    "7ab3d5d04a7c6dfef084e49587a81f7334a85cb4"
+  ],
+  "changeHistoryShort": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": "Yfilerename",
+    "996990ad1f68d25a219364109e4cafde9bd8a6bb": "Ybodychange",
+    "7ab3d5d04a7c6dfef084e49587a81f7334a85cb4": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": {
+      "type": "Yfilerename",
+      "commitMessage": "Rename core module to server (#28180)\n\nThis is related to #27933. It renames the core module to server. This is\r\nthe first step towards introducing an elasticsearch-core jar.",
+      "commitDate": 1515695443000,
+      "commitName": "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+      "commitAuthor": "Tim Brooks",
+      "commitDateOld": 1515688270000,
+      "commitNameOld": "7d0eb3292b8f8ba27ef50dbbf38783dc68c70728",
+      "commitAuthorOld": "Martijn van Groningen",
+      "daysBetweenCommits": 0.08,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "996990ad1f68d25a219364109e4cafde9bd8a6bb": {
+      "type": "Ybodychange",
+      "commitMessage": "Upgrade to lucene-7.2.0-snapshot-8c94404. (#27496)\n\nThe main highlight of this new snapshot is that it introduces the opportunity\r\nfor queries to opt out of caching. In case a query opts out of caching, not only\r\nwill it never be cached, but also no compound query that wraps it will be\r\ncached.",
+      "commitDate": 1511877162000,
+      "commitName": "996990ad1f68d25a219364109e4cafde9bd8a6bb",
+      "commitAuthor": "Adrien Grand",
+      "commitDateOld": 1497252810000,
+      "commitNameOld": "7ab3d5d04a7c6dfef084e49587a81f7334a85cb4",
+      "commitAuthorOld": "Jim Ferenczi",
+      "daysBetweenCommits": 169.26,
+      "commitsBetweenForRepo": 1377,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,28 @@\n     public Weight createWeight(IndexSearcher searcher, boolean needsScores, float boost) throws IOException {\n         return new ConstantScoreWeight(this, 1.0f) {\n             @Override\n             public Scorer scorer(LeafReaderContext context) throws IOException {\n                 Sort segmentSort \u003d context.reader().getMetaData().getSort();\n                 if (EarlyTerminatingSortingCollector.canEarlyTerminate(sort, segmentSort) \u003d\u003d false) {\n                     throw new IOException(\"search sort :[\" + sort.getSort() + \"] does not match the index sort:[\" + segmentSort + \"]\");\n                 }\n                 final int afterDoc \u003d after.doc - context.docBase;\n                 TopComparator comparator\u003d getTopComparator(fieldComparators, reverseMuls, context, afterDoc);\n                 final int maxDoc \u003d context.reader().maxDoc();\n                 final int firstDoc \u003d searchAfterDoc(comparator, 0, context.reader().maxDoc());\n                 if (firstDoc \u003e\u003d maxDoc) {\n                     return null;\n                 }\n                 final DocIdSetIterator disi \u003d new MinDocQuery.MinDocIterator(firstDoc, maxDoc);\n                 return new ConstantScoreScorer(this, score(), disi);\n             }\n+\n+            @Override\n+            public boolean isCacheable(LeafReaderContext ctx) {\n+                // If the sort order includes _doc, then the matches in a segment\n+                // may depend on other segments, which makes this query a bad\n+                // candidate for caching\n+                return false;\n+            }\n         };\n     }\n\\ No newline at end of file\n"
+    },
+    "7ab3d5d04a7c6dfef084e49587a81f7334a85cb4": {
+      "type": "Yintroduced",
+      "commitMessage": "Speed up sorted scroll when the index sort matches the search sort (#25138)\n\nSorted scroll search can use early termination when the index sort matches the scroll search sort.\r\nThe optimization can be done after the first query (which still needs to collect all documents)\r\nby applying a query that only matches documents that are greater than the last doc retrieved in the previous request.\r\nSince the index is sorted, retrieving the list of documents that are greater than the last doc\r\nonly requires a binary search on each segment.\r\nThis change introduces this new query called `SortedSearchAfterDocQuery` and apply it when possible.\r\nScrolls with this optimization will search all documents on the first request and then will early terminate each segment\r\nafter $size doc for any subsequent requests.\r\n\r\nRelates #6720",
+      "commitDate": 1497252810000,
+      "commitName": "7ab3d5d04a7c6dfef084e49587a81f7334a85cb4",
+      "commitAuthor": "Jim Ferenczi"
+    }
+  }
+}

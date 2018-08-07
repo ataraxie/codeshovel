@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "NeedBracesCheck.java",
+  "functionName": "isSingleLineIf",
+  "functionId": "isSingleLineIf___literalIf-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java",
+  "functionStartLine": 389,
+  "functionEndLine": 404,
+  "changeHistory": [
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2",
+    "cc355f7e108fe222d957f1dbc8c3ba4eeb7ed941",
+    "b436b3cd9860529718b95c36dafe565fe68f6293",
+    "cea86a6cad3098ebcdb4a88db2e49477b07e0d93",
+    "688dc9c547d92cf86d13733c6c0856dc43984676"
+  ],
+  "changeHistoryShort": {
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2": "Ybodychange",
+    "cc355f7e108fe222d957f1dbc8c3ba4eeb7ed941": "Ybodychange",
+    "b436b3cd9860529718b95c36dafe565fe68f6293": "Ybodychange",
+    "cea86a6cad3098ebcdb4a88db2e49477b07e0d93": "Ymultichange(Yparameterchange,Ybodychange)",
+    "688dc9c547d92cf86d13733c6c0856dc43984676": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #4328: moved variables inside if blocks to reduce execution time",
+      "commitDate": 1494119754000,
+      "commitName": "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1491395871000,
+      "commitNameOld": "3bd3a52280388520c64ec813dd1e4ffb3a0063a2",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 31.53,
+      "commitsBetweenForRepo": 176,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     private static boolean isSingleLineIf(DetailAST literalIf) {\n         boolean result \u003d false;\n-        final DetailAST ifCondition \u003d literalIf.findFirstToken(TokenTypes.EXPR);\n         if (literalIf.getParent().getType() \u003d\u003d TokenTypes.SLIST) {\n             final DetailAST literalIfLastChild \u003d literalIf.getLastChild();\n             final DetailAST block;\n             if (literalIfLastChild.getType() \u003d\u003d TokenTypes.LITERAL_ELSE) {\n                 block \u003d literalIfLastChild.getPreviousSibling();\n             }\n             else {\n                 block \u003d literalIfLastChild;\n             }\n+            final DetailAST ifCondition \u003d literalIf.findFirstToken(TokenTypes.EXPR);\n             result \u003d ifCondition.getLineNo() \u003d\u003d block.getLineNo();\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "cc355f7e108fe222d957f1dbc8c3ba4eeb7ed941": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix NeedBraces check not requiring braces in multiline statements when using allowSingleLineStatement option. #895\n",
+      "commitDate": 1432506514000,
+      "commitName": "cc355f7e108fe222d957f1dbc8c3ba4eeb7ed941",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 7.45,
+      "commitsBetweenForRepo": 34,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,16 @@\n     private static boolean isSingleLineIf(DetailAST literalIf) {\n         boolean result \u003d false;\n         final DetailAST ifCondition \u003d literalIf.findFirstToken(TokenTypes.EXPR);\n         if (literalIf.getParent().getType() \u003d\u003d TokenTypes.SLIST) {\n-            DetailAST block \u003d literalIf.getLastChild();\n-            if (block.getType() !\u003d TokenTypes.LITERAL_RETURN) {\n-                block \u003d literalIf.getLastChild().getPreviousSibling();\n+            final DetailAST literalIfLastChild \u003d literalIf.getLastChild();\n+            final DetailAST block;\n+            if (literalIfLastChild.getType() \u003d\u003d TokenTypes.LITERAL_ELSE) {\n+                block \u003d literalIfLastChild.getPreviousSibling();\n+            }\n+            else {\n+                block \u003d literalIfLastChild;\n             }\n             result \u003d ifCondition.getLineNo() \u003d\u003d block.getLineNo();\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "b436b3cd9860529718b95c36dafe565fe68f6293": {
+      "type": "Ybodychange",
+      "commitMessage": "Need Braces Check, one-line statements option, issue #300\n",
+      "commitDate": 1425777806000,
+      "commitName": "b436b3cd9860529718b95c36dafe565fe68f6293",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1425602876000,
+      "commitNameOld": "f7828693395f71a6ae99710f3fab44cb8a66ea51",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 2.02,
+      "commitsBetweenForRepo": 11,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private static boolean isSingleLineIf(DetailAST literalIf)\n     {\n         boolean result \u003d false;\n-        final DetailAST ifBlock \u003d literalIf.getLastChild();\n-        final DetailAST lastElementInIfBlock \u003d ifBlock.getLastChild();\n-        if (lastElementInIfBlock !\u003d null\n-            \u0026\u0026 lastElementInIfBlock.getFirstChild() \u003d\u003d null\n-            \u0026\u0026 literalIf.getLineNo() \u003d\u003d lastElementInIfBlock.getLineNo())\n-        {\n-            result \u003d true;\n+        final DetailAST ifCondition \u003d literalIf.findFirstToken(TokenTypes.EXPR);\n+        if (literalIf.getParent().getType() \u003d\u003d TokenTypes.SLIST) {\n+            DetailAST block \u003d literalIf.getLastChild();\n+            if (block.getType() !\u003d TokenTypes.LITERAL_RETURN) {\n+                block \u003d literalIf.getLastChild().getPreviousSibling();\n+            }\n+            result \u003d ifCondition.getLineNo() \u003d\u003d block.getLineNo();\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "cea86a6cad3098ebcdb4a88db2e49477b07e0d93": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, blocks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/AvoidNestedBlocksCheck.java\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java\n",
+      "commitDate": 1421677949000,
+      "commitName": "cea86a6cad3098ebcdb4a88db2e49477b07e0d93",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "688dc9c547d92cf86d13733c6c0856dc43984676": {
+      "type": "Yintroduced",
+      "commitMessage": "Need Braces, added option which allows one line if-statements without braces, issue #300\n",
+      "commitDate": 1418931618000,
+      "commitName": "688dc9c547d92cf86d13733c6c0856dc43984676",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

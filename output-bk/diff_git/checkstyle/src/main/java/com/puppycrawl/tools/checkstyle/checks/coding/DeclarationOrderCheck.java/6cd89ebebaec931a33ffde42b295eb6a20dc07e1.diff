@@ -1,0 +1,304 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java
+index 25fc07be0..1103a3a07 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java
+@@ -1,234 +1,299 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2014  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.coding;
+ 
++import java.util.HashMap;
++import java.util.Map;
++
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FastStack;
+ import com.puppycrawl.tools.checkstyle.api.Scope;
+ import com.puppycrawl.tools.checkstyle.api.ScopeUtils;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * <p>
+  * Checks that the parts of a class or interface declaration
+  * appear in the order suggested by the
+  * <a
+  * href="http://java.sun.com/docs/codeconv/html/CodeConventions.doc2.html#1852"
+  * >Code Conventions for the Java Programming Language</a>.
+  * </p>
+  * <p>
+  * <ol>
+  * <li> Class (static) variables. First the public class variables, then
+  *      the protected, then package level (no access modifier), and then
+  *      the private. </li>
+  * <li> Instance variables. First the public class variables, then
+  *      the protected, then package level (no access modifier), and then
+  *      the private. </li>
+  * <li> Constructors </li>
+  * <li> Methods </li>
+  * </ol>
+  * </p>
+  * <p>
++ * It can check that overload methods are grouped together. Example:
++ * </p>
++ * <pre><code>
++ * public void foo(int i) {}
++ * public void foo(String s) {}
++ * public void notFoo() {} // Have to be after foo(int i, String s)
++ * public void foo(int i, String s) {}
++ * </code></pre>
++ * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="DeclarationOrder"/&gt;
+  * </pre>
++ * An example of a check's configuration for grouping overload methods:
++ * <pre>
++ * &lt;module name="DeclarationOrder"&gt;
++ *     &lt;property name="groupOverloadMethods" value="true"&gt;
++ * &lt;/module&gt;
++ * </pre>
+  *
+  * @author r_auckenthaler
++ * @author maxvetrenko
+  */
+ public class DeclarationOrderCheck extends Check
+ {
+     /** State for the VARIABLE_DEF */
+     private static final int STATE_STATIC_VARIABLE_DEF = 1;
+ 
+     /** State for the VARIABLE_DEF */
+     private static final int STATE_INSTANCE_VARIABLE_DEF = 2;
+ 
+     /** State for the CTOR_DEF */
+     private static final int STATE_CTOR_DEF = 3;
+ 
+     /** State for the METHOD_DEF */
+     private static final int STATE_METHOD_DEF = 4;
+ 
+     /**
+      * List of Declaration States. This is necessary due to
+      * inner classes that have their own state
+      */
+     private final FastStack<ScopeState> mScopeStates = FastStack.newInstance();
+ 
+     /**
+      * private class to encapsulate the state
+      */
+     private static class ScopeState
+     {
+         /** The state the check is in */
+         private int mScopeState = STATE_STATIC_VARIABLE_DEF;
+ 
+         /** The sub-state the check is in */
+         private Scope mDeclarationAccess = Scope.PUBLIC;
+     }
+ 
+     /** If true, ignores the check to constructors. */
+     private boolean mIgnoreConstructors;
+     /** If true, ignore the check to methods. */
+     private boolean mIgnoreMethods;
+     /** If true, ignore the check to modifiers (fields, ...). */
+     private boolean mIgnoreModifiers;
++    /** If true, avoid splitting overload methods */
++    private boolean mGroupOverloadMethods;
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.MODIFIERS,
+             TokenTypes.OBJBLOCK,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         final int parentType = aAST.getParent().getType();
+         ScopeState state;
+ 
+         switch(aAST.getType()) {
+         case TokenTypes.OBJBLOCK:
+             mScopeStates.push(new ScopeState());
++            if (mGroupOverloadMethods && (parentType == TokenTypes.CLASS_DEF
++                    || parentType == TokenTypes.ENUM_DEF
++                    || parentType == TokenTypes.INTERFACE_DEF))
++            {
++                checkOverloadMethodsGrouping(aAST);
++            }
+             break;
+ 
+         case TokenTypes.CTOR_DEF:
+             if (parentType != TokenTypes.OBJBLOCK) {
+                 return;
+             }
+ 
+             state = mScopeStates.peek();
+             if (state.mScopeState > STATE_CTOR_DEF) {
+                 if (!mIgnoreConstructors) {
+                     log(aAST, "declaration.order.constructor");
+                 }
+             }
+             else {
+                 state.mScopeState = STATE_CTOR_DEF;
+             }
+             break;
+ 
+         case TokenTypes.METHOD_DEF:
+             state = mScopeStates.peek();
+             if (parentType != TokenTypes.OBJBLOCK) {
+                 return;
+             }
+ 
+             if (state.mScopeState > STATE_METHOD_DEF) {
+                 if (!mIgnoreMethods) {
+                     log(aAST, "declaration.order.method");
+                 }
+             }
+             else {
+                 state.mScopeState = STATE_METHOD_DEF;
+             }
+             break;
+ 
+         case TokenTypes.MODIFIERS:
+             if ((parentType != TokenTypes.VARIABLE_DEF)
+                 || (aAST.getParent().getParent().getType()
+                     != TokenTypes.OBJBLOCK))
+             {
+                 return;
+             }
+ 
+             state = mScopeStates.peek();
+             if (aAST.findFirstToken(TokenTypes.LITERAL_STATIC) != null) {
+                 if (state.mScopeState > STATE_STATIC_VARIABLE_DEF) {
+                     if (!mIgnoreModifiers
+                         || state.mScopeState > STATE_INSTANCE_VARIABLE_DEF)
+                     {
+                         log(aAST, "declaration.order.static");
+                     }
+                 }
+                 else {
+                     state.mScopeState = STATE_STATIC_VARIABLE_DEF;
+                 }
+             }
+             else {
+                 if (state.mScopeState > STATE_INSTANCE_VARIABLE_DEF) {
+                     log(aAST, "declaration.order.instance");
+                 }
+                 else if (state.mScopeState == STATE_STATIC_VARIABLE_DEF) {
+                     state.mDeclarationAccess = Scope.PUBLIC;
+                     state.mScopeState = STATE_INSTANCE_VARIABLE_DEF;
+                 }
+             }
+ 
+             final Scope access = ScopeUtils.getScopeFromMods(aAST);
+             if (state.mDeclarationAccess.compareTo(access) > 0) {
+                 if (!mIgnoreModifiers) {
+                     log(aAST, "declaration.order.access");
+                 }
+             }
+             else {
+                 state.mDeclarationAccess = access;
+             }
+             break;
+ 
+         default:
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST aAST)
+     {
+         switch(aAST.getType()) {
+         case TokenTypes.OBJBLOCK:
+             mScopeStates.pop();
+             break;
+ 
+         default:
+         }
+     }
+ 
++    /**
++     * Checks that if overload methods are grouped together they
++     * should not be separated from each other.
++     * @param aObjectBlock is a class, interface or enum object block.
++     */
++    private void checkOverloadMethodsGrouping(DetailAST aObjectBlock)
++    {
++        final int allowedDistance = 1;
++        DetailAST currentToken = aObjectBlock.getFirstChild();
++        final Map<String, Integer> methodIndexMap =
++                new HashMap<String, Integer>();
++        int currentIndex = 0;
++        while (currentToken != null) {
++            if (currentToken.getType() == TokenTypes.METHOD_DEF) {
++                currentIndex++;
++                final String methodName =
++                        currentToken.findFirstToken(TokenTypes.IDENT).getText();
++                if (methodIndexMap.containsKey(methodName)) {
++                    final int priviousIndex = methodIndexMap.get(methodName);
++                    if (currentIndex - priviousIndex > allowedDistance) {
++                        log(currentToken, "declaration.order.overloads");
++                    }
++                }
++                methodIndexMap.put(methodName, currentIndex);
++            }
++            currentToken = currentToken.getNextSibling();
++        }
++    }
++
+     /**
+      * Sets whether to ignore constructors.
+      * @param aIgnoreConstructors whether to ignore constructors.
+      */
+     public void setIgnoreConstructors(boolean aIgnoreConstructors)
+     {
+         mIgnoreConstructors = aIgnoreConstructors;
+     }
+ 
+     /**
+      * Sets whether to ignore methods.
+      * @param aIgnoreMethods whether to ignore methods.
+      */
+     public void setIgnoreMethods(boolean aIgnoreMethods)
+     {
+         mIgnoreMethods = aIgnoreMethods;
+     }
+ 
+     /**
+      * Sets whether to ignore modifiers.
+      * @param aIgnoreModifiers whether to ignore modifiers.
+      */
+     public void setIgnoreModifiers(boolean aIgnoreModifiers)
+     {
+         mIgnoreModifiers = aIgnoreModifiers;
+     }
++
++    /**
++     * Sets whether to group overload methods.
++     * @param aGroupOverloadMethods whether to group overload methods.
++     */
++    public void setGroupOverloadMethods(boolean aGroupOverloadMethods)
++    {
++        mGroupOverloadMethods = aGroupOverloadMethods;
++    }
+ }

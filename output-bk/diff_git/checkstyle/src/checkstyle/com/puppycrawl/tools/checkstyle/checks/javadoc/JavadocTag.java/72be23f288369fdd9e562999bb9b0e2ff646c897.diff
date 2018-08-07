@@ -1,0 +1,66 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTag.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTag.java
+index b9a04f75c..b418551a1 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTag.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTag.java
+@@ -59,54 +59,60 @@ class JavadocTag
+     {
+         return mTag;
+     }
+ 
+     /** @return the first argument. null if not set. **/
+     String getArg1()
+     {
+         return mArg1;
+     }
+ 
+     /** @return the line number **/
+     int getLineNo()
+     {
+         return mLineNo;
+     }
+ 
+     /** @return a string representation of the object **/
+     public String toString()
+     {
+         return "{Tag = '" + getTag() + "', lineNo = " + getLineNo()
+             + ", Arg1 = '" + getArg1() + "'}";
+     }
+ 
+     /** @return whether the tag is an 'author' tag **/
+     boolean isAuthorTag()
+     {
+         return "author".equals(getTag());
+     }
+ 
+     /** @return whether the tag is an 'return' tag **/
+     boolean isReturnTag()
+     {
+         return "return".equals(getTag());
+     }
+ 
+     /** @return whether the tag is an 'param' tag **/
+     boolean isParamTag()
+     {
+         return "param".equals(getTag());
+     }
+ 
+     /** @return whether the tag is an 'throws' or 'exception' tag **/
+     boolean isThrowsTag()
+     {
+         return ("throws".equals(getTag()) || "exception".equals(getTag()));
+     }
+ 
+     /** @return whether the tag is a 'see' or 'inheritDoc' tag **/
+     boolean isSeeOrInheritDocTag()
+     {
+-        return ("see".equals(getTag()) || "inheritDoc".equals(getTag()));
++        return ("see".equals(getTag()) || isInheritDocTag());
++    }
++
++    /** @return whether the tag is a 'inheritDoc' tag **/
++    boolean isInheritDocTag()
++    {
++        return "inheritDoc".equals(getTag());
+     }
+ }
+ 

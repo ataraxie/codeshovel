@@ -1,0 +1,115 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+index 0f908b1e4..a754deab4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+@@ -38,100 +38,110 @@ import org.apache.commons.beanutils.ConversionException;
+  * &lt;module name=&quot;UncommentedMain&quot;/&gt;
+  * </pre>
+  *
+  * @author Michael Yui
+  * @author o_sukhodolsky
+  */
+ public class UncommentedMainCheck
+     extends Check
+ {
+     /** the pattern to exclude classes from the check */
+     private String excludedClasses = "^$";
+     /** compiled regexp to exclude classes from check */
+     private Pattern excludedClassesPattern =
+         Utils.createPattern(excludedClasses);
+     /** current class name */
+     private String currentClass;
+     /** current package */
+     private FullIdent packageName;
+     /** class definition depth */
+     private int classDepth;
+ 
+     /**
+      * Set the excluded classes pattern.
+      * @param excludedClasses a <code>String</code> value
+      * @throws ConversionException unable to parse excludedClasses
+      */
+     public void setExcludedClasses(String excludedClasses)
+         throws ConversionException
+     {
+         try {
+             this.excludedClasses = excludedClasses;
+             excludedClassesPattern = Utils.getPattern(excludedClasses);
+         }
+         catch (final PatternSyntaxException e) {
+             throw new ConversionException("unable to parse "
+                                           + excludedClasses,
+                                           e);
+         }
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.PACKAGE_DEF,
+         };
+     }
+ 
++    @Override
++    public int[] getAcceptableTokens()
++    {
++        return new int[] {
++            TokenTypes.METHOD_DEF,
++            TokenTypes.CLASS_DEF,
++            TokenTypes.PACKAGE_DEF,
++        };
++    }
++
+     @Override
+     public int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST)
+     {
+         packageName = FullIdent.createFullIdent(null);
+         currentClass = null;
+         classDepth = 0;
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast)
+     {
+         if (ast.getType() == TokenTypes.CLASS_DEF) {
+             if (classDepth == 1) {
+                 currentClass = null;
+             }
+             classDepth--;
+         }
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         switch (ast.getType()) {
+             case TokenTypes.PACKAGE_DEF:
+                 visitPackageDef(ast);
+                 break;
+             case TokenTypes.CLASS_DEF:
+                 visitClassDef(ast);
+                 break;
+             case TokenTypes.METHOD_DEF:
+                 visitMethodDef(ast);
+                 break;
+             default:
+                 throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
+     /**
+      * Sets current package.
+      * @param packageDef node for package definition
+      */
+     private void visitPackageDef(DetailAST packageDef)
+     {
+         packageName = FullIdent.createFullIdent(packageDef.getLastChild()

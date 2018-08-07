@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalVariableNameCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalVariableNameCheck.java
+index cd2d38c2b..28ca49509 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalVariableNameCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalVariableNameCheck.java
+@@ -27,106 +27,106 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * <p>
+  * Checks that local, non-final variable names conform to a format specified
+  * by the format property. A catch parameter is considered to be
+  * a local variable. The format is a
+  * {@link java.util.regex.Pattern regular expression}
+  * and defaults to
+  * <strong>^[a-z][a-zA-Z0-9]*$</strong>.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="LocalVariableName"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check for names that begin with a lower
+  * case letter, followed by letters, digits, and underscores is:
+  * </p>
+  * <pre>
+  * &lt;module name="LocalVariableName"&gt;
+  *    &lt;property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * <p>
+  * An example of one character variable name in
+  * initialization expression(like "i") in FOR loop:
+  * </p>
+  * <pre>
+  * for(int i = 1; i &lt; 10; i++) {}
+  * </pre>
+  * <p>
+  * An example of how to configure the check to allow one char variable name in
+  * <a href="http://docs.oracle.com/javase/tutorial/java/nutsandbolts/for.html">
+  * initialization expressions</a> in FOR loop:
+  * </p>
+  * <pre>
+  * &lt;module name="LocalVariableName"&gt;
+  *    &lt;property name="allowOneCharVarInForLoop" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * <p>
+  *
+  * @author Rick Giles
+  * @author maxvetrenko
+  */
+ public class LocalVariableNameCheck
+     extends AbstractNameCheck {
+     /** Regexp for one-char loop variables. */
+-    private static Pattern sSingleChar = Pattern.compile("^[a-z]$");
++    private static final Pattern SINGLE_CHAR = Pattern.compile("^[a-z]$");
+ 
+     /**
+      * Allow one character name for initialization expression in FOR loop.
+      */
+     private boolean allowOneCharVarInForLoop;
+ 
+     /** Creates a new <code>LocalVariableNameCheck</code> instance. */
+     public LocalVariableNameCheck() {
+         super("^[a-z][a-zA-Z0-9]*$");
+     }
+ 
+     public final void setAllowOneCharVarInForLoop(boolean allow) {
+         allowOneCharVarInForLoop = allow;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     @Override
+     protected final boolean mustCheckName(DetailAST ast) {
+         if (allowOneCharVarInForLoop && isForLoopVariable(ast)) {
+             final String variableName =
+                     ast.findFirstToken(TokenTypes.IDENT).getText();
+-            return !sSingleChar.matcher(variableName).find();
++            return !SINGLE_CHAR.matcher(variableName).find();
+         }
+         final DetailAST modifiersAST =
+             ast.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isFinal = modifiersAST.branchContains(TokenTypes.FINAL);
+         return !isFinal && ScopeUtils.isLocalVariableDef(ast);
+     }
+ 
+     /**
+      * Checks if a variable is the loop's one.
+      * @param variableDef variable definition.
+      * @return true if a variable is the loop's one.
+      */
+     private static boolean isForLoopVariable(DetailAST variableDef) {
+         final int parentType = variableDef.getParent().getType();
+         return parentType == TokenTypes.FOR_INIT
+                 || parentType == TokenTypes.FOR_EACH_CLAUSE;
+     }
+ }

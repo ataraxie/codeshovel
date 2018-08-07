@@ -1,0 +1,109 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+index 660e4eb0f..75cbfc416 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+@@ -154,102 +154,102 @@ public class ImportOrderCheck extends Check
+     public int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
+     /**
+      * @param aName import name to check.
+      * @return group number for given import name.
+      */
+     private int getGroupNumber(String aName)
+     {
+         int i = 0;
+ 
+         // find out what group this belongs in
+         // loop over mGroups and get index
+         for (; i < mGroups.length; i++) {
+             if (aName.startsWith(mGroups[i])) {
+                 break;
+             }
+         }
+ 
+         return i;
+     }
+ 
+     /** {@inheritDoc} */
+     public void beginTree(DetailAST aRootAST)
+     {
+         mLastGroup = Integer.MIN_VALUE;
+         mLastImportLine = Integer.MIN_VALUE;
+         mLastImport = "";
+         mLastImportStatic = false;
+         mBeforeFirstImport = true;
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         final FullIdent ident;
+         boolean isStatic;
+         if (aAST.getType() == TokenTypes.IMPORT) {
+             ident = FullIdent.createFullIdentBelow(aAST);
+             isStatic = false;
+         }
+         else {
+             ident = FullIdent.createFullIdent(
+                 (DetailAST) aAST.getFirstChild().getNextSibling());
+             isStatic = true;
+         }
+ 
+         if (ident != null) {
+-            String name = ident.getText();
+-            int groupIdx = getGroupNumber(name);
++            final String name = ident.getText();
++            final int groupIdx = getGroupNumber(name);
+             final int line = ident.getLineNo();
+ 
+             if (groupIdx > mLastGroup) {
+                 if (!mBeforeFirstImport && mSeparated) {
+                     // This check should be made more robust to handle
+                     // comments and imports that span more than one line.
+                     if (line - mLastImportLine < 2) {
+                         log(line, "import.separation", name);
+                     }
+                 }
+             }
+             else if (groupIdx == mLastGroup) {
+                 if (mOrdered) {
+                     boolean shouldFireError = false;
+                     if (mCaseSensitive) {
+                         shouldFireError =
+                             //current and previous static or current and
+                             //previous non-static
+                             (!(mLastImportStatic ^ isStatic)
+                             &&
+                             //and out of lexicographic order
+                             (mLastImport.compareTo(name) >= 0))
+                             ||
+                             //previous static but current is non-static
+                             (mLastImportStatic && !isStatic);
+                     }
+                     else {
+                         shouldFireError =
+                                 //current and previous static or current and
+                                 //previous non-static
+                                 (!(mLastImportStatic ^ isStatic)
+                                 &&
+                                 //and out of lexicographic order
+                                 (mLastImport.compareToIgnoreCase(name) >= 0))
+                                 ||
+                                 //previous static but current is non-static
+                                 (mLastImportStatic && !isStatic);
+                     }
+                     if (shouldFireError) {
+                         log(line, "import.ordering", name);
+                     }
+                 }
+             }
+             else {
+                 log(line, "import.ordering", name);
+             }
+ 
+             mLastGroup = groupIdx;
+             mLastImport = name;
+             mLastImportLine = aAST.findFirstToken(TokenTypes.SEMI).getLineNo();

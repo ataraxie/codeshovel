@@ -1,0 +1,129 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java
+index 3a0f98a90..75b7f7533 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java
+@@ -162,107 +162,123 @@ public class RedundantModifierCheck
+         }
+         else if (ast.getType() == TokenTypes.ENUM_DEF) {
+             checkEnumDef(ast);
+         }
+         else {
+             if (ast.getType() == TokenTypes.CTOR_DEF) {
+                 if (isEnumMember(ast)) {
+                     checkEnumConstructorModifiers(ast);
+                 }
+                 else {
+                     checkClassConstructorModifiers(ast);
+                 }
+             }
+             else if (ast.getType() == TokenTypes.METHOD_DEF) {
+                 processMethods(ast);
+             }
+             else if (ast.getType() == TokenTypes.RESOURCE) {
+                 processResources(ast);
+             }
+ 
+             if (isInterfaceOrAnnotationMember(ast)) {
+                 processInterfaceOrAnnotation(ast);
+             }
+         }
+     }
+ 
+     /**
+      * Checks if interface has proper modifiers.
+      * @param ast interface to check
+      */
+     private void checkInterfaceModifiers(DetailAST ast) {
+         final DetailAST modifiers =
+             ast.findFirstToken(TokenTypes.MODIFIERS);
+ 
+         for (final int tokenType : TOKENS_FOR_INTERFACE_MODIFIERS) {
+             final DetailAST modifier =
+                     modifiers.findFirstToken(tokenType);
+             if (modifier != null) {
+                 log(modifier.getLineNo(), modifier.getColumnNo(),
+                         MSG_KEY, modifier.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Check if enum constructor has proper modifiers.
+      * @param ast constructor of enum
+      */
+     private void checkEnumConstructorModifiers(DetailAST ast) {
+         final DetailAST modifiers = ast.findFirstToken(TokenTypes.MODIFIERS);
+-        final DetailAST modifier = modifiers.getFirstChild();
++        final DetailAST modifier = getFirstModifierAst(modifiers);
++
+         if (modifier != null) {
+             log(modifier.getLineNo(), modifier.getColumnNo(),
+                     MSG_KEY, modifier.getText());
+         }
+     }
+ 
++    /**
++     * Retrieves the first modifier that is not an annotation.
++     * @param modifiers The ast to examine.
++     * @return The first modifier or {@code null} if none found.
++     */
++    private static DetailAST getFirstModifierAst(DetailAST modifiers) {
++        DetailAST modifier = modifiers.getFirstChild();
++
++        while (modifier != null && modifier.getType() == TokenTypes.ANNOTATION) {
++            modifier = modifier.getNextSibling();
++        }
++
++        return modifier;
++    }
++
+     /**
+      * Checks whether enum has proper modifiers.
+      * @param ast enum definition.
+      */
+     private void checkEnumDef(DetailAST ast) {
+         if (isInterfaceOrAnnotationMember(ast)) {
+             processInterfaceOrAnnotation(ast);
+         }
+         else if (ast.getParent() != null) {
+             checkForRedundantModifier(ast, TokenTypes.LITERAL_STATIC);
+         }
+     }
+ 
+     /**
+      * Do validation of interface of annotation.
+      * @param ast token AST
+      */
+     private void processInterfaceOrAnnotation(DetailAST ast) {
+         final DetailAST modifiers = ast.findFirstToken(TokenTypes.MODIFIERS);
+         DetailAST modifier = modifiers.getFirstChild();
+         while (modifier != null) {
+ 
+             // javac does not allow final or static in interface methods
+             // order annotation fields hence no need to check that this
+             // is not a method or annotation field
+ 
+             final int type = modifier.getType();
+             if (type == TokenTypes.LITERAL_PUBLIC
+                 || type == TokenTypes.LITERAL_STATIC
+                         && ast.getType() != TokenTypes.METHOD_DEF
+                 || type == TokenTypes.ABSTRACT
+                         && ast.getType() != TokenTypes.CLASS_DEF
+                 || type == TokenTypes.FINAL
+                         && ast.getType() != TokenTypes.CLASS_DEF) {
+                 log(modifier.getLineNo(), modifier.getColumnNo(),
+                         MSG_KEY, modifier.getText());
+                 break;
+             }
+ 
+             modifier = modifier.getNextSibling();
+         }
+     }
+ 
+     /**
+      * Process validation of Methods.
+      * @param ast method AST
+      */
+     private void processMethods(DetailAST ast) {
+         final DetailAST modifiers =
+                         ast.findFirstToken(TokenTypes.MODIFIERS);

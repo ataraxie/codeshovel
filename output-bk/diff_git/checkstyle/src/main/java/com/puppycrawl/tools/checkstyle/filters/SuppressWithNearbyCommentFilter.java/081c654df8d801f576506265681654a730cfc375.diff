@@ -1,0 +1,212 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+index 387b8c26c..eebe176bc 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+@@ -59,102 +59,101 @@ import com.puppycrawl.tools.checkstyle.checks.FileContentsHolder;
+  *    double x2 = 0.0, y2 = 1.0, z2 = 0.0;
+  *    double x3 = 0.0, y3 = 0.0, z3 = 1.0;
+  * </pre>
+  * or reverse:
+  * <pre>
+  *   try {
+  *     thirdPartyLibrary.method();
+  *   } catch (RuntimeException e) {
+  *     // ALLOW ILLEGAL CATCH BECAUSE third party API wraps everything
+  *     // in RuntimeExceptions.
+  *     ...
+  *   }
+  * </pre>
+  *
+  * <p>
+  * See {@link SuppressionCommentFilter} for usage notes.
+  *
+  *
+  * @author Mick Killianey
+  */
+ public class SuppressWithNearbyCommentFilter
+     extends AutomaticBean
+     implements Filter {
+     /**
+      * A Tag holds a suppression comment and its location.
+      */
+     public static class Tag implements Comparable<Tag> {
+         /** The text of the tag. */
+         private final String text;
+ 
+         /** The first line where warnings may be suppressed. */
+         private final int firstLine;
+ 
+         /** The last line where warnings may be suppressed. */
+         private final int lastLine;
+ 
+         /** The parsed check regexp, expanded for the text of this tag. */
+         private final Pattern tagCheckRegexp;
+ 
+         /** The parsed message regexp, expanded for the text of this tag. */
+         private final Pattern tagMessageRegexp;
+ 
+         /**
+          * Constructs a tag.
+          * @param text the text of the suppression.
+          * @param line the line number.
+          * @param filter the {@code SuppressWithNearbyCommentFilter} with the context
+          * @throws ConversionException if unable to parse expanded text.
+          * on.
+          */
+-        public Tag(String text, int line, SuppressWithNearbyCommentFilter filter)
+-            throws ConversionException {
++        public Tag(String text, int line, SuppressWithNearbyCommentFilter filter) {
+             this.text = text;
+ 
+             //Expand regexp for check and message
+             //Does not intern Patterns with Utils.getPattern()
+             String format = "";
+             try {
+                 format = expandFrocomment(text, filter.checkFormat, filter.commentRegexp);
+                 tagCheckRegexp = Pattern.compile(format);
+                 if (filter.messageFormat != null) {
+                     format = expandFrocomment(
+                          text, filter.messageFormat, filter.commentRegexp);
+                     tagMessageRegexp = Pattern.compile(format);
+                 }
+                 else {
+                     tagMessageRegexp = null;
+                 }
+                 int influence = 0;
+                 format = expandFrocomment(
+                     text, filter.influenceFormat, filter.commentRegexp);
+                 try {
+                     if (Utils.startsWithChar(format, '+')) {
+                         format = format.substring(1);
+                     }
+                     influence = Integer.parseInt(format);
+                 }
+                 catch (final NumberFormatException e) {
+                     throw new ConversionException(
+                         "unable to parse influence from '" + text
+                             + "' using " + filter.influenceFormat, e);
+                 }
+                 if (influence >= 0) {
+                     firstLine = line;
+                     lastLine = line + influence;
+                 }
+                 else {
+                     firstLine = line + influence;
+                     lastLine = line;
+                 }
+             }
+             catch (final PatternSyntaxException e) {
+                 throw new ConversionException(
+                     "unable to parse expanded comment " + format,
+                     e);
+             }
+         }
+ 
+         /** @return the text of the tag. */
+         public String getText() {
+             return text;
+         }
+@@ -278,102 +277,101 @@ public class SuppressWithNearbyCommentFilter
+ 
+     /** Default regex for lines that should be suppressed. */
+     private static final String DEFAULT_INFLUENCE_FORMAT = "0";
+ 
+     /** Whether to look for trigger in C-style comments. */
+     private boolean checkC = true;
+ 
+     /** Whether to look for trigger in C++-style comments. */
+     private boolean checkCPP = true;
+ 
+     /** Parsed comment regexp that marks checkstyle suppression region. */
+     private Pattern commentRegexp;
+ 
+     /** The comment pattern that triggers suppression. */
+     private String checkFormat;
+ 
+     /** The message format to suppress. */
+     private String messageFormat;
+ 
+     /** The influence of the suppression comment. */
+     private String influenceFormat;
+ 
+     /** Tagged comments */
+     private final List<Tag> tags = Lists.newArrayList();
+ 
+     /**
+      * References the current FileContents for this filter.
+      * Since this is a weak reference to the FileContents, the FileContents
+      * can be reclaimed as soon as the strong references in TreeWalker
+      * and FileContentsHolder are reassigned to the next FileContents,
+      * at which time filtering for the current FileContents is finished.
+      */
+     private WeakReference<FileContents> fileContentsReference = new WeakReference<>(null);
+ 
+     /**
+      * Constructs a SuppressionCommentFilter.
+      * Initializes comment on, comment off, and check formats
+      * to defaults.
+      */
+     public SuppressWithNearbyCommentFilter() {
+         setCommentFormat(DEFAULT_COMMENT_FORMAT);
+         setCheckFormat(DEFAULT_CHECK_FORMAT);
+         setInfluenceFormat(DEFAULT_INFLUENCE_FORMAT);
+     }
+ 
+     /**
+      * Set the format for a comment that turns off reporting.
+      * @param format a <code>String</code> value.
+      * @throws ConversionException if unable to create Pattern object.
+      */
+-    public void setCommentFormat(String format)
+-        throws ConversionException {
++    public void setCommentFormat(String format) {
+         commentRegexp = Utils.createPattern(format);
+     }
+ 
+     /** @return the FileContents for this filter. */
+     public FileContents getFileContents() {
+         return fileContentsReference.get();
+     }
+ 
+     /**
+      * Set the FileContents for this filter.
+      * @param fileContents the FileContents for this filter.
+      */
+     public void setFileContents(FileContents fileContents) {
+         fileContentsReference = new WeakReference<>(fileContents);
+     }
+ 
+     /**
+      * Set the format for a check.
+      * @param format a <code>String</code> value
+      */
+     public void setCheckFormat(String format) {
+         checkFormat = format;
+     }
+ 
+     /**
+      * Set the format for a message.
+      * @param format a <code>String</code> value
+      */
+     public void setMessageFormat(String format) {
+         messageFormat = format;
+     }
+ 
+     /**
+      * Set the format for the influence of this check.
+      * @param format a <code>String</code> value
+      */
+     public void setInfluenceFormat(String format) {
+         influenceFormat = format;
+     }
+ 
+ 
+     /**
+      * Set whether to look in C++ comments.
+      * @param checkCPP <code>true</code> if C++ comments are checked.
+      */
+     public void setCheckCPP(boolean checkCPP) {
+         this.checkCPP = checkCPP;
+     }
+ 
+     /**

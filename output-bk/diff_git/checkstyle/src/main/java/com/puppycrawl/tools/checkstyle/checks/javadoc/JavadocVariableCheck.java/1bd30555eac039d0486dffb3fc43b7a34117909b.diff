@@ -1,0 +1,61 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java
+index 79c7ee102..8e0147982 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java
+@@ -120,55 +120,55 @@ public class JavadocVariableCheck
+     {
+         if (shouldCheck(ast)) {
+             final FileContents contents = getFileContents();
+             final TextBlock cmt =
+                 contents.getJavadocBefore(ast.getLineNo());
+ 
+             if (cmt == null) {
+                 log(ast, JAVADOC_MISSING);
+             }
+         }
+     }
+ 
+     /**
+      * Decides whether the variable name of an AST is in the ignore list.
+      * @param ast the AST to check
+      * @return true if the variable name of ast is in the ignore list.
+      */
+     private boolean isIgnored(DetailAST ast)
+     {
+         final String name = ast.findFirstToken(TokenTypes.IDENT).getText();
+         return ignoreNamePattern != null
+                 && ignoreNamePattern.matcher(name).matches();
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param ast a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST ast)
+     {
+         if (ScopeUtils.inCodeBlock(ast) || isIgnored(ast)) {
+             return false;
+         }
+ 
+         final Scope scope;
+         if (ast.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+             scope = Scope.PUBLIC;
+         }
+         else {
+             final DetailAST mods = ast.findFirstToken(TokenTypes.MODIFIERS);
+             final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
+             scope =
+                 ScopeUtils.inInterfaceOrAnnotationBlock(ast)
+                     ? Scope.PUBLIC : declaredScope;
+         }
+ 
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(ast);
+ 
+         return scope.isIn(this.scope) && surroundingScope.isIn(this.scope)
+-            && ((excludeScope == null)
++            && (excludeScope == null
+                 || !scope.isIn(excludeScope)
+                 || !surroundingScope.isIn(excludeScope));
+     }
+ }

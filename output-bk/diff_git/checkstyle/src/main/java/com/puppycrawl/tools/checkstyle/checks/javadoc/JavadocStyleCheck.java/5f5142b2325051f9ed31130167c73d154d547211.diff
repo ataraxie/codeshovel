@@ -1,0 +1,136 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index b80f93159..1561986d7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -260,119 +260,119 @@ public class JavadocStyleCheck
+         for (final String line : comments) {
+             final int textStart = findTextStart(line);
+ 
+             if (textStart != -1) {
+                 if (line.charAt(textStart) == '@') {
+                     //we have found the tag section
+                     break;
+                 }
+                 builder.append(line.substring(textStart));
+                 trimTail(builder);
+                 builder.append('\n');
+             }
+         }
+ 
+         return builder.toString().trim();
+     }
+ 
+     /**
+      * Finds the index of the first non-whitespace character ignoring the
+      * Javadoc comment start and end strings (&#47** and *&#47) as well as any
+      * leading asterisk.
+      * @param line the Javadoc comment line of text to scan.
+      * @return the int index relative to 0 for the start of text
+      *         or -1 if not found.
+      */
+     private static int findTextStart(String line) {
+         int textStart = -1;
+         for (int i = 0; i < line.length();) {
+             if (!Character.isWhitespace(line.charAt(i))) {
+                 if (line.regionMatches(i, "/**", 0, "/**".length())) {
+                     i += 2;
+                 }
+                 else if (line.regionMatches(i, "*/", 0, 2)) {
+                     i++;
+                 }
+                 else if (line.charAt(i) != '*') {
+                     textStart = i;
+                     break;
+                 }
+             }
+             i++;
+         }
+         return textStart;
+     }
+ 
+     /**
+      * Trims any trailing whitespace or the end of Javadoc comment string.
+      * @param builder the StringBuilder to trim.
+      */
+     private static void trimTail(StringBuilder builder) {
+-        int i = builder.length() - 1;
++        int index = builder.length() - 1;
+         while (true) {
+-            if (Character.isWhitespace(builder.charAt(i))) {
+-                builder.deleteCharAt(i);
++            if (Character.isWhitespace(builder.charAt(index))) {
++                builder.deleteCharAt(index);
+             }
+-            else if (builder.charAt(i) == '/'
+-                    && builder.charAt(i - 1) == '*') {
+-                builder.deleteCharAt(i);
+-                builder.deleteCharAt(i - 1);
+-                i--;
+-                while (builder.charAt(i - 1) == '*') {
+-                    builder.deleteCharAt(i - 1);
+-                    i--;
++            else if (builder.charAt(index) == '/'
++                    && builder.charAt(index - 1) == '*') {
++                builder.deleteCharAt(index);
++                builder.deleteCharAt(index - 1);
++                index--;
++                while (builder.charAt(index - 1) == '*') {
++                    builder.deleteCharAt(index - 1);
++                    index--;
+                 }
+             }
+             else {
+                 break;
+             }
+-            i--;
++            index--;
+         }
+     }
+ 
+     /**
+      * Checks the comment for HTML tags that do not have a corresponding close
+      * tag or a close tag that has no previous open tag.  This code was
+      * primarily copied from the DocCheck checkHtml method.
+      *
+      * @param ast the node with the Javadoc
+      * @param comment the {@code TextBlock} which represents
+      *                 the Javadoc comment.
+      */
+     private void checkHtmlTags(final DetailAST ast, final TextBlock comment) {
+         final int lineNo = comment.getStartLineNo();
+         final Deque<HtmlTag> htmlStack = new ArrayDeque<>();
+         final String[] text = comment.getText();
+ 
+         final TagParser parser = new TagParser(text, lineNo);
+ 
+         while (parser.hasNextTag()) {
+             final HtmlTag tag = parser.nextTag();
+ 
+             if (tag.isIncompleteTag()) {
+                 log(tag.getLineNo(), INCOMPLETE_TAG,
+                     text[tag.getLineNo() - lineNo]);
+                 return;
+             }
+             if (tag.isClosedTag()) {
+                 //do nothing
+                 continue;
+             }
+             if (tag.isCloseTag()) {
+                 // We have found a close tag.
+                 if (isExtraHtml(tag.getId(), htmlStack)) {
+                     // No corresponding open tag was found on the stack.
+                     log(tag.getLineNo(),
+                         tag.getPosition(),
+                         EXTRA_HTML,
+                         tag);
+                 }
+                 else {
+                     // See if there are any unclosed tags that were opened
+                     // after this one.
+                     checkUnclosedTags(htmlStack, tag.getId());
+                 }
+             }
+             else {
+                 //We only push html tags that are allowed
+                 if (isAllowedTag(tag)) {
+                     htmlStack.push(tag);

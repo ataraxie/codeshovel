@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "ImmutableSetMultimap.java",
+  "functionName": "newMutableValueCollection",
+  "functionId": "newMutableValueCollection",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/ImmutableSetMultimap.java",
+  "functionStartLine": 157,
+  "functionEndLine": 159,
+  "changeHistory": [
+    "798774bf0ca9f5d641b949b041b601c92f784fde",
+    "d181e111ada75de243598c2522e725905adcdcc3"
+  ],
+  "changeHistoryShort": {
+    "798774bf0ca9f5d641b949b041b601c92f784fde": "Ybodychange",
+    "d181e111ada75de243598c2522e725905adcdcc3": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "798774bf0ca9f5d641b949b041b601c92f784fde": {
+      "type": "Ybodychange",
+      "commitMessage": "Use compact data structures in ImmutableMultimap builders.\n\nYes, this hurts code size, we want to know how much.  It does improve allocations incurred in creating ImmutableMultimaps.\n\nEffects on ImmutableListMultimapProGuard:\n61163 bytes \u003d\u003e 71554 bytes\n52 classes \u003d\u003e 61 classes\n409 methods \u003d\u003e 465 methods\n\nEffects on ImmutableSetMultimapProGuard:\n82739 bytes \u003d\u003e 97853 bytes\n69 classes \u003d\u003e 80 classes\n560 methods \u003d\u003e 641 methods\n\nRELNOTES\u003dn/a\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d179594998\n",
+      "commitDate": 1513719271000,
+      "commitName": "798774bf0ca9f5d641b949b041b601c92f784fde",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1513696020000,
+      "commitNameOld": "d181e111ada75de243598c2522e725905adcdcc3",
+      "commitAuthorOld": "lowasser",
+      "daysBetweenCommits": 0.27,
+      "commitsBetweenForRepo": 5,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n     Collection\u003cV\u003e newMutableValueCollection() {\n-      return new LinkedHashSet\u003c\u003e();\n+      return Platform.preservesInsertionOrderOnAddsSet();\n     }\n\\ No newline at end of file\n"
+    },
+    "d181e111ada75de243598c2522e725905adcdcc3": {
+      "type": "Yintroduced",
+      "commitMessage": "Use maps directly in ImmutableMultimap.Builder, instead of delegating to a mutable multimap.\n\nEffects on ImmutableListMultimapProGuard:\n135061 bytes \u003d\u003e 80938 bytes\n122 classes \u003d\u003e 74 classes\n963 methods \u003d\u003e 546 methods\n\nEffects on ImmutableSetMultimapProGuard:\n147668 bytes \u003d\u003e 102365 bytes\n131 classes \u003d\u003e 91 classes\n1024 methods \u003d\u003e 693 methods\n\nRELNOTES\u003dn/a\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d179487542\n",
+      "commitDate": 1513696020000,
+      "commitName": "d181e111ada75de243598c2522e725905adcdcc3",
+      "commitAuthor": "lowasser"
+    }
+  }
+}

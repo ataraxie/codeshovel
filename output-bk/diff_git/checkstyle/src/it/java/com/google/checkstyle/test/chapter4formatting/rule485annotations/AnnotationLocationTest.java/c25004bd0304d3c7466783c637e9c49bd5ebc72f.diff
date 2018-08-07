@@ -1,0 +1,67 @@
+diff --git a/src/it/java/com/google/checkstyle/test/chapter4formatting/rule485annotations/AnnotationLocationTest.java b/src/it/java/com/google/checkstyle/test/chapter4formatting/rule485annotations/AnnotationLocationTest.java
+index 4fcec4bd1..b8362faf7 100644
+--- a/src/it/java/com/google/checkstyle/test/chapter4formatting/rule485annotations/AnnotationLocationTest.java
++++ b/src/it/java/com/google/checkstyle/test/chapter4formatting/rule485annotations/AnnotationLocationTest.java
+@@ -27,62 +27,61 @@ import org.junit.Test;
+ import com.google.checkstyle.test.base.BaseCheckTestSupport;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import com.puppycrawl.tools.checkstyle.checks.annotation.AnnotationLocationCheck;
+ 
+ public class AnnotationLocationTest extends BaseCheckTestSupport {
+ 
+     @Override
+     protected String getPath(String fileName) throws IOException {
+         return super.getPath("chapter4formatting" + File.separator + "rule485annotations"
+                 + File.separator + fileName);
+     }
+ 
+     @Test
+     public void annotationTest() throws Exception {
+ 
+         final Class<AnnotationLocationCheck> clazz = AnnotationLocationCheck.class;
+         getCheckMessage(clazz, "annotation.location.alone");
+         final Configuration checkConfig = getCheckConfig("AnnotationLocation",
+                 "AnnotationLocationMostCases");
+ 
+         final String msgLocationAlone = "annotation.location.alone";
+         final String msgLocation = "annotation.location";
+         final String[] expected = {
+             "3: " + getCheckMessage(clazz, msgLocationAlone, "MyAnnotation1"),
+             "20: " + getCheckMessage(clazz, msgLocation, "MyAnnotation1", "8", "4"),
+             "27: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "7", "4"),
+             "31: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "8", "4"),
+             "32: " + getCheckMessage(clazz, msgLocation, "MyAnnotation3", "6", "4"),
+             "33: " + getCheckMessage(clazz, msgLocation, "MyAnnotation4", "10", "4"),
+             "54: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "12", "8"),
+             "58: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "12", "8"),
+             "78: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "11", "8"),
+             "81: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "10", "8"),
+             "90: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "1", "0"),
+         };
+ 
+         final String filePath = getPath("InputAnnotationLocation.java");
+ 
+         final Integer[] warnList = getLinesWithWarn(filePath);
+         verify(checkConfig, filePath, expected, warnList);
+     }
+ 
+     @Test
+     public void annotationTestVariables() throws Exception {
+ 
+         final Class<AnnotationLocationCheck> clazz = AnnotationLocationCheck.class;
+         getCheckMessage(clazz, "annotation.location.alone");
+         final Configuration checkConfig = getCheckConfig("AnnotationLocation",
+                 "AnnotationLocationVariables");
+ 
+-        final String msgLocationAlone = "annotation.location.alone";
+         final String msgLocation = "annotation.location";
+         final String[] expected = {
+             "63: " + getCheckMessage(clazz, msgLocation, "MyAnnotation2", "7", "4"),
+         };
+ 
+         final String filePath = getPath("InputAnnotationLocationVariables.java");
+ 
+         final Integer[] warnList = getLinesWithWarn(filePath);
+         verify(checkConfig, filePath, expected, warnList);
+     }
+ }

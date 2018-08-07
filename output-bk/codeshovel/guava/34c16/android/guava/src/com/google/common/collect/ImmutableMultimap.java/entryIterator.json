@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "ImmutableMultimap.java",
+  "functionName": "entryIterator",
+  "functionId": "entryIterator",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/ImmutableMultimap.java",
+  "functionStartLine": 559,
+  "functionEndLine": 581,
+  "changeHistory": [
+    "d21ad7b1a035997fa000dedc7e60e4a434539362",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "d21ad7b1a035997fa000dedc7e60e4a434539362": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "d21ad7b1a035997fa000dedc7e60e4a434539362": {
+      "type": "Ybodychange",
+      "commitMessage": "Don\u0027t bother sharing a superclass of ImmutableMultimap.values().iterator and ImmutableMultimap.entries().iterator.\n\nEffects on ImmutableListMultimapProGuard:\n135474 bytes \u003d\u003e 135061 bytes\n123 classes \u003d\u003e 122 classes\n966 methods \u003d\u003e 963 methods\n\nEffects on ImmutableSetMultimapProGuard:\n148081 bytes \u003d\u003e 147668 bytes\n132 classes \u003d\u003e 131 classes\n1027 methods \u003d\u003e 1024 methods\n\nRELNOTES\u003dn/a\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d179461342\n",
+      "commitDate": 1513634016000,
+      "commitName": "d21ad7b1a035997fa000dedc7e60e4a434539362",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1513631719000,
+      "commitNameOld": "9aaeb95faee253d0742003bab6f1365f27f6aba9",
+      "commitAuthorOld": "lowasser",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,23 @@\n   UnmodifiableIterator\u003cEntry\u003cK, V\u003e\u003e entryIterator() {\n-    return new Itr\u003cEntry\u003cK, V\u003e\u003e() {\n+    return new UnmodifiableIterator\u003cEntry\u003cK, V\u003e\u003e() {\n+      final Iterator\u003c? extends Entry\u003cK, ? extends ImmutableCollection\u003cV\u003e\u003e\u003e asMapItr \u003d\n+          map.entrySet().iterator();\n+      K currentKey \u003d null;\n+      Iterator\u003cV\u003e valueItr \u003d Iterators.emptyIterator();\n+\n       @Override\n-      Entry\u003cK, V\u003e output(K key, V value) {\n-        return Maps.immutableEntry(key, value);\n+      public boolean hasNext() {\n+        return valueItr.hasNext() || asMapItr.hasNext();\n+      }\n+\n+      @Override\n+      public Entry\u003cK, V\u003e next() {\n+        if (!valueItr.hasNext()) {\n+          Entry\u003cK, ? extends ImmutableCollection\u003cV\u003e\u003e entry \u003d asMapItr.next();\n+          currentKey \u003d entry.getKey();\n+          valueItr \u003d entry.getValue().iterator();\n+        }\n+        return Maps.immutableEntry(currentKey, valueItr.next());\n       }\n     };\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

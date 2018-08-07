@@ -1,0 +1,184 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/RegexpCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/RegexpCheck.java
+index 6133e5568..f7cffad5c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/RegexpCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/RegexpCheck.java
+@@ -1,76 +1,74 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.regexp;
+ 
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ 
+-import org.apache.commons.lang3.ArrayUtils;
+-
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.FileText;
+ import com.puppycrawl.tools.checkstyle.api.LineColumn;
+ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * <p>
+  * A check that makes sure that a specified pattern exists (or not) in the file.
+  * </p>
+  * <p>
+  * An example of how to configure the check to make sure a copyright statement
+  * is included in the file (but without requirements on where in the file
+  * it should be):
+  * </p>
+  * <pre>
+  * &lt;module name="RegexpCheck"&gt;
+  *    &lt;property name="format" value="This code is copyrighted"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * <p>
+  * And to make sure the same statement appears at the beginning of the file.
+  * </p>
+  * <pre>
+  * &lt;module name="RegexpCheck"&gt;
+  *    &lt;property name="format" value="\AThis code is copyrighted"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Stan Quinn
+  */
+ public class RegexpCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_ILLEGAL_REGEXP = "illegal.regexp";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_REQUIRED_REGEXP = "required.regexp";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_DUPLICATE_REGEXP = "duplicate.regexp";
+@@ -136,101 +134,101 @@ public class RegexpCheck extends AbstractCheck {
+      * Sets if matches within comments should be ignored.
+      * @param ignoreComments True if comments should be ignored.
+      */
+     public void setIgnoreComments(boolean ignoreComments) {
+         this.ignoreComments = ignoreComments;
+     }
+ 
+     /**
+      * Sets if pattern is illegal, otherwise pattern is required.
+      * @param illegalPattern True if pattern is not allowed.
+      */
+     public void setIllegalPattern(boolean illegalPattern) {
+         this.illegalPattern = illegalPattern;
+     }
+ 
+     /**
+      * Sets the limit on the number of errors to report.
+      * @param errorLimit the number of errors to report.
+      */
+     public void setErrorLimit(int errorLimit) {
+         this.errorLimit = errorLimit;
+     }
+ 
+     /**
+      * Sets the maximum number of instances of required pattern allowed.
+      * @param duplicateLimit negative values mean no duplicate checking,
+      *     any positive value is used as the limit.
+      */
+     public void setDuplicateLimit(int duplicateLimit) {
+         this.duplicateLimit = duplicateLimit;
+         checkForDuplicates = duplicateLimit > DEFAULT_DUPLICATE_LIMIT;
+     }
+ 
+     /**
+      * Set the format to the specified regular expression.
+      * @param format a {@code String} value
+      * @throws org.apache.commons.beanutils.ConversionException unable to parse format
+      */
+     public final void setFormat(String format) {
+         this.format = format;
+         regexp = CommonUtils.createPattern(format, Pattern.MULTILINE);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return ArrayUtils.EMPTY_INT_ARRAY;
++        return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         matcher = regexp.matcher(getFileContents().getText().getFullText());
+         matchCount = 0;
+         errorCount = 0;
+         findMatch();
+     }
+ 
+     /** Recursive method that finds the matches. */
+     private void findMatch() {
+ 
+         final boolean foundMatch = matcher.find();
+         if (foundMatch) {
+             final FileText text = getFileContents().getText();
+             final LineColumn start = text.lineColumn(matcher.start());
+             final int startLine = start.getLine();
+ 
+             final boolean ignore = isIgnore(startLine, text, start);
+ 
+             if (!ignore) {
+                 matchCount++;
+                 if (illegalPattern || checkForDuplicates
+                         && matchCount - 1 > duplicateLimit) {
+                     errorCount++;
+                     logMessage(startLine);
+                 }
+             }
+             if (canContinueValidation(ignore)) {
+                 findMatch();
+             }
+         }
+         else if (!illegalPattern && matchCount == 0) {
+             logMessage(0);
+         }
+ 
+     }
+ 
+     /**
+      * Check if we can stop validation.
+      * @param ignore flag
+      * @return true is we can continue
+      */
+     private boolean canContinueValidation(boolean ignore) {

@@ -1,0 +1,87 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/CodeSelectorPresentation.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/CodeSelectorPresentation.java
+index 56e3ca85d..53c4bfdf4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/CodeSelectorPresentation.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/CodeSelectorPresentation.java
+@@ -75,78 +75,80 @@ public class CodeSelectorPresentation {
+      */
+     public int getSelectionEnd() {
+         return selectionEnd;
+     }
+ 
+     /**
+      * Find start and end selection positions from AST line and Column.
+      */
+     public void findSelectionPositions() {
+         if (node instanceof DetailAST) {
+             findSelectionPositions((DetailAST) node);
+         }
+         else {
+             findSelectionPositions((DetailNode) node);
+         }
+     }
+ 
+     /**
+      * Find start and end selection positions from AST line and Column.
+      * @param ast DetailAST node for which selection finds
+      */
+     private void findSelectionPositions(DetailAST ast) {
+         selectionStart = lines2position.get(ast.getLineNo()) + ast.getColumnNo();
+ 
+         if (ast.getChildCount() == 0
+                 && TokenUtils.getTokenName(ast.getType()).equals(ast.getText())) {
+             selectionEnd = selectionStart;
+         }
+         else {
+             selectionEnd = findLastPosition(ast);
+         }
+     }
+ 
+     /**
+      * Find start and end selection positions from DetailNode line and Column.
+      * @param detailNode DetailNode node for which selection finds
+      */
+     private void findSelectionPositions(DetailNode detailNode) {
+         selectionStart = lines2position.get(detailNode.getLineNumber())
+                             + detailNode.getColumnNumber();
+ 
+         selectionEnd = findLastPosition(detailNode);
+     }
+ 
+     /**
+      * Finds the last position of node without children.
+      * @param astNode DetailAST node.
+      * @return Last position of node without children.
+      */
+     private int findLastPosition(final DetailAST astNode) {
++        final int lastPosition;
+         if (astNode.getChildCount() == 0) {
+-            return lines2position.get(astNode.getLineNo()) + astNode.getColumnNo()
++            lastPosition = lines2position.get(astNode.getLineNo()) + astNode.getColumnNo()
+                     + astNode.getText().length();
+         }
+         else {
+-            return findLastPosition(astNode.getLastChild());
++            lastPosition = findLastPosition(astNode.getLastChild());
+         }
++        return lastPosition;
+     }
+ 
+     /**
+      * Finds the last position of node without children.
+      * @param detailNode DetailNode node.
+      * @return Last position of node without children.
+      */
+     private int findLastPosition(final DetailNode detailNode) {
+         final int lastPosition;
+         if (detailNode.getChildren().length == 0) {
+             lastPosition = lines2position.get(detailNode.getLineNumber())
+                     + detailNode.getColumnNumber() + detailNode.getText().length();
+         }
+         else {
+             final DetailNode lastChild =
+                     detailNode.getChildren()[detailNode.getChildren().length - 1];
+             lastPosition = findLastPosition(lastChild);
+         }
+         return lastPosition;
+     }
+ }

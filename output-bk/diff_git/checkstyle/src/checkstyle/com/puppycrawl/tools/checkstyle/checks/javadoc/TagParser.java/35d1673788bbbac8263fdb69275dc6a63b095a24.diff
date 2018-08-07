@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java
+index a2b532bc9..d7c88c004 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java
+@@ -196,101 +196,101 @@ class TagParser
+      */
+     private Point skipHtmlComment(String[] aText, Point aFrom)
+     {
+         Point to = aFrom;
+         to = findChar(aText, '>', to);
+         while ((to.getLineNo() < aText.length)
+                && !aText[to.getLineNo()]
+                .substring(0, to.getColumnNo()).endsWith("-->"))
+         {
+             to = findChar(aText, '>', getNextCharPos(aText, to));
+         }
+         return to;
+     }
+ 
+     /**
+      * Finds next occurence of given character.
+      * @param aText text to search
+      * @param aChar character to search
+      * @param aFrom position to start search
+      * @return position of next occurence of given character
+      */
+     private Point findChar(String[] aText, char aChar, Point aFrom)
+     {
+         Point curr = new Point(aFrom.getLineNo(), aFrom.getColumnNo());
+         while ((curr.getLineNo() < aText.length)
+                && (aText[curr.getLineNo()].charAt(curr.getColumnNo()) != aChar))
+         {
+             curr = getNextCharPos(aText, curr);
+         }
+ 
+         return curr;
+     }
+ 
+     /**
+      * Returns position of next comment character, skips
+      * whitespaces and asteriks.
+      * @param aText to search.
+      * @param aFrom location to search from
+      * @return location of the next character.
+      */
+     private Point getNextCharPos(String[] aText, Point aFrom)
+     {
+         int line = aFrom.getLineNo();
+         int column = aFrom.getColumnNo() + 1;
+         while ((line < aText.length) && (column >= aText[line].length())) {
+             // go to the next line
+             line++;
+             column = 0;
+             if (line < aText.length) {
+                 //skip beginning spaces and stars
+-                String currentLine = aText[line];
++                final String currentLine = aText[line];
+                 while ((column < currentLine.length())
+                        && (Character.isWhitespace(currentLine.charAt(column))
+                            || (currentLine.charAt(column) == '*')))
+                 {
+                     column++;
+                     if ((column < currentLine.length())
+                         && (currentLine.charAt(column - 1) == '*')
+                         && (currentLine.charAt(column) == '/'))
+                     {
+                         // this is end of comment
+                         column = currentLine.length();
+                     }
+                 }
+             }
+         }
+ 
+         return new Point(line, column);
+     }
+ }
+ 
+ /**
+  * Represents current position in the text.
+  * @author o_sukholsky
+  */
+ final class Point
+ {
+     /** line number. */
+     private final int mLine;
+     /** clumn number.*/
+     private final int mColumn;
+ 
+     /**
+      * Creates new <code>Point</code> instance.
+      * @param aLineNo line number
+      * @param aColumnNo column number
+      */
+     public Point(int aLineNo, int aColumnNo)
+     {
+         mLine = aLineNo;
+         mColumn = aColumnNo;
+     }
+ 
+     /**
+      * Getter for line number.
+      * @return line number of the position.
+      */
+     public int getLineNo()
+     {
+         return mLine;
+     }

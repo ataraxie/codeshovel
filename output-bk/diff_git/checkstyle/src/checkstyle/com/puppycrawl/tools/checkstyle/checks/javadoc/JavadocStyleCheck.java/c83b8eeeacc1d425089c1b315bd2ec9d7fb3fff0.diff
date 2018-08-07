@@ -1,0 +1,118 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index 7c3dd1e84..8c638acb9 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -91,102 +91,111 @@ public class JavadocStyleCheck
+     /**
+      * Indicates if empty javadoc statements should be checked.
+      */
+     private boolean mCheckEmptyJavadoc;
+ 
+     /**
+      * The default tokens this Check is used for.
+      * @see com.puppycrawl.tools.checkstyle.api.Check#getDefaultTokens()
+      */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+         };
+     }
+ 
+     /**
+      * Called to process a token.
+      * @see com.puppycrawl.tools.checkstyle.api.Check
+      */
+     public void visitToken(DetailAST aAST)
+     {
+         if (shouldCheck(aAST)) {
+             final FileContents contents = getFileContents();
+             final TextBlock cmt =
+                 contents.getJavadocBefore(aAST.getLineNo());
+ 
+             checkComment(cmt);
+         }
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param aAST a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST aAST)
+     {
+         if (ScopeUtils.inCodeBlock(aAST)) {
+             return false;
+         }
+ 
+-        final DetailAST mods = aAST.findFirstToken(TokenTypes.MODIFIERS);
+-        final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
++        final Scope declaredScope;
++        if (aAST.getType() == TokenTypes.ENUM_CONSTANT_DEF)
++        {
++            declaredScope = Scope.PUBLIC;
++        }
++        else
++        {
++            declaredScope = ScopeUtils.getScopeFromMods(
++                aAST.findFirstToken(TokenTypes.MODIFIERS));
++        }
++
+         final Scope scope =
+             ScopeUtils.inInterfaceOrAnnotationBlock(aAST)
+             ? Scope.PUBLIC : declaredScope;
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(aAST);
+ 
+         return scope.isIn(mScope)
+             && ((surroundingScope == null) || surroundingScope.isIn(mScope))
+             && ((mExcludeScope == null)
+                 || !scope.isIn(mExcludeScope)
+                 || (surroundingScope != null)
+                 && !surroundingScope.isIn(mExcludeScope));
+     }
+ 
+     /**
+      * Performs the various checks agains the Javadoc comment.
+      *
+      * @param aComment the source lines that make up the Javadoc comment.
+      *
+      * @see #checkFirstSentence(TextBlock)
+      * @see #checkHtml(TextBlock)
+      */
+     private void checkComment(TextBlock aComment)
+     {
+         if (aComment == null) {
+             return;
+         }
+ 
+         if (mCheckFirstSentence) {
+             checkFirstSentence(aComment);
+         }
+ 
+         if (mCheckHtml) {
+             checkHtml(aComment);
+         }
+ 
+         if (mCheckEmptyJavadoc) {
+             checkEmptyJavadoc(aComment);
+         }
+     }
+ 
+     /**
+      * Checks that the first sentence ends with proper puctuation.  This method
+      * uses a regular expression that checks for the presence of a period,
+      * question mark, or exclaimation mark followed either by whitespace, an
+      * HTML element, or the end of string. This method ignores {@inheritDoc}
+      * comments.
+      *
+      * @param aComment the source lines that make up the Javadoc comment.
+      */
+     private void checkFirstSentence(TextBlock aComment)

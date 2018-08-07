@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
+index 7e1ff94cf..2127ba60a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
+@@ -154,101 +154,102 @@ public class LineWrappingHandler {
+         }
+         return result;
+     }
+ 
+     /**
+      * Returns next curNode node.
+      *
+      * @param curNode current node.
+      * @return next curNode node.
+      */
+     private static DetailAST getNextCurNode(DetailAST curNode) {
+         DetailAST nodeToVisit = curNode.getFirstChild();
+         DetailAST currentNode = curNode;
+ 
+         while (nodeToVisit == null) {
+             nodeToVisit = currentNode.getNextSibling();
+             if (nodeToVisit == null) {
+                 currentNode = currentNode.getParent();
+             }
+         }
+         return nodeToVisit;
+     }
+ 
+     /**
+      * Checks line wrapping into annotations.
+      *
+      * @param atNode at-clause node.
+      * @param firstNodesOnLines map which contains
+      *     first nodes as values and line numbers as keys.
+      * @param indentLevel line wrapping indentation.
+      */
+     private void checkAnnotationIndentation(DetailAST atNode,
+             NavigableMap<Integer, DetailAST> firstNodesOnLines, int indentLevel) {
+         final int firstNodeIndent = getLineStart(atNode);
+         final int currentIndent = firstNodeIndent + indentLevel;
+         final Collection<DetailAST> values = firstNodesOnLines.values();
+         final DetailAST lastAnnotationNode = getLastAnnotationNode(atNode);
+         final int lastAnnotationLine = lastAnnotationNode.getLineNo();
+ 
+         final Iterator<DetailAST> itr = values.iterator();
+         while (firstNodesOnLines.size() > 1) {
+             final DetailAST node = itr.next();
+ 
+             if (node.getLineNo() <= lastAnnotationLine) {
+                 final DetailAST parentNode = node.getParent();
+                 final boolean isCurrentNodeCloseAnnotationAloneInLine =
+                         node.getLineNo() == lastAnnotationLine
+                         && node.equals(lastAnnotationNode);
+                 if (isCurrentNodeCloseAnnotationAloneInLine
+                         || node.getType() == TokenTypes.AT
+-                        && parentNode.getParent().getType() == TokenTypes.MODIFIERS) {
++                        && (parentNode.getParent().getType() == TokenTypes.MODIFIERS
++                            || parentNode.getParent().getType() == TokenTypes.ANNOTATIONS)) {
+                     logWarningMessage(node, firstNodeIndent);
+                 }
+                 else {
+                     logWarningMessage(node, currentIndent);
+                 }
+                 itr.remove();
+             }
+             else {
+                 break;
+             }
+         }
+     }
+ 
+     /**
+      * Get the column number for the start of a given expression, expanding
+      * tabs out into spaces in the process.
+      *
+      * @param ast   the expression to find the start of
+      *
+      * @return the column number for the start of the expression
+      */
+     private int expandedTabsColumnNo(DetailAST ast) {
+         final String line =
+             indentCheck.getLine(ast.getLineNo() - 1);
+ 
+         return CommonUtils.lengthExpandedTabs(line, ast.getColumnNo(),
+             indentCheck.getIndentationTabWidth());
+     }
+ 
+     /**
+      * Get the start of the line for the given expression.
+      *
+      * @param ast   the expression to find the start of the line for
+      *
+      * @return the start of the line for the given expression
+      */
+     private int getLineStart(DetailAST ast) {
+         final String line = indentCheck.getLine(ast.getLineNo() - 1);
+         return getLineStart(line);
+     }
+ 
+     /**
+      * Get the start of the specified line.
+      *
+      * @param line the specified line number
+      *
+      * @return the start of the specified line
+      */
+     private int getLineStart(String line) {
+         int index = 0;

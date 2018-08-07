@@ -1,0 +1,92 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+index 79491edfe..6750215b9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+@@ -357,85 +357,85 @@ public final class Main {
+ 
+         return listener;
+     }
+ 
+     /**
+      * Determines the files to process.
+      * @param filesToProcess
+      *        arguments that were not processed yet but shall be
+      * @return list of files to process
+      */
+     private static List<File> getFilesToProcess(String... filesToProcess) {
+         final List<File> files = Lists.newLinkedList();
+         for (String element : filesToProcess) {
+             files.addAll(listFiles(new File(element)));
+         }
+ 
+         return files;
+     }
+ 
+     /**
+      * Traverses a specified node looking for files to check. Found files are added to a specified
+      * list. Subdirectories are also traversed.
+      * @param node
+      *        the node to process
+      * @return found files
+      */
+     private static List<File> listFiles(File node) {
+         // could be replaced with org.apache.commons.io.FileUtils.list() method
+         // if only we add commons-io library
+         final List<File> result = Lists.newLinkedList();
+ 
+         if (node.canRead()) {
+             if (node.isDirectory()) {
+                 final File[] files = node.listFiles();
+                 // listFiles() can return null, so we need to check it
+                 if (files != null) {
+                     for (File element : files) {
+                         result.addAll(listFiles(element));
+                     }
+                 }
+             }
+             else if (node.isFile()) {
+                 result.add(node);
+             }
+         }
+         return result;
+     }
+ 
+     /** Prints the usage information. **/
+     private static void printUsage() {
+-        final HelpFormatter hf = new HelpFormatter();
+-        hf.printHelp(String.format("java %s [options] -c <config.xml> file...",
++        final HelpFormatter formatter = new HelpFormatter();
++        formatter.printHelp(String.format("java %s [options] -c <config.xml> file...",
+                 Main.class.getName()), buildOptions());
+     }
+ 
+     /**
+      * Builds and returns list of parameters supported by cli Checkstyle.
+      * @return available options
+      */
+     private static Options buildOptions() {
+         final Options options = new Options();
+         options.addOption(OPTION_C_NAME, true, "Sets the check configuration file to use.");
+         options.addOption(OPTION_O_NAME, true, "Sets the output file. Defaults to stdout");
+         options.addOption(OPTION_P_NAME, true, "Loads the properties file");
+         options.addOption(OPTION_F_NAME, true, String.format(
+                 "Sets the output format. (%s|%s). Defaults to %s",
+                 PLAIN_FORMAT_NAME, XML_FORMAT_NAME, PLAIN_FORMAT_NAME));
+         options.addOption(OPTION_V_NAME, false, "Print product version and exit");
+         return options;
+     }
+ 
+     /** Helper structure to clear show what is required for Checker to run. **/
+     private static class CliOptions {
+         /** Properties file location. */
+         private String propertiesLocation;
+         /** Config file location. */
+         private String configLocation;
+         /** Output format. */
+         private String format;
+         /** Output file location. */
+         private String outputLocation;
+         /** List of file to validate. */
+         private List<File> files;
+     }
+ }

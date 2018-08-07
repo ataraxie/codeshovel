@@ -1,0 +1,119 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+index 3f96908e5..259b3fee3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+@@ -253,112 +253,111 @@ public final class Main {
+                     result.add(String.format("Could not find file '%s'.", propertiesLocation));
+                 }
+             }
+         }
+         else {
+             result.add("Must specify a config XML file.");
+         }
+ 
+         return result;
+     }
+ 
+     /**
+      * Do execution of CheckStyle based on Command line options.
+      * @param commandLine command line object
+      * @param filesToProcess List of files to process found from the command line.
+      * @return number of violations
+      * @throws IOException if a file could not be read.
+      * @throws CheckstyleException if something happens processing the files.
+      */
+     private static int runCli(CommandLine commandLine, List<File> filesToProcess)
+             throws IOException, CheckstyleException {
+         int result = 0;
+ 
+         // create config helper object
+         final CliOptions config = convertCliToPojo(commandLine, filesToProcess);
+         if (commandLine.hasOption(OPTION_T_NAME)) {
+             // print AST
+             final File file = config.files.get(0);
+             final String stringAst = AstTreeStringPrinter.printFileAst(file, false);
+             System.out.print(stringAst);
+         }
+         else if (commandLine.hasOption(OPTION_CAPITAL_T_NAME)) {
+             final File file = config.files.get(0);
+             final String stringAst = AstTreeStringPrinter.printFileAst(file, true);
+             System.out.print(stringAst);
+         }
+         else if (commandLine.hasOption(OPTION_J_NAME)) {
+             final File file = config.files.get(0);
+             final String stringAst = DetailNodeTreeStringPrinter.printFileAst(file);
+             System.out.print(stringAst);
+         }
+         else if (commandLine.hasOption(OPTION_CAPITAL_J_NAME)) {
+             final File file = config.files.get(0);
+             final String stringAst = AstTreeStringPrinter.printJavaAndJavadocTree(file);
+             System.out.print(stringAst);
+         }
+         else {
+             if (commandLine.hasOption(OPTION_D_NAME)) {
+                 final Logger parentLogger = Logger.getLogger(Main.class.getName()).getParent();
+                 final ConsoleHandler handler = new ConsoleHandler();
+-
+-                parentLogger.setLevel(Level.FINEST);
+                 handler.setLevel(Level.FINEST);
+-                parentLogger.addHandler(handler);
+                 handler.setFilter(new Filter() {
+                     private final String packageName = Main.class.getPackage().getName();
+ 
+                     @Override
+                     public boolean isLoggable(LogRecord record) {
+                         return record.getLoggerName().startsWith(packageName);
+                     }
+                 });
++                parentLogger.addHandler(handler);
++                parentLogger.setLevel(Level.FINEST);
+             }
+             if (LOG.isDebugEnabled()) {
+                 LOG.debug("Checkstyle debug logging enabled");
+                 LOG.debug("Running Checkstyle with version: "
+                         + Main.class.getPackage().getImplementationVersion());
+             }
+ 
+             // run Checker
+             result = runCheckstyle(config);
+         }
+ 
+         return result;
+     }
+ 
+     /**
+      * Util method to convert CommandLine type to POJO object.
+      * @param cmdLine command line object
+      * @param filesToProcess List of files to process found from the command line.
+      * @return command line option as POJO object
+      */
+     private static CliOptions convertCliToPojo(CommandLine cmdLine, List<File> filesToProcess) {
+         final CliOptions conf = new CliOptions();
+         conf.format = cmdLine.getOptionValue(OPTION_F_NAME);
+         if (conf.format == null) {
+             conf.format = PLAIN_FORMAT_NAME;
+         }
+         conf.outputLocation = cmdLine.getOptionValue(OPTION_O_NAME);
+         conf.configLocation = cmdLine.getOptionValue(OPTION_C_NAME);
+         conf.propertiesLocation = cmdLine.getOptionValue(OPTION_P_NAME);
+         conf.files = filesToProcess;
+         return conf;
+     }
+ 
+     /**
+      * Executes required Checkstyle actions based on passed parameters.
+      * @param cliOptions
+      *        pojo object that contains all options
+      * @return number of violations of ERROR level
+      * @throws FileNotFoundException
+      *         when output file could not be found
+      * @throws CheckstyleException
+      *         when properties file could not be loaded
+      */
+     private static int runCheckstyle(CliOptions cliOptions)
+             throws CheckstyleException, FileNotFoundException {
+         // setup the properties
+         final Properties props;
+ 
+         if (cliOptions.propertiesLocation == null) {
+             props = System.getProperties();

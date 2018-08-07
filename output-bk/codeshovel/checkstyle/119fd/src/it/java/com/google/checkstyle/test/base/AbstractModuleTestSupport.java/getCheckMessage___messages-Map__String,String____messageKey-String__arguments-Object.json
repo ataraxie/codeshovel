@@ -1,0 +1,107 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbstractModuleTestSupport.java",
+  "functionName": "getCheckMessage",
+  "functionId": "getCheckMessage___messages-Map__String,String____messageKey-String__arguments-Object",
+  "sourceFilePath": "src/it/java/com/google/checkstyle/test/base/AbstractModuleTestSupport.java",
+  "functionStartLine": 303,
+  "functionEndLine": 314,
+  "changeHistory": [
+    "5c6cdde35d65d19661f8f7fb59f130e646fa567d",
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba",
+    "7a466ec46461fb4c57d965040d9523b1fb2f8443",
+    "7d5db23ad528c95e0fbdfcd1293424c6240db07b",
+    "8142c804e90f6d24a3a5db736f3f1f576766a9a5",
+    "437986510709d7abc64b59c72779343ac5e77599"
+  ],
+  "changeHistoryShort": {
+    "5c6cdde35d65d19661f8f7fb59f130e646fa567d": "Ymodifierchange",
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba": "Yfilerename",
+    "7a466ec46461fb4c57d965040d9523b1fb2f8443": "Ybodychange",
+    "7d5db23ad528c95e0fbdfcd1293424c6240db07b": "Ybodychange",
+    "8142c804e90f6d24a3a5db736f3f1f576766a9a5": "Ymodifierchange",
+    "437986510709d7abc64b59c72779343ac5e77599": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "5c6cdde35d65d19661f8f7fb59f130e646fa567d": {
+      "type": "Ymodifierchange",
+      "commitMessage": "minor: locked down abstract test classes from overriding",
+      "commitDate": 1512742872000,
+      "commitName": "5c6cdde35d65d19661f8f7fb59f130e646fa567d",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1506343478000,
+      "commitNameOld": "3c1ddf428d9ddecaff63986007b4f5ff0593c098",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 74.07,
+      "commitsBetweenForRepo": 140,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n-    protected String getCheckMessage(Map\u003cString, String\u003e messages, String messageKey,\n+    protected static String getCheckMessage(Map\u003cString, String\u003e messages, String messageKey,\n             Object... arguments) {\n         String checkMessage \u003d null;\n         for (Map.Entry\u003cString, String\u003e entry : messages.entrySet()) {\n             if (messageKey.equals(entry.getKey())) {\n                 final MessageFormat formatter \u003d new MessageFormat(entry.getValue(), Locale.ROOT);\n                 checkMessage \u003d formatter.format(arguments);\n                 break;\n             }\n         }\n         return checkMessage;\n     }\n\\ No newline at end of file\n"
+    },
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba": {
+      "type": "Yfilerename",
+      "commitMessage": "Issue #4592: Added AbstractPathTestSupport, AbstractModuleTestSupport, AbstractIndentationTestSupport and all tests in ITs extend them\n",
+      "commitDate": 1501610201000,
+      "commitName": "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba",
+      "commitAuthor": "Subbu Dantu",
+      "commitDateOld": 1501592797000,
+      "commitNameOld": "29e131f949950d26e7880da5891d1754776fdeee",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.2,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "7a466ec46461fb4c57d965040d9523b1fb2f8443": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.google.checkstyle.test.base package\n",
+      "commitDate": 1492827278000,
+      "commitName": "7a466ec46461fb4c57d965040d9523b1fb2f8443",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1489947020000,
+      "commitNameOld": "4e089513a7496b8d9e2584445508cfaf7025125c",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 33.34,
+      "commitsBetweenForRepo": 123,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,12 @@\n     protected String getCheckMessage(Map\u003cString, String\u003e messages, String messageKey,\n             Object... arguments) {\n+        String checkMessage \u003d null;\n         for (Map.Entry\u003cString, String\u003e entry : messages.entrySet()) {\n             if (messageKey.equals(entry.getKey())) {\n                 final MessageFormat formatter \u003d new MessageFormat(entry.getValue(), Locale.ROOT);\n-                return formatter.format(arguments);\n+                checkMessage \u003d formatter.format(arguments);\n+                break;\n             }\n         }\n-        return null;\n+        return checkMessage;\n     }\n\\ No newline at end of file\n"
+    },
+    "7d5db23ad528c95e0fbdfcd1293424c6240db07b": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1217: goal \u0027testCheck\u0027 was activated in \u0027forbiddenapis\u0027 plugin, violations fixed\n",
+      "commitDate": 1444780326000,
+      "commitName": "7d5db23ad528c95e0fbdfcd1293424c6240db07b",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1441328844000,
+      "commitNameOld": "f7e41edb947dad22e10eeaa2e68e6f44b4bfa747",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 39.95,
+      "commitsBetweenForRepo": 245,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,10 @@\n     protected String getCheckMessage(Map\u003cString, String\u003e messages, String messageKey, Object... arguments)\n    {\n        for (Map.Entry\u003cString, String\u003e entry : messages.entrySet()) {\n            if (messageKey.equals(entry.getKey())) {\n-               return format(entry.getValue(), arguments);\n+               final MessageFormat formatter \u003d new MessageFormat(entry.getValue(), Locale.ROOT);\n+               return formatter.format(arguments);\n            }\n        }\n        return null;\n    }\n\\ No newline at end of file\n"
+    },
+    "8142c804e90f6d24a3a5db736f3f1f576766a9a5": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Decrease visibility of fields and methods where applicable. #1555\n\nFixes some `WeakerAccess` inspection violations.\n\nDescription:\n\u003eThis inspection reports all fields, methods or classes, found in the specified inspection scope, that may have their access modifier narrowed down.\n",
+      "commitDate": 1440705174000,
+      "commitName": "8142c804e90f6d24a3a5db736f3f1f576766a9a5",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440498512000,
+      "commitNameOld": "a992ca414f212fa4cdc52d8c510e6cfae27cc67c",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 2.39,
+      "commitsBetweenForRepo": 75,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n-   public String getCheckMessage(Map\u003cString, String\u003e messages, String messageKey, Object ... arguments)\n+    protected String getCheckMessage(Map\u003cString, String\u003e messages, String messageKey, Object... arguments)\n    {\n        for (Map.Entry\u003cString, String\u003e entry : messages.entrySet()) {\n            if (messageKey.equals(entry.getKey())) {\n                return format(entry.getValue(), arguments);\n            }\n        }\n        return null;\n    }\n\\ No newline at end of file\n"
+    },
+    "437986510709d7abc64b59c72779343ac5e77599": {
+      "type": "Yintroduced",
+      "commitMessage": "Integrate google-style-config-test as Integration Test. #863\n",
+      "commitDate": 1433731038000,
+      "commitName": "437986510709d7abc64b59c72779343ac5e77599",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

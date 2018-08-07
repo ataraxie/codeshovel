@@ -1,0 +1,116 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/header/HeaderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/header/HeaderCheck.java
+index 49581527a..a2bcccf4c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/header/HeaderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/header/HeaderCheck.java
+@@ -1,91 +1,91 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2014  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.header;
+ 
+ import java.io.File;
+ import java.util.Arrays;
+ import java.util.List;
+ 
+ /**
+  * Checks the header of the source against a fixed header file.
+  *
+  * @author Lars Kühne
+  */
+ public class HeaderCheck extends AbstractHeaderCheck
+ {
+     /** empty array to avoid instantiations. */
+     private static final int[] EMPTY_INT_ARRAY = new int[0];
+ 
+     /** the header lines to ignore in the check, sorted. */
+-    private int[] mIgnoreLines = EMPTY_INT_ARRAY;
++    private int[] ignoreLines = EMPTY_INT_ARRAY;
+ 
+     /**
+-     * @param aLineNo a line number
+-     * @return if <code>aLineNo</code> is one of the ignored header lines.
++     * @param lineNo a line number
++     * @return if <code>lineNo</code> is one of the ignored header lines.
+      */
+-    private boolean isIgnoreLine(int aLineNo)
++    private boolean isIgnoreLine(int lineNo)
+     {
+-        return (Arrays.binarySearch(mIgnoreLines, aLineNo) >= 0);
++        return (Arrays.binarySearch(ignoreLines, lineNo) >= 0);
+     }
+ 
+     /**
+      * Checks if a code line matches the required header line.
+-     * @param aLineNumber the line number to check against the header
+-     * @param aLine the line contents
++     * @param lineNumber the line number to check against the header
++     * @param line the line contents
+      * @return true if and only if the line matches the required header line
+      */
+-    protected boolean isMatch(int aLineNumber, String aLine)
++    protected boolean isMatch(int lineNumber, String line)
+     {
+         // skip lines we are meant to ignore
+-        return isIgnoreLine(aLineNumber + 1)
+-            || getHeaderLines().get(aLineNumber).equals(aLine);
++        return isIgnoreLine(lineNumber + 1)
++            || getHeaderLines().get(lineNumber).equals(line);
+     }
+ 
+     /**
+      * Set the lines numbers to ignore in the header check.
+-     * @param aList comma separated list of line numbers to ignore in header.
++     * @param list comma separated list of line numbers to ignore in header.
+      */
+-    public void setIgnoreLines(int[] aList)
++    public void setIgnoreLines(int[] list)
+     {
+-        if ((aList == null) || (aList.length == 0)) {
+-            mIgnoreLines = EMPTY_INT_ARRAY;
++        if ((list == null) || (list.length == 0)) {
++            ignoreLines = EMPTY_INT_ARRAY;
+             return;
+         }
+ 
+-        mIgnoreLines = new int[aList.length];
+-        System.arraycopy(aList, 0, mIgnoreLines, 0, aList.length);
+-        Arrays.sort(mIgnoreLines);
++        ignoreLines = new int[list.length];
++        System.arraycopy(list, 0, ignoreLines, 0, list.length);
++        Arrays.sort(ignoreLines);
+     }
+ 
+     @Override
+-    protected void processFiltered(File aFile, List<String> aLines)
++    protected void processFiltered(File file, List<String> lines)
+     {
+-        if (getHeaderLines().size() > aLines.size()) {
++        if (getHeaderLines().size() > lines.size()) {
+             log(1, "header.missing");
+         }
+         else {
+             for (int i = 0; i < getHeaderLines().size(); i++) {
+-                if (!isMatch(i, aLines.get(i))) {
++                if (!isMatch(i, lines.get(i))) {
+                     log(i + 1, "header.mismatch", getHeaderLines().get(i));
+                     break; // stop checking
+                 }
+             }
+         }
+     }
+ }

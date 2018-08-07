@@ -1,0 +1,226 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index 2b0f87328..b6b082749 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -1,109 +1,111 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2008  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.javadoc;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FastStack;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.Scope;
+ import com.puppycrawl.tools.checkstyle.api.ScopeUtils;
+ import com.puppycrawl.tools.checkstyle.api.TextBlock;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
+ import java.util.List;
+ import java.util.regex.Pattern;
+-import java.util.regex.PatternSyntaxException;
+ 
+ /**
+  * Custom Checkstyle Check to validate Javadoc.
+  *
+  * @author Chris Stillwell
+  * @author Daniel Grenner
+  * @version 1.2
+  */
+ public class JavadocStyleCheck
+     extends Check
+ {
+     /** Message property key for the Unclosed HTML message. */
+     private static final String UNCLOSED_HTML = "javadoc.unclosedhtml";
+ 
+     /** Message property key for the Extra HTML message. */
+     private static final String EXTRA_HTML = "javadoc.extrahtml";
+ 
+     /** HTML tags that do not require a close tag. */
+     private static final String[] SINGLE_TAG =
+     {"p", "br", "li", "dt", "dd", "td", "hr", "img", "tr", "th", "td"};
+ 
+     /** The scope to check. */
+     private Scope mScope = Scope.PRIVATE;
+ 
+     /** the visibility scope where Javadoc comments shouldn't be checked **/
+     private Scope mExcludeScope;
+ 
++    /** Format for matching the end of a sentence. */
++    private String mEndOfSentenceFormat = "([.?!][ \t\n\r\f<])|([.?!]$)";
++
+     /** Regular expression for matching the end of a sentence. */
+     private Pattern mEndOfSentencePattern;
+ 
+     /**
+      * Indicates if the first sentence should be checked for proper end of
+      * sentence punctuation.
+      */
+     private boolean mCheckFirstSentence = true;
+ 
+     /**
+      * Indicates if the HTML within the comment should be checked.
+      */
+     private boolean mCheckHtml = true;
+ 
+     /**
+      * Indicates if empty javadoc statements should be checked.
+      */
+     private boolean mCheckEmptyJavadoc;
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         if (shouldCheck(aAST)) {
+             final FileContents contents = getFileContents();
+             final TextBlock cmt =
+                 contents.getJavadocBefore(aAST.getLineNo());
+ 
+             checkComment(aAST, cmt);
+         }
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param aAST a given node.
+@@ -404,98 +406,100 @@ public class JavadocStyleCheck
+                 isSingleTag = true;
+             }
+         }
+         return isSingleTag;
+     }
+ 
+     /**
+      * Determines if the given token is an extra HTML tag. This indicates that
+      * a close tag was found that does not have a corresponding open tag.
+      *
+      * @param aToken an HTML tag id for which a close was found.
+      * @param aHtmlStack a Stack of previous open HTML tags.
+      * @return <code>false</code> if a previous open tag was found
+      *         for the token.
+      */
+     private boolean isExtraHtml(String aToken, FastStack<HtmlTag> aHtmlStack)
+     {
+         boolean isExtra = true;
+         for (final HtmlTag td : aHtmlStack) {
+             // Loop, looking for tags that are closed.
+             // The loop is needed in case there are unclosed
+             // tags on the stack. In that case, the stack would
+             // not be empty, but this tag would still be extra.
+             if (aToken.equalsIgnoreCase(td.getId())) {
+                 isExtra = false;
+                 break;
+             }
+         }
+ 
+         return isExtra;
+     }
+ 
+     /**
+      * Sets the scope to check.
+      * @param aFrom string to get the scope from
+      */
+     public void setScope(String aFrom)
+     {
+         mScope = Scope.getInstance(aFrom);
+     }
+ 
+     /**
+      * Set the excludeScope.
+      * @param aScope a <code>String</code> value
+      */
+     public void setExcludeScope(String aScope)
+     {
+         mExcludeScope = Scope.getInstance(aScope);
+     }
+ 
++    /**
++     * Set the format for matching the end of a sentence.
++     * @param aFormat format for matching the end of a sentence.
++     */
++    public void setEndOfSentenceFormat(String aFormat)
++    {
++        mEndOfSentenceFormat = aFormat;
++    }
++
+     /**
+      * Returns a regular expression for matching the end of a sentence.
+      *
+      * @return a regular expression for matching the end of a sentence.
+      */
+     private Pattern getEndOfSentencePattern()
+     {
+         if (mEndOfSentencePattern == null) {
+-            try {
+-                mEndOfSentencePattern =
+-                    Pattern.compile("([.?!][ \t\n\r\f<])|([.?!]$)");
+-            }
+-            catch (final PatternSyntaxException e) {
+-                // This should never occur.
+-                e.printStackTrace();
+-            }
++            mEndOfSentencePattern = Pattern.compile(mEndOfSentenceFormat);
+         }
+         return mEndOfSentencePattern;
+     }
+ 
+     /**
+      * Sets the flag that determines if the first sentence is checked for
+      * proper end of sentence punctuation.
+      * @param aFlag <code>true</code> if the first sentence is to be checked
+      */
+     public void setCheckFirstSentence(boolean aFlag)
+     {
+         mCheckFirstSentence = aFlag;
+     }
+ 
+     /**
+      * Sets the flag that determines if HTML checking is to be performed.
+      * @param aFlag <code>true</code> if HTML checking is to be performed.
+      */
+     public void setCheckHtml(boolean aFlag)
+     {
+         mCheckHtml = aFlag;
+     }
+ 
+     /**
+      * Sets the flag that determines if empty JavaDoc checking should be done.
+      * @param aFlag <code>true</code> if empty JavaDoc checking should be done.
+      */
+     public void setCheckEmptyJavadoc(boolean aFlag)
+     {
+         mCheckEmptyJavadoc = aFlag;
+     }
+ }

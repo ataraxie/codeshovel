@@ -1,0 +1,418 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+index 75449284b..1aad91743 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+@@ -1,105 +1,107 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2017 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.ant;
+ 
+ import java.io.File;
+ import java.io.FileInputStream;
+ import java.io.FileOutputStream;
+ import java.io.IOException;
+ import java.io.OutputStream;
+ import java.net.URL;
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.Properties;
+ import java.util.ResourceBundle;
+ 
+ import org.apache.tools.ant.AntClassLoader;
+ import org.apache.tools.ant.BuildException;
+ import org.apache.tools.ant.DirectoryScanner;
+ import org.apache.tools.ant.Project;
+ import org.apache.tools.ant.Task;
+ import org.apache.tools.ant.taskdefs.LogOutputStream;
+ import org.apache.tools.ant.types.EnumeratedAttribute;
+ import org.apache.tools.ant.types.FileSet;
+ import org.apache.tools.ant.types.Path;
+ import org.apache.tools.ant.types.Reference;
+ 
+ import com.google.common.io.Closeables;
+ import com.puppycrawl.tools.checkstyle.Checker;
+ import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
+-import com.puppycrawl.tools.checkstyle.DefaultContext;
+ import com.puppycrawl.tools.checkstyle.DefaultLogger;
++import com.puppycrawl.tools.checkstyle.ModuleFactory;
++import com.puppycrawl.tools.checkstyle.PackageObjectFactory;
+ import com.puppycrawl.tools.checkstyle.PropertiesExpander;
+ import com.puppycrawl.tools.checkstyle.XMLLogger;
+ import com.puppycrawl.tools.checkstyle.api.AuditListener;
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
++import com.puppycrawl.tools.checkstyle.api.RootModule;
+ import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
+ import com.puppycrawl.tools.checkstyle.api.SeverityLevelCounter;
+ 
+ /**
+  * An implementation of a ANT task for calling checkstyle. See the documentation
+  * of the task for usage.
+  * @author Oliver Burn
+  */
+ public class CheckstyleAntTask extends Task {
+     /** Poor man's enum for an xml formatter. */
+     private static final String E_XML = "xml";
+     /** Poor man's enum for an plain formatter. */
+     private static final String E_PLAIN = "plain";
+ 
+     /** Suffix for time string. */
+     private static final String TIME_SUFFIX = " ms.";
+ 
+     /** Contains the filesets to process. */
+     private final List<FileSet> fileSets = new ArrayList<>();
+ 
+     /** Contains the formatters to log to. */
+     private final List<Formatter> formatters = new ArrayList<>();
+ 
+     /** Contains the Properties to override. */
+     private final List<Property> overrideProps = new ArrayList<>();
+ 
+     /** Class path to locate class files. */
+     private Path classpath;
+ 
+     /** Name of file to check. */
+     private String fileName;
+ 
+     /** Config file containing configuration. */
+     private String configLocation;
+ 
+     /** Whether to fail build on violations. */
+     private boolean failOnViolation = true;
+ 
+     /** Property to set on violations. */
+     private String failureProperty;
+ 
+     /** The name of the properties file. */
+     private File properties;
+ 
+     /** The maximum number of errors that are tolerated. */
+     private int maxErrors;
+ 
+     /** The maximum number of warnings that are tolerated. */
+     private int maxWarnings = Integer.MAX_VALUE;
+ 
+@@ -215,266 +217,271 @@ public class CheckstyleAntTask extends Task {
+ 
+     /**
+      * Sets configuration file.
+      * @param file the configuration file to use
+      */
+     public void setConfig(File file) {
+         setConfigLocation(file.getAbsolutePath());
+     }
+ 
+     /**
+      * Sets URL to the configuration.
+      * @param url the URL of the configuration to use
+      * @deprecated please use setConfigUrl instead
+      */
+     // -@cs[AbbreviationAsWordInName] Should be removed at 7.0 version,
+     // we keep for some time to avoid braking compatibility.
+     @Deprecated
+     public void setConfigURL(URL url) {
+         setConfigUrl(url);
+     }
+ 
+     /**
+      * Sets URL to the configuration.
+      * @param url the URL of the configuration to use
+      */
+     public void setConfigUrl(URL url) {
+         setConfigLocation(url.toExternalForm());
+     }
+ 
+     /**
+      * Sets the location of the configuration.
+      * @param location the location, which is either a
+      */
+     private void setConfigLocation(String location) {
+         if (configLocation != null) {
+             throw new BuildException("Attributes 'config' and 'configURL' "
+                     + "must not be set at the same time");
+         }
+         configLocation = location;
+     }
+ 
+     /**
+      * Sets flag - whether to omit ignored modules.
+      * @param omit whether to omit ignored modules
+      */
+     public void setOmitIgnoredModules(boolean omit) {
+         omitIgnoredModules = omit;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+-    // Setters for Checker configuration attributes
++    // Setters for Root Module's configuration attributes
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /**
+      * Sets a properties file for use instead
+      * of individually setting them.
+      * @param props the properties File to use
+      */
+     public void setProperties(File props) {
+         properties = props;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // The doers
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     @Override
+     public void execute() {
+         final long startTime = System.currentTimeMillis();
+ 
+         try {
+             // output version info in debug mode
+             final ResourceBundle compilationProperties = ResourceBundle
+                     .getBundle("checkstylecompilation", Locale.ROOT);
+             final String version = compilationProperties
+                     .getString("checkstyle.compile.version");
+             final String compileTimestamp = compilationProperties
+                     .getString("checkstyle.compile.timestamp");
+             log("checkstyle version " + version, Project.MSG_VERBOSE);
+             log("compiled on " + compileTimestamp, Project.MSG_VERBOSE);
+ 
+             // Check for no arguments
+             if (fileName == null && fileSets.isEmpty()) {
+                 throw new BuildException(
+                         "Must specify at least one of 'file' or nested 'fileset'.",
+                         getLocation());
+             }
+             if (configLocation == null) {
+                 throw new BuildException("Must specify 'config'.", getLocation());
+             }
+             realExecute(version);
+         }
+         finally {
+             final long endTime = System.currentTimeMillis();
+             log("Total execution took " + (endTime - startTime) + TIME_SUFFIX,
+                 Project.MSG_VERBOSE);
+         }
+     }
+ 
+     /**
+      * Helper implementation to perform execution.
+      * @param checkstyleVersion Checkstyle compile version.
+      */
+     private void realExecute(String checkstyleVersion) {
+-        // Create the checker
+-        Checker checker = null;
++        // Create the root module
++        RootModule rootModule = null;
+         try {
+-            checker = createChecker();
++            rootModule = createRootModule();
+ 
+             // setup the listeners
+             final AuditListener[] listeners = getListeners();
+             for (AuditListener element : listeners) {
+-                checker.addListener(element);
++                rootModule.addListener(element);
+             }
+             final SeverityLevelCounter warningCounter =
+                 new SeverityLevelCounter(SeverityLevel.WARNING);
+-            checker.addListener(warningCounter);
++            rootModule.addListener(warningCounter);
+ 
+-            processFiles(checker, warningCounter, checkstyleVersion);
++            processFiles(rootModule, warningCounter, checkstyleVersion);
+         }
+         finally {
+-            destroyChecker(checker);
++            destroyRootModule(rootModule);
+         }
+     }
+ 
+     /**
+-     * Destroy Checker. This method exists only due to bug in cobertura library
++     * Destroy root module. This method exists only due to bug in cobertura library
+      * https://github.com/cobertura/cobertura/issues/170
+-     * @param checker Checker that was used to process files
++     * @param rootModule Root module that was used to process files
+      */
+-    private static void destroyChecker(Checker checker) {
+-        if (checker != null) {
+-            checker.destroy();
++    private static void destroyRootModule(RootModule rootModule) {
++        if (rootModule != null) {
++            rootModule.destroy();
+         }
+     }
+ 
+     /**
+-     * Scans and processes files by means given checker.
+-     * @param checker Checker to process files
+-     * @param warningCounter Checker's counter of warnings
++     * Scans and processes files by means given root module.
++     * @param rootModule Root module to process files
++     * @param warningCounter Root Module's counter of warnings
+      * @param checkstyleVersion Checkstyle compile version
+      */
+-    private void processFiles(Checker checker, final SeverityLevelCounter warningCounter,
++    private void processFiles(RootModule rootModule, final SeverityLevelCounter warningCounter,
+             final String checkstyleVersion) {
+         final long startTime = System.currentTimeMillis();
+         final List<File> files = scanFileSets();
+         final long endTime = System.currentTimeMillis();
+         log("To locate the files took " + (endTime - startTime) + TIME_SUFFIX,
+             Project.MSG_VERBOSE);
+ 
+         log("Running Checkstyle " + checkstyleVersion + " on " + files.size()
+                 + " files", Project.MSG_INFO);
+         log("Using configuration " + configLocation, Project.MSG_VERBOSE);
+ 
+         final int numErrs;
+ 
+         try {
+             final long processingStartTime = System.currentTimeMillis();
+-            numErrs = checker.process(files);
++            numErrs = rootModule.process(files);
+             final long processingEndTime = System.currentTimeMillis();
+             log("To process the files took " + (processingEndTime - processingStartTime)
+                 + TIME_SUFFIX, Project.MSG_VERBOSE);
+         }
+         catch (CheckstyleException ex) {
+             throw new BuildException("Unable to process files: " + files, ex);
+         }
+         final int numWarnings = warningCounter.getCount();
+         final boolean okStatus = numErrs <= maxErrors && numWarnings <= maxWarnings;
+ 
+         // Handle the return status
+         if (!okStatus) {
+             final String failureMsg =
+                     "Got " + numErrs + " errors and " + numWarnings
+                             + " warnings.";
+             if (failureProperty != null) {
+                 getProject().setProperty(failureProperty, failureMsg);
+             }
+ 
+             if (failOnViolation) {
+                 throw new BuildException(failureMsg, getLocation());
+             }
+         }
+     }
+ 
+     /**
+-     * Creates new instance of {@code Checker}.
+-     * @return new instance of {@code Checker}
++     * Creates new instance of the root module.
++     * @return new instance of the root module
+      */
+-    private Checker createChecker() {
+-        final Checker checker;
++    private RootModule createRootModule() {
++        final RootModule rootModule;
+         try {
+             final Properties props = createOverridingProperties();
+             final Configuration config =
+                 ConfigurationLoader.loadConfiguration(
+                     configLocation,
+                     new PropertiesExpander(props),
+                     omitIgnoredModules);
+ 
+-            final DefaultContext context = new DefaultContext();
+-            final ClassLoader loader = new AntClassLoader(getProject(),
+-                    classpath);
+-            context.add("classloader", loader);
+-
+             final ClassLoader moduleClassLoader =
+                 Checker.class.getClassLoader();
+-            context.add("moduleClassLoader", moduleClassLoader);
+ 
+-            checker = new Checker();
+-            checker.contextualize(context);
+-            checker.configure(config);
++            final ModuleFactory factory = new PackageObjectFactory(
++                    Checker.class.getPackage().getName() + ".", moduleClassLoader);
++
++            rootModule = (RootModule) factory.createModule(config.getName());
++            rootModule.setModuleClassLoader(moduleClassLoader);
++
++            if (rootModule instanceof Checker) {
++                final ClassLoader loader = new AntClassLoader(getProject(),
++                        classpath);
++
++                ((Checker) rootModule).setClassLoader(loader);
++            }
++
++            rootModule.configure(config);
+         }
+         catch (final CheckstyleException ex) {
+-            throw new BuildException(String.format(Locale.ROOT, "Unable to create a Checker: "
++            throw new BuildException(String.format(Locale.ROOT, "Unable to create Root Module: "
+                     + "configLocation {%s}, classpath {%s}.", configLocation, classpath), ex);
+         }
+-        return checker;
++        return rootModule;
+     }
+ 
+     /**
+      * Create the Properties object based on the arguments specified
+      * to the ANT task.
+      * @return the properties for property expansion expansion
+      * @throws BuildException if an error occurs
+      */
+     private Properties createOverridingProperties() {
+         final Properties returnValue = new Properties();
+ 
+         // Load the properties file if specified
+         if (properties != null) {
+             FileInputStream inStream = null;
+             try {
+                 inStream = new FileInputStream(properties);
+                 returnValue.load(inStream);
+             }
+             catch (final IOException ex) {
+                 throw new BuildException("Error loading Properties file '"
+                         + properties + "'", ex, getLocation());
+             }
+             finally {
+                 Closeables.closeQuietly(inStream);
+             }
+         }
+ 
+         // override with Ant properties like ${basedir}
+         final Map<String, Object> antProps = getProject().getProperties();
+         for (Map.Entry<String, Object> entry : antProps.entrySet()) {
+             final String value = String.valueOf(entry.getValue());
+             returnValue.setProperty(entry.getKey(), value);
+         }
+ 
+         // override with properties specified in subelements
+         for (Property p : overrideProps) {
+             returnValue.setProperty(p.getKey(), p.getValue());
+         }
+ 
+         return returnValue;
+     }
+ 
+     /**
+      * Return the list of listeners set in this task.
+      * @return the list of listeners.
+      */
+     private AuditListener[] getListeners() {
+         final int formatterCount = Math.max(1, formatters.size());
+ 
+         final AuditListener[] listeners = new AuditListener[formatterCount];

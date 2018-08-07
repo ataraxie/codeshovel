@@ -1,0 +1,108 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index 099a2cb30..6e08e1de5 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -543,103 +543,100 @@ public class JavadocMethodCheck
+ 
+         // Handle there being no @return tags :- unless
+         // the user has chosen to suppress these problems
+         if (!found && !mAllowMissingReturnTag) {
+             log(aLineNo, "javadoc.return.expected");
+         }
+     }
+ 
+ 
+     /**
+      * Checks a set of tags for matching throws.
+      * @param aTags the tags to check
+      * @param aThrows the throws to check
+      **/
+     private void checkThrowsTags(List aTags, List aThrows)
+     {
+         // Loop over the tags, checking to see they exist in the throws.
+         final Set foundThrows = new HashSet(); //used for performance only
+         final ListIterator tagIt = aTags.listIterator();
+         while (tagIt.hasNext()) {
+             final JavadocTag tag = (JavadocTag) tagIt.next();
+ 
+             if (!tag.isThrowsTag()) {
+                 continue;
+             }
+ 
+             tagIt.remove();
+ 
+             // Loop looking for matching throw
+             final String documentedEx = tag.getArg1();
+             boolean found = foundThrows.contains(documentedEx);
+             Class documentedClass = null;
+             boolean classLoaded = false;
+ 
+             final ListIterator throwIt = aThrows.listIterator();
+             while (!found && throwIt.hasNext()) {
+                 final ExceptionInfo ei = (ExceptionInfo) throwIt.next();
+                 final FullIdent fi = ei.getName();
+                 final String declaredEx = fi.getText();
+                 if (isSameType(declaredEx, documentedEx)) {
+                     found = true;
+                     ei.setFound();
+                     foundThrows.add(documentedEx);
+                 }
+                 else if (mAllowThrowsTagsForSubclasses) {
+                     if (!classLoaded) {
+                         documentedClass = loadClassForTag(tag);
+                         classLoaded = true;
+                     }
+                     found = isSubclass(documentedClass, ei.getClazz());
+-//                     if (found) {
+-//                         ei.setFound();
+-//                     }
+                 }
+             }
+ 
+             // Handle extra JavadocTag.
+             if (!found) {
+                 boolean reqd = true;
+                 if (mAllowUndeclaredRTE) {
+                     if (!classLoaded) {
+                         documentedClass = loadClassForTag(tag);
+                         classLoaded = true;
+                     }
+                     reqd = !isUnchecked(documentedClass);
+                 }
+ 
+                 if (reqd) {
+                     log(tag.getLineNo(), "javadoc.unusedTag",
+                                   "@throws", tag.getArg1());
+                 }
+             }
+         }
+ 
+         // Now dump out all throws without tags :- unless
+         // the user has chosen to suppress these problems
+         if (!mAllowMissingThrowsTags) {
+             final ListIterator throwIt = aThrows.listIterator();
+             while (throwIt.hasNext()) {
+                 final ExceptionInfo ei = (ExceptionInfo) throwIt.next();
+                 if (!ei.isFound()) {
+                     final FullIdent fi = ei.getName();
+                     log(fi.getLineNo(), fi.getColumnNo(),
+                         "javadoc.expectedTag", "@throws", fi.getText());
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Tries to load class for throws tag. Logs error if unable.
+      * @param aTag name of class which we try to load.
+      * @return <code>Class</code> for the tag.
+      */
+     private Class loadClassForTag(JavadocTag aTag)
+     {
+         Class clazz = resolveClass(aTag.getArg1());
+         if (clazz == null) {
+             log(aTag.getLineNo(), "javadoc.classInfo",
+                 "@throws", aTag.getArg1());
+         }
+         return clazz;
+     }

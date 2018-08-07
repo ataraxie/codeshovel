@@ -1,0 +1,187 @@
+diff --git a/android/guava/src/com/google/common/collect/ImmutableRangeMap.java b/android/guava/src/com/google/common/collect/ImmutableRangeMap.java
+index 3f6d7ad8d..507502867 100644
+--- a/android/guava/src/com/google/common/collect/ImmutableRangeMap.java
++++ b/android/guava/src/com/google/common/collect/ImmutableRangeMap.java
+@@ -219,112 +219,111 @@ public class ImmutableRangeMap<K extends Comparable<?>, V> implements RangeMap<K
+    * @deprecated Unsupported operation.
+    */
+   @Deprecated
+   @Override
+   public void putCoalescing(Range<K> range, V value) {
+     throw new UnsupportedOperationException();
+   }
+ 
+   /**
+    * Guaranteed to throw an exception and leave the {@code RangeMap} unmodified.
+    *
+    * @throws UnsupportedOperationException always
+    * @deprecated Unsupported operation.
+    */
+   @Deprecated
+   @Override
+   public void putAll(RangeMap<K, V> rangeMap) {
+     throw new UnsupportedOperationException();
+   }
+ 
+   /**
+    * Guaranteed to throw an exception and leave the {@code RangeMap} unmodified.
+    *
+    * @throws UnsupportedOperationException always
+    * @deprecated Unsupported operation.
+    */
+   @Deprecated
+   @Override
+   public void clear() {
+     throw new UnsupportedOperationException();
+   }
+ 
+   /**
+    * Guaranteed to throw an exception and leave the {@code RangeMap} unmodified.
+    *
+    * @throws UnsupportedOperationException always
+    * @deprecated Unsupported operation.
+    */
+   @Deprecated
+   @Override
+   public void remove(Range<K> range) {
+     throw new UnsupportedOperationException();
+   }
+ 
+   @Override
+   public ImmutableMap<Range<K>, V> asMapOfRanges() {
+     if (ranges.isEmpty()) {
+       return ImmutableMap.of();
+     }
+     RegularImmutableSortedSet<Range<K>> rangeSet =
+-        new RegularImmutableSortedSet<Range<K>>(ranges, Range.<K>rangeLexOrdering());
++        new RegularImmutableSortedSet<>(ranges, Range.<K>rangeLexOrdering());
+     return new ImmutableSortedMap<Range<K>, V>(rangeSet, values);
+   }
+ 
+   @Override
+   public ImmutableMap<Range<K>, V> asDescendingMapOfRanges() {
+     if (ranges.isEmpty()) {
+       return ImmutableMap.of();
+     }
+     RegularImmutableSortedSet<Range<K>> rangeSet =
+-        new RegularImmutableSortedSet<Range<K>>(
+-            ranges.reverse(), Range.<K>rangeLexOrdering().reverse());
++        new RegularImmutableSortedSet<>(ranges.reverse(), Range.<K>rangeLexOrdering().reverse());
+     return new ImmutableSortedMap<Range<K>, V>(rangeSet, values.reverse());
+   }
+ 
+   @Override
+   public ImmutableRangeMap<K, V> subRangeMap(final Range<K> range) {
+     if (checkNotNull(range).isEmpty()) {
+       return ImmutableRangeMap.of();
+     } else if (ranges.isEmpty() || range.encloses(span())) {
+       return this;
+     }
+     int lowerIndex =
+         SortedLists.binarySearch(
+             ranges,
+             Range.<K>upperBoundFn(),
+             range.lowerBound,
+             KeyPresentBehavior.FIRST_AFTER,
+             KeyAbsentBehavior.NEXT_HIGHER);
+     int upperIndex =
+         SortedLists.binarySearch(
+             ranges,
+             Range.<K>lowerBoundFn(),
+             range.upperBound,
+             KeyPresentBehavior.ANY_PRESENT,
+             KeyAbsentBehavior.NEXT_HIGHER);
+     if (lowerIndex >= upperIndex) {
+       return ImmutableRangeMap.of();
+     }
+     final int off = lowerIndex;
+     final int len = upperIndex - lowerIndex;
+     ImmutableList<Range<K>> subRanges =
+         new ImmutableList<Range<K>>() {
+           @Override
+           public int size() {
+             return len;
+           }
+ 
+           @Override
+           public Range<K> get(int index) {
+             checkElementIndex(index, len);
+             if (index == 0 || index == len - 1) {
+               return ranges.get(index + off).intersection(range);
+             } else {
+               return ranges.get(index + off);
+             }
+           }
+ 
+           @Override
+           boolean isPartialView() {
+             return true;
+           }
+@@ -335,66 +334,66 @@ public class ImmutableRangeMap<K extends Comparable<?>, V> implements RangeMap<K
+       public ImmutableRangeMap<K, V> subRangeMap(Range<K> subRange) {
+         if (range.isConnected(subRange)) {
+           return outer.subRangeMap(subRange.intersection(range));
+         } else {
+           return ImmutableRangeMap.of();
+         }
+       }
+     };
+   }
+ 
+   @Override
+   public int hashCode() {
+     return asMapOfRanges().hashCode();
+   }
+ 
+   @Override
+   public boolean equals(@Nullable Object o) {
+     if (o instanceof RangeMap) {
+       RangeMap<?, ?> rangeMap = (RangeMap<?, ?>) o;
+       return asMapOfRanges().equals(rangeMap.asMapOfRanges());
+     }
+     return false;
+   }
+ 
+   @Override
+   public String toString() {
+     return asMapOfRanges().toString();
+   }
+ 
+   /**
+    * This class is used to serialize ImmutableRangeMap instances.
+    * Serializes the {@link #asMapOfRanges()} form.
+    */
+   private static class SerializedForm<K extends Comparable<?>, V> implements Serializable {
+ 
+     private final ImmutableMap<Range<K>, V> mapOfRanges;
+ 
+     SerializedForm(ImmutableMap<Range<K>, V> mapOfRanges) {
+       this.mapOfRanges = mapOfRanges;
+     }
+ 
+     Object readResolve() {
+       if (mapOfRanges.isEmpty()) {
+         return of();
+       } else {
+         return createRangeMap();
+       }
+     }
+ 
+     Object createRangeMap() {
+-      Builder<K, V> builder = new Builder<K, V>();
++      Builder<K, V> builder = new Builder<>();
+       for (Entry<Range<K>, V> entry : mapOfRanges.entrySet()) {
+         builder.put(entry.getKey(), entry.getValue());
+       }
+       return builder.build();
+     }
+ 
+     private static final long serialVersionUID = 0;
+   }
+ 
+   Object writeReplace() {
+     return new SerializedForm<K, V>(asMapOfRanges());
+   }
+ 
+   private static final long serialVersionUID = 0;
+ }

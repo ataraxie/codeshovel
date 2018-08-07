@@ -1,0 +1,165 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+index b1237e6b7..8ba5207b4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+@@ -90,101 +90,101 @@ public abstract class AbstractClassCouplingCheck extends Check {
+     public final int getMax() {
+         return max;
+     }
+ 
+     /**
+      * Sets maximum allowed complexity.
+      * @param max allowed complexity.
+      */
+     public final void setMax(int max) {
+         this.max = max;
+     }
+ 
+     /**
+      * Sets user-excluded classes to ignore.
+      * @param excludedClasses the list of classes to ignore.
+      */
+     public final void setExcludedClasses(String... excludedClasses) {
+         this.excludedClasses = ImmutableSet.copyOf(excludedClasses);
+     }
+ 
+     @Override
+     public final void beginTree(DetailAST ast) {
+         packageName = "";
+     }
+ 
+     /** @return message key we use for log violations. */
+     protected abstract String getLogMessageId();
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.PACKAGE_DEF:
+                 visitPackageDef(ast);
+                 break;
+             case TokenTypes.CLASS_DEF:
+             case TokenTypes.INTERFACE_DEF:
+             case TokenTypes.ANNOTATION_DEF:
+             case TokenTypes.ENUM_DEF:
+                 visitClassDef(ast);
+                 break;
+             case TokenTypes.TYPE:
+                 context.visitType(ast);
+                 break;
+             case TokenTypes.LITERAL_NEW:
+                 context.visitLiteralNew(ast);
+                 break;
+             case TokenTypes.LITERAL_THROWS:
+                 context.visitLiteralThrows(ast);
+                 break;
+             default:
+-                throw new IllegalStateException(ast.toString());
++                throw new IllegalArgumentException("Unknown type: " + ast);
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CLASS_DEF:
+             case TokenTypes.INTERFACE_DEF:
+             case TokenTypes.ANNOTATION_DEF:
+             case TokenTypes.ENUM_DEF:
+                 leaveClassDef();
+                 break;
+             default:
+                 // Do nothing
+         }
+     }
+ 
+     /**
+      * Stores package of current class we check.
+      * @param pkg package definition.
+      */
+     private void visitPackageDef(DetailAST pkg) {
+         final FullIdent ident = FullIdent.createFullIdent(pkg.getLastChild()
+                 .getPreviousSibling());
+         packageName = ident.getText();
+     }
+ 
+     /**
+      * Creates new context for a given class.
+      * @param classDef class definition node.
+      */
+     private void visitClassDef(DetailAST classDef) {
+         contextStack.push(context);
+         final String className =
+             classDef.findFirstToken(TokenTypes.IDENT).getText();
+         context = new Context(className,
+                                classDef.getLineNo(),
+                                classDef.getColumnNo());
+     }
+ 
+     /** Restores previous context. */
+     private void leaveClassDef() {
+         context.checkCoupling();
+         context = contextStack.pop();
+     }
+ 
+     /**
+      * Incapsulates information about class coupling.
+      *
+      * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+@@ -237,56 +237,55 @@ public abstract class AbstractClassCouplingCheck extends Check {
+         public void visitType(DetailAST ast) {
+             final String className = CheckUtils.createFullType(ast).getText();
+             context.addReferencedClassName(className);
+         }
+ 
+         /**
+          * Visits NEW.
+          * @param ast NEW to process.
+          */
+         public void visitLiteralNew(DetailAST ast) {
+             context.addReferencedClassName(ast.getFirstChild());
+         }
+ 
+         /**
+          * Adds new referenced class.
+          * @param ast a node which represents referenced class.
+          */
+         private void addReferencedClassName(DetailAST ast) {
+             final String className = FullIdent.createFullIdent(ast).getText();
+             addReferencedClassName(className);
+         }
+ 
+         /**
+          * Adds new referenced class.
+          * @param className class name of the referenced class.
+          */
+         private void addReferencedClassName(String className) {
+             if (isSignificant(className)) {
+                 referencedClassNames.add(className);
+             }
+         }
+ 
+         /** Checks if coupling less than allowed or not. */
+         public void checkCoupling() {
+             referencedClassNames.remove(className);
+             referencedClassNames.remove(packageName + "." + className);
+ 
+             if (referencedClassNames.size() > max) {
+                 log(lineNo, columnNo, getLogMessageId(),
+                         referencedClassNames.size(), getMax(),
+                         referencedClassNames.toString());
+             }
+         }
+ 
+         /**
+          * Checks if given class shouldn't be ignored and not from java.lang.
+          * @param className class to check.
+          * @return true if we should count this class.
+          */
+         private boolean isSignificant(String className) {
+-            return className.length() > 0
+-                    && !excludedClasses.contains(className)
++            return !excludedClasses.contains(className)
+                     && !className.startsWith("java.lang.");
+         }
+     }
+ }

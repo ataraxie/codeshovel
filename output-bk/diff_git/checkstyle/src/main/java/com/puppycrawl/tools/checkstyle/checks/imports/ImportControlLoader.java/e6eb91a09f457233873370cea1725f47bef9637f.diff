@@ -1,0 +1,141 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlLoader.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlLoader.java
+index 1bbb9e83e..e38736578 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlLoader.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlLoader.java
+@@ -114,113 +114,133 @@ final class ImportControlLoader extends AbstractLoader {
+             stack.push(new ImportControl(stack.peek(), name, regex));
+         }
+         else if (ALLOW_ELEMENT_NAME.equals(qName) || "disallow".equals(qName)) {
+             // Need to handle either "pkg" or "class" attribute.
+             // May have "exact-match" for "pkg"
+             // May have "local-only"
+             final boolean isAllow = ALLOW_ELEMENT_NAME.equals(qName);
+             final boolean isLocalOnly = attributes.getValue("local-only") != null;
+             final String pkg = attributes.getValue(PKG_ATTRIBUTE_NAME);
+             final boolean regex = containsRegexAttribute(attributes);
+             final AbstractImportRule rule;
+             if (pkg == null) {
+                 // handle class names which can be normal class names or regular
+                 // expressions
+                 final String clazz = safeGet(attributes, "class");
+                 rule = new ClassImportRule(isAllow, isLocalOnly, clazz, regex);
+             }
+             else {
+                 final boolean exactMatch =
+                         attributes.getValue("exact-match") != null;
+                 rule = new PkgImportRule(isAllow, isLocalOnly, pkg, exactMatch, regex);
+             }
+             stack.peek().addImportRule(rule);
+         }
+     }
+ 
+     /**
+      * Check if the given attributes contain the regex attribute.
+      * @param attributes the attributes.
+      * @return if the regex attribute is contained.
+      */
+     private static boolean containsRegexAttribute(final Attributes attributes) {
+         return attributes.getValue("regex") != null;
+     }
+ 
+     @Override
+     public void endElement(final String namespaceUri, final String localName,
+         final String qName) {
+         if (SUBPACKAGE_ELEMENT_NAME.equals(qName)) {
+             stack.pop();
+         }
+     }
+ 
+     /**
+      * Loads the import control file from a file.
+      * @param uri the uri of the file to load.
+      * @return the root {@link ImportControl} object.
+      * @throws CheckstyleException if an error occurs.
+      */
+     public static ImportControl load(final URI uri) throws CheckstyleException {
+-        final InputStream inputStream;
++
++        InputStream inputStream = null;
+         try {
+             inputStream = uri.toURL().openStream();
++            final InputSource source = new InputSource(inputStream);
++            return load(source, uri);
+         }
+         catch (final MalformedURLException ex) {
+             throw new CheckstyleException("syntax error in url " + uri, ex);
+         }
+         catch (final IOException ex) {
+             throw new CheckstyleException("unable to find " + uri, ex);
+         }
+-        final InputSource source = new InputSource(inputStream);
+-        return load(source, uri);
++        finally {
++            closeStream(inputStream);
++        }
+     }
+ 
+     /**
+      * Loads the import control file from a {@link InputSource}.
+      * @param source the source to load from.
+      * @param uri uri of the source being loaded.
+      * @return the root {@link ImportControl} object.
+      * @throws CheckstyleException if an error occurs.
+      */
+     private static ImportControl load(final InputSource source,
+         final URI uri) throws CheckstyleException {
+         try {
+             final ImportControlLoader loader = new ImportControlLoader();
+             loader.parseInputSource(source);
+             return loader.getRoot();
+         }
+         catch (final ParserConfigurationException | SAXException ex) {
+             throw new CheckstyleException("unable to parse " + uri
+                     + " - " + ex.getMessage(), ex);
+         }
+         catch (final IOException ex) {
+             throw new CheckstyleException("unable to read " + uri, ex);
+         }
+     }
+ 
++    /**
++     * This method exists only due to bug in cobertura library
++     * https://github.com/cobertura/cobertura/issues/170
++     * @param inputStream the InputStream to close
++     * @throws CheckstyleException if an error occurs.
++     */
++    private static void closeStream(InputStream inputStream) throws CheckstyleException {
++        if (inputStream != null) {
++            try {
++                inputStream.close();
++            } catch (IOException ex) {
++                throw new CheckstyleException("unable to close input stream", ex);
++            }
++        }
++    }
++
+     /**
+      * @return the root {@link ImportControl} object loaded.
+      */
+     private ImportControl getRoot() {
+         return stack.peek();
+     }
+ 
+     /**
+      * Utility to safely get an attribute. If it does not exist an exception
+      * is thrown.
+      * @param attributes collect to get attribute from.
+      * @param name name of the attribute to get.
+      * @return the value of the attribute.
+      * @throws SAXException if the attribute does not exist.
+      */
+     private static String safeGet(final Attributes attributes, final String name)
+             throws SAXException {
+         final String returnValue = attributes.getValue(name);
+         if (returnValue == null) {
+             // -@cs[IllegalInstantiation] SAXException is in the overridden method signature
+             // of the only method which calls the current one
+             throw new SAXException("missing attribute " + name);
+         }
+         return returnValue;
+     }
+ }

@@ -1,0 +1,118 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java
+index 3606618c8..40ba10009 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java
+@@ -83,108 +83,108 @@ public final class JavadocUtils {
+     }
+ 
+     /** prevent instantiation */
+     private JavadocUtils() {
+     }
+ 
+     /**
+      * Gets validTags from a given piece of Javadoc.
+      * @param cmt
+      *        the Javadoc comment to process.
+      * @param tagType
+      *        the type of validTags we're interested in
+      * @return all standalone validTags from the given javadoc.
+      */
+     public static JavadocTags getJavadocTags(TextBlock cmt,
+             JavadocTagType tagType) {
+         final String[] text = cmt.getText();
+         final List<JavadocTag> tags = Lists.newArrayList();
+         final List<InvalidJavadocTag> invalidTags = Lists.newArrayList();
+         Pattern blockTagPattern = Pattern.compile("/\\*{2,}\\s*@(\\p{Alpha}+)\\s");
+         for (int i = 0; i < text.length; i++) {
+             final String s = text[i];
+             final Matcher blockTagMatcher = blockTagPattern.matcher(s);
+             if ((tagType == JavadocTagType.ALL || tagType == JavadocTagType.BLOCK)
+                     && blockTagMatcher.find()) {
+                 final String tagName = blockTagMatcher.group(1);
+                 String content = s.substring(blockTagMatcher.end(1));
+                 if (content.endsWith("*/")) {
+                     content = content.substring(0, content.length() - 2);
+                 }
+                 final int line = cmt.getStartLineNo() + i;
+                 int col = blockTagMatcher.start(1) - 1;
+                 if (i == 0) {
+                     col += cmt.getStartColNo();
+                 }
+                 if (JavadocTagInfo.isValidName(tagName)) {
+                     tags.add(
+                             new JavadocTag(line, col, tagName, content.trim()));
+                 }
+                 else {
+                     invalidTags.add(new InvalidJavadocTag(line, col, tagName));
+                 }
+             }
+             // No block tag, so look for inline validTags
+             else if (tagType == JavadocTagType.ALL || tagType == JavadocTagType.INLINE) {
+                 // Match Javadoc text after comment characters
+                 final Pattern commentPattern = Pattern.compile("^\\s*(?:/\\*{2,}|\\*+)\\s*(.*)");
+                 final Matcher commentMatcher = commentPattern.matcher(s);
+                 final String commentContents;
+                 final int commentOffset; // offset including comment characters
+-                if (!commentMatcher.find()) {
+-                    commentContents = s; // No leading asterisks, still valid
+-                    commentOffset = 0;
+-                }
+-                else {
++                if (commentMatcher.find()) {
+                     commentContents = commentMatcher.group(1);
+                     commentOffset = commentMatcher.start(1) - 1;
+                 }
++                else {
++                    commentContents = s; // No leading asterisks, still valid
++                    commentOffset = 0;
++                }
+                 final Pattern tagPattern = Pattern.compile(".*?\\{@(\\p{Alpha}+)\\s+(.*?)\\}");
+                 final Matcher tagMatcher = tagPattern.matcher(commentContents);
+                 while (tagMatcher.find()) {
+                     final String tagName = tagMatcher.group(1);
+                     final String tagValue = tagMatcher.group(2).trim();
+                     final int line = cmt.getStartLineNo() + i;
+                     int col = commentOffset + tagMatcher.start(1) - 1;
+                     if (i == 0) {
+                         col += cmt.getStartColNo();
+                     }
+                     if (JavadocTagInfo.isValidName(tagName)) {
+                         tags.add(new JavadocTag(line, col, tagName,
+                                 tagValue));
+                     }
+                     else {
+                         invalidTags.add(new InvalidJavadocTag(line, col,
+                                 tagName));
+                     }
+                     // else Error: Unexpected match count for inline Javadoc
+                     // tag!
+                 }
+             }
+             blockTagPattern = Pattern.compile("^\\s*\\**\\s*@(\\p{Alpha}+)\\s");
+         }
+         return new JavadocTags(tags, invalidTags);
+     }
+ 
+     /**
+      * The type of Javadoc tag we want returned.
+      */
+     public enum JavadocTagType {
+         /** block type. */
+         BLOCK,
+         /** inline type. */
+         INLINE,
+         /** all validTags. */
+         ALL
+     }
+ 
+     /**
+      * Checks that commentContent starts with '*' javadoc comment identifier.
+      * @param commentContent
+      *        content of block comment
+      * @return true if commentContent starts with '*' javadoc comment
+      *         identifier.
+      */
+     public static boolean isJavadocComment(String commentContent) {
+         boolean result = false;
+ 
+         if (!commentContent.isEmpty()) {

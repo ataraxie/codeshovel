@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
+index 84a074f1b..23765d968 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
+@@ -127,101 +127,101 @@ public abstract class AbstractSuperCheck
+      * @return true if any parameters found
+      */
+     private static boolean hasArguments(DetailAST methodCallDotAst) {
+         final DetailAST argumentsList = methodCallDotAst.getNextSibling();
+         return argumentsList.getChildCount() > 0;
+     }
+ 
+     /**
+      * Is same name of method
+      * @param ast method AST
+      * @return true if method name is the same
+      */
+     private boolean isSameNameMethod(DetailAST ast) {
+ 
+         AST sibling = ast.getNextSibling();
+         // ignore type parameters
+         if (sibling != null
+             && sibling.getType() == TokenTypes.TYPE_ARGUMENTS) {
+             sibling = sibling.getNextSibling();
+         }
+         if (sibling == null || sibling.getType() != TokenTypes.IDENT) {
+             return true;
+         }
+         final String name = sibling.getText();
+         return !getMethodName().equals(name);
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         if (isOverridingMethod(ast)) {
+             final MethodNode methodNode =
+                 methodStack.removeLast();
+             if (!methodNode.isCallingSuper()) {
+                 final DetailAST methodAST = methodNode.getMethod();
+                 final DetailAST nameAST =
+                     methodAST.findFirstToken(TokenTypes.IDENT);
+                 log(nameAST.getLineNo(), nameAST.getColumnNo(),
+                     MSG_KEY, nameAST.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Determines whether an AST is a method definition for this check,
+      * with 0 parameters.
+      * @param ast the method definition AST.
+      * @return true if the method of ast is a method for this check.
+      */
+     private boolean isOverridingMethod(DetailAST ast) {
+         if (ast.getType() != TokenTypes.METHOD_DEF
+-            || ScopeUtils.inInterfaceOrAnnotationBlock(ast)) {
++            || ScopeUtils.isInInterfaceOrAnnotationBlock(ast)) {
+             return false;
+         }
+         final DetailAST nameAST = ast.findFirstToken(TokenTypes.IDENT);
+         final String name = nameAST.getText();
+         final DetailAST modifiersAST = ast.findFirstToken(TokenTypes.MODIFIERS);
+         if (!getMethodName().equals(name)
+                 || modifiersAST.branchContains(TokenTypes.LITERAL_NATIVE)) {
+             return false;
+         }
+         final DetailAST params = ast.findFirstToken(TokenTypes.PARAMETERS);
+         return params.getChildCount() == 0;
+     }
+ 
+     /**
+      * Stack node for a method definition and a record of
+      * whether the method has a call to the super method.
+      * @author Rick Giles
+      */
+     private static class MethodNode {
+         /** Method definition */
+         private final DetailAST method;
+ 
+         /** True if the overriding method calls the super method */
+         private boolean callingSuper;
+ 
+         /**
+          * Constructs a stack node for a method definition.
+          * @param ast AST for the method definition.
+          */
+         MethodNode(DetailAST ast) {
+             method = ast;
+             callingSuper = false;
+         }
+ 
+         /**
+          * Records that the overriding method has a call to the super method.
+          */
+         public void setCallingSuper() {
+             callingSuper = true;
+         }
+ 
+         /**
+          * Determines whether the overriding method has a call to the super
+          * method.
+          * @return true if the overriding method has a call to the super
+          * method.
+          */
+         public boolean isCallingSuper() {
+             return callingSuper;
+         }

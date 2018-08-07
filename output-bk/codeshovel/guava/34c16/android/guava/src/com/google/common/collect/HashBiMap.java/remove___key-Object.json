@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "HashBiMap.java",
+  "functionName": "remove",
+  "functionId": "remove___key-Object",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/HashBiMap.java",
+  "functionStartLine": 522,
+  "functionEndLine": 532,
+  "changeHistory": [
+    "6f22af40e1526b8c194e9e36d457bcd37680c6a3",
+    "8b4789c403e9f4e6554852228c5a701a098040ef",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "6f22af40e1526b8c194e9e36d457bcd37680c6a3": "Ybodychange",
+    "8b4789c403e9f4e6554852228c5a701a098040ef": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6f22af40e1526b8c194e9e36d457bcd37680c6a3": {
+      "type": "Ybodychange",
+      "commitMessage": "Migrate from jsr305 @Nullable to Checker Framework @NullableDecl.\n[]\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d178274875\n",
+      "commitDate": 1512679066000,
+      "commitName": "6f22af40e1526b8c194e9e36d457bcd37680c6a3",
+      "commitAuthor": "cpovirk",
+      "commitDateOld": 1512409713000,
+      "commitNameOld": "908f2fede67ae5ff3234f6d56630f42c04ecfc6e",
+      "commitAuthorOld": "cpovirk",
+      "daysBetweenCommits": 3.12,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n-  public V remove(@Nullable Object key) {\n+  public V remove(@NullableDecl Object key) {\n     int keyHash \u003d Hashing.smearedHash(key);\n     int entry \u003d findEntryByKey(key, keyHash);\n     if (entry \u003d\u003d ABSENT) {\n       return null;\n     } else {\n-      @Nullable V value \u003d values[entry];\n+      @NullableDecl V value \u003d values[entry];\n       removeEntryKeyHashKnown(entry, keyHash);\n       return value;\n     }\n   }\n\\ No newline at end of file\n"
+    },
+    "8b4789c403e9f4e6554852228c5a701a098040ef": {
+      "type": "Ybodychange",
+      "commitMessage": "I tripped and rewrote HashBiMap in the fully compact form, with no redundant code or storage, like I had assumed was too much work.\n\nMemory consumption effects:\nUnsized: 52 bytes/entry vs. 64 for server-side implementation vs. 74 for CompactHash* implementation\nSized: 40 bytes/entry vs. 64 for server-side implementation vs. 56 for CompactHash* implementation\n\n(NB: I did not include storage of hash codes, as included in the other implementations.  If we wanted that it\u0027d add another 8 bytes/entry sized, and probably 12 bytes/entry unsized.)\n\nEffects on HashBiMapProGuard:\n17833 bytes vs. 30172 bytes for server-side implementation vs. 31159 bytes for CompactHash* implementation\n13 classes vs. 29 classes for server-side implementation vs. 27 classes for CompactHash* implementation\n99 methods vs. 132 methods for server-side implementation vs. 173 methods for CompactHash* implementation\n\nRELNOTES\u003dRewrites Java 7 HashBiMap, and fixes some bugs in both versions.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d177814345\n",
+      "commitDate": 1512404471000,
+      "commitName": "8b4789c403e9f4e6554852228c5a701a098040ef",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1507658406000,
+      "commitNameOld": "130bead827402e841282eaf8f197c6c4ce64ec4c",
+      "commitAuthorOld": "lowasser",
+      "daysBetweenCommits": 54.93,
+      "commitsBetweenForRepo": 103,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n   public V remove(@Nullable Object key) {\n-    BiEntry\u003cK, V\u003e entry \u003d seekByKey(key, smearedHash(key));\n-    if (entry \u003d\u003d null) {\n+    int keyHash \u003d Hashing.smearedHash(key);\n+    int entry \u003d findEntryByKey(key, keyHash);\n+    if (entry \u003d\u003d ABSENT) {\n       return null;\n     } else {\n-      delete(entry);\n-      entry.prevInKeyInsertionOrder \u003d null;\n-      entry.nextInKeyInsertionOrder \u003d null;\n-      return entry.value;\n+      @Nullable V value \u003d values[entry];\n+      removeEntryKeyHashKnown(entry, keyHash);\n+      return value;\n     }\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

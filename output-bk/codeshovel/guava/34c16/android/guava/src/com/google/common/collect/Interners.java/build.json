@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "Interners.java",
+  "functionName": "build",
+  "functionId": "build",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/Interners.java",
+  "functionStartLine": 80,
+  "functionEndLine": 85,
+  "changeHistory": [
+    "cd8fb02a9c762707e5b7bbc22507dc8569efe430",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "cd8fb02a9c762707e5b7bbc22507dc8569efe430": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "cd8fb02a9c762707e5b7bbc22507dc8569efe430": {
+      "type": "Ybodychange",
+      "commitMessage": "Provide specializations of MapMakerInternalMap\u0027s internal data structures, notably InternalEntry, for the case where the value type is a singleton. This is Interners\u0027s exact use case.\n\nThis CL is a pure refactor that results in a strict memory win. No public apis are changed.\n\nI am very happy that my design made this refactor very easy :)\n\nThere are the following Interners use cases:\n- Interners#newStrongInterner\n- Interners#newWeakInterner\nand the following relevant jvm flags:\n- -XX:+UseCompressedOops\n- -XX:-UseCompressedOops\n\nOf the four combinations of interner type and pointer size, the most important use case is probably Interners#newWeakInterner, since users tend to put lots of stuff in weak interners. On a 64-bit jvm with +UseCompressedOops, there\u0027s actually no win because of the way the current object alignment for WeakKeyStrongValueEntry works out. However, the current object alignment works out unfavorably on a jvm with -UseCompressedOops, and so this CL gives a sizeable win there.\n\nThe CL also gives very large savings for Interners#newStrongInterner, but I reckon that use case isn\u0027t too important.\n\nSummary of results:\n-------------------\nStrongInternerImpl w/ +UseCompressedOops --\u003e 19.8% savings\nWeakInternerImpl w/ +UseCompressedOops --\u003e 0.00016% savings\nStrongInternerImpl w/ -UseCompressedOops --\u003e 12.3% savings\nWeakInternerImpl w/ -UseCompressedOops --\u003e 9.0%% savings\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d154450505\n",
+      "commitDate": 1493319581000,
+      "commitName": "cd8fb02a9c762707e5b7bbc22507dc8569efe430",
+      "commitAuthor": "nharmata",
+      "commitDateOld": 1492741671000,
+      "commitNameOld": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthorOld": "zhenghua",
+      "daysBetweenCommits": 6.69,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,6 @@\n     public \u003cE\u003e Interner\u003cE\u003e build() {\n-      return strong ? new StrongInterner\u003cE\u003e(mapMaker) : new WeakInterner\u003cE\u003e(mapMaker);\n+      if (!strong) {\n+        mapMaker.weakKeys();\n+      }\n+      return new InternerImpl\u003cE\u003e(mapMaker);\n     }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

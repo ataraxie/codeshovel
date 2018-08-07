@@ -1,0 +1,56 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CommentsIndentationCheck.java",
+  "functionName": "getPrevStatementFromSwitchBlock",
+  "functionId": "getPrevStatementFromSwitchBlock___comment-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java",
+  "functionStartLine": 797,
+  "functionEndLine": 807,
+  "changeHistory": [
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6",
+    "2057a77c3a524b86dff382ac8abdca71dd03764a",
+    "df5eac375738952fdaa3bbf7de41965aa01a8cb6"
+  ],
+  "changeHistoryShort": {
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6": "Ybodychange",
+    "2057a77c3a524b86dff382ac8abdca71dd03764a": "Ymultichange(Yrename,Ybodychange)",
+    "df5eac375738952fdaa3bbf7de41965aa01a8cb6": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3126: Fix a lot of CommentsIndentationCheck false-positives and false-negatives\n",
+      "commitDate": 1464613701000,
+      "commitName": "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1461504289000,
+      "commitNameOld": "3defd234041f34854f50f1a77ae94d18fb730036",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 35.99,
+      "commitsBetweenForRepo": 88,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,11 @@\n     private static DetailAST getPrevStatementFromSwitchBlock(DetailAST comment) {\n-        DetailAST prevStmt \u003d null;\n+        final DetailAST prevStmt;\n         final DetailAST parentStatement \u003d comment.getParent();\n-        if (parentStatement !\u003d null) {\n-            if (parentStatement.getType() \u003d\u003d TokenTypes.CASE_GROUP) {\n-                prevStmt \u003d getPrevStatementWhenCommentIsUnderCase(parentStatement);\n-            }\n-            else {\n-                prevStmt \u003d getPrevCaseToken(parentStatement);\n-            }\n+        if (parentStatement.getType() \u003d\u003d TokenTypes.CASE_GROUP) {\n+            prevStmt \u003d getPrevStatementWhenCommentIsUnderCase(parentStatement);\n+        }\n+        else {\n+            prevStmt \u003d getPrevCaseToken(parentStatement);\n         }\n         return prevStmt;\n     }\n\\ No newline at end of file\n"
+    },
+    "2057a77c3a524b86dff382ac8abdca71dd03764a": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "Refactoring of CommentsIndentationCheck, issue #333\n",
+      "commitDate": 1440046957000,
+      "commitName": "2057a77c3a524b86dff382ac8abdca71dd03764a",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "df5eac375738952fdaa3bbf7de41965aa01a8cb6": {
+      "type": "Yintroduced",
+      "commitMessage": "Added new Check: CommentsIndentationCheck, issue #333\n",
+      "commitDate": 1439024061000,
+      "commitName": "df5eac375738952fdaa3bbf7de41965aa01a8cb6",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

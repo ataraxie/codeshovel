@@ -1,0 +1,70 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+index 86c6171fc..985741cae 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+@@ -521,63 +521,63 @@ public abstract class ExpressionHandler
+             if (startsLine(modifier)
+                 && !getLevel().accept(expandedTabsColumnNo(modifier)))
+             {
+                 logError(modifier, "modifier",
+                     expandedTabsColumnNo(modifier));
+             }
+         }
+     }
+ 
+     /**
+      * Check the indentation of the expression we are handling.
+      */
+     public abstract void checkIndentation();
+ 
+     /**
+      * Accessor for the IndentCheck attribute.
+      *
+      * @return the IndentCheck attribute
+      */
+     protected final IndentationCheck getIndentCheck()
+     {
+         return mIndentCheck;
+     }
+ 
+     /**
+      * Accessor for the MainAst attribute.
+      *
+      * @return the MainAst attribute
+      */
+     protected final DetailAST getMainAst()
+     {
+         return mMainAst;
+     }
+ 
+     /**
+      * Accessor for the Parent attribute.
+      *
+      * @return the Parent attribute
+      */
+     protected final ExpressionHandler getParent()
+     {
+         return mParent;
+     }
+ 
+     /**
+      * A shortcut for <code>IndentationCheck</code> property.
+      * @return value of basicOffset property of <code>IndentationCheck</code>
+      */
+     protected final int getBasicOffset()
+     {
+-        return Integer.parseInt(getIndentCheck().getBasicOffset());
++        return getIndentCheck().getBasicOffset();
+     }
+ 
+     /**
+      * A shortcut for <code>IndentationCheck</code> property.
+      * @return value of braceAdjustment property
+      *         of <code>IndentationCheck</code>
+      */
+     protected final int getBraceAdjustement()
+     {
+-        return Integer.parseInt(getIndentCheck().getBraceAdjustement());
++        return getIndentCheck().getBraceAdjustement();
+     }
+ }

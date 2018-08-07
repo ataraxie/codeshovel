@@ -1,0 +1,134 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbstractAccessControlNameCheck.java",
+  "functionName": "shouldCheckInScope",
+  "functionId": "shouldCheckInScope___modifiers-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/AbstractAccessControlNameCheck.java",
+  "functionStartLine": 84,
+  "functionEndLine": 97,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "31c6f5ebaefc42c8c97b9fc5c7a44cc90950c902",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "f6b0b3cd7f1587e97bbf188e8b285935e376f5ef",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "74b57239f50c2596574541202a007f98faf917d4"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "31c6f5ebaefc42c8c97b9fc5c7a44cc90950c902": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "f6b0b3cd7f1587e97bbf188e8b285935e376f5ef": "Ymultichange(Ymovefromfile,Ymodifierchange,Ybodychange)",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "74b57239f50c2596574541202a007f98faf917d4": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 271.52,
+      "commitsBetweenForRepo": 1006,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     protected boolean shouldCheckInScope(DetailAST modifiers) {\n         final boolean isPublic \u003d modifiers\n-                .branchContains(TokenTypes.LITERAL_PUBLIC);\n+                .findFirstToken(TokenTypes.LITERAL_PUBLIC) !\u003d null;\n         final boolean isProtected \u003d modifiers\n-                .branchContains(TokenTypes.LITERAL_PROTECTED);\n+                .findFirstToken(TokenTypes.LITERAL_PROTECTED) !\u003d null;\n         final boolean isPrivate \u003d modifiers\n-                .branchContains(TokenTypes.LITERAL_PRIVATE);\n+                .findFirstToken(TokenTypes.LITERAL_PRIVATE) !\u003d null;\n         final boolean isPackage \u003d !(isPublic || isProtected || isPrivate);\n \n         return applyToPublic \u0026\u0026 isPublic\n                 || applyToProtected \u0026\u0026 isProtected\n                 || applyToPackage \u0026\u0026 isPackage\n                 || applyToPrivate \u0026\u0026 isPrivate;\n     }\n\\ No newline at end of file\n"
+    },
+    "31c6f5ebaefc42c8c97b9fc5c7a44cc90950c902": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1288: \u0027AbstractAccessControlNameCheck\u0027 refactored, UT coverage improved\n",
+      "commitDate": 1436404795000,
+      "commitName": "31c6f5ebaefc42c8c97b9fc5c7a44cc90950c902",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 52.56,
+      "commitsBetweenForRepo": 296,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,14 @@\n     protected boolean shouldCheckInScope(DetailAST modifiers) {\n-        if (modifiers \u003d\u003d null) {\n-            // if there are no modifiers it is a package-private\n-            return applyToPackage;\n-        }\n-\n         final boolean isPublic \u003d modifiers\n                 .branchContains(TokenTypes.LITERAL_PUBLIC);\n         final boolean isProtected \u003d modifiers\n                 .branchContains(TokenTypes.LITERAL_PROTECTED);\n         final boolean isPrivate \u003d modifiers\n                 .branchContains(TokenTypes.LITERAL_PRIVATE);\n         final boolean isPackage \u003d !(isPublic || isProtected || isPrivate);\n \n         return applyToPublic \u0026\u0026 isPublic\n                 || applyToProtected \u0026\u0026 isProtected\n                 || applyToPackage \u0026\u0026 isPackage\n                 || applyToPrivate \u0026\u0026 isPrivate;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425602876000,
+      "commitNameOld": "f7828693395f71a6ae99710f3fab44cb8a66ea51",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 4.87,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     protected boolean shouldCheckInScope(DetailAST modifiers)\n     {\n         if (modifiers \u003d\u003d null) {\n             // if there are no modifiers it is a package-private\n             return applyToPackage;\n         }\n \n         final boolean isPublic \u003d modifiers\n                 .branchContains(TokenTypes.LITERAL_PUBLIC);\n         final boolean isProtected \u003d modifiers\n                 .branchContains(TokenTypes.LITERAL_PROTECTED);\n         final boolean isPrivate \u003d modifiers\n                 .branchContains(TokenTypes.LITERAL_PRIVATE);\n         final boolean isPackage \u003d !(isPublic || isProtected || isPrivate);\n \n-        return (applyToPublic \u0026\u0026 isPublic)\n-                || (applyToProtected \u0026\u0026 isProtected)\n-                || (applyToPackage \u0026\u0026 isPackage)\n-                || (applyToPrivate \u0026\u0026 isPrivate);\n+        return applyToPublic \u0026\u0026 isPublic\n+                || applyToProtected \u0026\u0026 isProtected\n+                || applyToPackage \u0026\u0026 isPackage\n+                || applyToPrivate \u0026\u0026 isPrivate;\n     }\n\\ No newline at end of file\n"
+    },
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, naming, #512\n",
+      "commitDate": 1421677299000,
+      "commitName": "750b733bd124eaea34d4692a1bb8d0fd0fe90976",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "f6b0b3cd7f1587e97bbf188e8b285935e376f5ef": {
+      "type": "Ymultichange(Ymovefromfile,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Applied patch 1892253 to expand access controls to other naming checks.\n",
+      "commitDate": 1203592179000,
+      "commitName": "f6b0b3cd7f1587e97bbf188e8b285935e376f5ef",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1130786628000,
+      "commitNameOld": "1aee9d55cc5bd8cca011e17369f6e370efcc85bb",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 248.34,
+      "commitsBetweenForRepo": 40,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,19 @@\n     private boolean shouldCheckInScope(DetailAST aModifiers)\n     {\n         if (aModifiers \u003d\u003d null) {\n             // if there are no modifaiers it is a package-private\n             return mApplyToPackage;\n         }\n \n         final boolean isPublic \u003d\n             aModifiers.branchContains(TokenTypes.LITERAL_PUBLIC);\n         final boolean isProtected \u003d\n             aModifiers.branchContains(TokenTypes.LITERAL_PROTECTED);\n         final boolean isPrivate \u003d\n             aModifiers.branchContains(TokenTypes.LITERAL_PRIVATE);\n         final boolean isPackage \u003d !(isPublic || isProtected || isPrivate);\n \n-        return mApplyToPublic \u0026\u0026 isPublic || mApplyToProtected \u0026\u0026 isProtected\n-            || mApplyToPackage \u0026\u0026 isPackage || mApplyToPrivate \u0026\u0026 isPrivate;\n+        return (mApplyToPublic \u0026\u0026 isPublic)\n+            || (mApplyToProtected \u0026\u0026 isProtected)\n+            || (mApplyToPackage \u0026\u0026 isPackage) || (mApplyToPrivate \u0026\u0026 isPrivate);\n     }\n\\ No newline at end of file\n"
+    },
+    "74b57239f50c2596574541202a007f98faf917d4": {
+      "type": "Yintroduced",
+      "commitMessage": "Implementation of rfe 695935 (Valid public identifier is still failing field naming style). Not sure that this is a best approach to implement. Open to discussions.\n",
+      "commitDate": 1075040247000,
+      "commitName": "74b57239f50c2596574541202a007f98faf917d4",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

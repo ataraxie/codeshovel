@@ -1,0 +1,109 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index 93bc63e91..782e05202 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -87,102 +87,102 @@ public class JavadocStyleCheck
+             TokenTypes.ENUM_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         if (shouldCheck(aAST)) {
+             final FileContents contents = getFileContents();
+             final TextBlock cmt =
+                 contents.getJavadocBefore(aAST.getLineNo());
+ 
+             checkComment(aAST, cmt);
+         }
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param aAST a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST aAST)
+     {
+         if (ScopeUtils.inCodeBlock(aAST)) {
+             return false;
+         }
+ 
+         final Scope declaredScope;
+         if (aAST.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+             declaredScope = Scope.PUBLIC;
+         }
+         else {
+             declaredScope = ScopeUtils.getScopeFromMods(
+                 aAST.findFirstToken(TokenTypes.MODIFIERS));
+         }
+ 
+         final Scope scope =
+             ScopeUtils.inInterfaceOrAnnotationBlock(aAST)
+             ? Scope.PUBLIC : declaredScope;
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(aAST);
+ 
+         return scope.isIn(mScope)
+             && ((surroundingScope == null) || surroundingScope.isIn(mScope))
+             && ((mExcludeScope == null)
+                 || !scope.isIn(mExcludeScope)
+-                || (surroundingScope != null)
+-                && !surroundingScope.isIn(mExcludeScope));
++                || ((surroundingScope != null)
++                && !surroundingScope.isIn(mExcludeScope)));
+     }
+ 
+     /**
+      * Performs the various checks agains the Javadoc comment.
+      *
+      * @param aAST the AST of the element being documented
+      * @param aComment the source lines that make up the Javadoc comment.
+      *
+      * @see #checkFirstSentence(TextBlock)
+      * @see #checkHtml(DetailAST, TextBlock)
+      */
+     private void checkComment(final DetailAST aAST, final TextBlock aComment)
+     {
+         if (aComment == null) {
+             return;
+         }
+ 
+         if (mCheckFirstSentence) {
+             checkFirstSentence(aComment);
+         }
+ 
+         if (mCheckHtml) {
+             checkHtml(aAST, aComment);
+         }
+ 
+         if (mCheckEmptyJavadoc) {
+             checkEmptyJavadoc(aComment);
+         }
+     }
+ 
+     /**
+      * Checks that the first sentence ends with proper puctuation.  This method
+      * uses a regular expression that checks for the presence of a period,
+      * question mark, or exclaimation mark followed either by whitespace, an
+      * HTML element, or the end of string. This method ignores {_AT_inheritDoc}
+      * comments.
+      *
+      * @param aComment the source lines that make up the Javadoc comment.
+      */
+     private void checkFirstSentence(TextBlock aComment)
+     {
+         final String commentText = getCommentText(aComment.getText());
+ 
+         if ((commentText.length() != 0)
+             && !getEndOfSentencePattern().matcher(commentText).find()
+             && !"{@inheritDoc}".equals(commentText))
+         {
+             log(aComment.getStartLineNo(), "javadoc.noperiod");
+         }
+     }

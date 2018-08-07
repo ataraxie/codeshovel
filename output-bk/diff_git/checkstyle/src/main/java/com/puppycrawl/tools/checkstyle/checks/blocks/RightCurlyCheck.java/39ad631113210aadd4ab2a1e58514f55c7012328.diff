@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+index 5c34156f6..e56dc5d35 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+@@ -152,83 +152,103 @@ public class RightCurlyCheck extends AbstractOptionCheck<RightCurlyOption>
+             }
+             break;
+         case TokenTypes.LITERAL_ELSE:
+             shouldCheckLastRcurly = true;
+             nextToken = getNextToken(aAST);
+             lcurly = aAST.getFirstChild();
+             rcurly = lcurly.getLastChild();
+             break;
+         case TokenTypes.LITERAL_FINALLY:
+             shouldCheckLastRcurly = true;
+             nextToken = getNextToken(aAST);
+             lcurly = aAST.getFirstChild();
+             rcurly = lcurly.getLastChild();
+             break;
+         case TokenTypes.CLASS_DEF:
+             lcurly = aAST.getLastChild().getFirstChild();
+             rcurly = aAST.getLastChild().getLastChild();
+             nextToken = aAST;
+             break;
+         case TokenTypes.CTOR_DEF:
+             lcurly = aAST.getLastChild();
+             rcurly = lcurly.getLastChild();
+             nextToken = aAST;
+             break;
+         case TokenTypes.METHOD_DEF:
+             lcurly = aAST.getLastChild();
+             rcurly = lcurly.getLastChild();
+             nextToken = aAST;
+             break;
+         default:
+             throw new RuntimeException("Unexpected token type ("
+                     + TokenTypes.getTokenName(aAST.getType()) + ")");
+         }
+ 
+         if ((rcurly == null) || (rcurly.getType() != TokenTypes.RCURLY)) {
+             // we need to have both tokens to perform the check
+             return;
+         }
+ 
+         if (shouldCheckLastRcurly) {
+             if (rcurly.getLineNo() == nextToken.getLineNo()) {
+                 log(rcurly, "line.alone", "}");
+             }
+         }
+         else if ((getAbstractOption() == RightCurlyOption.SAME)
+                 && (rcurly.getLineNo() != nextToken.getLineNo()))
+         {
+             log(rcurly, "line.same", "}");
+         }
+         else if ((getAbstractOption() == RightCurlyOption.ALONE)
+-                && (rcurly.getLineNo() == nextToken.getLineNo()))
++                && (rcurly.getLineNo() == nextToken.getLineNo())
++                && !isEmptyBody(lcurly))
+         {
+             log(rcurly, "line.alone", "}");
+         }
+ 
+         if (!mShouldStartLine) {
+             return;
+         }
+         final boolean startsLine =
+                 Utils.whitespaceBefore(rcurly.getColumnNo(),
+                         getLines()[rcurly.getLineNo() - 1]);
+ 
+         if (!startsLine && (lcurly.getLineNo() != rcurly.getLineNo())) {
+             log(rcurly, "line.new", "}");
+         }
+     }
+ 
++    /**
++     * Checks if definition body is empty.
++     * @param aLcurly left curly.
++     * @return true if definition body is empty.
++     */
++    private boolean isEmptyBody(DetailAST aLcurly)
++    {
++        boolean result = false;
++        if (aLcurly.getParent().getType() == TokenTypes.OBJBLOCK) {
++            if (aLcurly.getNextSibling().getType() == TokenTypes.RCURLY) {
++                result = true;
++            }
++        }
++        else if (aLcurly.getFirstChild().getType() == TokenTypes.RCURLY) {
++            result = true;
++        }
++        return result;
++    }
++
+     /**
+      * Finds next token after the given one.
+      * @param aAST the given node.
+      * @return the token which represents next lexical item.
+      */
+     private DetailAST getNextToken(DetailAST aAST)
+     {
+         DetailAST next = null;
+         DetailAST parent = aAST;
+         while ((parent != null) && (next == null)) {
+             next = parent.getNextSibling();
+             parent = parent.getParent();
+         }
+         return CheckUtils.getFirstNode(next);
+     }
+ }

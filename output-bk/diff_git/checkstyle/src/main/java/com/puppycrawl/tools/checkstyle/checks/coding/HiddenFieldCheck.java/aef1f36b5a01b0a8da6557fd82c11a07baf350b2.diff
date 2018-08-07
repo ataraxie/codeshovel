@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+index 57c3c3460..51a00f9b3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+@@ -365,102 +365,102 @@ public class HiddenFieldCheck
+      *
+      * @param aMethodAST AST corresponding to a method call
+      * @param aName name of single parameter of this method.
+      * @return true of false indicating of method is a setter or not.
+      */
+     private boolean isSetterMethod(DetailAST aMethodAST, String aName)
+     {
+         final String methodName =
+             aMethodAST.findFirstToken(TokenTypes.IDENT).getText();
+         boolean isSetterMethod = false;
+ 
+         if (methodName.equals("set" + capitalize(aName))) {
+             // method name did match set${Name}(${anyType} ${aName})
+             // where ${Name} is capitalized version of ${aName}
+             // therefore this method is potentially a setter
+             final DetailAST typeAST = aMethodAST.findFirstToken(TokenTypes.TYPE);
+             final String returnType = typeAST.getFirstChild().getText();
+             if (typeAST.branchContains(TokenTypes.LITERAL_VOID)
+                 || (setterCanReturnItsClass && currentFrame.embeddedIn(returnType)))
+             {
+                 // this method has signature
+                 //
+                 //     void set${Name}(${anyType} ${name})
+                 //
+                 // and therefore considered to be a setter
+                 //
+                 // or
+                 //
+                 // return type is not void, but it is the same as the class
+                 // where method is declared and and mSetterCanReturnItsClass
+                 // is set to true
+                 isSetterMethod = true;
+             }
+         }
+ 
+         return isSetterMethod;
+     }
+ 
+     /**
+      * Capitalizes a given property name the way we expect to see it in
+      * a setter name.
+      * @param name a property name
+      * @return capitalized property name
+      */
+     private static String capitalize(final String name)
+     {
+         String setterName = name;
+         // we should not capitalize the first character if the second
+         // one is a capital one, since according to JavBeans spec
+         // setXYzz() is a setter for XYzz property, not for xYzz one.
+-        if (name != null && name.length() > 0
+-            && (name.length() > 1 && !Character.isUpperCase(name.charAt(1))))
++        if (name != null && (name.length() == 1
++                || (name.length() > 1 && !Character.isUpperCase(name.charAt(1)))))
+         {
+             setterName = name.substring(0, 1).toUpperCase() + name.substring(1);
+         }
+         return setterName;
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of a
+      * constructor.
+      * @param ast the AST to check.
+      * @return true if ast should be ignored because check property
+      * ignoreConstructorParameter is true and ast is a constructor parameter.
+      */
+     private boolean isIgnoredConstructorParam(DetailAST ast)
+     {
+         boolean result = false;
+         if ((ast.getType() == TokenTypes.PARAMETER_DEF)
+             && ignoreConstructorParameter)
+         {
+             final DetailAST parametersAST = ast.getParent();
+             final DetailAST constructorAST = parametersAST.getParent();
+             result = (constructorAST.getType() == TokenTypes.CTOR_DEF);
+         }
+         return result;
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of an
+      * abstract method.
+      * @param ast the AST to check.
+      * @return true if ast should be ignored because check property
+      * ignoreAbstactMethods is true and ast is a parameter of abstract
+      * methods.
+      */
+     private boolean isIgnoredParamOfAbstractMethod(DetailAST ast)
+     {
+         boolean result = false;
+         if ((ast.getType() == TokenTypes.PARAMETER_DEF)
+             && ignoreAbstractMethods)
+         {
+             final DetailAST method = ast.getParent().getParent();
+             if (method.getType() == TokenTypes.METHOD_DEF) {
+                 final DetailAST mods = method.findFirstToken(TokenTypes.MODIFIERS);
+                 result = ((mods != null) && mods.branchContains(TokenTypes.ABSTRACT));
+             }
+         }
+         return result;
+     }
+ 
+     /**

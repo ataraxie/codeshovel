@@ -1,0 +1,180 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 71b83ca16..48b024e42 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -361,108 +361,108 @@ public final class TreeWalker
+         if (aAST != null) {
+             if (useRecursiveAlgorithm()) {
+                 processRec(aAST);
+             }
+             else {
+                 processIter(aAST);
+             }
+         }
+ 
+         notifyEnd(aAST);
+     }
+ 
+ 
+     /**
+      * Notify interested checks that about to begin walking a tree.
+      * @param aRootAST the root of the tree
+      * @param aContents the contents of the file the AST was generated from
+      */
+     private void notifyBegin(DetailAST aRootAST, FileContents aContents)
+     {
+         for (Check ch : mAllChecks) {
+             ch.setFileContents(aContents);
+             ch.beginTree(aRootAST);
+         }
+     }
+ 
+     /**
+      * Notify checks that finished walking a tree.
+      * @param aRootAST the root of the tree
+      */
+     private void notifyEnd(DetailAST aRootAST)
+     {
+         for (Check ch : mAllChecks) {
+             ch.finishTree(aRootAST);
+         }
+     }
+ 
+     /**
+      * Recursively processes a node calling interested checks at each node.
+      * Uses recursive algorithm.
+      * @param aAST the node to start from
+      */
+     private void processRec(DetailAST aAST)
+     {
+         if (aAST == null) {
+             return;
+         }
+ 
+         notifyVisit(aAST);
+ 
+-        final DetailAST child = (DetailAST) aAST.getFirstChild();
++        final DetailAST child = aAST.getFirstChild();
+         if (child != null) {
+             processRec(child);
+         }
+ 
+         notifyLeave(aAST);
+ 
+-        final DetailAST sibling = (DetailAST) aAST.getNextSibling();
++        final DetailAST sibling = aAST.getNextSibling();
+         if (sibling != null) {
+             processRec(sibling);
+         }
+     }
+ 
+     /**
+      * Notify interested checks that visiting a node.
+      * @param aAST the node to notify for
+      */
+     private void notifyVisit(DetailAST aAST)
+     {
+         final Collection<Check> visitors =
+             mTokenToChecks.get(TokenTypes.getTokenName(aAST.getType()));
+         for (Check c : visitors) {
+             c.visitToken(aAST);
+         }
+     }
+ 
+     /**
+      * Notify interested checks that leaving a node.
+      *
+      * @param aAST
+      *                the node to notify for
+      */
+     private void notifyLeave(DetailAST aAST)
+     {
+         final Collection<Check> visitors =
+             mTokenToChecks.get(TokenTypes.getTokenName(aAST.getType()));
+         for (Check ch : visitors) {
+             ch.leaveToken(aAST);
+         }
+     }
+ 
+     /**
+      * Static helper method to parses a Java source file.
+      *
+      * @param aContents
+      *                contains the contents of the file
+      * @throws TokenStreamException
+      *                 if lexing failed
+      * @throws RecognitionException
+      *                 if parsing failed
+      * @return the root of the AST
+      */
+     public static DetailAST parse(FileContents aContents)
+         throws RecognitionException, TokenStreamException
+     {
+         final Reader sar = new StringArrayReader(aContents.getLines());
+         final GeneratedJavaLexer lexer = new GeneratedJavaLexer(sar);
+         lexer.setFilename(aContents.getFilename());
+@@ -471,62 +471,62 @@ public final class TreeWalker
+         lexer.setTreatEnumAsKeyword(true);
+ 
+         final GeneratedJavaRecognizer parser =
+             new GeneratedJavaRecognizer(lexer);
+         parser.setFilename(aContents.getFilename());
+         parser.setASTNodeClass(DetailAST.class.getName());
+         parser.compilationUnit();
+ 
+         return (DetailAST) parser.getAST();
+     }
+ 
+     /** {@inheritDoc} */
+     public void process(List<File> aFiles)
+     {
+         final List<File> javaFiles = filter(aFiles);
+ 
+         for (File element : javaFiles) {
+             process(element);
+         }
+     }
+ 
+     @Override
+     public void destroy()
+     {
+         for (Check c : mAllChecks) {
+             c.destroy();
+         }
+         mCache.destroy();
+         super.destroy();
+     }
+ 
+     /**
+      * @return true if we should use recursive algorithm
+      *         for tree processing, false for iterative one.
+      */
+     private boolean useRecursiveAlgorithm()
+     {
+         return mRecursive;
+     }
+ 
+     /**
+      * Processes a node calling interested checks at each node.
+      * Uses iterative algorithm.
+      * @param aRoot the root of tree for process
+      */
+     private void processIter(DetailAST aRoot)
+     {
+         DetailAST curNode = aRoot;
+         while (curNode != null) {
+             notifyVisit(curNode);
+-            DetailAST toVisit = (DetailAST) curNode.getFirstChild();
++            DetailAST toVisit = curNode.getFirstChild();
+             while ((curNode != null) && (toVisit == null)) {
+                 notifyLeave(curNode);
+-                toVisit = (DetailAST) curNode.getNextSibling();
++                toVisit = curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+     }
+ }

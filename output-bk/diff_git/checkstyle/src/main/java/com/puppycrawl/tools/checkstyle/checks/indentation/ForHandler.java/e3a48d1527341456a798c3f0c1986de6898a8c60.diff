@@ -1,0 +1,69 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ForHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ForHandler.java
+index b49e7e131..4a4d7fdae 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ForHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ForHandler.java
+@@ -28,61 +28,64 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  */
+ public class ForHandler extends BlockParentHandler
+ {
+     /**
+      * Construct an instance of this handler with the given indentation check,
+      * abstract syntax tree, and parent handler.
+      *
+      * @param aIndentCheck   the indentation check
+      * @param aAst           the abstract syntax tree
+      * @param aParent        the parent handler
+      */
+     public ForHandler(IndentationCheck aIndentCheck,
+         DetailAST aAst, ExpressionHandler aParent)
+     {
+         super(aIndentCheck, "for", aAst, aParent);
+     }
+ 
+     /**
+      * Check the indentation of the parameters of the 'for' loop.
+      */
+     private void checkForParams()
+     {
+         final IndentLevel expected =
+             new IndentLevel(getLevel(), getBasicOffset());
+         final DetailAST init = getMainAst().findFirstToken(TokenTypes.FOR_INIT);
+ 
+         if (init != null) {
+             checkExpressionSubtree(init, expected, false, false);
+ 
+             final DetailAST cond =
+                 getMainAst().findFirstToken(TokenTypes.FOR_CONDITION);
+             checkExpressionSubtree(cond, expected, false, false);
+ 
+             final DetailAST iter =
+                 getMainAst().findFirstToken(TokenTypes.FOR_ITERATOR);
+             checkExpressionSubtree(iter, expected, false, false);
+         }
+         // for each
+         else {
+             final DetailAST forEach =
+                 getMainAst().findFirstToken(TokenTypes.FOR_EACH_CLAUSE);
+             checkExpressionSubtree(forEach, expected, false, false);
+         }
+     }
+ 
+     @Override
+     public void checkIndentation()
+     {
+         checkForParams();
+         super.checkIndentation();
++        final LineWrappingHandler lineWrap =
++            new LineWrappingHandler(getIndentCheck(), getMainAst());
++        lineWrap.checkIndentation();
+     }
+ 
+     @Override
+     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)
+     {
+         if (aChild instanceof ElseHandler) {
+             return getLevel();
+         }
+         return super.suggestedChildLevel(aChild);
+     }
+ }

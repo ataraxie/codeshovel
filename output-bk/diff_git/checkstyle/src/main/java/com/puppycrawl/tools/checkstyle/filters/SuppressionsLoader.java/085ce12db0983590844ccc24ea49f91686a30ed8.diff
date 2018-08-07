@@ -1,0 +1,84 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
+index aea6e2308..e6638193c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
+@@ -131,73 +131,75 @@ public final class SuppressionsLoader
+             uri = url.toURI();
+         }
+         catch (final MalformedURLException | URISyntaxException ignored) {
+             // URL violating RFC 2396
+             uri = null;
+         }
+         if (uri == null) {
+             final File file = new File(filename);
+             if (file.exists()) {
+                 uri = file.toURI();
+             }
+             else {
+                 // check to see if the file is in the classpath
+                 try {
+                     final URL configUrl = SuppressionsLoader.class
+                             .getResource(filename);
+                     if (configUrl == null) {
+                         throw new CheckstyleException(UNABLE_TO_FIND_ERROR_MESSAGE + filename);
+                     }
+                     uri = configUrl.toURI();
+                 }
+                 catch (final URISyntaxException e) {
+                     throw new CheckstyleException(UNABLE_TO_FIND_ERROR_MESSAGE + filename, e);
+                 }
+             }
+         }
+         final InputSource source = new InputSource(uri.toString());
+         return loadSuppressions(source, filename);
+     }
+ 
+     /**
+      * Returns the suppression filters in a specified source.
+      * @param source the source for the suppressions.
+      * @param sourceName the name of the source.
+      * @return the filter chain of suppression elements in source.
+      * @throws CheckstyleException if an error occurs.
+      */
+     private static FilterSet loadSuppressions(
+             InputSource source, String sourceName)
+         throws CheckstyleException {
+         try {
+             final SuppressionsLoader suppressionsLoader =
+                 new SuppressionsLoader();
+             suppressionsLoader.parseInputSource(source);
+             return suppressionsLoader.filterChain;
+         }
+         catch (final FileNotFoundException e) {
+             throw new CheckstyleException(UNABLE_TO_FIND_ERROR_MESSAGE + sourceName, e);
+         }
+         catch (final ParserConfigurationException | SAXException e) {
+-            throw new CheckstyleException("Unable to parse "
+-                    + sourceName + " - " + e.getMessage(), e);
++            final String message = String.format("Unable to parse %s - %s",
++                    sourceName, e.getMessage());
++            throw new CheckstyleException(message, e);
+         }
+         catch (final IOException e) {
+             throw new CheckstyleException("Unable to read " + sourceName, e);
+         }
+         catch (final NumberFormatException e) {
+-            throw new CheckstyleException("Number format exception "
+-                + sourceName + " - " + e.getMessage(), e);
++            final String message = String.format("Number format exception %s - %s",
++                    sourceName, e.getMessage());
++            throw new CheckstyleException(message, e);
+         }
+     }
+ 
+     /**
+      * Creates mapping between local resources and dtd ids.
+      * @return map between local resources and dtd ids.
+      */
+     private static Map<String, String> createIdToResourceNameMap() {
+         final Map<String, String> map = Maps.newHashMap();
+         map.put(DTD_PUBLIC_ID_1_0, DTD_RESOURCE_NAME_1_0);
+         map.put(DTD_PUBLIC_ID_1_1, DTD_RESOURCE_NAME_1_1);
+         return map;
+     }
+ }

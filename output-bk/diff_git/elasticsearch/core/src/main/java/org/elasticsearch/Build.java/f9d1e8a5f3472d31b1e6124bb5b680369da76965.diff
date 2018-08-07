@@ -1,0 +1,85 @@
+diff --git a/core/src/main/java/org/elasticsearch/Build.java b/core/src/main/java/org/elasticsearch/Build.java
+index a3b6cb0885a..f844e3b4040 100644
+--- a/core/src/main/java/org/elasticsearch/Build.java
++++ b/core/src/main/java/org/elasticsearch/Build.java
+@@ -81,51 +81,80 @@ public class Build {
+      * Returns path to elasticsearch codebase path
+      */
+     @SuppressForbidden(reason = "looks up path of elasticsearch.jar directly")
+     static Path getElasticsearchCodebase() {
+         URL url = Build.class.getProtectionDomain().getCodeSource().getLocation();
+         try {
+             return PathUtils.get(url.toURI());
+         } catch (URISyntaxException bogus) {
+             throw new RuntimeException(bogus);
+         }
+     }
+ 
+     private String shortHash;
+     private String date;
+ 
+     Build(String shortHash, String date, boolean isSnapshot) {
+         this.shortHash = shortHash;
+         this.date = date;
+         this.isSnapshot = isSnapshot;
+     }
+ 
+     public String shortHash() {
+         return shortHash;
+     }
+ 
+     public String date() {
+         return date;
+     }
+ 
+     public static Build readBuild(StreamInput in) throws IOException {
+         String hash = in.readString();
+         String date = in.readString();
+         boolean snapshot = in.readBoolean();
+         return new Build(hash, date, snapshot);
+     }
+ 
+     public static void writeBuild(Build build, StreamOutput out) throws IOException {
+         out.writeString(build.shortHash());
+         out.writeString(build.date());
+         out.writeBoolean(build.isSnapshot());
+     }
+ 
+     public boolean isSnapshot() {
+         return isSnapshot;
+     }
+ 
+     @Override
+     public String toString() {
+         return "[" + shortHash + "][" + date + "]";
+     }
++
++    @Override
++    public boolean equals(Object o) {
++        if (this == o) {
++            return true;
++        }
++        if (o == null || getClass() != o.getClass()) {
++            return false;
++        }
++
++        Build build = (Build) o;
++
++        if (isSnapshot != build.isSnapshot) {
++            return false;
++        }
++        if (!shortHash.equals(build.shortHash)) {
++            return false;
++        }
++        return date.equals(build.date);
++
++    }
++
++    @Override
++    public int hashCode() {
++        int result = (isSnapshot ? 1 : 0);
++        result = 31 * result + shortHash.hashCode();
++        result = 31 * result + date.hashCode();
++        return result;
++    }
+ }

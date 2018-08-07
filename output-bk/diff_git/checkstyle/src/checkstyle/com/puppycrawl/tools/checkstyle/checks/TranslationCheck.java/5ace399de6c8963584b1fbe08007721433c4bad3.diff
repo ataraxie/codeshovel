@@ -1,0 +1,146 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+index fd8e3b47d..66d1be07e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+@@ -110,138 +110,136 @@ public class TranslationCheck
+ 
+     /**
+      * Loads the keys of the specified property file into a set.
+      * @param aFile the property file
+      * @return a Set object which holds the loaded keys
+      */
+     private Set loadKeys(File aFile)
+     {
+         final Set keys = new HashSet();
+         InputStream inStream = null;
+ 
+         try {
+             // Load file and properties.
+             inStream = new FileInputStream(aFile);
+             Properties props = new Properties();
+             props.load(inStream);
+ 
+             // Gather the keys and put them into a set
+             final Enumeration e = props.propertyNames();
+             while (e.hasMoreElements()) {
+                 keys.add(e.nextElement());
+             }
+         }
+         catch (IOException e) {
+             logIOException(e, aFile);
+         }
+         finally {
+             try {
+                 inStream.close();
+             }
+             catch (IOException e) {
+                 logIOException(e, aFile);
+             }
+         }
+         return keys;
+     }
+ 
+     /**
+      * helper method to log an io exception.
+      * @param aEx the exception that occured
+      * @param aFile the file that could not be processed
+      */
+     private void logIOException(IOException aEx, File aFile)
+     {
+         String[] args = null;
+         String key = "general.fileNotFound";
+         if (!(aEx instanceof FileNotFoundException)) {
+             args = new String[] {aEx.getMessage()};
+             key = "general.exception";
+         }
+-        LocalizedMessage message =
++        final LocalizedMessage message =
+                 new LocalizedMessage(0, Defn.CHECKSTYLE_BUNDLE, key, args);
+-        LocalizedMessage[] messages = new LocalizedMessage[]{message};
++        final LocalizedMessage[] messages = new LocalizedMessage[]{message};
+         getMessageDispatcher().fireErrors(aFile.getPath(), messages);
+     }
+ 
+ 
+     /**
+      * Compares the key sets of the given property files (arranged in a map)
+      * with the specified key set. All missing keys are reported.
+      * @param aKeys the set of keys to compare with
+      * @param aFileMap a Map from property files to their key sets
+      */
+     private void compareKeySets(Set aKeys, Map aFileMap)
+     {
+         final Set fls = aFileMap.keySet();
+ 
+         for (Iterator iter = fls.iterator(); iter.hasNext();) {
+             final File currentFile = (File) iter.next();
+             final MessageDispatcher dispatcher = getMessageDispatcher();
+             final String path = currentFile.getPath();
+             dispatcher.fireFileStarted(path);
+             final Set currentKeys = (Set) aFileMap.get(currentFile);
+ 
+             // Clone the keys so that they are not lost
+             final Set keysClone = new HashSet(aKeys);
+             keysClone.removeAll(currentKeys);
+ 
+             // Remaining elements in the key set are missing in the current file
+             if (!keysClone.isEmpty()) {
+                 for (Iterator it = keysClone.iterator(); it.hasNext();) {
+                     Object key = it.next();
+                     log(0, "translation.missingKey", key);
+                 }
+             }
+-            final LocalizedMessage[] errors =
+-                getMessageCollector().getMessages();
+-            getMessageDispatcher().fireErrors(path, errors);
++            fireErrors(path);
+             dispatcher.fireFileFinished(path);
+         }
+     }
+ 
+ 
+     /**
+      * Tests whether the given property files (arranged by their prefixes
+      * in a Map) contain the proper keys.
+      *
+      * Each group of files must have the same keys. If this is not the case
+      * an error message is posted giving information which key misses in
+      * which file.
+      *
+      * @param aPropFiles the property files organized as Map
+      */
+     private void checkPropertyFileSets(Map aPropFiles)
+     {
+         final Set keySet = aPropFiles.keySet();
+ 
+         for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+             final String baseName = (String) iterator.next();
+             final Set files = (Set) aPropFiles.get(baseName);
+ 
+             if (files.size() >= 2) {
+                 // build a map from files to the keys they contain
+                 final Set keys = new HashSet();
+                 final Map fileMap = new HashMap();
+ 
+                 for (Iterator iter = files.iterator(); iter.hasNext();) {
+                     final File file = (File) iter.next();
+                     final Set fileKeys = loadKeys(file);
+                     keys.addAll(fileKeys);
+                     fileMap.put(file, fileKeys);
+                 }
+ 
+                 // check the map for consistency
+                 compareKeySets(keys, fileMap);
+             }
+         }
+     }
+ 
+ 
+     /**
+      * This method searches for property files in the specified file array
+      * and checks whether the key usage is consistent.
+      *
+      * Two property files which have the same prefix should use the same
+      * keys. If this is not the case the missing keys are reported.
+      *
+      * @see com.puppycrawl.tools.checkstyle.api.FileSetCheck

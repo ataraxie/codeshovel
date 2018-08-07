@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeTablePModel.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeTablePModel.java
+index 6f3573501..5ee1618ef 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeTablePModel.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeTablePModel.java
+@@ -195,101 +195,101 @@ public class ParseTreeTablePModel {
+ 
+         return result;
+     }
+ 
+     /**
+      * @return the root.
+      */
+     public Object getRoot() {
+         return root;
+     }
+ 
+     /**
+      * Whether the node is a leaf.
+      * @param node the node to check.
+      * @return true if the node is a leaf.
+      */
+     public boolean isLeaf(Object node) {
+         return getChildCount(node) == 0;
+     }
+ 
+     /**
+      * Return the index of child in parent.  If either <code>parent</code>
+      * or <code>child</code> is <code>null</code>, returns -1.
+      * If either <code>parent</code> or <code>child</code> don't
+      * belong to this tree model, returns -1.
+      *
+      * @param parent a node in the tree, obtained from this data source.
+      * @param child the node we are interested in.
+      * @return the index of the child in the parent, or -1 if either
+      *     <code>child</code> or <code>parent</code> are <code>null</code>
+      *     or don't belong to this tree model.
+      */
+     public int getIndexOfChild(Object parent, Object child) {
+         int index = -1;
+         for (int i = 0; i < getChildCount(parent); i++) {
+             if (getChild(parent, i).equals(child)) {
+                 index = i;
+                 break;
+             }
+         }
+         return index;
+     }
+ 
+     /**
+      * Indicates whether the the value for node {@code node}, at column number {@code column} is
+      * editable.
+      * @param column the column number
+      * @return true if editable
+      */
+     public boolean isCellEditable(int column) {
+-        return getColumnClass(column).equals(ParseTreeTablePModel.class);
++        return false;
+     }
+ 
+     /**
+      * Creates artificial tree root.
+      * @return artificial tree root.
+      */
+     private static DetailAST createArtificialTreeRoot() {
+         final ASTFactory factory = new ASTFactory();
+         factory.setASTNodeClass(DetailAST.class.getName());
+         return (DetailAST) factory.create(TokenTypes.EOF, "ROOT");
+     }
+ 
+     /**
+      * Gets child of DetailAST node at specified index.
+      * @param parent DetailAST node
+      * @param index child index
+      * @return child DetailsAST or DetailNode if child is Javadoc node
+      *         and parseMode is JAVA_WITH_JAVADOC_AND_COMMENTS.
+      */
+     private Object getChildAtDetailAst(DetailAST parent, int index) {
+         final Object result;
+         if (parseMode == ParseMode.JAVA_WITH_JAVADOC_AND_COMMENTS
+                 && parent.getType() == TokenTypes.COMMENT_CONTENT
+                 && JavadocUtils.isJavadocComment(parent.getParent())) {
+             result = getJavadocTree(parent.getParent());
+         }
+         else {
+             int currentIndex = 0;
+             DetailAST child = parent.getFirstChild();
+             while (currentIndex < index) {
+                 child = child.getNextSibling();
+                 currentIndex++;
+             }
+             result = child;
+         }
+ 
+         return result;
+     }
+ 
+     /**
+      * Gets a value for DetailNode object.
+      * @param node DetailNode(Javadoc) node.
+      * @param column column index.
+      * @return value at specified column.
+      */
+     private Object getValueAtDetailNode(DetailNode node, int column) {
+         final Object value;
+ 
+         switch (column) {
+             case 0:

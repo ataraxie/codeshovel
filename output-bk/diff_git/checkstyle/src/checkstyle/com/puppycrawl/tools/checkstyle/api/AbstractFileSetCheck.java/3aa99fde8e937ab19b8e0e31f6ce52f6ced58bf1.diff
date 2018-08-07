@@ -1,0 +1,71 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
+index dc454a6c4..cf7ec2a49 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
+@@ -65,51 +65,66 @@ public abstract class AbstractFileSetCheck
+      * This method can be used in the implementation of <code>process()</code>
+      * to filter it's argument list for interesting files.
+      * </p>
+      *
+      * @param aFiles the candidates for processing
+      * @return the subset of aFiles that this FileSetCheck should process
+      * @see FileSetCheck#process
+      */
+     protected final File[] filter(File[] aFiles)
+     {
+         if (mFileExtensions == null || mFileExtensions.length == 0) {
+             return aFiles;
+         }
+         ArrayList files = new ArrayList(aFiles.length);
+         for (int i = 0; i < aFiles.length; i++) {
+             File file = aFiles[i];
+             final String fileName = file.getName();
+             for (int j = 0; j < mFileExtensions.length; j++) {
+                 String fileExtension = mFileExtensions[j];
+                 if (fileName.endsWith(fileExtension)) {
+                     files.add(file);
+                 }
+             }
+         }
+         return (File[]) files.toArray(new File[files.size()]);
+     }
+ 
+     /**
+      * Sets the file extensions that identify the files that pass the
+      * filter of this FileSetCheck.
+      * @param aExtensions the set of file extensions. A missing
+      * initial '.' character of an extension is automatically added.
+      */
+     public final void setFileExtensions(String[] aExtensions)
+     {
+         if (aExtensions == null) {
+             mFileExtensions = null;
+             return;
+         }
+         mFileExtensions = new String[aExtensions.length];
+         for (int i = 0; i < aExtensions.length; i++) {
+             String extension = aExtensions[i];
+             if (extension.startsWith(".")) {
+                 mFileExtensions[i] = extension;
+             }
+             else {
+                 mFileExtensions[i] = "." + extension;
+             }
+         }
+     }
++
++    /**
++     * Returns the Message bundle name to use for this FileSetCheck.
++     * The default implementation uses the <code>messages</code> bundle
++     * in the same package as this FileSetCeck.
++     * @return the message bundle name
++     */
++    protected String getMessageBundle()
++    {
++        final String className = getClass().getName();
++        final int pkgEndIndex = className.lastIndexOf('.');
++        final String pkgName = className.substring(0, pkgEndIndex);
++        final String bundle = pkgName + ".messages";
++        return bundle;
++    }
+ }

@@ -1,0 +1,199 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/JavadocDetailNodeParser.java b/src/main/java/com/puppycrawl/tools/checkstyle/JavadocDetailNodeParser.java
+index 85adb62c7..70adc5f87 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/JavadocDetailNodeParser.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/JavadocDetailNodeParser.java
+@@ -1,86 +1,87 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle;
+ 
+ import org.antlr.v4.runtime.ANTLRInputStream;
+ import org.antlr.v4.runtime.BailErrorStrategy;
+ import org.antlr.v4.runtime.BaseErrorListener;
+ import org.antlr.v4.runtime.CommonTokenStream;
+ import org.antlr.v4.runtime.ParserRuleContext;
+ import org.antlr.v4.runtime.RecognitionException;
+ import org.antlr.v4.runtime.Recognizer;
+ import org.antlr.v4.runtime.Token;
+ import org.antlr.v4.runtime.misc.ParseCancellationException;
+ import org.antlr.v4.runtime.tree.ParseTree;
+ import org.antlr.v4.runtime.tree.TerminalNode;
+ 
+ import com.google.common.base.CaseFormat;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.DetailNode;
++import com.puppycrawl.tools.checkstyle.api.JavadocTokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocNodeImpl;
+ import com.puppycrawl.tools.checkstyle.grammars.javadoc.JavadocLexer;
+ import com.puppycrawl.tools.checkstyle.grammars.javadoc.JavadocParser;
+ import com.puppycrawl.tools.checkstyle.utils.JavadocUtils;
+ 
+ /**
+  * Used for parsing Javadoc comment as DetailNode tree.
+  * @author bizmailov
+  *
+  */
+ public class JavadocDetailNodeParser {
+ 
+     /**
+      * Message key of error message. Missed close HTML tag breaks structure
+      * of parse tree, so parser stops parsing and generates such error
+      * message. This case is special because parser prints error like
+      * {@code "no viable alternative at input 'b \n *\n'"} and it is not
+      * clear that error is about missed close HTML tag.
+      */
+     public static final String MSG_JAVADOC_MISSED_HTML_CLOSE = "javadoc.missed.html.close";
+ 
+     /**
+      * Message key of error message.
+      */
+     public static final String MSG_JAVADOC_WRONG_SINGLETON_TAG =
+         "javadoc.wrong.singleton.html.tag";
+ 
+     /**
+      * Parse error while rule recognition.
+      */
+     public static final String MSG_JAVADOC_PARSE_RULE_ERROR = "javadoc.parse.rule.error";
+ 
+     /**
+      * Error message key for common javadoc errors.
+      */
+     public static final String MSG_KEY_PARSE_ERROR = "javadoc.parse.error";
+ 
+     /**
+      * Unrecognized error from antlr parser.
+      */
+     public static final String MSG_KEY_UNRECOGNIZED_ANTLR_ERROR =
+             "javadoc.unrecognized.antlr.error";
+ 
+     /**
+      * Line number of the Block comment AST that is being parsed.
+      */
+     private int blockCommentLineNumber;
+ 
+     /**
+      * Custom error listener.
+@@ -134,100 +135,106 @@ public class JavadocDetailNodeParser {
+         return result;
+     }
+ 
+     /**
+      * Parses block comment content as javadoc comment.
+      * @param blockComment
+      *        block comment content.
+      * @return parse tree
+      */
+     private ParseTree parseJavadocAsParseTree(String blockComment) {
+         final ANTLRInputStream input = new ANTLRInputStream(blockComment);
+ 
+         final JavadocLexer lexer = new JavadocLexer(input);
+ 
+         // remove default error listeners
+         lexer.removeErrorListeners();
+ 
+         // add custom error listener that logs parsing errors
+         lexer.addErrorListener(errorListener);
+ 
+         final CommonTokenStream tokens = new CommonTokenStream(lexer);
+ 
+         final JavadocParser parser = new JavadocParser(tokens);
+ 
+         // remove default error listeners
+         parser.removeErrorListeners();
+ 
+         // add custom error listener that logs syntax errors
+         parser.addErrorListener(errorListener);
+ 
+         // This strategy stops parsing when parser error occurs.
+         // By default it uses Error Recover Strategy which is slow and useless.
+         parser.setErrorHandler(new BailErrorStrategy());
+ 
+         return parser.javadoc();
+     }
+ 
+     /**
+      * Converts ParseTree (that is generated by ANTLRv4) to DetailNode tree.
+      *
+      * @param parseTreeNode root node of ParseTree
+      * @return root of DetailNode tree
+      */
+     private DetailNode convertParseTreeToDetailNode(ParseTree parseTreeNode) {
+         final JavadocNodeImpl rootJavadocNode = createRootJavadocNode(parseTreeNode);
+ 
+         JavadocNodeImpl currentJavadocParent = rootJavadocNode;
+         ParseTree parseTreeParent = parseTreeNode;
+ 
+         while (currentJavadocParent != null) {
++            // remove unnecessary children tokens
++            if (currentJavadocParent.getType() == JavadocTokenTypes.TEXT) {
++                currentJavadocParent
++                        .setChildren((DetailNode[]) JavadocNodeImpl.EMPTY_DETAIL_NODE_ARRAY);
++            }
++
+             final JavadocNodeImpl[] children =
+                     (JavadocNodeImpl[]) currentJavadocParent.getChildren();
+ 
+             insertChildrenNodes(children, parseTreeParent);
+ 
+             if (children.length > 0) {
+                 currentJavadocParent = children[0];
+                 parseTreeParent = parseTreeParent.getChild(0);
+             }
+             else {
+                 JavadocNodeImpl nextJavadocSibling = (JavadocNodeImpl) JavadocUtils
+                         .getNextSibling(currentJavadocParent);
+ 
+                 ParseTree nextParseTreeSibling = getNextSibling(parseTreeParent);
+ 
+                 if (nextJavadocSibling == null) {
+                     JavadocNodeImpl tempJavadocParent =
+                             (JavadocNodeImpl) currentJavadocParent.getParent();
+ 
+                     ParseTree tempParseTreeParent = parseTreeParent.getParent();
+ 
+                     while (nextJavadocSibling == null && tempJavadocParent != null) {
+ 
+                         nextJavadocSibling = (JavadocNodeImpl) JavadocUtils
+                                 .getNextSibling(tempJavadocParent);
+ 
+                         nextParseTreeSibling = getNextSibling(tempParseTreeParent);
+ 
+                         tempJavadocParent = (JavadocNodeImpl) tempJavadocParent.getParent();
+                         tempParseTreeParent = tempParseTreeParent.getParent();
+                     }
+                 }
+                 currentJavadocParent = nextJavadocSibling;
+                 parseTreeParent = nextParseTreeSibling;
+             }
+         }
+ 
+         return rootJavadocNode;
+     }
+ 
+     /**
+      * Creates child nodes for each node from 'nodes' array.
+      * @param parseTreeParent original ParseTree parent node
+      * @param nodes array of JavadocNodeImpl nodes
+      */
+     private void insertChildrenNodes(final JavadocNodeImpl[] nodes, ParseTree parseTreeParent) {
+         for (int i = 0; i < nodes.length; i++) {
+             final JavadocNodeImpl currentJavadocNode = nodes[i];
+             final ParseTree currentParseTreeNodeChild = parseTreeParent.getChild(i);
+             final JavadocNodeImpl[] subChildren =

@@ -1,0 +1,67 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+index 904db6bbd..4982e32c0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+@@ -300,60 +300,60 @@ public class FinalLocalVariableCheck extends Check {
+         final DetailAST classOrMethodOfAst2 =
+             findClassOrConstructorOrMethodInWhichItIsDefined(ast2);
+ 
+         final String identifierOfAst1 =
+             classOrMethodOfAst1.findFirstToken(TokenTypes.IDENT).getText();
+         final String identifierOfAst2 =
+             classOrMethodOfAst2.findFirstToken(TokenTypes.IDENT).getText();
+ 
+         return identifierOfAst1.equals(identifierOfAst2);
+     }
+ 
+     /**
+      * Inserts a variable at the topmost scope stack
+      * @param ast the variable to insert
+      */
+     private void insertVariable(DetailAST ast) {
+         final Map<String, DetailAST> state = scopeStack.peek();
+         final DetailAST astNode = ast.findFirstToken(TokenTypes.IDENT);
+         state.put(astNode.getText(), astNode);
+     }
+ 
+     /**
+      * Removes the variable from the Stacks
+      * @param ast Variable to remove
+      */
+     private void removeVariable(DetailAST ast) {
+         final Iterator<Map<String, DetailAST>> iterator = scopeStack.descendingIterator();
+         while (iterator.hasNext()) {
+             final Map<String, DetailAST> state = iterator.next();
+             final DetailAST storedVariable = state.get(ast.getText());
+             if (storedVariable != null && isSameVariables(storedVariable, ast)) {
+                 state.remove(ast.getText());
+                 break;
+             }
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         super.leaveToken(ast);
+ 
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+             case TokenTypes.SLIST:
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.STATIC_INIT:
+             case TokenTypes.INSTANCE_INIT:
+             case TokenTypes.METHOD_DEF:
+                 final Map<String, DetailAST> state = scopeStack.pop();
+-                for (DetailAST var : state.values()) {
+-                    log(var.getLineNo(), var.getColumnNo(), MSG_KEY, var
++                for (DetailAST node : state.values()) {
++                    log(node.getLineNo(), node.getColumnNo(), MSG_KEY, node
+                         .getText());
+                 }
+                 break;
+ 
+             default:
+         }
+     }
+ }

@@ -1,0 +1,182 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/ExecutableStatementCountCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/ExecutableStatementCountCheck.java
+index 1c3dd8f1f..ec6581937 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/ExecutableStatementCountCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/ExecutableStatementCountCheck.java
+@@ -37,175 +37,167 @@ public final class ExecutableStatementCountCheck
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "executableStatementCount";
+ 
+     /** Default threshold */
+     private static final int DEFAULT_MAX = 30;
+ 
+     /** Threshold to report error for */
+     private int max;
+ 
+     /** Stack of method contexts. */
+     private final Deque<Context> contextStack = new ArrayDeque<>();
+ 
+     /** Current method context. */
+     private Context context;
+ 
+     /** Constructs a {@code ExecutableStatementCountCheck}. */
+     public ExecutableStatementCountCheck() {
+         max = DEFAULT_MAX;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.SLIST,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {TokenTypes.SLIST};
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.SLIST,
+         };
+     }
+ 
+-    /**
+-     * Gets the maximum threshold.
+-     * @return the maximum threshold.
+-     */
+-    public int getMax() {
+-        return max;
+-    }
+-
+     /**
+      * Sets the maximum threshold.
+      * @param max the maximum threshold.
+      */
+     public void setMax(int max) {
+         this.max = max;
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         context = new Context(null);
+         contextStack.clear();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.INSTANCE_INIT:
+             case TokenTypes.STATIC_INIT:
+                 visitMemberDef(ast);
+                 break;
+             case TokenTypes.SLIST:
+                 visitSlist(ast);
+                 break;
+             default:
+                 throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.INSTANCE_INIT:
+             case TokenTypes.STATIC_INIT:
+                 leaveMemberDef(ast);
+                 break;
+             case TokenTypes.SLIST:
+                 // Do nothing
+                 break;
+             default:
+                 throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
+     /**
+      * Process the start of the member definition.
+      * @param ast the token representing the member definition.
+      */
+     private void visitMemberDef(DetailAST ast) {
+         contextStack.push(context);
+         context = new Context(ast);
+     }
+ 
+     /**
+      * Process the end of a member definition.
+      *
+      * @param ast the token representing the member definition.
+      */
+     private void leaveMemberDef(DetailAST ast) {
+         final int count = context.getCount();
+-        if (count > getMax()) {
++        if (count > max) {
+             log(ast.getLineNo(), ast.getColumnNo(),
+-                    MSG_KEY, count, getMax());
++                    MSG_KEY, count, max);
+         }
+         context = contextStack.pop();
+     }
+ 
+     /**
+      * Process the end of a statement list.
+      *
+      * @param ast the token representing the statement list.
+      */
+     private void visitSlist(DetailAST ast) {
+         if (context.getAST() != null) {
+             // find member AST for the statement list
+             final DetailAST contextAST = context.getAST();
+             DetailAST parent = ast.getParent();
+             int type = parent.getType();
+             while (type != TokenTypes.CTOR_DEF
+                 && type != TokenTypes.METHOD_DEF
+                 && type != TokenTypes.INSTANCE_INIT
+                 && type != TokenTypes.STATIC_INIT) {
+ 
+                 parent = parent.getParent();
+                 type = parent.getType();
+             }
+             if (parent == contextAST) {
+                 context.addCount(ast.getChildCount() / 2);
+             }
+         }
+     }
+ 
+     /**
+      * Class to encapsulate counting information about one member.
+      * @author Simon Harris
+      */
+     private static class Context {
+         /** Member AST node. */
+         private final DetailAST ast;
+ 
+         /** Counter for context elements. */
+         private int count;
+ 
+         /**
+          * Creates new member context.
+          * @param ast member AST node.
+          */
+         Context(DetailAST ast) {
+             this.ast = ast;
+             count = 0;
+         }
+ 
+         /**

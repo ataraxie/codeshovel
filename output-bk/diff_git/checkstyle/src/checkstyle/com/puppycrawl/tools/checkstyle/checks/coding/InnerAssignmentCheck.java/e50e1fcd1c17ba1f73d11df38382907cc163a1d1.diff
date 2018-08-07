@@ -1,0 +1,75 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java
+index efcf0ae3b..087e5a19b 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/InnerAssignmentCheck.java
+@@ -161,67 +161,67 @@ public class InnerAssignmentCheck
+         }
+         final DetailAST expr = aAST.getParent();
+         final AST exprNext = expr.getNextSibling();
+         return (exprNext != null) && (exprNext.getType() == TokenTypes.SEMI);
+     }
+ 
+     /**
+      * Tests whether the given AST is used in the "assignment in while test"
+      * idiom.
+      * <p>
+      * <pre>
+      * while ((b = is.read()) != -1) {
+      *   // work with b
+      * }
+      * <pre>
+      * @param aAST assignment AST
+      * @return whether the context of the assignemt AST indicates the idiom
+      */
+     private boolean isInWhileIdiom(DetailAST aAST)
+     {
+         if (!isComparison(aAST.getParent())) {
+             return false;
+         }
+         return isInContext(
+                 aAST.getParent(), ALLOWED_ASSIGMENT_IN_COMPARISON_CONTEXT);
+     }
+ 
+     /**
+      * Checks if an AST is a comparison operator.
+      * @param aAST the AST to check
+      * @return true iff aAST is a comparison operator.
+      */
+     private static boolean isComparison(DetailAST aAST)
+     {
+         final int astType = aAST.getType();
+         return (Arrays.binarySearch(COMPARISON_TYPES, astType) >= 0);
+     }
+ 
+     /**
+      * Tests whether the provided AST is in
+      * one of the given contexts.
+      *
+      * @param aAST the AST from which to start walking towards root
+      * @param aContextSet the contexts to test against.
+      *
+      * @return whether the parents nodes of aAST match
+      * one of the allowed type paths
+      */
+     private static boolean isInContext(DetailAST aAST, int[][] aContextSet)
+     {
+-        for (int i = 0; i < aContextSet.length; i++) {
++        for (int[] element : aContextSet) {
+             DetailAST current = aAST;
+-            final int len = aContextSet[i].length;
++            final int len = element.length;
+             for (int j = 0; j < len; j++) {
+                 current = current.getParent();
+-                final int expectedType = aContextSet[i][j];
++                final int expectedType = element[j];
+                 if ((current == null) || (current.getType() != expectedType)) {
+                     break;
+                 }
+                 if (j == len - 1) {
+                     return true;
+                 }
+             }
+         }
+         return false;
+     }
+ }

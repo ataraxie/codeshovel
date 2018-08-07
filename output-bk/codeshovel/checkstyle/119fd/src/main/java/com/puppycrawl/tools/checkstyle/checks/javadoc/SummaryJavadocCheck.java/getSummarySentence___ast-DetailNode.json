@@ -1,0 +1,106 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SummaryJavadocCheck.java",
+  "functionName": "getSummarySentence",
+  "functionId": "getSummarySentence___ast-DetailNode",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/SummaryJavadocCheck.java",
+  "functionStartLine": 185,
+  "functionEndLine": 205,
+  "changeHistory": [
+    "548ace7809f9b8e52ee1d8506209297e2a400912",
+    "46fa8090954480eecdeb6e7367f0e30655853f42",
+    "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba",
+    "44efd238b3b23132bcfbe86440d82fbe87d28469",
+    "7609e96cc998cca40b396eb3f2d7ae82f60fcce1",
+    "6a8730f03c2114a894a583731cc89bc2ec559978"
+  ],
+  "changeHistoryShort": {
+    "548ace7809f9b8e52ee1d8506209297e2a400912": "Ybodychange",
+    "46fa8090954480eecdeb6e7367f0e30655853f42": "Ybodychange",
+    "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba": "Ymodifierchange",
+    "44efd238b3b23132bcfbe86440d82fbe87d28469": "Ymultichange(Yrename,Yreturntypechange,Ymodifierchange,Ybodychange)",
+    "7609e96cc998cca40b396eb3f2d7ae82f60fcce1": "Ybodychange",
+    "6a8730f03c2114a894a583731cc89bc2ec559978": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "548ace7809f9b8e52ee1d8506209297e2a400912": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4744: ignore starting inheritDoc in SummaryJavadocCheck",
+      "commitDate": 1501904736000,
+      "commitName": "548ace7809f9b8e52ee1d8506209297e2a400912",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1501186710000,
+      "commitNameOld": "46fa8090954480eecdeb6e7367f0e30655853f42",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 8.31,
+      "commitsBetweenForRepo": 37,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,21 @@\n     private static String getSummarySentence(DetailNode ast) {\n         boolean flag \u003d true;\n         final StringBuilder result \u003d new StringBuilder(256);\n         for (DetailNode child : ast.getChildren()) {\n             if (ALLOWED_TYPES.contains(child.getType())) {\n                 result.append(child.getText());\n             }\n-            else if (child.getType() \u003d\u003d JavadocTokenTypes.JAVADOC_INLINE_TAG\n-                    \u0026\u0026 getContentOfChild(child).equals(INHERIT_DOC)) {\n-                result.append(INHERIT_DOC);\n-            }\n             else if (child.getType() \u003d\u003d JavadocTokenTypes.HTML_ELEMENT\n                     \u0026\u0026 CommonUtils.isBlank(result.toString().trim())) {\n                 result.append(getStringInsideTag(result.toString(),\n                         child.getChildren()[0].getChildren()[0]));\n             }\n             else if (child.getType() \u003d\u003d JavadocTokenTypes.JAVADOC_TAG) {\n                 flag \u003d false;\n             }\n             if (!flag) {\n                 break;\n             }\n         }\n         return result.toString().trim();\n     }\n\\ No newline at end of file\n"
+    },
+    "46fa8090954480eecdeb6e7367f0e30655853f42": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4812: add report on StringBufferMustHaveInitialCapacity\n",
+      "commitDate": 1501186710000,
+      "commitName": "46fa8090954480eecdeb6e7367f0e30655853f42",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1500842894000,
+      "commitNameOld": "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 3.98,
+      "commitsBetweenForRepo": 28,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,25 @@\n     private static String getSummarySentence(DetailNode ast) {\n         boolean flag \u003d true;\n-        final StringBuilder result \u003d new StringBuilder();\n+        final StringBuilder result \u003d new StringBuilder(256);\n         for (DetailNode child : ast.getChildren()) {\n             if (ALLOWED_TYPES.contains(child.getType())) {\n                 result.append(child.getText());\n             }\n             else if (child.getType() \u003d\u003d JavadocTokenTypes.JAVADOC_INLINE_TAG\n                     \u0026\u0026 getContentOfChild(child).equals(INHERIT_DOC)) {\n                 result.append(INHERIT_DOC);\n             }\n             else if (child.getType() \u003d\u003d JavadocTokenTypes.HTML_ELEMENT\n                     \u0026\u0026 CommonUtils.isBlank(result.toString().trim())) {\n                 result.append(getStringInsideTag(result.toString(),\n                         child.getChildren()[0].getChildren()[0]));\n             }\n             else if (child.getType() \u003d\u003d JavadocTokenTypes.JAVADOC_TAG) {\n                 flag \u003d false;\n             }\n             if (!flag) {\n                 break;\n             }\n         }\n         return result.toString().trim();\n     }\n\\ No newline at end of file\n"
+    },
+    "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Issue #4726: fix MethodMayBeStatic idea violations\n",
+      "commitDate": 1500842894000,
+      "commitName": "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1500747820000,
+      "commitNameOld": "44efd238b3b23132bcfbe86440d82fbe87d28469",
+      "commitAuthorOld": "Sagar",
+      "daysBetweenCommits": 1.1,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,25 @@\n-    private String getSummarySentence(DetailNode ast) {\n+    private static String getSummarySentence(DetailNode ast) {\n         boolean flag \u003d true;\n         final StringBuilder result \u003d new StringBuilder();\n         for (DetailNode child : ast.getChildren()) {\n             if (ALLOWED_TYPES.contains(child.getType())) {\n                 result.append(child.getText());\n             }\n             else if (child.getType() \u003d\u003d JavadocTokenTypes.JAVADOC_INLINE_TAG\n                     \u0026\u0026 getContentOfChild(child).equals(INHERIT_DOC)) {\n                 result.append(INHERIT_DOC);\n             }\n             else if (child.getType() \u003d\u003d JavadocTokenTypes.HTML_ELEMENT\n                     \u0026\u0026 CommonUtils.isBlank(result.toString().trim())) {\n                 result.append(getStringInsideTag(result.toString(),\n                         child.getChildren()[0].getChildren()[0]));\n             }\n             else if (child.getType() \u003d\u003d JavadocTokenTypes.JAVADOC_TAG) {\n                 flag \u003d false;\n             }\n             if (!flag) {\n                 break;\n             }\n         }\n         return result.toString().trim();\n     }\n\\ No newline at end of file\n"
+    },
+    "44efd238b3b23132bcfbe86440d82fbe87d28469": {
+      "type": "Ymultichange(Yrename,Yreturntypechange,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Issue #3907: SummaryJavadoc no violation on javadoc where \u0027.\u0027 is used not as end of sentence\n",
+      "commitDate": 1500747820000,
+      "commitName": "44efd238b3b23132bcfbe86440d82fbe87d28469",
+      "commitAuthor": "Sagar",
+      "subchanges": [
+        "Yrename",
+        "Yreturntypechange",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "7609e96cc998cca40b396eb3f2d7ae82f60fcce1": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4342: Applied requested changes\n",
+      "commitDate": 1495136630000,
+      "commitName": "7609e96cc998cca40b396eb3f2d7ae82f60fcce1",
+      "commitAuthor": "Dmytro Kytsmen",
+      "commitDateOld": 1490449458000,
+      "commitNameOld": "6a8730f03c2114a894a583731cc89bc2ec559978",
+      "commitAuthorOld": "Sagar",
+      "daysBetweenCommits": 54.25,
+      "commitsBetweenForRepo": 219,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,26 @@\n     private static boolean isOnlyInheritDoc(DetailNode ast) {\n         boolean extraTextFound \u003d false;\n         boolean containsInheritDoc \u003d false;\n         for (DetailNode child : ast.getChildren()) {\n             if (child.getType() \u003d\u003d JavadocTokenTypes.TEXT) {\n-                if (!child.getText().trim().isEmpty()) {\n+                if (!CommonUtils.isBlank(child.getText())) {\n                     extraTextFound \u003d true;\n                 }\n             }\n             else if (child.getType() \u003d\u003d JavadocTokenTypes.JAVADOC_INLINE_TAG) {\n                 if (child.getChildren()[1].getType() \u003d\u003d JavadocTokenTypes.INHERIT_DOC_LITERAL) {\n                     containsInheritDoc \u003d true;\n                 }\n                 else {\n                     extraTextFound \u003d true;\n                 }\n             }\n             else if (!SKIP_TOKENS.contains(child.getType())) {\n                 extraTextFound \u003d true;\n             }\n             if (extraTextFound) {\n                 break;\n             }\n         }\n         return containsInheritDoc \u0026\u0026 !extraTextFound;\n     }\n\\ No newline at end of file\n"
+    },
+    "6a8730f03c2114a894a583731cc89bc2ec559978": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #3908: SummaryJavadoc need special processing of inheritDoc tag\n",
+      "commitDate": 1490449458000,
+      "commitName": "6a8730f03c2114a894a583731cc89bc2ec559978",
+      "commitAuthor": "Sagar"
+    }
+  }
+}

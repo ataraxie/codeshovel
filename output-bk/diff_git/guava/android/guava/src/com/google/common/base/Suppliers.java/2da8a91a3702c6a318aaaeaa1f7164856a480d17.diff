@@ -1,0 +1,101 @@
+diff --git a/android/guava/src/com/google/common/base/Suppliers.java b/android/guava/src/com/google/common/base/Suppliers.java
+index 0fa656e05..003027bd6 100644
+--- a/android/guava/src/com/google/common/base/Suppliers.java
++++ b/android/guava/src/com/google/common/base/Suppliers.java
+@@ -1,95 +1,95 @@
+ /*
+  * Copyright (C) 2007 The Guava Authors
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+  * in compliance with the License. You may obtain a copy of the License at
+  *
+  * http://www.apache.org/licenses/LICENSE-2.0
+  *
+  * Unless required by applicable law or agreed to in writing, software distributed under the License
+  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+  * or implied. See the License for the specific language governing permissions and limitations under
+  * the License.
+  */
+ 
+ package com.google.common.base;
+ 
+ import com.google.common.annotations.GwtCompatible;
+ import com.google.common.annotations.VisibleForTesting;
+ import java.io.Serializable;
+ import java.util.concurrent.TimeUnit;
+ import javax.annotation.Nullable;
+ 
+ /**
+  * Useful suppliers.
+  *
+  * <p>All methods return serializable suppliers as long as they're given serializable parameters.
+  *
+  * @author Laurence Gonsalves
+  * @author Harry Heymann
+  * @since 2.0
+  */
+ @GwtCompatible
+ public final class Suppliers {
+   private Suppliers() {}
+ 
+   /**
+    * Returns a new supplier which is the composition of the provided function and supplier. In other
+    * words, the new supplier's value will be computed by retrieving the value from {@code supplier},
+    * and then applying {@code function} to that value. Note that the resulting supplier will not
+    * call {@code supplier} or invoke {@code function} until it is called.
+    */
+   public static <F, T> Supplier<T> compose(Function<? super F, T> function, Supplier<F> supplier) {
+     Preconditions.checkNotNull(function);
+     Preconditions.checkNotNull(supplier);
+-    return new SupplierComposition<F, T>(function, supplier);
++    return new SupplierComposition<>(function, supplier);
+   }
+ 
+   private static class SupplierComposition<F, T> implements Supplier<T>, Serializable {
+     final Function<? super F, T> function;
+     final Supplier<F> supplier;
+ 
+     SupplierComposition(Function<? super F, T> function, Supplier<F> supplier) {
+       this.function = function;
+       this.supplier = supplier;
+     }
+ 
+     @Override
+     public T get() {
+       return function.apply(supplier.get());
+     }
+ 
+     @Override
+     public boolean equals(@Nullable Object obj) {
+       if (obj instanceof SupplierComposition) {
+         SupplierComposition<?, ?> that = (SupplierComposition<?, ?>) obj;
+         return function.equals(that.function) && supplier.equals(that.supplier);
+       }
+       return false;
+     }
+ 
+     @Override
+     public int hashCode() {
+       return Objects.hashCode(function, supplier);
+     }
+ 
+     @Override
+     public String toString() {
+       return "Suppliers.compose(" + function + ", " + supplier + ")";
+     }
+ 
+     private static final long serialVersionUID = 0;
+   }
+ 
+   /**
+    * Returns a supplier which caches the instance retrieved during the first call to {@code get()}
+    * and returns that value on subsequent calls to {@code get()}. See: <a
+    * href="http://en.wikipedia.org/wiki/Memoization">memoization</a>
+    *
+    * <p>The returned supplier is thread-safe. The delegate's {@code get()} method will be invoked at
+    * most once. The supplier's serialized form does not contain the cached value, which will be
+    * recalculated when {@code get()} is called on the reserialized instance.
+    *
+    * <p>If {@code delegate} is an instance created by an earlier call to {@code memoize}, it is
+    * returned directly.
+    */

@@ -1,0 +1,110 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/RegexpCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/RegexpCheck.java
+index 798adb88d..ab131db80 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/RegexpCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/RegexpCheck.java
+@@ -152,98 +152,104 @@ public class RegexpCheck extends AbstractFormatCheck {
+     }
+ 
+     /**
+      * Sets the limit on the number of errors to report.
+      * @param errorLimit the number of errors to report.
+      */
+     public void setErrorLimit(int errorLimit) {
+         this.errorLimit = errorLimit;
+     }
+ 
+     /**
+      * Sets the maximum number of instances of required pattern allowed.
+      * @param duplicateLimit negative values mean no duplicate checking,
+      * any positive value is used as the limit.
+      */
+     public void setDuplicateLimit(int duplicateLimit) {
+         this.duplicateLimit = duplicateLimit;
+         checkForDuplicates = duplicateLimit > DEFAULT_DUPLICATE_LIMIT;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[0];
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         final Pattern pattern = getRegexp();
+         matcher = pattern.matcher(getFileContents().getText().getFullText());
+         matchCount = 0;
+         errorCount = 0;
+         findMatch();
+     }
+ 
+     /** recursive method that finds the matches. */
+     private void findMatch() {
+         int startLine;
+         int startColumn;
+         int endLine;
+         int endColumn;
+         boolean foundMatch;
+         boolean ignore = false;
+ 
+         foundMatch = matcher.find();
+         if (!foundMatch && !illegalPattern && matchCount == 0) {
+             logMessage(0);
+         }
+         else if (foundMatch) {
+             final FileText text = getFileContents().getText();
+             final LineColumn start = text.lineColumn(matcher.start());
+-            final LineColumn end = text.lineColumn(matcher.end() - 1);
++            final LineColumn end;
++            if (matcher.end() == 0) {
++                end = text.lineColumn(0);
++            }
++            else {
++                end = text.lineColumn(matcher.end() - 1);
++            }
+             startLine = start.getLine();
+             startColumn = start.getColumn();
+             endLine = end.getLine();
+             endColumn = end.getColumn();
+             if (ignoreComments) {
+                 final FileContents theFileContents = getFileContents();
+                 ignore = theFileContents.hasIntersectionWithComment(startLine,
+                     startColumn, endLine, endColumn);
+             }
+             if (!ignore) {
+                 matchCount++;
+                 if (illegalPattern || checkForDuplicates
+                         && matchCount - 1 > duplicateLimit) {
+                     errorCount++;
+                     logMessage(startLine);
+                 }
+             }
+             if (errorCount < errorLimit
+                     && (ignore || illegalPattern || checkForDuplicates)) {
+                 findMatch();
+             }
+         }
+     }
+ 
+     /**
+      * Displays the right message.
+      * @param lineNumber the line number the message relates to.
+      */
+     private void logMessage(int lineNumber) {
+         String msg = "".equals(getMessage()) ? getFormat() : message;
+         if (errorCount >= errorLimit) {
+             msg = ERROR_LIMIT_EXCEEDED_MESSAGE + msg;
+         }
+         if (illegalPattern) {
+             log(lineNumber, MSG_ILLEGAL_REGEXP, msg);
+         }
+         else {
+             if (lineNumber > 0) {
+                 log(lineNumber, MSG_DUPLICATE_REGEXP, msg);
+             }
+             else {
+                 log(lineNumber, MSG_REQUIRED_REGEXP, msg);
+             }
+         }
+     }
+ }
+ 

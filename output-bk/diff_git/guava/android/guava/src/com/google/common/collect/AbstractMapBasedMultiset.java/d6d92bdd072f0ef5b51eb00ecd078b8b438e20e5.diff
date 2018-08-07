@@ -1,0 +1,107 @@
+diff --git a/android/guava/src/com/google/common/collect/AbstractMapBasedMultiset.java b/android/guava/src/com/google/common/collect/AbstractMapBasedMultiset.java
+index 4caf06165..ad3945249 100644
+--- a/android/guava/src/com/google/common/collect/AbstractMapBasedMultiset.java
++++ b/android/guava/src/com/google/common/collect/AbstractMapBasedMultiset.java
+@@ -36,101 +36,101 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+ 
+ /**
+  * Basic implementation of {@code Multiset<E>} backed by an instance of {@code
+  * AbstractObjectCountMap<E>}.
+  *
+  * <p>For serialization to work, the subclass must specify explicit {@code readObject} and {@code
+  * writeObject} methods.
+  *
+  * @author Kevin Bourrillion
+  */
+ @GwtCompatible(emulated = true)
+ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implements Serializable {
+   transient AbstractObjectCountMap<E> backingMap;
+ 
+   /*
+    * Cache the size for efficiency. Using a long lets us avoid the need for
+    * overflow checking and ensures that size() will function correctly even if
+    * the multiset had once been larger than Integer.MAX_VALUE.
+    */
+   private transient long size;
+ 
+   /** Standard constructor. */
+   protected AbstractMapBasedMultiset(AbstractObjectCountMap<E> backingMap) {
+     this.backingMap = checkNotNull(backingMap);
+     this.size = super.size();
+   }
+ 
+   /** Used during deserialization only. The backing map must be empty. */
+   void setBackingMap(AbstractObjectCountMap<E> backingMap) {
+     this.backingMap = backingMap;
+   }
+ 
+   // Required Implementations
+ 
+   /**
+    * {@inheritDoc}
+    *
+    * <p>Invoking {@link Multiset.Entry#getCount} on an entry in the returned set always returns the
+    * current count of that element in the multiset, as opposed to the count at the time the entry
+    * was retrieved.
+    */
+   @Override
+   public Set<Multiset.Entry<E>> createEntrySet() {
+     return new EntrySet();
+   }
+ 
+   @Override
+   Iterator<Entry<E>> entryIterator() {
+     final Iterator<Entry<E>> backingEntries = backingMap.entrySet().iterator();
+     return new Iterator<Multiset.Entry<E>>() {
+-      Entry<E> toRemove;
++      @NullableDecl Entry<E> toRemove;
+       boolean canRemove;
+ 
+       @Override
+       public boolean hasNext() {
+         return backingEntries.hasNext();
+       }
+ 
+       @Override
+       public Multiset.Entry<E> next() {
+         final Entry<E> mapEntry = backingEntries.next();
+         toRemove = mapEntry;
+         canRemove = true;
+         return mapEntry;
+       }
+ 
+       @Override
+       public void remove() {
+         checkRemove(canRemove);
+         size -= toRemove.getCount();
+         backingEntries.remove();
+         canRemove = false;
+         toRemove = null;
+       }
+     };
+   }
+ 
+   @Override
+   public void clear() {
+     backingMap.clear();
+     size = 0L;
+   }
+ 
+   @Override
+   int distinctElements() {
+     return backingMap.size();
+   }
+ 
+   // Optimizations - Query Operations
+ 
+   @Override
+   public int size() {
+     return Ints.saturatedCast(size);
+   }
+ 
+   @Override
+   public Iterator<E> iterator() {
+     return new MapBasedMultisetIterator();
+   }
+ 
+   /*

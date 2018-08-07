@@ -1,0 +1,303 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index 43f465216..d1ac18d5e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -181,170 +181,158 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck
+     public void setAllowMissingParamTags(boolean aFlag)
+     {
+         mAllowMissingParamTags = aFlag;
+     }
+ 
+     /**
+      * controls whether to allow a method which declares that it throws
+      * exceptions to omit matching throws tags in the javadoc. Defaults to
+      * false.
+      *
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingThrowsTags(boolean aFlag)
+     {
+         mAllowMissingThrowsTags = aFlag;
+     }
+ 
+     /**
+      * controls whether to allow a method which returns non-void type to omit
+      * the return tag in the javadoc. Defaults to false.
+      *
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingReturnTag(boolean aFlag)
+     {
+         mAllowMissingReturnTag = aFlag;
+     }
+ 
+     /**
+      * Controls whether to ignore errors when there is no javadoc. Defaults to
+      * false.
+      *
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingJavadoc(boolean aFlag)
+     {
+         mAllowMissingJavadoc = aFlag;
+     }
+ 
+     /**
+      * Controls whether to ignore errors when there is no javadoc for a
+      * property accessor (setter/getter methods). Defaults to false.
+      *
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingPropertyJavadoc(final boolean aFlag)
+     {
+         mAllowMissingPropertyJavadoc = aFlag;
+     }
+ 
+-    /** {@inheritDoc} */
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT,
+                           TokenTypes.CLASS_DEF, TokenTypes.ENUM_DEF,
+                           TokenTypes.METHOD_DEF, TokenTypes.CTOR_DEF,
+                           TokenTypes.ANNOTATION_FIELD_DEF,
+         };
+     }
+ 
+-    /** {@inheritDoc} */
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {TokenTypes.METHOD_DEF, TokenTypes.CTOR_DEF,
+                           TokenTypes.ANNOTATION_FIELD_DEF,
+         };
+     }
+ 
+-    /**
+-     * Checks Javadoc comments for a method or constructor.
+-     *
+-     * @param aAST the tree node for the method or constructor.
+-     */
+     @Override
+     protected final void processAST(DetailAST aAST)
+     {
+         final Scope theScope = calculateScope(aAST);
+         if (shouldCheck(aAST, theScope)) {
+             final FileContents contents = getFileContents();
+             final TextBlock cmt = contents.getJavadocBefore(aAST.getLineNo());
+ 
+             if (cmt == null) {
+                 if (!isMissingJavadocAllowed(aAST)) {
+                     log(aAST, "javadoc.missing");
+                 }
+             }
+             else {
+                 checkComment(aAST, cmt, theScope);
+             }
+         }
+     }
+ 
+-    /**
+-     * Logs error if unable to load class information.
+-     *
+-     * @param aIdent class name for which we can no load class.
+-     */
+     @Override
+     protected final void logLoadError(Token aIdent)
+     {
+         logLoadErrorImpl(aIdent.getLineNo(), aIdent.getColumnNo(),
+                          "javadoc.classInfo", "@throws", aIdent.getText());
+     }
+ 
+     /**
+      * The JavadocMethodCheck is about to report a missing Javadoc.
+      * This hook can be used by derived classes to allow a missing javadoc
+      * in some situations.  The default implementation checks
+      * <code>allowMissingJavadoc</code> and
+      * <code>allowMissingPropertyJavadoc</code> properties, do not forget
+      * to call <code>super.isMissingJavadocAllowed(aAST)</code> in case
+      * you want to keep this logic.
+      * @param aAST the tree node for the method or constructor.
+      * @return True if this method or constructor doesn't need Javadoc.
+      */
+     protected boolean isMissingJavadocAllowed(final DetailAST aAST)
+     {
+-        return mAllowMissingJavadoc
++        return mAllowMissingJavadoc || isOverrideMethod(aAST)
+             || (mAllowMissingPropertyJavadoc
+                 && (isSetterMethod(aAST) || isGetterMethod(aAST)));
+     }
+ 
+     /**
+      * Whether we should check this node.
+      *
+      * @param aAST a given node.
+      * @param aScope the scope of the node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST aAST, final Scope aScope)
+     {
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(aAST);
+ 
+         return aScope.isIn(mScope)
+                 && surroundingScope.isIn(mScope)
+                 && ((mExcludeScope == null) || !aScope.isIn(mExcludeScope)
+                     || !surroundingScope.isIn(mExcludeScope));
+     }
+ 
+     /**
+      * Checks the Javadoc for a method.
+      *
+      * @param aAST the token for the method
+      * @param aComment the Javadoc comment
+      * @param aScope the scope of the method.
+      */
+     private void checkComment(DetailAST aAST, TextBlock aComment, Scope aScope)
+     {
+         final List<JavadocTag> tags = getMethodTags(aComment);
+ 
+         if (hasShortCircuitTag(aAST, tags, aScope)) {
+             return;
+         }
+ 
+         Iterator<JavadocTag> it = tags.iterator();
+         if (aAST.getType() != TokenTypes.ANNOTATION_FIELD_DEF) {
+             // Check for inheritDoc
+             boolean hasInheritDocTag = false;
+             while (it.hasNext() && !hasInheritDocTag) {
+                 hasInheritDocTag |= (it.next()).isInheritDocTag();
+             }
+ 
+             checkParamTags(tags, aAST, !hasInheritDocTag);
+             checkThrowsTags(tags, getThrows(aAST), !hasInheritDocTag);
+             if (isFunction(aAST)) {
+                 checkReturnTag(tags, aAST.getLineNo(), !hasInheritDocTag);
+             }
+         }
+@@ -834,94 +822,126 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck
+     private boolean isGetterMethod(final DetailAST aAST)
+     {
+         // Check have a method with exactly 7 children which are all that
+         // is allowed in a proper getter method which does not throw any
+         // exceptions.
+         if ((aAST.getType() != TokenTypes.METHOD_DEF)
+                 || (aAST.getChildCount() != MAX_CHILDREN))
+         {
+             return false;
+         }
+ 
+         // Check the name matches format of getX or isX. Technically I should
+         // check that the format isX is only used with a boolean type.
+         final DetailAST type = aAST.findFirstToken(TokenTypes.TYPE);
+         final String name = type.getNextSibling().getText();
+         if (!name.matches("^(is|get)[A-Z].*")) { // Depends on JDK 1.4
+             return false;
+         }
+ 
+         // Check the return type is void
+         if (type.getChildCount(TokenTypes.LITERAL_VOID) > 0) {
+             return false;
+         }
+ 
+         // Check that is had only one parameter
+         final DetailAST params = aAST.findFirstToken(TokenTypes.PARAMETERS);
+         if ((params == null)
+                 || (params.getChildCount(TokenTypes.PARAMETER_DEF) > 0))
+         {
+             return false;
+         }
+ 
+         // Now verify that the body consists of:
+         // SLIST -> RETURN
+         // RCURLY
+         final DetailAST slist = aAST.findFirstToken(TokenTypes.SLIST);
+         if ((slist == null) || (slist.getChildCount() != 2)) {
+             return false;
+         }
+ 
+         final AST expr = slist.getFirstChild();
+         if ((expr.getType() != TokenTypes.LITERAL_RETURN)
+                 || (expr.getFirstChild().getType() != TokenTypes.EXPR))
+         {
+             return false;
+         }
+ 
+         return true;
+     }
+ 
++    /**
++     * Returns is a method has the "@Override" annotation.
++     * @param aAST the AST to check with
++     * @return whether the AST represents a method that has the annotation.
++     */
++    private boolean isOverrideMethod(DetailAST aAST)
++    {
++        // Need it to be a method, cannot have an override on anything else.
++        // Must also have MODIFIERS token to hold the @Override
++        if ((TokenTypes.METHOD_DEF != aAST.getType())
++            || (TokenTypes.MODIFIERS != aAST.getFirstChild().getType()))
++        {
++            return false;
++        }
++
++        // Now loop over all nodes while they are annotations looking for
++        // an "@Override".
++        DetailAST node = (DetailAST) aAST.getFirstChild().getFirstChild();
++        while ((null != node) && (TokenTypes.ANNOTATION == node.getType())) {
++            if ((node.getFirstChild().getType() == TokenTypes.AT)
++                && (node.getFirstChild().getNextSibling().getType()
++                    == TokenTypes.IDENT)
++                && ("Override".equals(
++                        node.getFirstChild().getNextSibling().getText())))
++            {
++                return true;
++            }
++            node = (DetailAST) node.getNextSibling();
++        }
++        return false;
++    }
++
+     /** Stores useful information about declared exception. */
+     private class ExceptionInfo
+     {
+         /** does the exception have throws tag associated with. */
+         private boolean mFound;
+         /** class information associated with this exception. */
+         private final ClassInfo mClassInfo;
+ 
+         /**
+          * Creates new instance for <code>FullIdent</code>.
+          *
+          * @param aIdent the exception
+          * @param aCurrentClass name of current class.
+          */
+         ExceptionInfo(Token aIdent, String aCurrentClass)
+         {
+             mClassInfo = createClassInfo(aIdent, aCurrentClass);
+         }
+ 
+         /** Mark that the exception has associated throws tag */
+         final void setFound()
+         {
+             mFound = true;
+         }
+ 
+         /** @return whether the exception has throws tag associated with */
+         final boolean isFound()
+         {
+             return mFound;
+         }
+ 
+         /** @return exception's name */
+         final Token getName()
+         {
+             return mClassInfo.getName();
+         }
+ 
+         /** @return class for this exception */
+         final Class<?> getClazz()
+         {
+             return mClassInfo.getClazz();
+         }
+     }
+ }

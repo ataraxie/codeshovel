@@ -1,0 +1,109 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+index d12463007..9d8a5a159 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+@@ -251,102 +251,102 @@ public class JavaNCSSCheck extends Check
+         mMethodMax = aMethodMax;
+     }
+ 
+     /**
+      * Checks if a token is countable for the ncss metric
+      *
+      * @param aAST
+      *            the AST
+      * @return true if the token is countable
+      */
+     private boolean isCountable(DetailAST aAST)
+     {
+         boolean countable = true;
+ 
+         int tokenType = aAST.getType();
+ 
+         //check if an expression is countable
+         if (TokenTypes.EXPR == tokenType) {
+             countable = isExpressionCountable(aAST);
+         }
+         //check if an variable definition is countable
+         else if (TokenTypes.VARIABLE_DEF == tokenType) {
+             countable = isVariableDefCountable(aAST);
+         }
+         return countable;
+     }
+ 
+     /**
+      * Checks if a variable definition is countable.
+      *
+      * @param aAST the AST
+      * @return true if the variable definition is countable, false otherwise
+      */
+     private boolean isVariableDefCountable(DetailAST aAST)
+     {
+         boolean countable = false;
+ 
+         //count variable defs only if they are direct child to a slist or
+         // object block
+         int parentType = aAST.getParent().getType();
+ 
+         if (TokenTypes.SLIST == parentType
+             || TokenTypes.OBJBLOCK == parentType)
+         {
+             DetailAST prevSibling = aAST.getPreviousSibling();
+ 
+             //is countable if no previous sibling is found or
+             //the sibling is no COMMA.
+             //This is done because multiple assignment on one line are countes
+             // as 1
+-            countable = prevSibling != null ? TokenTypes.COMMA != prevSibling
+-                    .getType() : true;
++            countable = (prevSibling == null)
++                    || (TokenTypes.COMMA != prevSibling.getType());
+         }
+ 
+         return countable;
+     }
+ 
+     /**
+      * Checks if an expression is countable for the ncss metric.
+      *
+      * @param aAST the AST
+      * @return true if the expression is countable, false otherwise
+      */
+     private boolean isExpressionCountable(DetailAST aAST)
+     {
+         boolean countable = true;
+ 
+         //count expressions only if they are direct child to a slist (method
+         // body, for loop...)
+         //or direct child of label,if,else,do,while,for
+         int parentType = aAST.getParent().getType();
+         switch (parentType) {
+         case TokenTypes.SLIST :
+         case TokenTypes.LABELED_STAT :
+         case TokenTypes.LITERAL_FOR :
+         case TokenTypes.LITERAL_DO :
+         case TokenTypes.LITERAL_WHILE :
+         case TokenTypes.LITERAL_IF :
+         case TokenTypes.LITERAL_ELSE :
+             //don't count if or loop conditions
+             DetailAST prevSibling = aAST.getPreviousSibling();
+             countable = prevSibling == null
+                 || TokenTypes.LPAREN != prevSibling.getType();
+             break;
+         default :
+             countable = false;
+             break;
+         }
+         return countable;
+     }
+ 
+     /**
+      * @author Lars K�dderitzsch
+      *
+      * Class representing a counter,
+      */
+     private class Counter
+     {
+         /** the counters internal integer */
+         private int mIvCount;
+ 
+         /**

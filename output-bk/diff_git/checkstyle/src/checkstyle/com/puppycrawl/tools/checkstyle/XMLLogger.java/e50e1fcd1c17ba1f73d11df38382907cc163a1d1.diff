@@ -1,0 +1,65 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/XMLLogger.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/XMLLogger.java
+index a8547e4fb..832cc8778 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/XMLLogger.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/XMLLogger.java
+@@ -180,58 +180,58 @@ public class XMLLogger
+             case '\"':
+                 sb.append("&quot;");
+                 break;
+             case '&':
+                 final int nextSemi = aValue.indexOf(";", i);
+                 if ((nextSemi < 0)
+                     || !isReference(aValue.substring(i, nextSemi + 1)))
+                 {
+                     sb.append("&amp;");
+                 }
+                 else {
+                     sb.append('&');
+                 }
+                 break;
+             default:
+                 sb.append(c);
+                 break;
+             }
+         }
+         return sb.toString();
+     }
+ 
+     /**
+      * @return whether the given argument a character or entity reference
+      * @param aEnt the possible entity to look for.
+      */
+     public boolean isReference(String aEnt)
+     {
+         if (!(aEnt.charAt(0) == '&') || !aEnt.endsWith(";")) {
+             return false;
+         }
+ 
+         if (aEnt.charAt(1) == '#') {
+             int prefixLength = 2; // "&#"
+             int radix = BASE_10;
+             if (aEnt.charAt(2) == 'x') {
+                 prefixLength++;
+                 radix = BASE_16;
+             }
+             try {
+                 Integer.parseInt(
+                     aEnt.substring(prefixLength, aEnt.length() - 1), radix);
+                 return true;
+             }
+             catch (final NumberFormatException nfe) {
+                 return false;
+             }
+         }
+ 
+         final String name = aEnt.substring(1, aEnt.length() - 1);
+-        for (int i = 0; i < ENTITIES.length; i++) {
+-            if (name.equals(ENTITIES[i])) {
++        for (String element : ENTITIES) {
++            if (name.equals(element)) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ }

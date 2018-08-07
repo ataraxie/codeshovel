@@ -1,0 +1,72 @@
+diff --git a/src/it/java/com/google/checkstyle/test/chapter3filestructure/rule332nolinewrap/NoLineWrapTest.java b/src/it/java/com/google/checkstyle/test/chapter3filestructure/rule332nolinewrap/NoLineWrapTest.java
+index 1881cefcd..50f1dda39 100644
+--- a/src/it/java/com/google/checkstyle/test/chapter3filestructure/rule332nolinewrap/NoLineWrapTest.java
++++ b/src/it/java/com/google/checkstyle/test/chapter3filestructure/rule332nolinewrap/NoLineWrapTest.java
+@@ -24,66 +24,60 @@ import java.io.IOException;
+ 
+ import org.apache.commons.lang3.ArrayUtils;
+ import org.junit.Test;
+ 
+ import com.google.checkstyle.test.base.BaseCheckTestSupport;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck;
+ import com.puppycrawl.tools.checkstyle.checks.whitespace.NoLineWrapCheck;
+ 
+ public class NoLineWrapTest extends BaseCheckTestSupport {
+ 
+     @Override
+     protected String getPath(String fileName) throws IOException {
+         return super.getPath("chapter3filestructure" + File.separator + "rule332nolinewrap"
+                 + File.separator + fileName);
+     }
+ 
+     @Test
+     public void badLineWrapTest() throws Exception {
+ 
+         final String[] expected = {
+             "1: " + getCheckMessage(NoLineWrapCheck.class, "no.line.wrap", "package"),
+             "6: " + getCheckMessage(NoLineWrapCheck.class, "no.line.wrap", "import"),
+         };
+ 
+         final Configuration checkConfig = getCheckConfig("NoLineWrap");
+         final String filePath = getPath("InputNoLineWrapBad.java");
+ 
+         final Integer[] warnList = getLinesWithWarn(filePath);
+         verify(checkConfig, filePath, expected, warnList);
+     }
+ 
+     @Test
+     public void goodLineWrapTest() throws Exception {
+ 
+         final String[] expected = ArrayUtils.EMPTY_STRING_ARRAY;
+ 
+         final Configuration checkConfig = getCheckConfig("NoLineWrap");
+         final String filePath = getPath("InputNoLineWrapGood.java");
+ 
+         final Integer[] warnList = getLinesWithWarn(filePath);
+         verify(checkConfig, filePath, expected, warnList);
+     }
+ 
+     @Test
+     public void goodLineLength() throws Exception {
+ 
+         final int maxLineLength = 100;
+         final String[] expected = {
+             "5: " + getCheckMessage(LineLengthCheck.class, "maxLineLen", maxLineLength, 112),
+-            "29: " + getCheckMessage(LineLengthCheck.class, "maxLineLen", maxLineLength, 183),
+-            "46: " + getCheckMessage(LineLengthCheck.class, "maxLineLen", maxLineLength, 131),
+-            "47: " + getCheckMessage(LineLengthCheck.class, "maxLineLen", maxLineLength, 124),
+-            "48: " + getCheckMessage(LineLengthCheck.class, "maxLineLen", maxLineLength, 113),
+-            "50: " + getCheckMessage(LineLengthCheck.class, "maxLineLen", maxLineLength, 116),
+-            "53: " + getCheckMessage(LineLengthCheck.class, "maxLineLen", maxLineLength, 131),
+-            "57: " + getCheckMessage(LineLengthCheck.class, "maxLineLen", maxLineLength, 116),
++            "29: " + getCheckMessage(LineLengthCheck.class, "maxLineLen", maxLineLength, 113),
+         };
+ 
+         final Configuration checkConfig = getCheckConfig("LineLength");
+         final String filePath = getPath("InputLineLength.java");
+ 
+         final Integer[] warnList = getLinesWithWarn(filePath);
+         verify(checkConfig, filePath, expected, warnList);
+     }
+ }

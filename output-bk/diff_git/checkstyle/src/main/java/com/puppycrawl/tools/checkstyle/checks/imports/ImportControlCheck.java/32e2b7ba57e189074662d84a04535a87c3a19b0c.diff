@@ -1,0 +1,120 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
+index ea24b8e74..72d8e61f5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
+@@ -45,112 +45,111 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  *
+  * @author Oliver Burn
+  */
+ @FileStatefulCheck
+ public class ImportControlCheck extends AbstractCheck implements ExternalResourceHolder {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_MISSING_FILE = "import.control.missing.file";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_UNKNOWN_PKG = "import.control.unknown.pkg";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_DISALLOWED = "import.control.disallowed";
+ 
+     /**
+      * A part of message for exception.
+      */
+     private static final String UNABLE_TO_LOAD = "Unable to load ";
+ 
+     /** Location of import control file. */
+     private String fileLocation;
+ 
+     /** The filepath pattern this check applies to. */
+     private Pattern path = Pattern.compile(".*");
+     /** Whether to process the current file. */
+     private boolean processCurrentFile;
+ 
+     /** The root package controller. */
+     private ImportControl root;
+     /** The package doing the import. */
+     private String packageName;
+ 
+     /**
+      * The package controller for the current file. Used for performance
+      * optimisation.
+      */
+     private ImportControl currentImportControl;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return getAcceptableTokens();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return new int[] {TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT,
+-                          TokenTypes.STATIC_IMPORT, };
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return getAcceptableTokens();
++        return new int[] {TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT, };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         currentImportControl = null;
+         processCurrentFile = path.matcher(getFileContents().getFileName()).find();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (processCurrentFile) {
+             if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+                 if (root == null) {
+                     log(ast, MSG_MISSING_FILE);
+                 }
+                 else {
+                     packageName = getPackageText(ast);
+                     currentImportControl = root.locateFinest(packageName);
+                     if (currentImportControl == null) {
+                         log(ast, MSG_UNKNOWN_PKG);
+                     }
+                 }
+             }
+             else if (currentImportControl != null) {
+                 final String importText = getImportText(ast);
+                 final AccessResult access =
+                         currentImportControl.checkAccess(packageName, importText);
+                 if (access != AccessResult.ALLOWED) {
+                     log(ast, MSG_DISALLOWED, importText);
+                 }
+             }
+         }
+     }
+ 
+     @Override
+     public Set<String> getExternalResourceLocations() {
+         return Collections.singleton(fileLocation);
+     }
+ 
+     /**
+      * Returns package text.
+      * @param ast PACKAGE_DEF ast node
+      * @return String that represents full package name
+      */
+     private static String getPackageText(DetailAST ast) {
+         final DetailAST nameAST = ast.getLastChild().getPreviousSibling();
+         return FullIdent.createFullIdent(nameAST).getText();
+     }
+ 
+     /**

@@ -1,0 +1,171 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+index 061c5b19a..e3cda1d51 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+@@ -98,156 +98,157 @@ public class UncommentedMainCheck
+     }
+ 
+     /** @see Check */
+     public void leaveToken(DetailAST aAst)
+     {
+         if (aAst.getType() == TokenTypes.CLASS_DEF) {
+             if (mClassDepth == 1) {
+                 mCurrentClass = null;
+             }
+             mClassDepth--;
+         }
+     }
+ 
+     /** @see Check */
+     public void visitToken(DetailAST aAst)
+     {
+         switch (aAst.getType()) {
+         case TokenTypes.PACKAGE_DEF:
+             visitPackageDef(aAst);
+             break;
+         case TokenTypes.CLASS_DEF:
+             visitClassDef(aAst);
+             break;
+         case TokenTypes.METHOD_DEF:
+             visitMethodDef(aAst);
+             break;
+         default:
+             throw new IllegalStateException(aAst.toString());
+         }
+     }
+ 
+     /**
+      * Sets current package.
+      * @param aPackage node for package definition
+      */
+     private void visitPackageDef(DetailAST aPackage)
+     {
+         mPackage =
+             FullIdent.createFullIdent((DetailAST) aPackage.getFirstChild());
+     }
+ 
+     /**
+      * If not inner class then change current class name.
+      * @param aClass node for class definition
+      */
+     private void visitClassDef(DetailAST aClass)
+     {
+         // we are not use inner classes because they can not
+         // have static methods
+         if (mClassDepth == 0) {
+-            DetailAST ident = aClass.findFirstToken(TokenTypes.IDENT);
++            final DetailAST ident = aClass.findFirstToken(TokenTypes.IDENT);
+             mCurrentClass = mPackage.getText() + "." + ident.getText();
+             mClassDepth++;
+         }
+         return;
+     }
+ 
+     /**
+      * Checks method definition if this is
+      * <code>public static void main(String[])</code>.
+      * @param aMethod method definition node
+      */
+     private void visitMethodDef(DetailAST aMethod)
+     {
+         if (mClassDepth != 1) {
+             // method in inner class or in interface definition
+             return;
+         }
+ 
+         if (checkClassName()
+             && checkName(aMethod)
+             && checkModifiers(aMethod)
+             && checkType(aMethod)
+             && checkParams(aMethod))
+         {
+             log(aMethod.getLineNo(), "uncommented.main");
+         }
+     }
+ 
+     /**
+      * Checks that current class is not excluded
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkClassName()
+     {
+         return !mExcludedClassesRE.match(mCurrentClass);
+     }
+ 
+     /**
+      * Checks that method name is @quot;main@quot;.
+      * @param aMethod the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkName(DetailAST aMethod)
+     {
+-        DetailAST ident = aMethod.findFirstToken(TokenTypes.IDENT);
++        final DetailAST ident = aMethod.findFirstToken(TokenTypes.IDENT);
+         return "main".equals(ident.getText());
+     }
+ 
+     /**
+      * Checks that method has final and static modifiers.
+      * @param aMethod the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkModifiers(DetailAST aMethod)
+     {
+-        DetailAST modifiers = aMethod.findFirstToken(TokenTypes.MODIFIERS);
++        final DetailAST modifiers =
++            aMethod.findFirstToken(TokenTypes.MODIFIERS);
+ 
+         return modifiers.branchContains(TokenTypes.LITERAL_PUBLIC)
+             && modifiers.branchContains(TokenTypes.LITERAL_STATIC);
+     }
+ 
+     /**
+      * Checks that return type is <code>void</code>.
+      * @param aMethod the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkType(DetailAST aMethod)
+     {
+-        DetailAST type =
++        final DetailAST type =
+             (DetailAST) aMethod.findFirstToken(TokenTypes.TYPE).getFirstChild();
+         return type.getType() == TokenTypes.LITERAL_VOID;
+     }
+ 
+     /**
+      * Checks that method has only <code>String[]</code> param
+      * @param aMethod the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkParams(DetailAST aMethod)
+     {
+-        DetailAST params = aMethod.findFirstToken(TokenTypes.PARAMETERS);
++        final DetailAST params = aMethod.findFirstToken(TokenTypes.PARAMETERS);
+         if (params.getChildCount() != 1) {
+             return false;
+         }
+-        DetailAST paramType = ((DetailAST) params.getFirstChild())
++        final DetailAST paramType = ((DetailAST) params.getFirstChild())
+             .findFirstToken(TokenTypes.TYPE);
+-        DetailAST arrayDecl =
++        final DetailAST arrayDecl =
+             paramType.findFirstToken(TokenTypes.ARRAY_DECLARATOR);
+         if (arrayDecl == null) {
+             return false;
+         }
+ 
+-        DetailAST arrayType = (DetailAST) arrayDecl.getFirstChild();
++        final DetailAST arrayType = (DetailAST) arrayDecl.getFirstChild();
+ 
+         if (arrayType.getType() == TokenTypes.IDENT
+             || arrayType.getType() == TokenTypes.DOT)
+         {
+-            FullIdent type = FullIdent.createFullIdent(arrayType);
++            final FullIdent type = FullIdent.createFullIdent(arrayType);
+             return ("String".equals(type.getText())
+                     || "java.lang.String".equals(type.getText()));
+         }
+ 
+         return false;
+     }
+ }

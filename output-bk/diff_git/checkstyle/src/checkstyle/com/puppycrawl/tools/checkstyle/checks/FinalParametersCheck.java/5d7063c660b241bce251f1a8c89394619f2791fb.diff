@@ -1,0 +1,91 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/FinalParametersCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/FinalParametersCheck.java
+index b99377ac5..215981bc8 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/FinalParametersCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/FinalParametersCheck.java
+@@ -42,84 +42,85 @@ public class FinalParametersCheck extends Check
+             TokenTypes.CTOR_DEF,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.LITERAL_CATCH,
+         };
+     }
+ 
+     /** @see Check */
+     public void visitToken(DetailAST aAST)
+     {
+         // don't flag interfaces
+         final DetailAST container = aAST.getParent().getParent();
+         if (container.getType() == TokenTypes.INTERFACE_DEF) {
+             return;
+         }
+ 
+         if (aAST.getType() == TokenTypes.LITERAL_CATCH) {
+             visitCatch(aAST);
+         }
+         else {
+             visitMethod(aAST);
+         }
+     }
+ 
+     /**
+      * Checks parameters of the method or ctor.
+      * @param aMethod method or ctor to check.
+      */
+     private void visitMethod(final DetailAST aMethod)
+     {
+         // exit on fast lane if there is nothing to check here
+         if (!aMethod.branchContains(TokenTypes.PARAMETER_DEF)) {
+             return;
+         }
+ 
+         // ignore abstract method
+         final DetailAST modifiers =
+             aMethod.findFirstToken(TokenTypes.MODIFIERS);
+         if (modifiers.branchContains(TokenTypes.ABSTRACT)) {
+             return;
+         }
+ 
+         // we can now be sure that there is at least one parameter
+-        DetailAST parameters = aMethod.findFirstToken(TokenTypes.PARAMETERS);
++        final DetailAST parameters =
++            aMethod.findFirstToken(TokenTypes.PARAMETERS);
+         DetailAST child = (DetailAST) parameters.getFirstChild();
+         while (child != null) {
+             // childs are PARAMETER_DEF and COMMA
+             if (child.getType() == TokenTypes.PARAMETER_DEF) {
+                 checkParam(child);
+             }
+             child = (DetailAST) child.getNextSibling();
+         }
+     }
+ 
+     /**
+      * Checks parameter of the catch block.
+      * @param aCatch catch block to check.
+      */
+     private void visitCatch(final DetailAST aCatch)
+     {
+         checkParam(aCatch.findFirstToken(TokenTypes.PARAMETER_DEF));
+     }
+ 
+     /**
+      * Checks if the given parameter is final.
+      * @param aParam parameter to check.
+      */
+     private void checkParam(final DetailAST aParam)
+     {
+         if (!aParam.branchContains(TokenTypes.FINAL)) {
+             final DetailAST paramName = aParam.findFirstToken(TokenTypes.IDENT);
+             final DetailAST firstNode = CheckUtils.getFirstNode(aParam);
+             log(firstNode.getLineNo(), firstNode.getColumnNo(),
+                 "final.parameter", paramName.getText());
+         }
+     }
+ }

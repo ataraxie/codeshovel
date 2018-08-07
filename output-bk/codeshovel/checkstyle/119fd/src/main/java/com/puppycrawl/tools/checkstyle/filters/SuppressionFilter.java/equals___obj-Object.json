@@ -1,0 +1,163 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SuppressionFilter.java",
+  "functionName": "equals",
+  "functionId": "equals___obj-Object",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionFilter.java",
+  "functionStartLine": 74,
+  "functionEndLine": 83,
+  "changeHistory": [
+    "4c1148db9982918e65f8d1156e8fb9c07b206fc9",
+    "be08323f8a58f992bc61171bf53e0e51dbd21f29",
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "8d242382f8bb77488b6da23bdd0d2d61583703fc",
+    "e9d1dff32e5233f1cc24c2e4a96c8ce2b9dd5364",
+    "1e7d8eef0641edcf97316618c8fab40bd248133d",
+    "524a7eca739f86e704c6a83ab44c433ec73d095b",
+    "21f0b07bd031f022d14106150af66ceddb4c06b8",
+    "c3baa3fa77f4ed8e475ab52db6d0f2f860d93ef0"
+  ],
+  "changeHistoryShort": {
+    "4c1148db9982918e65f8d1156e8fb9c07b206fc9": "Ybodychange",
+    "be08323f8a58f992bc61171bf53e0e51dbd21f29": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Ymultichange(Yfilerename,Yreturntypechange,Ybodychange,Yrename,Yparameterchange)",
+    "8d242382f8bb77488b6da23bdd0d2d61583703fc": "Ymultichange(Yparameterchange,Ybodychange)",
+    "e9d1dff32e5233f1cc24c2e4a96c8ce2b9dd5364": "Ybodychange",
+    "1e7d8eef0641edcf97316618c8fab40bd248133d": "Ymultichange(Yrename,Yreturntypechange,Ybodychange)",
+    "524a7eca739f86e704c6a83ab44c433ec73d095b": "Yfilerename",
+    "21f0b07bd031f022d14106150af66ceddb4c06b8": "Ymultichange(Ymovefromfile,Ybodychange,Yparameterchange)",
+    "c3baa3fa77f4ed8e475ab52db6d0f2f860d93ef0": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4c1148db9982918e65f8d1156e8fb9c07b206fc9": {
+      "type": "Ybodychange",
+      "commitMessage": "Rename variables with questionable names. #1555\n\nFixes `QuestionableName` inspection violations.\n\nDescription:\n\u003eReports on any variables, methods, or classes with questionable names. This inspection is best used to report common metasyntactic variables which may be used as names by lazy or confused developers.\n Use the list below to specify names which should be reported\n",
+      "commitDate": 1439008817000,
+      "commitName": "4c1148db9982918e65f8d1156e8fb9c07b206fc9",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 15.95,
+      "commitsBetweenForRepo": 165,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public boolean equals(Object obj) {\n         if (this \u003d\u003d obj) {\n             return true;\n         }\n         if (obj \u003d\u003d null || getClass() !\u003d obj.getClass()) {\n             return false;\n         }\n-        final SuppressionFilter that \u003d (SuppressionFilter) obj;\n-        return Objects.equals(filters, that.filters);\n+        final SuppressionFilter suppressionFilter \u003d (SuppressionFilter) obj;\n+        return Objects.equals(filters, suppressionFilter.filters);\n     }\n\\ No newline at end of file\n"
+    },
+    "be08323f8a58f992bc61171bf53e0e51dbd21f29": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+      "commitMessage": "Fix equals and hashCode in SuppressionFilter and remove toString. #1088\n",
+      "commitDate": 1432411165000,
+      "commitName": "be08323f8a58f992bc61171bf53e0e51dbd21f29",
+      "commitAuthor": "Michal Kordas",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d": {
+      "type": "Ybodychange",
+      "commitMessage": "Prefixes, filters, #512\n",
+      "commitDate": 1421677232000,
+      "commitName": "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1418625204000,
+      "commitNameOld": "7aa061665c2b005f97b0c05bf03604636175dc9a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 35.32,
+      "commitsBetweenForRepo": 76,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n     public String toString()\n     {\n-        return mFilters.toString();\n+        return filters.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Ymultichange(Yfilerename,Yreturntypechange,Ybodychange,Yrename,Yparameterchange)",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "subchanges": [
+        "Yfilerename",
+        "Yreturntypechange",
+        "Ybodychange",
+        "Yrename",
+        "Yparameterchange"
+      ]
+    },
+    "8d242382f8bb77488b6da23bdd0d2d61583703fc": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Filter.accept() now takes AuditEvent, not an Object.\n",
+      "commitDate": 1068180594000,
+      "commitName": "8d242382f8bb77488b6da23bdd0d2d61583703fc",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "e9d1dff32e5233f1cc24c2e4a96c8ce2b9dd5364": {
+      "type": "Ybodychange",
+      "commitMessage": "correct comments.\nmore consistent code.\n",
+      "commitDate": 1058312350000,
+      "commitName": "e9d1dff32e5233f1cc24c2e4a96c8ce2b9dd5364",
+      "commitAuthor": "Rick Giles",
+      "commitDateOld": 1058300282000,
+      "commitNameOld": "1e7d8eef0641edcf97316618c8fab40bd248133d",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 0.14,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,9 @@\n     public boolean accept(Object aObject)\n     {\n-        return mFilterChain.accept(aObject);\n+        if (!(aObject instanceof AuditEvent)) {\n+            return false;\n+        }\n+        else {\n+            return mFilters.accept(aObject);\n+        }\n     }\n\\ No newline at end of file\n"
+    },
+    "1e7d8eef0641edcf97316618c8fab40bd248133d": {
+      "type": "Ymultichange(Yrename,Yreturntypechange,Ybodychange)",
+      "commitMessage": "Refactored Filters to the way Checkstyle uses them;\ni.e. a Filter accepts or rejects an Object,\nand a FilterSet, not a FilterChain, aggregates Filters.\n",
+      "commitDate": 1058300282000,
+      "commitName": "1e7d8eef0641edcf97316618c8fab40bd248133d",
+      "commitAuthor": "Rick Giles",
+      "subchanges": [
+        "Yrename",
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "524a7eca739f86e704c6a83ab44c433ec73d095b": {
+      "type": "Yfilerename",
+      "commitMessage": "Renamed \"filter\" package to \"filters\" for consistency with \"checks\".\nIncorporated \"filters\" in package names.\n",
+      "commitDate": 1058208229000,
+      "commitName": "524a7eca739f86e704c6a83ab44c433ec73d095b",
+      "commitAuthor": "Rick Giles",
+      "commitDateOld": 1058204899000,
+      "commitNameOld": "e464c7197ad27249091919d50ac748adb59b7fa7",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "21f0b07bd031f022d14106150af66ceddb4c06b8": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange,Yparameterchange)",
+      "commitMessage": "Refactor and extend filters to filter chains.\nAdd suppression filters.\n",
+      "commitDate": 1058170930000,
+      "commitName": "21f0b07bd031f022d14106150af66ceddb4c06b8",
+      "commitAuthor": "Rick Giles",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange",
+        "Yparameterchange"
+      ]
+    },
+    "c3baa3fa77f4ed8e475ab52db6d0f2f860d93ef0": {
+      "type": "Yintroduced",
+      "commitMessage": "Added filter feature to Checker.\n",
+      "commitDate": 1057948517000,
+      "commitName": "c3baa3fa77f4ed8e475ab52db6d0f2f860d93ef0",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

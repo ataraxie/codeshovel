@@ -1,0 +1,135 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
+index c5c4ec07e..9ef60dc4c 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
+@@ -293,113 +293,125 @@ public class TokenTypes
+     /** token representing a INC */
+     public static final int INC = 130;
+     /** token representing a DEC */
+     public static final int DEC = 131;
+     /** token representing a BNOT */
+     public static final int BNOT = 132;
+     /** token representing a LNOT */
+     public static final int LNOT = 133;
+     /** token representing a LITERAL_true */
+     public static final int LITERAL_TRUE = 134;
+     /** token representing a LITERAL_false */
+     public static final int LITERAL_FALSE = 135;
+     /** token representing a LITERAL_null */
+     public static final int LITERAL_NULL = 136;
+     /** token representing a LITERAL_new */
+     public static final int LITERAL_NEW = 137;
+     /** token representing a NUM_INT */
+     public static final int NUM_INT = 138;
+     /** token representing a CHAR_LITERAL */
+     public static final int CHAR_LITERAL = 139;
+     /** token representing a STRING_LITERAL */
+     public static final int STRING_LITERAL = 140;
+     /** token representing a NUM_FLOAT */
+     public static final int NUM_FLOAT = 141;
+     /** token representing a NUM_LONG */
+     public static final int NUM_LONG = 142;
+     /** token representing a NUM_DOUBLE */
+     public static final int NUM_DOUBLE = 143;
+     /** token representing a WS */
+     public static final int WS = 144;
+     /** token representing a SL_COMMENT */
+     public static final int SL_COMMENT = 145;
+     /** token representing a ML_COMMENT */
+     public static final int ML_COMMENT = 146;
+     /** token representing a ESC */
+     public static final int ESC = 147;
+     /** token representing a HEX_DIGIT */
+     public static final int HEX_DIGIT = 148;
+     /** token representing a VOCAB */
+     public static final int VOCAB = 149;
+     /** token representing a EXPONENT */
+     public static final int EXPONENT = 150;
+     /** token representing a FLOAT_SUFFIX */
+     public static final int FLOAT_SUFFIX = 151;
+     /** token representing a ASSERT */
+     public static final int ASSERT = 152;
+ 
+     ////////////////////////////////////////////////////////////////////////
+     // The interesting code goes here
+     ////////////////////////////////////////////////////////////////////////
+-
+-    /** maps from a token name to value */
++    
++        /** maps from a token name to value */
+     private static final Map TOKEN_NAME_TO_VALUE = new HashMap();
+     /** maps from a token value to name */
+-    private static final Map TOKEN_VALUE_TO_NAME = new HashMap();
++    private static final String[] TOKEN_VALUE_TO_NAME;
+ 
+     // initialise the constants
+     static {
+         final Field[] fields = TokenTypes.class.getDeclaredFields();
++        String[] tempTokenValueToName = new String[0];
+         for (int i = 0; i < fields.length; i++) {
+             final Field f = fields[i];
+ 
+             // Only process the int declarations.
+             if (f.getType() != Integer.TYPE) {
+                 continue;
+             }
+ 
+             final String name = f.getName();
+             try {
+                 // this should NEVER fail (famous last words)
+                 final Integer value = new Integer(f.getInt(name));
+                 TOKEN_NAME_TO_VALUE.put(name, value);
+-                TOKEN_VALUE_TO_NAME.put(value, name);
++                final int tokenValue = value.intValue();
++                if (tokenValue > tempTokenValueToName.length - 1) {
++                    final String[] temp = new String[tokenValue + 1];
++                    System.arraycopy(tempTokenValueToName, 0,
++                                     temp, 0, tempTokenValueToName.length);
++                    tempTokenValueToName = temp;
++                }
++                tempTokenValueToName[tokenValue] = name;
+             }
+             catch (IllegalArgumentException e) {
+                 e.printStackTrace();
+                 System.exit(1);
+             }
+             catch (IllegalAccessException e) {
+                 e.printStackTrace();
+                 System.exit(1);
+             }
+         }
++        TOKEN_VALUE_TO_NAME = tempTokenValueToName;
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param aID the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int aID)
+     {
+-        final String name = (String) TOKEN_VALUE_TO_NAME.get(new Integer(aID));
++        if (aID > TOKEN_VALUE_TO_NAME.length - 1) {
++            throw new IllegalArgumentException("given id " + aID);
++        }
++        final String name = TOKEN_VALUE_TO_NAME[aID];
+         if (name == null) {
+             throw new IllegalArgumentException("given id " + aID);
+         }
+         return name;
+     }
+ 
+     /**
+      * Returns the ID of a token for a given name.
+      * @param aName the name of the token ID to get
+      * @return a token ID
+      */
+     public static int getTokenId(String aName)
+     {
+         final Integer id = (Integer) TOKEN_NAME_TO_VALUE.get(aName);
+         if (id == null) {
+             throw new IllegalArgumentException("given name " + aName);
+         }
+         return id.intValue();
+     }
+ }

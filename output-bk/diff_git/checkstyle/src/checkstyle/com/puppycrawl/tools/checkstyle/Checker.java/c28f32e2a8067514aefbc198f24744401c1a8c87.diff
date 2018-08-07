@@ -1,0 +1,330 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+index eb3b9f55f..7925c43ed 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -53,101 +53,101 @@ public class Checker
+      * <code>assert</code>). We must not write any error messages when
+      * parsing fails because with the next grammar it might succeed
+      * and the user will be confused.
+      */
+     private class SilentJava14Recognizer extends GeneratedJava14Recognizer
+     {
+         // TODO: remove
+         /**
+          * Creates a new <code>SilentJava14Recognizer</code> instance.
+          *
+          * @param aLexer the tokenstream the recognizer operates on.
+          */
+         private SilentJava14Recognizer(GeneratedJava14Lexer aLexer)
+         {
+             super(aLexer);
+         }
+ 
+         /**
+          * Parser error-reporting function, does nothing.
+          * @param aRex the exception to be reported
+          */
+         public void reportError(RecognitionException aRex)
+         {
+         }
+ 
+         /**
+          * Parser error-reporting function, does nothing.
+          * @param aMsg the error message
+          */
+         public void reportError(String aMsg)
+         {
+         }
+ 
+         /**
+          * Parser warning-reporting function, does nothing.
+          * @param aMsg the error message
+          */
+         public void reportWarning(String aMsg)
+         {
+         }
+     }
+ 
+     /**
+      * Overrides ANTLR error reporting so we completely control
+      * checkstyle's output during parsing. This is important because
+      * we try parsing with several grammers (with/without support for
+      * <code>assert</code>). We must not write any error messages when
+      * parsing fails because with the next grammar it might succeed
+      * and the user will be confused.
+      */
+-    private class NEWSilentJava14Recognizer extends Java14Recognizer
++    private static class NEWSilentJava14Recognizer extends Java14Recognizer
+     {
+         /**
+          * Creates a new <code>SilentJava14Recognizer</code> instance.
+          *
+          * @param aLexer the tokenstream the recognizer operates on.
+          */
+         private NEWSilentJava14Recognizer(Java14Lexer aLexer)
+         {
+             super(aLexer);
+         }
+ 
+         /**
+          * Parser error-reporting function, does nothing.
+          * @param aRex the exception to be reported
+          */
+         public void reportError(RecognitionException aRex)
+         {
+         }
+ 
+         /**
+          * Parser error-reporting function, does nothing.
+          * @param aMsg the error message
+          */
+         public void reportError(String aMsg)
+         {
+         }
+ 
+         /**
+          * Parser warning-reporting function, does nothing.
+          * @param aMsg the error message
+          */
+         public void reportWarning(String aMsg)
+         {
+         }
+     }
+ 
+     /** configuration */
+     private final Configuration mConfig;
+ 
+     /** cache file **/
+     private final PropertyCacheFile mCache;
+ 
+     /** vector of listeners */
+     private final ArrayList mListeners = new ArrayList();
+ 
+     /** used to collect messages TODO: delete */
+     private final LocalizedMessages mMessages;
+ 
+     /** used to walk an AST and notify the checks */
+     private final TreeWalker mWalker;
+@@ -368,170 +368,187 @@ public class Checker
+             errors = new LocalizedMessage[] {
+                 new LocalizedMessage(0, Defn.CHECKSTYLE_BUNDLE,
+                                      "general.exception",
+                                      new String[] {te.getMessage()})};
+         }
+ 
+         if (errors.length == 0) {
+             mCache.checkedOk(aFileName, timestamp);
+         }
+         else {
+             fireErrors(stripped, errors);
+         }
+ 
+         fireFileFinished(stripped);
+         return errors.length;
+     }
+ 
+     /**
+      * Processes a specified file and prints out all errors found.
+      * @return the number of errors found
+      * @param aFileName the name of the file to process
+      **/
+     private int processNEW(String aFileName)
+     {
+         // TODO: blow away the old process and rename this one
+ 
+         // check if already checked and passed the file
+         final File f = new File(aFileName);
+         final long timestamp = f.lastModified();
+         if (mCache.alreadyChecked(aFileName, timestamp)) {
+             return 0;
+         }
+ 
+         // Create a stripped down version
+         final String stripped;
+         final String basedir = mConfig.getBasedir();
+         if ((basedir == null) || !aFileName.startsWith(basedir)) {
+             stripped = aFileName;
+         }
+         else {
+             // making the assumption that there is text after basedir
+             final int skipSep = basedir.endsWith(File.separator) ? 0 : 1;
+             stripped = aFileName.substring(basedir.length() + skipSep);
+         }
+ 
+         mMessages.reset();
+         try {
+             fireFileStarted(stripped);
+             final String[] lines = Utils.getLines(aFileName);
+             final CommentManager cmgr = new CommentManager(lines);
+-            DetailAST rootAST;
+-            try {
+-                // try the 1.4 grammar first, this will succeed for
+-                // all code that compiles without any warnings in JDK 1.4,
+-                // that should cover most cases
+-                final Reader sar = new StringArrayReader(lines);
+-                final Java14Lexer jl = new Java14Lexer(sar);
+-                jl.setFilename(aFileName);
+-                jl.setCommentManager(cmgr);
+-
+-                final Java14Recognizer jr =
+-                    new NEWSilentJava14Recognizer(jl);
+-                jr.setFilename(aFileName);
+-                jr.setASTNodeClass(DetailAST.class.getName());
+-                jr.compilationUnit();
+-                rootAST = (DetailAST) jr.getAST();
+-            }
+-            catch (RecognitionException re) {
+-                // Parsing might have failed because the checked
+-                // file contains "assert" as an identifier. Retry with a
+-                // grammar that treats "assert" as an identifier
+-                // and not as a keyword
+-
+-                // Arghh - the pain - duplicate code!
+-                final Reader sar = new StringArrayReader(lines);
+-                final JavaLexer jl = new JavaLexer(sar);
+-                jl.setFilename(aFileName);
+-                jl.setCommentManager(cmgr);
+-
+-                final JavaRecognizer jr = new JavaRecognizer(jl);
+-                jr.setFilename(aFileName);
+-                jr.setASTNodeClass(DetailAST.class.getName());
+-                jr.compilationUnit();
+-                rootAST = (DetailAST) jr.getAST();
+-            }
++            DetailAST rootAST = parse(lines, aFileName, cmgr);
+             // ParseTreeInfoPanel.show(rootAST);
+             mWalker.walk(rootAST, lines, aFileName);
+         }
+         catch (FileNotFoundException fnfe) {
+             mMessages.add(new LocalizedMessage(0, Defn.CHECKSTYLE_BUNDLE,
+                                                "general.fileNotFound", null));
+         }
+         catch (IOException ioe) {
+             mMessages.add(new LocalizedMessage(
+                               0, Defn.CHECKSTYLE_BUNDLE,
+                               "general.exception",
+                               new String[] {ioe.getMessage()}));
+         }
+         catch (RecognitionException re) {
+             mMessages.add(new LocalizedMessage(0, Defn.CHECKSTYLE_BUNDLE,
+                                                "general.exception",
+                                                new String[] {re.getMessage()}));
+         }
+         catch (TokenStreamException te) {
+             mMessages.add(new LocalizedMessage(0, Defn.CHECKSTYLE_BUNDLE,
+                                                "general.exception",
+                                                new String[] {te.getMessage()}));
+         }
+ 
+         if (mMessages.size() == 0) {
+             mCache.checkedOk(aFileName, timestamp);
+         }
+         else {
+             fireErrors(stripped, mMessages.getMessages());
+         }
+ 
+         fireFileFinished(stripped);
+         return mMessages.size();
+     }
+ 
++    /**
++     *
++     * @param aLines the individual lines of the java file
++     * @param aFileName the filename of the file (used for error messages?)
++     * @param aCmgr the comment manager is informed of comments during parsing
++     * @return the root of the AST
++     * @throws TokenStreamException if lexing failed
++     * @throws RecognitionException if parsing failed
++     */
++    public static DetailAST parse(
++            final String[] aLines, String aFileName, final CommentManager aCmgr)
++            throws TokenStreamException, RecognitionException
++    {
++        DetailAST rootAST;
++        try {
++            // try the 1.4 grammar first, this will succeed for
++            // all code that compiles without any warnings in JDK 1.4,
++            // that should cover most cases
++            final Reader sar = new StringArrayReader(aLines);
++            final Java14Lexer jl = new Java14Lexer(sar);
++            jl.setFilename(aFileName);
++            jl.setCommentManager(aCmgr);
++
++            final Java14Recognizer jr =
++                new NEWSilentJava14Recognizer(jl);
++            jr.setFilename(aFileName);
++            jr.setASTNodeClass(DetailAST.class.getName());
++            jr.compilationUnit();
++            rootAST = (DetailAST) jr.getAST();
++        }
++        catch (RecognitionException re) {
++            // Parsing might have failed because the checked
++            // file contains "assert" as an identifier. Retry with a
++            // grammar that treats "assert" as an identifier
++            // and not as a keyword
++
++            // Arghh - the pain - duplicate code!
++            final Reader sar = new StringArrayReader(aLines);
++            final JavaLexer jl = new JavaLexer(sar);
++            jl.setFilename(aFileName);
++            jl.setCommentManager(aCmgr);
++
++            final JavaRecognizer jr = new JavaRecognizer(jl);
++            jr.setFilename(aFileName);
++            jr.setASTNodeClass(DetailAST.class.getName());
++            jr.compilationUnit();
++            rootAST = (DetailAST) jr.getAST();
++        }
++        return rootAST;
++    }
++
+     /**
+      * Checks for a package.html file for all java files in parameter list.
+      * @param aFiles the filenames of the java files to check
+      * @return the number of errors found
+      */
+     private int checkPackageHtml(String[] aFiles)
+     {
+         if (!mConfig.isRequirePackageHtml()) {
+             return 0;
+         }
+ 
+         int packageHtmlErrors = 0;
+         final HashSet checkedPackages = new HashSet();
+         for (int i = 0; i < aFiles.length; i++) {
+             final File file = new File(aFiles[i]);
+             final File packageDir = file.getParentFile();
+             if (!checkedPackages.contains(packageDir)) {
+                 final File packageDoc =
+                     new File(packageDir, "package.html");
+                 final String docFile = packageDoc.toString();
+                 fireFileStarted(docFile);
+                 if (!packageDoc.exists()) {
+                     final LocalizedMessage error =
+                         new LocalizedMessage(0, Defn.CHECKSTYLE_BUNDLE,
+                                              "javadoc.packageHtml", null);
+                     fireErrors(docFile, new LocalizedMessage[]{error});
+                     packageHtmlErrors++;
+                 }
+                 fireFileFinished(docFile);
+                 checkedPackages.add(packageDir);
+             }
+         }
+         return packageHtmlErrors;
+     }
+ 
+ 
+     /** notify all listeners about the audit start */
+     protected void fireAuditStarted()
+     {
+         final AuditEvent evt = new AuditEvent(this);
+         final Iterator it = mListeners.iterator();
+         while (it.hasNext()) {
+             final AuditListener listener = (AuditListener) it.next();
+             listener.auditStarted(evt);
+         }
+     }
+ 
+     /** notify all listeners about the audit end */
+     protected void fireAuditFinished()
+     {

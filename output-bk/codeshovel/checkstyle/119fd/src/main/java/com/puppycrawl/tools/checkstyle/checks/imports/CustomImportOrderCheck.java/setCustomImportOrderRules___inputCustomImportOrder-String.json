@@ -1,0 +1,101 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CustomImportOrderCheck.java",
+  "functionName": "setCustomImportOrderRules",
+  "functionId": "setCustomImportOrderRules___inputCustomImportOrder-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java",
+  "functionStartLine": 438,
+  "functionEndLine": 443,
+  "changeHistory": [
+    "776171b71897fde845e1f1c08f7bd2250e1b203d",
+    "c57ee4b58a2758a3b8a83a1d14dc3c4835ae2077",
+    "3fca3c9250864912e36783302ebe8f04f17ec262",
+    "6f51fa7e63d3af55e2a6900d9aadb183ecf0cde8",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+    "2a3be6769c4a97d090970ed52ca2333cb9aea706"
+  ],
+  "changeHistoryShort": {
+    "776171b71897fde845e1f1c08f7bd2250e1b203d": "Ybodychange",
+    "c57ee4b58a2758a3b8a83a1d14dc3c4835ae2077": "Ybodychange",
+    "3fca3c9250864912e36783302ebe8f04f17ec262": "Ybodychange",
+    "6f51fa7e63d3af55e2a6900d9aadb183ecf0cde8": "Ymultichange(Yparameterchange,Ybodychange)",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": "Ymultichange(Yparameterchange,Ybodychange)",
+    "2a3be6769c4a97d090970ed52ca2333cb9aea706": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "776171b71897fde845e1f1c08f7bd2250e1b203d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5004: pitest: increase mutation coverage for pitest-checks-imports profile to 100%\n",
+      "commitDate": 1513995633000,
+      "commitName": "776171b71897fde845e1f1c08f7bd2250e1b203d",
+      "commitAuthor": "BBG",
+      "commitDateOld": 1510708572000,
+      "commitNameOld": "32e2b7ba57e189074662d84a04535a87c3a19b0c",
+      "commitAuthorOld": "Subbu Dantu",
+      "daysBetweenCommits": 38.04,
+      "commitsBetweenForRepo": 99,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,6 @@\n     public final void setCustomImportOrderRules(final String inputCustomImportOrder) {\n-        customImportOrderRules.clear();\n         for (String currentState : GROUP_SEPARATOR_PATTERN.split(inputCustomImportOrder)) {\n             addRulesToList(currentState);\n         }\n         customImportOrderRules.add(NON_GROUP_RULE_GROUP);\n     }\n\\ No newline at end of file\n"
+    },
+    "c57ee4b58a2758a3b8a83a1d14dc3c4835ae2077": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix typos in import and java8 packages. #1555\n\nFixes some `SpellCheckingInspection` inspection violations.\n\nDescription:\n\u003eSpellchecker inspection helps locate typos and misspelling in your code, comments and literals.\n",
+      "commitDate": 1440739618000,
+      "commitName": "c57ee4b58a2758a3b8a83a1d14dc3c4835ae2077",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.72,
+      "commitsBetweenForRepo": 38,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     public final void setCustomImportOrderRules(final String inputCustomImportOrder) {\n         customImportOrderRules.clear();\n         for (String currentState : GROUP_SEPARATOR_PATTERN.split(inputCustomImportOrder)) {\n-            addRuleastoList(currentState);\n+            addRulesToList(currentState);\n         }\n         customImportOrderRules.add(NON_GROUP_RULE_GROUP);\n     }\n\\ No newline at end of file\n"
+    },
+    "3fca3c9250864912e36783302ebe8f04f17ec262": {
+      "type": "Ybodychange",
+      "commitMessage": "Use compiled pattern instead of dynamic regexp in checks. #1555\n\nFixes some `SpellDynamicRegexReplaceableByCompiledPattern` inspection violations.\n\nDescription:\n\u003eReports calls to the regular expression methods of java.lang.String using constants arguments. Such calls may be profitably replaced with a private static final Pattern field so that the regular expression does not have to be compiled each time it is used.\n",
+      "commitDate": 1440606516000,
+      "commitName": "3fca3c9250864912e36783302ebe8f04f17ec262",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440505228000,
+      "commitNameOld": "26513d52336c42432ee21565b253297ba4174530",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 1.17,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,7 @@\n     public final void setCustomImportOrderRules(final String inputCustomImportOrder) {\n         customImportOrderRules.clear();\n-        for (String currentState : inputCustomImportOrder\n-                .split(\"\\\\s*###\\\\s*\")) {\n+        for (String currentState : GROUP_SEPARATOR_PATTERN.split(inputCustomImportOrder)) {\n             addRuleastoList(currentState);\n         }\n         customImportOrderRules.add(NON_GROUP_RULE_GROUP);\n     }\n\\ No newline at end of file\n"
+    },
+    "6f51fa7e63d3af55e2a6900d9aadb183ecf0cde8": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Improved UT coverage for CustomImportOrder #1128\n",
+      "commitDate": 1436323037000,
+      "commitName": "6f51fa7e63d3af55e2a6900d9aadb183ecf0cde8",
+      "commitAuthor": "Aleksandr Ivanov",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, imports, #512\n",
+      "commitDate": 1421678111000,
+      "commitName": "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "2a3be6769c4a97d090970ed52ca2333cb9aea706": {
+      "type": "Yintroduced",
+      "commitMessage": "CustomImportOrder was introduced #231\n",
+      "commitDate": 1407671579000,
+      "commitName": "2a3be6769c4a97d090970ed52ca2333cb9aea706",
+      "commitAuthor": "Max"
+    }
+  }
+}

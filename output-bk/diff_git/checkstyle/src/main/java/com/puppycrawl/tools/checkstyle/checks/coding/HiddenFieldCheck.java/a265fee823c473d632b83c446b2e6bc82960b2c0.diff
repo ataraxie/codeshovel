@@ -1,0 +1,138 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+index b035bc09a..53f39d361 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+@@ -237,111 +237,130 @@ public class HiddenFieldCheck
+ 
+         //add fields to container
+         final DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);
+         // enum constants may not have bodies
+         if (objBlock != null) {
+             DetailAST child = objBlock.getFirstChild();
+             while (child != null) {
+                 if (child.getType() == TokenTypes.VARIABLE_DEF) {
+                     final String name =
+                         child.findFirstToken(TokenTypes.IDENT).getText();
+                     final DetailAST mods =
+                         child.findFirstToken(TokenTypes.MODIFIERS);
+                     if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {
+                         frame.addStaticField(name);
+                     }
+                     else {
+                         frame.addInstanceField(name);
+                     }
+                 }
+                 child = child.getNextSibling();
+             }
+         }
+         // push container
+         currentFrame = frame;
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.CLASS_DEF
+             || ast.getType() == TokenTypes.ENUM_DEF
+             || ast.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+             //pop
+             currentFrame = currentFrame.getParent();
+         }
+     }
+ 
+     /**
+      * Process a variable token.
+      * Check whether a local variable or parameter shadows a field.
+      * Store a field for later comparison with local variables and parameters.
+      * @param ast the variable token.
+      */
+     private void processVariable(DetailAST ast) {
+         if (!ScopeUtils.inInterfaceOrAnnotationBlock(ast)
+             && (ScopeUtils.isLocalVariableDef(ast)
+                 || ast.getType() == TokenTypes.PARAMETER_DEF)) {
+             // local variable or parameter. Does it shadow a field?
+             final DetailAST nameAST = ast.findFirstToken(TokenTypes.IDENT);
+             final String name = nameAST.getText();
+ 
+-            if ((currentFrame.containsStaticField(name)
+-                || !inStatic(ast) && currentFrame.containsInstanceField(name))
+-                && (regexp == null || !getRegexp().matcher(name).find())
++            if (isStaticOrOnstanceField(ast, name)
++                && !isMatchingRegexp(name)
+                 && !isIgnoredSetterParam(ast, name)
+                 && !isIgnoredConstructorParam(ast)
+                 && !isIgnoredParamOfAbstractMethod(ast)) {
+                 log(nameAST, MSG_KEY, name);
+             }
+         }
+     }
+ 
++    /**
++     * check for static or instance field.
++     * @param ast token
++     * @param name identifier of token
++     * @return true if static or instance field
++     */
++    private boolean isStaticOrOnstanceField(DetailAST ast, String name) {
++        return currentFrame.containsStaticField(name)
++            || !inStatic(ast) && currentFrame.containsInstanceField(name);
++    }
++
++    /**
++     * check name by regExp
++     * @param name string value to check
++     * @return true is regexp is matching
++     */
++    private boolean isMatchingRegexp(String name) {
++        return regexp != null && regexp.matcher(name).find();
++    }
++
+     /**
+      * Determines whether an AST node is in a static method or static
+      * initializer.
+      * @param ast the node to check.
+      * @return true if ast is in a static method or a static block;
+      */
+     private static boolean inStatic(DetailAST ast) {
+         DetailAST parent = ast.getParent();
+         while (parent != null) {
+             switch (parent.getType()) {
+                 case TokenTypes.STATIC_INIT:
+                     return true;
+                 case TokenTypes.METHOD_DEF:
+                     final DetailAST mods =
+                         parent.findFirstToken(TokenTypes.MODIFIERS);
+                     return mods.branchContains(TokenTypes.LITERAL_STATIC);
+                 default:
+                     parent = parent.getParent();
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of a
+      * setter method, where the property setter method for field 'xyz' has
+      * name 'setXyz', one parameter named 'xyz', and return type void
+      * (default behavior) or return type is name of the class in which
+      * such method is declared (allowed only if
+      * {@link #setSetterCanReturnItsClass(boolean)} is called with
+      * value <em>true</em>)
+      *
+      * @param ast the AST to check.
+      * @param name the name of ast.
+      * @return true if ast should be ignored because check property
+      * ignoreSetter is true and ast is the parameter of a setter method.
+      */
+     private boolean isIgnoredSetterParam(DetailAST ast, String name) {
+         if (ast.getType() == TokenTypes.PARAMETER_DEF && ignoreSetter) {
+             final DetailAST parametersAST = ast.getParent();
+             final DetailAST methodAST = parametersAST.getParent();
+             if (parametersAST.getChildCount() == 1
+                 && methodAST.getType() == TokenTypes.METHOD_DEF
+                 && isSetterMethod(methodAST, name)) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 

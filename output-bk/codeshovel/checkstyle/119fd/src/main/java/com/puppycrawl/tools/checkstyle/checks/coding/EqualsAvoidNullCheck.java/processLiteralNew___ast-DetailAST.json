@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "EqualsAvoidNullCheck.java",
+  "functionName": "processLiteralNew",
+  "functionId": "processLiteralNew___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java",
+  "functionStartLine": 245,
+  "functionEndLine": 251,
+  "changeHistory": [
+    "f0ed29b5cfef6adcec791cfdc236a5b850b685ee",
+    "0024de5711531372850e883c970414563ab8e3ad"
+  ],
+  "changeHistoryShort": {
+    "f0ed29b5cfef6adcec791cfdc236a5b850b685ee": "Ybodychange",
+    "0024de5711531372850e883c970414563ab8e3ad": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "f0ed29b5cfef6adcec791cfdc236a5b850b685ee": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for simple cases",
+      "commitDate": 1510238731000,
+      "commitName": "f0ed29b5cfef6adcec791cfdc236a5b850b685ee",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1509412562000,
+      "commitNameOld": "5cdbb191a17c65c2956b35d71513e9b59b6d2166",
+      "commitAuthorOld": "Andrew Kuchev",
+      "daysBetweenCommits": 9.56,
+      "commitsBetweenForRepo": 9,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     private void processLiteralNew(DetailAST ast) {\n-        if (ast.branchContains(TokenTypes.LCURLY)) {\n+        if (ast.findFirstToken(TokenTypes.OBJBLOCK) !\u003d null) {\n             final FieldFrame frame \u003d new FieldFrame(currentFrame);\n             currentFrame.addChild(frame);\n             currentFrame \u003d frame;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "0024de5711531372850e883c970414563ab8e3ad": {
+      "type": "Yintroduced",
+      "commitMessage": "reimplement EqualsAvoidNullCheck, #1377",
+      "commitDate": 1440758513000,
+      "commitName": "0024de5711531372850e883c970414563ab8e3ad",
+      "commitAuthor": "Vladislav Lisetskiy"
+    }
+  }
+}

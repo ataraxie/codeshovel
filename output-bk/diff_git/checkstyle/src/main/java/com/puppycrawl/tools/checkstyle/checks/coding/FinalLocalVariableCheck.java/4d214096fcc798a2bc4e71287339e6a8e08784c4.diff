@@ -1,0 +1,219 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+index 4578076e5..17f480dd7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+@@ -148,101 +148,102 @@ public class FinalLocalVariableCheck extends AbstractCheck {
+         };
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     // -@cs[CyclomaticComplexity] The only optimization which can be done here is moving CASE-block
+     // expressions to separate methods, but that will not increase readability.
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.CTOR_DEF:
+                 scopeStack.push(new ScopeData());
+                 break;
+             case TokenTypes.SLIST:
+                 if (ast.getParent().getType() != TokenTypes.CASE_GROUP
+                     || ast.getParent().getParent().findFirstToken(TokenTypes.CASE_GROUP)
+                     == ast.getParent()) {
+                     storePrevScopeUninitializedVariableData();
+                     scopeStack.push(new ScopeData());
+                 }
+                 break;
+             case TokenTypes.PARAMETER_DEF:
+                 if (!isInLambda(ast)
+                         && !ast.branchContains(TokenTypes.FINAL)
+                         && !isInAbstractOrNativeMethod(ast)
+-                        && !ScopeUtils.isInInterfaceBlock(ast)) {
++                        && !ScopeUtils.isInInterfaceBlock(ast)
++                        && !isMultipleTypeCatch(ast)) {
+                     insertParameter(ast);
+                 }
+                 break;
+             case TokenTypes.VARIABLE_DEF:
+                 if (ast.getParent().getType() != TokenTypes.OBJBLOCK
+                         && !ast.branchContains(TokenTypes.FINAL)
+                         && !isVariableInForInit(ast)
+                         && shouldCheckEnhancedForLoopVariable(ast)) {
+                     insertVariable(ast);
+                 }
+                 break;
+ 
+             case TokenTypes.IDENT:
+                 final int parentType = ast.getParent().getType();
+                 if (isAssignOperator(parentType) && isFirstChild(ast)) {
+                     final Optional<FinalVariableCandidate> candidate = getFinalCandidate(ast);
+                     if (candidate.isPresent()) {
+                         determineAssignmentConditions(ast, candidate.get());
+                     }
+                     removeFinalVariableCandidateFromStack(ast);
+                 }
+                 break;
+ 
+             default:
+                 throw new IllegalStateException("Incorrect token type");
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         Map<String, FinalVariableCandidate> scope = null;
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+                 scope = scopeStack.pop().scope;
+                 break;
+             case TokenTypes.SLIST:
+                 final Deque<DetailAST> prevScopeUnitializedVariableData =
+                     prevScopeUninitializedVariables.peek();
+                 if (ast.getParent().getType() != TokenTypes.CASE_GROUP
+                     || findLastChildWhichContainsSpecifiedToken(ast.getParent().getParent(),
+                             TokenTypes.CASE_GROUP, TokenTypes.SLIST) == ast.getParent()) {
+                     scope = scopeStack.pop().scope;
+                     prevScopeUninitializedVariables.pop();
+                 }
+                 final DetailAST parent = ast.getParent();
+                 if (shouldUpdateUninitializedVariables(parent)) {
+                     updateUninitializedVariables(prevScopeUnitializedVariableData);
+                 }
+@@ -421,100 +422,110 @@ public class FinalLocalVariableCheck extends AbstractCheck {
+     private void insertVariable(DetailAST ast) {
+         final Map<String, FinalVariableCandidate> scope = scopeStack.peek().scope;
+         final DetailAST astNode = ast.findFirstToken(TokenTypes.IDENT);
+         scope.put(astNode.getText(), new FinalVariableCandidate(astNode));
+         if (!isInitialized(astNode)) {
+             scopeStack.peek().uninitializedVariables.add(astNode);
+         }
+     }
+ 
+     /**
+      * Check if VARIABLE_DEF is initialized or not.
+      * @param ast VARIABLE_DEF to be checked
+      * @return true if initialized
+      */
+     private static boolean isInitialized(DetailAST ast) {
+         return ast.getParent().getLastChild().getType() == TokenTypes.ASSIGN;
+     }
+ 
+     /**
+      * Whether the ast is the first child of its parent.
+      * @param ast the ast to check.
+      * @return true if the ast is the first child of its parent.
+      */
+     private static boolean isFirstChild(DetailAST ast) {
+         return ast.getPreviousSibling() == null;
+     }
+ 
+     /**
+      * Removes the final variable candidate from the Stack.
+      * @param ast variable to remove.
+      */
+     private void removeFinalVariableCandidateFromStack(DetailAST ast) {
+         final Iterator<ScopeData> iterator = scopeStack.descendingIterator();
+         while (iterator.hasNext()) {
+             final ScopeData scopeData = iterator.next();
+             final Map<String, FinalVariableCandidate> scope = scopeData.scope;
+             final FinalVariableCandidate candidate = scope.get(ast.getText());
+             DetailAST storedVariable = null;
+             if (candidate != null) {
+                 storedVariable = candidate.variableIdent;
+             }
+             if (storedVariable != null && isSameVariables(storedVariable, ast)) {
+                 if (shouldRemoveFinalVariableCandidate(scopeData, ast)) {
+                     scope.remove(ast.getText());
+                 }
+                 break;
+             }
+         }
+     }
+ 
++    /**
++     * Check if given parameter definition is a multiple type catch.
++     * @param parameterDefAst parameter definition
++     * @return true if it is a multiple type catch, false otherwise
++     */
++    private boolean isMultipleTypeCatch(DetailAST parameterDefAst) {
++        final DetailAST typeAst = parameterDefAst.findFirstToken(TokenTypes.TYPE);
++        return typeAst.getFirstChild().getType() == TokenTypes.BOR;
++    }
++
+     /**
+      * Whether the final variable candidate should be removed from the list of final local variable
+      * candidates.
+      * @param scopeData the scope data of the variable.
+      * @param ast the variable ast.
+      * @return true, if the variable should be removed.
+      */
+     private static boolean shouldRemoveFinalVariableCandidate(ScopeData scopeData, DetailAST ast) {
+         boolean shouldRemove = true;
+         for (DetailAST variable : scopeData.uninitializedVariables) {
+             if (variable.getText().equals(ast.getText())) {
+                 // if the variable is declared outside the loop and initialized inside
+                 // the loop, then it cannot be declared final, as it can be initialized
+                 // more than once in this case
+                 if (isInTheSameLoop(variable, ast) || !isUseOfExternalVariableInsideLoop(ast)) {
+                     final FinalVariableCandidate candidate = scopeData.scope.get(ast.getText());
+                     shouldRemove = candidate.alreadyAssigned;
+                 }
+                 scopeData.uninitializedVariables.remove(variable);
+                 break;
+             }
+         }
+         return shouldRemove;
+     }
+ 
+     /**
+      * Checks whether a variable which is declared outside loop is used inside loop.
+      * For example:
+      * <p>
+      * {@code
+      * int x;
+      * for (int i = 0, j = 0; i < j; i++) {
+      *     x = 5;
+      * }
+      * }
+      * </p>
+      * @param variable variable.
+      * @return true if a variable which is declared ouside loop is used inside loop.
+      */
+     private static boolean isUseOfExternalVariableInsideLoop(DetailAST variable) {
+         DetailAST loop2 = variable.getParent();
+         while (loop2 != null
+             && !isLoopAst(loop2.getType())) {
+             loop2 = loop2.getParent();
+         }
+         return loop2 != null;
+     }
+ 
+     /**
+      * Is Arithmetic operator.

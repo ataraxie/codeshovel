@@ -1,0 +1,107 @@
+diff --git a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule4842fallthrough/FallThroughInput.java b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule4842fallthrough/FallThroughInput.java
+index 37aee1655..8b6590b07 100644
+--- a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule4842fallthrough/FallThroughInput.java
++++ b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule4842fallthrough/FallThroughInput.java
+@@ -55,101 +55,101 @@ public class FallThroughInput
+                     System.out.println("something");
+                     return;
+                 } while(true);
+             case 16:
+                 for (int j1 = 0; j1 < 10; j1++) {
+                     System.err.println("something");
+                     return;
+                 }
+             case 17:
+                 while (true)
+                     throw new RuntimeException("");
+             case 18:
+                 while(cond) {
+                     break;
+                 }
+             case 19:  //warn
+                 try {
+                     i++;
+                     break;
+                 } catch (RuntimeException e) {
+                     break;
+                 } catch (Error e) {
+                     return;
+                 }
+             case 20:
+                 try {
+                     i++;
+                     break;
+                 } catch (RuntimeException e) {
+                 } catch (Error e) {
+                     return;
+                 }
+             case 21:  //warn
+                 try {
+                     i++;
+                 } catch (RuntimeException e) {
+                     i--;
+                 } finally {
+                     break;
+                 }
+             case 22:
+                 try {
+                     i++;
+                     break;
+                 } catch (RuntimeException e) {
+                     i--;
+                     break;
+                 } finally {
+                     i++;
+                 }
+-            case 23:  //warn
++            case 23:
+                 switch (j) {
+                 case 1:
+                     continue;
+                 case 2:
+                     return;
+                 default:
+                     return;
+                 }
+             case 24:
+                 switch (j) {
+                 case 1:
+                     continue;
+                 case 2:
+                     break;
+                 default:
+                     return;
+                 }
+             default:  //warn
+                 // this is the last label
+                 i++;
+             }
+         }
+     }
+     
+     
+     
+     /* Like above, but all fall throughs with relief comment */
+     void methodFallThru(int i, int j, boolean cond) {
+       while (true) {
+           switch (i) {
+           case -1: // FALLTHRU
+               
+           case 0: // no problem
+           case 1:
+               i++;
+               break;
+           case 2:
+               i++;
+               // fallthru
+           case 3: 
+               i++;
+               break;
+           case 4:
+               return;
+           case 5:
+               throw new RuntimeException("");
+           case 6:
+               continue;
+           case 7: {
+               break;

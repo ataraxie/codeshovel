@@ -1,0 +1,116 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index 028b63ab8..f703ac1ad 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -343,105 +343,108 @@ public class SuppressionCommentFilter
+                     }
+                     else {
+                         format = CommonUtils.fillTemplateWithStringsByRegexp(
+                                 filter.messageFormat, text, filter.offCommentFormat);
+                         tagMessageRegexp = Pattern.compile(format);
+                     }
+                 }
+             }
+             catch (final PatternSyntaxException ex) {
+                 throw new IllegalArgumentException(
+                     "unable to parse expanded comment " + format, ex);
+             }
+         }
+ 
+         /**
+          * @return the line number of the tag in the source file.
+          */
+         public int getLine() {
+             return line;
+         }
+ 
+         /**
+          * Determines the column number of the tag in the source file.
+          * Will be 0 for all lines of multiline comment, except the
+          * first line.
+          * @return the column number of the tag in the source file.
+          */
+         public int getColumn() {
+             return column;
+         }
+ 
+         /**
+          * Determines whether the suppression turns checkstyle reporting on or
+          * off.
+          * @return {@code true}if the suppression turns reporting on.
+          */
+         public boolean isReportingOn() {
+             return reportingOn;
+         }
+ 
+         /**
+          * Compares the position of this tag in the file
+          * with the position of another tag.
+          * @param object the tag to compare with this one.
+          * @return a negative number if this tag is before the other tag,
+          *     0 if they are at the same position, and a positive number if this
+          *     tag is after the other tag.
+          */
+         @Override
+         public int compareTo(Tag object) {
++            final int result;
+             if (line == object.line) {
+-                return Integer.compare(column, object.column);
++                result = Integer.compare(column, object.column);
+             }
+-
+-            return Integer.compare(line, object.line);
++            else {
++                result = Integer.compare(line, object.line);
++            }
++            return result;
+         }
+ 
+         @Override
+         public boolean equals(Object other) {
+             if (this == other) {
+                 return true;
+             }
+             if (other == null || getClass() != other.getClass()) {
+                 return false;
+             }
+             final Tag tag = (Tag) other;
+             return Objects.equals(line, tag.line)
+                     && Objects.equals(column, tag.column)
+                     && Objects.equals(reportingOn, tag.reportingOn)
+                     && Objects.equals(text, tag.text)
+                     && Objects.equals(tagCheckRegexp, tag.tagCheckRegexp)
+                     && Objects.equals(tagMessageRegexp, tag.tagMessageRegexp);
+         }
+ 
+         @Override
+         public int hashCode() {
+             return Objects.hash(text, line, column, reportingOn, tagCheckRegexp, tagMessageRegexp);
+         }
+ 
+         /**
+          * Determines whether the source of an audit event
+          * matches the text of this tag.
+          * @param event the {@code AuditEvent} to check.
+          * @return true if the source of event matches the text of this tag.
+          */
+         public boolean isMatch(AuditEvent event) {
+             boolean match = false;
+             final Matcher tagMatcher = tagCheckRegexp.matcher(event.getSourceName());
+             if (tagMatcher.find()) {
+                 if (tagMessageRegexp == null) {
+                     match = true;
+                 }
+                 else {
+                     final Matcher messageMatcher = tagMessageRegexp.matcher(event.getMessage());
+                     match = messageMatcher.find();
+                 }
+             }
+             else if (event.getModuleId() != null) {
+                 final Matcher idMatcher = tagCheckRegexp.matcher(event.getModuleId());
+                 match = idMatcher.find();
+             }
+             return match;
+         }
+ 
+         @Override

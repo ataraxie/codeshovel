@@ -1,0 +1,189 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
+index 3b39e1588..ebe3ad43d 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
+@@ -162,175 +162,175 @@ public class WhitespaceAroundCheck extends Check
+             TokenTypes.LT,
+             TokenTypes.MINUS,
+             TokenTypes.MINUS_ASSIGN,
+             TokenTypes.MOD,
+             TokenTypes.MOD_ASSIGN,
+             TokenTypes.NOT_EQUAL,
+             TokenTypes.PLUS,
+             TokenTypes.PLUS_ASSIGN,
+             TokenTypes.QUESTION,
+             TokenTypes.RCURLY,
+             TokenTypes.SL,
+             TokenTypes.SLIST,
+             TokenTypes.SL_ASSIGN,
+             TokenTypes.SR,
+             TokenTypes.SR_ASSIGN,
+             TokenTypes.STAR,
+             TokenTypes.STAR_ASSIGN,
+             TokenTypes.LITERAL_ASSERT,
+             TokenTypes.GENERIC_START,
+             TokenTypes.GENERIC_END,
+             TokenTypes.TYPE_EXTENSION_AND,
+             TokenTypes.WILDCARD_TYPE,
+         };
+     }
+ 
+     /**
+      * Sets whether or now empty method bodies are allowed.
+      * @param aAllow <code>true</code> to allow empty method bodies.
+      */
+     public void setAllowEmptyMethods(boolean aAllow)
+     {
+         mAllowEmptyMethods = aAllow;
+     }
+ 
+     /**
+      * Sets whether or now empty constructor bodies are allowed.
+      * @param aAllow <code>true</code> to allow empty constructor bodies.
+      */
+     public void setAllowEmptyConstructors(boolean aAllow)
+     {
+         mAllowEmptyCtors = aAllow;
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         final int type = aAST.getType();
+         final int parentType = aAST.getParent().getType();
+ 
+         // Check for CURLY in array initializer
+-        if ((type == TokenTypes.RCURLY || type == TokenTypes.LCURLY)
++        if (((type == TokenTypes.RCURLY) || (type == TokenTypes.LCURLY))
+             && (parentType == TokenTypes.ARRAY_INIT))
+         {
+             return;
+         }
+ 
+         // Check for import pkg.name.*;
+         if ((type == TokenTypes.STAR)
+             && (parentType == TokenTypes.DOT))
+         {
+             return;
+         }
+ 
+         // Check for an SLIST that has a parent CASE_GROUP. It is not a '{'.
+         if ((type == TokenTypes.SLIST)
+             && (parentType == TokenTypes.CASE_GROUP))
+         {
+             return;
+         }
+ 
+         //we do not want to check colon for cases and defaults
+-        if (type == TokenTypes.COLON
+-            && (parentType == TokenTypes.LITERAL_DEFAULT
+-                || parentType == TokenTypes.LITERAL_CASE))
++        if ((type == TokenTypes.COLON)
++            && ((parentType == TokenTypes.LITERAL_DEFAULT)
++                || (parentType == TokenTypes.LITERAL_CASE)))
+         {
+             return;
+         }
+ 
+         // Check for allowed empty method or ctor blocks.
+         if (emptyMethodBlockCheck(aAST, parentType)
+             || emptyCtorBlockCheck(aAST, parentType))
+         {
+             return;
+         }
+ 
+         final String[] lines = getLines();
+         final String line = lines[aAST.getLineNo() - 1];
+         final int before = aAST.getColumnNo() - 1;
+         final int after = aAST.getColumnNo() + aAST.getText().length();
+ 
+         if ((before >= 0) && !Character.isWhitespace(line.charAt(before))) {
+             log(aAST.getLineNo(), aAST.getColumnNo(),
+                     "ws.notPreceded", new Object[]{aAST.getText()});
+         }
+ 
+         if (after >= line.length()) {
+             return;
+         }
+ 
+         final char nextChar = line.charAt(after);
+         if (!Character.isWhitespace(nextChar)
+             // Check for "return;"
+             && !((type == TokenTypes.LITERAL_RETURN)
+                 && (aAST.getFirstChild().getType() == TokenTypes.SEMI))
+             // Check for "})" or "};" or "},". Happens with anon-inners
+             && !((type == TokenTypes.RCURLY)
+                 && ((nextChar == ')')
+                     || (nextChar == ';')
+                     || (nextChar == ','))))
+         {
+             log(
+                 aAST.getLineNo(),
+                 aAST.getColumnNo() + aAST.getText().length(),
+                 "ws.notFollowed",
+                 new Object[] {aAST.getText()});
+         }
+     }
+ 
+     /**
+      * Test if the given <code>DetailAST</code> is part of an allowed empty
+      * method block.
+      * @param aAST the <code>DetailAST</code> to test.
+      * @param aParentType the token type of <code>aAST</code>'s parent.
+      * @return <code>true</code> if <code>aAST</code> makes up part of an
+      *         allowed empty method block.
+      */
+     private boolean emptyMethodBlockCheck(DetailAST aAST, int aParentType)
+     {
+         return mAllowEmptyMethods
+             && emptyBlockCheck(aAST, aParentType, TokenTypes.METHOD_DEF);
+     }
+ 
+     /**
+      * Test if the given <code>DetailAST</code> is part of an allowed empty
+      * constructor (ctor) block.
+      * @param aAST the <code>DetailAST</code> to test.
+      * @param aParentType the token type of <code>aAST</code>'s parent.
+      * @return <code>true</code> if <code>aAST</code> makes up part of an
+      *         allowed empty constructor block.
+      */
+     private boolean emptyCtorBlockCheck(DetailAST aAST, int aParentType)
+     {
+         return mAllowEmptyCtors
+             && emptyBlockCheck(aAST, aParentType, TokenTypes.CTOR_DEF);
+     }
+ 
+     /**
+      * Test if the given <code>DetailAST</code> is part of an empty block.
+      * An example empty block might look like the following
+      * <p>
+      * <pre>   public void myMethod(int val) {}</pre>
+      * <p>
+      * In the above, the method body is an empty block ("{}").
+      *
+      * @param aAST the <code>DetailAST</code> to test.
+      * @param aParentType the token type of <code>aAST</code>'s parent.
+      * @param aMatch the parent token type we're looking to match.
+      * @return <code>true</code> if <code>aAST</code> makes up part of an
+      *         empty block contained under a <code>aMatch</code> token type
+      *         node.
+      */
+     private boolean emptyBlockCheck(DetailAST aAST, int aParentType, int aMatch)
+     {
+         final int type = aAST.getType();
+         if (type == TokenTypes.RCURLY) {
+             DetailAST grandParent = aAST.getParent().getParent();
+-            return aParentType == TokenTypes.SLIST
+-                && grandParent.getType() == aMatch;
++            return (aParentType == TokenTypes.SLIST)
++                && (grandParent.getType() == aMatch);
+         }
+ 
+-        return type == TokenTypes.SLIST
+-            && aParentType == aMatch
+-            && aAST.getFirstChild().getType() == TokenTypes.RCURLY;
++        return (type == TokenTypes.SLIST)
++            && (aParentType == aMatch)
++            && (aAST.getFirstChild().getType() == TokenTypes.RCURLY);
+     }
+ }

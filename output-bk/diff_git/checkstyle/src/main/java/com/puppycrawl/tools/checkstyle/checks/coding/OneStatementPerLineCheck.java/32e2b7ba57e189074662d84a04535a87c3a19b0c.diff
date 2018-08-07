@@ -1,0 +1,129 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
+index fd237f0a7..f16701816 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
+@@ -62,118 +62,118 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  *     ; var2 = 2; //violation here
+  *     int o = 1, p = 2,
+  *     r = 5; int t; //violation here
+  * </pre>
+  *
+  * @author Alexander Jesse
+  * @author Oliver Burn
+  * @author Andrei Selkin
+  */
+ @FileStatefulCheck
+ public final class OneStatementPerLineCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "multiple.statements.line";
+ 
+     /**
+      * Counts number of semicolons in nested lambdas.
+      */
+     private final Deque<Integer> countOfSemiInLambda = new ArrayDeque<>();
+ 
+     /**
+      * Hold the line-number where the last statement ended.
+      */
+     private int lastStatementEnd = -1;
+ 
+     /**
+      * Hold the line-number where the last 'for-loop' statement ended.
+      */
+     private int forStatementEnd = -1;
+ 
+     /**
+      * The for-header usually has 3 statements on one line, but THIS IS OK.
+      */
+     private boolean inForHeader;
+ 
+     /**
+      * Holds if current token is inside lambda.
+      */
+     private boolean isInLambda;
+ 
+     /**
+      * Hold the line-number where the last lambda statement ended.
+      */
+     private int lambdaStatementEnd = -1;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return getAcceptableTokens();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
++        return getRequiredTokens();
++    }
++
++    @Override
++    public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.SEMI,
+             TokenTypes.FOR_INIT,
+             TokenTypes.FOR_ITERATOR,
+             TokenTypes.LAMBDA,
+         };
+     }
+ 
+-    @Override
+-    public int[] getRequiredTokens() {
+-        return getAcceptableTokens();
+-    }
+-
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         inForHeader = false;
+         lastStatementEnd = -1;
+         forStatementEnd = -1;
+         isInLambda = false;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.SEMI:
+                 checkIfSemicolonIsInDifferentLineThanPrevious(ast);
+                 break;
+             case TokenTypes.FOR_ITERATOR:
+                 forStatementEnd = ast.getLineNo();
+                 break;
+             case TokenTypes.LAMBDA:
+                 isInLambda = true;
+                 countOfSemiInLambda.push(0);
+                 break;
+             default:
+                 inForHeader = true;
+                 break;
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.SEMI:
+                 lastStatementEnd = ast.getLineNo();
+                 forStatementEnd = -1;
+                 lambdaStatementEnd = -1;
+                 break;
+             case TokenTypes.FOR_ITERATOR:
+                 inForHeader = false;
+                 break;
+             case TokenTypes.LAMBDA:
+                 countOfSemiInLambda.pop();
+                 if (countOfSemiInLambda.isEmpty()) {
+                     isInLambda = false;
+                 }
+                 lambdaStatementEnd = ast.getLineNo();
+                 break;
+             default:
+                 break;
+         }
+     }
+ 

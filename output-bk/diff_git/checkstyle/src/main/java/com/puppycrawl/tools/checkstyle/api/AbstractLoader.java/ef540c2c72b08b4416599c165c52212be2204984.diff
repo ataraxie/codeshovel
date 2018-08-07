@@ -1,0 +1,80 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractLoader.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractLoader.java
+index fd32e477e..2dec7aec5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractLoader.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractLoader.java
+@@ -59,74 +59,66 @@ public abstract class AbstractLoader
+      * @param dtdResourceName the resource for the DTD
+      * @throws SAXException if an error occurs
+      * @throws ParserConfigurationException if an error occurs
+      */
+     protected AbstractLoader(String publicId, String dtdResourceName)
+         throws SAXException, ParserConfigurationException {
+         this(new HashMap<String, String>(1));
+         publicIdToResourceNameMap.put(publicId, dtdResourceName);
+     }
+ 
+     /**
+      * Creates a new instance.
+      * @param publicIdToResourceNameMap maps public IDs to DTD resource names
+      * @throws SAXException if an error occurs
+      * @throws ParserConfigurationException if an error occurs
+      */
+     protected AbstractLoader(Map<String, String> publicIdToResourceNameMap)
+         throws SAXException, ParserConfigurationException {
+         this.publicIdToResourceNameMap =
+             Maps.newHashMap(publicIdToResourceNameMap);
+         final SAXParserFactory factory = SAXParserFactory.newInstance();
+         factory.setValidating(true);
+         factory.setNamespaceAware(true);
+         parser = factory.newSAXParser().getXMLReader();
+         parser.setContentHandler(this);
+         parser.setEntityResolver(this);
+         parser.setErrorHandler(this);
+     }
+ 
+     /**
+      * Parses the specified input source.
+      * @param inputSource the input source to parse.
+      * @throws IOException if an error occurs
+      * @throws SAXException in an error occurs
+      */
+     public void parseInputSource(InputSource inputSource)
+         throws IOException, SAXException {
+         parser.parse(inputSource);
+     }
+ 
+     @Override
+     public InputSource resolveEntity(String publicId, String systemId)
+         throws SAXException, IOException {
+         if (publicIdToResourceNameMap.keySet().contains(publicId)) {
+             final String dtdResourceName =
+                     publicIdToResourceNameMap.get(publicId);
+             final ClassLoader loader =
+                 this.getClass().getClassLoader();
+             final InputStream dtdIS =
+                 loader.getResourceAsStream(dtdResourceName);
+-            if (dtdIS == null) {
+-                throw new SAXException(
+-                    "Unable to load internal dtd " + dtdResourceName);
+-            }
++
+             return new InputSource(dtdIS);
+         }
+         return super.resolveEntity(publicId, systemId);
+     }
+ 
+-    @Override
+-    public void warning(SAXParseException ex) throws SAXException {
+-        throw ex;
+-    }
+-
+     @Override
+     public void error(SAXParseException ex) throws SAXException {
+         throw ex;
+     }
+ 
+     @Override
+     public void fatalError(SAXParseException ex) throws SAXException {
+         throw ex;
+     }
+ }

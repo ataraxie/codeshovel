@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "NoWhitespaceAfterCheck.java",
+  "functionName": "getPreviousNodeWithParentOfTypeAst",
+  "functionId": "getPreviousNodeWithParentOfTypeAst___ast-DetailAST__parent-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java",
+  "functionStartLine": 377,
+  "functionEndLine": 406,
+  "changeHistory": [
+    "6704dfabe1f8bb0f8310b958f89a38efedd26353",
+    "6c1a5e812a68ca12aaa861b3670622915ddc830c",
+    "c56dce9222a819b4741b4c0cd664d38c58b31050"
+  ],
+  "changeHistoryShort": {
+    "6704dfabe1f8bb0f8310b958f89a38efedd26353": "Ybodychange",
+    "6c1a5e812a68ca12aaa861b3670622915ddc830c": "Ybodychange",
+    "c56dce9222a819b4741b4c0cd664d38c58b31050": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6704dfabe1f8bb0f8310b958f89a38efedd26353": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5003: increased pitest coverage for whitespace package to 100%",
+      "commitDate": 1513111579000,
+      "commitName": "6704dfabe1f8bb0f8310b958f89a38efedd26353",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1509412562000,
+      "commitNameOld": "5cdbb191a17c65c2956b35d71513e9b59b6d2166",
+      "commitAuthorOld": "Andrew Kuchev",
+      "daysBetweenCommits": 42.81,
+      "commitsBetweenForRepo": 84,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,30 @@\n     private static DetailAST getPreviousNodeWithParentOfTypeAst(DetailAST ast, DetailAST parent) {\n         final DetailAST previousElement;\n         final DetailAST ident \u003d getIdentLastToken(parent.getParent());\n         final DetailAST lastTypeNode \u003d getTypeLastNode(ast);\n         // sometimes there are ident-less sentences\n         // i.e. \"(Object[]) null\", but in casual case should be\n         // checked whether ident or lastTypeNode has preceding position\n         // determining if it is java style or C style\n         if (ident \u003d\u003d null || ident.getLineNo() \u003e ast.getLineNo()) {\n             previousElement \u003d lastTypeNode;\n         }\n         else if (ident.getLineNo() \u003c ast.getLineNo()) {\n             previousElement \u003d ident;\n         }\n         //ident and lastTypeNode lay on one line\n         else {\n-            if (ident.getColumnNo() \u003e\u003d ast.getColumnNo() + 1\n-                || lastTypeNode.getColumnNo() \u003e ident.getColumnNo()) {\n+            final int instanceOfSize \u003d 13;\n+            // +2 because ast has `[]` after the ident\n+            if (ident.getColumnNo() \u003e\u003d ast.getColumnNo() + 2\n+                // +13 because ident (at most 1 character) is followed by\n+                // \u0027 instanceof \u0027 (12 characters)\n+                || lastTypeNode.getColumnNo() \u003e\u003d ident.getColumnNo() + instanceOfSize) {\n                 previousElement \u003d lastTypeNode;\n             }\n             else {\n                 previousElement \u003d ident;\n             }\n         }\n         return previousElement;\n     }\n\\ No newline at end of file\n"
+    },
+    "6c1a5e812a68ca12aaa861b3670622915ddc830c": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5003: increase coverage of pitest-checks-whitespace to 99%\n",
+      "commitDate": 1508890981000,
+      "commitName": "6c1a5e812a68ca12aaa861b3670622915ddc830c",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1505565421000,
+      "commitNameOld": "3be76368423001233ae7d05235527213bf66ee34",
+      "commitAuthorOld": "Ruslan Iagudin",
+      "daysBetweenCommits": 38.49,
+      "commitsBetweenForRepo": 66,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,26 @@\n     private static DetailAST getPreviousNodeWithParentOfTypeAst(DetailAST ast, DetailAST parent) {\n         final DetailAST previousElement;\n         final DetailAST ident \u003d getIdentLastToken(parent.getParent());\n         final DetailAST lastTypeNode \u003d getTypeLastNode(ast);\n         // sometimes there are ident-less sentences\n         // i.e. \"(Object[]) null\", but in casual case should be\n         // checked whether ident or lastTypeNode has preceding position\n         // determining if it is java style or C style\n         if (ident \u003d\u003d null || ident.getLineNo() \u003e ast.getLineNo()) {\n             previousElement \u003d lastTypeNode;\n         }\n         else if (ident.getLineNo() \u003c ast.getLineNo()) {\n             previousElement \u003d ident;\n         }\n         //ident and lastTypeNode lay on one line\n         else {\n-            if (ident.getColumnNo() \u003e ast.getColumnNo()\n+            if (ident.getColumnNo() \u003e\u003d ast.getColumnNo() + 1\n                 || lastTypeNode.getColumnNo() \u003e ident.getColumnNo()) {\n                 previousElement \u003d lastTypeNode;\n             }\n             else {\n                 previousElement \u003d ident;\n             }\n         }\n         return previousElement;\n     }\n\\ No newline at end of file\n"
+    },
+    "c56dce9222a819b4741b4c0cd664d38c58b31050": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1013: Fix NoWhitespaceAfterCheck\n",
+      "commitDate": 1446329775000,
+      "commitName": "c56dce9222a819b4741b4c0cd664d38c58b31050",
+      "commitAuthor": "attatrol"
+    }
+  }
+}

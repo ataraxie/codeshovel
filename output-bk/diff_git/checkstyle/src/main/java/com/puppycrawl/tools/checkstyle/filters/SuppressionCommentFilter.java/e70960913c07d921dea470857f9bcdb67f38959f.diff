@@ -1,0 +1,139 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index 55d0ea00a..4d4cc93f8 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -268,131 +268,131 @@ public class SuppressionCommentFilter
+ 
+     /** Control all checks */
+     private static final String DEFAULT_CHECK_FORMAT = ".*";
+ 
+     /** Whether to look in comments of the C type. */
+     private boolean checkC = true;
+ 
+     /** Whether to look in comments of the C++ type. */
+     private boolean checkCPP = true;
+ 
+     /** Parsed comment regexp that turns checkstyle reporting off. */
+     private Pattern offRegexp;
+ 
+     /** Parsed comment regexp that turns checkstyle reporting on. */
+     private Pattern onRegexp;
+ 
+     /** The check format to suppress. */
+     private String checkFormat;
+ 
+     /** The message format to suppress. */
+     private String messageFormat;
+ 
+     /** Tagged comments */
+     private final List<Tag> tags = Lists.newArrayList();
+ 
+     /**
+      * References the current FileContents for this filter.
+      * Since this is a weak reference to the FileContents, the FileContents
+      * can be reclaimed as soon as the strong references in TreeWalker
+      * and FileContentsHolder are reassigned to the next FileContents,
+      * at which time filtering for the current FileContents is finished.
+      */
+     private WeakReference<FileContents> fileContentsReference = new WeakReference<>(null);
+ 
+     /**
+      * Constructs a SuppressionCoontFilter.
+      * Initializes comment on, comment off, and check formats
+      * to defaults.
+      */
+     public SuppressionCommentFilter() {
+         setOnCommentFormat(DEFAULT_ON_FORMAT);
+         setOffCommentFormat(DEFAULT_OFF_FORMAT);
+         setCheckFormat(DEFAULT_CHECK_FORMAT);
+     }
+ 
+     /**
+      * Set the format for a comment that turns off reporting.
+      * @param format a <code>String</code> value.
+      * @throws ConversionException if unable to create Pattern object.
+      */
+-    public void setOffCommentFormat(String format) {
++    public final void setOffCommentFormat(String format) {
+         offRegexp = Utils.createPattern(format);
+     }
+ 
+     /**
+      * Set the format for a comment that turns on reporting.
+      * @param format a <code>String</code> value
+      * @throws ConversionException if unable to create Pattern object.
+      */
+-    public void setOnCommentFormat(String format) {
++    public final void setOnCommentFormat(String format) {
+         onRegexp = Utils.createPattern(format);
+     }
+ 
+     /** @return the FileContents for this filter. */
+     public FileContents getFileContents() {
+         return fileContentsReference.get();
+     }
+ 
+     /**
+      * Set the FileContents for this filter.
+      * @param fileContents the FileContents for this filter.
+      */
+     public void setFileContents(FileContents fileContents) {
+         fileContentsReference = new WeakReference<>(fileContents);
+     }
+ 
+     /**
+      * Set the format for a check.
+      * @param format a <code>String</code> value
+      */
+-    public void setCheckFormat(String format) {
++    public final void setCheckFormat(String format) {
+         checkFormat = format;
+     }
+ 
+     /**
+      * Set the format for a message.
+      * @param format a <code>String</code> value
+      */
+     public void setMessageFormat(String format) {
+         messageFormat = format;
+     }
+ 
+     /**
+      * Set whether to look in C++ comments.
+      * @param checkCPP <code>true</code> if C++ comments are checked.
+      */
+     public void setCheckCPP(boolean checkCPP) {
+         this.checkCPP = checkCPP;
+     }
+ 
+     /**
+      * Set whether to look in C comments.
+      * @param checkC <code>true</code> if C comments are checked.
+      */
+     public void setCheckC(boolean checkC) {
+         this.checkC = checkC;
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public boolean accept(AuditEvent event) {
+         if (event.getLocalizedMessage() == null) {
+             return true;        // A special event.
+         }
+ 
+         // Lazy update. If the first event for the current file, update file
+         // contents and tag suppressions
+         final FileContents currentContents = FileContentsHolder.getContents();
+         if (currentContents == null) {
+             // we have no contents, so we can not filter.
+             return true;
+         }
+         if (getFileContents() != currentContents) {
+             setFileContents(currentContents);
+             tagSuppressions();
+         }
+         final Tag matchTag = findNearestMatch(event);
+         return matchTag == null || matchTag.isOn();
+     }
+ 
+     /**

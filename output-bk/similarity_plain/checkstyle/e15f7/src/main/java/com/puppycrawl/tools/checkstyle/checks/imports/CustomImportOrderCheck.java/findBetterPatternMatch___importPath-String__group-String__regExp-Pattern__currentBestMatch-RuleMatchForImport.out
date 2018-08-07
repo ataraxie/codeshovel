@@ -1,0 +1,33 @@
+=== COMPARE FUNCTION ===
+
+COMMIT: e15f70ac5b1460236e14237acc3a041102238efd
+NAME: findBetterPatternMatch
+PATH: findBetterPatternMatch___importPath-String__group-String__regExp-Pattern__currentBestMatch-RuleMatchForImport
+BODY:
+{
+    RuleMatchForImport betterMatchCandidate = currentBestMatch;
+    final Matcher matcher = regExp.matcher(importPath);
+    while (matcher.find()) {
+        final int length = matcher.end() - matcher.start();
+        if (length > betterMatchCandidate.matchLength || length == betterMatchCandidate.matchLength && matcher.start() < betterMatchCandidate.matchPosition) {
+            betterMatchCandidate = new RuleMatchForImport(group, length, matcher.start());
+        }
+    }
+    return betterMatchCandidate;
+}
+
+
+=== MOST SIMILAR FUNCTION ===
+
+COMMIT: 5ca96679525171c73fc4d5c257301f51d2100071
+NAME: matchesSamePackageImportGroup
+PATH: matchesSamePackageImportGroup___isStatic-boolean__importFullPath-String__currentGroup-String
+BODY:
+{
+    final String importPathTrimmedToSamePackageDepth = getFirstNDomainsFromIdent(samePackageMatchingDepth, importFullPath);
+    return !isStatic && SAME_PACKAGE_RULE_GROUP.equals(currentGroup) && samePackageDomainsRegExp.equals(importPathTrimmedToSamePackageDepth);
+}
+
+
+=== SIMILARITY ===
+BodySimilarity: 0.5841315317145382; ScopeSimilarity: 1.0; NameSimilarity: 0.5355276907001044; LineNumberSimilarity: 0.9563269876819709 --- Overall: 0.5299148056036607

@@ -1,0 +1,124 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java b/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
+index c82021acd..159157fcf 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
+@@ -215,117 +215,117 @@ public final class Utils {
+      * @throws ConversionException if unable to create Pattern object.
+      **/
+     public static Pattern createPattern(String pattern) {
+         try {
+             return Pattern.compile(pattern);
+         }
+         catch (final PatternSyntaxException e) {
+             throw new ConversionException(
+                 "Failed to initialise regular expression " + pattern, e);
+         }
+     }
+ 
+     /**
+      * @param type the fully qualified name. Cannot be null
+      * @return the base class name from a fully qualified name
+      */
+     public static String baseClassname(String type) {
+         final int i = type.lastIndexOf('.');
+         return i == -1 ? type : type.substring(i + 1);
+     }
+ 
+     /**
+      * Constructs a normalized relative path between base directory and a given path.
+      * @param baseDirectory the base path to which given path is relativized
+      * @param path the path to relativize against base directory
+      * @return the relative normalized path between base directory and path or path if base
+      * directory is null
+      */
+     public static String relativizeAndNormalizePath(final String baseDirectory, final String path) {
+         if (baseDirectory == null) {
+             return path;
+         }
+         final Path pathAbsolute = Paths.get(path).normalize();
+         final Path pathBase = Paths.get(baseDirectory).normalize();
+         return pathBase.relativize(pathAbsolute).toString();
+     }
+ 
+     /**
+      * Tests if this string starts with the specified prefix.
+      * <p/>
+      * It is faster version of {@link String#startsWith(String)} optimized for one-character
+      * prefixes at the expense of some readability. Suggested by SimplifyStartsWith PMD rule:
+      * http://pmd.sourceforge.net/pmd-5.3.1/pmd-java/rules/java/optimizations.html#SimplifyStartsWith
+      *
+      * @param string the <code>String</code> to check
+      * @param prefix the prefix to find
+      * @return <code>true</code> if the <code>char</code> is a prefix of the given
+      * <code>String</code>; <code>false</code> otherwise.
+      */
+     public static boolean startsWithChar(String string, char prefix) {
+-        return string.length() > 0 && string.charAt(0) == prefix;
++        return !string.isEmpty() && string.charAt(0) == prefix;
+     }
+ 
+     /**
+      * Tests if this string ends with the specified suffix.
+      * <p/>
+      * It is faster version of {@link String#endsWith(String)} optimized for one-character
+      * suffixes at the expense of some readability. Suggested by SimplifyStartsWith PMD rule:
+      * http://pmd.sourceforge.net/pmd-5.3.1/pmd-java/rules/java/optimizations.html#SimplifyStartsWith
+      *
+      * @param string the <code>String</code> to check
+      * @param suffix the suffix to find
+      * @return <code>true</code> if the <code>char</code> is a suffix of the given
+      * <code>String</code>; <code>false</code> otherwise.
+      */
+     public static boolean endsWithChar(String string, char suffix) {
+-        return string.length() > 0 && string.charAt(string.length() - 1) == suffix;
++        return !string.isEmpty() && string.charAt(string.length() - 1) == suffix;
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param iD the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int iD) {
+         if (iD > TOKEN_VALUE_TO_NAME.length - 1) {
+             throw new IllegalArgumentException("given id " + iD);
+         }
+         final String name = TOKEN_VALUE_TO_NAME[iD];
+         if (name == null) {
+             throw new IllegalArgumentException("given id " + iD);
+         }
+         return name;
+     }
+ 
+     /**
+      * Returns the ID of a token for a given name.
+      * @param name the name of the token ID to get
+      * @return a token ID
+      */
+     public static int getTokenId(String name) {
+         final Integer id = TOKEN_NAME_TO_VALUE.get(name);
+         if (id == null) {
+             throw new IllegalArgumentException("given name " + name);
+         }
+         return id.intValue();
+     }
+ 
+     /**
+      * Returns the short description of a token for a given name.
+      * @param name the name of the token ID to get
+      * @return a short description
+      */
+     public static String getShortDescription(String name) {
+         if (!TOKEN_NAME_TO_VALUE.containsKey(name)) {
+             throw new IllegalArgumentException("given name " + name);
+         }
+ 
+         final String tokentypes =
+             "com.puppycrawl.tools.checkstyle.api.tokentypes";
+         final ResourceBundle bundle = ResourceBundle.getBundle(tokentypes);
+         return bundle.getString(name);
+     }
+ 
+     /**
+      * Is argument comment-related type (SINGLE_LINE_COMMENT,
+      * BLOCK_COMMENT_BEGIN, BLOCK_COMMENT_END, COMMENT_CONTENT).

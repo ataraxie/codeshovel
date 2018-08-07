@@ -1,0 +1,106 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+index ca8c4fdeb..80cff6205 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -125,100 +125,101 @@ public class Checker extends AutomaticBean implements MessageDispatcher, RootMod
+     private SeverityLevel severityLevel = SeverityLevel.ERROR;
+ 
+     /** Name of a charset. */
+     private String charset = System.getProperty("file.encoding", StandardCharsets.UTF_8.name());
+ 
+     /** Cache file. **/
+     private PropertyCacheFile cache;
+ 
+     /** Controls whether exceptions should halt execution or not. */
+     private boolean haltOnException = true;
+ 
+     /**
+      * Creates a new {@code Checker} instance.
+      * The instance needs to be contextualized and configured.
+      */
+     public Checker() {
+         addListener(counter);
+         log = LogFactory.getLog(Checker.class);
+     }
+ 
+     /**
+      * Sets cache file.
+      * @param fileName the cache file.
+      * @throws IOException if there are some problems with file loading.
+      */
+     public void setCacheFile(String fileName) throws IOException {
+         final Configuration configuration = getConfiguration();
+         cache = new PropertyCacheFile(configuration, fileName);
+         cache.load();
+     }
+ 
+     /**
+      * Removes before execution file filter.
+      * @param filter before execution file filter to remove.
+      */
+     public void removeBeforeExecutionFileFilter(BeforeExecutionFileFilter filter) {
+         beforeExecutionFileFilters.removeBeforeExecutionFileFilter(filter);
+     }
+ 
+     /**
+      * Removes filter.
+      * @param filter filter to remove.
+      */
+     public void removeFilter(Filter filter) {
+         filters.removeFilter(filter);
+     }
+ 
+     @Override
+     public void destroy() {
+         listeners.clear();
++        fileSetChecks.clear();
+         beforeExecutionFileFilters.clear();
+         filters.clear();
+         if (cache != null) {
+             try {
+                 cache.persist();
+             }
+             catch (IOException ex) {
+                 throw new IllegalStateException("Unable to persist cache file.", ex);
+             }
+         }
+     }
+ 
+     /**
+      * Removes a given listener.
+      * @param listener a listener to remove
+      */
+     public void removeListener(AuditListener listener) {
+         listeners.remove(listener);
+     }
+ 
+     /**
+      * Sets base directory.
+      * @param basedir the base directory to strip off in file names
+      */
+     public void setBasedir(String basedir) {
+         this.basedir = basedir;
+     }
+ 
+     @Override
+     public int process(List<File> files) throws CheckstyleException {
+         if (cache != null) {
+             cache.putExternalResources(getExternalResourceLocations());
+         }
+ 
+         // Prepare to start
+         fireAuditStarted();
+         for (final FileSetCheck fsc : fileSetChecks) {
+             fsc.beginProcessing(charset);
+         }
+ 
+         processFiles(files);
+ 
+         // Finish up
+         // It may also log!!!
+         fileSetChecks.forEach(FileSetCheck::finishProcessing);
+ 
+         // It may also log!!!
+         fileSetChecks.forEach(FileSetCheck::destroy);
+ 
+         final int errorCount = counter.getCount();

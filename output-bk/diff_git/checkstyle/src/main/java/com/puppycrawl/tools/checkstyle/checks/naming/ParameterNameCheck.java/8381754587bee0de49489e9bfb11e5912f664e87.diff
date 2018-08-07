@@ -1,0 +1,72 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ParameterNameCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ParameterNameCheck.java
+index 9152f7063..3658dc4b4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ParameterNameCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ParameterNameCheck.java
+@@ -71,60 +71,62 @@ public class ParameterNameCheck
+ 
+     /**
+      * Creates a new {@code ParameterNameCheck} instance.
+      */
+     public ParameterNameCheck() {
+         super("^[a-z][a-zA-Z0-9]*$");
+     }
+ 
+     /**
+      * Sets whether to skip methods with Override annotation from validation.
+      *
+      * @param ignoreOverridden Flag for skipping methods with Override annotation.
+      */
+     public void setIgnoreOverridden(boolean ignoreOverridden) {
+         this.ignoreOverridden = ignoreOverridden;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.PARAMETER_DEF};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     protected boolean mustCheckName(DetailAST ast) {
+         boolean checkName = true;
+         if (ignoreOverridden && isOverriddenMethod(ast)
+                 || ast.getParent().getType() == TokenTypes.LITERAL_CATCH) {
+             checkName = false;
+         }
+         return checkName;
+     }
+ 
+     /**
+      * Checks whether a method is annotated with Override annotation.
+      * @param ast method parameter definition token.
+      * @return true if a method is annotated with Override annotation.
+      */
+     private static boolean isOverriddenMethod(DetailAST ast) {
+         boolean overridden = false;
+         final DetailAST parent = ast.getParent().getParent();
+-        final DetailAST annotation = parent.getFirstChild().getFirstChild();
+-        if (annotation.getType() == TokenTypes.ANNOTATION) {
+-            final DetailAST overrideToken = annotation.findFirstToken(TokenTypes.IDENT);
+-            if ("Override".equals(overrideToken.getText())) {
+-                overridden = true;
++        if (parent.getFirstChild().getFirstChild() != null) {
++            final DetailAST annotation = parent.getFirstChild().getFirstChild();
++            if (annotation.getType() == TokenTypes.ANNOTATION) {
++                final DetailAST overrideToken = annotation.findFirstToken(TokenTypes.IDENT);
++                if ("Override".equals(overrideToken.getText())) {
++                    overridden = true;
++                }
+             }
+         }
+         return overridden;
+     }
+ }

@@ -1,0 +1,91 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Utils.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Utils.java
+index e1394c0a4..a14a80110 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Utils.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Utils.java
+@@ -155,51 +155,86 @@ public final class Utils
+     {
+         final StringBuffer buf = new StringBuffer();
+         final Iterator it = aSet.iterator();
+         while (it.hasNext()) {
+             buf.append(it.next().toString());
+             if (it.hasNext()) {
+                 buf.append(",");
+             }
+         }
+         aProps.put(aKey, buf.toString());
+     }
+ 
+     /**
+      * Loads the contents of a file in a String array.
+      * @return the lines in the file
+      * @param aFileName the name of the file to load
+      * @throws IOException error occurred
+      **/
+     public static String[] getLines(String aFileName)
+         throws IOException
+     {
+         final LineNumberReader lnr =
+             new LineNumberReader(new FileReader(aFileName));
+         final ArrayList lines = new ArrayList();
+         while (true) {
+             final String l = lnr.readLine();
+             if (l == null) {
+                 break;
+             }
+             lines.add(l);
+         }
+ 
+         return (String[]) lines.toArray(new String[0]);
+     }
+ 
+     /**
+      * Return the last sibling for an AST.
+      * @param aAST the AST to start navigating from
+      * @return the last sibling
+      */
+     public static DetailAST getLastSibling(final AST aAST)
+     {
+         AST retVal = aAST;
+         AST nextSibling = retVal.getNextSibling();
+         while (nextSibling != null) {
+             retVal = nextSibling;
+             nextSibling = nextSibling.getNextSibling();
+         }
+         return (DetailAST) retVal;
+     }
++
++    /**
++     * Returns the first sibling token that makes a specified type.
++     * @param aFrom the token to search from
++     * @param aType the token type to match
++     * @return the matching token, or null if no match
++     */
++    public static DetailAST findFirstToken(AST aFrom, int aType)
++    {
++        DetailAST retVal = null;
++        for (AST i = aFrom; i != null; i = i.getNextSibling()) {
++            if (i.getType() == aType) {
++                retVal = (DetailAST) i;
++                break;
++            }
++        }
++        return retVal;
++    }
++
++    /**
++     * Returns the number of sibling tokens that are of a specified type.
++     * @param aFrom the token to search from
++     * @param aType the token type to match
++     * @return the number of matching token
++     */
++    public static int countTokens(AST aFrom, int aType)
++    {
++        int count = 0;
++        for (AST i = aFrom; i != null; i = i.getNextSibling()) {
++            if (i.getType() == aType) {
++                count++;
++            }
++        }
++        return count;
++    }
+ }

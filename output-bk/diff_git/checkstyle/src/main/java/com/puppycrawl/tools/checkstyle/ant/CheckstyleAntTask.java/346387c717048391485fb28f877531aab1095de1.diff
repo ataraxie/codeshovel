@@ -1,0 +1,143 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+index 08ef8b950..fb5ee5ee3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+@@ -298,136 +298,136 @@ public class CheckstyleAntTask extends Task {
+                 Project.MSG_VERBOSE);
+         }
+     }
+ 
+     /**
+      * Helper implementation to perform execution.
+      * @param checkstyleVersion Checkstyle compile version.
+      */
+     private void realExecute(String checkstyleVersion) {
+         // Create the checker
+         Checker checker = null;
+         try {
+             checker = createChecker();
+ 
+             // setup the listeners
+             final AuditListener[] listeners = getListeners();
+             for (AuditListener element : listeners) {
+                 checker.addListener(element);
+             }
+             final SeverityLevelCounter warningCounter =
+                 new SeverityLevelCounter(SeverityLevel.WARNING);
+             checker.addListener(warningCounter);
+ 
+             processFiles(checker, warningCounter, checkstyleVersion);
+         }
+         finally {
+             if (checker != null) {
+                 checker.destroy();
+             }
+         }
+     }
+ 
+     /**
+      * Scans and processes files by means given checker.
+      * @param checker Checker to process files
+      * @param warningCounter Checker's counter of warnings
+      * @param checkstyleVersion Checkstyle compile version
+      */
+     private void processFiles(Checker checker, final SeverityLevelCounter warningCounter,
+             final String checkstyleVersion) {
+         final long startTime = System.currentTimeMillis();
+         final List<File> files = scanFileSets();
+         final long endTime = System.currentTimeMillis();
+         log("To locate the files took " + (endTime - startTime) + TIME_SUFFIX,
+             Project.MSG_VERBOSE);
+ 
+         log("Running Checkstyle " + checkstyleVersion + " on " + files.size()
+                 + " files", Project.MSG_INFO);
+         log("Using configuration " + configLocation, Project.MSG_VERBOSE);
+ 
+-        int numErrs;
++        final int numErrs;
+ 
+         try {
+             final long processingStartTime = System.currentTimeMillis();
+             numErrs = checker.process(files);
+             final long processingEndTime = System.currentTimeMillis();
+             log("To process the files took " + (processingEndTime - processingStartTime)
+                 + TIME_SUFFIX, Project.MSG_VERBOSE);
+         }
+         catch (CheckstyleException e) {
+             throw new BuildException("Unable to process files: " + files, e);
+         }
+         final int numWarnings = warningCounter.getCount();
+         final boolean okStatus = numErrs <= maxErrors && numWarnings <= maxWarnings;
+ 
+         // Handle the return status
+         if (!okStatus) {
+             final String failureMsg =
+                     "Got " + numErrs + " errors and " + numWarnings
+                             + " warnings.";
+             if (failureProperty != null) {
+                 getProject().setProperty(failureProperty, failureMsg);
+             }
+ 
+             if (failOnViolation) {
+                 throw new BuildException(failureMsg, getLocation());
+             }
+         }
+     }
+ 
+     /**
+      * Creates new instance of {@code Checker}.
+      * @return new instance of {@code Checker}
+      */
+     private Checker createChecker() {
+-        Checker checker;
++        final Checker checker;
+         try {
+             final Properties props = createOverridingProperties();
+             final Configuration config =
+                 ConfigurationLoader.loadConfiguration(
+                     configLocation,
+                     new PropertiesExpander(props),
+                     omitIgnoredModules);
+ 
+             final DefaultContext context = new DefaultContext();
+             final ClassLoader loader = new AntClassLoader(getProject(),
+                     classpath);
+             context.add("classloader", loader);
+ 
+             final ClassLoader moduleClassLoader =
+                 Checker.class.getClassLoader();
+             context.add("moduleClassLoader", moduleClassLoader);
+ 
+             checker = new Checker();
+             checker.contextualize(context);
+             checker.configure(config);
+         }
+         catch (final CheckstyleException e) {
+             throw new BuildException(String.format(Locale.ROOT, "Unable to create a Checker: "
+                     + "configLocation {%s}, classpath {%s}.", configLocation, classpath), e);
+         }
+         return checker;
+     }
+ 
+     /**
+      * Create the Properties object based on the arguments specified
+      * to the ANT task.
+      * @return the properties for property expansion expansion
+      * @throws BuildException if an error occurs
+      */
+     private Properties createOverridingProperties() {
+         final Properties returnValue = new Properties();
+ 
+         // Load the properties file if specified
+         if (properties != null) {
+             FileInputStream inStream = null;
+             try {
+                 inStream = new FileInputStream(properties);
+                 returnValue.load(inStream);
+             }
+             catch (final IOException e) {
+                 throw new BuildException("Error loading Properties file '"
+                         + properties + "'", e, getLocation());
+             }
+             finally {
+                 Closeables.closeQuietly(inStream);

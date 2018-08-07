@@ -1,0 +1,164 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "equals___object-Object",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 311,
+  "changeHistory": [
+    "2f4e7d93d64b61b6762d15422549cb6bdf0d41eb",
+    "e0f764de8962100ff1fc3ab96f33e7ef5fb7fd03",
+    "abfc952fd0ed88f6246b1d969a8a980ea63f0bd6",
+    "4c1148db9982918e65f8d1156e8fb9c07b206fc9",
+    "291cde4801ed627f52b4fc97851d5177f6a1385d",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "f8adbfac289758989fea4136123aacc3dc4775b7",
+    "59af65d194da001d34a48da91ba296e6c5d439cb",
+    "bf31a252e3e45d28fd7ae7971bbe925d3ab03489"
+  ],
+  "changeHistoryShort": {
+    "2f4e7d93d64b61b6762d15422549cb6bdf0d41eb": "Ybodychange",
+    "e0f764de8962100ff1fc3ab96f33e7ef5fb7fd03": "Ybodychange",
+    "abfc952fd0ed88f6246b1d969a8a980ea63f0bd6": "Ybodychange",
+    "4c1148db9982918e65f8d1156e8fb9c07b206fc9": "Ybodychange",
+    "291cde4801ed627f52b4fc97851d5177f6a1385d": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "f8adbfac289758989fea4136123aacc3dc4775b7": "Ybodychange",
+    "59af65d194da001d34a48da91ba296e6c5d439cb": "Ymultichange(Yparameterchange,Ybodychange)",
+    "bf31a252e3e45d28fd7ae7971bbe925d3ab03489": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "2f4e7d93d64b61b6762d15422549cb6bdf0d41eb": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4998: Add columnCharIndex field to LocalizedMessage\n",
+      "commitDate": 1504699353000,
+      "commitName": "2f4e7d93d64b61b6762d15422549cb6bdf0d41eb",
+      "commitAuthor": "Timur Tibeyev",
+      "commitDateOld": 1502399664000,
+      "commitNameOld": "78de3dc771531cfee50a60ff2cee80c46b83c43b",
+      "commitAuthorOld": "Luolc",
+      "daysBetweenCommits": 26.62,
+      "commitsBetweenForRepo": 113,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,20 @@\n     public boolean equals(Object object) {\n         if (this \u003d\u003d object) {\n             return true;\n         }\n         if (object \u003d\u003d null || getClass() !\u003d object.getClass()) {\n             return false;\n         }\n         final LocalizedMessage localizedMessage \u003d (LocalizedMessage) object;\n         return Objects.equals(lineNo, localizedMessage.lineNo)\n                 \u0026\u0026 Objects.equals(columnNo, localizedMessage.columnNo)\n+                \u0026\u0026 Objects.equals(columnCharIndex, localizedMessage.columnCharIndex)\n                 \u0026\u0026 Objects.equals(tokenType, localizedMessage.tokenType)\n                 \u0026\u0026 Objects.equals(severityLevel, localizedMessage.severityLevel)\n                 \u0026\u0026 Objects.equals(moduleId, localizedMessage.moduleId)\n                 \u0026\u0026 Objects.equals(key, localizedMessage.key)\n                 \u0026\u0026 Objects.equals(bundle, localizedMessage.bundle)\n                 \u0026\u0026 Objects.equals(sourceClass, localizedMessage.sourceClass)\n                 \u0026\u0026 Objects.equals(customMessage, localizedMessage.customMessage)\n                 \u0026\u0026 Arrays.equals(args, localizedMessage.args);\n     }\n\\ No newline at end of file\n"
+    },
+    "e0f764de8962100ff1fc3ab96f33e7ef5fb7fd03": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4419: Add token type to LocalizedMessage\n",
+      "commitDate": 1501133009000,
+      "commitName": "e0f764de8962100ff1fc3ab96f33e7ef5fb7fd03",
+      "commitAuthor": "Timur",
+      "commitDateOld": 1500859159000,
+      "commitNameOld": "4c10bc55b4aea0f7e3b95b06d820eedb7c6a6fb2",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 3.17,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,19 @@\n     public boolean equals(Object object) {\n         if (this \u003d\u003d object) {\n             return true;\n         }\n         if (object \u003d\u003d null || getClass() !\u003d object.getClass()) {\n             return false;\n         }\n         final LocalizedMessage localizedMessage \u003d (LocalizedMessage) object;\n         return Objects.equals(lineNo, localizedMessage.lineNo)\n                 \u0026\u0026 Objects.equals(columnNo, localizedMessage.columnNo)\n+                \u0026\u0026 Objects.equals(tokenType, localizedMessage.tokenType)\n                 \u0026\u0026 Objects.equals(severityLevel, localizedMessage.severityLevel)\n                 \u0026\u0026 Objects.equals(moduleId, localizedMessage.moduleId)\n                 \u0026\u0026 Objects.equals(key, localizedMessage.key)\n                 \u0026\u0026 Objects.equals(bundle, localizedMessage.bundle)\n                 \u0026\u0026 Objects.equals(sourceClass, localizedMessage.sourceClass)\n                 \u0026\u0026 Objects.equals(customMessage, localizedMessage.customMessage)\n                 \u0026\u0026 Arrays.equals(args, localizedMessage.args);\n     }\n\\ No newline at end of file\n"
+    },
+    "abfc952fd0ed88f6246b1d969a8a980ea63f0bd6": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix suspicious getters and setters. #1555\n\nFixes `SuspiciousGetterSetter` inspection violations.\n\nDescription:\n\u003eReports suspicious getter or setter methods. A getter or setter is suspicious if it accesses a different field than would be expected by its name.\n",
+      "commitDate": 1440243789000,
+      "commitName": "abfc952fd0ed88f6246b1d969a8a980ea63f0bd6",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440243292000,
+      "commitNameOld": "d1f4e8d40014f53f40f045c6f8bea7ead44761c1",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,18 @@\n     public boolean equals(Object object) {\n         if (this \u003d\u003d object) {\n             return true;\n         }\n         if (object \u003d\u003d null || getClass() !\u003d object.getClass()) {\n             return false;\n         }\n         final LocalizedMessage localizedMessage \u003d (LocalizedMessage) object;\n         return Objects.equals(lineNo, localizedMessage.lineNo)\n-                \u0026\u0026 Objects.equals(colNo, localizedMessage.colNo)\n+                \u0026\u0026 Objects.equals(columnNo, localizedMessage.columnNo)\n                 \u0026\u0026 Objects.equals(severityLevel, localizedMessage.severityLevel)\n                 \u0026\u0026 Objects.equals(moduleId, localizedMessage.moduleId)\n                 \u0026\u0026 Objects.equals(key, localizedMessage.key)\n                 \u0026\u0026 Objects.equals(bundle, localizedMessage.bundle)\n                 \u0026\u0026 Objects.equals(sourceClass, localizedMessage.sourceClass)\n                 \u0026\u0026 Objects.equals(customMessage, localizedMessage.customMessage)\n                 \u0026\u0026 Arrays.equals(args, localizedMessage.args);\n     }\n\\ No newline at end of file\n"
+    },
+    "4c1148db9982918e65f8d1156e8fb9c07b206fc9": {
+      "type": "Ybodychange",
+      "commitMessage": "Rename variables with questionable names. #1555\n\nFixes `QuestionableName` inspection violations.\n\nDescription:\n\u003eReports on any variables, methods, or classes with questionable names. This inspection is best used to report common metasyntactic variables which may be used as names by lazy or confused developers.\n Use the list below to specify names which should be reported\n",
+      "commitDate": 1439008817000,
+      "commitName": "4c1148db9982918e65f8d1156e8fb9c07b206fc9",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1438566538000,
+      "commitNameOld": "2880edd6554400955fb950bf8127311c436d2a7a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 5.12,
+      "commitsBetweenForRepo": 33,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,18 @@\n     public boolean equals(Object object) {\n         if (this \u003d\u003d object) {\n             return true;\n         }\n         if (object \u003d\u003d null || getClass() !\u003d object.getClass()) {\n             return false;\n         }\n-        final LocalizedMessage that \u003d (LocalizedMessage) object;\n-        return Objects.equals(lineNo, that.lineNo)\n-                \u0026\u0026 Objects.equals(colNo, that.colNo)\n-                \u0026\u0026 Objects.equals(severityLevel, that.severityLevel)\n-                \u0026\u0026 Objects.equals(moduleId, that.moduleId)\n-                \u0026\u0026 Objects.equals(key, that.key)\n-                \u0026\u0026 Objects.equals(bundle, that.bundle)\n-                \u0026\u0026 Objects.equals(sourceClass, that.sourceClass)\n-                \u0026\u0026 Objects.equals(customMessage, that.customMessage)\n-                \u0026\u0026 Arrays.equals(args, that.args);\n+        final LocalizedMessage localizedMessage \u003d (LocalizedMessage) object;\n+        return Objects.equals(lineNo, localizedMessage.lineNo)\n+                \u0026\u0026 Objects.equals(colNo, localizedMessage.colNo)\n+                \u0026\u0026 Objects.equals(severityLevel, localizedMessage.severityLevel)\n+                \u0026\u0026 Objects.equals(moduleId, localizedMessage.moduleId)\n+                \u0026\u0026 Objects.equals(key, localizedMessage.key)\n+                \u0026\u0026 Objects.equals(bundle, localizedMessage.bundle)\n+                \u0026\u0026 Objects.equals(sourceClass, localizedMessage.sourceClass)\n+                \u0026\u0026 Objects.equals(customMessage, localizedMessage.customMessage)\n+                \u0026\u0026 Arrays.equals(args, localizedMessage.args);\n     }\n\\ No newline at end of file\n"
+    },
+    "291cde4801ed627f52b4fc97851d5177f6a1385d": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix equals and hashCode in LocalizedMessage. #1088\n",
+      "commitDate": 1432251246000,
+      "commitName": "291cde4801ed627f52b4fc97851d5177f6a1385d",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 4.49,
+      "commitsBetweenForRepo": 17,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,29 +1,18 @@\n     public boolean equals(Object object) {\n         if (this \u003d\u003d object) {\n             return true;\n         }\n-        if (!(object instanceof LocalizedMessage)) {\n+        if (object \u003d\u003d null || getClass() !\u003d object.getClass()) {\n             return false;\n         }\n-\n-        final LocalizedMessage localizedMessage \u003d (LocalizedMessage) object;\n-\n-        if (colNo !\u003d localizedMessage.colNo) {\n-            return false;\n-        }\n-        if (lineNo !\u003d localizedMessage.lineNo) {\n-            return false;\n-        }\n-        if (!key.equals(localizedMessage.key)) {\n-            return false;\n-        }\n-\n-        if (!Arrays.equals(args, localizedMessage.args)) {\n-            return false;\n-        }\n-        // ignoring bundle for perf reasons.\n-\n-        // we currently never load the same error from different bundles.\n-\n-        return true;\n+        final LocalizedMessage that \u003d (LocalizedMessage) object;\n+        return Objects.equals(lineNo, that.lineNo)\n+                \u0026\u0026 Objects.equals(colNo, that.colNo)\n+                \u0026\u0026 Objects.equals(severityLevel, that.severityLevel)\n+                \u0026\u0026 Objects.equals(moduleId, that.moduleId)\n+                \u0026\u0026 Objects.equals(key, that.key)\n+                \u0026\u0026 Objects.equals(bundle, that.bundle)\n+                \u0026\u0026 Objects.equals(sourceClass, that.sourceClass)\n+                \u0026\u0026 Objects.equals(customMessage, that.customMessage)\n+                \u0026\u0026 Arrays.equals(args, that.args);\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "f8adbfac289758989fea4136123aacc3dc4775b7": {
+      "type": "Ybodychange",
+      "commitMessage": "Compare mArgs in order to handle checks such as\nTranslationCheck that can fire the same error for the same location\nwith different arguments.\n",
+      "commitDate": 1052235975000,
+      "commitName": "f8adbfac289758989fea4136123aacc3dc4775b7",
+      "commitAuthor": "Rick Giles",
+      "commitDateOld": 1052223407000,
+      "commitNameOld": "8d6a11074ccb67a8f5cf8abe7969c75afa208dbd",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 0.15,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,30 @@\n     public boolean equals(Object aObject)\n     {\n         if (this \u003d\u003d aObject) {\n             return true;\n         }\n         if (!(aObject instanceof LocalizedMessage)) {\n             return false;\n         }\n \n         final LocalizedMessage localizedMessage \u003d (LocalizedMessage) aObject;\n \n         if (mColNo !\u003d localizedMessage.mColNo) {\n             return false;\n         }\n         if (mLineNo !\u003d localizedMessage.mLineNo) {\n             return false;\n         }\n         if (!mKey.equals(localizedMessage.mKey)) {\n             return false;\n         }\n \n-        // ignoring mArgs and mBundle for perf reasons.\n+        if (!Arrays.equals(mArgs, localizedMessage.mArgs)) {\n+           return false;\n+        }\n+        // ignoring mBundle for perf reasons.\n \n-        // we currently never load the same error from different bundles or\n-        // fire the same error for the same location with different arguments.\n+        // we currently never load the same error from different bundles.\n \n         return true;\n     }\n\\ No newline at end of file\n"
+    },
+    "59af65d194da001d34a48da91ba296e6c5d439cb": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "fixed checkstyle errors\nIDEAs code generation did not know about our requirements...\n",
+      "commitDate": 1041594181000,
+      "commitName": "59af65d194da001d34a48da91ba296e6c5d439cb",
+      "commitAuthor": "Lars Kühne",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "bf31a252e3e45d28fd7ae7971bbe925d3ab03489": {
+      "type": "Yintroduced",
+      "commitMessage": "ensure that equals() is consistent with compareTo()\nas advised in the documentation of compareTo()\n",
+      "commitDate": 1041435910000,
+      "commitName": "bf31a252e3e45d28fd7ae7971bbe925d3ab03489",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

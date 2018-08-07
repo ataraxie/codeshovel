@@ -1,0 +1,104 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/AbstractCellEditor.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/AbstractCellEditor.java
+index 6d8ebd992..e6a972cd5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/AbstractCellEditor.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/AbstractCellEditor.java
+@@ -59,98 +59,99 @@
+ 
+ 
+ package com.puppycrawl.tools.checkstyle.gui;
+ 
+ import java.util.EventObject;
+ import javax.swing.CellEditor;
+ import javax.swing.event.CellEditorListener;
+ import javax.swing.event.ChangeEvent;
+ import javax.swing.event.EventListenerList;
+ 
+ /** 
+  * A base class for CellEditors, providing default implementations for all 
+  * methods in the CellEditor interface and support for managing a series 
+  * of listeners.
+  *
+  * <a href="https://docs.oracle.com/cd/E48246_01/apirefs.1111/e13403/oracle/ide/controls/TreeTableModel.html">
+  * Original&nbsp;Source&nbsp;Location</a>
+  * 
+  * @author Philip Milne
+  */
+ public class AbstractCellEditor implements CellEditor {
+     private final EventListenerList listenerList = new EventListenerList();
+ 
+     /** @see CellEditor */
+     @Override
+     public Object getCellEditorValue() {
+         return null;
+     }
+ 
+     /** @see CellEditor */
+     @Override
+     public boolean isCellEditable(EventObject e) {
+         return true;
+     }
+ 
+     /** @see CellEditor */
+     @Override
+     public boolean shouldSelectCell(EventObject anEvent) {
+         return false;
+     }
+ 
+     /** @see CellEditor */
+     @Override
+     public boolean stopCellEditing() {
+         return true;
+     }
+ 
+     /** @see CellEditor */
+     @Override
+     public void cancelCellEditing() {
++        // No code, tree is read-only
+     }
+ 
+     /** @see CellEditor */
+     @Override
+     public void addCellEditorListener(CellEditorListener l) {
+         listenerList.add(CellEditorListener.class, l);
+     }
+ 
+     /** @see CellEditor */
+     @Override
+     public void removeCellEditorListener(CellEditorListener l) {
+         listenerList.remove(CellEditorListener.class, l);
+     }
+ 
+     /*
+      * Notify all listeners that have registered interest for
+      * notification on this event type.
+      * @see EventListenerList
+      */
+     protected void fireEditingStopped() {
+         // Guaranteed to return a non-null array
+         final Object[] listeners = listenerList.getListenerList();
+         // Process the listeners last to first, notifying
+         // those that are interested in this event
+         for (int i = listeners.length - 2; i >= 0; i -= 2) {
+             if (listeners[i] == CellEditorListener.class) {
+                 ((CellEditorListener) listeners[i + 1]).editingStopped(new ChangeEvent(this));
+             }
+         }
+     }
+ 
+     /*
+      * Notify all listeners that have registered interest for
+      * notification on this event type.
+      * @see EventListenerList
+      */
+     protected void fireEditingCanceled() {
+         // Guaranteed to return a non-null array
+         final Object[] listeners = listenerList.getListenerList();
+         // Process the listeners last to first, notifying
+         // those that are interested in this event
+         for (int i = listeners.length - 2; i >= 0; i -= 2) {
+             if (listeners[i] == CellEditorListener.class) {
+                 ((CellEditorListener) listeners[i + 1]).editingCanceled(new ChangeEvent(this));
+             }
+         }
+     }
+ }

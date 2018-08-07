@@ -1,0 +1,117 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index 6ae8e6c93..ba8235dab 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -156,107 +156,107 @@ public class SuppressionCommentFilter
+         /**
+          * Determines the column number of the tag in the source file.
+          * Will be 0 for all lines of multiline comment, except the
+          * first line.
+          * @return the column number of the tag in the source file.
+          */
+         public int getColumn()
+         {
+             return mColumn;
+         }
+ 
+         /**
+          * Determines whether the suppression turns checkstyle reporting on or
+          * off.
+          * @return <code>true</code>if the suppression turns reporting on.
+          */
+         public boolean isOn()
+         {
+             return mOn;
+         }
+ 
+         /**
+          * Compares the position of this tag in the file
+          * with the position of another tag.
+          * @param aObject the tag to compare with this one.
+          * @return a negative number if this tag is before the other tag,
+          * 0 if they are at the same position, and a positive number if this
+          * tag is after the other tag.
+          * @see java.lang.Comparable#compareTo(java.lang.Object)
+          */
+         public int compareTo(Tag aObject)
+         {
+             if (mLine == aObject.mLine) {
+                 return mColumn - aObject.mColumn;
+             }
+ 
+             return (mLine - aObject.mLine);
+         }
+ 
+         /**
+          * Determines whether the source of an audit event
+          * matches the text of this tag.
+          * @param aEvent the <code>AuditEvent</code> to check.
+          * @return true if the source of aEvent matches the text of this tag.
+          */
+         public boolean isMatch(AuditEvent aEvent)
+         {
+             final Matcher tagMatcher =
+                 mTagCheckRegexp.matcher(aEvent.getSourceName());
+             if (tagMatcher.find()) {
++                if (mTagMessageRegexp != null) {
++                    final Matcher messageMatcher =
++                            mTagMessageRegexp.matcher(aEvent.getMessage());
++                    return messageMatcher.find();
++                }
+                 return true;
+             }
+-            if (mTagMessageRegexp != null) {
+-                final Matcher messageMatcher =
+-                    mTagMessageRegexp.matcher(aEvent.getMessage());
+-                return messageMatcher.find();
+-            }
+             return false;
+         }
+ 
+         /**
+          * Expand based on a matching comment.
+          * @param aComment the comment.
+          * @param aString the string to expand.
+          * @param aRegexp the parsed expander.
+          * @return the expanded string
+          */
+         private String expandFromComment(
+             String aComment,
+             String aString,
+             Pattern aRegexp)
+         {
+             final Matcher matcher = aRegexp.matcher(aComment);
+             // Match primarily for effect.
+             if (!matcher.find()) {
+                 ///CLOVER:OFF
+                 return aString;
+                 ///CLOVER:ON
+             }
+             String result = aString;
+             for (int i = 0; i <= matcher.groupCount(); i++) {
+                 // $n expands comment match like in Pattern.subst().
+                 result = result.replaceAll("\\$" + i, matcher.group(i));
+             }
+             return result;
+         }
+ 
+         @Override
+         public final String toString()
+         {
+             return "Tag[line=" + getLine() + "; col=" + getColumn()
+                 + "; on=" + isOn() + "; text='" + getText() + "']";
+         }
+     }
+ 
+     /** Turns checkstyle reporting off. */
+     private static final String DEFAULT_OFF_FORMAT = "CHECKSTYLE\\:OFF";
+ 
+     /** Turns checkstyle reporting on. */
+     private static final String DEFAULT_ON_FORMAT = "CHECKSTYLE\\:ON";
+ 
+     /** Control all checks */
+     private static final String DEFAULT_CHECK_FORMAT = ".*";
+ 
+     /** Whether to look in comments of the C type. */
+     private boolean mCheckC = true;
+ 

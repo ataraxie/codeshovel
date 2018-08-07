@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SingleSpaceSeparatorCheck.java",
+  "functionName": "visitEachToken",
+  "functionId": "visitEachToken___node-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/SingleSpaceSeparatorCheck.java",
+  "functionStartLine": 140,
+  "functionEndLine": 162,
+  "changeHistory": [
+    "6c1a5e812a68ca12aaa861b3670622915ddc830c",
+    "5c6f1ee17a98f088dcb4da9bb166864db1abf7dd"
+  ],
+  "changeHistoryShort": {
+    "6c1a5e812a68ca12aaa861b3670622915ddc830c": "Ybodychange",
+    "5c6f1ee17a98f088dcb4da9bb166864db1abf7dd": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6c1a5e812a68ca12aaa861b3670622915ddc830c": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5003: increase coverage of pitest-checks-whitespace to 99%\n",
+      "commitDate": 1508890981000,
+      "commitName": "6c1a5e812a68ca12aaa861b3670622915ddc830c",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1498951068000,
+      "commitNameOld": "dfa3cee94273bf210acc39c3910a5b936f9be42f",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 115.05,
+      "commitsBetweenForRepo": 455,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,23 @@\n     private void visitEachToken(DetailAST node) {\n         DetailAST sibling \u003d node;\n \n         while (sibling !\u003d null) {\n             final int columnNo \u003d sibling.getColumnNo() - 1;\n \n-            if (columnNo \u003e\u003d 0\n+            // in such expression: \"j  \u003d123\", placed at the start of the string index of the second\n+            // space character will be: 2 \u003d 0(j) + 1(whitespace) + 1(whitespace). It is a minimal\n+            // possible index for the second whitespace between non-whitespace characters.\n+            final int minSecondWhitespaceColumnNo \u003d 2;\n+\n+            if (columnNo \u003e\u003d minSecondWhitespaceColumnNo\n                     \u0026\u0026 !isTextSeparatedCorrectlyFromPrevious(getLine(sibling.getLineNo() - 1),\n                             columnNo)) {\n                 log(sibling.getLineNo(), columnNo, MSG_KEY);\n             }\n-            if (sibling.getChildCount() \u003e 0) {\n+            if (sibling.getChildCount() \u003e\u003d 1) {\n                 visitEachToken(sibling.getFirstChild());\n             }\n \n             sibling \u003d sibling.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "5c6f1ee17a98f088dcb4da9bb166864db1abf7dd": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #3173: moved SingleSpaceSeparatorCheck from sevntu to checkstyle (#3179)",
+      "commitDate": 1464440021000,
+      "commitName": "5c6f1ee17a98f088dcb4da9bb166864db1abf7dd",
+      "commitAuthor": "rnveach"
+    }
+  }
+}

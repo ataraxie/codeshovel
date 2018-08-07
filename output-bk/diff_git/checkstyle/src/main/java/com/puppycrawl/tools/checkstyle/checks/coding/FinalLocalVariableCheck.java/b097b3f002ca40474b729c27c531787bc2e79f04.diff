@@ -1,0 +1,160 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+index 7e448f68d..904db6bbd 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+@@ -142,152 +142,153 @@ public class FinalLocalVariableCheck extends Check {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+             case TokenTypes.SLIST:
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.STATIC_INIT:
+             case TokenTypes.INSTANCE_INIT:
+                 scopeStack.push(new HashMap<String, DetailAST>());
+                 break;
+ 
+             case TokenTypes.PARAMETER_DEF:
+                 if (!inLambda(ast)
+                         && !ast.branchContains(TokenTypes.FINAL)
+                         && !inAbstractOrNativeMethod(ast)
+                         && !ScopeUtils.inInterfaceBlock(ast)) {
+                     insertVariable(ast);
+                 }
+                 break;
+             case TokenTypes.VARIABLE_DEF:
+                 if (ast.getParent().getType() != TokenTypes.OBJBLOCK
+-                        && isVariableInForInit(ast)
++                        && !isVariableInForInit(ast)
+                         && shouldCheckEnhancedForLoopVariable(ast)
+                         && !ast.branchContains(TokenTypes.FINAL)) {
+                     insertVariable(ast);
+                 }
+                 break;
+ 
+             case TokenTypes.IDENT:
+                 final int parentType = ast.getParent().getType();
+                 if (isAssignOperator(parentType)
+                         && ast.getParent().getFirstChild() == ast) {
+                     removeVariable(ast);
+                 }
+                 break;
+ 
+             default:
++                throw new IllegalStateException("Incorrect token type");
+         }
+     }
+ 
+     /**
+      * is Arithmetic operator
+      * @param parentType token AST
+      * @return true is token type is in arithmetic operator
+      */
+     private static boolean isAssignOperator(int parentType) {
+         return Arrays.binarySearch(ASSIGN_OPERATOR_TYPES, parentType) >= 0;
+     }
+ 
+     /**
+      * Determines whether enhanced for-loop variable should be checked or not.
+      * @param ast The ast to compare.
+      * @return true if enhanced for-loop variable should be checked.
+      */
+     private boolean shouldCheckEnhancedForLoopVariable(DetailAST ast) {
+         return validateEnhancedForLoopVariable
+                 || ast.getParent().getType() != TokenTypes.FOR_EACH_CLAUSE;
+     }
+ 
+     /**
+      * Checks if current variable is defined in
+      *  {@link TokenTypes#FOR_INIT for-loop init}, e.g.:
+      * <p>
+      * <code>
+      * for (int i = 0, j = 0; i < j; i++) { . . . }
+      * </code>
+      * </p>
+      * <code>i, j</code> are defined in {@link TokenTypes#FOR_INIT for-loop init}
+      * @param variableDef variable definition node.
+      * @return true if variable is defined in {@link TokenTypes#FOR_INIT for-loop init}
+      */
+     private static boolean isVariableInForInit(DetailAST variableDef) {
+-        return variableDef.getParent().getType() != TokenTypes.FOR_INIT;
++        return variableDef.getParent().getType() == TokenTypes.FOR_INIT;
+     }
+ 
+     /**
+      * Determines whether an AST is a descendant of an abstract or native method.
+      * @param ast the AST to check.
+      * @return true if ast is a descendant of an abstract or native method.
+      */
+     private static boolean inAbstractOrNativeMethod(DetailAST ast) {
+         boolean abstractOrNative = false;
+         DetailAST parent = ast.getParent();
+         while (parent != null && !abstractOrNative) {
+             if (parent.getType() == TokenTypes.METHOD_DEF) {
+                 final DetailAST modifiers =
+                     parent.findFirstToken(TokenTypes.MODIFIERS);
+                 abstractOrNative = modifiers.branchContains(TokenTypes.ABSTRACT)
+                         || modifiers.branchContains(TokenTypes.LITERAL_NATIVE);
+             }
+             parent = parent.getParent();
+         }
+         return abstractOrNative;
+     }
+ 
+     /**
+      * Check if current param is lamda's param.
+      * @param paramDef {@link TokenTypes#PARAMETER_DEF parameter def}.
+      * @return true if current param is lamda's param.
+      */
+     private static boolean inLambda(DetailAST paramDef) {
+         return paramDef.getParent().getParent().getType() == TokenTypes.LAMBDA;
+     }
+ 
+     /**
+      * Find the Class or Constructor or Method in which it is defined.
+      * @param ast Variable for which we want to find the scope in which it is defined
+      * @return ast The Class or Constructor or Method in which it is defined.
+      */
+     private static DetailAST findClassOrConstructorOrMethodInWhichItIsDefined(DetailAST ast) {
+         DetailAST astTraverse = ast;
+         while (!(astTraverse.getType() == TokenTypes.METHOD_DEF
+                 || astTraverse.getType() == TokenTypes.CLASS_DEF
+                 || astTraverse.getType() == TokenTypes.CTOR_DEF)) {
+             astTraverse = astTraverse.getParent();
+         }
+         return astTraverse;
+     }
+ 
+     /**
+      * Check if both the Variable are same.
+      * @param ast1 Variable to compare
+      * @param ast2 Variable to compare

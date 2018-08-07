@@ -1,0 +1,91 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "NPathComplexityCheck.java",
+  "functionName": "leaveMultiplyingConditional",
+  "functionId": "leaveMultiplyingConditional",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/NPathComplexityCheck.java",
+  "functionStartLine": 334,
+  "functionEndLine": 337,
+  "changeHistory": [
+    "e810918205ff8e99a5cd692d6a99b899f5337eef",
+    "237dbc6866249f18545d695d75b4577b1f2dfed6",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "5a6be4c757437373caf8e7d675f5bc1aa6a9ae38",
+    "c044038c3b932586c0d384b614254cc2d1838838"
+  ],
+  "changeHistoryShort": {
+    "e810918205ff8e99a5cd692d6a99b899f5337eef": "Ybodychange",
+    "237dbc6866249f18545d695d75b4577b1f2dfed6": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "5a6be4c757437373caf8e7d675f5bc1aa6a9ae38": "Ybodychange",
+    "c044038c3b932586c0d384b614254cc2d1838838": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e810918205ff8e99a5cd692d6a99b899f5337eef": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #56: fix NPathComplexityCheck\n",
+      "commitDate": 1493397493000,
+      "commitName": "e810918205ff8e99a5cd692d6a99b899f5337eef",
+      "commitAuthor": "kazachka",
+      "commitDateOld": 1487369078000,
+      "commitNameOld": "6e8d1e06728b7defbd734253b3818a33676b62bc",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 69.77,
+      "commitsBetweenForRepo": 263,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,4 @@\n     private void leaveMultiplyingConditional() {\n-        currentValue \u003d currentValue.add(BigInteger.ONE).multiply(popValue());\n+        currentRangeValue \u003d currentRangeValue.add(BigInteger.ONE)\n+                .multiply(popValue().getRangeValue().add(BigInteger.ONE));\n     }\n\\ No newline at end of file\n"
+    },
+    "237dbc6866249f18545d695d75b4577b1f2dfed6": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2451: removed excess hierarchy from NPathComplexityCheck",
+      "commitDate": 1447940135000,
+      "commitName": "237dbc6866249f18545d695d75b4577b1f2dfed6",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1444265874000,
+      "commitNameOld": "9c0ce8e0ece427b3ee03cab57b2451864d734e3b",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 42.53,
+      "commitsBetweenForRepo": 300,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,3 @@\n     private void leaveMultiplyingConditional() {\n-        setCurrentValue(\n-                getCurrentValue().add(BigInteger.ONE).multiply(popValue()));\n+        currentValue \u003d currentValue.add(BigInteger.ONE).multiply(popValue());\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "5a6be4c757437373caf8e7d675f5bc1aa6a9ae38": {
+      "type": "Ybodychange",
+      "commitMessage": "Use BigInteger in complexity metrics checks to avoid integer overflow (bug 1654769).\nThanks to Simon Harris (haruki_zaemon) for reporting this bug together with an idea how to fix it.\n",
+      "commitDate": 1171307622000,
+      "commitName": "5a6be4c757437373caf8e7d675f5bc1aa6a9ae38",
+      "commitAuthor": "Lars Kühne",
+      "commitDateOld": 1169909494000,
+      "commitNameOld": "1efc394250b8f1c79bd7f8344b738a7d13396ed3",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 16.18,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,5 @@\n     private void leaveMultiplyingConditional()\n     {\n-        setCurrentValue((getCurrentValue() + 1) * popValue());\n+        setCurrentValue(\n+                getCurrentValue().add(BigInteger.ONE).multiply(popValue()));\n     }\n\\ No newline at end of file\n"
+    },
+    "c044038c3b932586c0d384b614254cc2d1838838": {
+      "type": "Yintroduced",
+      "commitMessage": "Added NPathComplexity, ClassDataAbstractionCoupling,\nBooleanExpressionComplexity and ClassFanOutComplexity checks\ncontributed by Simon Harris (requests 750757, 750758, 750760 and\n750759).\nIsEqualsMethod() moved from CovariantEqualsCheck to ChecUtils.\n\nTODO: add documentation.\n",
+      "commitDate": 1073030748000,
+      "commitName": "c044038c3b932586c0d384b614254cc2d1838838",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

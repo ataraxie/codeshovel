@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
+index e2321e9f5..5e711a6bb 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
+@@ -174,101 +174,101 @@ public class CommentsIndentationCheck extends Check {
+                     }
+                 }
+             }
+             else {
+                 final DetailAST parentBlock = parentStatement.getParent();
+ 
+                 if (parentBlock != null && parentBlock.getParent() != null
+                     && parentBlock.getParent().getPreviousSibling() != null
+                     && parentBlock.getParent().getPreviousSibling()
+                         .getType() == TokenTypes.LITERAL_CASE) {
+ 
+                     prevBlock = parentBlock.getParent().getPreviousSibling();
+                     prevStmt = prevBlock;
+                 }
+             }
+         }
+         return prevStmt;
+     }
+ 
+     /**
+      * Checks if comment and next code statement
+      * (or previous code stmt like <b>case</b> in switch block) are indented at the same level,
+      * e.g.:
+      * <p>
+      * <pre>
+      * {@code
+      * // some comment - same indentation level
+      * int x = 10;
+      *     // some comment - different indentation level
+      * int x1 = 5;
+      * /*
+      *  *
+      *  *&#47;
+      *  boolean bool = true; - same indentation level
+      * }
+      * </pre>
+      * </p>
+      * @param singleLineComment {@link TokenTypes#SINGLE_LINE_COMMENT single line comment}.
+      * @param prevStmt previous code statement.
+      * @param nextStmt next code statement.
+      * @return true if comment and next code statement are indented at the same level.
+      */
+     private static boolean areSameLevelIndented(DetailAST singleLineComment,
+                                                 DetailAST prevStmt, DetailAST nextStmt) {
+         boolean result;
+         if (prevStmt == null) {
+             result = singleLineComment.getColumnNo() == nextStmt.getColumnNo();
+         }
+         else {
+             result = singleLineComment.getColumnNo() == nextStmt.getColumnNo()
+-                | singleLineComment.getColumnNo() == prevStmt.getColumnNo();
++                || singleLineComment.getColumnNo() == prevStmt.getColumnNo();
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if current single line comment is trailing comment, e.g.:
+      * <p>
+      * {@code
+      * double d = 3.14; // some comment
+      * }
+      * </p>
+      * @param singleLineComment {@link TokenTypes#SINGLE_LINE_COMMENT single line comment}.
+      * @return true if current single line comment is trailing comment.
+      */
+     private boolean isTrailingSingleLineComment(DetailAST singleLineComment) {
+         final String targetSourceLine = getLine(singleLineComment.getLineNo() - 1);
+         final int commentColumnNo = singleLineComment.getColumnNo();
+         return !Utils.whitespaceBefore(commentColumnNo, targetSourceLine);
+     }
+ 
+     /**
+      * Checks comment block indentations over surrounding code, e.g.:
+      * <p>
+      * {@code
+      * /* some comment *&#47; - this is ok
+      * double d = 3.14;
+      *     /* some comment *&#47; - this is <b>not</b> ok.
+      * double d1 = 5.0;
+      * }
+      * </p>
+      * @param blockComment {@link TokenTypes#BLOCK_COMMENT_BEGIN block comment begin}.
+      */
+     private void visitBlockComment(DetailAST blockComment) {
+         final DetailAST nextStatement = blockComment.getNextSibling();
+         final DetailAST prevStatement = getPreviousStmt(blockComment);
+ 
+         if (nextStatement != null
+             && nextStatement.getType() != TokenTypes.RCURLY
+             && !isTrailingBlockComment(blockComment)
+             && !areSameLevelIndented(blockComment, prevStatement, nextStatement)) {
+ 
+             log(blockComment.getLineNo(), MSG_KEY_BLOCK, nextStatement.getLineNo(),
+                 blockComment.getColumnNo(), nextStatement.getColumnNo());
+         }
+     }
+ 
+     /**
+      * Checks if current comment block is trailing comment, e.g.:
+      * <p>
+      * {@code

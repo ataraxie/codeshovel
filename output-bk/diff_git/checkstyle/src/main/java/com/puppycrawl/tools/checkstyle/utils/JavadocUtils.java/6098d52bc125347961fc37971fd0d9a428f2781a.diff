@@ -1,0 +1,209 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
+index bd146927a..b447baa6c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
+@@ -285,186 +285,187 @@ public final class JavadocUtils {
+      */
+     public static String getJavadocCommentContent(DetailAST javadocCommentBegin) {
+         final DetailAST commentContent = javadocCommentBegin.getFirstChild();
+         return commentContent.getText().substring(1);
+     }
+ 
+     /**
+      * Returns the first child token that has a specified type.
+      * @param detailNode
+      *        Javadoc AST node
+      * @param type
+      *        the token type to match
+      * @return the matching token, or null if no match
+      */
+     public static DetailNode findFirstToken(DetailNode detailNode, int type) {
+         DetailNode returnValue = null;
+         DetailNode node = getFirstChild(detailNode);
+         while (node != null) {
+             if (node.getType() == type) {
+                 returnValue = node;
+                 break;
+             }
+             node = getNextSibling(node);
+         }
+         return returnValue;
+     }
+ 
+     /**
+      * Gets first child node of specified node.
+      *
+      * @param node DetailNode
+      * @return first child
+      */
+     public static DetailNode getFirstChild(DetailNode node) {
+         DetailNode resultNode = null;
+ 
+         if (node.getChildren().length > 0) {
+             resultNode = node.getChildren()[0];
+         }
+         return resultNode;
+     }
+ 
+     /**
+      * Checks whether node contains any node of specified type among children on any deep level.
+      *
+      * @param node DetailNode
+      * @param type token type
+      * @return true if node contains any node of type type among children on any deep level.
+      */
+     public static boolean containsInBranch(DetailNode node, int type) {
++        boolean result = true;
+         DetailNode curNode = node;
+-        while (true) {
+-
+-            if (type == curNode.getType()) {
+-                return true;
+-            }
+-
++        while (type != curNode.getType()) {
+             DetailNode toVisit = getFirstChild(curNode);
+             while (curNode != null && toVisit == null) {
+                 toVisit = getNextSibling(curNode);
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+ 
+             if (curNode == toVisit) {
++                result = false;
+                 break;
+             }
+ 
+             curNode = toVisit;
+         }
+-
+-        return false;
++        return result;
+     }
+ 
+     /**
+      * Gets next sibling of specified node.
+      *
+      * @param node DetailNode
+      * @return next sibling.
+      */
+     public static DetailNode getNextSibling(DetailNode node) {
++        DetailNode nextSibling = null;
+         final DetailNode parent = node.getParent();
+         if (parent != null) {
+             final int nextSiblingIndex = node.getIndex() + 1;
+             final DetailNode[] children = parent.getChildren();
+             if (nextSiblingIndex <= children.length - 1) {
+-                return children[nextSiblingIndex];
++                nextSibling = children[nextSiblingIndex];
+             }
+         }
+-        return null;
++        return nextSibling;
+     }
+ 
+     /**
+      * Gets next sibling of specified node with the specified type.
+      *
+      * @param node DetailNode
+      * @param tokenType javadoc token type
+      * @return next sibling.
+      */
+     public static DetailNode getNextSibling(DetailNode node, int tokenType) {
+         DetailNode nextSibling = getNextSibling(node);
+         while (nextSibling != null && nextSibling.getType() != tokenType) {
+             nextSibling = getNextSibling(nextSibling);
+         }
+         return nextSibling;
+     }
+ 
+     /**
+      * Gets previous sibling of specified node.
+      * @param node DetailNode
+      * @return previous sibling
+      */
+     public static DetailNode getPreviousSibling(DetailNode node) {
++        DetailNode previousSibling = null;
+         final DetailNode parent = node.getParent();
+         final int previousSiblingIndex = node.getIndex() - 1;
+         final DetailNode[] children = parent.getChildren();
+         if (previousSiblingIndex >= 0) {
+-            return children[previousSiblingIndex];
++            previousSibling = children[previousSiblingIndex];
+         }
+-        return null;
++        return previousSibling;
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param id
+      *        the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int id) {
++        final String name;
+         if (id == JavadocTokenTypes.EOF) {
+-            return "EOF";
++            name = "EOF";
+         }
+-        if (id > TOKEN_VALUE_TO_NAME.length - 1) {
++        else if (id > TOKEN_VALUE_TO_NAME.length - 1) {
+             throw new IllegalArgumentException(UNKNOWN_JAVADOC_TOKEN_ID_EXCEPTION_MESSAGE + id);
+         }
+-        final String name = TOKEN_VALUE_TO_NAME[id];
+-        if (name == null) {
+-            throw new IllegalArgumentException(UNKNOWN_JAVADOC_TOKEN_ID_EXCEPTION_MESSAGE + id);
++        else {
++            name = TOKEN_VALUE_TO_NAME[id];
++            if (name == null) {
++                throw new IllegalArgumentException(UNKNOWN_JAVADOC_TOKEN_ID_EXCEPTION_MESSAGE + id);
++            }
+         }
+         return name;
+     }
+ 
+     /**
+      * Returns the ID of a token for a given name.
+      * @param name
+      *        the name of the token ID to get
+      * @return a token ID
+      */
+     public static int getTokenId(String name) {
+         final Integer id = TOKEN_NAME_TO_VALUE.get(name);
+         if (id == null) {
+             throw new IllegalArgumentException("Unknown javadoc token name. Given name " + name);
+         }
+         return id;
+     }
+ 
+     /**
+      * Gets tag name from javadocTagSection.
+      *
+      * @param javadocTagSection to get tag name from.
+      * @return name, of the javadocTagSection's tag.
+      */
+     public static String getTagName(DetailNode javadocTagSection) {
+         final String javadocTagName;
+         if (javadocTagSection.getType() == JavadocTokenTypes.JAVADOC_INLINE_TAG) {
+             javadocTagName = getNextSibling(
+                     getFirstChild(javadocTagSection)).getText();
+         }
+         else {
+             javadocTagName = getFirstChild(javadocTagSection).getText();
+         }
+         return javadocTagName;
+     }
+ 
+     /**
+      * Replace all control chars with escaped symbols.
+      * @param text the String to process.
+      * @return the processed String with all control chars escaped.
+      */
+     public static String escapeAllControlChars(String text) {
+         final String textWithoutNewlines = NEWLINE.matcher(text).replaceAll("\\\\n");
+         final String textWithoutReturns = RETURN.matcher(textWithoutNewlines).replaceAll("\\\\r");
+         return TAB.matcher(textWithoutReturns).replaceAll("\\\\t");
+     }
+ }

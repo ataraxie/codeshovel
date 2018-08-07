@@ -1,0 +1,69 @@
+diff --git a/android/guava/src/com/google/common/collect/ImmutableSortedMultiset.java b/android/guava/src/com/google/common/collect/ImmutableSortedMultiset.java
+index ec4bd3539..ed19094b1 100644
+--- a/android/guava/src/com/google/common/collect/ImmutableSortedMultiset.java
++++ b/android/guava/src/com/google/common/collect/ImmutableSortedMultiset.java
+@@ -618,63 +618,63 @@ public abstract class ImmutableSortedMultiset<E> extends ImmutableSortedMultiset
+         }
+       }
+       Arrays.fill(elements, size, length, null);
+       Arrays.fill(counts, size, length, 0);
+       length = size;
+     }
+ 
+     /**
+      * Returns a newly-created {@code ImmutableSortedMultiset} based on the contents of the {@code
+      * Builder}.
+      */
+     @Override
+     public ImmutableSortedMultiset<E> build() {
+       dedupAndCoalesceAndDeleteEmpty();
+       if (length == 0) {
+         return emptyMultiset(comparator);
+       }
+       RegularImmutableSortedSet<E> elementSet =
+           (RegularImmutableSortedSet<E>)
+               ImmutableSortedSet.construct(comparator, length, elements);
+       long[] cumulativeCounts = new long[length + 1];
+       for (int i = 0; i < length; i++) {
+         cumulativeCounts[i + 1] = cumulativeCounts[i] + counts[i];
+       }
+       forceCopyElements = true;
+       return new RegularImmutableSortedMultiset<E>(elementSet, cumulativeCounts, 0, length);
+     }
+   }
+ 
+   private static final class SerializedForm<E> implements Serializable {
+     final Comparator<? super E> comparator;
+     final E[] elements;
+     final int[] counts;
+ 
+     @SuppressWarnings("unchecked")
+     SerializedForm(SortedMultiset<E> multiset) {
+       this.comparator = multiset.comparator();
+       int n = multiset.entrySet().size();
+       elements = (E[]) new Object[n];
+       counts = new int[n];
+       int i = 0;
+       for (Entry<E> entry : multiset.entrySet()) {
+         elements[i] = entry.getElement();
+         counts[i] = entry.getCount();
+         i++;
+       }
+     }
+ 
+     Object readResolve() {
+       int n = elements.length;
+-      Builder<E> builder = new Builder<E>(comparator);
++      Builder<E> builder = new Builder<>(comparator);
+       for (int i = 0; i < n; i++) {
+         builder.addCopies(elements[i], counts[i]);
+       }
+       return builder.build();
+     }
+   }
+ 
+   @Override
+   Object writeReplace() {
+     return new SerializedForm<E>(this);
+   }
+ }

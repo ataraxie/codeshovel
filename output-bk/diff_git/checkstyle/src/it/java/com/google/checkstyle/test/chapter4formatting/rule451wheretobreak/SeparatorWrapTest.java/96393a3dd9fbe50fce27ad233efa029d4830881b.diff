@@ -1,0 +1,73 @@
+diff --git a/src/it/java/com/google/checkstyle/test/chapter4formatting/rule451wheretobreak/SeparatorWrapTest.java b/src/it/java/com/google/checkstyle/test/chapter4formatting/rule451wheretobreak/SeparatorWrapTest.java
+index b82e401d1..1294efc34 100644
+--- a/src/it/java/com/google/checkstyle/test/chapter4formatting/rule451wheretobreak/SeparatorWrapTest.java
++++ b/src/it/java/com/google/checkstyle/test/chapter4formatting/rule451wheretobreak/SeparatorWrapTest.java
+@@ -1,52 +1,66 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.google.checkstyle.test.chapter4formatting.rule451wheretobreak;
+ 
+ import java.io.File;
+ import java.io.IOException;
+ 
+ import org.junit.Test;
+ 
+ import com.google.checkstyle.test.base.BaseCheckTestSupport;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import com.puppycrawl.tools.checkstyle.checks.whitespace.SeparatorWrapCheck;
+ 
+ public class SeparatorWrapTest extends BaseCheckTestSupport {
+ 
+     @Override
+     protected String getPath(String fileName) throws IOException {
+         return super.getPath("chapter4formatting" + File.separator + "rule451wheretobreak"
+                 + File.separator + fileName);
+     }
+ 
+     @Test
+-    public void separatorWrapTest() throws Exception {
++    public void separatorWrapDotTest() throws Exception {
+ 
+         final String[] expected = {
+             "28:30: " + getCheckMessage(SeparatorWrapCheck.class, "line.new", "."),
+         };
+ 
+-        final Configuration checkConfig = getCheckConfig("SeparatorWrap");
++        final Configuration checkConfig = getCheckConfig("SeparatorWrap", "SeparatorWrapDot");
+         final String filePath = getPath("InputSeparatorWrap.java");
+ 
+         final Integer[] warnList = getLinesWithWarn(filePath);
+         verify(checkConfig, filePath, expected, warnList);
+     }
++
++    @Test
++    public void separatorWrapCommaTest() throws Exception {
++
++        final String[] expected = {
++            "31:17: " + getCheckMessage(SeparatorWrapCheck.class, "line.previous", ","),
++        };
++
++        final Configuration checkConfig = getCheckConfig("SeparatorWrap", "SeparatorWrapComma");
++        final String filePath = getPath("InputSeparatorWrapComma.java");
++
++        final Integer[] warnList = getLinesWithWarn(filePath);
++        verify(checkConfig, filePath, expected, warnList);
++    }
+ }

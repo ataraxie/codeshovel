@@ -1,0 +1,143 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "JavadocStyleCheck.java",
+  "functionName": "checkUnclosedTags",
+  "functionId": "checkUnclosedTags___htmlStack-Deque__HtmlTag____token-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java",
+  "functionStartLine": 417,
+  "functionEndLine": 446,
+  "changeHistory": [
+    "2c71b5433175f9689c308c47207f03d029671d11",
+    "77733a452387aa2ee99fdc9a737633566cc7af3d",
+    "7dd24c8c35572b5db3e5c905d440e813cfe2538c",
+    "303d7cc6182e72f5472c8bcd9aa37432986793d1",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "06e8a4eaa00e548f52b2483864a31ba9defd0989",
+    "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d",
+    "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3"
+  ],
+  "changeHistoryShort": {
+    "2c71b5433175f9689c308c47207f03d029671d11": "Ybodychange",
+    "77733a452387aa2ee99fdc9a737633566cc7af3d": "Ybodychange",
+    "7dd24c8c35572b5db3e5c905d440e813cfe2538c": "Ybodychange",
+    "303d7cc6182e72f5472c8bcd9aa37432986793d1": "Ymultichange(Yparameterchange,Ybodychange)",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "06e8a4eaa00e548f52b2483864a31ba9defd0989": "Ymultichange(Yparameterchange,Ybodychange)",
+    "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d": "Ymultichange(Yparameterchange,Ybodychange)",
+    "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "2c71b5433175f9689c308c47207f03d029671d11": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4724: fix FieldNotUsedInToString IDEA violations\n",
+      "commitDate": 1500824788000,
+      "commitName": "2c71b5433175f9689c308c47207f03d029671d11",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1500613458000,
+      "commitNameOld": "b1a0f2b5f61a997e0b7e3fdff8f19a0ae0180ac6",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 2.45,
+      "commitsBetweenForRepo": 14,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,30 @@\n     private void checkUnclosedTags(Deque\u003cHtmlTag\u003e htmlStack, String token) {\n         final Deque\u003cHtmlTag\u003e unclosedTags \u003d new ArrayDeque\u003c\u003e();\n         HtmlTag lastOpenTag \u003d htmlStack.pop();\n         while (!token.equalsIgnoreCase(lastOpenTag.getId())) {\n             // Find unclosed elements. Put them on a stack so the\n             // output order won\u0027t be back-to-front.\n             if (isSingleTag(lastOpenTag)) {\n                 lastOpenTag \u003d htmlStack.pop();\n             }\n             else {\n                 unclosedTags.push(lastOpenTag);\n                 lastOpenTag \u003d htmlStack.pop();\n             }\n         }\n \n         // Output the unterminated tags, if any\n         // Skip multiples, like \u003cb\u003e..\u003cb\u003e\n         String lastFound \u003d \"\";\n         for (final HtmlTag htag : unclosedTags) {\n             lastOpenTag \u003d htag;\n             if (lastOpenTag.getId().equals(lastFound)) {\n                 continue;\n             }\n             lastFound \u003d lastOpenTag.getId();\n             log(lastOpenTag.getLineNo(),\n                 lastOpenTag.getPosition(),\n                 MSG_UNCLOSED_HTML,\n-                lastOpenTag);\n+                lastOpenTag.getText());\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "77733a452387aa2ee99fdc9a737633566cc7af3d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2836: renamed error message fields to match standard naming",
+      "commitDate": 1453387259000,
+      "commitName": "77733a452387aa2ee99fdc9a737633566cc7af3d",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 16.59,
+      "commitsBetweenForRepo": 19,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,30 @@\n     private void checkUnclosedTags(Deque\u003cHtmlTag\u003e htmlStack, String token) {\n         final Deque\u003cHtmlTag\u003e unclosedTags \u003d new ArrayDeque\u003c\u003e();\n         HtmlTag lastOpenTag \u003d htmlStack.pop();\n         while (!token.equalsIgnoreCase(lastOpenTag.getId())) {\n             // Find unclosed elements. Put them on a stack so the\n             // output order won\u0027t be back-to-front.\n             if (isSingleTag(lastOpenTag)) {\n                 lastOpenTag \u003d htmlStack.pop();\n             }\n             else {\n                 unclosedTags.push(lastOpenTag);\n                 lastOpenTag \u003d htmlStack.pop();\n             }\n         }\n \n         // Output the unterminated tags, if any\n         // Skip multiples, like \u003cb\u003e..\u003cb\u003e\n         String lastFound \u003d \"\";\n         for (final HtmlTag htag : unclosedTags) {\n             lastOpenTag \u003d htag;\n             if (lastOpenTag.getId().equals(lastFound)) {\n                 continue;\n             }\n             lastFound \u003d lastOpenTag.getId();\n             log(lastOpenTag.getLineNo(),\n                 lastOpenTag.getPosition(),\n-                UNCLOSED_HTML,\n+                MSG_UNCLOSED_HTML,\n                 lastOpenTag);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "7dd24c8c35572b5db3e5c905d440e813cfe2538c": {
+      "type": "Ybodychange",
+      "commitMessage": "fix for Findbugs violations NM_CONFUSING. Issue #912\n",
+      "commitDate": 1428792106000,
+      "commitName": "7dd24c8c35572b5db3e5c905d440e813cfe2538c",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1426740846000,
+      "commitNameOld": "303d7cc6182e72f5472c8bcd9aa37432986793d1",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 23.74,
+      "commitsBetweenForRepo": 80,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,30 @@\n     private void checkUnclosedTags(Deque\u003cHtmlTag\u003e htmlStack, String token)\n     {\n         final Deque\u003cHtmlTag\u003e unclosedTags \u003d new ArrayDeque\u003c\u003e();\n         HtmlTag lastOpenTag \u003d htmlStack.pop();\n         while (!token.equalsIgnoreCase(lastOpenTag.getId())) {\n             // Find unclosed elements. Put them on a stack so the\n             // output order won\u0027t be back-to-front.\n             if (isSingleTag(lastOpenTag)) {\n                 lastOpenTag \u003d htmlStack.pop();\n             }\n             else {\n                 unclosedTags.push(lastOpenTag);\n                 lastOpenTag \u003d htmlStack.pop();\n             }\n         }\n \n         // Output the unterminated tags, if any\n         String lastFound \u003d \"\"; // Skip multiples, like \u003cb\u003e..\u003cb\u003e\n         for (final HtmlTag htag : unclosedTags) {\n             lastOpenTag \u003d htag;\n             if (lastOpenTag.getId().equals(lastFound)) {\n                 continue;\n             }\n             lastFound \u003d lastOpenTag.getId();\n-            log(lastOpenTag.getLineno(),\n+            log(lastOpenTag.getLineNo(),\n                 lastOpenTag.getPosition(),\n                 UNCLOSED_HTML,\n                 lastOpenTag);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "303d7cc6182e72f5472c8bcd9aa37432986793d1": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Replace FastStack with ArrayDeque where possible, issue #86\n",
+      "commitDate": 1426740846000,
+      "commitName": "303d7cc6182e72f5472c8bcd9aa37432986793d1",
+      "commitAuthor": "Michal Kordas",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "06e8a4eaa00e548f52b2483864a31ba9defd0989": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Simple implementation of a LIFO Stack that can be used instead of java.util.Vector which is synchronized. Will help performance.\n",
+      "commitDate": 1209024589000,
+      "commitName": "06e8a4eaa00e548f52b2483864a31ba9defd0989",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Start of adding generics.\n",
+      "commitDate": 1197694270000,
+      "commitName": "85a9c1f13f06baf70c00e62d8bb91507aeb3a72d",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3": {
+      "type": "Yintroduced",
+      "commitMessage": "New Javadoc style check from Chris Stillwell.\n",
+      "commitDate": 1058185912000,
+      "commitName": "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

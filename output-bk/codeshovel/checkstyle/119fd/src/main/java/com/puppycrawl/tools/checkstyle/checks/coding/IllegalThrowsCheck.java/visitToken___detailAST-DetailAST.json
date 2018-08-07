@@ -1,0 +1,152 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IllegalThrowsCheck.java",
+  "functionName": "visitToken",
+  "functionId": "visitToken___detailAST-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalThrowsCheck.java",
+  "functionStartLine": 106,
+  "functionEndLine": 121,
+  "changeHistory": [
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2",
+    "f4d416e749e743a0c559c43460094e1cfb761a22",
+    "27149f3504a2f350b74f456a9bffbae76a460060",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "943e07af07c27cda9b6d7298863484ef1e28a3ad",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "3c63c31901ca2e6714fe922f695135718198dd06",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+    "b0e77dd3174f71b8db1e5ca24dfa185277ed5318"
+  ],
+  "changeHistoryShort": {
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2": "Ybodychange",
+    "f4d416e749e743a0c559c43460094e1cfb761a22": "Ybodychange",
+    "27149f3504a2f350b74f456a9bffbae76a460060": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "943e07af07c27cda9b6d7298863484ef1e28a3ad": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "3c63c31901ca2e6714fe922f695135718198dd06": "Ybodychange",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": "Ybodychange",
+    "b0e77dd3174f71b8db1e5ca24dfa185277ed5318": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #4328: moved variables inside if blocks to reduce execution time",
+      "commitDate": 1494119754000,
+      "commitName": "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1488034522000,
+      "commitNameOld": "55aa8cedc60d4faa776d7a36f8ae2d0bed0ada45",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 70.43,
+      "commitsBetweenForRepo": 292,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     public void visitToken(DetailAST detailAST) {\n         final DetailAST methodDef \u003d detailAST.getParent();\n-        DetailAST token \u003d detailAST.getFirstChild();\n         // Check if the method with the given name should be ignored.\n         if (!isIgnorableMethod(methodDef)) {\n+            DetailAST token \u003d detailAST.getFirstChild();\n             while (token !\u003d null) {\n                 if (token.getType() !\u003d TokenTypes.COMMA) {\n                     final FullIdent ident \u003d FullIdent.createFullIdent(token);\n                     if (illegalClassNames.contains(ident.getText())) {\n                         log(token, MSG_KEY, ident.getText());\n                     }\n                 }\n                 token \u003d token.getNextSibling();\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "f4d416e749e743a0c559c43460094e1cfb761a22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2451: removed excess hierarchy from IllegalThrowsCheck",
+      "commitDate": 1446655379000,
+      "commitName": "f4d416e749e743a0c559c43460094e1cfb761a22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1441045466000,
+      "commitNameOld": "2b861bd6e16584e22bb115ff7abd65c35072eb92",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 64.93,
+      "commitsBetweenForRepo": 451,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     public void visitToken(DetailAST detailAST) {\n         final DetailAST methodDef \u003d detailAST.getParent();\n         DetailAST token \u003d detailAST.getFirstChild();\n         // Check if the method with the given name should be ignored.\n         if (!isIgnorableMethod(methodDef)) {\n             while (token !\u003d null) {\n                 if (token.getType() !\u003d TokenTypes.COMMA) {\n                     final FullIdent ident \u003d FullIdent.createFullIdent(token);\n-                    if (isIllegalClassName(ident.getText())) {\n+                    if (illegalClassNames.contains(ident.getText())) {\n                         log(token, MSG_KEY, ident.getText());\n                     }\n                 }\n                 token \u003d token.getNextSibling();\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "27149f3504a2f350b74f456a9bffbae76a460060": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactored UTs, coding package, issue #537\n",
+      "commitDate": 1424437367000,
+      "commitName": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.66,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     public void visitToken(DetailAST detailAST)\n     {\n         final DetailAST methodDef \u003d detailAST.getParent();\n         DetailAST token \u003d detailAST.getFirstChild();\n         // Check if the method with the given name should be ignored.\n         if (!isIgnorableMethod(methodDef)) {\n             while (token !\u003d null) {\n                 if (token.getType() !\u003d TokenTypes.COMMA) {\n                     final FullIdent ident \u003d FullIdent.createFullIdent(token);\n                     if (isIllegalClassName(ident.getText())) {\n-                        log(token, \"illegal.throw\", ident.getText());\n+                        log(token, MSG_KEY, ident.getText());\n                     }\n                 }\n                 token \u003d token.getNextSibling();\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "943e07af07c27cda9b6d7298863484ef1e28a3ad": {
+      "type": "Ybodychange",
+      "commitMessage": "Added option to Illegal Throws Check due to twitter custom checks, issue #430\n",
+      "commitDate": 1419893034000,
+      "commitName": "943e07af07c27cda9b6d7298863484ef1e28a3ad",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1393953491000,
+      "commitNameOld": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthorOld": "Ivan Sopov",
+      "daysBetweenCommits": 300.23,
+      "commitsBetweenForRepo": 428,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,17 @@\n     public void visitToken(DetailAST aDetailAST)\n     {\n+        final DetailAST methodDef \u003d aDetailAST.getParent();\n         DetailAST token \u003d aDetailAST.getFirstChild();\n         // Check if the method with the given name should be ignored.\n-        if (!(shouldIgnoreMethod(aDetailAST.getParent().findFirstToken(\n-                                     TokenTypes.IDENT).getText())))\n-        {\n+        if (!isIgnorableMethod(methodDef)) {\n             while (token !\u003d null) {\n                 if (token.getType() !\u003d TokenTypes.COMMA) {\n                     final FullIdent ident \u003d FullIdent.createFullIdent(token);\n                     if (isIllegalClassName(ident.getText())) {\n                         log(token, \"illegal.throw\", ident.getText());\n                     }\n                 }\n                 token \u003d token.getNextSibling();\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "3c63c31901ca2e6714fe922f695135718198dd06": {
+      "type": "Ybodychange",
+      "commitMessage": "Changes for patch #3115439 - Added ignoredMethodNames to IllegalThrowsCheck\n",
+      "commitDate": 1294219361000,
+      "commitName": "3c63c31901ca2e6714fe922f695135718198dd06",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1266029835000,
+      "commitNameOld": "523080bbf2be11354b94b851ac85d06e7e8a2c14",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 326.27,
+      "commitsBetweenForRepo": 124,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,18 @@\n     public void visitToken(DetailAST aDetailAST)\n     {\n         DetailAST token \u003d aDetailAST.getFirstChild();\n-        while (token !\u003d null) {\n-            if (token.getType() !\u003d TokenTypes.COMMA) {\n-                final FullIdent ident \u003d FullIdent.createFullIdent(token);\n-                if (isIllegalClassName(ident.getText())) {\n-                    log(token, \"illegal.throw\", ident.getText());\n+        // Check if the method with the given name should be ignored.\n+        if (!(shouldIgnoreMethod(aDetailAST.getParent().findFirstToken(\n+                                     TokenTypes.IDENT).getText())))\n+        {\n+            while (token !\u003d null) {\n+                if (token.getType() !\u003d TokenTypes.COMMA) {\n+                    final FullIdent ident \u003d FullIdent.createFullIdent(token);\n+                    if (isIllegalClassName(ident.getText())) {\n+                        log(token, \"illegal.throw\", ident.getText());\n+                    }\n                 }\n+                token \u003d token.getNextSibling();\n             }\n-\n-            token \u003d token.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": {
+      "type": "Ybodychange",
+      "commitMessage": "Inspired by patch# 2111354 - changes to remove casting. Neat trick\n",
+      "commitDate": 1221737656000,
+      "commitName": "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200296548000,
+      "commitNameOld": "fd90bd5aa5cd623b08a2e44ef05e8fac8045d333",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 248.16,
+      "commitsBetweenForRepo": 71,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     public void visitToken(DetailAST aDetailAST)\n     {\n-        DetailAST token \u003d (DetailAST) aDetailAST.getFirstChild();\n+        DetailAST token \u003d aDetailAST.getFirstChild();\n         while (token !\u003d null) {\n             if (token.getType() !\u003d TokenTypes.COMMA) {\n                 final FullIdent ident \u003d FullIdent.createFullIdent(token);\n                 if (isIllegalClassName(ident.getText())) {\n                     log(token, \"illegal.throw\", ident.getText());\n                 }\n             }\n \n-            token \u003d (DetailAST) token.getNextSibling();\n+            token \u003d token.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b0e77dd3174f71b8db1e5ca24dfa185277ed5318": {
+      "type": "Yintroduced",
+      "commitMessage": "Introduce a new check called IllegalThrowsCheck which checks for illegal\nthrows declarations. I have added as I really need it for my work at the\nmoment.\n",
+      "commitDate": 1121777152000,
+      "commitName": "b0e77dd3174f71b8db1e5ca24dfa185277ed5318",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

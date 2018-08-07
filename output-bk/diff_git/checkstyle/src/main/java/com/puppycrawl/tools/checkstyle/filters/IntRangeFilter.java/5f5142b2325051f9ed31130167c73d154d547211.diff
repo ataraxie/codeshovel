@@ -1,0 +1,71 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/IntRangeFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/IntRangeFilter.java
+index af5ca8df1..20d68f4c0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/IntRangeFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/IntRangeFilter.java
+@@ -8,62 +8,62 @@
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.filters;
+ 
+ import java.util.Objects;
+ 
+ /**
+  * This filter accepts an Integer in a range.
+  * @author Rick Giles
+  */
+ class IntRangeFilter implements IntFilter {
+     /** Lower bound of the range. */
+     private final Integer lowerBound;
+ 
+     /** Upper bound of the range. */
+     private final Integer upperBound;
+ 
+     /**
+      * Constructs a {@code IntRangeFilter} with a
+      * lower bound and an upper bound for the range.
+      * @param lowerBound the lower bound of the range.
+      * @param upperBound the upper bound of the range.
+      */
+     IntRangeFilter(int lowerBound, int upperBound) {
+         this.lowerBound = lowerBound;
+         this.upperBound = upperBound;
+     }
+ 
+     @Override
+     public boolean accept(int intValue) {
+         return lowerBound.compareTo(intValue) <= 0
+             && upperBound.compareTo(intValue) >= 0;
+     }
+ 
+     @Override
+     public int hashCode() {
+         return Objects.hash(lowerBound, upperBound);
+     }
+ 
+     @Override
+-    public boolean equals(Object o) {
+-        if (this == o) {
++    public boolean equals(Object other) {
++        if (this == other) {
+             return true;
+         }
+-        if (o == null || getClass() != o.getClass()) {
++        if (other == null || getClass() != other.getClass()) {
+             return false;
+         }
+-        final IntRangeFilter intRangeFilter = (IntRangeFilter) o;
++        final IntRangeFilter intRangeFilter = (IntRangeFilter) other;
+         return Objects.equals(lowerBound, intRangeFilter.lowerBound)
+                 && Objects.equals(upperBound, intRangeFilter.upperBound);
+     }
+ }

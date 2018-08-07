@@ -1,0 +1,60 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
+index 07b956596..c91bb8e02 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
+@@ -2704,54 +2704,54 @@ public final class TokenTypes
+                 System.exit(1);
+             }
+         }
+         TOKEN_VALUE_TO_NAME = tempTokenValueToName;
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param aID the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int aID)
+     {
+         if (aID > TOKEN_VALUE_TO_NAME.length - 1) {
+             throw new IllegalArgumentException("given id " + aID);
+         }
+         final String name = TOKEN_VALUE_TO_NAME[aID];
+         if (name == null) {
+             throw new IllegalArgumentException("given id " + aID);
+         }
+         return name;
+     }
+ 
+     /**
+      * Returns the ID of a token for a given name.
+      * @param aName the name of the token ID to get
+      * @return a token ID
+      */
+     public static int getTokenId(String aName)
+     {
+         final Integer id = (Integer) TOKEN_NAME_TO_VALUE.get(aName);
+         if (id == null) {
+             throw new IllegalArgumentException("given name " + aName);
+         }
+         return id.intValue();
+     }
+ 
+     /**
+      * Returns the short description of a token for a given name.
+      * @param aName the name of the token ID to get
+      * @return a short description
+      */
+     public static String getShortDescription(String aName)
+     {
+         if (!TOKEN_NAME_TO_VALUE.containsKey(aName)) {
+             throw new IllegalArgumentException("given name " + aName);
+         }
+ 
+         final String tokentypes =
+             "com.puppycrawl.tools.checkstyle.api.tokentypes";
+-        ResourceBundle bundle = ResourceBundle.getBundle(tokentypes);
++        final ResourceBundle bundle = ResourceBundle.getBundle(tokentypes);
+         return bundle.getString(aName);
+     }
+ }

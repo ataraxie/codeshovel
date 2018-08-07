@@ -1,0 +1,83 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/sizes/MethodLengthCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/sizes/MethodLengthCheck.java
+index d6115cdc6..f8b55cf3e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/sizes/MethodLengthCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/sizes/MethodLengthCheck.java
+@@ -45,76 +45,73 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * <p>
+  * An example of how to configure the check so that it accepts methods with at
+  * most 60 lines is:
+  * </p>
+  * <pre>
+  * &lt;module name="MethodLength"&gt;
+  *    &lt;property name="max" value="60"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Lars K�hne
+  */
+ public class MethodLengthCheck extends Check
+ {
+     /** whether to ignore empty lines and single line comments */
+     private boolean mCountEmpty = true;
+ 
+     /** default maximum number of lines */
+     private static final int DEFAULT_MAX_LINES = 150;
+ 
+     /** the maximum number of lines */
+     private int mMax = DEFAULT_MAX_LINES;
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.METHOD_DEF, TokenTypes.CTOR_DEF};
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         final DetailAST openingBrace = aAST.findFirstToken(TokenTypes.SLIST);
+         if (openingBrace != null) {
+             final DetailAST closingBrace =
+                 openingBrace.findFirstToken(TokenTypes.RCURLY);
+             int length =
+                 closingBrace.getLineNo() - openingBrace.getLineNo() + 1;
+ 
+             if (!mCountEmpty) {
+                 final FileContents contents = getFileContents();
+                 final int lastLine = closingBrace.getLineNo();
+                 for (int i = openingBrace.getLineNo() - 1; i < lastLine; i++) {
+                     if (contents.lineIsBlank(i) || contents.lineIsComment(i)) {
+                         length--;
+                     }
+                 }
+             }
+             if (length > mMax) {
+-                log(aAST.getLineNo(),
+-                    aAST.getColumnNo(),
+-                    "maxLen.method",
+-                    new Integer(length),
+-                    new Integer(mMax));
++                log(aAST.getLineNo(), aAST.getColumnNo(), "maxLen.method",
++                        length, mMax);
+             }
+         }
+     }
+ 
+     /**
+      * @param aLength the maximum length of a method.
+      */
+     public void setMax(int aLength)
+     {
+         mMax = aLength;
+     }
+ 
+     /**
+      * @param aCountEmpty whether to count empty and single line comments
+      * of the form //.
+      */
+     public void setCountEmpty(boolean aCountEmpty)
+     {
+         mCountEmpty = aCountEmpty;
+     }
+ }

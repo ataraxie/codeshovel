@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/SuppressWarningsCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/SuppressWarningsCheck.java
+index 20d1d7333..525c613c1 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/SuppressWarningsCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/SuppressWarningsCheck.java
+@@ -157,101 +157,101 @@ public class SuppressWarningsCheck extends AbstractFormatCheck
+             //check to see if empty warnings are forbidden -- are by default
+             this.logMatch(warningHolder.getLineNo(),
+                 warningHolder.getColumnNo(), "");
+             return;
+         }
+ 
+         while (warning != null) {
+             if (warning.getType() == TokenTypes.EXPR) {
+                 final DetailAST fChild = warning.getFirstChild();
+                 switch (fChild.getType()) {
+                     //typical case
+                     case TokenTypes.STRING_LITERAL:
+                         final String warningText =
+                             this.removeQuotes(warning.getFirstChild().getText());
+                         this.logMatch(warning.getLineNo(),
+                                 warning.getColumnNo(), warningText);
+                         break;
+                         //conditional case
+                         //ex: @SuppressWarnings((false) ? (true) ? "unchecked" : "foo" : "unused")
+                     case TokenTypes.QUESTION:
+                         this.walkConditional(fChild);
+                         break;
+                         //param in constant case
+                         //ex: public static final String UNCHECKED = "unchecked";
+                         //@SuppressWarnings(UNCHECKED) or @SuppressWarnings(SomeClass.UNCHECKED)
+                     case TokenTypes.IDENT:
+                     case TokenTypes.DOT:
+                         break;
+                     default:
+                         throw new IllegalStateException("Should never get here, type: "
+                                 + fChild.getType() + " text: " + fChild.getText());
+                 }
+             }
+             warning = warning.getNextSibling();
+         }
+     }
+ 
+     /**
+      * Gets the {@link SuppressWarnings SuppressWarnings} annotation
+      * that is annotating the AST.  If the annotation does not exist
+      * this method will return {@code null}.
+      *
+      * @param ast the AST
+      * @return the {@link SuppressWarnings SuppressWarnings} annotation
+      */
+     private DetailAST getSuppressWarnings(DetailAST ast)
+     {
+         final DetailAST annotation = AnnotationUtility.getAnnotation(
+             ast, SuppressWarningsCheck.SUPPRESS_WARNINGS);
+ 
+-        return (annotation != null) ? annotation
++        return annotation != null ? annotation
+             : AnnotationUtility.getAnnotation(
+                 ast, SuppressWarningsCheck.FQ_SUPPRESS_WARNINGS);
+     }
+ 
+     /**
+      * This method looks for a warning that matches a configured expression.
+      * If found it logs a violation at the given line and column number.
+      *
+      * @param lineNo the line number
+      * @param colNum the column number
+      * @param warningText the warning.
+      */
+     private void logMatch(final int lineNo,
+         final int colNum, final String warningText)
+     {
+         final Matcher matcher = this.getRegexp().matcher(warningText);
+         if (matcher.matches()) {
+             this.log(lineNo, colNum,
+                     MSG_KEY_SUPPRESSED_WARNING_NOT_ALLOWED, warningText);
+         }
+     }
+ 
+     /**
+      * Find the parent (holder) of the of the warnings (Expr).
+      *
+      * @param annotation the annotation
+      * @return a Token representing the expr.
+      */
+     private DetailAST findWarningsHolder(final DetailAST annotation)
+     {
+         final DetailAST annValuePair =
+             annotation.findFirstToken(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
+         final DetailAST annArrayInit;
+ 
+         if (annValuePair != null) {
+             annArrayInit =
+                 annValuePair.findFirstToken(TokenTypes.ANNOTATION_ARRAY_INIT);
+         }
+         else {
+             annArrayInit =
+                 annotation.findFirstToken(TokenTypes.ANNOTATION_ARRAY_INIT);
+         }
+ 
+         if (annArrayInit != null) {
+             return annArrayInit;
+         }
+ 
+         return annotation;
+     }
+ 

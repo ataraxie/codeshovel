@@ -1,0 +1,247 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 5e8710f21..0d1ff61ab 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -1,93 +1,142 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2002  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.LocalizedMessages;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ 
+ import java.util.ArrayList;
+ import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.Map;
+ import java.util.Set;
+ import java.util.Arrays;
++import java.io.Reader;
++
++import antlr.RecognitionException;
++import antlr.TokenStreamException;
+ 
+ /**
+  * Responsible for walking an abstract syntax tree and notifying interested
+  * checks at each each node.
+  *
+  * @author <a href="mailto:checkstyle@puppycrawl.com">Oliver Burn</a>
+  * @version 1.0
+  */
+ class TreeWalker
+ {
++    /**
++     * Overrides ANTLR error reporting so we completely control
++     * checkstyle's output during parsing. This is important because
++     * we try parsing with several grammers (with/without support for
++     * <code>assert</code>). We must not write any error messages when
++     * parsing fails because with the next grammar it might succeed
++     * and the user will be confused.
++     */
++    private static class SilentJava14Recognizer
++        extends GeneratedJava14Recognizer
++    {
++        /**
++         * Creates a new <code>SilentJava14Recognizer</code> instance.
++         *
++         * @param aLexer the tokenstream the recognizer operates on.
++         */
++        private SilentJava14Recognizer(GeneratedJava14Lexer aLexer)
++        {
++            super(aLexer);
++        }
++
++        /**
++         * Parser error-reporting function, does nothing.
++         * @param aRex the exception to be reported
++         */
++        public void reportError(RecognitionException aRex)
++        {
++        }
++
++        /**
++         * Parser error-reporting function, does nothing.
++         * @param aMsg the error message
++         */
++        public void reportError(String aMsg)
++        {
++        }
++
++        /**
++         * Parser warning-reporting function, does nothing.
++         * @param aMsg the error message
++         */
++        public void reportWarning(String aMsg)
++        {
++        }
++    }
+     // TODO: really need to optimise the performance of this class.
+ 
+     /** maps from token name to checks */
+     private final Map mTokenToChecks = new HashMap();
+     /** all the registered checks */
+     private final Set mAllChecks = new HashSet();
+     /** collects the error messages */
+     private final LocalizedMessages mMessages;
+     /** the tab width for error reporting */
+     private final int mTabWidth;
+ 
+     /**
+      * Creates a new <code>TreeWalker</code> instance.
+      *
+      * @param aMessages used to collect messages
+      * @param aTabWidth the tabwidth to use
+      */
+     public TreeWalker(LocalizedMessages aMessages, int aTabWidth)
+     {
+         mMessages = aMessages;
+         mTabWidth = aTabWidth;
+     }
+ 
+     /**
+      * Register a check for a given configuration.
+      * @param aCheck the check to register
+      * @param aConfig the configuration to use
+      */
+     void registerCheck(Check aCheck, CheckConfiguration aConfig)
+     {
+         aCheck.setMessages(mMessages);
+         aCheck.setTabWidth(mTabWidth);
+         if (!aConfig.getTokens().isEmpty()) {
+             int acceptableTokens[] = aCheck.getAcceptableTokens();
+             Arrays.sort(acceptableTokens);
+             final Iterator it = aConfig.getTokens().iterator();
+             while (it.hasNext()) {
+                 String token = (String) it.next();
+                 int tokenId = TokenTypes.getTokenId(token);
+                 if (Arrays.binarySearch(acceptableTokens, tokenId) >= 0) {
+                     registerCheck(token, aCheck);
+                 }
+                 // TODO: else error message?
+             }
+         }
+         else {
+             final int[] tokens = aCheck.getDefaultTokens();
+             for (int i = 0; i < tokens.length; i++) {
+                 registerCheck(tokens[i], aCheck);
+             }
+@@ -189,51 +238,99 @@ class TreeWalker
+             child.setParent(aAST);
+             process(child);
+         }
+ 
+         notifyLeave(aAST);
+ 
+         final DetailAST sibling = (DetailAST) aAST.getNextSibling();
+         if (sibling != null) {
+             sibling.setParent(aAST.getParent());
+             process(sibling);
+         }
+ 
+     }
+ 
+     /**
+      * Notify interested checks that visiting a node.
+      * @param aAST the node to notify for
+      */
+     private void notifyVisit(DetailAST aAST)
+     {
+         final ArrayList visitors =
+             (ArrayList) mTokenToChecks.get(TokenTypes.getTokenName(
+                                                aAST.getType()));
+         if (visitors != null) {
+             final Map ctx = new HashMap();
+             for (int i = 0; i < visitors.size(); i++) {
+                 final Check check = (Check) visitors.get(i);
+                 check.setTokenContext(ctx);
+                 check.visitToken(aAST);
+             }
+         }
+     }
+ 
+     /**
+      * Notify interested checks that leaving a node.
+      * @param aAST the node to notify for
+      */
+     private void notifyLeave(DetailAST aAST)
+     {
+         final ArrayList visitors =
+             (ArrayList) mTokenToChecks.get(TokenTypes.getTokenName(
+                                                aAST.getType()));
+         if (visitors != null) {
+             for (int i = 0; i < visitors.size(); i++) {
+                 final Check check = (Check) visitors.get(i);
+                 // TODO: need to setup the token context
+                 check.leaveToken(aAST);
+             }
+         }
+     }
++
++    /**
++     *
++     * @param aContents contains the contents of the file
++     * @return the root of the AST
++     * @throws TokenStreamException if lexing failed
++     * @throws RecognitionException if parsing failed
++     */
++    public static DetailAST parse(FileContents aContents)
++        throws TokenStreamException, RecognitionException
++    {
++        DetailAST rootAST;
++        try {
++            // try the 1.4 grammar first, this will succeed for
++            // all code that compiles without any warnings in JDK 1.4,
++            // that should cover most cases
++            final Reader sar = new StringArrayReader(aContents.getLines());
++            final GeneratedJava14Lexer jl = new GeneratedJava14Lexer(sar);
++            jl.setFilename(aContents.getFilename());
++            jl.setFileContents(aContents);
++
++            final GeneratedJava14Recognizer jr =
++                new SilentJava14Recognizer(jl);
++            jr.setFilename(aContents.getFilename());
++            jr.setASTNodeClass(DetailAST.class.getName());
++            jr.compilationUnit();
++            rootAST = (DetailAST) jr.getAST();
++        }
++        catch (RecognitionException re) {
++            // Parsing might have failed because the checked
++            // file contains "assert" as an identifier. Retry with a
++            // grammar that treats "assert" as an identifier
++            // and not as a keyword
++
++            // Arghh - the pain - duplicate code!
++            final Reader sar = new StringArrayReader(aContents.getLines());
++            final GeneratedJavaLexer jl = new GeneratedJavaLexer(sar);
++            jl.setFilename(aContents.getFilename());
++            jl.setFileContents(aContents);
++
++            final GeneratedJavaRecognizer jr = new GeneratedJavaRecognizer(jl);
++            jr.setFilename(aContents.getFilename());
++            jr.setASTNodeClass(DetailAST.class.getName());
++            jr.compilationUnit();
++            rootAST = (DetailAST) jr.getAST();
++        }
++        return rootAST;
++    }
+ }

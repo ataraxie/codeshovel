@@ -1,0 +1,42 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "VersionProperties.java",
+  "functionName": "getLucene",
+  "functionId": "getLucene",
+  "sourceFilePath": "buildSrc/src/main/java/org/elasticsearch/gradle/VersionProperties.java",
+  "functionStartLine": 17,
+  "functionEndLine": 19,
+  "changeHistory": [
+    "23198ea5512891c86e422c69e45970e357c9fade",
+    "0afec8f31c14ba1a6dfdd6fbeef118fa174721fa"
+  ],
+  "changeHistoryShort": {
+    "23198ea5512891c86e422c69e45970e357c9fade": "Ymultichange(Yfilerename,Yreturntypechange,Ybodychange,Yrename)",
+    "0afec8f31c14ba1a6dfdd6fbeef118fa174721fa": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "23198ea5512891c86e422c69e45970e357c9fade": {
+      "type": "Ymultichange(Yfilerename,Yreturntypechange,Ybodychange,Yrename)",
+      "commitMessage": "Convert Version to Java - clusterformation part1 (#32009)\n\nImplement buildSrc Version in java\r\n\r\n- This allows to move all  all .java files from .groovy.\r\n- Will prevent eclipse from tangling up in this setup\r\n- make it possible to use Version from Java\r\n\r\n",
+      "commitDate": 1531470912000,
+      "commitName": "23198ea5512891c86e422c69e45970e357c9fade",
+      "commitAuthor": "Alpar Torok",
+      "subchanges": [
+        "Yfilerename",
+        "Yreturntypechange",
+        "Ybodychange",
+        "Yrename"
+      ]
+    },
+    "0afec8f31c14ba1a6dfdd6fbeef118fa174721fa": {
+      "type": "Yintroduced",
+      "commitMessage": "Remove deprecation warnings to prepare for Gradle 5 (sourceSets.main.output.classesDirs) (#30389)\n\n* Remove deprecation warnings to prepare for Gradle 5\r\n\r\nGradle replaced `project.sourceSets.main.output.classesDir` of type\r\n`File` with `project.sourceSets.main.output.classesDirs` of type\r\n`FileCollection`\r\n(see [SourceSetOutput](https://github.com/gradle/gradle/blob/master/subprojects/plugins/src/main/java/org/gradle/api/tasks/SourceSetOutput.java))\r\nBuild output is now stored on a per language folder.\r\n\r\nThere are a few places where we use that, here\u0027s these and how it\u0027s\r\nfixed:\r\n\r\n- Randomized Test execution\r\n    - look in all test folders ( pass the multi dir configuration to the\r\n    ant runner )\r\n    - DRY the task configuration by introducing `basedOn` for\r\n      `RandomizedTestingTask` DSL\r\n- Extend the naming convention test to support passing in multiple\r\n  directories\r\n- Fix the standalon test plugin, the dires were not passed trough,\r\n  checked with a debuger and the statement had no affect due to a\r\n  missing `\u003d`.\r\n\r\nCloses #30354\r\n\r\n* Only check Java tests, PR feedback\r\n\r\n- Name checker was ran for Groovy tests that don\u0027t adhere to the same\r\n  convections causing the check to fail\r\n- implement PR feedback\r\n\r\n* Replace `add` with `addAll`\r\n\r\nThis worked because the list is passed to `project.files` that does the\r\nright thing.\r\n\r\n* Revert \"Only check Java tests, PR feedback\"\r\n\r\nThis reverts commit 9bd9389875d8b88aadb50df57a45cd0d2b073241.\r\n\r\n* Remove `basedOn` helper\r\n\r\n* Bring some changes back\r\n\r\nPrevius revert accidentally reverted too much\r\n\r\n* Fix negation\r\n\r\n* add back public\r\n\r\n* revert name check changes\r\n\r\n* Revert \"revert name check changes\"\r\n\r\nThis reverts commit a2800c0b363168339ea65e2a79ec8256e5883e6d.\r\n\r\n* Pass all dirs to name check\r\n\r\nOnly run on Java for build-tools, this is safe because it\u0027s a self test.\r\nIt needs more work before we could pass in the Groovy classes as well as\r\nthese inherit from `GroovyTestCase`\r\n\r\n* remove self tests from name check\r\n\r\nThe self complicates the task setup and disable real checks on\r\nbuild-tools.\r\nWith this change there are no more self tests, and the build-tools tests\r\nadhere to the conventions.\r\nThe self test will be replaced by gradle test kit, thus the addition of\r\nthe Gradle plugin builder plugin.\r\n\r\n* First test to run a Gradle build\r\n\r\n* Add tests that replace the name check self test\r\n\r\n* Clean up integ test base class\r\n\r\n* Always run tests\r\n\r\n* Align with test naming conventions\r\n\r\n* Make integ. test case inherit from unit test case\r\n\r\nThe check requires this\r\n\r\n* Remove `import static org.junit.Assert.*`\r\n",
+      "commitDate": 1530188074000,
+      "commitName": "0afec8f31c14ba1a6dfdd6fbeef118fa174721fa",
+      "commitAuthor": "Alpar Torok"
+    }
+  }
+}

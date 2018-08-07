@@ -1,0 +1,127 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+index fa0028cbe..2dab720f9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+@@ -22,115 +22,115 @@ package com.puppycrawl.tools.checkstyle.checks;
+ import java.util.Optional;
+ import java.util.regex.Pattern;
+ 
+ import com.puppycrawl.tools.checkstyle.FileStatefulCheck;
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Detects uncommented main methods. Basically detects
+  * any main method, since if it is detectable
+  * that means it is uncommented.
+  *
+  * <pre class="body">
+  * &lt;module name=&quot;UncommentedMain&quot;/&gt;
+  * </pre>
+  *
+  * @author Michael Yui
+  * @author o_sukhodolsky
+  */
+ @FileStatefulCheck
+ public class UncommentedMainCheck
+     extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "uncommented.main";
+ 
+     /** Compiled regexp to exclude classes from check. */
+     private Pattern excludedClasses = Pattern.compile("^$");
+     /** Current class name. */
+     private String currentClass;
+     /** Current package. */
+     private FullIdent packageName;
+     /** Class definition depth. */
+     private int classDepth;
+ 
+     /**
+      * Set the excluded classes pattern.
+      * @param excludedClasses a pattern
+      */
+     public void setExcludedClasses(Pattern excludedClasses) {
+         this.excludedClasses = excludedClasses;
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return new int[] {
+-            TokenTypes.METHOD_DEF,
+-            TokenTypes.CLASS_DEF,
+-            TokenTypes.PACKAGE_DEF,
+-        };
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return getAcceptableTokens();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return getAcceptableTokens();
++        return new int[] {
++            TokenTypes.METHOD_DEF,
++            TokenTypes.CLASS_DEF,
++            TokenTypes.PACKAGE_DEF,
++        };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         packageName = FullIdent.createFullIdent(null);
+         currentClass = null;
+         classDepth = 0;
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.CLASS_DEF) {
+             classDepth--;
+         }
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+ 
+         switch (ast.getType()) {
+             case TokenTypes.PACKAGE_DEF:
+                 visitPackageDef(ast);
+                 break;
+             case TokenTypes.CLASS_DEF:
+                 visitClassDef(ast);
+                 break;
+             case TokenTypes.METHOD_DEF:
+                 visitMethodDef(ast);
+                 break;
+             default:
+                 throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
+     /**
+      * Sets current package.
+      * @param packageDef node for package definition
+      */
+     private void visitPackageDef(DetailAST packageDef) {
+         packageName = FullIdent.createFullIdent(packageDef.getLastChild()
+                 .getPreviousSibling());
+     }
+ 
+     /**
+      * If not inner class then change current class name.
+      * @param classDef node for class definition
+      */
+     private void visitClassDef(DetailAST classDef) {
+         // we are not use inner classes because they can not
+         // have static methods

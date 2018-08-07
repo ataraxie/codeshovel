@@ -1,0 +1,90 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceBeforeCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceBeforeCheck.java
+index e0cc287e6..d92d1f9cf 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceBeforeCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceBeforeCheck.java
+@@ -45,73 +45,85 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * <pre>
+  * &lt;module name="NoWhitespaceBefore"/&gt;
+  * </pre>
+  * <p> An example of how to configure the check to allow linebreaks before
+  * a {@link TokenTypes#DOT DOT} token is:
+  * <pre>
+  * &lt;module name="NoWhitespaceBefore"&gt;
+  *     &lt;property name="tokens" value="DOT"/&gt;
+  *     &lt;property name="allowLineBreaks" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  * @author lkuehne
+  * @version 1.0
+  */
+ public class NoWhitespaceBeforeCheck
+     extends Check
+ {
+     /** Whether whitespace is allowed if the AST is at a linebreak */
+     private boolean mAllowLineBreaks;
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.SEMI,
+             TokenTypes.POST_INC,
+             TokenTypes.POST_DEC,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.SEMI,
+             TokenTypes.POST_INC,
+             TokenTypes.POST_DEC,
+             TokenTypes.DOT,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void visitToken(DetailAST aAST)
+     {
+         final String[] lines = getLines();
+         final String line = lines[aAST.getLineNo() - 1];
+         final int before = aAST.getColumnNo() - 1;
+ 
+         if ((before < 0) || Character.isWhitespace(line.charAt(before))) {
++
++            // empty FOR initializer?
++            if (aAST.getType() == TokenTypes.SEMI) {
++                final DetailAST sibling = aAST.getPreviousSibling();
++                if ((sibling != null)
++                        && (sibling.getType() == TokenTypes.FOR_INIT)
++                        && (sibling.getChildCount() == 0))
++                {
++                    return;
++                }
++            }
++
+             boolean flag = !mAllowLineBreaks;
+             // verify all characters before '.' are whitespace
+             for (int i = 0; !flag && i < before; i++) {
+                 if (!Character.isWhitespace(line.charAt(i))) {
+                     flag = true;
+                 }
+             }
+             if (flag) {
+                 log(aAST.getLineNo(), before, "ws.preceded", aAST.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Control whether whitespace is flagged at linebreaks.
+      * @param aAllowLineBreaks whether whitespace should be
+      * flagged at linebreaks.
+      */
+     public void setAllowLineBreaks(boolean aAllowLineBreaks)
+     {
+         mAllowLineBreaks = aAllowLineBreaks;
+     }
+ }

@@ -1,0 +1,299 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+index bf87d3503..4e9575ca3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+@@ -40,138 +40,176 @@ import com.puppycrawl.tools.checkstyle.utils.JavadocUtils;
+ /**
+  * Base class for Checks that process Javadoc comments.
+  * @author Baratali Izmailov
+  * @noinspection NoopMethodInAbstractClass
+  */
+ public abstract class AbstractJavadocCheck extends AbstractCheck {
+     /**
+      * Message key of error message. Missed close HTML tag breaks structure
+      * of parse tree, so parser stops parsing and generates such error
+      * message. This case is special because parser prints error like
+      * {@code "no viable alternative at input 'b \n *\n'"} and it is not
+      * clear that error is about missed close HTML tag.
+      */
+     public static final String MSG_JAVADOC_MISSED_HTML_CLOSE =
+             JavadocDetailNodeParser.MSG_JAVADOC_MISSED_HTML_CLOSE;
+ 
+     /**
+      * Message key of error message.
+      */
+     public static final String MSG_JAVADOC_WRONG_SINGLETON_TAG =
+             JavadocDetailNodeParser.MSG_JAVADOC_WRONG_SINGLETON_TAG;
+ 
+     /**
+      * Parse error while rule recognition.
+      */
+     public static final String MSG_JAVADOC_PARSE_RULE_ERROR =
+             JavadocDetailNodeParser.MSG_JAVADOC_PARSE_RULE_ERROR;
+ 
+     /**
+      * Error message key for common javadoc errors.
+      */
+     public static final String MSG_KEY_PARSE_ERROR =
+             JavadocDetailNodeParser.MSG_KEY_PARSE_ERROR;
+ 
+     /**
+      * Key is "line:column". Value is {@link DetailNode} tree. Map is stored in {@link ThreadLocal}
+      * to guarantee basic thread safety and avoid shared, mutable state when not necessary.
+      */
+     private static final ThreadLocal<Map<String, ParseStatus>> TREE_CACHE =
+             ThreadLocal.withInitial(HashMap::new);
+ 
+     /**
+      * The file context.
+      * @noinspection ThreadLocalNotStaticFinal
+      */
+     private final ThreadLocal<FileContext> context = ThreadLocal.withInitial(FileContext::new);
+ 
+     /** The javadoc tokens the check is interested in. */
+     private final Set<Integer> javadocTokens = new HashSet<>();
+ 
++    /**
++     * This property determines if a check should log a violation upon encountering javadoc with
++     * non-tight html. The default return value for this method is set to false since checks
++     * generally tend to be fine with non tight html. It can be set through config file if a check
++     * is to log violation upon encountering non-tight HTML in javadoc.
++     *
++     * @see ParseStatus#firstNonTightHtmlTag
++     * @see ParseStatus#isNonTight()
++     * @see <a href="http://checkstyle.sourceforge.net/writingjavadocchecks.html#Tight-HTML_rules">
++     *     Tight HTML rules</a>
++     */
++    private boolean violateExecutionOnNonTightHtml;
++
+     /**
+      * Returns the default javadoc token types a check is interested in.
+      * @return the default javadoc token types
+      * @see JavadocTokenTypes
+      */
+     public abstract int[] getDefaultJavadocTokens();
+ 
+     /**
+      * Called to process a Javadoc token.
+      * @param ast
+      *        the token to process
+      */
+     public abstract void visitJavadocToken(DetailNode ast);
+ 
+     /**
+      * The configurable javadoc token set.
+      * Used to protect Checks against malicious users who specify an
+      * unacceptable javadoc token set in the configuration file.
+      * The default implementation returns the check's default javadoc tokens.
+      * @return the javadoc token set this check is designed for.
+      * @see JavadocTokenTypes
+      */
+     public int[] getAcceptableJavadocTokens() {
+         final int[] defaultJavadocTokens = getDefaultJavadocTokens();
+         final int[] copy = new int[defaultJavadocTokens.length];
+         System.arraycopy(defaultJavadocTokens, 0, copy, 0, defaultJavadocTokens.length);
+         return copy;
+     }
+ 
+     /**
+      * The javadoc tokens that this check must be registered for.
+      * @return the javadoc token set this must be registered for.
+      * @see JavadocTokenTypes
+      */
+     public int[] getRequiredJavadocTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
++    /**
++     * This method determines if a check should process javadoc containing non-tight html tags.
++     * This method must be overridden in checks extending {@code AbstractJavadocCheck} which
++     * are not supposed to process javadoc containing non-tight html tags.
++     *
++     * @return true if the check should or can process javadoc containing non-tight html tags;
++     *     false otherwise
++     * @see ParseStatus#isNonTight()
++     * @see <a href="http://checkstyle.sourceforge.net/writingjavadocchecks.html#Tight-HTML_rules">
++     *     Tight HTML rules</a>
++     */
++    public boolean acceptJavadocWithNonTightHtml() {
++        return true;
++    }
++
++    /**
++     * Setter for {@link #violateExecutionOnNonTightHtml}.
++     * @param shouldReportViolation value to which the field shall be set to
++     * @see <a href="http://checkstyle.sourceforge.net/writingjavadocchecks.html#Tight-HTML_rules">
++     *     Tight HTML rules</a>
++     */
++    public final void setViolateExecutionOnNonTightHtml(boolean shouldReportViolation) {
++        violateExecutionOnNonTightHtml = shouldReportViolation;
++    }
++
+     /**
+      * Adds a set of tokens the check is interested in.
+      * @param strRep the string representation of the tokens interested in
+      */
+     public final void setJavadocTokens(String... strRep) {
+         javadocTokens.clear();
+         for (String str : strRep) {
+             javadocTokens.add(JavadocUtils.getTokenId(str));
+         }
+     }
+ 
+     @Override
+     public void init() {
+         validateDefaultJavadocTokens();
+         if (javadocTokens.isEmpty()) {
+             for (int id : getDefaultJavadocTokens()) {
+                 javadocTokens.add(id);
+             }
+         }
+         else {
+             final int[] acceptableJavadocTokens = getAcceptableJavadocTokens();
+             Arrays.sort(acceptableJavadocTokens);
+             for (Integer javadocTokenId : javadocTokens) {
+                 if (Arrays.binarySearch(acceptableJavadocTokens, javadocTokenId) < 0) {
+                     final String message = String.format(Locale.ROOT, "Javadoc Token \"%s\" was "
+                             + "not found in Acceptable javadoc tokens list in check %s",
+                             JavadocUtils.getTokenName(javadocTokenId), getClass().getName());
+                     throw new IllegalStateException(message);
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Validates that check's required javadoc tokens are subset of default javadoc tokens.
+      * @throws IllegalStateException when validation of default javadoc tokens fails
+      */
+     private void validateDefaultJavadocTokens() {
+         if (getRequiredJavadocTokens().length != 0) {
+             final int[] defaultJavadocTokens = getDefaultJavadocTokens();
+             Arrays.sort(defaultJavadocTokens);
+             for (final int javadocToken : getRequiredJavadocTokens()) {
+                 if (Arrays.binarySearch(defaultJavadocTokens, javadocToken) < 0) {
+                     final String message = String.format(Locale.ROOT,
+                             "Javadoc Token \"%s\" from required javadoc "
+                                 + "tokens was not found in default "
+                                 + "javadoc tokens list in check %s",
+                             javadocToken, getClass().getName());
+                     throw new IllegalStateException(message);
+                 }
+@@ -214,106 +252,115 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
+      */
+     @Override
+     public final int[] getDefaultTokens() {
+         return new int[] {TokenTypes.BLOCK_COMMENT_BEGIN };
+     }
+ 
+     @Override
+     public final int[] getAcceptableTokens() {
+         return getDefaultTokens();
+     }
+ 
+     @Override
+     public final int[] getRequiredTokens() {
+         return getDefaultTokens();
+     }
+ 
+     /**
+      * Defined final because all JavadocChecks require comment nodes.
+      * @return true
+      */
+     @Override
+     public final boolean isCommentNodesRequired() {
+         return true;
+     }
+ 
+     @Override
+     public final void beginTree(DetailAST rootAST) {
+         TREE_CACHE.get().clear();
+     }
+ 
+     @Override
+     public final void finishTree(DetailAST rootAST) {
+         TREE_CACHE.get().clear();
+     }
+ 
+     @Override
+     public final void visitToken(DetailAST blockCommentNode) {
+         if (JavadocUtils.isJavadocComment(blockCommentNode)) {
+             // store as field, to share with child Checks
+             context.get().blockCommentAst = blockCommentNode;
+ 
+             final String treeCacheKey = blockCommentNode.getLineNo() + ":"
+                     + blockCommentNode.getColumnNo();
+ 
+             final ParseStatus result;
+ 
+             if (TREE_CACHE.get().containsKey(treeCacheKey)) {
+                 result = TREE_CACHE.get().get(treeCacheKey);
+             }
+             else {
+-                result = context.get().parser.parseJavadocAsDetailNode(blockCommentNode);
++                result = context.get().parser
++                        .parseJavadocAsDetailNode(blockCommentNode);
+                 TREE_CACHE.get().put(treeCacheKey, result);
+             }
+ 
+             if (result.getParseErrorMessage() == null) {
+-                processTree(result.getTree());
++                if (acceptJavadocWithNonTightHtml() || !result.isNonTight()) {
++                    processTree(result.getTree());
++                }
++
++                if (violateExecutionOnNonTightHtml && result.isNonTight()) {
++                    log(result.getFirstNonTightHtmlTag().getLine(),
++                            JavadocDetailNodeParser.MSG_UNCLOSED_HTML_TAG,
++                            result.getFirstNonTightHtmlTag().getText());
++                }
+             }
+             else {
+                 final ParseErrorMessage parseErrorMessage = result.getParseErrorMessage();
+                 log(parseErrorMessage.getLineNumber(),
+                         parseErrorMessage.getMessageKey(),
+                         parseErrorMessage.getMessageArguments());
+             }
+         }
+ 
+     }
+ 
+     /**
+      * Getter for block comment in Java language syntax tree.
+      * @return A block comment in the syntax tree.
+      */
+     protected DetailAST getBlockCommentAst() {
+         return context.get().blockCommentAst;
+     }
+ 
+     /**
+      * Processes JavadocAST tree notifying Check.
+      * @param root
+      *        root of JavadocAST tree.
+      */
+     private void processTree(DetailNode root) {
+         beginJavadocTree(root);
+         walk(root);
+         finishJavadocTree(root);
+     }
+ 
+     /**
+      * Processes a node calling Check at interested nodes.
+      * @param root
+      *        the root of tree for process
+      */
+     private void walk(DetailNode root) {
+         DetailNode curNode = root;
+         while (curNode != null) {
+             boolean waitsForProcessing = shouldBeProcessed(curNode);
+ 
+             if (waitsForProcessing) {
+                 visitJavadocToken(curNode);
+             }
+             DetailNode toVisit = JavadocUtils.getFirstChild(curNode);
+             while (curNode != null && toVisit == null) {
+ 
+                 if (waitsForProcessing) {
+                     leaveJavadocToken(curNode);
+                 }
+ 

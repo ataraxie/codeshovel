@@ -1,0 +1,71 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CheckUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CheckUtils.java
+index c72fc75c6..eb2627d2c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CheckUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CheckUtils.java
+@@ -363,51 +363,66 @@ public final class CheckUtils {
+      * @return whether the AST represents a getter method
+      */
+     public static boolean isGetterMethod(final DetailAST ast) {
+         boolean getterMethod = false;
+ 
+         // Check have a method with exactly 7 children which are all that
+         // is allowed in a proper getter method which does not throw any
+         // exceptions.
+         if (ast.getType() == TokenTypes.METHOD_DEF
+                 && ast.getChildCount() == SETTER_GETTER_MAX_CHILDREN) {
+ 
+             final DetailAST type = ast.findFirstToken(TokenTypes.TYPE);
+             final String name = type.getNextSibling().getText();
+             final boolean matchesGetterFormat = GETTER_PATTERN.matcher(name).matches();
+             final boolean noVoidReturnType = type.getChildCount(TokenTypes.LITERAL_VOID) == 0;
+ 
+             final DetailAST params = ast.findFirstToken(TokenTypes.PARAMETERS);
+             final boolean noParams = params.getChildCount(TokenTypes.PARAMETER_DEF) == 0;
+ 
+             if (matchesGetterFormat && noVoidReturnType && noParams) {
+                 // Now verify that the body consists of:
+                 // SLIST -> RETURN
+                 // RCURLY
+                 final DetailAST slist = ast.findFirstToken(TokenTypes.SLIST);
+ 
+                 if (slist != null && slist.getChildCount() == GETTER_BODY_SIZE) {
+                     final DetailAST expr = slist.getFirstChild();
+                     getterMethod = expr.getType() == TokenTypes.LITERAL_RETURN;
+                 }
+             }
+         }
+         return getterMethod;
+     }
+ 
+     /**
+      * Checks whether a method is a not void one.
+      *
+      * @param methodDefAst the method node.
+      * @return true if method is a not void one.
+      */
+     public static boolean isNonVoidMethod(DetailAST methodDefAst) {
+         boolean returnValue = false;
+         if (methodDefAst.getType() == TokenTypes.METHOD_DEF) {
+             final DetailAST typeAST = methodDefAst.findFirstToken(TokenTypes.TYPE);
+             if (typeAST.findFirstToken(TokenTypes.LITERAL_VOID) == null) {
+                 returnValue = true;
+             }
+         }
+         return returnValue;
+     }
++
++    /**
++     * Checks whether a parameter is a receiver.
++     *
++     * @param parameterDefAst the parameter node.
++     * @return true if the parameter is a receiver.
++     */
++    public static boolean isReceiverParameter(DetailAST parameterDefAst) {
++        boolean returnValue = false;
++        if (parameterDefAst.getType() == TokenTypes.PARAMETER_DEF
++                && parameterDefAst.findFirstToken(TokenTypes.IDENT) == null) {
++            returnValue = parameterDefAst.branchContains(TokenTypes.LITERAL_THIS);
++        }
++        return returnValue;
++    }
+ }

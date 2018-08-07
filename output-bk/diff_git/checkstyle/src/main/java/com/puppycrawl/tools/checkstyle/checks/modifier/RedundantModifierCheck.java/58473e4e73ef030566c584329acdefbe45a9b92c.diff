@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java
+index 99e9ccada..8468de9a7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java
+@@ -145,101 +145,101 @@ public class RedundantModifierCheck
+                 log(modifier.getLineNo(), modifier.getColumnNo(),
+                         MSG_KEY, modifier.getText());
+                 break;
+             }
+ 
+             modifier = modifier.getNextSibling();
+         }
+     }
+ 
+     /**
+      * process validation ofMethods
+      * @param ast method AST
+      */
+     private void processMethods(DetailAST ast) {
+         final DetailAST modifiers =
+                         ast.findFirstToken(TokenTypes.MODIFIERS);
+         // private method?
+         boolean checkFinal =
+             modifiers.branchContains(TokenTypes.LITERAL_PRIVATE);
+         // declared in a final class?
+         DetailAST parent = ast.getParent();
+         while (parent != null) {
+             if (parent.getType() == TokenTypes.CLASS_DEF) {
+                 final DetailAST classModifiers =
+                     parent.findFirstToken(TokenTypes.MODIFIERS);
+                 checkFinal |=
+                     classModifiers.branchContains(TokenTypes.FINAL);
+                 break;
+             }
+             parent = parent.getParent();
+         }
+         if (checkFinal && !isAnnotatedWithSafeVarargs(ast)) {
+             DetailAST modifier = modifiers.getFirstChild();
+             while (modifier != null) {
+                 final int type = modifier.getType();
+                 if (type == TokenTypes.FINAL) {
+                     log(modifier.getLineNo(), modifier.getColumnNo(),
+                             MSG_KEY, modifier.getText());
+                     break;
+                 }
+                 modifier = modifier.getNextSibling();
+             }
+         }
+     }
+ 
+     /**
+      * Checks if current AST node is member of Enum
+      * @param ast AST node
+      * @return true if it is an enum member
+      */
+-    private boolean isEnumMember(DetailAST ast) {
++    private static boolean isEnumMember(DetailAST ast) {
+         final DetailAST parentTypeDef = ast.getParent().getParent();
+         return parentTypeDef.getType() == TokenTypes.ENUM_DEF;
+     }
+ 
+     /**
+      * Checks if current AST node is member of Interface or Annotation, not of their subnodes.
+      * @param ast AST node
+      * @return true or false
+      */
+     private static boolean isInterfaceOrAnnotationMember(DetailAST ast) {
+         final DetailAST parentTypeDef =
+                 ast.getParent() != null ? ast.getParent().getParent() : null;
+         return parentTypeDef != null
+                 && (parentTypeDef.getType() == TokenTypes.INTERFACE_DEF
+                     || parentTypeDef.getType() == TokenTypes.ANNOTATION_DEF);
+     }
+ 
+     /**
+      * Checks if method definition is annotated with
+      * <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/SafeVarargs.html">
+      * SafeVarargs</a> annotation
+      * @param methodDef method definition node
+      * @return true or false
+      */
+     private static boolean isAnnotatedWithSafeVarargs(DetailAST methodDef) {
+         boolean result = false;
+         final List<DetailAST> methodAnnotationsList = getMethodAnnotationsList(methodDef);
+         for (DetailAST annotationNode : methodAnnotationsList) {
+             if ("SafeVarargs".equals(annotationNode.getLastChild().getText())) {
+                 result = true;
+                 break;
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Gets the list of annotations on method definition
+      * @param methodDef method definition node
+      * @return List of annotations
+      */
+     private static List<DetailAST> getMethodAnnotationsList(DetailAST methodDef) {
+         final List<DetailAST> annotationsList = new ArrayList<>();
+         final DetailAST modifiers = methodDef.findFirstToken(TokenTypes.MODIFIERS);
+         DetailAST modifier = modifiers.getFirstChild();
+         while (modifier != null) {
+             if (modifier.getType() == TokenTypes.ANNOTATION) {
+                 annotationsList.add(modifier);
+             }
+             modifier = modifier.getNextSibling();

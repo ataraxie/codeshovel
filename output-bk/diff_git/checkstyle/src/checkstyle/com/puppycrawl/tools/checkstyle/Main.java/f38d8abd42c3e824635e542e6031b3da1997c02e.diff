@@ -1,0 +1,110 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+index 49bc12383..d8534ee9d 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+@@ -71,104 +71,101 @@ public final class Main
+             line = clp.parse(OPTS, aArgs);
+         }
+         catch (final ParseException e) {
+             e.printStackTrace();
+             usage();
+         }
+         assert line != null;
+ 
+         // setup the properties
+         final Properties props =
+             line.hasOption("p")
+                 ? loadProperties(new File(line.getOptionValue("p")))
+                 : System.getProperties();
+ 
+         // ensure a config file is specified
+         if (!line.hasOption("c")) {
+             System.out.println("Must specify a config XML file.");
+             usage();
+         }
+ 
+         final Configuration config = loadConfig(line, props);
+ 
+         //Load the set of package names
+         ModuleFactory moduleFactory = null;
+         if (line.hasOption("n")) {
+             moduleFactory = loadPackages(line);
+         }
+ 
+         // setup the output stream
+         OutputStream out = null;
+         boolean closeOut = false;
+         if (line.hasOption("o")) {
+             final String fname = line.getOptionValue("o");
+             try {
+                 out = new FileOutputStream(fname);
+                 closeOut = true;
+             }
+             catch (final FileNotFoundException e) {
+                 System.out.println("Could not find file: '" + fname + "'");
+                 System.exit(1);
+             }
+         }
+         else {
+             out = System.out;
+             closeOut = false;
+         }
+ 
+         final AuditListener listener = createListener(line, out, closeOut);
+         final List<File> files = getFilesToProcess(line);
+         final Checker c = createChecker(config, moduleFactory, listener);
+-
+-        final File[] processedFiles = new File[files.size()];
+-        files.toArray(processedFiles);
+-        final int numErrs = c.process(processedFiles);
++        final int numErrs = c.process(files);
+         c.destroy();
+         System.exit(numErrs);
+     }
+ 
+     /**
+      * Creates the Checker object.
+      *
+      * @param aConfig the configuration to use
+      * @param aFactory the module factor to use
+      * @param aNosy the sticky beak to track what happens
+      * @return a nice new fresh Checker
+      */
+     private static Checker createChecker(Configuration aConfig,
+                                          ModuleFactory aFactory,
+                                          AuditListener aNosy)
+     {
+         Checker c = null;
+         try {
+             c = new Checker();
+             c.setModuleFactory(aFactory);
+             c.configure(aConfig);
+             c.addListener(aNosy);
+         }
+         catch (final Exception e) {
+             System.out.println("Unable to create Checker: "
+                                + e.getMessage());
+             e.printStackTrace(System.out);
+             System.exit(1);
+         }
+         return c;
+     }
+ 
+     /**
+      * Determines the files to process.
+      *
+      * @param aLine the command line options specifying what files to process
+      * @return list of files to process
+      */
+     private static List<File> getFilesToProcess(CommandLine aLine)
+     {
+         final List<File> files = new LinkedList<File>();
+         if (aLine.hasOption("r")) {
+             final String[] values = aLine.getOptionValues("r");
+             for (String element : values) {
+                 traverse(new File(element), files);
+             }
+         }
+ 
+         final String[] remainingArgs = aLine.getArgs();
+         for (String element : remainingArgs) {

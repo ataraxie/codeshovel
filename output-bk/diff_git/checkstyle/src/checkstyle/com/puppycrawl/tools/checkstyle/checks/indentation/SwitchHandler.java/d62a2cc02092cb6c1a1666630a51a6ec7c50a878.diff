@@ -1,0 +1,70 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SwitchHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SwitchHandler.java
+index 3f433d2b9..ca9ec7c1a 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SwitchHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SwitchHandler.java
+@@ -29,64 +29,64 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ public class SwitchHandler extends BlockParentHandler
+ {
+     /**
+      * Construct an instance of this handler with the given indentation check,
+      * abstract syntax tree, and parent handler.
+      *
+      * @param aIndentCheck   the indentation check
+      * @param aAst           the abstract syntax tree
+      * @param aParent        the parent handler
+      */
+     public SwitchHandler(IndentationCheck aIndentCheck,
+         DetailAST aAst, ExpressionHandler aParent)
+     {
+         super(aIndentCheck, "switch", aAst, aParent);
+     }
+ 
+     @Override
+     protected DetailAST getLCurly()
+     {
+         return getMainAst().findFirstToken(TokenTypes.LCURLY);
+     }
+ 
+     @Override
+     protected DetailAST getRCurly()
+     {
+         return getMainAst().findFirstToken(TokenTypes.RCURLY);
+     }
+ 
+     @Override
+     protected DetailAST getListChild()
+     {
+         // all children should be taken care of by case handler (plus
+         // there is no parent of just the cases, if checking is needed
+         // here in the future, an additional way beyond checkChildren()
+         // will have to be devised to get children)
+         return null;
+     }
+ 
+     @Override
+     protected DetailAST getNonlistChild()
+     {
+         return null;
+     }
+ 
+     /**
+      * Check the indentation of the switch expression.
+      */
+     private void checkSwitchExpr()
+     {
+         checkExpressionSubtree(
+-            (DetailAST) getMainAst().findFirstToken(TokenTypes.LPAREN).
++            getMainAst().findFirstToken(TokenTypes.LPAREN).
+                 getNextSibling(),
+             getLevel(),
+             false,
+             false);
+     }
+ 
+     @Override
+     public void checkIndentation()
+     {
+         checkSwitchExpr();
+         super.checkIndentation();
+     }
+ }

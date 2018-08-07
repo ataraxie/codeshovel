@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RedundantModifierCheck.java",
+  "functionName": "checkClassConstructorModifiers",
+  "functionId": "checkClassConstructorModifiers___classCtorAst-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java",
+  "functionStartLine": 339,
+  "functionEndLine": 344,
+  "changeHistory": [
+    "b1eced12b2be801d2f68de4e1f404e1c04b10ae8",
+    "07b24dd81c7648f093f2a789a7fa288d8e7eeef4",
+    "da6ebe6de41b7a5afc6f6746ff0c2382c2a4be0f"
+  ],
+  "changeHistoryShort": {
+    "b1eced12b2be801d2f68de4e1f404e1c04b10ae8": "Ybodychange",
+    "07b24dd81c7648f093f2a789a7fa288d8e7eeef4": "Yrename",
+    "da6ebe6de41b7a5afc6f6746ff0c2382c2a4be0f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b1eced12b2be801d2f68de4e1f404e1c04b10ae8": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3322: added RedundantModifiers for final in abstract methods",
+      "commitDate": 1470314986000,
+      "commitName": "b1eced12b2be801d2f68de4e1f404e1c04b10ae8",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1469589545000,
+      "commitNameOld": "b415ce007ba73732ecfaa9ed7d4ec6dc65f4d354",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 8.4,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     private void checkClassConstructorModifiers(DetailAST classCtorAst) {\n         final DetailAST classDef \u003d classCtorAst.getParent().getParent();\n         if (!isClassPublic(classDef) \u0026\u0026 !isClassProtected(classDef)) {\n-            checkForRedundantPublicModifier(classCtorAst);\n+            checkForRedundantModifier(classCtorAst, TokenTypes.LITERAL_PUBLIC);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "07b24dd81c7648f093f2a789a7fa288d8e7eeef4": {
+      "type": "Yrename",
+      "commitMessage": "Issue #1555: Fix various typos\n\nFixes some `SpellCheckingInspection` inspection violations.\n\nDescription:\n\u003eSpellchecker inspection helps locate typos and misspelling in your code, comments and literals.\n",
+      "commitDate": 1440827623000,
+      "commitName": "07b24dd81c7648f093f2a789a7fa288d8e7eeef4",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440784341000,
+      "commitNameOld": "da6ebe6de41b7a5afc6f6746ff0c2382c2a4be0f",
+      "commitAuthorOld": "liscju",
+      "daysBetweenCommits": 0.5,
+      "commitsBetweenForRepo": 31,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n-    private void checkClassContructorModifiers(DetailAST classCtorAst) {\n+    private void checkClassConstructorModifiers(DetailAST classCtorAst) {\n         final DetailAST classDef \u003d classCtorAst.getParent().getParent();\n         if (!isClassPublic(classDef) \u0026\u0026 !isClassProtected(classDef)) {\n             checkForRedundantPublicModifier(classCtorAst);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "da6ebe6de41b7a5afc6f6746ff0c2382c2a4be0f": {
+      "type": "Yintroduced",
+      "commitMessage": "Detect public constructors in non-public classes in RedundantModifier,\nfixes issue #1537\n",
+      "commitDate": 1440784341000,
+      "commitName": "da6ebe6de41b7a5afc6f6746ff0c2382c2a4be0f",
+      "commitAuthor": "liscju"
+    }
+  }
+}

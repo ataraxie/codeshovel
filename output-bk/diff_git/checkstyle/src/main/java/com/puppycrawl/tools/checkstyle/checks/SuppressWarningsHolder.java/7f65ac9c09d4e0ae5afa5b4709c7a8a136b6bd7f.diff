@@ -1,0 +1,216 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
+index d72133d46..980131756 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/SuppressWarningsHolder.java
+@@ -230,167 +230,179 @@ public class SuppressWarningsHolder
+     @Override
+     public void beginTree(DetailAST rootAST)
+     {
+         ENTRIES.set(new LinkedList<Entry>());
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         // check whether annotation is SuppressWarnings
+         // expected children: AT ( IDENT | DOT ) LPAREN <values> RPAREN
+         String identifier = getIdentifier(getNthChild(ast, 1));
+         if (identifier.startsWith(JAVA_LANG_PREFIX)) {
+             identifier = identifier.substring(JAVA_LANG_PREFIX.length());
+         }
+         if ("SuppressWarnings".equals(identifier)) {
+ 
+             // get values of annotation
+             List<String> values = null;
+             final DetailAST lparenAST = ast.findFirstToken(TokenTypes.LPAREN);
+             if (lparenAST != null) {
+                 final DetailAST nextAST = lparenAST.getNextSibling();
+                 if (nextAST != null) {
+                     final int nextType = nextAST.getType();
+                     switch (nextType) {
+                         case TokenTypes.EXPR:
+                         case TokenTypes.ANNOTATION_ARRAY_INIT:
+                             values = getAnnotationValues(nextAST);
+                             break;
+ 
+                         case TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR:
+                             // expected children: IDENT ASSIGN ( EXPR |
+                             // ANNOTATION_ARRAY_INIT )
+                             values = getAnnotationValues(getNthChild(nextAST, 2));
+                             break;
+ 
+                         case TokenTypes.RPAREN:
+                             // no value present (not valid Java)
+                             break;
+ 
+                         default:
+                             // unknown annotation value type (new syntax?)
+                     }
+                 }
+             }
+             if (values == null) {
+                 log(ast, "suppress.warnings.missing.value");
+                 return;
+             }
+ 
+-            // get target of annotation
+-            DetailAST targetAST = null;
+-            DetailAST parentAST = ast.getParent();
+-            if (parentAST != null) {
+-                switch (parentAST.getType()) {
+-                    case TokenTypes.MODIFIERS:
+-                    case TokenTypes.ANNOTATIONS:
+-                        parentAST = parentAST.getParent();
+-                        if (parentAST != null) {
+-                            switch (parentAST.getType()) {
+-                                case TokenTypes.ANNOTATION_DEF:
+-                                case TokenTypes.PACKAGE_DEF:
+-                                case TokenTypes.CLASS_DEF:
+-                                case TokenTypes.INTERFACE_DEF:
+-                                case TokenTypes.ENUM_DEF:
+-                                case TokenTypes.ENUM_CONSTANT_DEF:
+-                                case TokenTypes.CTOR_DEF:
+-                                case TokenTypes.METHOD_DEF:
+-                                case TokenTypes.PARAMETER_DEF:
+-                                case TokenTypes.VARIABLE_DEF:
+-                                    targetAST = parentAST;
+-                                    break;
+-
+-                                default:
+-                                    // unexpected target type
+-                            }
+-                        }
+-                        break;
++            final DetailAST targetAST = getAnnotationTarget(ast);
++
+ 
+-                    default:
+-                        // unexpected container type
+-                }
+-            }
+             if (targetAST == null) {
+                 log(ast, "suppress.warnings.invalid.target");
+                 return;
+             }
+ 
+             // get text range of target
+             final int firstLine = targetAST.getLineNo();
+             final int firstColumn = targetAST.getColumnNo();
+             final DetailAST nextAST = targetAST.getNextSibling();
+             final int lastLine, lastColumn;
+             if (nextAST != null) {
+                 lastLine = nextAST.getLineNo();
+                 lastColumn = nextAST.getColumnNo() - 1;
+             }
+             else {
+                 lastLine = Integer.MAX_VALUE;
+                 lastColumn = Integer.MAX_VALUE;
+             }
+ 
+             // add suppression entries for listed checks
+             final List<Entry> entries = ENTRIES.get();
+             if (entries != null) {
+                 for (String value : values) {
+                     // strip off the checkstyle-only prefix if present
+                     if (value.startsWith(CHECKSTYLE_PREFIX)) {
+                         value = value.substring(CHECKSTYLE_PREFIX.length());
+                     }
+                     entries.add(new Entry(value, firstLine, firstColumn,
+                         lastLine, lastColumn));
+                 }
+             }
+         }
+     }
+ 
++    /**
++     * get target of annotation
++     * @param ast the AST node to get the child of
++     * @return get target of annotation
++     */
++    private DetailAST getAnnotationTarget(DetailAST ast)
++    {
++        DetailAST targetAST = null;
++        DetailAST parentAST = ast.getParent();
++        if (parentAST != null) {
++            switch (parentAST.getType()) {
++                case TokenTypes.MODIFIERS:
++                case TokenTypes.ANNOTATIONS:
++                    parentAST = parentAST.getParent();
++                    if (parentAST != null) {
++                        switch (parentAST.getType()) {
++                            case TokenTypes.ANNOTATION_DEF:
++                            case TokenTypes.PACKAGE_DEF:
++                            case TokenTypes.CLASS_DEF:
++                            case TokenTypes.INTERFACE_DEF:
++                            case TokenTypes.ENUM_DEF:
++                            case TokenTypes.ENUM_CONSTANT_DEF:
++                            case TokenTypes.CTOR_DEF:
++                            case TokenTypes.METHOD_DEF:
++                            case TokenTypes.PARAMETER_DEF:
++                            case TokenTypes.VARIABLE_DEF:
++                                targetAST = parentAST;
++                                break;
++
++                            default:
++                                // unexpected target type
++                        }
++                    }
++                    break;
++
++                default:
++                    // unexpected container type
++            }
++        }
++        return targetAST;
++    }
++
+     /**
+      * Returns the n'th child of an AST node.
+      * @param ast the AST node to get the child of
+      * @param index the index of the child to get
+      * @return the n'th child of the given AST node, or {@code null} if none
+      */
+     private static DetailAST getNthChild(DetailAST ast, int index)
+     {
+         DetailAST child = ast.getFirstChild();
+         if (child != null) {
+             for (int i = 0; i < index && child != null; ++i) {
+                 child = child.getNextSibling();
+             }
+         }
+         return child;
+     }
+ 
+     /**
+      * Returns the Java identifier represented by an AST.
+      * @param ast an AST node for an IDENT or DOT
+      * @return the Java identifier represented by the given AST subtree
+      * @throws IllegalArgumentException if the AST is invalid
+      */
+     private static String getIdentifier(DetailAST ast)
+     {
+         if (ast != null) {
+             if (ast.getType() == TokenTypes.IDENT) {
+                 return ast.getText();
+             }
+             else if (ast.getType() == TokenTypes.DOT) {
+                 return getIdentifier(ast.getFirstChild()) + "."
+                     + getIdentifier(ast.getLastChild());
+             }
+         }
+         throw new IllegalArgumentException("Identifier AST expected: " + ast);
+     }
+ 
+     /**
+      * Returns the literal string expression represented by an AST.
+      * @param ast an AST node for an EXPR
+      * @return the Java string represented by the given AST expression
+      * @throws IllegalArgumentException if the AST is invalid
+      */
+     private static String getStringExpr(DetailAST ast)
+     {
+         if (ast != null && ast.getType() == TokenTypes.EXPR) {
+             final DetailAST firstChild = ast.getFirstChild();
+             switch (firstChild.getType()) {
+                 case TokenTypes.STRING_LITERAL:
+                     // NOTE: escaped characters are not unescaped

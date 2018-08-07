@@ -1,0 +1,180 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java
+index 525734bc8..fda2732f5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java
+@@ -1,169 +1,175 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2017 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.whitespace;
+ 
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
++import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * <p>
+  * Checks that there is no whitespace after a token.
+  * More specifically, it checks that it is not followed by whitespace,
+  * or (if linebreaks are allowed) all characters on the line after are
+  * whitespace. To forbid linebreaks after a token, set property
+  * allowLineBreaks to false.
+  * </p>
+   * <p> By default the check will check the following operators:
+  *  {@link TokenTypes#ARRAY_INIT ARRAY_INIT},
+  *  {@link TokenTypes#BNOT BNOT},
+  *  {@link TokenTypes#DEC DEC},
+  *  {@link TokenTypes#DOT DOT},
+  *  {@link TokenTypes#INC INC},
+  *  {@link TokenTypes#LNOT LNOT},
+  *  {@link TokenTypes#UNARY_MINUS UNARY_MINUS},
+  *  {@link TokenTypes#UNARY_PLUS UNARY_PLUS},
+  *  {@link TokenTypes#TYPECAST TYPECAST},
+  *  {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR},
+  *  {@link TokenTypes#INDEX_OP INDEX_OP}.
+  * </p>
+  * <p>
+  * The check processes
+  * {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR},
+  * {@link TokenTypes#INDEX_OP INDEX_OP}
+  * specially from other tokens. Actually it is checked that there is
+  * no whitespace before this tokens, not after them.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="NoWhitespaceAfter"/&gt;
+  * </pre>
+  * <p> An example of how to configure the check to forbid linebreaks after
+  * a {@link TokenTypes#DOT DOT} token is:
+  * </p>
+  * <pre>
+  * &lt;module name="NoWhitespaceAfter"&gt;
+  *     &lt;property name="tokens" value="DOT"/&gt;
+  *     &lt;property name="allowLineBreaks" value="false"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  * @author lkuehne
+  * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+  * @author attatrol
+  */
+ public class NoWhitespaceAfterCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "ws.followed";
+ 
+     /** Whether whitespace is allowed if the AST is at a linebreak. */
+     private boolean allowLineBreaks = true;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.ARRAY_INIT,
+             TokenTypes.INC,
+             TokenTypes.DEC,
+             TokenTypes.UNARY_MINUS,
+             TokenTypes.UNARY_PLUS,
+             TokenTypes.BNOT,
+             TokenTypes.LNOT,
+             TokenTypes.DOT,
+             TokenTypes.ARRAY_DECLARATOR,
+             TokenTypes.INDEX_OP,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.ARRAY_INIT,
+             TokenTypes.INC,
+             TokenTypes.DEC,
+             TokenTypes.UNARY_MINUS,
+             TokenTypes.UNARY_PLUS,
+             TokenTypes.BNOT,
+             TokenTypes.LNOT,
+             TokenTypes.DOT,
+             TokenTypes.TYPECAST,
+             TokenTypes.ARRAY_DECLARATOR,
+             TokenTypes.INDEX_OP,
+             TokenTypes.LITERAL_SYNCHRONIZED,
+             TokenTypes.METHOD_REF,
+         };
+     }
+ 
++    @Override
++    public int[] getRequiredTokens() {
++        return CommonUtils.EMPTY_INT_ARRAY;
++    }
++
+     /**
+      * Control whether whitespace is flagged at linebreaks.
+      * @param allowLineBreaks whether whitespace should be
+      *     flagged at linebreaks.
+      */
+     public void setAllowLineBreaks(boolean allowLineBreaks) {
+         this.allowLineBreaks = allowLineBreaks;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final DetailAST whitespaceFollowedAst = getWhitespaceFollowedNode(ast);
+ 
+         final int whitespaceColumnNo = getPositionAfter(whitespaceFollowedAst);
+         final int whitespaceLineNo = whitespaceFollowedAst.getLineNo();
+ 
+         if (hasTrailingWhitespace(ast, whitespaceColumnNo, whitespaceLineNo)) {
+             log(whitespaceLineNo, whitespaceColumnNo,
+                 MSG_KEY, whitespaceFollowedAst.getText());
+         }
+     }
+ 
+     /**
+      * For a visited ast node returns node that should be checked
+      * for not being followed by whitespace.
+      * @param ast
+      *        , visited node.
+      * @return node before ast.
+      */
+     private static DetailAST getWhitespaceFollowedNode(DetailAST ast) {
+         final DetailAST whitespaceFollowedAst;
+         switch (ast.getType()) {
+             case TokenTypes.TYPECAST:
+                 whitespaceFollowedAst = ast.findFirstToken(TokenTypes.RPAREN);
+                 break;
+             case TokenTypes.ARRAY_DECLARATOR:
+                 whitespaceFollowedAst = getArrayDeclaratorPreviousElement(ast);
+                 break;
+             case TokenTypes.INDEX_OP:
+                 whitespaceFollowedAst = getIndexOpPreviousElement(ast);
+                 break;
+             default:
+                 whitespaceFollowedAst = ast;
+         }
+         return whitespaceFollowedAst;
+     }
+ 
+     /**
+      * Gets position after token (place of possible redundant whitespace).
+      * @param ast Node representing token.

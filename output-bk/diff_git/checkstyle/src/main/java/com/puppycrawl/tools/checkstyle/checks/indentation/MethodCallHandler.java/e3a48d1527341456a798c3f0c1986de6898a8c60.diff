@@ -1,0 +1,122 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
+index 7c34d1fe7..3131546df 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
+@@ -103,85 +103,107 @@ public class MethodCallHandler extends ExpressionHandler
+         return super.getLevelImpl();
+     }
+ 
+     /**
+      * Get the first AST of the specified method call.
+      *
+      * @param aAst
+      *            the method call
+      *
+      * @return the first AST of the specified method call
+      */
+     private DetailAST getFirstAst(DetailAST aAst)
+     {
+         // walk down the first child part of the dots that make up a method
+         // call name
+ 
+         DetailAST ast = aAst.getFirstChild();
+         while ((ast != null) && (ast.getType() == TokenTypes.DOT)) {
+             ast = ast.getFirstChild();
+         }
+ 
+         if (ast == null) {
+             ast = aAst;
+         }
+ 
+         return ast;
+     }
+ 
+     @Override
+     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)
+     {
+         // for whatever reason a method that crosses lines, like asList
+         // here:
+         //            System.out.println("methods are: " + Arrays.asList(
+         //                new String[] {"method"}).toString());
+         // will not have the right line num, so just get the child name
+ 
+         final DetailAST first = getMainAst().getFirstChild();
+         int indentLevel = getLineStart(first);
+         if (!areOnSameLine(aChild.getMainAst().getFirstChild(),
+                            getMainAst().getFirstChild()))
+         {
+             indentLevel += getBasicOffset();
+         }
+         return new IndentLevel(indentLevel);
+     }
+ 
+     @Override
+     public void checkIndentation()
+     {
++        final DetailAST exprNode = getMainAst().getParent();
++        if (exprNode.getParent().getType() != TokenTypes.LCURLY
++            && exprNode.getParent().getType() != TokenTypes.SLIST)
++        {
++            return;
++        }
+         final DetailAST methodName = getMainAst().getFirstChild();
+         checkExpressionSubtree(methodName, getLevel(), false, false);
+ 
+         final DetailAST lparen = getMainAst();
+         final DetailAST rparen = getMainAst().findFirstToken(TokenTypes.RPAREN);
+         checkLParen(lparen);
+ 
+         if (rparen.getLineNo() == lparen.getLineNo()) {
+             return;
+         }
+ 
+-        // if this method name is on the same line as a containing
+-        // method, don't indent, this allows expressions like:
+-        //    method("my str" + method2(
+-        //        "my str2"));
+-        // as well as
+-        //    method("my str" +
+-        //        method2(
+-        //            "my str2"));
+-        //
+-
+         checkExpressionSubtree(
+             getMainAst().findFirstToken(TokenTypes.ELIST),
+             new IndentLevel(getLevel(), getBasicOffset()),
+             false, true);
+ 
+         checkRParen(lparen, rparen);
++        final LineWrappingHandler lineWrap =
++            new LineWrappingHandler(getIndentCheck(), getMainAst()) {
++                @Override
++                public DetailAST findLastNode(DetailAST aFirstNode)
++                {
++                    DetailAST lastNode;
++                    if (getFirstNode().getNextSibling() == null) {
++                        lastNode = getFirstNode().getLastChild();
++                    }
++                    else {
++                        lastNode = getFirstNode().getNextSibling();
++                    }
++                    return lastNode;
++                }
++
++                @Override
++                public int getCurrentIndentation()
++                {
++                    DetailAST curNode = getFirstNode();
++                    while (curNode.getType() != TokenTypes.IDENT) {
++                        curNode = curNode.getFirstChild();
++                    }
++                    return curNode.getColumnNo() + getIndentLevel();
++                }
++            };
++        lineWrap.checkIndentation();
+     }
+ 
+     @Override
+     protected boolean shouldIncreaseIndent()
+     {
+         return false;
+     }
+ }

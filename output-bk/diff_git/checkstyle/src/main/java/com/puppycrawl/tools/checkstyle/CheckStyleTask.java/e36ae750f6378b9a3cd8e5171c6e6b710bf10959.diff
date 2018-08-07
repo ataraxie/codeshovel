@@ -1,0 +1,213 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/main/java/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index 957b97474..588787818 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -404,101 +404,101 @@ public class CheckStyleTask extends Task
+             }
+             catch (final FileNotFoundException e) {
+                 throw new BuildException("Could not find Properties file '"
+                         + propertiesFile + "'", e, getLocation());
+             }
+             catch (final IOException e) {
+                 throw new BuildException("Error loading Properties file '"
+                         + propertiesFile + "'", e, getLocation());
+             }
+             finally {
+                 Utils.closeQuietly(inStream);
+             }
+         }
+ 
+         // override with Ant properties like ${basedir}
+         final Hashtable<?, ?> antProps = this.getProject().getProperties();
+         for (Object name : antProps.keySet()) {
+             final String key = (String) name;
+             final String value = String.valueOf(antProps.get(key));
+             retVal.put(key, value);
+         }
+ 
+         // override with properties specified in subelements
+         for (Property p : overrideProps) {
+             retVal.put(p.getKey(), p.getValue());
+         }
+ 
+         return retVal;
+     }
+ 
+     /**
+      * Return the list of listeners set in this task.
+      * @return the list of listeners.
+      * @throws ClassNotFoundException if an error occurs
+      * @throws InstantiationException if an error occurs
+      * @throws IllegalAccessException if an error occurs
+      * @throws IOException if an error occurs
+      */
+     protected AuditListener[] getListeners() throws ClassNotFoundException,
+             InstantiationException, IllegalAccessException, IOException
+     {
+         final int formatterCount = Math.max(1, formatters.size());
+ 
+         final AuditListener[] listeners = new AuditListener[formatterCount];
+ 
+         // formatters
+         if (formatters.isEmpty()) {
+             final OutputStream debug = new LogOutputStream(this,
+                     Project.MSG_DEBUG);
+             final OutputStream err = new LogOutputStream(this, Project.MSG_ERR);
+-            listeners[0] = new DefaultLogger(debug, true, err, true, true);
++            listeners[0] = new DefaultLogger(debug, true, err, true);
+         }
+         else {
+             for (int i = 0; i < formatterCount; i++) {
+                 final Formatter f = formatters.get(i);
+                 listeners[i] = f.createListener(this);
+             }
+         }
+         return listeners;
+     }
+ 
+     /**
+      * returns the list of files (full path name) to process.
+      * @return the list of files included via the filesets.
+      */
+     protected List<File> scanFileSets()
+     {
+         final List<File> list = Lists.newArrayList();
+         if (fileName != null) {
+             // oops we've got an additional one to process, don't
+             // forget it. No sweat, it's fully resolved via the setter.
+             log("Adding standalone file for audit", Project.MSG_VERBOSE);
+             list.add(new File(fileName));
+         }
+         for (int i = 0; i < fileSets.size(); i++) {
+             final FileSet fs = fileSets.get(i);
+             final DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+             ds.scan();
+ 
+             final String[] names = ds.getIncludedFiles();
+             log(i + ") Adding " + names.length + " files from directory "
+                     + ds.getBasedir(), Project.MSG_VERBOSE);
+ 
+             for (String element : names) {
+                 final String pathname = ds.getBasedir() + File.separator
+                         + element;
+                 list.add(new File(pathname));
+             }
+         }
+ 
+         return list;
+     }
+ 
+     /**
+      * Poor mans enumeration for the formatter types.
+      * @author Oliver Burn
+      */
+     public static class FormatterType extends EnumeratedAttribute
+     {
+         /** my possible values */
+         private static final String[] VALUES = {E_XML, E_PLAIN};
+@@ -535,103 +535,103 @@ public class CheckStyleTask extends Task
+             }
+ 
+             formatterType = type;
+         }
+ 
+         /**
+          * Set the file to output to.
+          * @param to the file to output to
+          */
+         public void setTofile(File to)
+         {
+             toFile = to;
+         }
+ 
+         /**
+          * Sets whether or not we write to a file if it is provided.
+          * @param use whether not not to use provided file.
+          */
+         public void setUseFile(boolean use)
+         {
+             useFile = use;
+         }
+ 
+         /**
+          * Creates a listener for the formatter.
+          * @param task the task running
+          * @return a listener
+          * @throws IOException if an error occurs
+          */
+         public AuditListener createListener(Task task) throws IOException
+         {
+             if (formatterType != null
+                     && E_XML.equals(formatterType.getValue()))
+             {
+                 return createXMLLogger(task);
+             }
+             return createDefaultLogger(task);
+         }
+ 
+         /**
+          * @return a DefaultLogger instance
+          * @param task the task to possibly log to
+          * @throws IOException if an error occurs
+          */
+         private AuditListener createDefaultLogger(Task task)
+             throws IOException
+         {
+             if (toFile == null || !useFile) {
+                 return new DefaultLogger(
+                     new LogOutputStream(task, Project.MSG_DEBUG),
+-                    true, new LogOutputStream(task, Project.MSG_ERR), true, true);
++                    true, new LogOutputStream(task, Project.MSG_ERR), true);
+             }
+-            return new DefaultLogger(new FileOutputStream(toFile), true, true);
++            return new DefaultLogger(new FileOutputStream(toFile), true);
+         }
+ 
+         /**
+          * @return an XMLLogger instance
+          * @param task the task to possibly log to
+          * @throws IOException if an error occurs
+          */
+         private AuditListener createXMLLogger(Task task) throws IOException
+         {
+             if (toFile == null || !useFile) {
+                 return new XMLLogger(new LogOutputStream(task,
+                         Project.MSG_INFO), true);
+             }
+             return new XMLLogger(new FileOutputStream(toFile), true);
+         }
+     }
+ 
+     /**
+      * Represents a property that consists of a key and value.
+      */
+     public static class Property
+     {
+         /** the property key */
+         private String key;
+         /** the property value */
+         private String value;
+ 
+         /** @return the property key */
+         public String getKey()
+         {
+             return key;
+         }
+ 
+         /** @param key sets the property key */
+         public void setKey(String key)
+         {
+             this.key = key;
+         }
+ 
+         /** @return the property value */
+         public String getValue()
+         {
+             return value;
+         }
+ 
+         /** @param value set the property value */
+         public void setValue(String value)
+         {
+             this.value = value;
+         }

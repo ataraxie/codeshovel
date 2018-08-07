@@ -1,0 +1,152 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DetailAST.java",
+  "functionName": "setNextSibling",
+  "functionId": "setNextSibling___ast-AST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java",
+  "functionStartLine": 94,
+  "functionEndLine": 104,
+  "changeHistory": [
+    "4b7adec5ae396e24d3d0bf0d790919a45bac5421",
+    "2577c4121ca5a1f4809d2f705123a577dfb08d71",
+    "97956e1ae5d6842401ea0bfab121e8fb8d51c14d",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "e3929c641ca2c2ef08d90ee506db556529088326",
+    "3925906faee1cf9310942708e2946d3e598f5f71"
+  ],
+  "changeHistoryShort": {
+    "4b7adec5ae396e24d3d0bf0d790919a45bac5421": "Ybodychange",
+    "2577c4121ca5a1f4809d2f705123a577dfb08d71": "Ybodychange",
+    "97956e1ae5d6842401ea0bfab121e8fb8d51c14d": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "e3929c641ca2c2ef08d90ee506db556529088326": "Ybodychange",
+    "3925906faee1cf9310942708e2946d3e598f5f71": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4b7adec5ae396e24d3d0bf0d790919a45bac5421": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3486: clear childCount field cache in DetailAST",
+      "commitDate": 1475368053000,
+      "commitName": "4b7adec5ae396e24d3d0bf0d790919a45bac5421",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1475273624000,
+      "commitNameOld": "2577c4121ca5a1f4809d2f705123a577dfb08d71",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 1.09,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,11 @@\n     public void setNextSibling(AST ast) {\n-        clearBranchTokenTypesCache();\n+        clearBranchTokenTypes();\n+        clearChildCountCache(parent);\n         super.setNextSibling(ast);\n         if (ast !\u003d null \u0026\u0026 parent !\u003d null) {\n             ((DetailAST) ast).setParent(parent);\n         }\n         if (ast !\u003d null) {\n             ((DetailAST) ast).previousSibling \u003d this;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "2577c4121ca5a1f4809d2f705123a577dfb08d71": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3466: Clear branchTokenTypes field cache in DetailAST before changing its structure\n",
+      "commitDate": 1475273624000,
+      "commitName": "2577c4121ca5a1f4809d2f705123a577dfb08d71",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1455999924000,
+      "commitNameOld": "8ad9441bbb78695a924be63444222ae80cfcf114",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 223.08,
+      "commitsBetweenForRepo": 441,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,10 @@\n     public void setNextSibling(AST ast) {\n+        clearBranchTokenTypesCache();\n         super.setNextSibling(ast);\n         if (ast !\u003d null \u0026\u0026 parent !\u003d null) {\n             ((DetailAST) ast).setParent(parent);\n         }\n         if (ast !\u003d null) {\n             ((DetailAST) ast).previousSibling \u003d this;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "97956e1ae5d6842401ea0bfab121e8fb8d51c14d": {
+      "type": "Ybodychange",
+      "commitMessage": "Inline simple setters. #1555\n\nFixes `CallToSimpleSetterInClass` inspection violations.\n\nDescription:\n\u003eReports any calls to a simple property setter from within the property\u0027s class. A simple property setter is defined as one which simply assigns the value of its parameter to a field, and does no other calculation. Such simple setter calls may be safely inlined, at a small performance improvement. Some coding standards also suggest against the use of simple setters for code clarity reasons.\n",
+      "commitDate": 1440161574000,
+      "commitName": "97956e1ae5d6842401ea0bfab121e8fb8d51c14d",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440158741000,
+      "commitNameOld": "23a1b6253f6296c1a3888361953da47f2808ca3d",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public void setNextSibling(AST ast) {\n         super.setNextSibling(ast);\n         if (ast !\u003d null \u0026\u0026 parent !\u003d null) {\n             ((DetailAST) ast).setParent(parent);\n         }\n         if (ast !\u003d null) {\n-            ((DetailAST) ast).setPreviousSibling(this);\n+            ((DetailAST) ast).previousSibling \u003d this;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425602876000,
+      "commitNameOld": "f7828693395f71a6ae99710f3fab44cb8a66ea51",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 4.87,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public void setNextSibling(AST ast)\n     {\n         super.setNextSibling(ast);\n-        if ((ast !\u003d null) \u0026\u0026 (parent !\u003d null)) {\n+        if (ast !\u003d null \u0026\u0026 parent !\u003d null) {\n             ((DetailAST) ast).setParent(parent);\n         }\n         if (ast !\u003d null) {\n             ((DetailAST) ast).setPreviousSibling(this);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1130786628000,
+      "commitNameOld": "1aee9d55cc5bd8cca011e17369f6e370efcc85bb",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 248.34,
+      "commitsBetweenForRepo": 40,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public void setNextSibling(AST aAST)\n     {\n         super.setNextSibling(aAST);\n-        if (aAST !\u003d null \u0026\u0026 mParent !\u003d null) {\n+        if ((aAST !\u003d null) \u0026\u0026 (mParent !\u003d null)) {\n             ((DetailAST) aAST).setParent(mParent);\n         }\n         if (aAST !\u003d null) {\n             ((DetailAST) aAST).setPreviousSibling(this);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "e3929c641ca2c2ef08d90ee506db556529088326": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed implementation of DetailAST so getPreviousSibling() works for\nall nodes in AST tree (bug 1244994)\nNow we set next sibling during tree creation, instead of calculating\nit (the calculation doesn\u0027t work if parent is null as for toplevel\nnodes such as package, import and class definition).\nAdded test which verify correct tree structure for all testinputs.\n",
+      "commitDate": 1122418580000,
+      "commitName": "e3929c641ca2c2ef08d90ee506db556529088326",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1121777024000,
+      "commitNameOld": "cbabd6b314a5523a5557e089858d3a3596426d56",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 7.43,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,10 @@\n     public void setNextSibling(AST aAST)\n     {\n         super.setNextSibling(aAST);\n         if (aAST !\u003d null \u0026\u0026 mParent !\u003d null) {\n             ((DetailAST) aAST).setParent(mParent);\n         }\n+        if (aAST !\u003d null) {\n+            ((DetailAST) aAST).setPreviousSibling(this);\n+        }\n     }\n\\ No newline at end of file\n"
+    },
+    "3925906faee1cf9310942708e2946d3e598f5f71": {
+      "type": "Yintroduced",
+      "commitMessage": "fix for DetailAST\u0027s parent problem\n",
+      "commitDate": 1053604084000,
+      "commitName": "3925906faee1cf9310942708e2946d3e598f5f71",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

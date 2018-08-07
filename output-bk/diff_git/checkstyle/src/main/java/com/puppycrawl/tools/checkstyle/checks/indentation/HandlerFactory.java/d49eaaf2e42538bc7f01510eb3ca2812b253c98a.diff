@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java
+index 979eaef74..9a46da6aa 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java
+@@ -68,101 +68,102 @@ public class HandlerFactory {
+         register(TokenTypes.ARRAY_INIT, ArrayInitHandler.class);
+         register(TokenTypes.METHOD_CALL, MethodCallHandler.class);
+         register(TokenTypes.CTOR_CALL, MethodCallHandler.class);
+         register(TokenTypes.LABELED_STAT, LabelHandler.class);
+         register(TokenTypes.STATIC_INIT, StaticInitHandler.class);
+         register(TokenTypes.INSTANCE_INIT, SlistHandler.class);
+         register(TokenTypes.VARIABLE_DEF, MemberDefHandler.class);
+         register(TokenTypes.LITERAL_NEW, NewHandler.class);
+         register(TokenTypes.INDEX_OP, IndexHandler.class);
+         register(TokenTypes.LITERAL_SYNCHRONIZED, SynchronizedHandler.class);
+     }
+ 
+     /**
+      * registers a handler
+      *
+      * @param type
+      *                type from TokenTypes
+      * @param handlerClass
+      *                the handler to register
+      */
+     private void register(int type, Class<?> handlerClass) {
+         final Constructor<?> ctor = Utils.getConstructor(handlerClass,
+                 IndentationCheck.class,
+                 DetailAST.class, // current AST
+                 AbstractExpressionHandler.class // parent
+         );
+         typeHandlers.put(type, ctor);
+     }
+ 
+     /**
+      * Returns true if this type (form TokenTypes) is handled.
+      *
+      * @param type type from TokenTypes
+      * @return true if handler is registered, false otherwise
+      */
+     public boolean isHandledType(int type) {
+         final Set<Integer> typeSet = typeHandlers.keySet();
+         return typeSet.contains(type);
+     }
+ 
+     /**
+      * Gets list of registered handler types.
+      *
+      * @return int[] of TokenType types
+      */
+     public int[] getHandledTypes() {
+         final Set<Integer> typeSet = typeHandlers.keySet();
+         final int[] types = new int[typeSet.size()];
+         int index = 0;
+         for (final Integer val : typeSet) {
+-            types[index++] = val;
++            types[index] = val;
++            index++;
+         }
+ 
+         return types;
+     }
+ 
+     /**
+      * Get the handler for an AST.
+      *
+      * @param indentCheck   the indentation check
+      * @param ast           ast to handle
+      * @param parent        the handler parent of this AST
+      *
+      * @return the ExpressionHandler for ast
+      */
+     public AbstractExpressionHandler getHandler(IndentationCheck indentCheck,
+         DetailAST ast, AbstractExpressionHandler parent) {
+         final AbstractExpressionHandler handler =
+             createdHandlers.get(ast);
+         if (handler != null) {
+             return handler;
+         }
+ 
+         if (ast.getType() == TokenTypes.METHOD_CALL) {
+             return createMethodCallHandler(indentCheck, ast, parent);
+         }
+ 
+         AbstractExpressionHandler expHandler = null;
+         final Constructor<?> handlerCtor =
+             typeHandlers.get(ast.getType());
+         expHandler = (AbstractExpressionHandler) Utils.invokeConstructor(
+                 handlerCtor, indentCheck, ast, parent);
+         return expHandler;
+     }
+ 
+     /**
+      * Create new instance of handler for METHOD_CALL.
+      *
+      * @param indentCheck   the indentation check
+      * @param ast           ast to handle
+      * @param parent        the handler parent of this AST
+      *
+      * @return new instance.
+      */
+     AbstractExpressionHandler createMethodCallHandler(IndentationCheck indentCheck,
+         DetailAST ast, AbstractExpressionHandler parent) {
+         AbstractExpressionHandler theParent = parent;
+         DetailAST astNode = ast.getFirstChild();
+         while (astNode.getType() == TokenTypes.DOT) {
+             astNode = astNode.getFirstChild();
+         }

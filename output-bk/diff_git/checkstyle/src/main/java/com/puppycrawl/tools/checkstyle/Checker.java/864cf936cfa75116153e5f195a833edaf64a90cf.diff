@@ -1,0 +1,106 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+index 5881361d8..b10f03322 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -114,100 +114,101 @@ public class Checker extends AutomaticBean implements MessageDispatcher {
+      * Creates a new <code>Checker</code> instance.
+      * The instance needs to be contextualized and configured.
+      *
+      * @throws CheckstyleException if an error occurs
+      */
+     public Checker() throws CheckstyleException {
+         addListener(counter);
+     }
+ 
+     @Override
+     public void finishLocalSetup() throws CheckstyleException {
+         final Locale locale = new Locale(localeLanguage, localeCountry);
+         LocalizedMessage.setLocale(locale);
+ 
+         if (moduleFactory == null) {
+ 
+             if (moduleClassLoader == null) {
+                 throw new CheckstyleException(
+                         "if no custom moduleFactory is set, "
+                                 + "moduleClassLoader must be specified");
+             }
+ 
+             final Set<String> packageNames = PackageNamesLoader
+                     .getPackageNames(moduleClassLoader);
+             moduleFactory = new PackageObjectFactory(packageNames,
+                     moduleClassLoader);
+         }
+ 
+         final DefaultContext context = new DefaultContext();
+         context.add("charset", charset);
+         context.add("classLoader", loader);
+         context.add("moduleFactory", moduleFactory);
+         context.add("severity", severityLevel.getName());
+         context.add("basedir", basedir);
+         childContext = context;
+     }
+ 
+     @Override
+     protected void setupChild(Configuration childConf)
+         throws CheckstyleException {
+         final String name = childConf.getName();
+         try {
+             final Object child = moduleFactory.createModule(name);
+             if (child instanceof AutomaticBean) {
+                 final AutomaticBean bean = (AutomaticBean) child;
+                 bean.contextualize(childContext);
+                 bean.configure(childConf);
+             }
+             if (child instanceof FileSetCheck) {
+                 final FileSetCheck fsc = (FileSetCheck) child;
++                fsc.init();
+                 addFileSetCheck(fsc);
+             }
+             else if (child instanceof Filter) {
+                 final Filter filter = (Filter) child;
+                 addFilter(filter);
+             }
+             else if (child instanceof AuditListener) {
+                 final AuditListener listener = (AuditListener) child;
+                 addListener(listener);
+             }
+             else {
+                 throw new CheckstyleException(name
+                         + " is not allowed as a child in Checker");
+             }
+         }
+         catch (final Exception ex) {
+             throw new CheckstyleException("cannot initialize module " + name
+                     + " - " + ex.getMessage(), ex);
+         }
+     }
+ 
+     /**
+      * Adds a FileSetCheck to the list of FileSetChecks
+      * that is executed in process().
+      * @param fileSetCheck the additional FileSetCheck
+      */
+     public void addFileSetCheck(FileSetCheck fileSetCheck) {
+         fileSetCheck.setMessageDispatcher(this);
+         fileSetChecks.add(fileSetCheck);
+     }
+ 
+     /**
+      * Adds a filter to the end of the audit event filter chain.
+      * @param filter the additional filter
+      */
+     public void addFilter(Filter filter) {
+         filters.addFilter(filter);
+     }
+ 
+     /**
+      * Removes filter.
+      * @param filter filter to remove.
+      */
+     public void removeFilter(Filter filter) {
+         filters.removeFilter(filter);
+     }
+ 
+     /** Cleans up the object. **/
+     public void destroy() {
+         listeners.clear();

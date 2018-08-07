@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 49b602920..2809ff783 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -477,101 +477,101 @@ public final class TreeWalker
+             }
+             catch (IOException e) {
+                 throw new IllegalStateException("Unable to persist cache file", e);
+             }
+         }
+         super.destroy();
+     }
+ 
+     /**
+      * Processes a node calling interested checks at each node.
+      * Uses iterative algorithm.
+      * @param root the root of tree for process
+      * @param astState state of AST.
+      */
+     private void processIter(DetailAST root, AstState astState) {
+         DetailAST curNode = root;
+         while (curNode != null) {
+             notifyVisit(curNode, astState);
+             DetailAST toVisit = curNode.getFirstChild();
+             while (curNode != null && toVisit == null) {
+                 notifyLeave(curNode, astState);
+                 toVisit = curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+     }
+ 
+     /**
+      * Appends comment nodes to existing AST.
+      * It traverses each node in AST, looks for hidden comment tokens
+      * and appends found comment tokens as nodes in AST.
+      * @param root
+      *        root of AST.
+      * @return root of AST with comment nodes.
+      */
+     private static DetailAST appendHiddenCommentNodes(DetailAST root) {
+         DetailAST result = root;
+         DetailAST curNode = root;
+         DetailAST lastNode = root;
+ 
+         while (curNode != null) {
+             if (isPositionGreater(curNode, lastNode)) {
+                 lastNode = curNode;
+             }
+ 
+             CommonHiddenStreamToken tokenBefore = curNode.getHiddenBefore();
+             DetailAST currentSibling = curNode;
+-            while (tokenBefore != null) { // threat multiple comments
++            while (tokenBefore != null) {
+                 final DetailAST newCommentNode =
+                          createCommentAstFromToken(tokenBefore);
+ 
+                 currentSibling.addPreviousSibling(newCommentNode);
+ 
+                 if (currentSibling == result) {
+                     result = newCommentNode;
+                 }
+ 
+                 currentSibling = newCommentNode;
+                 tokenBefore = tokenBefore.getHiddenBefore();
+             }
+ 
+             DetailAST toVisit = curNode.getFirstChild();
+             while (curNode != null && toVisit == null) {
+                 toVisit = curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+         if (lastNode != null) {
+             CommonHiddenStreamToken tokenAfter = lastNode.getHiddenAfter();
+             DetailAST currentSibling = lastNode;
+             while (tokenAfter != null) {
+                 final DetailAST newCommentNode =
+                         createCommentAstFromToken(tokenAfter);
+ 
+                 currentSibling.addNextSibling(newCommentNode);
+ 
+                 currentSibling = newCommentNode;
+                 tokenAfter = tokenAfter.getHiddenAfter();
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if position of first DetailAST is greater than position of
+      * second DetailAST. Position is line number and column number in source
+      * file.
+      * @param ast1
+      *        first DetailAST node.
+      * @param ast2
+      *        second DetailAST node.
+      * @return true if position of ast1 is greater than position of ast2.
+      */
+     private static boolean isPositionGreater(DetailAST ast1, DetailAST ast2) {
+         if (ast1.getLineNo() == ast2.getLineNo()) {

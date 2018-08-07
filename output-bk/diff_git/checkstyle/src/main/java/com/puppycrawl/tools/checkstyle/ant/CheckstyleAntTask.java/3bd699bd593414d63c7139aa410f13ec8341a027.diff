@@ -1,0 +1,80 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+index 276b9314e..2951d7dce 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+@@ -551,72 +551,72 @@ public class CheckstyleAntTask extends Task {
+                 return new DefaultLogger(
+                     new LogOutputStream(task, Project.MSG_DEBUG),
+                     true, new LogOutputStream(task, Project.MSG_ERR), true);
+             }
+             return new DefaultLogger(new FileOutputStream(toFile), true);
+         }
+ 
+         /**
+          * @param task the task to possibly log to
+          * @return an XMLLogger instance
+          * @throws IOException if an error occurs
+          */
+         private AuditListener createXMLLogger(Task task) throws IOException {
+             if (toFile == null || !useFile) {
+                 return new XMLLogger(new LogOutputStream(task,
+                         Project.MSG_INFO), true);
+             }
+             return new XMLLogger(new FileOutputStream(toFile), true);
+         }
+     }
+ 
+     /**
+      * Represents a property that consists of a key and value.
+      */
+     public static class Property {
+         /** the property key */
+         private String key;
+         /** the property value */
+         private String value;
+ 
+         /** @return the property key */
+         public String getKey() {
+             return key;
+         }
+ 
+         /** @param key sets the property key */
+         public void setKey(String key) {
+             this.key = key;
+         }
+ 
+         /** @return the property value */
+         public String getValue() {
+             return value;
+         }
+ 
+         /** @param value set the property value */
+         public void setValue(String value) {
+             this.value = value;
+         }
+ 
+-        /** @param value set the property value from a File */
+-        public void setFile(File value) {
+-            setValue(value.getAbsolutePath());
++        /** @param file set the property value from a File */
++        public void setFile(File file) {
++            setValue(file.getAbsolutePath());
+         }
+     }
+ 
+     /** Represents a custom listener. */
+     public static class Listener {
+         /** classname of the listener class */
+         private String classname;
+ 
+         /** @return the classname */
+         public String getClassname() {
+             return classname;
+         }
+ 
+         /** @param classname set the classname */
+         public void setClassname(String classname) {
+             this.classname = classname;
+         }
+     }
+ }

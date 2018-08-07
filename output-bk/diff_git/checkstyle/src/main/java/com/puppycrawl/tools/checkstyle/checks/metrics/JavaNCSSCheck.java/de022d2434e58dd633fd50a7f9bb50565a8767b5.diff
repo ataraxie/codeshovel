@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+index a39947897..569df5c0f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+@@ -158,103 +158,101 @@ public class JavaNCSSCheck extends AbstractCheck {
+             TokenTypes.STATIC_INIT,
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.IMPORT,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.CTOR_CALL,
+             TokenTypes.SUPER_CTOR_CALL,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.LITERAL_BREAK,
+             TokenTypes.LITERAL_CONTINUE,
+             TokenTypes.LITERAL_RETURN,
+             TokenTypes.LITERAL_THROW,
+             TokenTypes.LITERAL_SYNCHRONIZED,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.EXPR,
+             TokenTypes.LABELED_STAT,
+             TokenTypes.LITERAL_CASE,
+             TokenTypes.LITERAL_DEFAULT,
+         };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         counters = new ArrayDeque<>();
+ 
+         //add a counter for the file
+         counters.push(new Counter());
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final int tokenType = ast.getType();
+ 
+         if (tokenType == TokenTypes.CLASS_DEF
+             || tokenType == TokenTypes.METHOD_DEF
+             || tokenType == TokenTypes.CTOR_DEF
+             || tokenType == TokenTypes.STATIC_INIT
+             || tokenType == TokenTypes.INSTANCE_INIT) {
+             //add a counter for this class/method
+             counters.push(new Counter());
+         }
+ 
+         //check if token is countable
+         if (isCountable(ast)) {
+             //increment the stacked counters
+-            for (final Counter counter : counters) {
+-                counter.increment();
+-            }
++            counters.forEach(Counter::increment);
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         final int tokenType = ast.getType();
+         if (tokenType == TokenTypes.METHOD_DEF
+             || tokenType == TokenTypes.CTOR_DEF
+             || tokenType == TokenTypes.STATIC_INIT
+             || tokenType == TokenTypes.INSTANCE_INIT) {
+             //pop counter from the stack
+             final Counter counter = counters.pop();
+ 
+             final int count = counter.getCount();
+             if (count > methodMaximum) {
+                 log(ast.getLineNo(), ast.getColumnNo(), MSG_METHOD,
+                         count, methodMaximum);
+             }
+         }
+         else if (tokenType == TokenTypes.CLASS_DEF) {
+             //pop counter from the stack
+             final Counter counter = counters.pop();
+ 
+             final int count = counter.getCount();
+             if (count > classMaximum) {
+                 log(ast.getLineNo(), ast.getColumnNo(), MSG_CLASS,
+                         count, classMaximum);
+             }
+         }
+     }
+ 
+     @Override
+     public void finishTree(DetailAST rootAST) {
+         //pop counter from the stack
+         final Counter counter = counters.pop();
+ 
+         final int count = counter.getCount();
+         if (count > fileMaximum) {
+             log(rootAST.getLineNo(), rootAST.getColumnNo(), MSG_FILE,
+                     count, fileMaximum);
+         }
+     }
+ 
+     /**
+      * Sets the maximum ncss for a file.
+      *
+      * @param fileMaximum
+      *            the maximum ncss
+      */
+     public void setFileMaximum(int fileMaximum) {

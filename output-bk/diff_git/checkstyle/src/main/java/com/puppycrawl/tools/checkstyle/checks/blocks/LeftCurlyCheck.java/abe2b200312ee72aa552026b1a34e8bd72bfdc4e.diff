@@ -1,0 +1,129 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java
+index 900267db4..d15130a9f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java
+@@ -100,100 +100,124 @@ public class LeftCurlyCheck
+     /** TODO: replace this ugly hack **/
+     private int maxLineLength = DEFAULT_MAX_LINE_LENGTH;
+ 
+     /** If true, Check will ignore enums*/
+     private boolean ignoreEnums = true;
+ 
+     /**
+      * Creates a default instance and sets the policy to EOL.
+      */
+     public LeftCurlyCheck()
+     {
+         super(LeftCurlyOption.EOL, LeftCurlyOption.class);
+     }
+ 
+     /**
+      * Sets the maximum line length used in calculating the placement of the
+      * left curly brace.
+      * @param maxLineLength the max allowed line length
+      */
+     public void setMaxLineLength(int maxLineLength)
+     {
+         this.maxLineLength = maxLineLength;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_SYNCHRONIZED,
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_FOR,
+             // TODO: need to handle....
+             //TokenTypes.STATIC_INIT,
+         };
+     }
+ 
++    @Override
++    public int[] getAcceptableTokens()
++    {
++        return new int[] {
++            TokenTypes.INTERFACE_DEF,
++            TokenTypes.CLASS_DEF,
++            TokenTypes.ANNOTATION_DEF,
++            TokenTypes.ENUM_DEF,
++            TokenTypes.CTOR_DEF,
++            TokenTypes.METHOD_DEF,
++            TokenTypes.ENUM_CONSTANT_DEF,
++            TokenTypes.LITERAL_WHILE,
++            TokenTypes.LITERAL_TRY,
++            TokenTypes.LITERAL_CATCH,
++            TokenTypes.LITERAL_FINALLY,
++            TokenTypes.LITERAL_SYNCHRONIZED,
++            TokenTypes.LITERAL_SWITCH,
++            TokenTypes.LITERAL_DO,
++            TokenTypes.LITERAL_IF,
++            TokenTypes.LITERAL_ELSE,
++            TokenTypes.LITERAL_FOR,
++        };
++    }
++
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         final DetailAST startToken;
+         final DetailAST brace;
+ 
+         switch (ast.getType()) {
+             case TokenTypes.CTOR_DEF :
+             case TokenTypes.METHOD_DEF :
+                 startToken = skipAnnotationOnlyLines(ast);
+                 brace = ast.findFirstToken(TokenTypes.SLIST);
+                 break;
+ 
+             case TokenTypes.INTERFACE_DEF :
+             case TokenTypes.CLASS_DEF :
+             case TokenTypes.ANNOTATION_DEF :
+             case TokenTypes.ENUM_DEF :
+             case TokenTypes.ENUM_CONSTANT_DEF :
+                 startToken = skipAnnotationOnlyLines(ast);
+                 final DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);
+                 brace = (objBlock == null)
+                     ? null
+                     : objBlock.getFirstChild();
+                 break;
+ 
+             case TokenTypes.LITERAL_WHILE:
+             case TokenTypes.LITERAL_CATCH:
+             case TokenTypes.LITERAL_SYNCHRONIZED:
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.LITERAL_TRY:
+             case TokenTypes.LITERAL_FINALLY:
+             case TokenTypes.LITERAL_DO:
+             case TokenTypes.LITERAL_IF :
+                 startToken = ast;
+                 brace = ast.findFirstToken(TokenTypes.SLIST);
+                 break;
+ 
+             case TokenTypes.LITERAL_ELSE :
+                 startToken = ast;
+                 final DetailAST candidate = ast.getFirstChild();
+                 brace =
+                     (candidate.getType() == TokenTypes.SLIST)
+                     ? candidate
+                     : null; // silently ignore
+                 break;
+ 
+             case TokenTypes.LITERAL_SWITCH :
+                 startToken = ast;
+                 brace = ast.findFirstToken(TokenTypes.LCURLY);
+                 break;

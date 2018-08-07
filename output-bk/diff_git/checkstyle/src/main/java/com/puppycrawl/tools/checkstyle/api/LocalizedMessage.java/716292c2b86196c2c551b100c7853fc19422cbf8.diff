@@ -1,0 +1,88 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+index 8a53b8c45..eda1c26cb 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+@@ -321,82 +321,81 @@ public final class LocalizedMessage
+      *
+      * @return the message key
+      */
+     public String getKey() {
+         return key;
+     }
+ 
+     /** @return the name of the source for this LocalizedMessage */
+     public String getSourceName() {
+         return sourceClass.getName();
+     }
+ 
+     /** @param locale the locale to use for localization **/
+     public static void setLocale(Locale locale) {
+         if (Locale.ENGLISH.getLanguage().equals(locale.getLanguage())) {
+             sLocale = Locale.ROOT;
+         }
+         else {
+             sLocale = locale;
+         }
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Interface Comparable methods
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int compareTo(LocalizedMessage other) {
+         if (getLineNo() == other.getLineNo()) {
+             if (getColumnNo() == other.getColumnNo()) {
+                 return getMessage().compareTo(other.getMessage());
+             }
+             return getColumnNo() < other.getColumnNo() ? -1 : 1;
+         }
+ 
+         return getLineNo() < other.getLineNo() ? -1 : 1;
+     }
+ 
+     /**
+      * <p>
+      * Custom ResourceBundle.Control implementation which allows explicitly read
+      * the properties files as UTF-8
+      * </p>
+      *
+      * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+      */
+     private static class UTF8Control extends Control {
+         @Override
+         public ResourceBundle newBundle(String aBaseName, Locale aLocale, String aFormat,
+-                 ClassLoader aLoader, boolean aReload) throws IllegalAccessException,
+-                  InstantiationException, IOException {
++                 ClassLoader aLoader, boolean aReload) throws IOException {
+             // The below is a copy of the default implementation.
+             final String bundleName = toBundleName(aBaseName, aLocale);
+             final String resourceName = toResourceName(bundleName, "properties");
+             ResourceBundle bundle = null;
+             InputStream stream = null;
+             if (aReload) {
+                 final URL url = aLoader.getResource(resourceName);
+                 if (url != null) {
+                     final URLConnection connection = url.openConnection();
+                     if (connection != null) {
+                         connection.setUseCaches(false);
+                         stream = connection.getInputStream();
+                     }
+                 }
+             }
+             else {
+                 stream = aLoader.getResourceAsStream(resourceName);
+             }
+             if (stream != null) {
+                 try (Reader streamReader = new InputStreamReader(stream, "UTF-8")) {
+                     // Only this line is changed to make it to read properties files as UTF-8.
+                     bundle = new PropertyResourceBundle(streamReader);
+                 } finally {
+                     stream.close();
+                 }
+             }
+             return bundle;
+         }
+     }
+ }

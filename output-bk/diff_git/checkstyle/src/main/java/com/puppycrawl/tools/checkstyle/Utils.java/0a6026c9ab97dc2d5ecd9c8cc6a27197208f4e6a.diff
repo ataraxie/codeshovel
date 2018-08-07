@@ -1,0 +1,210 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java b/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
+index 159157fcf..4f93301bf 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
+@@ -32,101 +32,101 @@ import java.util.regex.PatternSyntaxException;
+ import org.apache.commons.beanutils.ConversionException;
+ 
+ import com.google.common.collect.ImmutableMap;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Contains utility methods.
+  *
+  * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+  */
+ public final class Utils {
+ 
+     /** maps from a token name to value */
+     private static final ImmutableMap<String, Integer> TOKEN_NAME_TO_VALUE;
+     /** maps from a token value to name */
+     private static final String[] TOKEN_VALUE_TO_NAME;
+ 
+     /** Array of all token IDs */
+     private static final int[] TOKEN_IDS;
+ 
+     // initialise the constants
+     static {
+         final ImmutableMap.Builder<String, Integer> builder =
+                 ImmutableMap.builder();
+         final Field[] fields = TokenTypes.class.getDeclaredFields();
+         String[] tempTokenValueToName = new String[0];
+         for (final Field f : fields) {
+             // Only process the int declarations.
+             if (f.getType() != Integer.TYPE) {
+                 continue;
+             }
+ 
+             final String name = f.getName();
+             final int tokenValue = getIntFromField(f, name);
+             builder.put(name, tokenValue);
+             if (tokenValue > tempTokenValueToName.length - 1) {
+                 final String[] temp = new String[tokenValue + 1];
+                 System.arraycopy(tempTokenValueToName, 0,
+                         temp, 0, tempTokenValueToName.length);
+                 tempTokenValueToName = temp;
+             }
+             tempTokenValueToName[tokenValue] = name;
+         }
+ 
+         TOKEN_NAME_TO_VALUE = builder.build();
+         TOKEN_VALUE_TO_NAME = tempTokenValueToName;
+ 
+         final Integer[] ids = TOKEN_NAME_TO_VALUE.values().toArray(new Integer[0]);
+         TOKEN_IDS = new int[ids.length];
+         for (int i = 0; i < ids.length; i++) {
+-            TOKEN_IDS[i] = ids[i].intValue();
++            TOKEN_IDS[i] = ids[i];
+         }
+     }
+ 
+     /** stop instances being created **/
+     private Utils() {
+     }
+ 
+     /**
+      * Get all token IDs that are available in TokenTypes.
+      * @return array of token IDs
+      */
+     public static int[] getAllTokenIds() {
+         final int[] safeCopy = new int[TOKEN_IDS.length];
+         System.arraycopy(TOKEN_IDS, 0, safeCopy, 0, TOKEN_IDS.length);
+         return safeCopy;
+     }
+ 
+     /**
+      * Returns whether the file extension matches what we are meant to
+      * process.
+      * @param file the file to be checked.
+      * @param fileExtensions files extensions, empty property in config makes it matches to all.
+      * @return whether there is a match.
+      */
+     public static boolean fileExtensionMatches(File file, String... fileExtensions) {
+         boolean result = false;
+         if (fileExtensions == null || fileExtensions.length == 0) {
+             result = true;
+         }
+         else {
+             // normalize extensions so all of them have a leading dot
+             final String[] withDotExtensions = new String[fileExtensions.length];
+             for (int i = 0; i < fileExtensions.length; i++) {
+                 final String extension = fileExtensions[i];
+                 if (startsWithChar(extension, '.')) {
+                     withDotExtensions[i] = extension;
+                 }
+                 else {
+                     withDotExtensions[i] = "." + extension;
+                 }
+             }
+ 
+             final String fileName = file.getName();
+             for (final String fileExtension : withDotExtensions) {
+                 if (fileName.endsWith(fileExtension)) {
+                     result = true;
+                 }
+             }
+         }
+ 
+@@ -260,101 +260,101 @@ public final class Utils {
+      * @param prefix the prefix to find
+      * @return <code>true</code> if the <code>char</code> is a prefix of the given
+      * <code>String</code>; <code>false</code> otherwise.
+      */
+     public static boolean startsWithChar(String string, char prefix) {
+         return !string.isEmpty() && string.charAt(0) == prefix;
+     }
+ 
+     /**
+      * Tests if this string ends with the specified suffix.
+      * <p/>
+      * It is faster version of {@link String#endsWith(String)} optimized for one-character
+      * suffixes at the expense of some readability. Suggested by SimplifyStartsWith PMD rule:
+      * http://pmd.sourceforge.net/pmd-5.3.1/pmd-java/rules/java/optimizations.html#SimplifyStartsWith
+      *
+      * @param string the <code>String</code> to check
+      * @param suffix the suffix to find
+      * @return <code>true</code> if the <code>char</code> is a suffix of the given
+      * <code>String</code>; <code>false</code> otherwise.
+      */
+     public static boolean endsWithChar(String string, char suffix) {
+         return !string.isEmpty() && string.charAt(string.length() - 1) == suffix;
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param iD the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int iD) {
+         if (iD > TOKEN_VALUE_TO_NAME.length - 1) {
+             throw new IllegalArgumentException("given id " + iD);
+         }
+         final String name = TOKEN_VALUE_TO_NAME[iD];
+         if (name == null) {
+             throw new IllegalArgumentException("given id " + iD);
+         }
+         return name;
+     }
+ 
+     /**
+      * Returns the ID of a token for a given name.
+      * @param name the name of the token ID to get
+      * @return a token ID
+      */
+     public static int getTokenId(String name) {
+         final Integer id = TOKEN_NAME_TO_VALUE.get(name);
+         if (id == null) {
+             throw new IllegalArgumentException("given name " + name);
+         }
+-        return id.intValue();
++        return id;
+     }
+ 
+     /**
+      * Returns the short description of a token for a given name.
+      * @param name the name of the token ID to get
+      * @return a short description
+      */
+     public static String getShortDescription(String name) {
+         if (!TOKEN_NAME_TO_VALUE.containsKey(name)) {
+             throw new IllegalArgumentException("given name " + name);
+         }
+ 
+         final String tokentypes =
+             "com.puppycrawl.tools.checkstyle.api.tokentypes";
+         final ResourceBundle bundle = ResourceBundle.getBundle(tokentypes);
+         return bundle.getString(name);
+     }
+ 
+     /**
+      * Is argument comment-related type (SINGLE_LINE_COMMENT,
+      * BLOCK_COMMENT_BEGIN, BLOCK_COMMENT_END, COMMENT_CONTENT).
+      * @param type
+      *        token type.
+      * @return true if type is comment-related type.
+      */
+     public static boolean isCommentType(int type) {
+         return type == TokenTypes.SINGLE_LINE_COMMENT
+                 || type == TokenTypes.BLOCK_COMMENT_BEGIN
+                 || type == TokenTypes.BLOCK_COMMENT_END
+                 || type == TokenTypes.COMMENT_CONTENT;
+     }
+ 
+     /**
+      * Is argument comment-related type name (SINGLE_LINE_COMMENT,
+      * BLOCK_COMMENT_BEGIN, BLOCK_COMMENT_END, COMMENT_CONTENT).
+      * @param type
+      *        token type name.
+      * @return true if type is comment-related type name.
+      */
+     public static boolean isCommentType(String type) {
+         return isCommentType(getTokenId(type));
+     }
+ 
+     /**
+      * @param targetClass from which constructor is returned
+      * @param parameterTypes of constructor
+      * @return constructor of targetClass or {@link IllegalStateException} if any exception occurs
+      * @see Class#getConstructor(Class[])
+      */
+     public static Constructor<?> getConstructor(Class<?> targetClass, Class<?>... parameterTypes) {

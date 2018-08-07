@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/HiddenFieldCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/HiddenFieldCheck.java
+index f2355046c..01d76d7f8 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/HiddenFieldCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/HiddenFieldCheck.java
+@@ -38,101 +38,101 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * &lt;module name="HiddenField"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check so that it checks variables but not
+  * parameters is:
+  * </p>
+  * <pre>
+  * &lt;module name="HiddenField"&gt;
+  *    &lt;property name="tokens" value="VARIABLE_DEF"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  * @version 1.0
+  */
+ public class HiddenFieldCheck
+     extends Check
+ {
+ 
+     /** stack of sets of field names,
+      * one for each class of a set of nested classes */
+     private LinkedList mFieldsStack = null;
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.CLASS_DEF,
+         };
+     }
+     
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+     
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+-    public void beginTree()
++    public void beginTree(DetailAST aRootAST)
+     {
+         mFieldsStack = new LinkedList();
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void visitToken(DetailAST aAST)
+     {
+         if (aAST.getType() == TokenTypes.CLASS_DEF) {
+             //find and push fields
+             final HashSet fieldSet = new HashSet(); //fields container
+             //add fields to container
+             final DetailAST objBlock =
+                 aAST.findFirstToken(TokenTypes.OBJBLOCK);
+             DetailAST child = (DetailAST) objBlock.getFirstChild();
+             while (child != null) {
+                 if (child.getType() == TokenTypes.VARIABLE_DEF) {
+                     final String name =
+                         child.findFirstToken(TokenTypes.IDENT).getText();
+                     fieldSet.add(name);
+                 }
+                 child = (DetailAST) child.getNextSibling();
+             }                
+             mFieldsStack.addLast(fieldSet); //push container              
+         }
+         else {
+             //must be VARIABLE_DEF or PARAMETER_DEF
+             processVariable(aAST);
+         }
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void leaveToken(DetailAST aAST)
+     {
+         if (aAST.getType() == TokenTypes.CLASS_DEF) {
+             //pop
+             mFieldsStack.removeLast();
+         }
+     }
+ 
+     /**
+      * Process a variable token.
+      * Check whether a local variable or parameter shadows a field.
+      * Store a field for later comparison with local variables and parameters.
+      * @param aAST the variable token.
+      */
+     private void processVariable(DetailAST aAST)
+     {
+         if (!ScopeUtils.inInterfaceBlock(aAST)) {
+             if (ScopeUtils.inCodeBlock(aAST)) {
+                 //local variable or parameter. Does it shadow a field?

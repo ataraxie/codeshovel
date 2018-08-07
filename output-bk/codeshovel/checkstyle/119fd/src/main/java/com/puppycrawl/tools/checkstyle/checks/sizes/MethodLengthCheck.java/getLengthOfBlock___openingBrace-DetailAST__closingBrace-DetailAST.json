@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MethodLengthCheck.java",
+  "functionName": "getLengthOfBlock",
+  "functionId": "getLengthOfBlock___openingBrace-DetailAST__closingBrace-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodLengthCheck.java",
+  "functionStartLine": 112,
+  "functionEndLine": 128,
+  "changeHistory": [
+    "6e3ce6e12088eda6a6aa2f27d515ccb0ce131c05",
+    "6e775898e7d1ac179bcb6550f3023ee9b9d70bc3"
+  ],
+  "changeHistoryShort": {
+    "6e3ce6e12088eda6a6aa2f27d515ccb0ce131c05": "Ybodychange",
+    "6e775898e7d1ac179bcb6550f3023ee9b9d70bc3": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6e3ce6e12088eda6a6aa2f27d515ccb0ce131c05": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4993: increased coverage of pitest-checks-sizes to 100%\n",
+      "commitDate": 1503778768000,
+      "commitName": "6e3ce6e12088eda6a6aa2f27d515ccb0ce131c05",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1497287515000,
+      "commitNameOld": "4a087c020c2b97130e94f9292b94cb4bc1f6ed93",
+      "commitAuthorOld": "sagar-shah94",
+      "daysBetweenCommits": 75.13,
+      "commitsBetweenForRepo": 378,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,17 @@\n     private int getLengthOfBlock(DetailAST openingBrace, DetailAST closingBrace) {\n         int length \u003d closingBrace.getLineNo() - openingBrace.getLineNo() + 1;\n \n         if (!countEmpty) {\n             final FileContents contents \u003d getFileContents();\n             final int lastLine \u003d closingBrace.getLineNo();\n-            for (int i \u003d openingBrace.getLineNo() - 1; i \u003c lastLine; i++) {\n+            // lastLine - 1 is actual last line index. Last line is line with curly brace,\n+            // which is always not empty. So, we make it lastLine - 2 to cover last line that\n+            // actually may be empty.\n+            for (int i \u003d openingBrace.getLineNo() - 1; i \u003c\u003d lastLine - 2; i++) {\n                 if (contents.lineIsBlank(i) || contents.lineIsComment(i)) {\n                     length--;\n                 }\n             }\n         }\n         return length;\n     }\n\\ No newline at end of file\n"
+    },
+    "6e775898e7d1ac179bcb6550f3023ee9b9d70bc3": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #46: Statements shouldn\u0027t be nested too deep.\n",
+      "commitDate": 1441134086000,
+      "commitName": "6e775898e7d1ac179bcb6550f3023ee9b9d70bc3",
+      "commitAuthor": "Ilja Dubinin"
+    }
+  }
+}

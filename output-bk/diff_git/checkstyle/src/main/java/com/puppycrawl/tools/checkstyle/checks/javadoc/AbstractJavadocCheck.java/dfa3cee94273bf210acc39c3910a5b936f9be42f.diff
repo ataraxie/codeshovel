@@ -1,0 +1,115 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+index 1e988445b..d2af06b03 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+@@ -182,100 +182,110 @@ public abstract class AbstractJavadocCheck extends AbstractCheck {
+             Arrays.sort(defaultJavadocTokens);
+             for (final int javadocToken : getRequiredJavadocTokens()) {
+                 if (Arrays.binarySearch(defaultJavadocTokens, javadocToken) < 0) {
+                     final String message = String.format(Locale.ROOT,
+                             "Javadoc Token \"%s\" from required javadoc "
+                                 + "tokens was not found in default "
+                                 + "javadoc tokens list in check %s",
+                             javadocToken, getClass().getName());
+                     throw new IllegalStateException(message);
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Called before the starting to process a tree.
+      * @param rootAst
+      *        the root of the tree
+      */
+     public void beginJavadocTree(DetailNode rootAst) {
+         // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Called after finished processing a tree.
+      * @param rootAst
+      *        the root of the tree
+      */
+     public void finishJavadocTree(DetailNode rootAst) {
+         // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Called after all the child nodes have been process.
+      * @param ast
+      *        the token leaving
+      */
+     public void leaveJavadocToken(DetailNode ast) {
+         // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Defined final to not allow JavadocChecks to change default tokens.
+      * @return default tokens
+      */
+     @Override
+     public final int[] getDefaultTokens() {
+         return new int[] {TokenTypes.BLOCK_COMMENT_BEGIN };
+     }
+ 
++    @Override
++    public final int[] getAcceptableTokens() {
++        return getDefaultTokens();
++    }
++
++    @Override
++    public final int[] getRequiredTokens() {
++        return getDefaultTokens();
++    }
++
+     /**
+      * Defined final because all JavadocChecks require comment nodes.
+      * @return true
+      */
+     @Override
+     public final boolean isCommentNodesRequired() {
+         return true;
+     }
+ 
+     @Override
+     public final void beginTree(DetailAST rootAST) {
+         TREE_CACHE.get().clear();
+     }
+ 
+     @Override
+     public final void finishTree(DetailAST rootAST) {
+         TREE_CACHE.get().clear();
+     }
+ 
+     @Override
+     public final void visitToken(DetailAST blockCommentNode) {
+         if (JavadocUtils.isJavadocComment(blockCommentNode)) {
+             // store as field, to share with child Checks
+             blockCommentAst = blockCommentNode;
+ 
+             final String treeCacheKey = blockCommentNode.getLineNo() + ":"
+                     + blockCommentNode.getColumnNo();
+ 
+             final ParseStatus result;
+ 
+             if (TREE_CACHE.get().containsKey(treeCacheKey)) {
+                 result = TREE_CACHE.get().get(treeCacheKey);
+             }
+             else {
+                 result = parser.parseJavadocAsDetailNode(blockCommentNode);
+                 TREE_CACHE.get().put(treeCacheKey, result);
+             }
+ 
+             if (result.getParseErrorMessage() == null) {
+                 processTree(result.getTree());
+             }
+             else {
+                 final ParseErrorMessage parseErrorMessage = result.getParseErrorMessage();
+                 log(parseErrorMessage.getLineNumber(),
+                         parseErrorMessage.getMessageKey(),
+                         parseErrorMessage.getMessageArguments());
+             }
+         }
+ 
+     }

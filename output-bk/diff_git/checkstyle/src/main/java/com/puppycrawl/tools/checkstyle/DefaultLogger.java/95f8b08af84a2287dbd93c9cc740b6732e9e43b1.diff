@@ -1,0 +1,68 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/DefaultLogger.java b/src/main/java/com/puppycrawl/tools/checkstyle/DefaultLogger.java
+index 745e29235..c997dfaa3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/DefaultLogger.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/DefaultLogger.java
+@@ -113,62 +113,62 @@ public class DefaultLogger
+ 
+             // avoid StringBuffer.expandCapacity
+             final int bufLen = fileName.length() + message.length()
+                 + BUFFER_CUSHION;
+             final StringBuilder sb = new StringBuilder(bufLen);
+ 
+             sb.append(fileName).append(':').append(evt.getLine());
+             if (evt.getColumn() > 0) {
+                 sb.append(':').append(evt.getColumn());
+             }
+             if (severityLevel == SeverityLevel.WARNING) {
+                 sb.append(": warning");
+             }
+             sb.append(": ").append(message);
+             errorWriter.println(sb);
+         }
+     }
+ 
+     @Override
+     public void addException(AuditEvent evt, Throwable throwable) {
+         synchronized (errorWriter) {
+             errorWriter.println("Error auditing " + evt.getFileName());
+             throwable.printStackTrace(errorWriter);
+         }
+     }
+ 
+     @Override
+     public void auditStarted(AuditEvent evt) {
+         infoWriter.println("Starting audit...");
+     }
+ 
+     @Override
+     public void fileFinished(AuditEvent evt) {
+         // No need to implement this method in this class
+     }
+ 
+     @Override
+     public void fileStarted(AuditEvent evt) {
+         // No need to implement this method in this class
+     }
+ 
+     @Override
+     public void auditFinished(AuditEvent evt) {
+         infoWriter.println("Audit done.");
+         closeStreams();
+     }
+ 
+     /**
+      * Flushes the output streams and closes them if needed.
+      */
+-    protected void closeStreams() {
++    private void closeStreams() {
+         infoWriter.flush();
+         if (closeInfo) {
+             infoWriter.close();
+         }
+ 
+         errorWriter.flush();
+         if (closeError) {
+             errorWriter.close();
+         }
+     }
+ }

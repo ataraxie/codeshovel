@@ -1,0 +1,106 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "readFile___inputFile-File__decoder-CharsetDecoder",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 215,
+  "changeHistory": [
+    "98fd9b84ef6fa5f7bb5d1a6299605c3f6e6e458f",
+    "46fa8090954480eecdeb6e7367f0e30655853f42",
+    "94df4ad94faa1230f06521e9457472e0ebd2715a",
+    "4ae3c958225827c9913840942aa8561b8f6be516",
+    "13a49cc45b1527357934dd7802c24686d7bb7858",
+    "d6bdd7ee798c9c3b721483cae4efb8faa97c8f1c"
+  ],
+  "changeHistoryShort": {
+    "98fd9b84ef6fa5f7bb5d1a6299605c3f6e6e458f": "Ybodychange",
+    "46fa8090954480eecdeb6e7367f0e30655853f42": "Ybodychange",
+    "94df4ad94faa1230f06521e9457472e0ebd2715a": "Ybodychange",
+    "4ae3c958225827c9913840942aa8561b8f6be516": "Ybodychange",
+    "13a49cc45b1527357934dd7802c24686d7bb7858": "Ymodifierchange",
+    "d6bdd7ee798c9c3b721483cae4efb8faa97c8f1c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "98fd9b84ef6fa5f7bb5d1a6299605c3f6e6e458f": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3455: removed guava from api code",
+      "commitDate": 1514733537000,
+      "commitName": "98fd9b84ef6fa5f7bb5d1a6299605c3f6e6e458f",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1503014771000,
+      "commitNameOld": "4acf7a786285d95d2c544f6d7daf6b31b86e0b44",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 135.63,
+      "commitsBetweenForRepo": 370,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,23 @@\n     private static String readFile(final File inputFile, final CharsetDecoder decoder)\n             throws IOException {\n         if (!inputFile.exists()) {\n             throw new FileNotFoundException(inputFile.getPath() + \" (No such file or directory)\");\n         }\n         final StringBuilder buf \u003d new StringBuilder(1024);\n         final FileInputStream stream \u003d new FileInputStream(inputFile);\n         final Reader reader \u003d new InputStreamReader(stream, decoder);\n         try {\n             final char[] chars \u003d new char[READ_BUFFER_SIZE];\n             while (true) {\n                 final int len \u003d reader.read(chars);\n                 if (len \u003d\u003d -1) {\n                     break;\n                 }\n                 buf.append(chars, 0, len);\n             }\n         }\n         finally {\n-            Closeables.closeQuietly(reader);\n+            CommonUtils.close(reader);\n         }\n         return buf.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "46fa8090954480eecdeb6e7367f0e30655853f42": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4812: add report on StringBufferMustHaveInitialCapacity\n",
+      "commitDate": 1501186710000,
+      "commitName": "46fa8090954480eecdeb6e7367f0e30655853f42",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1500859159000,
+      "commitNameOld": "4c10bc55b4aea0f7e3b95b06d820eedb7c6a6fb2",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 3.79,
+      "commitsBetweenForRepo": 26,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,23 @@\n     private static String readFile(final File inputFile, final CharsetDecoder decoder)\n             throws IOException {\n         if (!inputFile.exists()) {\n             throw new FileNotFoundException(inputFile.getPath() + \" (No such file or directory)\");\n         }\n-        final StringBuilder buf \u003d new StringBuilder();\n+        final StringBuilder buf \u003d new StringBuilder(1024);\n         final FileInputStream stream \u003d new FileInputStream(inputFile);\n         final Reader reader \u003d new InputStreamReader(stream, decoder);\n         try {\n             final char[] chars \u003d new char[READ_BUFFER_SIZE];\n             while (true) {\n                 final int len \u003d reader.read(chars);\n                 if (len \u003d\u003d -1) {\n                     break;\n                 }\n                 buf.append(chars, 0, len);\n             }\n         }\n         finally {\n             Closeables.closeQuietly(reader);\n         }\n         return buf.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "94df4ad94faa1230f06521e9457472e0ebd2715a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4394: increase coverage of pitest-checkstyle-api profile to 96%\n",
+      "commitDate": 1500074888000,
+      "commitName": "94df4ad94faa1230f06521e9457472e0ebd2715a",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1499716651000,
+      "commitNameOld": "0c2abadbb7f2887f31011157d62edf40bea131c3",
+      "commitAuthorOld": "Timur",
+      "daysBetweenCommits": 4.15,
+      "commitsBetweenForRepo": 20,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,23 @@\n     private static String readFile(final File inputFile, final CharsetDecoder decoder)\n             throws IOException {\n         if (!inputFile.exists()) {\n             throw new FileNotFoundException(inputFile.getPath() + \" (No such file or directory)\");\n         }\n         final StringBuilder buf \u003d new StringBuilder();\n         final FileInputStream stream \u003d new FileInputStream(inputFile);\n         final Reader reader \u003d new InputStreamReader(stream, decoder);\n         try {\n             final char[] chars \u003d new char[READ_BUFFER_SIZE];\n             while (true) {\n                 final int len \u003d reader.read(chars);\n-                if (len \u003c 0) {\n+                if (len \u003d\u003d -1) {\n                     break;\n                 }\n                 buf.append(chars, 0, len);\n             }\n         }\n         finally {\n             Closeables.closeQuietly(reader);\n         }\n         return buf.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "4ae3c958225827c9913840942aa8561b8f6be516": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2137: Make test for FileTabCharacter locale and OS independent\n",
+      "commitDate": 1441659438000,
+      "commitName": "4ae3c958225827c9913840942aa8561b8f6be516",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1441047087000,
+      "commitNameOld": "c899af31c112c07ea1244f6bbe2c5c6c56818ae5",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 7.09,
+      "commitsBetweenForRepo": 96,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,23 @@\n     private static String readFile(final File inputFile, final CharsetDecoder decoder)\n             throws IOException {\n+        if (!inputFile.exists()) {\n+            throw new FileNotFoundException(inputFile.getPath() + \" (No such file or directory)\");\n+        }\n         final StringBuilder buf \u003d new StringBuilder();\n         final FileInputStream stream \u003d new FileInputStream(inputFile);\n         final Reader reader \u003d new InputStreamReader(stream, decoder);\n         try {\n             final char[] chars \u003d new char[READ_BUFFER_SIZE];\n             while (true) {\n                 final int len \u003d reader.read(chars);\n                 if (len \u003c 0) {\n                     break;\n                 }\n                 buf.append(chars, 0, len);\n             }\n         }\n         finally {\n             Closeables.closeQuietly(reader);\n         }\n         return buf.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "13a49cc45b1527357934dd7802c24686d7bb7858": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Mark method as static. #1555\n\nFixes `MethodMayBeStatic` inspection violation introduced in recent commit.\n\nDescription:\n\u003eReports any methods which may safely be made static. A method may be static if it is not synchronized, it does not reference any of its class\u0027 non static methods and non static fields and is not overridden in a sub class.\n",
+      "commitDate": 1440679432000,
+      "commitName": "13a49cc45b1527357934dd7802c24686d7bb7858",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440618651000,
+      "commitNameOld": "d6bdd7ee798c9c3b721483cae4efb8faa97c8f1c",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 0.7,
+      "commitsBetweenForRepo": 20,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n-    private String readFile(final File inputFile, final CharsetDecoder decoder)\n+    private static String readFile(final File inputFile, final CharsetDecoder decoder)\n             throws IOException {\n         final StringBuilder buf \u003d new StringBuilder();\n         final FileInputStream stream \u003d new FileInputStream(inputFile);\n         final Reader reader \u003d new InputStreamReader(stream, decoder);\n         try {\n             final char[] chars \u003d new char[READ_BUFFER_SIZE];\n             while (true) {\n                 final int len \u003d reader.read(chars);\n                 if (len \u003c 0) {\n                     break;\n                 }\n                 buf.append(chars, 0, len);\n             }\n         }\n         finally {\n             Closeables.closeQuietly(reader);\n         }\n         return buf.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "d6bdd7ee798c9c3b721483cae4efb8faa97c8f1c": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1566: Reduce FileText\u0027s constructor length\n",
+      "commitDate": 1440618651000,
+      "commitName": "d6bdd7ee798c9c3b721483cae4efb8faa97c8f1c",
+      "commitAuthor": "Baratali Izmailov"
+    }
+  }
+}

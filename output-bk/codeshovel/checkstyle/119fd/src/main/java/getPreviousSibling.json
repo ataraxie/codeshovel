@@ -1,0 +1,90 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "getPreviousSibling",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 381,
+  "changeHistory": [
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "e3929c641ca2c2ef08d90ee506db556529088326",
+    "ce177456e7042b22b1842cb0309b6b285dc900d4",
+    "eecd476fa8c6dba62f919a5ff1740d108848c867"
+  ],
+  "changeHistoryShort": {
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "e3929c641ca2c2ef08d90ee506db556529088326": "Ybodychange",
+    "ce177456e7042b22b1842cb0309b6b285dc900d4": "Ybodychange",
+    "eecd476fa8c6dba62f919a5ff1740d108848c867": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ybodychange",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1413609550000,
+      "commitNameOld": "a24df47cafeab03fd65cf72b460aad3d2fafce3d",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 93.38,
+      "commitsBetweenForRepo": 273,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n     public DetailAST getPreviousSibling()\n     {\n-        return mPreviousSibling;\n+        return previousSibling;\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "e3929c641ca2c2ef08d90ee506db556529088326": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed implementation of DetailAST so getPreviousSibling() works for\nall nodes in AST tree (bug 1244994)\nNow we set next sibling during tree creation, instead of calculating\nit (the calculation doesn\u0027t work if parent is null as for toplevel\nnodes such as package, import and class definition).\nAdded test which verify correct tree structure for all testinputs.\n",
+      "commitDate": 1122418580000,
+      "commitName": "e3929c641ca2c2ef08d90ee506db556529088326",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1121777024000,
+      "commitNameOld": "cbabd6b314a5523a5557e089858d3a3596426d56",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 7.43,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,4 @@\n     public DetailAST getPreviousSibling()\n     {\n-        final DetailAST parent \u003d getParent();\n-        if (parent \u003d\u003d null) {\n-            return null;\n-        }\n-\n-        AST ast \u003d parent.getFirstChild();\n-        while (ast !\u003d null) {\n-            AST nextSibling \u003d ast.getNextSibling();\n-            if (this \u003d\u003d nextSibling) {\n-                return (DetailAST) ast;\n-            }\n-            ast \u003d nextSibling;\n-        }\n-        return null;\n+        return mPreviousSibling;\n     }\n\\ No newline at end of file\n"
+    },
+    "ce177456e7042b22b1842cb0309b6b285dc900d4": {
+      "type": "Ybodychange",
+      "commitMessage": "Made some style changes.\n",
+      "commitDate": 1036288032000,
+      "commitName": "ce177456e7042b22b1842cb0309b6b285dc900d4",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1036255492000,
+      "commitNameOld": "e70cb13b07f5b2c17dec74a42c05e7e32bb33ffb",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 0.38,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     public DetailAST getPreviousSibling()\n     {\n-        DetailAST parent \u003d getParent();\n+        final DetailAST parent \u003d getParent();\n         if (parent \u003d\u003d null) {\n             return null;\n         }\n \n         AST ast \u003d parent.getFirstChild();\n         while (ast !\u003d null) {\n             AST nextSibling \u003d ast.getNextSibling();\n             if (this \u003d\u003d nextSibling) {\n                 return (DetailAST) ast;\n             }\n             ast \u003d nextSibling;\n         }\n         return null;\n     }\n\\ No newline at end of file\n"
+    },
+    "eecd476fa8c6dba62f919a5ff1740d108848c867": {
+      "type": "Yintroduced",
+      "commitMessage": "moved static AST helpers in Util to DetailAST\n",
+      "commitDate": 1035797514000,
+      "commitName": "eecd476fa8c6dba62f919a5ff1740d108848c867",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

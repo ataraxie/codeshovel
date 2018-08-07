@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SuppressWithPlainTextCommentFilter.java",
+  "functionName": "getFileText",
+  "functionId": "getFileText___fileName-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithPlainTextCommentFilter.java",
+  "functionStartLine": 137,
+  "functionEndLine": 152,
+  "changeHistory": [
+    "19211ae6e578e023959e7df2698afa8986857d42",
+    "4ff16354a51829216a0a8d05e95858121c367c2f"
+  ],
+  "changeHistoryShort": {
+    "19211ae6e578e023959e7df2698afa8986857d42": "Ybodychange",
+    "4ff16354a51829216a0a8d05e95858121c367c2f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "19211ae6e578e023959e7df2698afa8986857d42": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5405: SuppressWithPlainTextComment should ignore directories",
+      "commitDate": 1514684314000,
+      "commitName": "19211ae6e578e023959e7df2698afa8986857d42",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1514560578000,
+      "commitNameOld": "4ff16354a51829216a0a8d05e95858121c367c2f",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 1.43,
+      "commitsBetweenForRepo": 9,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,16 @@\n     private static FileText getFileText(String fileName) {\n-        try {\n-            return new FileText(new File(fileName), StandardCharsets.UTF_8.name());\n+        final File file \u003d new File(fileName);\n+        FileText result \u003d null;\n+\n+        // some violations can be on a directory, instead of a file\n+        if (!file.isDirectory()) {\n+            try {\n+                result \u003d new FileText(file, StandardCharsets.UTF_8.name());\n+            }\n+            catch (IOException ex) {\n+                throw new IllegalStateException(\"Cannot read source file: \" + fileName, ex);\n+            }\n         }\n-        catch (IOException ex) {\n-            throw new IllegalStateException(\"Cannot read source file: \" + fileName, ex);\n-        }\n+\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "4ff16354a51829216a0a8d05e95858121c367c2f": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #4841: Add SuppressWithPlainTextCommentFilter\n",
+      "commitDate": 1514560578000,
+      "commitName": "4ff16354a51829216a0a8d05e95858121c367c2f",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

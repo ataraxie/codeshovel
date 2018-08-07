@@ -1,0 +1,83 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java
+index 2c0ec7cbc..789204af2 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java
+@@ -244,73 +244,74 @@ public class GenericWhitespaceCheck extends AbstractCheck {
+ 
+     /**
+      * Checks the token for the start of Generics.
+      * @param ast the token to check
+      */
+     private void processStart(DetailAST ast) {
+         final String line = getLine(ast.getLineNo() - 1);
+         final int before = ast.getColumnNo() - 1;
+         final int after = ast.getColumnNo() + 1;
+ 
+         // Need to handle two cases as in:
+         //
+         //   public static <T> Callable<T> callable(Runnable task, T result)
+         //                 ^           ^
+         //      ws reqd ---+           +--- whitespace NOT required
+         //
+         if (before >= 0) {
+             // Detect if the first case
+             final DetailAST parent = ast.getParent();
+             final DetailAST grandparent = parent.getParent();
+             if (parent.getType() == TokenTypes.TYPE_PARAMETERS
+                 && (grandparent.getType() == TokenTypes.CTOR_DEF
+                     || grandparent.getType() == TokenTypes.METHOD_DEF)) {
+                 // Require whitespace
+                 if (!Character.isWhitespace(line.charAt(before))) {
+                     log(ast.getLineNo(), before, MSG_WS_NOT_PRECEDED, OPEN_ANGLE_BRACKET);
+                 }
+             }
+             // Whitespace not required
+             else if (Character.isWhitespace(line.charAt(before))
+                 && !CommonUtils.hasWhitespaceBefore(before, line)) {
+                 log(ast.getLineNo(), before, MSG_WS_PRECEDED, OPEN_ANGLE_BRACKET);
+             }
+         }
+ 
+         if (after < line.length()
+                 && Character.isWhitespace(line.charAt(after))) {
+             log(ast.getLineNo(), after, MSG_WS_FOLLOWED, OPEN_ANGLE_BRACKET);
+         }
+     }
+ 
+     /**
+      * Returns whether the specified string contains only whitespace between
+      * specified indices.
+      *
+      * @param fromIndex the index to start the search from. Inclusive
+      * @param toIndex the index to finish the search. Exclusive
+      * @param line the line to check
+      * @return whether there are only whitespaces (or nothing)
+      */
+-    private static boolean containsWhitespaceBetween(
+-            int fromIndex, int toIndex, String line) {
++    private static boolean containsWhitespaceBetween(int fromIndex, int toIndex, String line) {
++        boolean result = true;
+         for (int i = fromIndex; i < toIndex; i++) {
+             if (!Character.isWhitespace(line.charAt(i))) {
+-                return false;
++                result = false;
++                break;
+             }
+         }
+-        return true;
++        return result;
+     }
+ 
+     /**
+      * Checks whether given character is valid to be right after generic ends.
+      * @param charAfter character to check
+      * @return checks if given character is valid
+      */
+     private static boolean isCharacterValidAfterGenericEnd(char charAfter) {
+         return charAfter == '(' || charAfter == ')'
+             || charAfter == ',' || charAfter == '['
+             || charAfter == '.' || charAfter == ':'
+             || charAfter == ';'
+             || Character.isWhitespace(charAfter);
+     }
+ }

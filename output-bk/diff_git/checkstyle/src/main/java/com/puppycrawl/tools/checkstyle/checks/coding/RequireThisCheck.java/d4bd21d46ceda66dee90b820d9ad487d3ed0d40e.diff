@@ -1,0 +1,208 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+index f44a4e165..674849cb8 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+@@ -473,100 +473,101 @@ public class RequireThisCheck extends AbstractCheck {
+         else if (variableDeclarationFrameType == FrameType.CTOR_FRAME
+                  && isOverlappingByArgument(ast)
+                  && !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)) {
+             frameWhereViolationIsFound = findFrame(ast, true);
+         }
+         else if (variableDeclarationFrameType == FrameType.BLOCK_FRAME) {
+             if (isOverlappingByLocalVariable(ast)) {
+                 if (canAssignValueToClassField(ast)
+                         && !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)
+                         && !isReturnedVariable(variableDeclarationFrame, ast)
+                         && canBeReferencedFromStaticContext(ast)) {
+                     frameWhereViolationIsFound = findFrame(ast, true);
+                 }
+             }
+             else if (!validateOnlyOverlapping
+                      && prevSibling == null
+                      && isAssignToken(ast.getParent().getType())
+                      && !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)
+                      && canBeReferencedFromStaticContext(ast)) {
+                 frameWhereViolationIsFound = findFrame(ast, true);
+             }
+         }
+         return frameWhereViolationIsFound;
+     }
+ 
+     /**
+      * Checks whether user arranges 'this' for variable in method, constructor, or block on his own.
+      * @param currentFrame current frame.
+      * @param ident ident token.
+      * @return true if user arranges 'this' for variable in method, constructor,
+      *         or block on his own.
+      */
+     private static boolean isUserDefinedArrangementOfThis(AbstractFrame currentFrame,
+                                                           DetailAST ident) {
+         final DetailAST blockFrameNameIdent = currentFrame.getFrameNameIdent();
+         final DetailAST definitionToken = blockFrameNameIdent.getParent();
+         final DetailAST blockStartToken = definitionToken.findFirstToken(TokenTypes.SLIST);
+         final DetailAST blockEndToken = getBlockEndToken(blockFrameNameIdent, blockStartToken);
+ 
+         boolean userDefinedArrangementOfThis = false;
+ 
+         final Set<DetailAST> variableUsagesInsideBlock =
+             getAllTokensWhichAreEqualToCurrent(definitionToken, ident,
+                 blockEndToken.getLineNo());
+ 
+         for (DetailAST variableUsage : variableUsagesInsideBlock) {
+             final DetailAST prevSibling = variableUsage.getPreviousSibling();
+             if (prevSibling != null
+                     && prevSibling.getType() == TokenTypes.LITERAL_THIS) {
+                 userDefinedArrangementOfThis = true;
++                break;
+             }
+         }
+         return userDefinedArrangementOfThis;
+     }
+ 
+     /**
+      * Returns the token which ends the code block.
+      * @param blockNameIdent block name identifier.
+      * @param blockStartToken token which starts the block.
+      * @return the token which ends the code block.
+      */
+     private static DetailAST getBlockEndToken(DetailAST blockNameIdent, DetailAST blockStartToken) {
+         final Set<DetailAST> rcurlyTokens = getAllTokensOfType(blockNameIdent, TokenTypes.RCURLY);
+         DetailAST blockEndToken = null;
+         for (DetailAST currentRcurly : rcurlyTokens) {
+             final DetailAST parent = currentRcurly.getParent();
+             if (blockStartToken.getLineNo() == parent.getLineNo()) {
+                 blockEndToken = currentRcurly;
+             }
+         }
+         return blockEndToken;
+     }
+ 
+     /**
+      * Checks whether the current variable is returned from the method.
+      * @param currentFrame current frame.
+      * @param ident variable ident token.
+      * @return true if the current variable is returned from the method.
+      */
+     private static boolean isReturnedVariable(AbstractFrame currentFrame, DetailAST ident) {
+         final DetailAST blockFrameNameIdent = currentFrame.getFrameNameIdent();
+         final DetailAST definitionToken = blockFrameNameIdent.getParent();
+         final DetailAST blockStartToken = definitionToken.findFirstToken(TokenTypes.SLIST);
+         final DetailAST blockEndToken = getBlockEndToken(blockFrameNameIdent, blockStartToken);
+ 
+         final Set<DetailAST> returnsInsideBlock = getAllTokensOfType(definitionToken,
+             TokenTypes.LITERAL_RETURN, blockEndToken.getLineNo());
+ 
+         boolean returnedVariable = false;
+         for (DetailAST returnToken : returnsInsideBlock) {
+             returnedVariable = returnToken.findAll(ident).hasMoreNodes();
+             if (returnedVariable) {
+                 break;
+             }
+         }
+         return returnedVariable;
+     }
+ 
+     /**
+      * Checks whether a field can be referenced from a static context.
+@@ -1142,100 +1143,101 @@ public class RequireThisCheck extends AbstractCheck {
+         /**
+          * Adds instance method's name.
+          * @param ident an ident of instance method of the class.
+          */
+         public void addInstanceMethod(final DetailAST ident) {
+             instanceMethods.add(ident);
+         }
+ 
+         /**
+          * Checks if a given name is a known instance member of the class.
+          * @param ident the IDENT ast of the name to check.
+          * @return true is the given name is a name of a known
+          *         instance member of the class.
+          */
+         public boolean hasInstanceMember(final DetailAST ident) {
+             return containsFieldOrVariableDef(instanceMembers, ident);
+         }
+ 
+         /**
+          * Checks if a given name is a known instance method of the class.
+          * @param ident the IDENT ast of the method call to check.
+          * @return true if the given ast is correspondent to a known
+          *         instance method of the class.
+          */
+         public boolean hasInstanceMethod(final DetailAST ident) {
+             return containsMethodDef(instanceMethods, ident);
+         }
+ 
+         /**
+          * Checks if a given name is a known static method of the class.
+          * @param ident the IDENT ast of the method call to check.
+          * @return true is the given ast is correspondent to a known
+          *         instance method of the class.
+          */
+         public boolean hasStaticMethod(final DetailAST ident) {
+             return containsMethodDef(staticMethods, ident);
+         }
+ 
+         /**
+          * Checks whether given instance member has final modifier.
+          * @param instanceMember an instance member of a class.
+          * @return true if given instance member has final modifier.
+          */
+         public boolean hasFinalField(final DetailAST instanceMember) {
+             boolean result = false;
+             for (DetailAST member : instanceMembers) {
+                 final DetailAST mods = member.getParent().findFirstToken(TokenTypes.MODIFIERS);
+                 final boolean finalMod = mods.branchContains(TokenTypes.FINAL);
+                 if (finalMod && member.equals(instanceMember)) {
+                     result = true;
++                    break;
+                 }
+             }
+             return result;
+         }
+ 
+         @Override
+         protected boolean containsFieldOrVariable(DetailAST nameToFind) {
+             return containsFieldOrVariableDef(instanceMembers, nameToFind)
+                     || containsFieldOrVariableDef(staticMembers, nameToFind);
+         }
+ 
+         @Override
+         protected boolean isProperDefinition(DetailAST ident, DetailAST ast) {
+             final String nameToFind = ident.getText();
+             return nameToFind.equals(ast.getText());
+         }
+ 
+         @Override
+         protected AbstractFrame getIfContains(DetailAST nameToFind, boolean lookForMethod) {
+             AbstractFrame frame = null;
+ 
+             if (lookForMethod && containsMethod(nameToFind)
+                 || containsFieldOrVariable(nameToFind)) {
+                 frame = this;
+             }
+             else if (getParent() != null) {
+                 frame = getParent().getIfContains(nameToFind, lookForMethod);
+             }
+             return frame;
+         }
+ 
+         /**
+          * Check whether the frame contains a given method.
+          * @param methodToFind the AST of the method to find.
+          * @return true, if a method with the same name and number of parameters is found.
+          */
+         private boolean containsMethod(DetailAST methodToFind) {
+             return containsMethodDef(instanceMethods, methodToFind)
+                 || containsMethodDef(staticMethods, methodToFind);
+         }
+ 
+         /**
+          * Whether the set contains a method definition with the
+          *     same name and number of parameters.
+          * @param set the set of definitions.
+          * @param ident the specified method call IDENT ast.
+          * @return true if the set contains a definition with the
+          *     same name and number of parameters.
+          */
+         private static boolean containsMethodDef(Set<DetailAST> set, DetailAST ident) {

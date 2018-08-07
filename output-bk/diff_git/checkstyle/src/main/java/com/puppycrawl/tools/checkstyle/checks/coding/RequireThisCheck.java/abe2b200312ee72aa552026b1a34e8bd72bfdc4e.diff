@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+index 97cf78d44..71cbf61b0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+@@ -72,100 +72,108 @@ public class RequireThisCheck extends DeclarationCollector
+      * @return true if we should check fields usage false otherwise.
+      */
+     public boolean getCheckFields()
+     {
+         return checkFields;
+     }
+ 
+     /**
+      * Setter for checkMethods property.
+      * @param checkMethods should we check methods usage or not.
+      */
+     public void setCheckMethods(boolean checkMethods)
+     {
+         this.checkMethods = checkMethods;
+     }
+     /**
+      * @return true if we should check methods usage false otherwise.
+      */
+     public boolean getCheckMethods()
+     {
+         return checkMethods;
+     }
+ 
+     /** Creates new instance of the check. */
+     public RequireThisCheck()
+     {
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.IDENT,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.SLIST,
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
++    @Override
++    public int[] getAcceptableTokens()
++    {
++        return new int[] {
++            TokenTypes.IDENT,
++        };
++    }
++
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         super.visitToken(ast);
+         if (ast.getType() == TokenTypes.IDENT) {
+             processIDENT(ast);
+         }
+     } // end visitToken
+ 
+     /**
+      * Checks if a given IDENT is method call or field name which
+      * require explicit <code>this</code> qualifier.
+      *
+      * @param ast IDENT to check.
+      */
+     private void processIDENT(DetailAST ast)
+     {
+         final int parentType = ast.getParent().getType();
+ 
+         if (parentType == TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR
+             || parentType == TokenTypes.ANNOTATION
+             || parentType == TokenTypes.ANNOTATION_FIELD_DEF)
+         {
+             //cannot refer to 'this' from annotations
+             return;
+         }
+ 
+         // let's check method calls
+         if (parentType == TokenTypes.METHOD_CALL) {
+             if (checkMethods && isClassMethod(ast.getText())) {
+                 log(ast, "require.this.method", ast.getText());
+             }
+             return;
+         }
+ 
+         // let's check fields
+         if (!checkFields) {
+             // we shouldn't check fields
+             return;
+         }
+ 
+         if (ScopeUtils.getSurroundingScope(ast) == null) {
+             // it is not a class or interface it's
+             // either import or package
+             // we shouldn't checks this
+             return;
+         }
+ 
+         if ((parentType == TokenTypes.DOT)
+             && (ast.getPreviousSibling() != null))

@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DescendantTokenCheck.java",
+  "functionName": "logAsSeparated",
+  "functionId": "logAsSeparated___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/DescendantTokenCheck.java",
+  "functionStartLine": 247,
+  "functionEndLine": 280,
+  "changeHistory": [
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e",
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78",
+    "40bb6812631517615cfc45efeb5bdcc93b95a8ae"
+  ],
+  "changeHistoryShort": {
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": "Ybodychange",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": "Ybodychange",
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78": "Ybodychange",
+    "40bb6812631517615cfc45efeb5bdcc93b95a8ae": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": {
+      "type": "Ybodychange",
+      "commitMessage": "Utils class has been splitted to CommonUtils and TokenUtils. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,34 +1,34 @@\n     private void logAsSeparated(DetailAST ast) {\n         // name of this token\n-        final String name \u003d Utils.getTokenName(ast.getType());\n+        final String name \u003d TokenUtils.getTokenName(ast.getType());\n \n         for (int element : limitedTokens) {\n             final int tokenCount \u003d counts[element - 1];\n             if (tokenCount \u003c minimumNumber) {\n-                final String descendantName \u003d Utils.getTokenName(element);\n+                final String descendantName \u003d TokenUtils.getTokenName(element);\n \n                 if (minimumMessage \u003d\u003d null) {\n                     minimumMessage \u003d MSG_KEY_MIN;\n                 }\n                 log(ast.getLineNo(), ast.getColumnNo(),\n                         minimumMessage,\n                         String.valueOf(tokenCount),\n                         String.valueOf(minimumNumber),\n                         name,\n                         descendantName);\n             }\n             if (tokenCount \u003e maximumNumber) {\n-                final String descendantName \u003d Utils.getTokenName(element);\n+                final String descendantName \u003d TokenUtils.getTokenName(element);\n \n                 if (maximumMessage \u003d\u003d null) {\n                     maximumMessage \u003d MSG_KEY_MAX;\n                 }\n                 log(ast.getLineNo(), ast.getColumnNo(),\n                         maximumMessage,\n                         String.valueOf(tokenCount),\n                         String.valueOf(maximumNumber),\n                         name,\n                         descendantName);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: AvoidInlineConditional violations fixed\n",
+      "commitDate": 1439784080000,
+      "commitName": "23c8774d2e2fd245de1e5df02758fd23702c565e",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439782863000,
+      "commitNameOld": "d56a2a366c6f9e3e8639d492d548ae562b75dc81",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,34 @@\n     private void logAsSeparated(DetailAST ast) {\n         // name of this token\n         final String name \u003d Utils.getTokenName(ast.getType());\n \n         for (int element : limitedTokens) {\n             final int tokenCount \u003d counts[element - 1];\n             if (tokenCount \u003c minimumNumber) {\n-                final String descendantName \u003d Utils\n-                        .getTokenName(element);\n+                final String descendantName \u003d Utils.getTokenName(element);\n+\n+                if (minimumMessage \u003d\u003d null) {\n+                    minimumMessage \u003d MSG_KEY_MIN;\n+                }\n                 log(ast.getLineNo(), ast.getColumnNo(),\n-                    minimumMessage \u003d\u003d null ? MSG_KEY_MIN\n-                                : minimumMessage,\n+                        minimumMessage,\n                         String.valueOf(tokenCount),\n                         String.valueOf(minimumNumber),\n                         name,\n                         descendantName);\n             }\n             if (tokenCount \u003e maximumNumber) {\n-                final String descendantName \u003d Utils\n-                        .getTokenName(element);\n+                final String descendantName \u003d Utils.getTokenName(element);\n+\n+                if (maximumMessage \u003d\u003d null) {\n+                    maximumMessage \u003d MSG_KEY_MAX;\n+                }\n                 log(ast.getLineNo(), ast.getColumnNo(),\n-                    maximumMessage \u003d\u003d null ? MSG_KEY_MAX\n-                                : maximumMessage,\n+                        maximumMessage,\n                         String.valueOf(tokenCount),\n                         String.valueOf(maximumNumber),\n                         name,\n                         descendantName);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78": {
+      "type": "Ybodychange",
+      "commitMessage": "Move constants to left side of comparison. #1555\n\nFixes `ConstantOnLHSOfComparison` inspection violations.\n\nDescription:\n\u003eReports on comparison operations with constant values on their left-hand side. Some coding conventions specify that constants should be on the right-hand side of comparisons.\n",
+      "commitDate": 1439084780000,
+      "commitName": "4d6e2376db89b69167de867bfc28f8d8624a6b78",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439024061000,
+      "commitNameOld": "2da168644500c915660b7cfac9668b44317d81fc",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.7,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,30 @@\n     private void logAsSeparated(DetailAST ast) {\n         // name of this token\n         final String name \u003d Utils.getTokenName(ast.getType());\n \n         for (int element : limitedTokens) {\n             final int tokenCount \u003d counts[element - 1];\n             if (tokenCount \u003c minimumNumber) {\n                 final String descendantName \u003d Utils\n                         .getTokenName(element);\n                 log(ast.getLineNo(), ast.getColumnNo(),\n-                        null \u003d\u003d minimumMessage ? MSG_KEY_MIN\n+                    minimumMessage \u003d\u003d null ? MSG_KEY_MIN\n                                 : minimumMessage,\n                         String.valueOf(tokenCount),\n                         String.valueOf(minimumNumber),\n                         name,\n                         descendantName);\n             }\n             if (tokenCount \u003e maximumNumber) {\n                 final String descendantName \u003d Utils\n                         .getTokenName(element);\n                 log(ast.getLineNo(), ast.getColumnNo(),\n-                        null \u003d\u003d maximumMessage ? MSG_KEY_MAX\n+                    maximumMessage \u003d\u003d null ? MSG_KEY_MAX\n                                 : maximumMessage,\n                         String.valueOf(tokenCount),\n                         String.valueOf(maximumNumber),\n                         name,\n                         descendantName);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "40bb6812631517615cfc45efeb5bdcc93b95a8ae": {
+      "type": "Yintroduced",
+      "commitMessage": "DescendantTokenCheck  updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434261690000,
+      "commitName": "40bb6812631517615cfc45efeb5bdcc93b95a8ae",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

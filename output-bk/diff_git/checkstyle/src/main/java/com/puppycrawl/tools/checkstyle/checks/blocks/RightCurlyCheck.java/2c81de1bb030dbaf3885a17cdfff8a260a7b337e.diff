@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+index 974a4f69f..e2af25de4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+@@ -323,101 +323,103 @@ public class RightCurlyCheck extends AbstractCheck {
+             case TokenTypes.LITERAL_TRY:
+                 lcurly = ast.getFirstChild();
+                 nextToken = lcurly.getNextSibling();
+                 rcurly = lcurly.getLastChild();
+                 break;
+             case TokenTypes.LITERAL_CATCH:
+                 nextToken = ast.getNextSibling();
+                 lcurly = ast.getLastChild();
+                 rcurly = lcurly.getLastChild();
+                 if (nextToken == null) {
+                     shouldCheckLastRcurly = true;
+                     nextToken = getNextToken(ast);
+                 }
+                 break;
+             case TokenTypes.LITERAL_IF:
+                 nextToken = ast.findFirstToken(TokenTypes.LITERAL_ELSE);
+                 if (nextToken == null) {
+                     shouldCheckLastRcurly = true;
+                     nextToken = getNextToken(ast);
+                     lcurly = ast.getLastChild();
+                     rcurly = lcurly.getLastChild();
+                 }
+                 else {
+                     lcurly = nextToken.getPreviousSibling();
+                     rcurly = lcurly.getLastChild();
+                 }
+                 break;
+             case TokenTypes.LITERAL_ELSE:
+             case TokenTypes.LITERAL_FINALLY:
+                 shouldCheckLastRcurly = true;
+                 nextToken = getNextToken(ast);
+                 lcurly = ast.getFirstChild();
+                 rcurly = lcurly.getLastChild();
+                 break;
+             case TokenTypes.CLASS_DEF:
+                 final DetailAST child = ast.getLastChild();
+                 lcurly = child.getFirstChild();
+                 rcurly = child.getLastChild();
+                 nextToken = ast;
+                 break;
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.STATIC_INIT:
+             case TokenTypes.INSTANCE_INIT:
+                 lcurly = ast.findFirstToken(TokenTypes.SLIST);
+                 rcurly = lcurly.getLastChild();
+                 nextToken = getNextToken(ast);
+                 break;
+             case TokenTypes.LITERAL_DO:
+                 nextToken = ast.findFirstToken(TokenTypes.DO_WHILE);
+                 lcurly = ast.findFirstToken(TokenTypes.SLIST);
+-                rcurly = lcurly.getLastChild();
++                if (lcurly != null) {
++                    rcurly = lcurly.getLastChild();
++                }
+                 break;
+             default:
+                 // ATTENTION! We have default here, but we expect case TokenTypes.METHOD_DEF,
+                 // TokenTypes.LITERAL_FOR, TokenTypes.LITERAL_WHILE, only.
+                 // It has been done to improve coverage to 100%. I couldn't replace it with
+                 // if-else-if block because code was ugly and didn't pass pmd check.
+ 
+                 lcurly = ast.findFirstToken(TokenTypes.SLIST);
+                 if (lcurly != null) {
+                     // SLIST could be absent if method is abstract,
+                     // and code like "while(true);"
+                     rcurly = lcurly.getLastChild();
+                 }
+                 nextToken = getNextToken(ast);
+                 break;
+         }
+ 
+         final Details details = new Details();
+         details.rcurly = rcurly;
+         details.lcurly = lcurly;
+         details.nextToken = nextToken;
+         details.shouldCheckLastRcurly = shouldCheckLastRcurly;
+ 
+         return details;
+     }
+ 
+     /**
+      * Checks if definition body is empty.
+      * @param lcurly left curly.
+      * @return true if definition body is empty.
+      */
+     private static boolean isEmptyBody(DetailAST lcurly) {
+         boolean result = false;
+         if (lcurly.getParent().getType() == TokenTypes.OBJBLOCK) {
+             if (lcurly.getNextSibling().getType() == TokenTypes.RCURLY) {
+                 result = true;
+             }
+         }
+         else if (lcurly.getFirstChild().getType() == TokenTypes.RCURLY) {
+             result = true;
+         }
+         return result;
+     }
+ 
+     /**
+      * Finds next token after the given one.
+      * @param ast the given node.
+      * @return the token which represents next lexical item.
+      */
+     private static DetailAST getNextToken(DetailAST ast) {

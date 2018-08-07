@@ -1,0 +1,60 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+index 31f66e852..b633e0527 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -515,54 +515,54 @@ public class Checker extends AutomaticBean implements MessageDispatcher {
+      * reflection.
+      * @param classLoader the new classloader
+      */
+     public final void setClassLoader(ClassLoader classLoader) {
+         this.classLoader = classLoader;
+     }
+ 
+     /**
+      * Sets the classloader that is used to contextualize fileset checks.
+      * Some Check implementations will use that classloader to improve the
+      * quality of their reports, e.g. to load a class and then analyze it via
+      * reflection.
+      * @param loader the new classloader
+      * @deprecated use {@link #setClassLoader(ClassLoader loader)} instead.
+      */
+     @Deprecated
+     public final void setClassloader(ClassLoader loader) {
+         classLoader = loader;
+     }
+ 
+     /**
+      * Sets the classloader used to load Checkstyle core and custom module
+      * classes when the module tree is being built up.
+      * If no custom ModuleFactory is being set for the Checker module then
+      * this module classloader must be specified.
+      * @param moduleClassLoader the classloader used to load module classes
+      */
+     public final void setModuleClassLoader(ClassLoader moduleClassLoader) {
+         this.moduleClassLoader = moduleClassLoader;
+     }
+ 
+     /**
+      * Sets a named charset.
+      * @param charset the name of a charset
+      * @throws UnsupportedEncodingException if charset is unsupported.
+      */
+     public void setCharset(String charset)
+             throws UnsupportedEncodingException {
+         if (!Charset.isSupported(charset)) {
+             final String message = "unsupported charset: '" + charset + "'";
+             throw new UnsupportedEncodingException(message);
+         }
+         this.charset = charset;
+     }
+ 
+     /**
+      * Clears the cache.
+      */
+     public void clearCache() {
+         if (cache != null) {
+-            cache.clear();
++            cache.reset();
+         }
+     }
+ }

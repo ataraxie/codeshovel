@@ -1,0 +1,90 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "isSingleLineFor___literalFor-DetailAST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 377,
+  "changeHistory": [
+    "ee5d8ec0360a1e7f9790a050bc7a00ac362e2015",
+    "aaf606ee0268f140c3694baba4c13b03f7839522",
+    "c0d3652d1b5757746ddf4a290d5c4ab7bcce10bc",
+    "eb29e863de490162290425654a7fdcbd41d084df",
+    "b436b3cd9860529718b95c36dafe565fe68f6293"
+  ],
+  "changeHistoryShort": {
+    "ee5d8ec0360a1e7f9790a050bc7a00ac362e2015": "Ybodychange",
+    "aaf606ee0268f140c3694baba4c13b03f7839522": "Ybodychange",
+    "c0d3652d1b5757746ddf4a290d5c4ab7bcce10bc": "Ybodychange",
+    "eb29e863de490162290425654a7fdcbd41d084df": "Ybodychange",
+    "b436b3cd9860529718b95c36dafe565fe68f6293": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "ee5d8ec0360a1e7f9790a050bc7a00ac362e2015": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2291: Fix not raising violation NeedBraces with ForEach loop with single stmt\n",
+      "commitDate": 1449851866000,
+      "commitName": "ee5d8ec0360a1e7f9790a050bc7a00ac362e2015",
+      "commitAuthor": "liscju",
+      "commitDateOld": 1446645178000,
+      "commitNameOld": "880ae00b7b8c90cf4ae0b66685f59b56adaf2aff",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 37.11,
+      "commitsBetweenForRepo": 159,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,11 @@\n     private static boolean isSingleLineFor(DetailAST literalFor) {\n         boolean result \u003d false;\n         if (literalFor.getLastChild().getType() \u003d\u003d TokenTypes.EMPTY_STAT) {\n             result \u003d true;\n         }\n         else if (literalFor.getParent().getType() \u003d\u003d TokenTypes.SLIST\n                 \u0026\u0026 literalFor.getLastChild().getType() !\u003d TokenTypes.SLIST) {\n-            final DetailAST block \u003d findExpressionBlockInForLoop(literalFor);\n-            if (block \u003d\u003d null) {\n-                result \u003d literalFor.getLineNo() \u003d\u003d literalFor.getLastChild().getLineNo();\n-            }\n-            else {\n-                result \u003d literalFor.getLineNo() \u003d\u003d block.getLineNo();\n-            }\n+            result \u003d literalFor.getLineNo() \u003d\u003d literalFor.getLastChild().getLineNo();\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "aaf606ee0268f140c3694baba4c13b03f7839522": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2283: fixed NPE in NeedBraces.isSingleLineFor",
+      "commitDate": 1444396682000,
+      "commitName": "aaf606ee0268f140c3694baba4c13b03f7839522",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1444265756000,
+      "commitNameOld": "423ed9e469db620671459827b58c89025d8f6c66",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.52,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,17 @@\n     private static boolean isSingleLineFor(DetailAST literalFor) {\n         boolean result \u003d false;\n         if (literalFor.getLastChild().getType() \u003d\u003d TokenTypes.EMPTY_STAT) {\n             result \u003d true;\n         }\n         else if (literalFor.getParent().getType() \u003d\u003d TokenTypes.SLIST\n                 \u0026\u0026 literalFor.getLastChild().getType() !\u003d TokenTypes.SLIST) {\n             final DetailAST block \u003d findExpressionBlockInForLoop(literalFor);\n-            result \u003d literalFor.getLineNo() \u003d\u003d block.getLineNo();\n+            if (block \u003d\u003d null) {\n+                result \u003d literalFor.getLineNo() \u003d\u003d literalFor.getLastChild().getLineNo();\n+            }\n+            else {\n+                result \u003d literalFor.getLineNo() \u003d\u003d block.getLineNo();\n+            }\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "c0d3652d1b5757746ddf4a290d5c4ab7bcce10bc": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2135: Fix exception at NeedBraces check in enhanced for loops\n",
+      "commitDate": 1441743803000,
+      "commitName": "c0d3652d1b5757746ddf4a290d5c4ab7bcce10bc",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440997958000,
+      "commitNameOld": "74566f21a2298d53f9c97935542fdb630ad5da87",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 8.63,
+      "commitsBetweenForRepo": 114,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private static boolean isSingleLineFor(DetailAST literalFor) {\n         boolean result \u003d false;\n         if (literalFor.getLastChild().getType() \u003d\u003d TokenTypes.EMPTY_STAT) {\n             result \u003d true;\n         }\n         else if (literalFor.getParent().getType() \u003d\u003d TokenTypes.SLIST\n                 \u0026\u0026 literalFor.getLastChild().getType() !\u003d TokenTypes.SLIST) {\n-            final DetailAST block \u003d literalFor.findFirstToken(TokenTypes.EXPR);\n+            final DetailAST block \u003d findExpressionBlockInForLoop(literalFor);\n             result \u003d literalFor.getLineNo() \u003d\u003d block.getLineNo();\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "eb29e863de490162290425654a7fdcbd41d084df": {
+      "type": "Ybodychange",
+      "commitMessage": "Coverage has been increased to 100% in NeedBracesCheck. Issue #1291\n",
+      "commitDate": 1437888674000,
+      "commitName": "eb29e863de490162290425654a7fdcbd41d084df",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1432506514000,
+      "commitNameOld": "cc355f7e108fe222d957f1dbc8c3ba4eeb7ed941",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 62.29,
+      "commitsBetweenForRepo": 461,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,12 @@\n     private static boolean isSingleLineFor(DetailAST literalFor) {\n         boolean result \u003d false;\n         if (literalFor.getLastChild().getType() \u003d\u003d TokenTypes.EMPTY_STAT) {\n             result \u003d true;\n         }\n         else if (literalFor.getParent().getType() \u003d\u003d TokenTypes.SLIST\n                 \u0026\u0026 literalFor.getLastChild().getType() !\u003d TokenTypes.SLIST) {\n             final DetailAST block \u003d literalFor.findFirstToken(TokenTypes.EXPR);\n-            if (block !\u003d null) {\n-                result \u003d literalFor.getLineNo() \u003d\u003d block.getLineNo();\n-            }\n+            result \u003d literalFor.getLineNo() \u003d\u003d block.getLineNo();\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "b436b3cd9860529718b95c36dafe565fe68f6293": {
+      "type": "Yintroduced",
+      "commitMessage": "Need Braces Check, one-line statements option, issue #300\n",
+      "commitDate": 1425777806000,
+      "commitName": "b436b3cd9860529718b95c36dafe565fe68f6293",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

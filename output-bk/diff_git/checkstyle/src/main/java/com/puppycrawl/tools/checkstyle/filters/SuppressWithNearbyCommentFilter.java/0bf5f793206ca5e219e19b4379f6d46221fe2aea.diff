@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+index 4db7791aa..bc98d509f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+@@ -134,101 +134,101 @@ public class SuppressWithNearbyCommentFilter
+      * @throws ConversionException if unable to create Pattern object.
+      */
+     public final void setCommentFormat(String format) {
+         commentRegexp = CommonUtils.createPattern(format);
+     }
+ 
+     /**
+      * @return the FileContents for this filter.
+      */
+     public FileContents getFileContents() {
+         return fileContentsReference.get();
+     }
+ 
+     /**
+      * Set the FileContents for this filter.
+      * @param fileContents the FileContents for this filter.
+      */
+     public void setFileContents(FileContents fileContents) {
+         fileContentsReference = new WeakReference<>(fileContents);
+     }
+ 
+     /**
+      * Set the format for a check.
+      * @param format a {@code String} value
+      */
+     public final void setCheckFormat(String format) {
+         checkFormat = format;
+     }
+ 
+     /**
+      * Set the format for a message.
+      * @param format a {@code String} value
+      */
+     public void setMessageFormat(String format) {
+         messageFormat = format;
+     }
+ 
+     /**
+      * Set the format for the influence of this check.
+      * @param format a {@code String} value
+      */
+     public final void setInfluenceFormat(String format) {
+         influenceFormat = format;
+     }
+ 
+     /**
+      * Set whether to look in C++ comments.
+      * @param checkCpp {@code true} if C++ comments are checked.
+      */
+     public void setCheckCPP(boolean checkCpp) {
+-        this.checkCPP = checkCpp;
++        checkCPP = checkCpp;
+     }
+ 
+     /**
+      * Set whether to look in C comments.
+      * @param checkC {@code true} if C comments are checked.
+      */
+     public void setCheckC(boolean checkC) {
+         this.checkC = checkC;
+     }
+ 
+     @Override
+     public boolean accept(AuditEvent event) {
+         boolean accepted = true;
+ 
+         if (event.getLocalizedMessage() != null) {
+             // Lazy update. If the first event for the current file, update file
+             // contents and tag suppressions
+             final FileContents currentContents = FileContentsHolder.getContents();
+ 
+             if (currentContents != null) {
+                 if (getFileContents() != currentContents) {
+                     setFileContents(currentContents);
+                     tagSuppressions();
+                 }
+                 if (matchesTag(event)) {
+                     accepted = false;
+                 }
+             }
+         }
+         return accepted;
+     }
+ 
+     /**
+      * Whether current event matches any tag from {@link #tags}.
+      * @param event AuditEvent to test match on {@link #tags}.
+      * @return true if event matches any tag from {@link #tags}, false otherwise.
+      */
+     private boolean matchesTag(AuditEvent event) {
+         for (final Tag tag : tags) {
+             if (tag.isMatch(event)) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Collects all the suppression tags for all comments into a list and
+      * sorts the list.
+      */

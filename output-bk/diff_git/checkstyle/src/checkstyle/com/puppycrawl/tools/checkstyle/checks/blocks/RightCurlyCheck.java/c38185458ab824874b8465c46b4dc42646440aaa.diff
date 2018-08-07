@@ -1,0 +1,111 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+index ffefbb28c..5588a3887 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+@@ -50,103 +50,103 @@ import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
+  * <pre>
+  * &lt;module name="RightCurly"&gt;
+  *     &lt;property name="tokens" value="LITERAL_ELSE"/&gt;
+  *     &lt;property name="option" value="alone"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author Oliver Burn
+  * @author lkuehne
+  * @author o_sukhodolsky
+  * @version 2.0
+  */
+ public class RightCurlyCheck extends AbstractOptionCheck
+ {
+     /** Do we need to check if rculry starts line. */
+     private boolean mShouldStartLine = true;
+ 
+     /**
+      * Sets the right curly option to same.
+      */
+     public RightCurlyCheck()
+     {
+         super(RightCurlyOption.SAME);
+     }
+ 
+     /**
+      * Does the check need to check if rcurly starts line.
+      * @param aFlag new value of this property.
+      */
+     public void setShouldStartLine(boolean aFlag)
+     {
+         mShouldStartLine = aFlag;
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         // Attempt to locate the tokens to do the check
+-        DetailAST rcurly = null;
+-        DetailAST lcurly = null;
+-        DetailAST nextToken = null;
++        DetailAST rcurly;
++        DetailAST lcurly;
++        DetailAST nextToken;
+         boolean shouldCheckLastRcurly = false;
+ 
+         switch (aAST.getType()) {
+         case TokenTypes.LITERAL_TRY:
+             lcurly = (DetailAST) aAST.getFirstChild();
+             nextToken = (DetailAST) lcurly.getNextSibling();
+             rcurly = lcurly.getLastChild();
+             break;
+         case TokenTypes.LITERAL_CATCH:
+             nextToken = (DetailAST) aAST.getNextSibling();
+             lcurly = aAST.getLastChild();
+             rcurly = lcurly.getLastChild();
+             if (nextToken == null) {
+                 shouldCheckLastRcurly = true;
+                 nextToken = getNextToken(aAST);
+             }
+             break;
+         case TokenTypes.LITERAL_IF:
+             nextToken = aAST.findFirstToken(TokenTypes.LITERAL_ELSE);
+             if (nextToken != null) {
+                 lcurly = nextToken.getPreviousSibling();
+                 rcurly = lcurly.getLastChild();
+             }
+             else {
+                 shouldCheckLastRcurly = true;
+                 nextToken = getNextToken(aAST);
+                 lcurly = aAST.getLastChild();
+                 rcurly = lcurly.getLastChild();
+             }
+             break;
+         case TokenTypes.LITERAL_ELSE:
+             shouldCheckLastRcurly = true;
+             nextToken = getNextToken(aAST);
+             lcurly = (DetailAST) aAST.getFirstChild();
+             rcurly = lcurly.getLastChild();
+             break;
+         case TokenTypes.LITERAL_FINALLY:
+             shouldCheckLastRcurly = true;
+             nextToken = getNextToken(aAST);
+             lcurly = (DetailAST) aAST.getFirstChild();
+             rcurly = lcurly.getLastChild();
+             break;
+         default:
+             throw new RuntimeException("Unexpected token type ("
+                     + TokenTypes.getTokenName(aAST.getType()) + ")");
+         }
+ 
+         if (rcurly == null || rcurly.getType() != TokenTypes.RCURLY) {
+             // we need to have both tokens to perform the check
+             return;

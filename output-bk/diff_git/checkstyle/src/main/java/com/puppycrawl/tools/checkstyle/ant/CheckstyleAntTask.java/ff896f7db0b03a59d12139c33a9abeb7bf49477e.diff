@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+index 0478dacf7..b3d507258 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+@@ -236,101 +236,101 @@ public class CheckstyleAntTask extends Task {
+      * @param url the URL of the configuration to use
+      */
+     public void setConfigUrl(URL url) {
+         setConfigLocation(url.toExternalForm());
+     }
+ 
+     /**
+      * Sets the location of the configuration.
+      * @param location the location, which is either a
+      */
+     private void setConfigLocation(String location) {
+         if (configLocation != null) {
+             throw new BuildException("Attributes 'config' and 'configURL' "
+                     + "must not be set at the same time");
+         }
+         configLocation = location;
+     }
+ 
+     /**
+      * Sets flag - whether to omit ignored modules.
+      * @param omit whether to omit ignored modules
+      */
+     public void setOmitIgnoredModules(boolean omit) {
+         omitIgnoredModules = omit;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Setters for Checker configuration attributes
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /**
+      * Sets a properties file for use instead
+      * of individually setting them.
+      * @param props the properties File to use
+      */
+     public void setProperties(File props) {
+         properties = props;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // The doers
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     @Override
+     public void execute() {
+         final long startTime = System.currentTimeMillis();
+ 
+         try {
+             // output version info in debug mode
+             final ResourceBundle compilationProperties = ResourceBundle
+-                    .getBundle("checkstylecompilation");
++                    .getBundle("checkstylecompilation", Locale.ROOT);
+             final String version = compilationProperties
+                     .getString("checkstyle.compile.version");
+             final String compileTimestamp = compilationProperties
+                     .getString("checkstyle.compile.timestamp");
+             log("checkstyle version " + version, Project.MSG_VERBOSE);
+             log("compiled on " + compileTimestamp, Project.MSG_VERBOSE);
+ 
+             // Check for no arguments
+             if (fileName == null && fileSets.isEmpty()) {
+                 throw new BuildException(
+                         "Must specify at least one of 'file' or nested 'fileset'.",
+                         getLocation());
+             }
+             if (configLocation == null) {
+                 throw new BuildException("Must specify 'config'.", getLocation());
+             }
+             realExecute(version);
+         }
+         finally {
+             final long endTime = System.currentTimeMillis();
+             log("Total execution took " + (endTime - startTime) + TIME_SUFFIX,
+                 Project.MSG_VERBOSE);
+         }
+     }
+ 
+     /**
+      * Helper implementation to perform execution.
+      * @param checkstyleVersion Checkstyle compile version.
+      */
+     private void realExecute(String checkstyleVersion) {
+         // Create the checker
+         Checker checker = null;
+         try {
+             checker = createChecker();
+ 
+             // setup the listeners
+             final AuditListener[] listeners = getListeners();
+             for (AuditListener element : listeners) {
+                 checker.addListener(element);
+             }
+             final SeverityLevelCounter warningCounter =
+                 new SeverityLevelCounter(SeverityLevel.WARNING);
+             checker.addListener(warningCounter);
+ 
+             processFiles(checker, warningCounter, checkstyleVersion);
+         }
+         finally {
+             destroyChecker(checker);
+         }
+     }

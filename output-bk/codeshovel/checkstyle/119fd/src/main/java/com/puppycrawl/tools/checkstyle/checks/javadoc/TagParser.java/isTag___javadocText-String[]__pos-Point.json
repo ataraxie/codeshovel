@@ -1,0 +1,136 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "TagParser.java",
+  "functionName": "isTag",
+  "functionId": "isTag___javadocText-String[]__pos-Point",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java",
+  "functionStartLine": 154,
+  "functionEndLine": 164,
+  "changeHistory": [
+    "1bc8a685f64ec17d87b465cb765127cc5f0db1ca",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "979b0b5c20f79d7ac2281ae539859a60dad48c6e",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "fd6a743fd4b3c9283d62174327dd978bda694892"
+  ],
+  "changeHistoryShort": {
+    "1bc8a685f64ec17d87b465cb765127cc5f0db1ca": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "979b0b5c20f79d7ac2281ae539859a60dad48c6e": "Ybodychange",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "fd6a743fd4b3c9283d62174327dd978bda694892": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "1bc8a685f64ec17d87b465cb765127cc5f0db1ca": {
+      "type": "Ybodychange",
+      "commitMessage": "Add tests and refactor TagParser for JavadocStyle check. #1308\n",
+      "commitDate": 1437782507000,
+      "commitName": "1bc8a685f64ec17d87b465cb765127cc5f0db1ca",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 1.75,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,11 @@\n     private static boolean isTag(String[] javadocText, Point pos) {\n         final int column \u003d pos.getColumnNo() + 1;\n         final String text \u003d javadocText[pos.getLineNo()];\n \n         //Character.isJavidentifier... may not be a valid HTML\n         //identifier but is valid for generics\n         return column \u003c text.length()\n                 \u0026\u0026 (Character.isJavaIdentifierStart(text.charAt(column))\n-                    || Character.isJavaIdentifierPart(text.charAt(column))\n                     || text.charAt(column) \u003d\u003d \u0027/\u0027)\n                 || column \u003e\u003d text.length();\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 61.71,
+      "commitsBetweenForRepo": 387,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n-    private boolean isTag(String[] javadocText, Point pos) {\n+    private static boolean isTag(String[] javadocText, Point pos) {\n         final int column \u003d pos.getColumnNo() + 1;\n         final String text \u003d javadocText[pos.getLineNo()];\n \n         //Character.isJavidentifier... may not be a valid HTML\n         //identifier but is valid for generics\n         return column \u003c text.length()\n                 \u0026\u0026 (Character.isJavaIdentifierStart(text.charAt(column))\n                     || Character.isJavaIdentifierPart(text.charAt(column))\n                     || text.charAt(column) \u003d\u003d \u0027/\u0027)\n                 || column \u003e\u003d text.length();\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 20.02,
+      "commitsBetweenForRepo": 107,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private boolean isTag(String[] javadocText, Point pos)\n     {\n         final int column \u003d pos.getColumnNo() + 1;\n         final String text \u003d javadocText[pos.getLineNo()];\n \n         //Character.isJavidentifier... may not be a valid HTML\n         //identifier but is valid for generics\n-        return ((column \u003c text.length())\n+        return column \u003c text.length()\n                 \u0026\u0026 (Character.isJavaIdentifierStart(text.charAt(column))\n                     || Character.isJavaIdentifierPart(text.charAt(column))\n                     || text.charAt(column) \u003d\u003d \u0027/\u0027)\n-                || (column \u003e\u003d text.length()));\n+                || column \u003e\u003d text.length();\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "979b0b5c20f79d7ac2281ae539859a60dad48c6e": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed bug #1649020 where generic parameters for methods\nrecognized as HTML tags. Used patch #1936389 from Travis\nSchneeberger.\n",
+      "commitDate": 1208673630000,
+      "commitName": "979b0b5c20f79d7ac2281ae539859a60dad48c6e",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200192438000,
+      "commitNameOld": "5a7e221b757e91d49be1aea105eb4b839e653fbd",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 98.16,
+      "commitsBetweenForRepo": 28,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private boolean isTag(String[] aText, Point aPos)\n     {\n         final int column \u003d aPos.getColumnNo() + 1;\n         final String text \u003d aText[aPos.getLineNo()];\n \n-        return (((column \u003c text.length())\n-                \u0026\u0026 (((text.charAt(column) \u003e\u003d \u0027A\u0027)\n-                     \u0026\u0026 (text.charAt(column) \u003c\u003d \u0027Z\u0027))\n-                    || ((text.charAt(column) \u003e\u003d \u0027a\u0027)\n-                        \u0026\u0026 (text.charAt(column) \u003c\u003d \u0027z\u0027))\n-                    || (text.charAt(column) \u003d\u003d \u0027/\u0027)))\n+        //Character.isJavaIdentifier... may not be a valid HTML\n+        //identifier but is valid for generics\n+        return ((column \u003c text.length())\n+                \u0026\u0026 (Character.isJavaIdentifierStart(text.charAt(column))\n+                    || Character.isJavaIdentifierPart(text.charAt(column))\n+                    || text.charAt(column) \u003d\u003d \u0027/\u0027)\n                 || (column \u003e\u003d text.length()));\n     }\n\\ No newline at end of file\n"
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1123546736000,
+      "commitNameOld": "d6175fd6c95f64e854c1604e0331d8d1ab9dcaf3",
+      "commitAuthorOld": "Michael Studman",
+      "daysBetweenCommits": 332.13,
+      "commitsBetweenForRepo": 82,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private boolean isTag(String[] aText, Point aPos)\n     {\n         final int column \u003d aPos.getColumnNo() + 1;\n         final String text \u003d aText[aPos.getLineNo()];\n \n-        return (column \u003c text.length()\n+        return (((column \u003c text.length())\n                 \u0026\u0026 (((text.charAt(column) \u003e\u003d \u0027A\u0027)\n                      \u0026\u0026 (text.charAt(column) \u003c\u003d \u0027Z\u0027))\n                     || ((text.charAt(column) \u003e\u003d \u0027a\u0027)\n                         \u0026\u0026 (text.charAt(column) \u003c\u003d \u0027z\u0027))\n-                    || (text.charAt(column) \u003d\u003d \u0027/\u0027))\n-                || column \u003e\u003d text.length());\n+                    || (text.charAt(column) \u003d\u003d \u0027/\u0027)))\n+                || (column \u003e\u003d text.length()));\n     }\n\\ No newline at end of file\n"
+    },
+    "fd6a743fd4b3c9283d62174327dd978bda694892": {
+      "type": "Yintroduced",
+      "commitMessage": "Draft fix for 843887 (XHTML not handled correctly in JavadocStyle).  Feel free to improve it.\n",
+      "commitDate": 1069327160000,
+      "commitName": "fd6a743fd4b3c9283d62174327dd978bda694892",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "JavadocMethodCheck.java",
+  "functionName": "isInThrows",
+  "functionId": "isInThrows___throwsList-List__ExceptionInfo____documentedClassInfo-AbstractClassInfo__foundThrows-Set__String__",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java",
+  "functionStartLine": 933,
+  "functionEndLine": 968,
+  "changeHistory": [
+    "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e",
+    "bf9325be913ce46a1427232c455f4830b574ba44",
+    "5f5142b2325051f9ed31130167c73d154d547211",
+    "e81ca8290b4efd42c3454ffa0159b739f958ea48",
+    "6f1840f011cea3a523d9df1278d4a0af98e1d967"
+  ],
+  "changeHistoryShort": {
+    "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e": "Ybodychange",
+    "bf9325be913ce46a1427232c455f4830b574ba44": "Ymultichange(Yparameterchange,Ybodychange)",
+    "5f5142b2325051f9ed31130167c73d154d547211": "Ybodychange",
+    "e81ca8290b4efd42c3454ffa0159b739f958ea48": "Ybodychange",
+    "6f1840f011cea3a523d9df1278d4a0af98e1d967": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #4102: changed loops to end execution early",
+      "commitDate": 1491393573000,
+      "commitName": "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 67.89,
+      "commitsBetweenForRepo": 202,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,38 +1,36 @@\n     private boolean isInThrows(List\u003cExceptionInfo\u003e throwsList,\n             AbstractClassInfo documentedClassInfo, Set\u003cString\u003e foundThrows) {\n         boolean found \u003d false;\n         ExceptionInfo foundException \u003d null;\n \n         // First look for matches on the exception name\n-        final ListIterator\u003cExceptionInfo\u003e throwIt \u003d throwsList.listIterator();\n-        while (!found \u0026\u0026 throwIt.hasNext()) {\n-            final ExceptionInfo exceptionInfo \u003d throwIt.next();\n-\n+        for (ExceptionInfo exceptionInfo : throwsList) {\n             if (exceptionInfo.getName().getText().equals(\n                     documentedClassInfo.getName().getText())) {\n                 found \u003d true;\n                 foundException \u003d exceptionInfo;\n+                break;\n             }\n         }\n \n         // Now match on the exception type\n         final ListIterator\u003cExceptionInfo\u003e exceptionInfoIt \u003d throwsList.listIterator();\n         while (!found \u0026\u0026 exceptionInfoIt.hasNext()) {\n             final ExceptionInfo exceptionInfo \u003d exceptionInfoIt.next();\n \n             if (documentedClassInfo.getClazz() \u003d\u003d exceptionInfo.getClazz()) {\n                 found \u003d true;\n                 foundException \u003d exceptionInfo;\n             }\n             else if (allowThrowsTagsForSubclasses) {\n                 found \u003d isSubclass(documentedClassInfo.getClazz(), exceptionInfo.getClazz());\n             }\n         }\n \n         if (foundException !\u003d null) {\n             foundException.setFound();\n             foundThrows.add(documentedClassInfo.getName().getText());\n         }\n \n         return found;\n     }\n\\ No newline at end of file\n"
+    },
+    "bf9325be913ce46a1427232c455f4830b574ba44": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #2639: adjust AbbreviationAsWordInName in checkstyle_checks.xml to catch unexpected abbreviations\n",
+      "commitDate": 1448157067000,
+      "commitName": "bf9325be913ce46a1427232c455f4830b574ba44",
+      "commitAuthor": "Roman Ivanov",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "5f5142b2325051f9ed31130167c73d154d547211": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #985: Fix PMD violations for ShortVariable rule\n",
+      "commitDate": 1444185186000,
+      "commitName": "5f5142b2325051f9ed31130167c73d154d547211",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1444139777000,
+      "commitNameOld": "e2b4e687d7b8f9d6d5e1346d874b90e4567aff81",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.53,
+      "commitsBetweenForRepo": 9,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,38 +1,38 @@\n     private boolean isInThrows(List\u003cExceptionInfo\u003e throwsList,\n             AbstractClassInfo documentedCI, Set\u003cString\u003e foundThrows) {\n         boolean found \u003d false;\n         ExceptionInfo foundException \u003d null;\n \n         // First look for matches on the exception name\n         final ListIterator\u003cExceptionInfo\u003e throwIt \u003d throwsList.listIterator();\n         while (!found \u0026\u0026 throwIt.hasNext()) {\n-            final ExceptionInfo ei \u003d throwIt.next();\n+            final ExceptionInfo exceptionInfo \u003d throwIt.next();\n \n-            if (ei.getName().getText().equals(\n+            if (exceptionInfo.getName().getText().equals(\n                     documentedCI.getName().getText())) {\n                 found \u003d true;\n-                foundException \u003d ei;\n+                foundException \u003d exceptionInfo;\n             }\n         }\n \n         // Now match on the exception type\n         final ListIterator\u003cExceptionInfo\u003e exceptionInfoIt \u003d throwsList.listIterator();\n         while (!found \u0026\u0026 exceptionInfoIt.hasNext()) {\n-            final ExceptionInfo ei \u003d exceptionInfoIt.next();\n+            final ExceptionInfo exceptionInfo \u003d exceptionInfoIt.next();\n \n-            if (documentedCI.getClazz() \u003d\u003d ei.getClazz()) {\n+            if (documentedCI.getClazz() \u003d\u003d exceptionInfo.getClazz()) {\n                 found \u003d true;\n-                foundException \u003d ei;\n+                foundException \u003d exceptionInfo;\n             }\n             else if (allowThrowsTagsForSubclasses) {\n-                found \u003d isSubclass(documentedCI.getClazz(), ei.getClazz());\n+                found \u003d isSubclass(documentedCI.getClazz(), exceptionInfo.getClazz());\n             }\n         }\n \n         if (foundException !\u003d null) {\n             foundException.setFound();\n             foundThrows.add(documentedCI.getName().getText());\n         }\n \n         return found;\n     }\n\\ No newline at end of file\n"
+    },
+    "e81ca8290b4efd42c3454ffa0159b739f958ea48": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1555: Avoid reuse of local variables\n\nFixes `ReuseOfLocalVariable` inspection violation.\n\nDescription:\n\u003eReports local variables that are \"reused\", overwriting their values with new values unrelated to their original use. Such local variable reuse may be confusing, as the intended semantics of the local variable may vary with each use. It may also be prone to bugs, if code changes result in values that were thought to be overwritten actually being live. It is good practices to keep variable lifetimes as short as possible, and not reuse local variables for the sake of brevity.\n",
+      "commitDate": 1440912854000,
+      "commitName": "e81ca8290b4efd42c3454ffa0159b739f958ea48",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440826590000,
+      "commitNameOld": "ef834b210cc5c7803ef930fcff96219b6b91922d",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.0,
+      "commitsBetweenForRepo": 57,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,38 +1,38 @@\n     private boolean isInThrows(List\u003cExceptionInfo\u003e throwsList,\n             AbstractClassInfo documentedCI, Set\u003cString\u003e foundThrows) {\n         boolean found \u003d false;\n         ExceptionInfo foundException \u003d null;\n \n         // First look for matches on the exception name\n-        ListIterator\u003cExceptionInfo\u003e throwIt \u003d throwsList.listIterator();\n+        final ListIterator\u003cExceptionInfo\u003e throwIt \u003d throwsList.listIterator();\n         while (!found \u0026\u0026 throwIt.hasNext()) {\n             final ExceptionInfo ei \u003d throwIt.next();\n \n             if (ei.getName().getText().equals(\n                     documentedCI.getName().getText())) {\n                 found \u003d true;\n                 foundException \u003d ei;\n             }\n         }\n \n         // Now match on the exception type\n-        throwIt \u003d throwsList.listIterator();\n-        while (!found \u0026\u0026 throwIt.hasNext()) {\n-            final ExceptionInfo ei \u003d throwIt.next();\n+        final ListIterator\u003cExceptionInfo\u003e exceptionInfoIt \u003d throwsList.listIterator();\n+        while (!found \u0026\u0026 exceptionInfoIt.hasNext()) {\n+            final ExceptionInfo ei \u003d exceptionInfoIt.next();\n \n             if (documentedCI.getClazz() \u003d\u003d ei.getClazz()) {\n                 found \u003d true;\n                 foundException \u003d ei;\n             }\n             else if (allowThrowsTagsForSubclasses) {\n                 found \u003d isSubclass(documentedCI.getClazz(), ei.getClazz());\n             }\n         }\n \n         if (foundException !\u003d null) {\n             foundException.setFound();\n             foundThrows.add(documentedCI.getName().getText());\n         }\n \n         return found;\n     }\n\\ No newline at end of file\n"
+    },
+    "6f1840f011cea3a523d9df1278d4a0af98e1d967": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1566: Refactoring of JavadocMethodCheck to reduce method\u0027s length\n",
+      "commitDate": 1440682229000,
+      "commitName": "6f1840f011cea3a523d9df1278d4a0af98e1d967",
+      "commitAuthor": "Baratali Izmailov"
+    }
+  }
+}

@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index dd591c3ff..5f6901f64 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -226,101 +226,101 @@ public class JavadocStyleCheck
+             checkHtml(ast, comment);
+         }
+ 
+         if (checkEmptyJavadoc) {
+             checkEmptyJavadoc(comment);
+         }
+     }
+ 
+     /**
+      * Checks that the first sentence ends with proper punctuation.  This method
+      * uses a regular expression that checks for the presence of a period,
+      * question mark, or exclamation mark followed either by whitespace, an
+      * HTML element, or the end of string. This method ignores {_AT_inheritDoc}
+      * comments for TokenTypes that are valid for {_AT_inheritDoc}.
+      *
+      * @param ast the current node
+      * @param comment the source lines that make up the Javadoc comment.
+      */
+     private void checkFirstSentence(final DetailAST ast, TextBlock comment)
+     {
+         final String commentText = getCommentText(comment.getText());
+ 
+         if (commentText.length() != 0
+             && !getEndOfSentencePattern().matcher(commentText).find()
+             && !("{@inheritDoc}".equals(commentText)
+             && JavadocTagInfo.INHERIT_DOC.isValidOn(ast)))
+         {
+             log(comment.getStartLineNo(), NO_PERIOD);
+         }
+     }
+ 
+     /**
+      * Checks that the Javadoc is not empty.
+      *
+      * @param comment the source lines that make up the Javadoc comment.
+      */
+     private void checkEmptyJavadoc(TextBlock comment)
+     {
+         final String commentText = getCommentText(comment.getText());
+ 
+         if (commentText.length() == 0) {
+             log(comment.getStartLineNo(), EMPTY);
+         }
+     }
+ 
+     /**
+      * Returns the comment text from the Javadoc.
+      * @param comments the lines of Javadoc.
+      * @return a comment text String.
+      */
+-    private String getCommentText(String[] comments)
++    private String getCommentText(String... comments)
+     {
+         final StringBuffer buffer = new StringBuffer();
+         for (final String line : comments) {
+             final int textStart = findTextStart(line);
+ 
+             if (textStart != -1) {
+                 if (line.charAt(textStart) == '@') {
+                     //we have found the tag section
+                     break;
+                 }
+                 buffer.append(line.substring(textStart));
+                 trimTail(buffer);
+                 buffer.append('\n');
+             }
+         }
+ 
+         return buffer.toString().trim();
+     }
+ 
+     /**
+      * Finds the index of the first non-whitespace character ignoring the
+      * Javadoc comment start and end strings (&#47** and *&#47) as well as any
+      * leading asterisk.
+      * @param line the Javadoc comment line of text to scan.
+      * @return the int index relative to 0 for the start of text
+      *         or -1 if not found.
+      */
+     private int findTextStart(String line)
+     {
+         int textStart = -1;
+         for (int i = 0; i < line.length(); i++) {
+             if (!Character.isWhitespace(line.charAt(i))) {
+                 if (line.regionMatches(i, "/**", 0, "/**".length())) {
+                     i += 2;
+                 }
+                 else if (line.regionMatches(i, "*/", 0, 2)) {
+                     i++;
+                 }
+                 else if (line.charAt(i) != '*') {
+                     textStart = i;
+                     break;
+                 }
+             }
+         }
+         return textStart;
+     }
+ 
+     /**
+      * Trims any trailing whitespace or the end of Javadoc comment string.
+      * @param buffer the StringBuffer to trim.

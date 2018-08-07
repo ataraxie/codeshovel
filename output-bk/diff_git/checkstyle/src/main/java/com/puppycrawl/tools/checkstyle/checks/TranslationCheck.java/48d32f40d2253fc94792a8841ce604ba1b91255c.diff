@@ -1,0 +1,233 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+index f310fe9b1..70473ee06 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+@@ -1,90 +1,89 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks;
+ 
+ import java.io.File;
+ import java.io.FileInputStream;
+ import java.io.FileNotFoundException;
+ import java.io.IOException;
+ import java.io.InputStream;
+ import java.util.Collections;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Properties;
+ import java.util.Set;
+ import java.util.SortedSet;
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ 
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+ 
+ import com.google.common.base.Optional;
+-import com.google.common.base.Splitter;
+ import com.google.common.collect.HashMultimap;
+ import com.google.common.collect.SetMultimap;
+ import com.google.common.collect.Sets;
+ import com.google.common.io.Closeables;
+ import com.google.common.io.Files;
+ import com.puppycrawl.tools.checkstyle.Definitions;
+ import com.puppycrawl.tools.checkstyle.api.AbstractFileSetCheck;
+ import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
+ import com.puppycrawl.tools.checkstyle.api.MessageDispatcher;
+ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * <p>
+  * The TranslationCheck class helps to ensure the correct translation of code by
+  * checking locale-specific resource files for consistency regarding their keys.
+  * Two locale-specific resource files describing one and the same context are consistent if they
+  * contain the same keys. TranslationCheck also can check an existence of required translations
+  * which must exist in project, if 'requiredTranslations' option is used.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="Translation"/&gt;
+  * </pre>
+  * Check has the following options:
+  *
+  * <p><b>baseName</b> - a base name regexp for resource bundles which contain message resources. It
+  * helps the check to distinguish config and localization resources. Default value is
+  * <b>^messages.*$</b>
+  * <p>An example of how to configure the check to validate only bundles which base names start with
+  * "ButtonLabels":
+  * </p>
+  * <pre>
+  * &lt;module name="Translation"&gt;
+  *     &lt;property name="baseName" value="^ButtonLabels.*$"/&gt;
+  * &lt;module/&gt;
+  * </pre>
+  * <p>To configure the check to check only files which have '.properties' and '.translations'
+  * extensions:
+  * </p>
+  * <pre>
+  * &lt;module name="Translation"&gt;
+  *     &lt;property name="fileExtensions" value="properties, translations"/&gt;
+  * &lt;module/&gt;
+  * </pre>
+  *
+  * <p><b>requiredTranslations</b> which allows to specify language codes of required translations
+  * which must exist in project. Language code is composed of the lowercase, two-letter codes as
+  * defined by <a href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO 639-1</a>.
+@@ -126,133 +125,132 @@ public class TranslationCheck extends AbstractFileSetCheck {
+     private static final String WRONG_LANGUAGE_CODE_KEY = "translation.wrongLanguageCode";
+ 
+     /** Logger for TranslationCheck. */
+     private static final Log LOG = LogFactory.getLog(TranslationCheck.class);
+ 
+     /**
+      * Regexp string for default tranlsation files.
+      * For example, messages.properties.
+      */
+     private static final String DEFAULT_TRANSLATION_REGEXP = "^.+\\..+$";
+ 
+     /**
+      * Regexp pattern for bundles names wich end with language code, followed by country code and
+      * variant suffix. For example, messages_es_ES_UNIX.properties.
+      */
+     private static final Pattern LANGUAGE_COUNTRY_VARIANT_PATTERN =
+         CommonUtils.createPattern("^.+\\_[a-z]{2}\\_[A-Z]{2}\\_[A-Za-z]+\\..+$");
+     /**
+      * Regexp pattern for bundles names wich end with language code, followed by country code
+      * suffix. For example, messages_es_ES.properties.
+      */
+     private static final Pattern LANGUAGE_COUNTRY_PATTERN =
+         CommonUtils.createPattern("^.+\\_[a-z]{2}\\_[A-Z]{2}\\..+$");
+     /**
+      * Regexp pattern for bundles names wich end with language code suffix.
+      * For example, messages_es.properties.
+      */
+     private static final Pattern LANGUAGE_PATTERN =
+         CommonUtils.createPattern("^.+\\_[a-z]{2}\\..+$");
+ 
+     /** File name format for default translation. */
+     private static final String DEFAULT_TRANSLATION_FILE_NAME_FORMATTER = "%s.%s";
+     /** File name format with language code. */
+     private static final String FILE_NAME_WITH_LANGUAGE_CODE_FORMATTER = "%s_%s.%s";
+ 
+     /** Formatting string to form regexp to validate required tranlsations file names. */
+     private static final String REGEXP_FORMAT_TO_CHECK_REQUIRED_TRANSLATIONS =
+         "^%1$s\\_%2$s(\\_[A-Z]{2})?\\.%3$s$|^%1$s\\_%2$s\\_[A-Z]{2}\\_[A-Za-z]+\\.%3$s$";
+     /** Formatting string to form regexp to validate default tranlsations file names. */
+     private static final String REGEXP_FORMAT_TO_CHECK_DEFAULT_TRANSLATIONS = "^%s\\.%s$";
+ 
+     /** The files to process. */
+     private final Set<File> filesToProcess = Sets.newHashSet();
+ 
+     /** The base name regexp pattern. */
+     private Pattern baseNamePattern;
+ 
+     /**
+      * Language codes of required translations for the check (de, pt, ja, etc).
+      */
+-    private SortedSet<String> requiredTranslations = Sets.newTreeSet();
++    private Set<String> requiredTranslations = Sets.newHashSet();
+ 
+     /**
+      * Creates a new {@code TranslationCheck} instance.
+      */
+     public TranslationCheck() {
+         setFileExtensions("properties");
+         baseNamePattern = CommonUtils.createPattern("^messages.*$");
+     }
+ 
+     /**
+      * Sets the base name regexp pattern.
+      * @param baseName base name regexp.
+      */
+     public void setBaseName(String baseName) {
+         baseNamePattern = CommonUtils.createPattern(baseName);
+     }
+ 
+     /**
+      * Sets language codes of required translations for the check.
+      * @param translationCodes a comma separated list of language codes.
+      */
+-    public void setRequiredTranslations(String translationCodes) {
+-        requiredTranslations = Sets.newTreeSet(Splitter.on(',')
+-            .trimResults().omitEmptyStrings().split(translationCodes));
++    public void setRequiredTranslations(String... translationCodes) {
++        requiredTranslations = Sets.newHashSet(translationCodes);
+         validateUserSpecifiedLanguageCodes(requiredTranslations);
+     }
+ 
+     /**
+      * Validates the correctness of user specififed language codes for the check.
+      * @param languageCodes user specified language codes for the check.
+      */
+-    private void validateUserSpecifiedLanguageCodes(SortedSet<String> languageCodes) {
++    private void validateUserSpecifiedLanguageCodes(Set<String> languageCodes) {
+         for (String code : languageCodes) {
+             if (!isValidLanguageCode(code)) {
+                 final LocalizedMessage msg = new LocalizedMessage(0, TRANSLATION_BUNDLE,
+                         WRONG_LANGUAGE_CODE_KEY, new Object[] {code}, getId(), getClass(), null);
+                 final String exceptionMessage = String.format(Locale.ROOT,
+                         "%s [%s]", msg.getMessage(), TranslationCheck.class.getSimpleName());
+                 throw new IllegalArgumentException(exceptionMessage);
+             }
+         }
+     }
+ 
+     /**
+      * Checks whether user specified language code is correct (is contained in available locales).
+      * @param userSpecifiedLanguageCode user specified language code.
+      * @return true if user specified language code is correct.
+      */
+     private static boolean isValidLanguageCode(final String userSpecifiedLanguageCode) {
+         boolean valid = false;
+         final Locale[] locales = Locale.getAvailableLocales();
+         for (Locale locale : locales) {
+             if (userSpecifiedLanguageCode.equals(locale.toString())) {
+                 valid = true;
+                 break;
+             }
+         }
+         return valid;
+     }
+ 
+     @Override
+     public void beginProcessing(String charset) {
+         super.beginProcessing(charset);
+         filesToProcess.clear();
+     }
+ 
+     @Override
+     protected void processFiltered(File file, List<String> lines) {
+         // We just collecting files for processing at finishProcessing()
+         filesToProcess.add(file);
+     }
+ 
+     @Override
+     public void finishProcessing() {
+         super.finishProcessing();
+ 
+         final Set<ResourceBundle> bundles = groupFilesIntoBundles(filesToProcess, baseNamePattern);
+         for (ResourceBundle currentBundle : bundles) {
+             checkExistenceOfDefaultTranslation(currentBundle);
+             checkExistenceOfRequiredTranslations(currentBundle);
+             checkTranslationKeys(currentBundle);
+         }

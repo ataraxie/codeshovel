@@ -1,0 +1,102 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/AvoidNestedBlocksCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/AvoidNestedBlocksCheck.java
+index 806c7a278..f77e29b1c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/AvoidNestedBlocksCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/AvoidNestedBlocksCheck.java
+@@ -43,89 +43,89 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+  *
+  * <pre>
+  * // if (someOldCondition)
+  * {
+  *     System.out.println("unconditional");
+  * }
+  * </pre>
+  *
+  * <p>
+  * A case in a switch statement does not implicitly form a block.
+  * Thus to be able to introduce local variables that have case scope
+  * it is necessary to open a nested block. This is supported, set
+  * the allowInSwitchCase property to true and include all statements
+  * of the case in the block.
+  * </p>
+  *
+  * <pre>
+  * switch (a)
+  * {
+  *     case 0:
+  *         // Never OK, break outside block
+  *         {
+  *             x = 1;
+  *         }
+  *         break;
+  *     case 1:
+  *         // Never OK, statement outside block
+  *         System.out.println("Hello");
+  *         {
+  *             x = 2;
+  *             break;
+  *         }
+  *     case 1:
+  *         // OK if allowInSwitchCase is true
+  *         {
+  *             System.out.println("Hello");
+  *             x = 2;
+  *             break;
+  *         }
+  * }
+  * </pre>
+  *
+  * @author lkuehne
+  */
+ public class AvoidNestedBlocksCheck extends Check
+ {
+     /**
+      * Whether nested blocks are allowed if they are the
+      * only child of a switch case.
+      */
+-    private boolean mAllowInSwitchCase;
++    private boolean allowInSwitchCase;
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_BLOCK_NESTED = "block.nested";
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.SLIST};
+     }
+ 
+     @Override
+-    public void visitToken(DetailAST aAST)
++    public void visitToken(DetailAST ast)
+     {
+-        final DetailAST parent = aAST.getParent();
++        final DetailAST parent = ast.getParent();
+         if (parent.getType() == TokenTypes.SLIST) {
+-            if (mAllowInSwitchCase
++            if (allowInSwitchCase
+                     && (parent.getParent().getType() == TokenTypes.CASE_GROUP)
+                     && (parent.getNumberOfChildren() == 1))
+             {
+                 return;
+             }
+-            log(aAST.getLineNo(), aAST.getColumnNo(), MSG_KEY_BLOCK_NESTED);
++            log(ast.getLineNo(), ast.getColumnNo(), MSG_KEY_BLOCK_NESTED);
+         }
+     }
+ 
+     /**
+      * Setter for allowInSwitchCase property.
+-     * @param aAllowInSwitchCase whether nested blocks are allowed
++     * @param allowInSwitchCase whether nested blocks are allowed
+      *                 if they are the only child of a switch case.
+      */
+-    public void setAllowInSwitchCase(boolean aAllowInSwitchCase)
++    public void setAllowInSwitchCase(boolean allowInSwitchCase)
+     {
+-        mAllowInSwitchCase = aAllowInSwitchCase;
++        this.allowInSwitchCase = allowInSwitchCase;
+     }
+ }

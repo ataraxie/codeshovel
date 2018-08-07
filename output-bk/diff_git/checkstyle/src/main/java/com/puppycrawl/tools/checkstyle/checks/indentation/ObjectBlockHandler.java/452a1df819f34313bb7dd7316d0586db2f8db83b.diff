@@ -1,0 +1,69 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java
+index a7efddcb0..090a154e8 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java
+@@ -49,63 +49,63 @@ public class ObjectBlockHandler extends BlockParentHandler {
+     @Override
+     protected DetailAST getLCurly() {
+         return getMainAst().findFirstToken(TokenTypes.LCURLY);
+     }
+ 
+     @Override
+     protected DetailAST getRCurly() {
+         return getMainAst().findFirstToken(TokenTypes.RCURLY);
+     }
+ 
+     @Override
+     protected DetailAST getListChild() {
+         return getMainAst();
+     }
+ 
+     @Override
+     protected IndentLevel getIndentImpl() {
+         final DetailAST parentAST = getMainAst().getParent();
+         IndentLevel indent = getParent().getIndent();
+         if (parentAST.getType() == TokenTypes.LITERAL_NEW) {
+             indent.addAcceptedIndent(super.getIndentImpl());
+         }
+         else if (parentAST.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+             indent = super.getIndentImpl();
+         }
+         return indent;
+     }
+ 
+     @Override
+     public void checkIndentation() {
+         // if we have a class or interface as a parent, don't do anything,
+         // as this is checked by class def; so
+         // only do this if we have a new for a parent (anonymous inner
+         // class)
+         final DetailAST parentAST = getMainAst().getParent();
+         if (parentAST.getType() != TokenTypes.LITERAL_NEW) {
+             return;
+         }
+ 
+         super.checkIndentation();
+     }
+ 
+     @Override
+     protected void checkRCurly() {
+         final DetailAST rcurly = getRCurly();
+         final int rcurlyPos = expandedTabsColumnNo(rcurly);
+         final IndentLevel level = curlyIndent();
+         level.addAcceptedIndent(level.getFirstIndentLevel() + getLineWrappingIndentation());
+ 
+         if (!level.isAcceptable(rcurlyPos) && isOnStartOfLine(rcurly)) {
+-            logError(rcurly, "rcurly", rcurlyPos, curlyIndent());
++            logError(rcurly, "rcurly", rcurlyPos, level);
+         }
+     }
+ 
+     /**
+      * A shortcut for {@code IndentationCheck} property.
+      * @return value of lineWrappingIndentation property
+      *         of {@code IndentationCheck}
+      */
+     private int getLineWrappingIndentation() {
+         return getIndentCheck().getLineWrappingIndentation();
+     }
+ }

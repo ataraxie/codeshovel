@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CustomImportOrderCheck.java",
+  "functionName": "createSamePackageRegexp",
+  "functionId": "createSamePackageRegexp___firstPackageDomainsCount-int__packageNode-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java",
+  "functionStartLine": 775,
+  "functionEndLine": 779,
+  "changeHistory": [
+    "6e8d1e06728b7defbd734253b3818a33676b62bc",
+    "70c83141b4983d3c6073fb645158fc2755d5a6f0",
+    "1c42e3eeb9aeebc47b2373541c1cc8d311d8b671",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+    "2a3be6769c4a97d090970ed52ca2333cb9aea706"
+  ],
+  "changeHistoryShort": {
+    "6e8d1e06728b7defbd734253b3818a33676b62bc": "Ybodychange",
+    "70c83141b4983d3c6073fb645158fc2755d5a6f0": "Ybodychange",
+    "1c42e3eeb9aeebc47b2373541c1cc8d311d8b671": "Ybodychange",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": "Ymultichange(Yparameterchange,Ybodychange)",
+    "2a3be6769c4a97d090970ed52ca2333cb9aea706": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6e8d1e06728b7defbd734253b3818a33676b62bc": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3721: enforced no abbreviations in checkstyle",
+      "commitDate": 1487369078000,
+      "commitName": "6e8d1e06728b7defbd734253b3818a33676b62bc",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 21.31,
+      "commitsBetweenForRepo": 74,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n     private static String createSamePackageRegexp(int firstPackageDomainsCount,\n              DetailAST packageNode) {\n         final String packageFullPath \u003d getFullImportIdent(packageNode);\n-        return getFirstNDomainsFromIdent(firstPackageDomainsCount, packageFullPath);\n+        return getFirstDomainsFromIdent(firstPackageDomainsCount, packageFullPath);\n     }\n\\ No newline at end of file\n"
+    },
+    "70c83141b4983d3c6073fb645158fc2755d5a6f0": {
+      "type": "Ybodychange",
+      "commitMessage": "Changed SAME_PACKAGE rule for CustomImportOrderCheck #1262\n",
+      "commitDate": 1439028110000,
+      "commitName": "70c83141b4983d3c6073fb645158fc2755d5a6f0",
+      "commitAuthor": "Aleksandr Ivanov",
+      "commitDateOld": 1439011156000,
+      "commitNameOld": "f24916302751c0e48d107b68a1b0d61aa81d32a8",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.2,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,5 @@\n     private static String createSamePackageRegexp(int firstPackageDomainsCount,\n              DetailAST packageNode) {\n-        final StringBuilder builder \u003d new StringBuilder();\n         final String packageFullPath \u003d getFullImportIdent(packageNode);\n-        final StringTokenizer tokens \u003d new StringTokenizer(packageFullPath, \".\");\n-        int count \u003d firstPackageDomainsCount;\n-\n-        while (tokens.hasMoreTokens() \u0026\u0026 count \u003e 0) {\n-            builder.append(tokens.nextToken()).append(\u0027.\u0027);\n-            count--;\n-        }\n-        return builder.append(\"*\").toString();\n+        return getFirstNDomainsFromIdent(firstPackageDomainsCount, packageFullPath);\n     }\n\\ No newline at end of file\n"
+    },
+    "1c42e3eeb9aeebc47b2373541c1cc8d311d8b671": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix PMD violations from \u0027strings\u0027 ruleset, issue #873\n",
+      "commitDate": 1429113367000,
+      "commitName": "1c42e3eeb9aeebc47b2373541c1cc8d311d8b671",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1427492342000,
+      "commitNameOld": "ebd4afdebe8ee09c0e6c7d1239e2ca982f87e51c",
+      "commitAuthorOld": "Damian Szczepanik",
+      "daysBetweenCommits": 18.76,
+      "commitsBetweenForRepo": 62,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     private static String createSamePackageRegexp(int firstPackageDomainsCount,\n              DetailAST packageNode)\n     {\n         final StringBuilder builder \u003d new StringBuilder();\n         final String packageFullPath \u003d getFullImportIdent(packageNode);\n         final StringTokenizer tokens \u003d new StringTokenizer(packageFullPath, \".\");\n         int count \u003d firstPackageDomainsCount;\n \n         while (tokens.hasMoreTokens() \u0026\u0026 count \u003e 0) {\n-            builder.append(tokens.nextToken()).append(\".\");\n+            builder.append(tokens.nextToken()).append(\u0027.\u0027);\n             count--;\n         }\n         return builder.append(\"*\").toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, imports, #512\n",
+      "commitDate": 1421678111000,
+      "commitName": "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "2a3be6769c4a97d090970ed52ca2333cb9aea706": {
+      "type": "Yintroduced",
+      "commitMessage": "CustomImportOrder was introduced #231\n",
+      "commitDate": 1407671579000,
+      "commitName": "2a3be6769c4a97d090970ed52ca2333cb9aea706",
+      "commitAuthor": "Max"
+    }
+  }
+}

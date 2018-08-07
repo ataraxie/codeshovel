@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "CollapseTopFieldDocs.java",
+  "functionName": "lessThan",
+  "functionId": "lessThan___first-ShardRef__second-ShardRef",
+  "sourceFilePath": "server/src/main/java/org/apache/lucene/search/grouping/CollapseTopFieldDocs.java",
+  "functionStartLine": 139,
+  "functionEndLine": 155,
+  "changeHistory": [
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+    "998eeb7687826e76c4c860eea7f5a72294838e68",
+    "e48bc2eed71b1808e5d98960976ec60e6e722d78"
+  ],
+  "changeHistoryShort": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": "Yfilerename",
+    "998eeb7687826e76c4c860eea7f5a72294838e68": "Ybodychange",
+    "e48bc2eed71b1808e5d98960976ec60e6e722d78": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": {
+      "type": "Yfilerename",
+      "commitMessage": "Rename core module to server (#28180)\n\nThis is related to #27933. It renames the core module to server. This is\r\nthe first step towards introducing an elasticsearch-core jar.",
+      "commitDate": 1515695443000,
+      "commitName": "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+      "commitAuthor": "Tim Brooks",
+      "commitDateOld": 1515688270000,
+      "commitNameOld": "7d0eb3292b8f8ba27ef50dbbf38783dc68c70728",
+      "commitAuthorOld": "Martijn van Groningen",
+      "daysBetweenCommits": 0.08,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "998eeb7687826e76c4c860eea7f5a72294838e68": {
+      "type": "Ybodychange",
+      "commitMessage": "Synchronized CollapseTopFieldDocs with lucenes relatives (#23854)\n\nTopDocs et.al. got additional parameters to incrementally reduce\r\ntop docs. In order to add incremental reduction `CollapseTopFieldDocs`\r\nneeds to have the same properties.",
+      "commitDate": 1491205844000,
+      "commitName": "998eeb7687826e76c4c860eea7f5a72294838e68",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1486133204000,
+      "commitNameOld": "9a0b216c36e3debb9d48374ced1e58d6568429bd",
+      "commitAuthorOld": "Jason Tedor",
+      "daysBetweenCommits": 58.71,
+      "commitsBetweenForRepo": 538,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,17 @@\n         public boolean lessThan(ShardRef first, ShardRef second) {\n             assert first !\u003d second;\n             final FieldDoc firstFD \u003d (FieldDoc) shardHits[first.shardIndex][first.hitIndex];\n             final FieldDoc secondFD \u003d (FieldDoc) shardHits[second.shardIndex][second.hitIndex];\n \n             for (int compIDX \u003d 0; compIDX \u003c comparators.length; compIDX++) {\n                 final FieldComparator comp \u003d comparators[compIDX];\n \n                 final int cmp \u003d\n                     reverseMul[compIDX] * comp.compareValues(firstFD.fields[compIDX], secondFD.fields[compIDX]);\n \n                 if (cmp !\u003d 0) {\n                     return cmp \u003c 0;\n                 }\n             }\n-\n-            // Tie break: earlier shard wins\n-            if (first.shardIndex \u003c second.shardIndex) {\n-                return true;\n-            } else if (first.shardIndex \u003e second.shardIndex) {\n-                return false;\n-            } else {\n-                // Tie break in same shard: resolve however the\n-                // shard had resolved it:\n-                assert first.hitIndex !\u003d second.hitIndex;\n-                return first.hitIndex \u003c second.hitIndex;\n-            }\n+            return tieBreakLessThan(first, firstFD, second, secondFD);\n         }\n\\ No newline at end of file\n"
+    },
+    "e48bc2eed71b1808e5d98960976ec60e6e722d78": {
+      "type": "Yintroduced",
+      "commitMessage": "Add field collapsing for search request (#22337)\n\n* Add top hits collapsing to search request\r\n\r\nThe field collapsing is done with a custom top docs collector that \"collapse\" search hits with same field value.\r\nThe distributed aspect is resolve using the two passes that the regular search uses. The first pass \"collapse\" the top hits, then the coordinating node merge/collapse the top hits from each shard.\r\n\r\n```\r\nGET _search\r\n{\r\n   \"collapse\": {\r\n      \"field\": \"category\",\r\n   }\r\n}\r\n```\r\n\r\nThis change also adds an ExpandCollapseSearchResponseListener that intercepts the search response and expands collapsed hits using the CollapseBuilder#innerHit} options.\r\nThe retrieval of each inner_hits is done by sending a query to all shards filtered by the collapse key.\r\n\r\n```\r\nGET _search\r\n{\r\n   \"collapse\": {\r\n      \"field\": \"category\",\r\n      \"inner_hits\": {\r\n\t\"size\": 2\r\n      }\r\n   }\r\n}\r\n```\r\n",
+      "commitDate": 1485185631000,
+      "commitName": "e48bc2eed71b1808e5d98960976ec60e6e722d78",
+      "commitAuthor": "Jim Ferenczi"
+    }
+  }
+}

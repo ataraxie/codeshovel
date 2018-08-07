@@ -1,0 +1,100 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java
+index 1b999d86b..9baa54c49 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java
+@@ -21,94 +21,93 @@ package com.puppycrawl.tools.checkstyle.checks.whitespace;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ 
+ /**
+  * <p>
+  * Checks that a token is followed by whitespace, with the exception that it
+  * does not check for whitespace after the semicolon of an empty for iterator.
+  * Use Check {@link EmptyForIteratorPadCheck EmptyForIteratorPad} to validate
+  * empty for iterators.
+  * </p>
+  * <p> By default the check will check the following tokens:
+  *  {@link TokenTypes#COMMA COMMA},
+  *  {@link TokenTypes#SEMI SEMI},
+  *  {@link TokenTypes#TYPECAST TYPECAST}.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="WhitespaceAfter"/&gt;
+  * </pre>
+  * <p> An example of how to configure the check for whitespace only after
+  * {@link TokenTypes#COMMA COMMA} and {@link TokenTypes#SEMI SEMI} tokens is:
+  * </p>
+  * <pre>
+  * &lt;module name="WhitespaceAfter"&gt;
+  *     &lt;property name="tokens" value="COMMA, SEMI"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Oliver Burn
+  * @author Rick Giles
+  * @version 1.0
+  */
+ public class WhitespaceAfterCheck
+     extends Check
+ {
+     /** {@inheritDoc} */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.COMMA,
+             TokenTypes.SEMI,
+             TokenTypes.TYPECAST,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+-        final String[] lines = getLines();
+         final Object[] message;
+         final DetailAST targetAST;
+         if (aAST.getType() == TokenTypes.TYPECAST) {
+             targetAST = aAST.findFirstToken(TokenTypes.RPAREN);
+             // TODO: i18n
+             message = new Object[]{"cast"};
+         }
+         else {
+             targetAST = aAST;
+             message = new Object[]{aAST.getText()};
+         }
+-        final String line = lines[targetAST.getLineNo() - 1];
++        final String line = getLines()[targetAST.getLineNo() - 1];
+         final int after =
+             targetAST.getColumnNo() + targetAST.getText().length();
+ 
+         if (after < line.length()) {
+ 
+             final char charAfter = line.charAt(after);
+             if ((targetAST.getType() == TokenTypes.SEMI)
+                 && ((charAfter == ';') || (charAfter == ')')))
+             {
+                 return;
+             }
+             if (!Character.isWhitespace(charAfter)) {
+                 //empty FOR_ITERATOR?
+                 if (targetAST.getType() == TokenTypes.SEMI) {
+                     final DetailAST sibling =
+                         (DetailAST) targetAST.getNextSibling();
+                     if ((sibling != null)
+                         && (sibling.getType() == TokenTypes.FOR_ITERATOR)
+                         && (sibling.getChildCount() == 0))
+                     {
+                         return;
+                     }
+                 }
+                 log(targetAST.getLineNo(),
+                     targetAST.getColumnNo() + targetAST.getText().length(),
+                     "ws.notFollowed",
+                     message);
+             }
+         }
+     }
+ }

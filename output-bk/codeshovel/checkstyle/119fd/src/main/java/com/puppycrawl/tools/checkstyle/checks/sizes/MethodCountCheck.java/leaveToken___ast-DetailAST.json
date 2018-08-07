@@ -1,0 +1,152 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MethodCountCheck.java",
+  "functionName": "leaveToken",
+  "functionId": "leaveToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodCountCheck.java",
+  "functionStartLine": 125,
+  "functionEndLine": 131,
+  "changeHistory": [
+    "32f4b6e39b30dc032208b876391cd475fae5897f",
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "764360d861e52e34997f63053a90f4ea869886cd",
+    "94ea38f6cf5179e6e9998b864664df32349e42e9",
+    "fead6ef45a093f2a4ffbff013802959c89e7a6c6",
+    "afa1c0d8cd66b51f02b750594cbb9c9855e3e74a"
+  ],
+  "changeHistoryShort": {
+    "32f4b6e39b30dc032208b876391cd475fae5897f": "Ybodychange",
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "764360d861e52e34997f63053a90f4ea869886cd": "Ybodychange",
+    "94ea38f6cf5179e6e9998b864664df32349e42e9": "Yfilerename",
+    "fead6ef45a093f2a4ffbff013802959c89e7a6c6": "Ybodychange",
+    "afa1c0d8cd66b51f02b750594cbb9c9855e3e74a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "32f4b6e39b30dc032208b876391cd475fae5897f": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4540: fixed wrong MethodCount with new nested interface def",
+      "commitDate": 1498654577000,
+      "commitName": "32f4b6e39b30dc032208b876391cd475fae5897f",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1498567814000,
+      "commitNameOld": "7956f0b8d846d8f8ded1e9871e4bb58bf351fbb1",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.0,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,6 @@\n     public void leaveToken(DetailAST ast) {\n-        if (ast.getType() \u003d\u003d TokenTypes.CLASS_DEF\n-            || ast.getType() \u003d\u003d TokenTypes.INTERFACE_DEF\n-            || ast.getType() \u003d\u003d TokenTypes.ENUM_CONSTANT_DEF\n-            || ast.getType() \u003d\u003d TokenTypes.ENUM_DEF) {\n+        if (ast.getType() !\u003d TokenTypes.METHOD_DEF) {\n             final MethodCounter counter \u003d counters.pop();\n             checkCounters(counter, ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78": {
+      "type": "Ybodychange",
+      "commitMessage": "Move constants to left side of comparison. #1555\n\nFixes `ConstantOnLHSOfComparison` inspection violations.\n\nDescription:\n\u003eReports on comparison operations with constant values on their left-hand side. Some coding conventions specify that constants should be on the right-hand side of comparisons.\n",
+      "commitDate": 1439084780000,
+      "commitName": "4d6e2376db89b69167de867bfc28f8d8624a6b78",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 16.82,
+      "commitsBetweenForRepo": 180,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public void leaveToken(DetailAST ast) {\n-        if (TokenTypes.CLASS_DEF \u003d\u003d ast.getType()\n-            || TokenTypes.INTERFACE_DEF \u003d\u003d ast.getType()\n-            || TokenTypes.ENUM_CONSTANT_DEF \u003d\u003d ast.getType()\n-            || TokenTypes.ENUM_DEF \u003d\u003d ast.getType()) {\n+        if (ast.getType() \u003d\u003d TokenTypes.CLASS_DEF\n+            || ast.getType() \u003d\u003d TokenTypes.INTERFACE_DEF\n+            || ast.getType() \u003d\u003d TokenTypes.ENUM_CONSTANT_DEF\n+            || ast.getType() \u003d\u003d TokenTypes.ENUM_DEF) {\n             final MethodCounter counter \u003d counters.pop();\n             checkCounters(counter, ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437365000,
+      "commitNameOld": "0dc48c7c567555a1efe8fb9cbf7ba1812034a5f2",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 18.36,
+      "commitsBetweenForRepo": 101,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     public void leaveToken(DetailAST ast)\n     {\n-        if ((TokenTypes.CLASS_DEF \u003d\u003d ast.getType())\n-            || (TokenTypes.INTERFACE_DEF \u003d\u003d ast.getType())\n-            || (TokenTypes.ENUM_CONSTANT_DEF \u003d\u003d ast.getType())\n-            || (TokenTypes.ENUM_DEF \u003d\u003d ast.getType()))\n+        if (TokenTypes.CLASS_DEF \u003d\u003d ast.getType()\n+            || TokenTypes.INTERFACE_DEF \u003d\u003d ast.getType()\n+            || TokenTypes.ENUM_CONSTANT_DEF \u003d\u003d ast.getType()\n+            || TokenTypes.ENUM_DEF \u003d\u003d ast.getType())\n         {\n             final MethodCounter counter \u003d counters.pop();\n             checkCounters(counter, ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, sizes, #512\n",
+      "commitDate": 1421677310000,
+      "commitName": "3fec4a92e39afc5b68b03c5fd023cb8d13408385",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "764360d861e52e34997f63053a90f4ea869886cd": {
+      "type": "Ybodychange",
+      "commitMessage": "Add support for enumerations.\n",
+      "commitDate": 1285903530000,
+      "commitName": "764360d861e52e34997f63053a90f4ea869886cd",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1285894042000,
+      "commitNameOld": "94ea38f6cf5179e6e9998b864664df32349e42e9",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.11,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,11 @@\n     public void leaveToken(DetailAST aAST)\n     {\n         if ((TokenTypes.CLASS_DEF \u003d\u003d aAST.getType())\n-            || (TokenTypes.INTERFACE_DEF \u003d\u003d aAST.getType()))\n+            || (TokenTypes.INTERFACE_DEF \u003d\u003d aAST.getType())\n+            || (TokenTypes.ENUM_CONSTANT_DEF \u003d\u003d aAST.getType())\n+            || (TokenTypes.ENUM_DEF \u003d\u003d aAST.getType()))\n         {\n             final MethodCounter counter \u003d mCounters.pop();\n             checkCounters(counter, aAST);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "94ea38f6cf5179e6e9998b864664df32349e42e9": {
+      "type": "Yfilerename",
+      "commitMessage": "Move to a better home. It is a better fit.\n",
+      "commitDate": 1285894042000,
+      "commitName": "94ea38f6cf5179e6e9998b864664df32349e42e9",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1285892858000,
+      "commitNameOld": "5c6e03a868c0f756ccd3bb9b796febbbbf25bd4e",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "fead6ef45a093f2a4ffbff013802959c89e7a6c6": {
+      "type": "Ybodychange",
+      "commitMessage": "A version ready for testing.\n",
+      "commitDate": 1285830130000,
+      "commitName": "fead6ef45a093f2a4ffbff013802959c89e7a6c6",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1285827639000,
+      "commitNameOld": "afa1c0d8cd66b51f02b750594cbb9c9855e3e74a",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public void leaveToken(DetailAST aAST)\n     {\n         if ((TokenTypes.CLASS_DEF \u003d\u003d aAST.getType())\n             || (TokenTypes.INTERFACE_DEF \u003d\u003d aAST.getType()))\n         {\n-            checkCounters(aAST);\n-            cleanupTypeDef();\n+            final MethodCounter counter \u003d mCounters.pop();\n+            checkCounters(counter, aAST);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "afa1c0d8cd66b51f02b750594cbb9c9855e3e74a": {
+      "type": "Yintroduced",
+      "commitMessage": "Record a first cut.\n",
+      "commitDate": 1285827639000,
+      "commitName": "afa1c0d8cd66b51f02b750594cbb9c9855e3e74a",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

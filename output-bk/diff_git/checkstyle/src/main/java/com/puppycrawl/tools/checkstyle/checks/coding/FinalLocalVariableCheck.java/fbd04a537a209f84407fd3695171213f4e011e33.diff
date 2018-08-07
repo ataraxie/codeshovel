@@ -1,0 +1,106 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+index 9330094f6..ae1cfc1d9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+@@ -235,100 +235,101 @@ public class FinalLocalVariableCheck extends Check {
+      * {@code
+      * for (int i = 0, j = 0; i < j; i++) { . . . }
+      * }
+      * </p>
+      * {@code i, j} are defined in {@link TokenTypes#FOR_INIT for-loop init}
+      * @param variableDef variable definition node.
+      * @return true if variable is defined in {@link TokenTypes#FOR_INIT for-loop init}
+      */
+     private static boolean isVariableInForInit(DetailAST variableDef) {
+         return variableDef.getParent().getType() == TokenTypes.FOR_INIT;
+     }
+ 
+     /**
+      * Determines whether an AST is a descendant of an abstract or native method.
+      * @param ast the AST to check.
+      * @return true if ast is a descendant of an abstract or native method.
+      */
+     private static boolean isInAbstractOrNativeMethod(DetailAST ast) {
+         boolean abstractOrNative = false;
+         DetailAST parent = ast.getParent();
+         while (parent != null && !abstractOrNative) {
+             if (parent.getType() == TokenTypes.METHOD_DEF) {
+                 final DetailAST modifiers =
+                     parent.findFirstToken(TokenTypes.MODIFIERS);
+                 abstractOrNative = modifiers.branchContains(TokenTypes.ABSTRACT)
+                         || modifiers.branchContains(TokenTypes.LITERAL_NATIVE);
+             }
+             parent = parent.getParent();
+         }
+         return abstractOrNative;
+     }
+ 
+     /**
+      * Check if current param is lambda's param.
+      * @param paramDef {@link TokenTypes#PARAMETER_DEF parameter def}.
+      * @return true if current param is lambda's param.
+      */
+     private static boolean isInLambda(DetailAST paramDef) {
+         return paramDef.getParent().getParent().getType() == TokenTypes.LAMBDA;
+     }
+ 
+     /**
+      * Find the Class or Constructor or Method in which it is defined.
+      * @param ast Variable for which we want to find the scope in which it is defined
+      * @return ast The Class or Constructor or Method in which it is defined.
+      */
+     private static DetailAST findClassOrConstructorOrMethodInWhichItIsDefined(DetailAST ast) {
+         DetailAST astTraverse = ast;
+         while (!(astTraverse.getType() == TokenTypes.METHOD_DEF
+                 || astTraverse.getType() == TokenTypes.CLASS_DEF
++                || astTraverse.getType() == TokenTypes.ENUM_DEF
+                 || astTraverse.getType() == TokenTypes.CTOR_DEF)) {
+             astTraverse = astTraverse.getParent();
+         }
+         return astTraverse;
+     }
+ 
+     /**
+      * Check if both the Variable are same.
+      * @param ast1 Variable to compare
+      * @param ast2 Variable to compare
+      * @return true if both the variable are same, otherwise false
+      */
+     private static boolean isSameVariables(DetailAST ast1, DetailAST ast2) {
+         final DetailAST classOrMethodOfAst1 =
+             findClassOrConstructorOrMethodInWhichItIsDefined(ast1);
+         final DetailAST classOrMethodOfAst2 =
+             findClassOrConstructorOrMethodInWhichItIsDefined(ast2);
+ 
+         final String identifierOfAst1 =
+             classOrMethodOfAst1.findFirstToken(TokenTypes.IDENT).getText();
+         final String identifierOfAst2 =
+             classOrMethodOfAst2.findFirstToken(TokenTypes.IDENT).getText();
+ 
+         return identifierOfAst1.equals(identifierOfAst2);
+     }
+ 
+     /**
+      * Inserts a variable at the topmost scope stack.
+      * @param ast the variable to insert
+      */
+     private void insertVariable(DetailAST ast) {
+         final Map<String, DetailAST> state = scopeStack.peek();
+         final DetailAST astNode = ast.findFirstToken(TokenTypes.IDENT);
+         state.put(astNode.getText(), astNode);
+     }
+ 
+     /**
+      * Removes the variable from the Stacks.
+      * @param ast Variable to remove
+      */
+     private void removeVariable(DetailAST ast) {
+         final Iterator<Map<String, DetailAST>> iterator = scopeStack.descendingIterator();
+         while (iterator.hasNext()) {
+             final Map<String, DetailAST> state = iterator.next();
+             final DetailAST storedVariable = state.get(ast.getText());
+             if (storedVariable != null && isSameVariables(storedVariable, ast)) {
+                 state.remove(ast.getText());
+                 break;
+             }
+         }

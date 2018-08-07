@@ -1,0 +1,155 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index 8738b9be6..26d5b68d6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -926,146 +926,139 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck {
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Returns whether an AST represents a setter method.
+      * @param ast the AST to check with
+      * @return whether the AST represents a setter method
+      */
+     private boolean isSetterMethod(final DetailAST ast) {
+         // Check have a method with exactly 7 children which are all that
+         // is allowed in a proper setter method which does not throw any
+         // exceptions.
+         if (ast.getType() != TokenTypes.METHOD_DEF
+                 || ast.getChildCount() != MAX_CHILDREN) {
+             return false;
+         }
+ 
+         // Should I handle only being in a class????
+ 
+         // Check the name matches format setX...
+         final DetailAST type = ast.findFirstToken(TokenTypes.TYPE);
+         final String name = type.getNextSibling().getText();
+         if (!name.matches("^set[A-Z].*")) { // Depends on JDK 1.4
+             return false;
+         }
+ 
+         // Check the return type is void
+         if (type.getChildCount(TokenTypes.LITERAL_VOID) == 0) {
+             return false;
+         }
+ 
+         // Check that is had only one parameter
+         final DetailAST params = ast.findFirstToken(TokenTypes.PARAMETERS);
+         if (params == null
+                 || params.getChildCount(TokenTypes.PARAMETER_DEF) != 1) {
+             return false;
+         }
+ 
+         // Now verify that the body consists of:
+         // SLIST -> EXPR -> ASSIGN
+         // SEMI
+         // RCURLY
+         final DetailAST slist = ast.findFirstToken(TokenTypes.SLIST);
+         if (slist == null || slist.getChildCount() != BODY_SIZE) {
+             return false;
+         }
+ 
+         final AST expr = slist.getFirstChild();
+-        if (expr.getType() != TokenTypes.EXPR
+-                || expr.getFirstChild().getType() != TokenTypes.ASSIGN) {
+-            return false;
+-        }
+-
+-        return true;
++        return expr.getType() == TokenTypes.EXPR
++                && expr.getFirstChild().getType() == TokenTypes.ASSIGN;
+     }
+ 
+     /**
+      * Returns whether an AST represents a getter method.
+      * @param ast the AST to check with
+      * @return whether the AST represents a getter method
+      */
+     private boolean isGetterMethod(final DetailAST ast) {
+         // Check have a method with exactly 7 children which are all that
+         // is allowed in a proper getter method which does not throw any
+         // exceptions.
+         if (ast.getType() != TokenTypes.METHOD_DEF
+                 || ast.getChildCount() != MAX_CHILDREN) {
+             return false;
+         }
+ 
+         // Check the name matches format of getX or isX. Technically I should
+         // check that the format isX is only used with a boolean type.
+         final DetailAST type = ast.findFirstToken(TokenTypes.TYPE);
+         final String name = type.getNextSibling().getText();
+         if (!name.matches("^(is|get)[A-Z].*")) { // Depends on JDK 1.4
+             return false;
+         }
+ 
+         // Check the return type is void
+         if (type.getChildCount(TokenTypes.LITERAL_VOID) > 0) {
+             return false;
+         }
+ 
+         // Check that is had only one parameter
+         final DetailAST params = ast.findFirstToken(TokenTypes.PARAMETERS);
+         if (params == null
+                 || params.getChildCount(TokenTypes.PARAMETER_DEF) > 0) {
+             return false;
+         }
+ 
+         // Now verify that the body consists of:
+         // SLIST -> RETURN
+         // RCURLY
+         final DetailAST slist = ast.findFirstToken(TokenTypes.SLIST);
+         if (slist == null || slist.getChildCount() != 2) {
+             return false;
+         }
+ 
+         final AST expr = slist.getFirstChild();
+-        if (expr.getType() != TokenTypes.LITERAL_RETURN
+-                || expr.getFirstChild().getType() != TokenTypes.EXPR) {
+-            return false;
+-        }
++        return expr.getType() == TokenTypes.LITERAL_RETURN
++                && expr.getFirstChild().getType() == TokenTypes.EXPR;
+ 
+-        return true;
+     }
+ 
+     /** Stores useful information about declared exception. */
+     private static class ExceptionInfo {
+         /** does the exception have throws tag associated with. */
+         private boolean found;
+         /** class information associated with this exception. */
+         private final AbstractClassInfo classInfo;
+ 
+         /**
+          * Creates new instance for <code>FullIdent</code>.
+          *
+          * @param classInfo clas info
+          */
+         ExceptionInfo(AbstractClassInfo classInfo) {
+             this.classInfo = classInfo;
+         }
+ 
+         /** Mark that the exception has associated throws tag */
+         final void setFound() {
+             found = true;
+         }
+ 
+         /** @return whether the exception has throws tag associated with */
+         final boolean isFound() {
+             return found;
+         }
+ 
+         /** @return exception's name */
+         final Token getName() {
+             return classInfo.getName();
+         }
+ 
+         /** @return class for this exception */
+         final Class<?> getClazz() {
+             return classInfo.getClazz();
+         }
+     }
+ }

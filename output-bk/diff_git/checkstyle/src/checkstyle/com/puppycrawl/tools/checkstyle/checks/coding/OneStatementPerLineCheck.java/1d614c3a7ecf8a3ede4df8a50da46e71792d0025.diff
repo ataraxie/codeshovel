@@ -1,0 +1,79 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
+index 79e8917f9..1e81e7972 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
+@@ -52,69 +52,70 @@ public final class OneStatementPerLineCheck extends Check
+     public void beginTree(DetailAST aRootAST)
+     {
+         mExprDepth = 0;
+         mInForHeader = false;
+         mLastStatementEnd = -1;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST aAst)
+     {
+         switch (aAst.getType()) {
+         case TokenTypes.EXPR:
+             visitExpr(aAst);
+             break;
+         case TokenTypes.SEMI:
+             visitSemi(aAst);
+             break;
+         case TokenTypes.FOR_INIT:
+             mInForHeader = true;
+             break;
+         default:
+             break;
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST aAst)
+     {
+         switch (aAst.getType()) {
+         case TokenTypes.FOR_ITERATOR:
+             mInForHeader = false;
+             break;
+         case TokenTypes.EXPR:
+             mExprDepth--;
+             break;
+         default:
+             break;
+         }
+     }
+ 
+     /**
+      * Mark the state-change for the statement (entering) and remember the
+      * first line of the last statement. If the first line of the new
+      * statement is the same as the last line of the last statement and we are
+      * not within a for-statement, then the rule is violated.
+      * @param aAst token for the {@link TokenTypes#EXPR}.
+      */
+     private void visitExpr(DetailAST aAst)
+     {
+         mExprDepth++;
+-        if (mExprDepth == 1) {
+-            if (!mInForHeader && (mLastStatementEnd == aAst.getLineNo())) {
+-                log(aAst, "multiple.statements.line");
+-            }
++        if (mExprDepth == 1
++                && !mInForHeader
++                && (mLastStatementEnd == aAst.getLineNo()))
++        {
++            log(aAst, "multiple.statements.line");
+         }
+     }
+ 
+     /**
+      * Mark the state-change for the statement (leaving) and remember the last
+      * line of the last statement.
+      * @param aAst for the {@link TokenTypes#SEMI}.
+      */
+     private void visitSemi(DetailAST aAst)
+     {
+         if (mExprDepth == 0) {
+             mLastStatementEnd = aAst.getLineNo();
+         }
+     }
+ }

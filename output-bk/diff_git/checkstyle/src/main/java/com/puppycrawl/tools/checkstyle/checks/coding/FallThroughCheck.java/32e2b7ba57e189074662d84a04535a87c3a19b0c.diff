@@ -1,0 +1,119 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
+index 07f5df963..627f08e2c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
+@@ -45,111 +45,111 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+  * </p>
+  * <pre>
+  * case 3:
+  *     x = 2;
+  *     // fallthru
+  * case 4:
+  * case 5:
+  * case 6:
+  *     break;
+  * </pre>
+  * <p>
+  * The recognized relief comment can be configured with the property
+  * {@code reliefPattern}. Default value of this regular expression
+  * is "fallthru|fall through|fallthrough|falls through".
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="FallThrough"&gt;
+  *     &lt;property name=&quot;reliefPattern&quot;
+  *                  value=&quot;Fall Through&quot;/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author o_sukhodolsky
+  */
+ @StatelessCheck
+ public class FallThroughCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_FALL_THROUGH = "fall.through";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_FALL_THROUGH_LAST = "fall.through.last";
+ 
+     /** Do we need to check last case group. */
+     private boolean checkLastCaseGroup;
+ 
+     /** Relief regexp to allow fall through to the next case branch. */
+     private Pattern reliefPattern = Pattern.compile("fallthru|falls? ?through");
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[] {TokenTypes.CASE_GROUP};
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return getDefaultTokens();
++        return new int[] {TokenTypes.CASE_GROUP};
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return new int[] {TokenTypes.CASE_GROUP};
++        return getRequiredTokens();
+     }
+ 
+     /**
+      * Set the relief pattern.
+      *
+      * @param pattern
+      *            The regular expression pattern.
+      */
+     public void setReliefPattern(Pattern pattern) {
+         reliefPattern = pattern;
+     }
+ 
+     /**
+      * Configures whether we need to check last case group or not.
+      * @param value new value of the property.
+      */
+     public void setCheckLastCaseGroup(boolean value) {
+         checkLastCaseGroup = value;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final DetailAST nextGroup = ast.getNextSibling();
+         final boolean isLastGroup = nextGroup.getType() != TokenTypes.CASE_GROUP;
+         if (!isLastGroup || checkLastCaseGroup) {
+             final DetailAST slist = ast.findFirstToken(TokenTypes.SLIST);
+ 
+             if (slist != null && !isTerminated(slist, true, true)
+                 && !hasFallThroughComment(ast, nextGroup)) {
+                 if (isLastGroup) {
+                     log(ast, MSG_FALL_THROUGH_LAST);
+                 }
+                 else {
+                     log(nextGroup, MSG_FALL_THROUGH);
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Checks if a given subtree terminated by return, throw or,
+      * if allowed break, continue.
+      * @param ast root of given subtree
+      * @param useBreak should we consider break as terminator.
+      * @param useContinue should we consider continue as terminator.
+      * @return true if the subtree is terminated.
+      */
+     private boolean isTerminated(final DetailAST ast, boolean useBreak,
+                                  boolean useContinue) {
+         final boolean terminated;

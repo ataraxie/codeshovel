@@ -1,0 +1,111 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index 3553454c5..1ce73a42d 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -69,102 +69,105 @@ public class JavadocStyleCheck
+     /** The scope to check. */
+     private Scope mScope = Scope.PRIVATE;
+ 
+     /** the visibility scope where Javadoc comments shouldn't be checked **/
+     private Scope mExcludeScope;
+ 
+     /** Format for matching the end of a sentence. */
+     private String mEndOfSentenceFormat = "([.?!][ \t\n\r\f<])|([.?!]$)";
+ 
+     /** Regular expression for matching the end of a sentence. */
+     private Pattern mEndOfSentencePattern;
+ 
+     /**
+      * Indicates if the first sentence should be checked for proper end of
+      * sentence punctuation.
+      */
+     private boolean mCheckFirstSentence = true;
+ 
+     /**
+      * Indicates if the HTML within the comment should be checked.
+      */
+     private boolean mCheckHtml = true;
+ 
+     /**
+      * Indicates if empty javadoc statements should be checked.
+      */
+     private boolean mCheckEmptyJavadoc;
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+             TokenTypes.PACKAGE_DEF,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         if (shouldCheck(aAST)) {
+             final FileContents contents = getFileContents();
++            // Need to start searching for the comment before the annotations
++            // that may exist. Even if annotations are not defined on the
++            // package, the ANNOTATIONS AST is defined.
+             final TextBlock cmt =
+-                contents.getJavadocBefore(aAST.getLineNo());
++                contents.getJavadocBefore(aAST.getFirstChild().getLineNo());
+ 
+             checkComment(aAST, cmt);
+         }
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param aAST a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST aAST)
+     {
+         if (aAST.getType() == TokenTypes.PACKAGE_DEF) {
+             return getFileContents().inPackageInfo();
+         }
+ 
+         if (ScopeUtils.inCodeBlock(aAST)) {
+             return false;
+         }
+ 
+         final Scope declaredScope;
+         if (aAST.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+             declaredScope = Scope.PUBLIC;
+         }
+         else {
+             declaredScope = ScopeUtils.getScopeFromMods(
+                 aAST.findFirstToken(TokenTypes.MODIFIERS));
+         }
+ 
+         final Scope scope =
+             ScopeUtils.inInterfaceOrAnnotationBlock(aAST)
+             ? Scope.PUBLIC : declaredScope;
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(aAST);
+ 
+         return scope.isIn(mScope)
+             && ((surroundingScope == null) || surroundingScope.isIn(mScope))
+             && ((mExcludeScope == null)
+                 || !scope.isIn(mExcludeScope)
+                 || ((surroundingScope != null)
+                 && !surroundingScope.isIn(mExcludeScope)));
+     }
+ 
+     /**
+      * Performs the various checks agains the Javadoc comment.
+      *
+      * @param aAST the AST of the element being documented
+      * @param aComment the source lines that make up the Javadoc comment.
+      *
+      * @see #checkFirstSentence(TextBlock)
+      * @see #checkHtml(DetailAST, TextBlock)

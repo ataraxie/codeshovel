@@ -1,0 +1,70 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+index 768ce6170..31758a74e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+@@ -175,63 +175,63 @@ public class UncommentedMainCheck
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkClassName() {
+         return !excludedClassesPattern.matcher(currentClass).find();
+     }
+ 
+     /**
+      * Checks that method name is @quot;main@quot;.
+      * @param method the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private static boolean checkName(DetailAST method) {
+         final DetailAST ident = method.findFirstToken(TokenTypes.IDENT);
+         return "main".equals(ident.getText());
+     }
+ 
+     /**
+      * Checks that method has final and static modifiers.
+      * @param method the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private static boolean checkModifiers(DetailAST method) {
+         final DetailAST modifiers =
+             method.findFirstToken(TokenTypes.MODIFIERS);
+ 
+         return modifiers.branchContains(TokenTypes.LITERAL_PUBLIC)
+             && modifiers.branchContains(TokenTypes.LITERAL_STATIC);
+     }
+ 
+     /**
+      * Checks that return type is {@code void}.
+      * @param method the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private static boolean checkType(DetailAST method) {
+         final DetailAST type =
+             method.findFirstToken(TokenTypes.TYPE).getFirstChild();
+         return type.getType() == TokenTypes.LITERAL_VOID;
+     }
+ 
+     /**
+      * Checks that method has only {@code String[]} param.
+      * @param method the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private static boolean checkParams(DetailAST method) {
+         boolean checkPassed = false;
+         final DetailAST params = method.findFirstToken(TokenTypes.PARAMETERS);
+ 
+         if (params.getChildCount() == 1) {
+-            final DetailAST paratype = params.getFirstChild().findFirstToken(TokenTypes.TYPE);
+-            final DetailAST arrayDecl = paratype.findFirstToken(TokenTypes.ARRAY_DECLARATOR);
++            final DetailAST parameterType = params.getFirstChild().findFirstToken(TokenTypes.TYPE);
++            final DetailAST arrayDecl = parameterType.findFirstToken(TokenTypes.ARRAY_DECLARATOR);
+ 
+             if (arrayDecl != null) {
+                 final DetailAST arrayType = arrayDecl.getFirstChild();
+                 final FullIdent type = FullIdent.createFullIdent(arrayType);
+                 checkPassed = "String".equals(type.getText())
+                         || "java.lang.String".equals(type.getText());
+             }
+         }
+         return checkPassed;
+     }
+ }

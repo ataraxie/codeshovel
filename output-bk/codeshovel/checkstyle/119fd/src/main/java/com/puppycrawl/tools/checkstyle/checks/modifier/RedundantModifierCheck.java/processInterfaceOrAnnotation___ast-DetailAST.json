@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RedundantModifierCheck.java",
+  "functionName": "processInterfaceOrAnnotation",
+  "functionId": "processInterfaceOrAnnotation___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/RedundantModifierCheck.java",
+  "functionStartLine": 254,
+  "functionEndLine": 277,
+  "changeHistory": [
+    "dbcca4f428fbab2d34e19db05b9bbfb145d20b85",
+    "9acda0b233abd4ddd617d67c7c41fc8dfbab86f0",
+    "e030d1463c307836bbb201a202d15e81a41bcb0b"
+  ],
+  "changeHistoryShort": {
+    "dbcca4f428fbab2d34e19db05b9bbfb145d20b85": "Ybodychange",
+    "9acda0b233abd4ddd617d67c7c41fc8dfbab86f0": "Ybodychange",
+    "e030d1463c307836bbb201a202d15e81a41bcb0b": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "dbcca4f428fbab2d34e19db05b9bbfb145d20b85": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2203: Fix RedundantModifier check at final classes in interfaces\n",
+      "commitDate": 1442753415000,
+      "commitName": "dbcca4f428fbab2d34e19db05b9bbfb145d20b85",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1442582459000,
+      "commitNameOld": "bad81c81c2be3e67099c512e4e0aada291323566",
+      "commitAuthorOld": "liscju",
+      "daysBetweenCommits": 1.98,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,25 @@\n     private void processInterfaceOrAnnotation(DetailAST ast) {\n         final DetailAST modifiers \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n         DetailAST modifier \u003d modifiers.getFirstChild();\n         while (modifier !\u003d null) {\n \n             // javac does not allow final or static in interface methods\n             // order annotation fields hence no need to check that this\n             // is not a method or annotation field\n \n             final int type \u003d modifier.getType();\n             if (type \u003d\u003d TokenTypes.LITERAL_PUBLIC\n                 || type \u003d\u003d TokenTypes.LITERAL_STATIC\n                         \u0026\u0026 ast.getType() !\u003d TokenTypes.METHOD_DEF\n                 || type \u003d\u003d TokenTypes.ABSTRACT\n                         \u0026\u0026 ast.getType() !\u003d TokenTypes.CLASS_DEF\n-                || type \u003d\u003d TokenTypes.FINAL) {\n+                || type \u003d\u003d TokenTypes.FINAL\n+                        \u0026\u0026 ast.getType() !\u003d TokenTypes.CLASS_DEF) {\n                 log(modifier.getLineNo(), modifier.getColumnNo(),\n                         MSG_KEY, modifier.getText());\n                 break;\n             }\n \n             modifier \u003d modifier.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "9acda0b233abd4ddd617d67c7c41fc8dfbab86f0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1833: Fixed redundant modifier false positive for abstract classes in interfaces.\n",
+      "commitDate": 1441369971000,
+      "commitName": "9acda0b233abd4ddd617d67c7c41fc8dfbab86f0",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1441287944000,
+      "commitNameOld": "f66dcdbd9439aa413c6240287dadcc9ccf2c8ea3",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 0.95,
+      "commitsBetweenForRepo": 19,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,24 @@\n     private void processInterfaceOrAnnotation(DetailAST ast) {\n         final DetailAST modifiers \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n         DetailAST modifier \u003d modifiers.getFirstChild();\n         while (modifier !\u003d null) {\n \n             // javac does not allow final or static in interface methods\n             // order annotation fields hence no need to check that this\n             // is not a method or annotation field\n \n             final int type \u003d modifier.getType();\n             if (type \u003d\u003d TokenTypes.LITERAL_PUBLIC\n                 || type \u003d\u003d TokenTypes.LITERAL_STATIC\n                         \u0026\u0026 ast.getType() !\u003d TokenTypes.METHOD_DEF\n                 || type \u003d\u003d TokenTypes.ABSTRACT\n+                        \u0026\u0026 ast.getType() !\u003d TokenTypes.CLASS_DEF\n                 || type \u003d\u003d TokenTypes.FINAL) {\n                 log(modifier.getLineNo(), modifier.getColumnNo(),\n                         MSG_KEY, modifier.getText());\n                 break;\n             }\n \n             modifier \u003d modifier.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "e030d1463c307836bbb201a202d15e81a41bcb0b": {
+      "type": "Yintroduced",
+      "commitMessage": "RedundantModifierCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344165000,
+      "commitName": "e030d1463c307836bbb201a202d15e81a41bcb0b",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

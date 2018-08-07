@@ -1,0 +1,232 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index e74457caf..4a92f464c 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -277,105 +277,105 @@ public class CheckStyleTask extends Task
+      */
+     private void realExecute()
+     {
+         // output version info in debug mode
+         final ResourceBundle compilationProperties = ResourceBundle
+                 .getBundle("checkstylecompilation");
+         final String version = compilationProperties
+                 .getString("checkstyle.compile.version");
+         final String compileTimestamp = compilationProperties
+                 .getString("checkstyle.compile.timestamp");
+         log("checkstyle version " + version, Project.MSG_VERBOSE);
+         log("compiled on " + compileTimestamp, Project.MSG_VERBOSE);
+ 
+         // Check for no arguments
+         if ((mFileName == null) && (mFileSets.size() == 0)) {
+             throw new BuildException(
+                     "Must specify atleast one of 'file' or nested 'fileset'.",
+                     getLocation());
+         }
+ 
+         if (mConfigLocation == null) {
+             throw new BuildException("Must specify 'config'.", getLocation());
+         }
+ 
+         // Create the checker
+         Checker c = null;
+         try {
+             c = createChecker();
+ 
+             final SeverityLevelCounter warningCounter =
+                 new SeverityLevelCounter(SeverityLevel.WARNING);
+             c.addListener(warningCounter);
+ 
+             // Process the files
+             long startTime = System.currentTimeMillis();
+             final File[] files = scanFileSets();
+             long endTime = System.currentTimeMillis();
+             log("To locate the files took " + (endTime - startTime) + " ms.",
+                 Project.MSG_VERBOSE);
+ 
+             log("Running Checkstyle " + version + " on " + files.length
+                     + " files", Project.MSG_INFO);
+             log("Using configuration " + mConfigLocation, Project.MSG_VERBOSE);
+ 
+             startTime = System.currentTimeMillis();
+             final int numErrs = c.process(files);
+             endTime = System.currentTimeMillis();
+             log("To process the files took " + (endTime - startTime) + " ms.",
+                 Project.MSG_VERBOSE);
+             final int numWarnings = warningCounter.getCount();
+-            final boolean ok = numErrs <= mMaxErrors
+-                    && numWarnings <= mMaxWarnings;
++            final boolean ok = (numErrs <= mMaxErrors)
++                    && (numWarnings <= mMaxWarnings);
+ 
+             // Handle the return status
+-            if (!ok && mFailureProperty != null) {
++            if (!ok && (mFailureProperty != null)) {
+                 getProject().setProperty(mFailureProperty, "true");
+             }
+ 
+             if (!ok && mFailOnViolation) {
+                 throw new BuildException("Got " + numErrs + " errors and "
+                         + numWarnings + " warnings.", getLocation());
+             }
+         }
+         finally {
+             if (c != null) {
+                 c.destroy();
+             }
+         }
+     }
+ 
+     /**
+      * Creates new instance of <code>Checker</code>.
+      * @return new instance of <code>Checker</code>
+      */
+     private Checker createChecker()
+     {
+         Checker c = null;
+         try {
+             final Properties props = createOverridingProperties();
+             final Configuration config = ConfigurationLoader.loadConfiguration(
+                     mConfigLocation, new PropertiesExpander(props), true);
+ 
+             final DefaultContext context = new DefaultContext();
+             final ClassLoader loader = new AntClassLoader(getProject(),
+                     mClasspath);
+             context.add("classloader", loader);
+ 
+             c = new Checker();
+ 
+             //load the set of package names
+             if (mPackageNamesFile != null) {
+                 final ModuleFactory moduleFactory = PackageNamesLoader
+                         .loadModuleFactory(mPackageNamesFile.getAbsolutePath());
+                 c.setModuleFactory(moduleFactory);
+             }
+             c.contextualize(context);
+             c.configure(config);
+ 
+             // setup the listeners
+             final AuditListener[] listeners = getListeners();
+             for (int i = 0; i < listeners.length; i++) {
+                 c.addListener(listeners[i]);
+             }
+         }
+         catch (Exception e) {
+@@ -542,116 +542,116 @@ public class CheckStyleTask extends Task
+             final String val = aType.getValue();
+             if (!E_XML.equals(val) && !E_PLAIN.equals(val)) {
+                 throw new BuildException("Invalid formatter type: " + val);
+             }
+ 
+             mFormatterType = aType;
+         }
+ 
+         /**
+          * Set the file to output to.
+          * @param aTo the file to output to
+          */
+         public void setTofile(File aTo)
+         {
+             mToFile = aTo;
+         }
+ 
+         /**
+          * Sets whether or not we write to a file if it is provided.
+          * @param aUse whether not not to use provided file.
+          */
+         public void setUseFile(boolean aUse)
+         {
+             mUseFile = aUse;
+         }
+ 
+         /**
+          * Creates a listener for the formatter.
+          * @param aTask the task running
+          * @return a listener
+          * @throws IOException if an error occurs
+          */
+         public AuditListener createListener(Task aTask) throws IOException
+         {
+             if ((mFormatterType != null)
+                     && E_XML.equals(mFormatterType.getValue()))
+             {
+                 return createXMLLogger(aTask);
+             }
+             return createDefaultLogger(aTask);
+         }
+ 
+         /**
+          * @return a DefaultLogger instance
+          * @param aTask the task to possibly log to
+          * @throws IOException if an error occurs
+          */
+         private AuditListener createDefaultLogger(Task aTask)
+             throws IOException
+         {
+-            if (mToFile == null || !mUseFile) {
++            if ((mToFile == null) || !mUseFile) {
+                 return new DefaultLogger(
+                     new LogOutputStream(aTask, Project.MSG_DEBUG),
+                     true, new LogOutputStream(aTask, Project.MSG_ERR), true);
+             }
+             return new DefaultLogger(new FileOutputStream(mToFile), true);
+         }
+ 
+         /**
+          * @return an XMLLogger instance
+          * @param aTask the task to possibly log to
+          * @throws IOException if an error occurs
+          */
+         private AuditListener createXMLLogger(Task aTask) throws IOException
+         {
+-            if (mToFile == null || !mUseFile) {
++            if ((mToFile == null) || !mUseFile) {
+                 return new XMLLogger(new LogOutputStream(aTask,
+                         Project.MSG_INFO), true);
+             }
+             return new XMLLogger(new FileOutputStream(mToFile), true);
+         }
+     }
+ 
+     /**
+      * Represents a property that consists of a key and value.
+      */
+     public static class Property
+     {
+         /** the property key */
+         private String mKey;
+         /** the property value */
+         private String mValue;
+ 
+         /** @return the property key */
+         public String getKey()
+         {
+             return mKey;
+         }
+ 
+         /** @param aKey sets the property key */
+         public void setKey(String aKey)
+         {
+             mKey = aKey;
+         }
+ 
+         /** @return the property value */
+         public String getValue()
+         {
+             return mValue;
+         }
+ 
+         /** @param aValue set the property value */
+         public void setValue(String aValue)
+         {
+             mValue = aValue;
+         }
+ 
+         /** @param aValue set the property value from a File */
+         public void setFile(File aValue)
+         {
+             setValue(aValue.getAbsolutePath());
+         }
+     }
+ 
+     /** Represents a custom listener. */
+     public static class Listener

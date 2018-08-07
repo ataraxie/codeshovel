@@ -1,0 +1,133 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RequireThisCheck.java",
+  "functionName": "getFieldWithoutThis",
+  "functionId": "getFieldWithoutThis___ast-DetailAST__parentType-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java",
+  "functionStartLine": 332,
+  "functionEndLine": 352,
+  "changeHistory": [
+    "bb05231428d62fa6e253fa3f55a47335c958f4b4",
+    "81c030e322201085e463b9cc97e3e8dbce0e38d4",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+    "6c04cd63af392376159dc7aae41d85bbc348e96d",
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+    "99ce97725cd037d152c571e5ff58eac9247d072d",
+    "8c3e4a50749044ae3177fc4c84db9c4fd93abca2",
+    "5a9b7249e3d092a78ac8e7d48aeeb62bf1c44e20"
+  ],
+  "changeHistoryShort": {
+    "bb05231428d62fa6e253fa3f55a47335c958f4b4": "Ybodychange",
+    "81c030e322201085e463b9cc97e3e8dbce0e38d4": "Ybodychange",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": "Ymultichange(Yrename,Ybodychange)",
+    "6c04cd63af392376159dc7aae41d85bbc348e96d": "Ymultichange(Yreturntypechange,Ybodychange)",
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a": "Ybodychange",
+    "99ce97725cd037d152c571e5ff58eac9247d072d": "Ybodychange",
+    "8c3e4a50749044ae3177fc4c84db9c4fd93abca2": "Ybodychange",
+    "5a9b7249e3d092a78ac8e7d48aeeb62bf1c44e20": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "bb05231428d62fa6e253fa3f55a47335c958f4b4": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4207: Fixed false positives from RequireThis for lambdas\n",
+      "commitDate": 1495544545000,
+      "commitName": "bb05231428d62fa6e253fa3f55a47335c958f4b4",
+      "commitAuthor": "Piyush Sharma",
+      "commitDateOld": 1494539783000,
+      "commitNameOld": "073c370de2e65fc346b51ef09763ecb30b5cd14f",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 11.63,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,21 @@\n     private AbstractFrame getFieldWithoutThis(DetailAST ast, int parentType) {\n         final boolean importOrPackage \u003d ScopeUtils.getSurroundingScope(ast) \u003d\u003d null;\n         final boolean methodNameInMethodCall \u003d parentType \u003d\u003d TokenTypes.DOT\n                 \u0026\u0026 ast.getPreviousSibling() !\u003d null;\n         final boolean typeName \u003d parentType \u003d\u003d TokenTypes.TYPE\n                 || parentType \u003d\u003d TokenTypes.LITERAL_NEW;\n         AbstractFrame frame \u003d null;\n \n         if (!importOrPackage\n                 \u0026\u0026 !methodNameInMethodCall\n                 \u0026\u0026 !typeName\n-                \u0026\u0026 !isDeclarationToken(parentType)) {\n+                \u0026\u0026 !isDeclarationToken(parentType)\n+                \u0026\u0026 !isLambdaParameter(ast)) {\n             final AbstractFrame fieldFrame \u003d findClassFrame(ast, false);\n \n             if (fieldFrame !\u003d null \u0026\u0026 ((ClassFrame) fieldFrame).hasInstanceMember(ast)) {\n                 frame \u003d getClassFrameWhereViolationIsFound(ast);\n             }\n         }\n         return frame;\n     }\n\\ No newline at end of file\n"
+    },
+    "81c030e322201085e463b9cc97e3e8dbce0e38d4": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3335: prevented static variables being checked for RequireThis (#3355)\n\n",
+      "commitDate": 1469508708000,
+      "commitName": "81c030e322201085e463b9cc97e3e8dbce0e38d4",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1467737762000,
+      "commitNameOld": "0a85131b141a185ec3d7bb92df8ccbd92d38570e",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 20.5,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,20 @@\n     private AbstractFrame getFieldWithoutThis(DetailAST ast, int parentType) {\n         final boolean importOrPackage \u003d ScopeUtils.getSurroundingScope(ast) \u003d\u003d null;\n         final boolean methodNameInMethodCall \u003d parentType \u003d\u003d TokenTypes.DOT\n                 \u0026\u0026 ast.getPreviousSibling() !\u003d null;\n         final boolean typeName \u003d parentType \u003d\u003d TokenTypes.TYPE\n                 || parentType \u003d\u003d TokenTypes.LITERAL_NEW;\n         AbstractFrame frame \u003d null;\n \n         if (!importOrPackage\n                 \u0026\u0026 !methodNameInMethodCall\n                 \u0026\u0026 !typeName\n                 \u0026\u0026 !isDeclarationToken(parentType)) {\n-            frame \u003d getClassFrameWhereViolationIsFound(ast);\n+            final AbstractFrame fieldFrame \u003d findClassFrame(ast, false);\n+\n+            if (fieldFrame !\u003d null \u0026\u0026 ((ClassFrame) fieldFrame).hasInstanceMember(ast)) {\n+                frame \u003d getClassFrameWhereViolationIsFound(ast);\n+            }\n         }\n         return frame;\n     }\n\\ No newline at end of file\n"
+    },
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "Issue #2362: Add \u0027validateOnlyOverlapping\u0027 option for RequireThisCheck\n",
+      "commitDate": 1457102074000,
+      "commitName": "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "6c04cd63af392376159dc7aae41d85bbc348e96d": {
+      "type": "Ymultichange(Yreturntypechange,Ybodychange)",
+      "commitMessage": "Issue #2239: Extend RequireThis check message\n",
+      "commitDate": 1450994205000,
+      "commitName": "6c04cd63af392376159dc7aae41d85bbc348e96d",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "subchanges": [
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "f52306ff7799ea2b2e4d99fba7040a11b186d68a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2240: Fix false negative in RequireThisCheck\n",
+      "commitDate": 1447597420000,
+      "commitName": "f52306ff7799ea2b2e4d99fba7040a11b186d68a",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1446945172000,
+      "commitNameOld": "4424370783f1c41fc1e146f554468f89e8f0e88b",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 7.55,
+      "commitsBetweenForRepo": 49,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,15 @@\n     private void processField(DetailAST ast, int parentType) {\n         final boolean importOrPackage \u003d ScopeUtils.getSurroundingScope(ast) \u003d\u003d null;\n         final boolean methodNameInMethodCall \u003d parentType \u003d\u003d TokenTypes.DOT\n                 \u0026\u0026 ast.getPreviousSibling() !\u003d null;\n         final boolean typeName \u003d parentType \u003d\u003d TokenTypes.TYPE\n                 || parentType \u003d\u003d TokenTypes.LITERAL_NEW;\n \n         if (!importOrPackage\n                 \u0026\u0026 !methodNameInMethodCall\n                 \u0026\u0026 !typeName\n-                \u0026\u0026 !isDeclarationToken(parentType)) {\n-\n-            final String name \u003d ast.getText();\n-\n-            if (isClassField(name)) {\n-                log(ast, MSG_VARIABLE, name);\n-            }\n+                \u0026\u0026 !isDeclarationToken(parentType)\n+                \u0026\u0026 isClassField(ast)) {\n+            log(ast, MSG_VARIABLE, ast.getText());\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "99ce97725cd037d152c571e5ff58eac9247d072d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: ReturnCount violation fixed for RequireThisCheck\n",
+      "commitDate": 1440741417000,
+      "commitName": "99ce97725cd037d152c571e5ff58eac9247d072d",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.74,
+      "commitsBetweenForRepo": 54,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,19 @@\n     private void processField(DetailAST ast, int parentType) {\n-        if (ScopeUtils.getSurroundingScope(ast) \u003d\u003d null) {\n-            // it is not a class or interface it\u0027s\n-            // either import or package\n-            // we shouldn\u0027t checks this\n-            return;\n-        }\n+        final boolean importOrPackage \u003d ScopeUtils.getSurroundingScope(ast) \u003d\u003d null;\n+        final boolean methodNameInMethodCall \u003d parentType \u003d\u003d TokenTypes.DOT\n+                \u0026\u0026 ast.getPreviousSibling() !\u003d null;\n+        final boolean typeName \u003d parentType \u003d\u003d TokenTypes.TYPE\n+                || parentType \u003d\u003d TokenTypes.LITERAL_NEW;\n \n-        if (parentType \u003d\u003d TokenTypes.DOT\n-                \u0026\u0026 ast.getPreviousSibling() !\u003d null) {\n-            // it\u0027s the method name in a method call; no problem\n-            return;\n-        }\n-        if (parentType \u003d\u003d TokenTypes.TYPE\n-                || parentType \u003d\u003d TokenTypes.LITERAL_NEW) {\n-            // it\u0027s a type name; no problem\n-            return;\n-        }\n-        if (isDeclarationToken(parentType)) {\n-            // it\u0027s being declared; no problem\n-            return;\n-        }\n+        if (!importOrPackage\n+                \u0026\u0026 !methodNameInMethodCall\n+                \u0026\u0026 !typeName\n+                \u0026\u0026 !isDeclarationToken(parentType)) {\n \n-        final String name \u003d ast.getText();\n-        if (isClassField(name)) {\n-            log(ast, MSG_VARIABLE, name);\n+            final String name \u003d ast.getText();\n+\n+            if (isClassField(name)) {\n+                log(ast, MSG_VARIABLE, name);\n+            }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "8c3e4a50749044ae3177fc4c84db9c4fd93abca2": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: MultipleStringLiterals violations partial fix\n",
+      "commitDate": 1440504773000,
+      "commitName": "8c3e4a50749044ae3177fc4c84db9c4fd93abca2",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440040911000,
+      "commitNameOld": "efa16e17bf710b7b24af828296c2337612912ba9",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 5.37,
+      "commitsBetweenForRepo": 102,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,28 @@\n     private void processField(DetailAST ast, int parentType) {\n         if (ScopeUtils.getSurroundingScope(ast) \u003d\u003d null) {\n             // it is not a class or interface it\u0027s\n             // either import or package\n             // we shouldn\u0027t checks this\n             return;\n         }\n \n         if (parentType \u003d\u003d TokenTypes.DOT\n                 \u0026\u0026 ast.getPreviousSibling() !\u003d null) {\n             // it\u0027s the method name in a method call; no problem\n             return;\n         }\n         if (parentType \u003d\u003d TokenTypes.TYPE\n                 || parentType \u003d\u003d TokenTypes.LITERAL_NEW) {\n             // it\u0027s a type name; no problem\n             return;\n         }\n         if (isDeclarationToken(parentType)) {\n             // it\u0027s being declared; no problem\n             return;\n         }\n \n         final String name \u003d ast.getText();\n         if (isClassField(name)) {\n-            log(ast, \"require.this.variable\", name);\n+            log(ast, MSG_VARIABLE, name);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "5a9b7249e3d092a78ac8e7d48aeeb62bf1c44e20": {
+      "type": "Yintroduced",
+      "commitMessage": "RequireThisCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344164000,
+      "commitName": "5a9b7249e3d092a78ac8e7d48aeeb62bf1c44e20",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

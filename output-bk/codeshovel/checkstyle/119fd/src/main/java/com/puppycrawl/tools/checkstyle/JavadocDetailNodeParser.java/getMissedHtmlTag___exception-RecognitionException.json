@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "JavadocDetailNodeParser.java",
+  "functionName": "getMissedHtmlTag",
+  "functionId": "getMissedHtmlTag___exception-RecognitionException",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/JavadocDetailNodeParser.java",
+  "functionStartLine": 481,
+  "functionEndLine": 508,
+  "changeHistory": [
+    "47dd1da57bff2bd47727cac5f12b621f8bca5e59",
+    "60c70922fa41c6a6b6d0e80fcbaea8bfb4acc5ad"
+  ],
+  "changeHistoryShort": {
+    "47dd1da57bff2bd47727cac5f12b621f8bca5e59": "Ybodychange",
+    "60c70922fa41c6a6b6d0e80fcbaea8bfb4acc5ad": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "47dd1da57bff2bd47727cac5f12b621f8bca5e59": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5633: Fix PMD6 violations (bestpractices)\n",
+      "commitDate": 1521747315000,
+      "commitName": "47dd1da57bff2bd47727cac5f12b621f8bca5e59",
+      "commitAuthor": "Pavel Bludov",
+      "commitDateOld": 1515079236000,
+      "commitNameOld": "746a9d69125211ff44af1cb37732e919368ba620",
+      "commitAuthorOld": "Pavel Bludov",
+      "daysBetweenCommits": 77.18,
+      "commitsBetweenForRepo": 148,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,28 @@\n     private static Token getMissedHtmlTag(RecognitionException exception) {\n         Token htmlTagNameStart \u003d null;\n         final Interval sourceInterval \u003d exception.getCtx().getSourceInterval();\n         final List\u003cToken\u003e tokenList \u003d ((BufferedTokenStream) exception.getInputStream())\n                 .getTokens(sourceInterval.a, sourceInterval.b);\n         final Deque\u003cToken\u003e stack \u003d new ArrayDeque\u003c\u003e();\n-        for (int i \u003d 0; i \u003c tokenList.size(); i++) {\n-            final Token token \u003d tokenList.get(i);\n-            if (token.getType() \u003d\u003d JavadocTokenTypes.HTML_TAG_NAME\n-                    \u0026\u0026 tokenList.get(i - 1).getType() \u003d\u003d JavadocTokenTypes.START) {\n+        int prevTokenType \u003d JavadocTokenTypes.EOF;\n+        for (final Token token : tokenList) {\n+            final int tokenType \u003d token.getType();\n+            if (tokenType \u003d\u003d JavadocTokenTypes.HTML_TAG_NAME\n+                    \u0026\u0026 prevTokenType \u003d\u003d JavadocTokenTypes.START) {\n                 stack.push(token);\n             }\n-            else if (token.getType() \u003d\u003d JavadocTokenTypes.HTML_TAG_NAME \u0026\u0026 !stack.isEmpty()) {\n+            else if (tokenType \u003d\u003d JavadocTokenTypes.HTML_TAG_NAME \u0026\u0026 !stack.isEmpty()) {\n                 if (stack.peek().getText().equals(token.getText())) {\n                     stack.pop();\n                 }\n                 else {\n                     htmlTagNameStart \u003d stack.pop();\n                 }\n             }\n+            prevTokenType \u003d tokenType;\n         }\n         if (htmlTagNameStart \u003d\u003d null) {\n             htmlTagNameStart \u003d stack.pop();\n         }\n         return htmlTagNameStart;\n     }\n\\ No newline at end of file\n"
+    },
+    "60c70922fa41c6a6b6d0e80fcbaea8bfb4acc5ad": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #4390: Modified error handling of errors that are to be generated when missing HTML tags are encountered while parsing javadoc\n",
+      "commitDate": 1503321339000,
+      "commitName": "60c70922fa41c6a6b6d0e80fcbaea8bfb4acc5ad",
+      "commitAuthor": "Piyush Sharma"
+    }
+  }
+}

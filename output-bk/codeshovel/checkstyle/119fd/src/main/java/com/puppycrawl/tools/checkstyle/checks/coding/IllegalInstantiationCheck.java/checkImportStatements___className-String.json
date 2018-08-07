@@ -1,0 +1,107 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IllegalInstantiationCheck.java",
+  "functionName": "checkImportStatements",
+  "functionId": "checkImportStatements___className-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java",
+  "functionStartLine": 260,
+  "functionEndLine": 276,
+  "changeHistory": [
+    "327c0bc843612486ab4ded32a2f01038e1271fd0",
+    "33ab409c4e5a4c5c29a5c19eb4b45f079f17d481",
+    "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0",
+    "98a3157200a6b488a0f78b67b0741a2bd72d40fa",
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+    "d64bdf0caa867be3913f2665ef4fcc654524937e"
+  ],
+  "changeHistoryShort": {
+    "327c0bc843612486ab4ded32a2f01038e1271fd0": "Ybodychange",
+    "33ab409c4e5a4c5c29a5c19eb4b45f079f17d481": "Ybodychange",
+    "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0": "Ybodychange",
+    "98a3157200a6b488a0f78b67b0741a2bd72d40fa": "Ybodychange",
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": "Ybodychange",
+    "d64bdf0caa867be3913f2665ef4fcc654524937e": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "327c0bc843612486ab4ded32a2f01038e1271fd0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3254: UT to verify all property types and values in XDocs",
+      "commitDate": 1515029424000,
+      "commitName": "327c0bc843612486ab4ded32a2f01038e1271fd0",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1514928265000,
+      "commitNameOld": "dabb75d43c7e02317565dde4c5e60f380d3b16b8",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.17,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     private String checkImportStatements(String className) {\n         String illegalType \u003d null;\n         // import statements\n         for (FullIdent importLineText : imports) {\n             String importArg \u003d importLineText.getText();\n             if (importArg.endsWith(\".*\")) {\n                 importArg \u003d importArg.substring(0, importArg.length() - 1)\n                         + className;\n             }\n             if (CommonUtils.baseClassName(importArg).equals(className)\n-                    \u0026\u0026 illegalClasses.contains(importArg)) {\n+                    \u0026\u0026 classes.contains(importArg)) {\n                 illegalType \u003d importArg;\n                 break;\n             }\n         }\n         return illegalType;\n     }\n\\ No newline at end of file\n"
+    },
+    "33ab409c4e5a4c5c29a5c19eb4b45f079f17d481": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #46: loops should not have more then one break or continue statement\n",
+      "commitDate": 1441670570000,
+      "commitName": "33ab409c4e5a4c5c29a5c19eb4b45f079f17d481",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1441045466000,
+      "commitNameOld": "2b861bd6e16584e22bb115ff7abd65c35072eb92",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 7.24,
+      "commitsBetweenForRepo": 99,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,17 @@\n     private String checkImportStatements(String className) {\n         String illegalType \u003d null;\n         // import statements\n         for (FullIdent importLineText : imports) {\n-            final String importArg \u003d importLineText.getText();\n+            String importArg \u003d importLineText.getText();\n             if (importArg.endsWith(\".*\")) {\n-                final String fqClass \u003d\n-                    importArg.substring(0, importArg.length() - 1)\n-                    + className;\n-                // assume that illegalInstances only contain existing classes\n-                // or else we might create a false alarm here\n-                if (illegalClasses.contains(fqClass)) {\n-                    illegalType \u003d fqClass;\n-                    break;\n-                }\n+                importArg \u003d importArg.substring(0, importArg.length() - 1)\n+                        + className;\n             }\n-            else {\n-                if (CommonUtils.baseClassName(importArg).equals(className)\n+            if (CommonUtils.baseClassName(importArg).equals(className)\n                     \u0026\u0026 illegalClasses.contains(importArg)) {\n-                    illegalType \u003d importArg;\n-                    break;\n-                }\n+                illegalType \u003d importArg;\n+                break;\n             }\n         }\n         return illegalType;\n     }\n\\ No newline at end of file\n"
+    },
+    "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix typos in utlis package. #1555\n\nFixes some `SpellCheckingInspection` inspection violations.\n\nDescription:\n\u003eSpellchecker inspection helps locate typos and misspelling in your code, comments and literals.\n",
+      "commitDate": 1440739587000,
+      "commitName": "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440678509000,
+      "commitNameOld": "98a3157200a6b488a0f78b67b0741a2bd72d40fa",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 0.71,
+      "commitsBetweenForRepo": 33,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,26 @@\n     private String checkImportStatements(String className) {\n         String illegalType \u003d null;\n         // import statements\n         for (FullIdent importLineText : imports) {\n             final String importArg \u003d importLineText.getText();\n             if (importArg.endsWith(\".*\")) {\n                 final String fqClass \u003d\n                     importArg.substring(0, importArg.length() - 1)\n                     + className;\n                 // assume that illegalInsts only contain existing classes\n                 // or else we might create a false alarm here\n                 if (illegalClasses.contains(fqClass)) {\n                     illegalType \u003d fqClass;\n                     break;\n                 }\n             }\n             else {\n-                if (CommonUtils.baseClassname(importArg).equals(className)\n+                if (CommonUtils.baseClassName(importArg).equals(className)\n                     \u0026\u0026 illegalClasses.contains(importArg)) {\n                     illegalType \u003d importArg;\n                     break;\n                 }\n             }\n         }\n         return illegalType;\n     }\n\\ No newline at end of file\n"
+    },
+    "98a3157200a6b488a0f78b67b0741a2bd72d40fa": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: partial fix of ReturnCount violations\n",
+      "commitDate": 1440678509000,
+      "commitName": "98a3157200a6b488a0f78b67b0741a2bd72d40fa",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,26 @@\n     private String checkImportStatements(String className) {\n+        String illegalType \u003d null;\n         // import statements\n         for (FullIdent importLineText : imports) {\n             final String importArg \u003d importLineText.getText();\n             if (importArg.endsWith(\".*\")) {\n                 final String fqClass \u003d\n                     importArg.substring(0, importArg.length() - 1)\n                     + className;\n                 // assume that illegalInsts only contain existing classes\n                 // or else we might create a false alarm here\n                 if (illegalClasses.contains(fqClass)) {\n-                    return fqClass;\n+                    illegalType \u003d fqClass;\n+                    break;\n                 }\n             }\n             else {\n                 if (CommonUtils.baseClassname(importArg).equals(className)\n                     \u0026\u0026 illegalClasses.contains(importArg)) {\n-                    return importArg;\n+                    illegalType \u003d importArg;\n+                    break;\n                 }\n             }\n         }\n-        return null;\n+        return illegalType;\n     }\n\\ No newline at end of file\n"
+    },
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": {
+      "type": "Ybodychange",
+      "commitMessage": "Utils class has been splitted to CommonUtils and TokenUtils. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,23 @@\n     private String checkImportStatements(String className) {\n         // import statements\n         for (FullIdent importLineText : imports) {\n             final String importArg \u003d importLineText.getText();\n             if (importArg.endsWith(\".*\")) {\n                 final String fqClass \u003d\n                     importArg.substring(0, importArg.length() - 1)\n                     + className;\n                 // assume that illegalInsts only contain existing classes\n                 // or else we might create a false alarm here\n                 if (illegalClasses.contains(fqClass)) {\n                     return fqClass;\n                 }\n             }\n             else {\n-                if (Utils.baseClassname(importArg).equals(className)\n+                if (CommonUtils.baseClassname(importArg).equals(className)\n                     \u0026\u0026 illegalClasses.contains(importArg)) {\n                     return importArg;\n                 }\n             }\n         }\n         return null;\n     }\n\\ No newline at end of file\n"
+    },
+    "d64bdf0caa867be3913f2665ef4fcc654524937e": {
+      "type": "Yintroduced",
+      "commitMessage": "IllegalInstantiationCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434261690000,
+      "commitName": "d64bdf0caa867be3913f2665ef4fcc654524937e",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

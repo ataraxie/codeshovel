@@ -1,0 +1,73 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ConstantNameCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ConstantNameCheck.java
+index 0ca62a7f8..672ee5e74 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ConstantNameCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ConstantNameCheck.java
+@@ -38,65 +38,65 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+  * </p>
+  * <pre>
+  * &lt;module name="ConstantName"/&gt;
+  * </pre>
+  *
+  * <p>
+  * An example of how to configure the check for names that are only upper case
+  * letters and digits is:
+  * </p>
+  * <pre>
+  * &lt;module name="ConstantName"&gt;
+  *    &lt;property name="format" value="^[A-Z][A-Z0-9]*$"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  *
+  * @author Rick Giles
+  */
+ public class ConstantNameCheck
+     extends AbstractAccessControlNameCheck {
+     /** Creates a new {@code ConstantNameCheck} instance. */
+     public ConstantNameCheck() {
+         super("^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$");
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     protected final boolean mustCheckName(DetailAST ast) {
+         boolean retVal = false;
+ 
+         final DetailAST modifiersAST =
+             ast.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isStatic = modifiersAST.branchContains(TokenTypes.LITERAL_STATIC);
+         final boolean isFinal = modifiersAST.branchContains(TokenTypes.FINAL);
+ 
+         if (isStatic  && isFinal && shouldCheckInScope(modifiersAST)
+-                || ScopeUtils.inAnnotationBlock(ast)
+-                || ScopeUtils.inInterfaceOrAnnotationBlock(ast)
+-                        && !ScopeUtils.inCodeBlock(ast)) {
++                || ScopeUtils.isInAnnotationBlock(ast)
++                || ScopeUtils.isInInterfaceOrAnnotationBlock(ast)
++                        && !ScopeUtils.isInCodeBlock(ast)) {
+             // Handle the serialVersionUID and serialPersistentFields constants
+             // which are used for Serialization. Cannot enforce rules on it. :-)
+             final DetailAST nameAST = ast.findFirstToken(TokenTypes.IDENT);
+             if (!"serialVersionUID".equals(nameAST.getText())
+                 && !"serialPersistentFields".equals(nameAST.getText())) {
+                 retVal = true;
+             }
+         }
+ 
+         return retVal;
+     }
+ }

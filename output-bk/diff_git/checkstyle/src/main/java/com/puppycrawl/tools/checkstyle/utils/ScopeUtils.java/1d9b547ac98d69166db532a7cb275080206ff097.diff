@@ -1,0 +1,162 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/ScopeUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/ScopeUtils.java
+index 05b902bad..0dbe3a36f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/ScopeUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/ScopeUtils.java
+@@ -51,143 +51,135 @@ public final class ScopeUtils {
+             }
+             else if ("protected".equals(token.getText())) {
+                 returnValue = Scope.PROTECTED;
+             }
+             else if ("private".equals(token.getText())) {
+                 returnValue = Scope.PRIVATE;
+             }
+         }
+         return returnValue;
+     }
+ 
+     /**
+      * Returns the scope of the surrounding "block".
+      * @param node the node to return the scope for
+      * @return the Scope of the surrounding block
+      */
+     public static Scope getSurroundingScope(DetailAST node) {
+         Scope returnValue = null;
+         for (DetailAST token = node.getParent();
+              token != null;
+              token = token.getParent()) {
+             final int type = token.getType();
+             if (type == TokenTypes.CLASS_DEF
+                 || type == TokenTypes.INTERFACE_DEF
+                 || type == TokenTypes.ANNOTATION_DEF
+                 || type == TokenTypes.ENUM_DEF) {
+                 final DetailAST mods =
+                     token.findFirstToken(TokenTypes.MODIFIERS);
+                 final Scope modScope = getScopeFromMods(mods);
+                 if (returnValue == null || returnValue.isIn(modScope)) {
+                     returnValue = modScope;
+                 }
+             }
+             else if (type == TokenTypes.LITERAL_NEW) {
+                 returnValue = Scope.ANONINNER;
+                 // because Scope.ANONINNER is not in any other Scope
+                 break;
+             }
+         }
+ 
+         return returnValue;
+     }
+ 
+     /**
+      * Returns whether a node is directly contained within an interface block.
+      *
+      * @param node the node to check if directly contained within an interface block.
+      * @return a {@code boolean} value
+      */
+     public static boolean isInInterfaceBlock(DetailAST node) {
+-        boolean returnValue = false;
+-
+-        // Loop up looking for a containing interface block
+-        for (DetailAST token = node.getParent();
+-             token != null && !returnValue;
+-             token = token.getParent()) {
+-
+-            final int type = token.getType();
+-
+-            if (type == TokenTypes.INTERFACE_DEF) {
+-                returnValue = true;
+-            }
+-            else if (type == TokenTypes.CLASS_DEF
+-                || type == TokenTypes.ENUM_DEF
+-                || type == TokenTypes.ANNOTATION_DEF
+-                || type == TokenTypes.LITERAL_NEW) {
+-                break;
+-            }
+-        }
+-
+-        return returnValue;
++        return isInBlockOf(node, TokenTypes.INTERFACE_DEF);
+     }
+ 
+     /**
+      * Returns whether a node is directly contained within an annotation block.
+      *
+      * @param node the node to check if directly contained within an annotation block.
+      * @return a {@code boolean} value
+      */
+     public static boolean isInAnnotationBlock(DetailAST node) {
++        return isInBlockOf(node, TokenTypes.ANNOTATION_DEF);
++    }
++
++    /**
++     * Returns whether a node is directly contained within a specified block.
++     *
++     * @param node the node to check if directly contained within a specified block.
++     * @param tokenType type of token.
++     * @return a {@code boolean} value
++     */
++    private static boolean isInBlockOf(DetailAST node, int tokenType) {
+         boolean returnValue = false;
+ 
+         // Loop up looking for a containing interface block
+         for (DetailAST token = node.getParent();
+              token != null && !returnValue;
+              token = token.getParent()) {
+             final int type = token.getType();
+-            if (type == TokenTypes.ANNOTATION_DEF) {
++            if (type == tokenType) {
+                 returnValue = true;
+             }
+             else if (type == TokenTypes.CLASS_DEF
+                 || type == TokenTypes.ENUM_DEF
+                 || type == TokenTypes.INTERFACE_DEF
++                || type == TokenTypes.ANNOTATION_DEF
+                 || type == TokenTypes.LITERAL_NEW) {
+                 break;
+             }
+ 
+         }
+ 
+         return returnValue;
+     }
+ 
+     /**
+      * Returns whether a node is directly contained within an interface or
+      * annotation block.
+      *
+      * @param node the node to check if directly contained within an interface
+      *     or annotation block.
+      * @return a {@code boolean} value
+      */
+     public static boolean isInInterfaceOrAnnotationBlock(DetailAST node) {
+         return isInInterfaceBlock(node) || isInAnnotationBlock(node);
+     }
+ 
+     /**
+      * Returns whether a node is directly contained within an enum block.
+      *
+      * @param node the node to check if directly contained within an enum block.
+      * @return a {@code boolean} value
+      */
+     public static boolean isInEnumBlock(DetailAST node) {
+         boolean returnValue = false;
+ 
+         // Loop up looking for a containing interface block
+         for (DetailAST token = node.getParent();
+              token != null && !returnValue;
+              token = token.getParent()) {
+             final int type = token.getType();
+             if (type == TokenTypes.ENUM_DEF) {
+                 returnValue = true;
+             }
+             else if (type == TokenTypes.INTERFACE_DEF
+                 || type == TokenTypes.ANNOTATION_DEF
+                 || type == TokenTypes.CLASS_DEF
+                 || type == TokenTypes.LITERAL_NEW) {
+                 break;
+             }
+         }
+ 
+         return returnValue;
+     }
+ 
+     /**

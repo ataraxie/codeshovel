@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/EqualsHashCodeCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/EqualsHashCodeCheck.java
+index 2a7deba78..257ecd80f 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/EqualsHashCodeCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/EqualsHashCodeCheck.java
+@@ -27,101 +27,101 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import java.util.Map;
+ import java.util.Set;
+ 
+ /**
+  * <p>
+  * Checks that classes that override equals() also override hashCode().
+  * </p>
+  * <p>
+  * Rationale: The contract of equals() and hashCode() requires that
+  * equal objects have the same hashCode. Hence, whenever you override
+  * equals() you must override hashCode() to ensure that your class can
+  * be used in collections that are hash based.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="EqualsHashCode"/&gt;
+  * </pre>
+  * @author lkuehne
+  */
+ public class EqualsHashCodeCheck
+         extends Check
+ {
+     // implementation note: we have to use the following members to
+     // keep track of definitions in different inner classes
+ 
+     /** maps OBJ_BLOCK to the method definition of equals() */
+     private final Map<DetailAST, DetailAST> mObjBlockEquals = Maps.newHashMap();
+ 
+     /** the set of OBJ_BLOCKs that contain a definition of hashCode() */
+     private final Set<DetailAST> mObjBlockWithHashCode = Sets.newHashSet();
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.METHOD_DEF};
+     }
+ 
+     @Override
+     public void beginTree(DetailAST aRootAST)
+     {
+         mObjBlockEquals.clear();
+         mObjBlockWithHashCode.clear();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+-        final DetailAST modifiers = (DetailAST) aAST.getFirstChild();
++        final DetailAST modifiers = aAST.getFirstChild();
+         final AST type = aAST.findFirstToken(TokenTypes.TYPE);
+         final AST methodName = aAST.findFirstToken(TokenTypes.IDENT);
+         final DetailAST parameters = aAST.findFirstToken(TokenTypes.PARAMETERS);
+ 
+         if ((type.getFirstChild().getType() == TokenTypes.LITERAL_BOOLEAN)
+                 && "equals".equals(methodName.getText())
+                 && modifiers.branchContains(TokenTypes.LITERAL_PUBLIC)
+                 && (parameters.getChildCount() == 1)
+                 && isObjectParam(parameters.getFirstChild())
+             )
+         {
+             mObjBlockEquals.put(aAST.getParent(), aAST);
+         }
+         else if ((type.getFirstChild().getType() == TokenTypes.LITERAL_INT)
+                 && "hashCode".equals(methodName.getText())
+                 && modifiers.branchContains(TokenTypes.LITERAL_PUBLIC)
+                 && (parameters.getFirstChild() == null)) // no params
+         {
+             mObjBlockWithHashCode.add(aAST.getParent());
+         }
+     }
+ 
+     /**
+      * Determines if an AST is a formal param of type Object (or subclass).
+      * @param aFirstChild the AST to check
+      * @return true iff aFirstChild is a parameter of an Object type.
+      */
+     private boolean isObjectParam(AST aFirstChild)
+     {
+         final AST modifiers = aFirstChild.getFirstChild();
+         final AST type = modifiers.getNextSibling();
+         switch (type.getFirstChild().getType()) {
+         case TokenTypes.LITERAL_BOOLEAN:
+         case TokenTypes.LITERAL_BYTE:
+         case TokenTypes.LITERAL_CHAR:
+         case TokenTypes.LITERAL_DOUBLE:
+         case TokenTypes.LITERAL_FLOAT:
+         case TokenTypes.LITERAL_INT:
+         case TokenTypes.LITERAL_LONG:
+         case TokenTypes.LITERAL_SHORT:
+             return false;
+         default:
+             return true;
+         }
+     }
+ 
+     @Override
+     public void finishTree(DetailAST aRootAST)
+     {
+         final Set<DetailAST> equalsDefs = mObjBlockEquals.keySet();

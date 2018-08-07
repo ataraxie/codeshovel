@@ -1,0 +1,120 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+index 4ddae6192..3bc4b830d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+@@ -296,108 +296,107 @@ public final class CommonUtils {
+     public static boolean endsWithChar(String value, char suffix) {
+         return !value.isEmpty() && value.charAt(value.length() - 1) == suffix;
+     }
+ 
+     /**
+      * Gets constructor of targetClass.
+      * @param targetClass
+      *            from which constructor is returned
+      * @param parameterTypes
+      *            of constructor
+      * @param <T> type of the target class object.
+      * @return constructor of targetClass or {@link IllegalStateException} if any exception occurs
+      * @see Class#getConstructor(Class[])
+      */
+     public static <T> Constructor<T> getConstructor(Class<T> targetClass,
+                                                     Class<?>... parameterTypes) {
+         try {
+             return targetClass.getConstructor(parameterTypes);
+         }
+         catch (NoSuchMethodException ex) {
+             throw new IllegalStateException(ex);
+         }
+     }
+ 
+     /**
+      * @param constructor
+      *            to invoke
+      * @param parameters
+      *            to pass to constructor
+      * @param <T>
+      *            type of constructor
+      * @return new instance of class or {@link IllegalStateException} if any exception occurs
+      * @see Constructor#newInstance(Object...)
+      */
+     public static <T> T invokeConstructor(Constructor<T> constructor, Object... parameters) {
+         try {
+             return constructor.newInstance(parameters);
+         }
+         catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+             throw new IllegalStateException(ex);
+         }
+     }
+ 
+     /**
+      * Closes a stream re-throwing IOException as IllegalStateException.
+      *
+      * @param closeable
+      *            Closeable object
+      */
+     public static void close(Closeable closeable) {
+-        if (closeable == null) {
+-            return;
+-        }
+-        try {
+-            closeable.close();
+-        }
+-        catch (IOException ex) {
+-            throw new IllegalStateException("Cannot close the stream", ex);
++        if (closeable != null) {
++            try {
++                closeable.close();
++            }
++            catch (IOException ex) {
++                throw new IllegalStateException("Cannot close the stream", ex);
++            }
+         }
+     }
+ 
+     /**
+      * Resolve the specified filename to a URI.
+      * @param filename name os the file
+      * @return resolved header file URI
+      * @throws CheckstyleException on failure
+      */
+     public static URI getUriByFilename(String filename) throws CheckstyleException {
+         // figure out if this is a File or a URL
+         URI uri;
+         try {
+             final URL url = new URL(filename);
+             uri = url.toURI();
+         }
+         catch (final URISyntaxException | MalformedURLException ignored) {
+             uri = null;
+         }
+ 
+         if (uri == null) {
+             final File file = new File(filename);
+             if (file.exists()) {
+                 uri = file.toURI();
+             }
+             else {
+                 // check to see if the file is in the classpath
+                 try {
+                     final URL configUrl = CommonUtils.class
+                             .getResource(filename);
+                     if (configUrl == null) {
+                         throw new CheckstyleException(UNABLE_TO_FIND_EXCEPTION_PREFIX + filename);
+                     }
+                     uri = configUrl.toURI();
+                 }
+                 catch (final URISyntaxException ex) {
+                     throw new CheckstyleException(UNABLE_TO_FIND_EXCEPTION_PREFIX + filename, ex);
+                 }
+             }
+         }
+ 
+         return uri;
+     }
+ 
+     /**
+      * Puts part of line, which matches regexp into given template
+      * on positions $n where 'n' is number of matched part in line.
+      * @param template the string to expand.
+      * @param lineToPlaceInTemplate contains expression which should be placed into string.
+      * @param regexp expression to find in comment.

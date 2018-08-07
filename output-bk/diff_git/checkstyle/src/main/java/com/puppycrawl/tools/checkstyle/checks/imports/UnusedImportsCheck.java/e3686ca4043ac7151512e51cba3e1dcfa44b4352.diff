@@ -1,0 +1,242 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java
+index 7559961fa..326459301 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java
+@@ -11,215 +11,230 @@
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.imports;
+ 
+ import java.util.HashSet;
+ import java.util.List;
+ import java.util.Set;
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ 
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TextBlock;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTag;
+ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ import com.puppycrawl.tools.checkstyle.utils.JavadocUtils;
+ 
+ /**
+  * <p>
+  * Checks for unused import statements.
+  * </p>
+  *  <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="UnusedImports"/&gt;
+  * </pre>
+  * Compatible with Java 1.5 source.
+  *
+  * @author Oliver Burn
+  */
+ public class UnusedImportsCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "import.unused";
+ 
+     /** Regex to match class names. */
+-    private static final Pattern CLASS_NAME = Pattern.compile(
++    private static final Pattern CLASS_NAME = CommonUtils.createPattern(
+            "((:?[\\p{L}_$][\\p{L}\\p{N}_$]*\\.)*[\\p{L}_$][\\p{L}\\p{N}_$]*)");
+     /** Regex to match the first class name. */
+-    private static final Pattern FIRST_CLASS_NAME = Pattern.compile(
++    private static final Pattern FIRST_CLASS_NAME = CommonUtils.createPattern(
+            "^" + CLASS_NAME);
+     /** Regex to match argument names. */
+-    private static final Pattern ARGUMENT_NAME = Pattern.compile(
++    private static final Pattern ARGUMENT_NAME = CommonUtils.createPattern(
+            "[(,]\\s*" + CLASS_NAME.pattern());
+ 
++    /** Regexp pattern to match java.lang package. */
++    private static final Pattern JAVA_LANG_PACKAGE_PATTERN =
++        CommonUtils.createPattern("^java\\.lang\\.[a-zA-Z]+$");
++
+     /** Suffix for the star import. */
+     private static final String STAR_IMPORT_SUFFIX = ".*";
+ 
+     /** Set of the imports. */
+     private final Set<FullIdent> imports = new HashSet<>();
+ 
+     /** Set of references - possibly to imports or other things. */
+     private final Set<String> referenced = new HashSet<>();
+ 
+     /** Flag to indicate when time to start collecting references. */
+     private boolean collect;
+     /** Flag whether to process Javadoc comments. */
+     private boolean processJavadoc = true;
+ 
+     /**
+      * Sets whether to process JavaDoc or not.
+      *
+      * @param value Flag for processing JavaDoc.
+      */
+     public void setProcessJavadoc(boolean value) {
+         processJavadoc = value;
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         collect = false;
+         imports.clear();
+         referenced.clear();
+     }
+ 
+     @Override
+     public void finishTree(DetailAST rootAST) {
+         // loop over all the imports to see if referenced.
+         imports.stream()
+-            .filter(imp -> !referenced.contains(CommonUtils.baseClassName(imp.getText())))
+-            .forEach(imp -> log(imp.getLineNo(),
+-                imp.getColumnNo(),
+-                MSG_KEY, imp.getText()));
++            .filter(imprt -> isUnusedImport(imprt.getText()))
++            .forEach(imprt -> log(imprt.getLineNo(),
++                imprt.getColumnNo(),
++                MSG_KEY, imprt.getText()));
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.IMPORT,
+             TokenTypes.STATIC_IMPORT,
+             // Definitions that may contain Javadoc...
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getDefaultTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.IMPORT,
+             TokenTypes.STATIC_IMPORT,
+             // Definitions that may contain Javadoc...
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.IDENT) {
+             if (collect) {
+                 processIdent(ast);
+             }
+         }
+         else if (ast.getType() == TokenTypes.IMPORT) {
+             processImport(ast);
+         }
+         else if (ast.getType() == TokenTypes.STATIC_IMPORT) {
+             processStaticImport(ast);
+         }
+         else {
+             collect = true;
+             if (processJavadoc) {
+                 collectReferencesFromJavadoc(ast);
+             }
+         }
+     }
+ 
++    /**
++     * Checks whether an import is unused.
++     * @param imprt an import.
++     * @return true if an import is unused.
++     */
++    private boolean isUnusedImport(String imprt) {
++        final Matcher javaLangPackageMatcher = JAVA_LANG_PACKAGE_PATTERN.matcher(imprt);
++        return !referenced.contains(CommonUtils.baseClassName(imprt))
++            || javaLangPackageMatcher.matches();
++    }
++
+     /**
+      * Collects references made by IDENT.
+      * @param ast the IDENT node to process
+      */
+     private void processIdent(DetailAST ast) {
+         final DetailAST parent = ast.getParent();
+         final int parentType = parent.getType();
+         if (parentType != TokenTypes.DOT
+             && parentType != TokenTypes.METHOD_DEF
+             || parentType == TokenTypes.DOT
+                 && ast.getNextSibling() != null) {
+             referenced.add(ast.getText());
+         }
+     }
+ 
+     /**
+      * Collects the details of imports.
+      * @param ast node containing the import details
+      */
+     private void processImport(DetailAST ast) {
+         final FullIdent name = FullIdent.createFullIdentBelow(ast);
+         if (!name.getText().endsWith(STAR_IMPORT_SUFFIX)) {
+             imports.add(name);
+         }
+     }
+ 
+     /**
+      * Collects the details of static imports.
+      * @param ast node containing the static import details
+      */
+     private void processStaticImport(DetailAST ast) {
+         final FullIdent name =
+             FullIdent.createFullIdent(
+                 ast.getFirstChild().getNextSibling());
+         if (!name.getText().endsWith(STAR_IMPORT_SUFFIX)) {
+             imports.add(name);
+         }
+     }
+ 
+     /**
+      * Collects references made in Javadoc comments.
+      * @param ast node to inspect for Javadoc
+      */
+     private void collectReferencesFromJavadoc(DetailAST ast) {
+         final FileContents contents = getFileContents();
+         final int lineNo = ast.getLineNo();
+         final TextBlock textBlock = contents.getJavadocBefore(lineNo);
+         if (textBlock != null) {
+             referenced.addAll(collectReferencesFromJavadoc(textBlock));
+         }

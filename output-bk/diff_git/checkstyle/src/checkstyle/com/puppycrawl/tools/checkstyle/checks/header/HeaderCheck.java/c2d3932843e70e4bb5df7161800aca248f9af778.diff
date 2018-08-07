@@ -1,0 +1,82 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/header/HeaderCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/header/HeaderCheck.java
+index 47f69f95f..e14ffa73c 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/header/HeaderCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/header/HeaderCheck.java
+@@ -18,76 +18,76 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.header;
+ 
+ import java.util.Arrays;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.checks.AbstractHeaderCheck;
+ 
+ /**
+  * Checks the header of the source against a fixed header file.
+  *
+  * @author Lars K�hne
+  */
+ public class HeaderCheck extends AbstractHeaderCheck
+ {
+     /** empty array to avoid instantiations. */
+     private static final int[] EMPTY_INT_ARRAY = new int[0];
+ 
+     /** the header lines to ignore in the check, sorted. */
+     private int[] mIgnoreLines = EMPTY_INT_ARRAY;
+ 
+     /**
+      * @param aLineNo a line number
+      * @return if <code>aLineNo</code> is one of the ignored header lines.
+      */
+     private boolean isIgnoreLine(int aLineNo)
+     {
+         return (Arrays.binarySearch(mIgnoreLines, aLineNo) >= 0);
+     }
+ 
+     /**
+      * Checks if a code line matches the required header line.
+      * @param aLineNumber the linenumber to check against the header
+      * @return true if and only if the line matches the required header line
+      */
+     protected boolean isMatch(int aLineNumber)
+     {
+         final String line = getLines()[aLineNumber];
+         // skip lines we are meant to ignore
+         return isIgnoreLine(aLineNumber + 1)
+             || getHeaderLines()[aLineNumber].equals(line);
+     }
+ 
+     /**
+      * Set the lines numbers to ignore in the header check.
+      * @param aList comma separated list of line numbers to ignore in header.
+      */
+     public void setIgnoreLines(int[] aList)
+     {
+-        if (aList == null || aList.length == 0) {
++        if ((aList == null) || (aList.length == 0)) {
+             mIgnoreLines = EMPTY_INT_ARRAY;
+             return;
+         }
+ 
+         mIgnoreLines = new int[aList.length];
+         System.arraycopy(aList, 0, mIgnoreLines, 0, aList.length);
+         Arrays.sort(mIgnoreLines);
+     }
+ 
+     /** {@inheritDoc} */
+     public void beginTree(DetailAST aRootAST)
+     {
+         if (getHeaderLines().length > getLines().length) {
+             log(1, "header.missing");
+         }
+         else {
+             for (int i = 0; i < getHeaderLines().length; i++) {
+                 if (!isMatch(i)) {
+                     log(i + 1, "header.mismatch", getHeaderLines()[i]);
+                     break; // stop checking
+                 }
+             }
+         }
+     }
+ }

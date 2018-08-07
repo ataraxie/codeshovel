@@ -1,0 +1,91 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "Checker.java",
+  "functionName": "processFile",
+  "functionId": "processFile___file-File",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/Checker.java",
+  "functionStartLine": 315,
+  "functionEndLine": 348,
+  "changeHistory": [
+    "127f729942afa7d645db2e41c1b3ebe4c12be6c4",
+    "a43191d49473b50097f172884a2bf55494c49567",
+    "b61daf7f44e5b3a817e712b6af84d6bca796fb28",
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020",
+    "77acd41cf13e912caf8e68f92550a6e0b928de92"
+  ],
+  "changeHistoryShort": {
+    "127f729942afa7d645db2e41c1b3ebe4c12be6c4": "Ybodychange",
+    "a43191d49473b50097f172884a2bf55494c49567": "Ybodychange",
+    "b61daf7f44e5b3a817e712b6af84d6bca796fb28": "Ybodychange",
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020": "Ybodychange",
+    "77acd41cf13e912caf8e68f92550a6e0b928de92": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "127f729942afa7d645db2e41c1b3ebe4c12be6c4": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #929: Using private final loggers instead of private static final\n",
+      "commitDate": 1508521617000,
+      "commitName": "127f729942afa7d645db2e41c1b3ebe4c12be6c4",
+      "commitAuthor": "crude",
+      "commitDateOld": 1508336382000,
+      "commitNameOld": "b16aef991830dd1fce1ce2640af7e7db8b329d86",
+      "commitAuthorOld": "Artem Dudkin",
+      "daysBetweenCommits": 2.14,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,34 +1,34 @@\n     private SortedSet\u003cLocalizedMessage\u003e processFile(File file) throws CheckstyleException {\n         final SortedSet\u003cLocalizedMessage\u003e fileMessages \u003d new TreeSet\u003c\u003e();\n         try {\n             final FileText theText \u003d new FileText(file.getAbsoluteFile(), charset);\n             for (final FileSetCheck fsc : fileSetChecks) {\n                 fileMessages.addAll(fsc.process(file, theText));\n             }\n         }\n         catch (final IOException ioe) {\n-            LOG.debug(\"IOException occurred.\", ioe);\n+            log.debug(\"IOException occurred.\", ioe);\n             fileMessages.add(new LocalizedMessage(0,\n                     Definitions.CHECKSTYLE_BUNDLE, EXCEPTION_MSG,\n                     new String[] {ioe.getMessage()}, null, getClass(), null));\n         }\n         // -@cs[IllegalCatch] There is no other way to obey haltOnException field\n         catch (Exception ex) {\n             if (haltOnException) {\n                 throw ex;\n             }\n \n-            LOG.debug(\"Exception occurred.\", ex);\n+            log.debug(\"Exception occurred.\", ex);\n \n             final StringWriter sw \u003d new StringWriter();\n             final PrintWriter pw \u003d new PrintWriter(sw, true);\n \n             ex.printStackTrace(pw);\n \n             fileMessages.add(new LocalizedMessage(0,\n                     Definitions.CHECKSTYLE_BUNDLE, EXCEPTION_MSG,\n                     new String[] {sw.getBuffer().toString()},\n                     null, getClass(), null));\n         }\n         return fileMessages;\n     }\n\\ No newline at end of file\n"
+    },
+    "a43191d49473b50097f172884a2bf55494c49567": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4350: expanded exception violation when haltOnException is off",
+      "commitDate": 1495807890000,
+      "commitName": "a43191d49473b50097f172884a2bf55494c49567",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1489375026000,
+      "commitNameOld": "7caba87cc7113bf4484ca6046483a7a9bad58ec8",
+      "commitAuthorOld": "Luolc",
+      "daysBetweenCommits": 74.45,
+      "commitsBetweenForRepo": 270,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,34 @@\n     private SortedSet\u003cLocalizedMessage\u003e processFile(File file) throws CheckstyleException {\n         final SortedSet\u003cLocalizedMessage\u003e fileMessages \u003d new TreeSet\u003c\u003e();\n         try {\n             final FileText theText \u003d new FileText(file.getAbsoluteFile(), charset);\n             for (final FileSetCheck fsc : fileSetChecks) {\n                 fileMessages.addAll(fsc.process(file, theText));\n             }\n         }\n         catch (final IOException ioe) {\n             LOG.debug(\"IOException occurred.\", ioe);\n             fileMessages.add(new LocalizedMessage(0,\n                     Definitions.CHECKSTYLE_BUNDLE, EXCEPTION_MSG,\n                     new String[] {ioe.getMessage()}, null, getClass(), null));\n         }\n         // -@cs[IllegalCatch] There is no other way to obey haltOnException field\n         catch (Exception ex) {\n             if (haltOnException) {\n                 throw ex;\n             }\n \n             LOG.debug(\"Exception occurred.\", ex);\n+\n+            final StringWriter sw \u003d new StringWriter();\n+            final PrintWriter pw \u003d new PrintWriter(sw, true);\n+\n+            ex.printStackTrace(pw);\n+\n             fileMessages.add(new LocalizedMessage(0,\n                     Definitions.CHECKSTYLE_BUNDLE, EXCEPTION_MSG,\n-                    new String[] {ex.getClass().getName() + \": \" + ex.getMessage()},\n+                    new String[] {sw.getBuffer().toString()},\n                     null, getClass(), null));\n         }\n         return fileMessages;\n     }\n\\ No newline at end of file\n"
+    },
+    "b61daf7f44e5b3a817e712b6af84d6bca796fb28": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3611: added haltOnException to Checker",
+      "commitDate": 1481152863000,
+      "commitName": "b61daf7f44e5b3a817e712b6af84d6bca796fb28",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1478807994000,
+      "commitNameOld": "56cc11416ebdf52dd299d11424fb04fda42fa63f",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 27.14,
+      "commitsBetweenForRepo": 54,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,28 @@\n     private SortedSet\u003cLocalizedMessage\u003e processFile(File file) throws CheckstyleException {\n         final SortedSet\u003cLocalizedMessage\u003e fileMessages \u003d new TreeSet\u003c\u003e();\n         try {\n             final FileText theText \u003d new FileText(file.getAbsoluteFile(), charset);\n             for (final FileSetCheck fsc : fileSetChecks) {\n                 fileMessages.addAll(fsc.process(file, theText));\n             }\n         }\n         catch (final IOException ioe) {\n             LOG.debug(\"IOException occurred.\", ioe);\n             fileMessages.add(new LocalizedMessage(0,\n-                    Definitions.CHECKSTYLE_BUNDLE, \"general.exception\",\n+                    Definitions.CHECKSTYLE_BUNDLE, EXCEPTION_MSG,\n                     new String[] {ioe.getMessage()}, null, getClass(), null));\n         }\n+        // -@cs[IllegalCatch] There is no other way to obey haltOnException field\n+        catch (Exception ex) {\n+            if (haltOnException) {\n+                throw ex;\n+            }\n+\n+            LOG.debug(\"Exception occurred.\", ex);\n+            fileMessages.add(new LocalizedMessage(0,\n+                    Definitions.CHECKSTYLE_BUNDLE, EXCEPTION_MSG,\n+                    new String[] {ex.getClass().getName() + \": \" + ex.getMessage()},\n+                    null, getClass(), null));\n+        }\n         return fileMessages;\n     }\n\\ No newline at end of file\n"
+    },
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3433: Cut down on Checkstyle\u0027s dependencies on Guava (part 2) (#3454)\n\n",
+      "commitDate": 1474426326000,
+      "commitName": "fbf3f95c2273be23b966cba6e6ef89390a6fb020",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1473886714000,
+      "commitNameOld": "25a37e5049b7816b34c552899841a978efc37a63",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 6.25,
+      "commitsBetweenForRepo": 9,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     private SortedSet\u003cLocalizedMessage\u003e processFile(File file) throws CheckstyleException {\n-        final SortedSet\u003cLocalizedMessage\u003e fileMessages \u003d Sets.newTreeSet();\n+        final SortedSet\u003cLocalizedMessage\u003e fileMessages \u003d new TreeSet\u003c\u003e();\n         try {\n             final FileText theText \u003d new FileText(file.getAbsoluteFile(), charset);\n             for (final FileSetCheck fsc : fileSetChecks) {\n                 fileMessages.addAll(fsc.process(file, theText));\n             }\n         }\n         catch (final IOException ioe) {\n             LOG.debug(\"IOException occurred.\", ioe);\n             fileMessages.add(new LocalizedMessage(0,\n                     Definitions.CHECKSTYLE_BUNDLE, \"general.exception\",\n                     new String[] {ioe.getMessage()}, null, getClass(), null));\n         }\n         return fileMessages;\n     }\n\\ No newline at end of file\n"
+    },
+    "77acd41cf13e912caf8e68f92550a6e0b928de92": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2285: Add possibility to track down the name of source file which caused the internal Exception or Error\n",
+      "commitDate": 1455650521000,
+      "commitName": "77acd41cf13e912caf8e68f92550a6e0b928de92",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

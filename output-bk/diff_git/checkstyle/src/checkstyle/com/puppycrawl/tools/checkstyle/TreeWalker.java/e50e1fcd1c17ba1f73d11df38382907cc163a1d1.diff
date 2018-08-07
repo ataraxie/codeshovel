@@ -1,0 +1,211 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 02a88b064..b4e89781b 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -329,102 +329,102 @@ public final class TreeWalker
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {"" + err},
+                     getId(),
+                     this.getClass()));
+         }
+ 
+         if (getMessageCollector().size() == 0) {
+             mCache.checkedOk(fileName, timestamp);
+         }
+         else {
+             fireErrors(fileName);
+         }
+ 
+         getMessageDispatcher().fireFileFinished(fileName);
+     }
+ 
+     /**
+      * Register a check for a given configuration.
+      * @param aCheck the check to register
+      * @throws CheckstyleException if an error occurs
+      */
+     private void registerCheck(Check aCheck)
+         throws CheckstyleException
+     {
+         int[] tokens = new int[] {}; //safety initialization
+         final Set<String> checkTokens = aCheck.getTokenNames();
+         if (!checkTokens.isEmpty()) {
+             tokens = aCheck.getRequiredTokens();
+ 
+             //register configured tokens
+             final int acceptableTokens[] = aCheck.getAcceptableTokens();
+             Arrays.sort(acceptableTokens);
+             for (String token : checkTokens) {
+                 try {
+                     final int tokenId = TokenTypes.getTokenId(token);
+                     if (Arrays.binarySearch(acceptableTokens, tokenId) >= 0) {
+                         registerCheck(token, aCheck);
+                     }
+                     // TODO: else log warning
+                 }
+                 catch (final IllegalArgumentException ex) {
+                     throw new CheckstyleException("illegal token \""
+                         + token + "\" in check " + aCheck, ex);
+                 }
+             }
+         }
+         else {
+             tokens = aCheck.getDefaultTokens();
+         }
+-        for (int i = 0; i < tokens.length; i++) {
+-            registerCheck(tokens[i], aCheck);
++        for (int element : tokens) {
++            registerCheck(element, aCheck);
+         }
+         mAllChecks.add(aCheck);
+     }
+ 
+     /**
+      * Register a check for a specified token id.
+      * @param aTokenID the id of the token
+      * @param aCheck the check to register
+      */
+     private void registerCheck(int aTokenID, Check aCheck)
+     {
+         registerCheck(TokenTypes.getTokenName(aTokenID), aCheck);
+     }
+ 
+     /**
+      * Register a check for a specified token name
+      * @param aToken the name of the token
+      * @param aCheck the check to register
+      */
+     private void registerCheck(String aToken, Check aCheck)
+     {
+         List<Check> visitors = mTokenToChecks.get(aToken);
+         if (visitors == null) {
+             visitors = new ArrayList<Check>();
+             mTokenToChecks.put(aToken, visitors);
+         }
+ 
+         visitors.add(aCheck);
+     }
+ 
+     /**
+      * Initiates the walk of an AST.
+      * @param aAST the root AST
+      * @param aContents the contents of the file the AST was generated from
+      */
+     private void walk(DetailAST aAST, FileContents aContents)
+     {
+         getMessageCollector().reset();
+         notifyBegin(aAST, aContents);
+ 
+         // empty files are not flagged by javac, will yield aAST == null
+         if (aAST != null) {
+             if (useRecursiveAlgorithm()) {
+                 processRec(aAST);
+             }
+             else {
+                 processIter(aAST);
+             }
+         }
+ 
+@@ -532,99 +532,99 @@ public final class TreeWalker
+                 rootAST = parse(aContents, true, true, false);
+             }
+             catch (final RecognitionException exception2) {
+                 rootAST = parse(aContents, false, false, false);
+             }
+         }
+         return rootAST;
+     }
+ 
+     /**
+      * Static helper method to parses a Java source file with a given
+      * lexer class and parser class.
+      * @param aContents contains the contents of the file
+      * @param aSilentlyConsumeErrors flag to output errors to stdout or not
+      * @param aTreatAssertAsKeyword flag to treat 'assert' as a keyowrd
+      * @param aTreatEnumAsKeyword flag to treat 'enum' as a keyowrd
+      * @throws TokenStreamException if lexing failed
+      * @throws RecognitionException if parsing failed
+      * @return the root of the AST
+      */
+     private static DetailAST parse(
+         FileContents aContents,
+         boolean aSilentlyConsumeErrors,
+         boolean aTreatAssertAsKeyword,
+         boolean aTreatEnumAsKeyword)
+         throws RecognitionException, TokenStreamException
+     {
+         final Reader sar = new StringArrayReader(aContents.getLines());
+         final GeneratedJavaLexer lexer = new GeneratedJavaLexer(sar);
+         lexer.setFilename(aContents.getFilename());
+         lexer.setCommentListener(aContents);
+         lexer.setTreatAssertAsKeyword(aTreatAssertAsKeyword);
+         lexer.setTreatEnumAsKeyword(aTreatEnumAsKeyword);
+ 
+         final GeneratedJavaRecognizer parser =
+             aSilentlyConsumeErrors
+                 ? new SilentJavaRecognizer(lexer)
+                 : new GeneratedJavaRecognizer(lexer);
+         parser.setFilename(aContents.getFilename());
+         parser.setASTNodeClass(DetailAST.class.getName());
+         parser.compilationUnit();
+ 
+         return (DetailAST) parser.getAST();
+     }
+ 
+     /** {@inheritDoc} */
+     public void process(File[] aFiles)
+     {
+         final File[] javaFiles = filter(aFiles);
+ 
+-        for (int i = 0; i < javaFiles.length; i++) {
+-            process(javaFiles[i]);
++        for (File element : javaFiles) {
++            process(element);
+         }
+     }
+ 
+     /**
+      * @see com.puppycrawl.tools.checkstyle.api.FileSetCheck
+      */
+     @Override
+     public void destroy()
+     {
+         for (Check c : mAllChecks) {
+             c.destroy();
+         }
+         mCache.destroy();
+         super.destroy();
+     }
+ 
+     /**
+      * @return true if we should use recursive algorithm
+      *         for tree processing, false for iterative one.
+      */
+     private boolean useRecursiveAlgorithm()
+     {
+         return mRecursive;
+     }
+ 
+     /**
+      * Processes a node calling interested checks at each node.
+      * Uses iterative algorithm.
+      * @param aRoot the root of tree for process
+      */
+     private void processIter(DetailAST aRoot)
+     {
+         DetailAST curNode = aRoot;
+         while (curNode != null) {
+             notifyVisit(curNode);
+             DetailAST toVisit = (DetailAST) curNode.getFirstChild();
+             while ((curNode != null) && (toVisit == null)) {
+                 notifyLeave(curNode);
+                 toVisit = (DetailAST) curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+     }
+ }

@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
+index 9fcebd888..dd723d9cb 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
+@@ -75,101 +75,101 @@ public class ImportControlCheck extends Check
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT,
+                           TokenTypes.STATIC_IMPORT, };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT,
+                           TokenTypes.STATIC_IMPORT, };
+     }
+ 
+     @Override
+     public void beginTree(final DetailAST rootAST)
+     {
+         currentLeaf = null;
+     }
+ 
+     @Override
+     public void visitToken(final DetailAST ast)
+     {
+         if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+             final DetailAST nameAST = ast.getLastChild().getPreviousSibling();
+             final FullIdent full = FullIdent.createFullIdent(nameAST);
+             if (root == null) {
+                 log(nameAST, MSG_MISSING_FILE);
+             }
+             else {
+                 inPkg = full.getText();
+                 currentLeaf = root.locateFinest(inPkg);
+                 if (currentLeaf == null) {
+                     log(nameAST, MSG_UNKNOWN_PKG);
+                 }
+             }
+         }
+         else if (currentLeaf != null) {
+             final FullIdent imp;
+             if (ast.getType() == TokenTypes.IMPORT) {
+                 imp = FullIdent.createFullIdentBelow(ast);
+             }
+             else {
+                 // know it is a static import
+                 imp = FullIdent.createFullIdent(ast
+                         .getFirstChild().getNextSibling());
+             }
+             final AccessResult access = currentLeaf.checkAccess(imp.getText(),
+                     inPkg);
+-            if (!AccessResult.ALLOWED.equals(access)) {
++            if (AccessResult.ALLOWED != access) {
+                 log(ast, MSG_DISALLOWED, imp.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Set the parameter for the url containing the import control
+      * configuration. It will cause the url to be loaded.
+      * @param url the url of the file to load.
+      * @throws ConversionException on error loading the file.
+      */
+     public void setUrl(final String url)
+     {
+         // Handle empty param
+         if ((url == null) || (url.trim().length() == 0)) {
+             return;
+         }
+         final URI uri;
+         try {
+             uri = URI.create(url);
+         }
+         catch (final IllegalArgumentException ex) {
+             throw new ConversionException("syntax error in url " + url, ex);
+         }
+         try {
+             root = ImportControlLoader.load(uri);
+         }
+         catch (final CheckstyleException ex) {
+             throw new ConversionException("Unable to load " + url, ex);
+         }
+     }
+ 
+     /**
+      * Set the pnameter for the file containing the import control
+      * configuration. It will cause the file to be loaded.
+      * @param name the name of the file to load.
+      * @throws ConversionException on error loading the file.
+      */
+     public void setFile(final String name)
+     {
+         // Handle empty param
+         if ((name == null) || (name.trim().length() == 0)) {
+             return;
+         }
+ 
+         try {
+             root = ImportControlLoader.load(new File(name).toURI());
+         }
+         catch (final CheckstyleException ex) {
+             throw new ConversionException("Unable to load " + name, ex);

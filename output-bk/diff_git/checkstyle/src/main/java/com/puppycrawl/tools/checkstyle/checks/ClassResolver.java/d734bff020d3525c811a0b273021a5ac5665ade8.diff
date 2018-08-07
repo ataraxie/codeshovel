@@ -1,0 +1,168 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/ClassResolver.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/ClassResolver.java
+index 4b8191ebb..7b5865e16 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/ClassResolver.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/ClassResolver.java
+@@ -46,124 +46,155 @@ public class ClassResolver {
+     public ClassResolver(ClassLoader loader, String pkg, Set<String> imports) {
+         this.loader = loader;
+         this.pkg = pkg;
+         this.imports = imports;
+         imports.add("java.lang.*");
+     }
+ 
+     /**
+      * Attempts to resolve the Class for a specified name. The algorithm is
+      * to check:
+      * - fully qualified name
+      * - explicit imports
+      * - enclosing package
+      * - star imports
+      * @param name name of the class to resolve
+      * @param currentClass name of current class (for inner classes).
+      * @return the resolved class
+      * @throws ClassNotFoundException if unable to resolve the class
+      */
+     public Class<?> resolve(String name, String currentClass)
+         throws ClassNotFoundException {
+         // See if the class is full qualified
+         Class<?> clazz = resolveQualifiedName(name);
+         if (clazz != null) {
+             return clazz;
+         }
+ 
+         // try matching explicit imports
+         for (String imp : imports) {
+             // Very important to add the "." in the check below. Otherwise you
+             // when checking for "DataException", it will match on
+             // "SecurityDataException". This has been the cause of a very
+             // difficult bug to resolve!
+             if (imp.endsWith("." + name)) {
+                 clazz = resolveQualifiedName(imp);
+                 if (clazz != null) {
+                     return clazz;
+                 }
+ 
+             }
+         }
+ 
+         // See if in the package
+         if (!"".equals(pkg)) {
+             clazz = resolveQualifiedName(pkg + "." + name);
+             if (clazz != null) {
+                 return clazz;
+             }
+         }
+ 
+-        //inner class of this class???
++        // see if inner class of this class
++        clazz = resolveInnerClass(name, currentClass);
++        if (clazz != null) {
++            return clazz;
++        }
++
++        clazz = resolveByStarImports(name);
++        if (clazz != null) {
++            return clazz;
++        }
++
++
++        // Giving up, the type is unknown, so load the class to generate an
++        // exception
++        return safeLoad(name);
++    }
++
++    /**
++     * see if inner class of this class
++     * @param name name of the search Class to search
++     * @param currentClass class where search in
++     * @return class if found , or null if not resolved
++     * @throws ClassNotFoundException  if an error occurs
++     */
++    private Class<?> resolveInnerClass(String name, String currentClass)
++            throws ClassNotFoundException {
++        Class<?> clazz = null;
+         if (!"".equals(currentClass)) {
+             final String innerClass = (!"".equals(pkg) ? pkg + "." : "")
+                 + currentClass + "$" + name;
+             if (isLoadable(innerClass)) {
+-                return safeLoad(innerClass);
++                clazz = safeLoad(innerClass);
+             }
+         }
++        return clazz;
++    }
+ 
+-        // try star imports
++    /**
++     * try star imports
++     * @param name name of the Class to search
++     * @return  class if found , or null if not resolved
++     */
++    private Class<?> resolveByStarImports(String name) {
++        Class<?> clazz = null;
+         for (String imp : imports) {
+             if (imp.endsWith(".*")) {
+                 final String fqn = imp.substring(0, imp.lastIndexOf('.') + 1)
+                     + name;
+                 clazz = resolveQualifiedName(fqn);
+                 if (clazz != null) {
+-                    return clazz;
++                    break;
+                 }
+             }
+         }
+-
+-        // Giving up, the type is unknown, so load the class to generate an
+-        // exception
+-        return safeLoad(name);
++        return clazz;
+     }
+ 
+     /**
+      * @param name name of the class to check
+      * @return whether a specified class is loadable with safeLoad().
+      */
+     public boolean isLoadable(String name) {
+         try {
+             safeLoad(name);
+             return true;
+         }
+         catch (final ClassNotFoundException e) {
+             return false;
+         }
+     }
+ 
+     /**
+      * Will load a specified class is such a way that it will NOT be
+      * initialised.
+      * @param name name of the class to load
+      * @return the <code>Class</code> for the specified class
+      * @throws ClassNotFoundException if an error occurs
+      */
+     public Class<?> safeLoad(String name)
+         throws ClassNotFoundException {
+         // The next line will load the class using the specified class
+         // loader. The magic is having the "false" parameter. This means the
+         // class will not be initialised. Very, very important.
+         return Class.forName(name, false, loader);
+     }
+ 
+     /**
+      * Tries to resolve a class for fully-specified name.
+      * @param name a given name of class.
+      * @return Class object for the given name or null.
+      */
+     private Class<?> resolveQualifiedName(final String name) {
+         try {
+             if (isLoadable(name)) {
+                 return safeLoad(name);
+             }
+             //Perhaps it's fully-qualified inner class
+             final int dot = name.lastIndexOf('.');
+             if (dot != -1) {
+                 final String innerName =
+                     name.substring(0, dot) + "$" + name.substring(dot + 1);
+                 if (isLoadable(innerName)) {
+                     return safeLoad(innerName);
+                 }
+             }

@@ -1,0 +1,65 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/LabelHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/LabelHandler.java
+index 7a90aa3cb..24d4e18f0 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/LabelHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/LabelHandler.java
+@@ -21,59 +21,58 @@ package com.puppycrawl.tools.checkstyle.checks.indentation;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Handler for labels.
+  *
+  * @author jrichard
+  */
+ public class LabelHandler extends ExpressionHandler
+ {
+     /**
+      * The types of expressions that are children of a label.
+      */
+     private final int[] mLabelChildren = new int[] {
+         TokenTypes.IDENT,
+     };
+ 
+     /**
+      * Construct an instance of this handler with the given indentation check,
+      * abstract syntax tree, and parent handler.
+      *
+      * @param aIndentCheck   the indentation check
+      * @param aExpr          the abstract syntax tree
+      * @param aParent        the parent handler
+      */
+     public LabelHandler(IndentationCheck aIndentCheck,
+         DetailAST aExpr, ExpressionHandler aParent)
+     {
+         super(aIndentCheck, "label", aExpr, aParent);
+     }
+ 
+     @Override
+     protected IndentLevel getLevelImpl()
+     {
+         return new IndentLevel(super.getLevelImpl(), -getBasicOffset());
+     }
+ 
+     /**
+      * Check the indentation of the label.
+      */
+     private void checkLabel()
+     {
+         checkChildren(getMainAst(), mLabelChildren, getLevel(), true, false);
+     }
+ 
+     @Override
+     public void checkIndentation()
+     {
+         checkLabel();
+         // need to check children (like 'block' parents do)
+-        final DetailAST parent = (DetailAST)
+-            getMainAst().getFirstChild().getNextSibling();
++        final DetailAST parent = getMainAst().getFirstChild().getNextSibling();
+ 
+         final IndentLevel expected =
+             new IndentLevel(getLevel(), getBasicOffset());
+ 
+         checkExpressionSubtree(parent, expected, true, false);
+     }
+ }

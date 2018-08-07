@@ -1,0 +1,151 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "JavadocMethodCheck.java",
+  "functionName": "removeMatchingParam",
+  "functionId": "removeMatchingParam___params-List__DetailAST____paramName-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java",
+  "functionStartLine": 818,
+  "functionEndLine": 830,
+  "changeHistory": [
+    "a384794adeebe9ee5d2f023e841823734bf2453b",
+    "a21164df1fbaff36ba020968b3a6128ab8476756",
+    "af095344e1501d55b2dfbbd18deaf305e814601c",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "04ac5dd87c11a2bf7b908b45bbca7933382df515",
+    "c75f97dbc2123f550a1acc64886a8bebf4b888cf"
+  ],
+  "changeHistoryShort": {
+    "a384794adeebe9ee5d2f023e841823734bf2453b": "Ymodifierchange",
+    "a21164df1fbaff36ba020968b3a6128ab8476756": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Ybodychange)",
+    "af095344e1501d55b2dfbbd18deaf305e814601c": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "04ac5dd87c11a2bf7b908b45bbca7933382df515": "Yfilerename",
+    "c75f97dbc2123f550a1acc64886a8bebf4b888cf": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "a384794adeebe9ee5d2f023e841823734bf2453b": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Mark method as static. #1555\n\nFixes `MethodMayBeStatic` inspection violation introduced in recent commit.\n\nDescription:\n\u003eReports any methods which may safely be made static. A method may be static if it is not synchronized, it does not reference any of its class\u0027 non static methods and non static fields and is not overridden in a sub class.\n",
+      "commitDate": 1440739895000,
+      "commitName": "a384794adeebe9ee5d2f023e841823734bf2453b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440705239000,
+      "commitNameOld": "4d2e6647f9e8385749c382bcab5e64965a943178",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.4,
+      "commitsBetweenForRepo": 14,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n-    private boolean removeMatchingParam(List\u003cDetailAST\u003e params, String paramName) {\n+    private static boolean removeMatchingParam(List\u003cDetailAST\u003e params, String paramName) {\n         boolean found \u003d false;\n         final Iterator\u003cDetailAST\u003e paramIt \u003d params.iterator();\n         while (paramIt.hasNext()) {\n             final DetailAST param \u003d paramIt.next();\n             if (param.getText().equals(paramName)) {\n                 found \u003d true;\n                 paramIt.remove();\n                 break;\n             }\n         }\n         return found;\n     }\n\\ No newline at end of file\n"
+    },
+    "a21164df1fbaff36ba020968b3a6128ab8476756": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Issue #1566: Fixed NPathComplexity violation in JavadocMethodCheck\n",
+      "commitDate": 1440694468000,
+      "commitName": "a21164df1fbaff36ba020968b3a6128ab8476756",
+      "commitAuthor": "Baratali Izmailov",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "af095344e1501d55b2dfbbd18deaf305e814601c": {
+      "type": "Ybodychange",
+      "commitMessage": "Add tests and refactor JavadocMethod check. #1308\n",
+      "commitDate": 1438285571000,
+      "commitName": "af095344e1501d55b2dfbbd18deaf305e814601c",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 7.57,
+      "commitsBetweenForRepo": 89,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,10 @@\n     private static boolean isFunction(DetailAST ast) {\n         boolean retVal \u003d false;\n         if (ast.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n             final DetailAST typeAST \u003d ast.findFirstToken(TokenTypes.TYPE);\n-            if (typeAST !\u003d null\n-                \u0026\u0026 typeAST.findFirstToken(TokenTypes.LITERAL_VOID) \u003d\u003d null) {\n+            if (typeAST.findFirstToken(TokenTypes.LITERAL_VOID) \u003d\u003d null) {\n                 retVal \u003d true;\n             }\n         }\n         return retVal;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436323201000,
+      "commitNameOld": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 10.09,
+      "commitsBetweenForRepo": 97,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n-    private boolean isFunction(DetailAST ast) {\n+    private static boolean isFunction(DetailAST ast) {\n         boolean retVal \u003d false;\n         if (ast.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n             final DetailAST typeAST \u003d ast.findFirstToken(TokenTypes.TYPE);\n             if (typeAST !\u003d null\n                 \u0026\u0026 typeAST.findFirstToken(TokenTypes.LITERAL_VOID) \u003d\u003d null) {\n                 retVal \u003d true;\n             }\n         }\n         return retVal;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437366000,
+      "commitNameOld": "cee4f351944dc6bad1c0b91eb8aaa118eed59fcc",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 18.36,
+      "commitsBetweenForRepo": 96,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private boolean isFunction(DetailAST ast)\n     {\n         boolean retVal \u003d false;\n         if (ast.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n             final DetailAST typeAST \u003d ast.findFirstToken(TokenTypes.TYPE);\n-            if ((typeAST !\u003d null)\n-                \u0026\u0026 (typeAST.findFirstToken(TokenTypes.LITERAL_VOID) \u003d\u003d null))\n+            if (typeAST !\u003d null\n+                \u0026\u0026 typeAST.findFirstToken(TokenTypes.LITERAL_VOID) \u003d\u003d null)\n             {\n                 retVal \u003d true;\n             }\n         }\n         return retVal;\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "04ac5dd87c11a2bf7b908b45bbca7933382df515": {
+      "type": "Yfilerename",
+      "commitMessage": "Moving another Javadoc check to see what is involved.\nA suprisingly small amount. Love the Eclipse refactoring\nsupport having the smarts to do the CVS operations.\n",
+      "commitDate": 1054648289000,
+      "commitName": "04ac5dd87c11a2bf7b908b45bbca7933382df515",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1054647239000,
+      "commitNameOld": "2ef6dc6a43ede89c5b5b9091dee83e1e58bb5edc",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "c75f97dbc2123f550a1acc64886a8bebf4b888cf": {
+      "type": "Yintroduced",
+      "commitMessage": "Javadoc method check\n",
+      "commitDate": 1036501994000,
+      "commitName": "c75f97dbc2123f550a1acc64886a8bebf4b888cf",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

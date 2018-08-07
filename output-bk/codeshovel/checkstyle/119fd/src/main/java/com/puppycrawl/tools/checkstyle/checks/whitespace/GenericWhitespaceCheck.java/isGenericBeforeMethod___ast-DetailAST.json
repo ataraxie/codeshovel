@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "GenericWhitespaceCheck.java",
+  "functionName": "isGenericBeforeMethod",
+  "functionId": "isGenericBeforeMethod___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java",
+  "functionStartLine": 229,
+  "functionEndLine": 234,
+  "changeHistory": [
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "7c1d239748c9a90112bf3a59b189dc31ffe41983"
+  ],
+  "changeHistoryShort": {
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "7c1d239748c9a90112bf3a59b189dc31ffe41983": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437004697000,
+      "commitNameOld": "6d3dbe2fd3d64b491ee39ac1d42d0ee88938d190",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 2.2,
+      "commitsBetweenForRepo": 20,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n-    private boolean isGenericBeforeMethod(DetailAST ast) {\n+    private static boolean isGenericBeforeMethod(DetailAST ast) {\n         return ast.getParent().getType() \u003d\u003d TokenTypes.TYPE_ARGUMENTS\n                 \u0026\u0026 ast.getParent().getParent().getType()\n                     \u003d\u003d TokenTypes.DOT\n                 \u0026\u0026 ast.getParent().getParent().getParent().getType()\n                     \u003d\u003d TokenTypes.METHOD_CALL\n                 || isAfterMethodReference(ast);\n     }\n\\ No newline at end of file\n"
+    },
+    "7c1d239748c9a90112bf3a59b189dc31ffe41983": {
+      "type": "Yintroduced",
+      "commitMessage": "GenericWhitespace updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344165000,
+      "commitName": "7c1d239748c9a90112bf3a59b189dc31ffe41983",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

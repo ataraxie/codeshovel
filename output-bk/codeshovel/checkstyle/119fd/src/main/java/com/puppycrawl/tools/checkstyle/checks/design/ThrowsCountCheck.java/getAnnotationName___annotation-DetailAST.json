@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ThrowsCountCheck.java",
+  "functionName": "getAnnotationName",
+  "functionId": "getAnnotationName___annotation-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/ThrowsCountCheck.java",
+  "functionStartLine": 165,
+  "functionEndLine": 175,
+  "changeHistory": [
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d",
+    "f4e5c1e2b27b975c6e7c08380fadb669d6a92b65",
+    "e6f4dad587d318233ff9343c5b66d831b7035fcf"
+  ],
+  "changeHistoryShort": {
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d": "Ybodychange",
+    "f4e5c1e2b27b975c6e7c08380fadb669d6a92b65": "Ybodychange",
+    "e6f4dad587d318233ff9343c5b66d831b7035fcf": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0d8e93ce79ea33b72b3e904d8796984271ee3d8d": {
+      "type": "Ybodychange",
+      "commitMessage": "minor: enforce FinalLocalVariableCheck on checkstyle code\n",
+      "commitDate": 1453646135000,
+      "commitName": "0d8e93ce79ea33b72b3e904d8796984271ee3d8d",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 19.59,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     private static String getAnnotationName(DetailAST annotation) {\n         final DetailAST dotAst \u003d annotation.findFirstToken(TokenTypes.DOT);\n-        String name;\n+        final String name;\n         if (dotAst \u003d\u003d null) {\n             name \u003d annotation.findFirstToken(TokenTypes.IDENT).getText();\n         }\n         else {\n             name \u003d dotAst.findFirstToken(TokenTypes.IDENT).getText();\n         }\n         return name;\n     }\n\\ No newline at end of file\n"
+    },
+    "f4e5c1e2b27b975c6e7c08380fadb669d6a92b65": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #974: PMD violation ConfusingTernary (partial fix)\n",
+      "commitDate": 1444265760000,
+      "commitName": "f4e5c1e2b27b975c6e7c08380fadb669d6a92b65",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1441040575000,
+      "commitNameOld": "5ca96679525171c73fc4d5c257301f51d2100071",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 37.33,
+      "commitsBetweenForRepo": 245,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     private static String getAnnotationName(DetailAST annotation) {\n         final DetailAST dotAst \u003d annotation.findFirstToken(TokenTypes.DOT);\n         String name;\n-        if (dotAst !\u003d null) {\n-            name \u003d dotAst.findFirstToken(TokenTypes.IDENT).getText();\n+        if (dotAst \u003d\u003d null) {\n+            name \u003d annotation.findFirstToken(TokenTypes.IDENT).getText();\n         }\n         else {\n-            name \u003d annotation.findFirstToken(TokenTypes.IDENT).getText();\n+            name \u003d dotAst.findFirstToken(TokenTypes.IDENT).getText();\n         }\n         return name;\n     }\n\\ No newline at end of file\n"
+    },
+    "e6f4dad587d318233ff9343c5b66d831b7035fcf": {
+      "type": "Yintroduced",
+      "commitMessage": "Do not verify overriding methods in ThrowsCount check, #1085",
+      "commitDate": 1432677678000,
+      "commitName": "e6f4dad587d318233ff9343c5b66d831b7035fcf",
+      "commitAuthor": "vlad"
+    }
+  }
+}

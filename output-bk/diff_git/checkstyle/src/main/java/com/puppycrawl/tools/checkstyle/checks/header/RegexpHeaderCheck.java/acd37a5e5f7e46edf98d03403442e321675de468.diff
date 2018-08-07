@@ -1,0 +1,86 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/header/RegexpHeaderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/header/RegexpHeaderCheck.java
+index 08967cc41..db2c78b02 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/header/RegexpHeaderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/header/RegexpHeaderCheck.java
+@@ -102,81 +102,80 @@ public class RegexpHeaderCheck extends AbstractHeaderCheck {
+                     break;
+                 }
+                 if (!isMultiLine(headerLineNo)) {
+                     headerLineNo++;
+                 }
+             }
+             if (index == fileSize) {
+                 // if file finished, but we have at least one non-multi-line
+                 // header isn't completed
+                 logFirstSinglelineLine(headerLineNo, headerSize);
+             }
+         }
+     }
+ 
+     /**
+      * Logs warning if any non-multiline lines left in header regexp.
+      * @param startHeaderLine header line number to start from
+      * @param headerSize whole header size
+      */
+     private void logFirstSinglelineLine(int startHeaderLine, int headerSize) {
+         for (int lineNum = startHeaderLine; lineNum < headerSize; lineNum++) {
+             if (!isMultiLine(lineNum)) {
+                 log(1, MSG_HEADER_MISSING);
+                 break;
+             }
+         }
+     }
+ 
+     /**
+      * Checks if a code line matches the required header line.
+      * @param line the code line
+      * @param headerLineNo the header line number.
+      * @return true if and only if the line matches the required header line.
+      */
+     private boolean isMatch(String line, int headerLineNo) {
+         return headerRegexps.get(headerLineNo).matcher(line).find();
+     }
+ 
+     /**
+      * Returns true if line is multiline header lines or false.
+      * @param lineNo a line number
+      * @return if {@code lineNo} is one of the repeat header lines.
+      */
+     private boolean isMultiLine(int lineNo) {
+         return Arrays.binarySearch(multiLines, lineNo + 1) >= 0;
+     }
+ 
+     @Override
+     protected void postProcessHeaderLines() {
+         final List<String> headerLines = getHeaderLines();
+-        headerRegexps.clear();
+         for (String line : headerLines) {
+             try {
+                 headerRegexps.add(Pattern.compile(line));
+             }
+             catch (final PatternSyntaxException ex) {
+                 throw new IllegalArgumentException("line "
+                         + (headerRegexps.size() + 1)
+                         + " in header specification"
+                         + " is not a regular expression", ex);
+             }
+         }
+     }
+ 
+     /**
+      * Validates the {@code header} by compiling it with
+      * {@link Pattern#compile(String) } and throws
+      * {@link IllegalArgumentException} if {@code header} isn't a valid pattern.
+      * @param header the header value to validate and set (in that order)
+      */
+     @Override
+     public void setHeader(String header) {
+         if (!CommonUtils.isBlank(header)) {
+             if (!CommonUtils.isPatternValid(header)) {
+                 throw new IllegalArgumentException("Unable to parse format: " + header);
+             }
+             super.setHeader(header);
+         }
+     }
+ 
+ }

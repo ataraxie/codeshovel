@@ -1,0 +1,162 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "JavadocMethodCheck.java",
+  "functionName": "shouldCheck",
+  "functionId": "shouldCheck___ast-DetailAST__nodeScope-Scope",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java",
+  "functionStartLine": 464,
+  "functionEndLine": 472,
+  "changeHistory": [
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab",
+    "483132aca9c35591e1010e51a0ac31d746dc75a6",
+    "02dfe8c7c51e9df3ad1d3a391c5293c861c1982f",
+    "3bd699bd593414d63c7139aa410f13ec8341a027",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "0a72322796c28266f07df8af6f7e000aa9cf0e48",
+    "6125beffc437f970eae276b4a6542265c6547784",
+    "cdf0ac0f4c4fb8ab63c4bb7d144a71682c6e400a"
+  ],
+  "changeHistoryShort": {
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab": "Ybodychange",
+    "483132aca9c35591e1010e51a0ac31d746dc75a6": "Ybodychange",
+    "02dfe8c7c51e9df3ad1d3a391c5293c861c1982f": "Ybodychange",
+    "3bd699bd593414d63c7139aa410f13ec8341a027": "Ymultichange(Yparameterchange,Ybodychange)",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "0a72322796c28266f07df8af6f7e000aa9cf0e48": "Ymultichange(Yparameterchange,Ybodychange)",
+    "6125beffc437f970eae276b4a6542265c6547784": "Ybodychange",
+    "cdf0ac0f4c4fb8ab63c4bb7d144a71682c6e400a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2661: Enforce LogicConditionNeedOptimizationCheck of sevntu-checkstyle over Checkstyle source code\n",
+      "commitDate": 1450994367000,
+      "commitName": "6ee4a0f805d528cdee03cfc175502d15b5722dab",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1450903898000,
+      "commitNameOld": "2864c10cd45d23b91717299954aaaf41d36a6cb0",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 1.05,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,9 @@\n     private boolean shouldCheck(final DetailAST ast, final Scope nodeScope) {\n         final Scope surroundingScope \u003d ScopeUtils.getSurroundingScope(ast);\n \n-        return nodeScope.isIn(scope)\n-                \u0026\u0026 surroundingScope.isIn(scope)\n-                \u0026\u0026 (excludeScope \u003d\u003d null || nodeScope !\u003d excludeScope\n-                    \u0026\u0026 surroundingScope !\u003d excludeScope);\n+        return (excludeScope \u003d\u003d null\n+                || nodeScope !\u003d excludeScope\n+                \u0026\u0026 surroundingScope !\u003d excludeScope)\n+            \u0026\u0026 nodeScope.isIn(scope)\n+            \u0026\u0026 surroundingScope.isIn(scope);\n     }\n\\ No newline at end of file\n"
+    },
+    "483132aca9c35591e1010e51a0ac31d746dc75a6": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2205: Fix not working excludeScope in JavadocMethod check\n",
+      "commitDate": 1442618479000,
+      "commitName": "483132aca9c35591e1010e51a0ac31d746dc75a6",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1441690643000,
+      "commitNameOld": "f7698ed23b365bce680b6ec8cd00b78e148582ac",
+      "commitAuthorOld": "Phillip Webb",
+      "daysBetweenCommits": 10.74,
+      "commitsBetweenForRepo": 46,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private boolean shouldCheck(final DetailAST ast, final Scope nodeScope) {\n         final Scope surroundingScope \u003d ScopeUtils.getSurroundingScope(ast);\n \n         return nodeScope.isIn(scope)\n                 \u0026\u0026 surroundingScope.isIn(scope)\n-                \u0026\u0026 (excludeScope \u003d\u003d null || !nodeScope.isIn(excludeScope)\n-                    || !surroundingScope.isIn(excludeScope));\n+                \u0026\u0026 (excludeScope \u003d\u003d null || nodeScope !\u003d excludeScope\n+                    \u0026\u0026 surroundingScope !\u003d excludeScope);\n     }\n\\ No newline at end of file\n"
+    },
+    "02dfe8c7c51e9df3ad1d3a391c5293c861c1982f": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary this. #1555\n\nFixes `UnnecessaryThis` inspection violations after recent commits.\n\nDescription:\n\u003eReports on any unnecessary uses of this in the code. Using this to disambiguate a code reference may easily become unnecessary via automatic refactorings, and is discouraged by many coding styles.\n",
+      "commitDate": 1439610129000,
+      "commitName": "02dfe8c7c51e9df3ad1d3a391c5293c861c1982f",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439560811000,
+      "commitNameOld": "66d73fe6189267fee3423e2e8d7fc2d68599a43f",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 0.57,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private boolean shouldCheck(final DetailAST ast, final Scope nodeScope) {\n         final Scope surroundingScope \u003d ScopeUtils.getSurroundingScope(ast);\n \n-        return nodeScope.isIn(this.scope)\n-                \u0026\u0026 surroundingScope.isIn(this.scope)\n+        return nodeScope.isIn(scope)\n+                \u0026\u0026 surroundingScope.isIn(scope)\n                 \u0026\u0026 (excludeScope \u003d\u003d null || !nodeScope.isIn(excludeScope)\n                     || !surroundingScope.isIn(excludeScope));\n     }\n\\ No newline at end of file\n"
+    },
+    "3bd699bd593414d63c7139aa410f13ec8341a027": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #1566: HiddenField violations fixed\n",
+      "commitDate": 1439356761000,
+      "commitName": "3bd699bd593414d63c7139aa410f13ec8341a027",
+      "commitAuthor": "Ruslan Diachenko",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437366000,
+      "commitNameOld": "cee4f351944dc6bad1c0b91eb8aaa118eed59fcc",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 18.36,
+      "commitsBetweenForRepo": 96,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     private boolean shouldCheck(final DetailAST ast, final Scope scope)\n     {\n         final Scope surroundingScope \u003d ScopeUtils.getSurroundingScope(ast);\n \n         return scope.isIn(this.scope)\n                 \u0026\u0026 surroundingScope.isIn(this.scope)\n-                \u0026\u0026 ((excludeScope \u003d\u003d null) || !scope.isIn(excludeScope)\n+                \u0026\u0026 (excludeScope \u003d\u003d null || !scope.isIn(excludeScope)\n                     || !surroundingScope.isIn(excludeScope));\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "0a72322796c28266f07df8af6f7e000aa9cf0e48": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Tighten up the allowed use of the {@inheritDoc} tag.\n",
+      "commitDate": 1148305756000,
+      "commitName": "0a72322796c28266f07df8af6f7e000aa9cf0e48",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "6125beffc437f970eae276b4a6542265c6547784": {
+      "type": "Ybodychange",
+      "commitMessage": "Initial Java 1.5 support\n",
+      "commitDate": 1096311350000,
+      "commitName": "6125beffc437f970eae276b4a6542265c6547784",
+      "commitAuthor": "Michael Studman",
+      "commitDateOld": 1080421817000,
+      "commitNameOld": "cdf0ac0f4c4fb8ab63c4bb7d144a71682c6e400a",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 183.91,
+      "commitsBetweenForRepo": 91,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private boolean shouldCheck(final DetailAST aAST)\n     {\n         final DetailAST mods \u003d aAST.findFirstToken(TokenTypes.MODIFIERS);\n         final Scope declaredScope \u003d ScopeUtils.getScopeFromMods(mods);\n-        final Scope scope \u003d\n-            ScopeUtils.inInterfaceBlock(aAST) ? Scope.PUBLIC : declaredScope;\n+        final Scope scope \u003d ScopeUtils.inInterfaceOrAnnotationBlock(aAST)\n+                ? Scope.PUBLIC : declaredScope;\n         final Scope surroundingScope \u003d ScopeUtils.getSurroundingScope(aAST);\n \n         return scope.isIn(mScope) \u0026\u0026 surroundingScope.isIn(mScope)\n             \u0026\u0026 ((mExcludeScope \u003d\u003d null)\n                 || !scope.isIn(mExcludeScope)\n                 || !surroundingScope.isIn(mExcludeScope));\n     }\n\\ No newline at end of file\n"
+    },
+    "cdf0ac0f4c4fb8ab63c4bb7d144a71682c6e400a": {
+      "type": "Yintroduced",
+      "commitMessage": "Scoping for javadoc checks\n",
+      "commitDate": 1080421817000,
+      "commitName": "cdf0ac0f4c4fb8ab63c4bb7d144a71682c6e400a",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

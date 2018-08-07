@@ -1,0 +1,168 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+index 9e65dff46..df245b236 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+@@ -173,151 +173,157 @@ import com.puppycrawl.tools.checkstyle.Utils;
+  */
+ public class CustomImportOrderCheck extends Check
+ {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_LINE_SEPARATOR = "custom.import.order.line.separator";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_LEX = "custom.import.order.lex";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_NONGROUP_IMPORT = "custom.import.order.nongroup.import";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_ORDER = "custom.import.order";
+ 
+     /** STATIC group name */
+     private static final String STATIC_RULE_GROUP = "STATIC";
+ 
+     /** SAME_PACKAGE group name */
+     private static final String SAME_PACKAGE_RULE_GROUP = "SAME_PACKAGE";
+ 
+     /** THIRD_PARTY_PACKAGE group name */
+     private static final String THIRD_PARTY_PACKAGE_RULE_GROUP = "THIRD_PARTY_PACKAGE";
+ 
+     /** STANDARD_JAVA_PACKAGE group name */
+     private static final String STANDARD_JAVA_PACKAGE_RULE_GROUP = "STANDARD_JAVA_PACKAGE";
+ 
+     /** NON_GROUP group name */
+     private static final String SPECIAL_IMPORTS_RULE_GROUP = "SPECIAL_IMPORTS";
+ 
+     /** NON_GROUP group name */
+     private static final String NON_GROUP_RULE_GROUP = "NON_GROUP";
+ 
+     /** RegExp for SAME_PACKAGE group imports */
+     private String samePackageDomainsRegExp = "";
+ 
+     /** RegExp for STANDARD_JAVA_PACKAGE group imports */
+-    private Pattern standardPackageRegExp = Utils.getPattern("java|javax");
++    private Pattern standardPackageRegExp = Pattern.compile("java|javax");
+ 
+     /** RegExp for THIRDPARTY_PACKAGE group imports */
+-    private Pattern thirdPartyPackageRegExp = Utils.getPattern(".*");
++    private Pattern thirdPartyPackageRegExp = Pattern.compile(".*");
+ 
+     /** RegExp for SPECIAL_IMPORTS group imports */
+-    private Pattern specialImportsRegExp = Utils.getPattern("^$");
++    private Pattern specialImportsRegExp = Pattern.compile("^$");
+ 
+     /** Force empty line separator between import groups */
+     private boolean separateLineBetweenGroups = true;
+ 
+     /** Force grouping alphabetically, in ASCII order */
+     private boolean sortImportsInGroupAlphabetically;
+ 
+     /** List of order declaration customizing by user */
+     private final List<String> customImportOrderRules = new ArrayList<>();
+ 
+     /** Number of first domains for SAME_PACKAGE group. */
+     private int samePackageMatchingDepth = 2;
+ 
+     /** Contains objects with import attributes */
+     private List<ImportDetails> importToGroupList = new ArrayList<>();
+ 
+     /**
+      * Sets standardRegExp specified by user.
+      * @param regexp
+      *        user value.
++     * @throws org.apache.commons.beanutils.ConversionException
++     *         if unable to create Pattern object.
+      */
+     public final void setStandardPackageRegExp(String regexp)
+     {
+-        standardPackageRegExp = Utils.getPattern(regexp);
++        standardPackageRegExp = Utils.createPattern(regexp);
+     }
+ 
+     /**
+      * Sets thirdPartyRegExp specified by user.
+      * @param regexp
+      *        user value.
++     * @throws org.apache.commons.beanutils.ConversionException
++     *         if unable to create Pattern object.
+      */
+     public final void setThirdPartyPackageRegExp(String regexp)
+     {
+-        thirdPartyPackageRegExp = Utils.getPattern(regexp);
++        thirdPartyPackageRegExp = Utils.createPattern(regexp);
+     }
+ 
+     /**
+      * Sets specialImportsRegExp specified by user.
+      * @param regexp
+      *        user value.
++     * @throws org.apache.commons.beanutils.ConversionException
++     *         if unable to create Pattern object.
+      */
+     public final void setSpecialImportsRegExp(String regexp)
+     {
+-        specialImportsRegExp = Utils.getPattern(regexp);
++        specialImportsRegExp = Utils.createPattern(regexp);
+     }
+ 
+     /**
+      * Sets separateLineBetweenGroups specified by user.
+      * @param value
+      *        user value.
+      */
+     public final void setSeparateLineBetweenGroups(boolean value)
+     {
+         separateLineBetweenGroups = value;
+     }
+ 
+     /**
+      * Sets sortImportsInGroupAlphabetically specified by user.
+      * @param value
+      *        user value.
+      */
+     public final void setSortImportsInGroupAlphabetically(boolean value)
+     {
+         sortImportsInGroupAlphabetically = value;
+     }
+ 
+     /**
+      * Sets a custom import order from the rules in the string format specified
+      * by user.
+      * @param inputCustoimportOrder
+      *        user value.
+      */
+     public final void setCustomImportOrderRules(final String inputCustoimportOrder)
+     {
+         customImportOrderRules.clear();
+         try {
+             for (String currentState : inputCustoimportOrder
+                     .split("\\s*###\\s*"))
+             {
+                 addRuleastoList(currentState);
+             }
+             customImportOrderRules.add(NON_GROUP_RULE_GROUP);
+         }
+         catch (StringIndexOutOfBoundsException exp) {
+             //if the structure of the input rule isn't correct
+             throw new RuntimeException("Unable to parse input rule: " + exp);
+         }
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.IMPORT,

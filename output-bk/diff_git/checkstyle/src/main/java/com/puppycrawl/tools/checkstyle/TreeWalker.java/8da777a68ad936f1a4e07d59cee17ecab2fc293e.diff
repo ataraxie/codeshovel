@@ -1,0 +1,117 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 3c59969a0..05a581fbf 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -537,107 +537,105 @@ public final class TreeWalker
+         }
+         if (lastNode != null) {
+             CommonHiddenStreamToken tokenAfter = lastNode.getHiddenAfter();
+             DetailAST currentSibling = lastNode;
+             while (tokenAfter != null) {
+                 final DetailAST newCommentNode =
+                         createCommentAstFromToken(tokenAfter);
+ 
+                 currentSibling.addNextSibling(newCommentNode);
+ 
+                 currentSibling = newCommentNode;
+                 tokenAfter = tokenAfter.getHiddenAfter();
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if position of first DetailAST is greater than position of
+      * second DetailAST. Position is line number and column number in source
+      * file.
+      * @param ast1
+      *        first DetailAST node.
+      * @param ast2
+      *        second DetailAST node.
+      * @return true if position of ast1 is greater than position of ast2.
+      */
+     private static boolean isPositionGreater(DetailAST ast1, DetailAST ast2) {
+         if (ast1.getLineNo() > ast2.getLineNo()) {
+             return true;
+         }
+         else if (ast1.getLineNo() < ast2.getLineNo()) {
+             return false;
+         }
+         else {
+             if (ast1.getColumnNo() > ast2.getColumnNo()) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Create comment AST from token. Depending on token type
+      * SINGLE_LINE_COMMENT or BLOCK_COMMENT_BEGIN is created.
+      * @param token
+      *        Token object.
+      * @return DetailAST of comment node.
+      */
+     private static DetailAST createCommentAstFromToken(Token token) {
+-        switch (token.getType()) {
+-            case TokenTypes.SINGLE_LINE_COMMENT:
+-                return createSlCommentNode(token);
+-            case TokenTypes.BLOCK_COMMENT_BEGIN:
+-                return createBlockCommentNode(token);
+-            default:
+-                throw new IllegalArgumentException("Unknown comment type");
++        if (token.getType() == TokenTypes.SINGLE_LINE_COMMENT) {
++            return createSlCommentNode(token);
++        }
++        else {
++            return createBlockCommentNode(token);
+         }
+     }
+ 
+     /**
+      * Create single-line comment from token.
+      * @param token
+      *        Token object.
+      * @return DetailAST with SINGLE_LINE_COMMENT type.
+      */
+     private static DetailAST createSlCommentNode(Token token) {
+         final DetailAST slComment = new DetailAST();
+         slComment.setType(TokenTypes.SINGLE_LINE_COMMENT);
+         slComment.setText("//");
+ 
+         // column counting begins from 0
+         slComment.setColumnNo(token.getColumn() - 1);
+         slComment.setLineNo(token.getLine());
+ 
+         final DetailAST slCommentContent = new DetailAST();
+         slCommentContent.initialize(token);
+         slCommentContent.setType(TokenTypes.COMMENT_CONTENT);
+ 
+         // column counting begins from 0
+         // plus length of '//'
+         slCommentContent.setColumnNo(token.getColumn() - 1 + 2);
+         slCommentContent.setLineNo(token.getLine());
+         slCommentContent.setText(token.getText());
+ 
+         slComment.addChild(slCommentContent);
+         return slComment;
+     }
+ 
+     /**
+      * Create block comment from token.
+      * @param token
+      *        Token object.
+      * @return DetailAST with BLOCK_COMMENT type.
+      */
+     private static DetailAST createBlockCommentNode(Token token) {
+         final DetailAST blockComment = new DetailAST();
+         blockComment.initialize(TokenTypes.BLOCK_COMMENT_BEGIN, "/*");
+ 
+         // column counting begins from 0
+         blockComment.setColumnNo(token.getColumn() - 1);
+         blockComment.setLineNo(token.getLine());
+ 
+         final DetailAST blockCommentContent = new DetailAST();
+         blockCommentContent.initialize(token);
+         blockCommentContent.setType(TokenTypes.COMMENT_CONTENT);
+ 

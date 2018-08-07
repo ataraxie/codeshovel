@@ -1,0 +1,180 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+index 3795b64b3..395509fa2 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+@@ -1,70 +1,72 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.annotation;
+ 
++import java.util.Locale;
++
+ import org.apache.commons.beanutils.ConversionException;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * This check controls the style with the usage of annotations.
+  *
+  * <p>
+  * Annotations have three element styles starting with the least verbose.
+  * <ul>
+  * <li>{@link ElementStyle#COMPACT_NO_ARRAY COMPACT_NO_ARRAY}</li>
+  * <li>{@link ElementStyle#COMPACT COMPACT}</li>
+  * <li>{@link ElementStyle#EXPANDED EXPANDED}</li>
+  * </ul>
+  * To not enforce an element style
+  * a {@link ElementStyle#IGNORE IGNORE} type is provided.  The desired style
+  * can be set through the <code>elementStyle</code> property.
+  *
+  *
+  * <p>
+  * Using the EXPANDED style is more verbose. The expanded version
+  * is sometimes referred to as "named parameters" in other languages.
+  *
+  *
+  * <p>
+  * Using the COMPACT style is less verbose. This style can only
+  * be used when there is an element called 'value' which is either
+  * the sole element or all other elements have default valuess.
+  *
+  *
+  * <p>
+  * Using the COMPACT_NO_ARRAY style is less verbose. It is similar
+  * to the COMPACT style but single value arrays are flagged. With
+  * annotations a single value array does not need to be placed in an
+  * array initializer. This style can only be used when there is an
+  * element called 'value' which is either the sole element or all other
+  * elements have default values.
+  *
+  *
+  * <p>
+  * The ending parenthesis are optional when using annotations with no elements.
+  * To always require ending parenthesis use the
+  * {@link ClosingParens#ALWAYS ALWAYS} type.  To never have ending parenthesis
+  * use the {@link ClosingParens#NEVER NEVER} type. To not enforce a
+  * closing parenthesis preference a {@link ClosingParens#IGNORE IGNORE} type is
+  * provided. Set this through the <code>closingParens</code> property.
+  *
+  *
+@@ -170,101 +172,101 @@ public final class AnnotationUseStyleCheck extends Check
+     /** @see #setTrailingArrayComma(String) */
+     private TrailingArrayComma comma = TrailingArrayComma.NEVER;
+ 
+     /** @see #setClosingParens(String) */
+     private ClosingParens parens = ClosingParens.NEVER;
+ 
+     /**
+      * Sets the ElementStyle from a string.
+      *
+      * @param style string representation
+      * @throws ConversionException if cannot convert string.
+      */
+     public void setElementStyle(final String style)
+     {
+         this.style = this.getOption(ElementStyle.class, style);
+     }
+ 
+     /**
+      * Sets the TrailingArrayComma from a string.
+      *
+      * @param comma string representation
+      * @throws ConversionException if cannot convert string.
+      */
+     public void setTrailingArrayComma(final String comma)
+     {
+         this.comma = this.getOption(TrailingArrayComma.class, comma);
+     }
+ 
+     /**
+      * Sets the ClosingParens from a string.
+      *
+      * @param parens string representation
+      * @throws ConversionException if cannot convert string.
+      */
+     public void setClosingParens(final String parens)
+     {
+         this.parens = this.getOption(ClosingParens.class, parens);
+     }
+ 
+     /**
+      * Retrieves an {@link Enum Enum} type from a @{link String String}.
+      * @param <T> the enum type
+      * @param enuclass the enum class
+      * @param string the string representing the enum
+      * @return the enum type
+      */
+     private <T extends Enum<T>> T getOption(final Class<T> enuclass,
+         final String string)
+     {
+         try {
+-            return Enum.valueOf(enuclass, string.trim().toUpperCase());
++            return Enum.valueOf(enuclass, string.trim().toUpperCase(Locale.ENGLISH));
+         }
+         catch (final IllegalArgumentException iae) {
+             throw new ConversionException("unable to parse " + string, iae);
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return this.getRequiredTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+             TokenTypes.ANNOTATION,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return this.getRequiredTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void visitToken(final DetailAST ast)
+     {
+         this.checkStyleType(ast);
+         this.checkCheckClosingParens(ast);
+         this.checkTrailingComma(ast);
+     }
+ 
+     /**
+      * Checks to see if the
+      * {@link ElementStyle AnnotationElementStyle}
+      * is correct.
+      *
+      * @param annotation the annotation token
+      */
+     private void checkStyleType(final DetailAST annotation)
+     {
+         if (ElementStyle.IGNORE == this.style
+             || this.style == null)
+         {

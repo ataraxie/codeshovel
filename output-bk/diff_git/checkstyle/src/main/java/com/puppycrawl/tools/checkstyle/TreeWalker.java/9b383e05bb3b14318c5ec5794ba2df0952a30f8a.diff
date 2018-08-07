@@ -1,0 +1,263 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 8ad076262..8c73b2107 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -1,80 +1,78 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2017 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle;
+ 
+ import java.io.File;
+ import java.io.Reader;
+ import java.io.StringReader;
+-import java.util.AbstractMap.SimpleEntry;
+ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.HashSet;
+ import java.util.Locale;
+-import java.util.Map.Entry;
+ import java.util.Set;
+ import java.util.SortedSet;
+ import java.util.TreeSet;
+ 
+ import antlr.CommonHiddenStreamToken;
+ import antlr.RecognitionException;
+ import antlr.Token;
+ import antlr.TokenStreamException;
+ import antlr.TokenStreamHiddenTokenFilter;
+ import antlr.TokenStreamRecognitionException;
+ import com.google.common.collect.HashMultimap;
+ import com.google.common.collect.Multimap;
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.AbstractFileSetCheck;
+ import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import com.puppycrawl.tools.checkstyle.api.Context;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.ExternalResourceHolder;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.FileText;
+ import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.grammars.GeneratedJavaLexer;
+ import com.puppycrawl.tools.checkstyle.grammars.GeneratedJavaRecognizer;
+ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ import com.puppycrawl.tools.checkstyle.utils.TokenUtils;
+ 
+ /**
+  * Responsible for walking an abstract syntax tree and notifying interested
+  * checks at each each node.
+  *
+  * @author Oliver Burn
+  */
+ // -@cs[ClassFanOutComplexity] To resolve issue 4714, new classes were imported. Number of
+ // classes current class relies on currently is 27, which is above threshold 25.
+ // see https://github.com/checkstyle/checkstyle/issues/4714.
+ public final class TreeWalker extends AbstractFileSetCheck implements ExternalResourceHolder {
+ 
+     /** Default distance between tab stops. */
+     private static final int DEFAULT_TAB_WIDTH = 8;
+ 
+     /** Maps from token name to ordinary checks. */
+     private final Multimap<String, AbstractCheck> tokenToOrdinaryChecks =
+         HashMultimap.create();
+ 
+     /** Maps from token name to comment checks. */
+     private final Multimap<String, AbstractCheck> tokenToCommentChecks =
+             HashMultimap.create();
+@@ -634,176 +632,99 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
+             }
+             curNode = toVisit;
+         }
+         if (lastNode != null) {
+             CommonHiddenStreamToken tokenAfter = lastNode.getHiddenAfter();
+             DetailAST currentSibling = lastNode;
+             while (tokenAfter != null) {
+                 final DetailAST newCommentNode =
+                         createCommentAstFromToken(tokenAfter);
+ 
+                 currentSibling.addNextSibling(newCommentNode);
+ 
+                 currentSibling = newCommentNode;
+                 tokenAfter = tokenAfter.getHiddenAfter();
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if position of first DetailAST is greater than position of
+      * second DetailAST. Position is line number and column number in source
+      * file.
+      * @param ast1
+      *        first DetailAST node.
+      * @param ast2
+      *        second DetailAST node.
+      * @return true if position of ast1 is greater than position of ast2.
+      */
+     private static boolean isPositionGreater(DetailAST ast1, DetailAST ast2) {
+         boolean isGreater = ast1.getLineNo() > ast2.getLineNo();
+         if (!isGreater && ast1.getLineNo() == ast2.getLineNo()) {
+             isGreater = ast1.getColumnNo() > ast2.getColumnNo();
+         }
+         return isGreater;
+     }
+ 
+     /**
+      * Create comment AST from token. Depending on token type
+      * SINGLE_LINE_COMMENT or BLOCK_COMMENT_BEGIN is created.
+      * @param token
+      *        Token object.
+      * @return DetailAST of comment node.
+      */
+     private static DetailAST createCommentAstFromToken(Token token) {
+         final DetailAST commentAst;
+         if (token.getType() == TokenTypes.SINGLE_LINE_COMMENT) {
+             commentAst = createSlCommentNode(token);
+         }
+         else {
+-            commentAst = createBlockCommentNode(token);
++            commentAst = CommonUtils.createBlockCommentNode(token);
+         }
+         return commentAst;
+     }
+ 
+     /**
+      * Create single-line comment from token.
+      * @param token
+      *        Token object.
+      * @return DetailAST with SINGLE_LINE_COMMENT type.
+      */
+     private static DetailAST createSlCommentNode(Token token) {
+         final DetailAST slComment = new DetailAST();
+         slComment.setType(TokenTypes.SINGLE_LINE_COMMENT);
+         slComment.setText("//");
+ 
+         // column counting begins from 0
+         slComment.setColumnNo(token.getColumn() - 1);
+         slComment.setLineNo(token.getLine());
+ 
+         final DetailAST slCommentContent = new DetailAST();
+         slCommentContent.setType(TokenTypes.COMMENT_CONTENT);
+ 
+         // column counting begins from 0
+         // plus length of '//'
+         slCommentContent.setColumnNo(token.getColumn() - 1 + 2);
+         slCommentContent.setLineNo(token.getLine());
+         slCommentContent.setText(token.getText());
+ 
+         slComment.addChild(slCommentContent);
+         return slComment;
+     }
+ 
+-    /**
+-     * Create block comment from token.
+-     * @param token
+-     *        Token object.
+-     * @return DetailAST with BLOCK_COMMENT type.
+-     */
+-    private static DetailAST createBlockCommentNode(Token token) {
+-        final DetailAST blockComment = new DetailAST();
+-        blockComment.initialize(TokenTypes.BLOCK_COMMENT_BEGIN, "/*");
+-
+-        // column counting begins from 0
+-        blockComment.setColumnNo(token.getColumn() - 1);
+-        blockComment.setLineNo(token.getLine());
+-
+-        final DetailAST blockCommentContent = new DetailAST();
+-        blockCommentContent.setType(TokenTypes.COMMENT_CONTENT);
+-
+-        // column counting begins from 0
+-        // plus length of '/*'
+-        blockCommentContent.setColumnNo(token.getColumn() - 1 + 2);
+-        blockCommentContent.setLineNo(token.getLine());
+-        blockCommentContent.setText(token.getText());
+-
+-        final DetailAST blockCommentClose = new DetailAST();
+-        blockCommentClose.initialize(TokenTypes.BLOCK_COMMENT_END, "*/");
+-
+-        final Entry<Integer, Integer> linesColumns = countLinesColumns(
+-                token.getText(), token.getLine(), token.getColumn());
+-        blockCommentClose.setLineNo(linesColumns.getKey());
+-        blockCommentClose.setColumnNo(linesColumns.getValue());
+-
+-        blockComment.addChild(blockCommentContent);
+-        blockComment.addChild(blockCommentClose);
+-        return blockComment;
+-    }
+-
+-    /**
+-     * Count lines and columns (in last line) in text.
+-     * @param text
+-     *        String.
+-     * @param initialLinesCnt
+-     *        initial value of lines counter.
+-     * @param initialColumnsCnt
+-     *        initial value of columns counter.
+-     * @return entry(pair), first element is lines counter, second - columns
+-     *         counter.
+-     */
+-    private static Entry<Integer, Integer> countLinesColumns(
+-            String text, int initialLinesCnt, int initialColumnsCnt) {
+-        int lines = initialLinesCnt;
+-        int columns = initialColumnsCnt;
+-        boolean foundCr = false;
+-        for (char c : text.toCharArray()) {
+-            if (c == '\n') {
+-                foundCr = false;
+-                lines++;
+-                columns = 0;
+-            }
+-            else {
+-                if (foundCr) {
+-                    foundCr = false;
+-                    lines++;
+-                    columns = 0;
+-                }
+-                if (c == '\r') {
+-                    foundCr = true;
+-                }
+-                columns++;
+-            }
+-        }
+-        if (foundCr) {
+-            lines++;
+-            columns = 0;
+-        }
+-        return new SimpleEntry<>(lines, columns);
+-    }
+-
+     /**
+      * State of AST.
+      * Indicates whether tree contains certain nodes.
+      */
+     private enum AstState {
+         /**
+          * Ordinary tree.
+          */
+         ORDINARY,
+ 
+         /**
+          * AST contains comment nodes.
+          */
+         WITH_COMMENTS
+     }
+ }

@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "Iterators.java",
+  "functionName": "find",
+  "functionId": "find___iterator-Iterator__T____predicate-Predicate__? super T__",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/Iterators.java",
+  "functionStartLine": 690,
+  "functionEndLine": 700,
+  "changeHistory": [
+    "76245f6337f3b695357319699b07d44164768794",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "76245f6337f3b695357319699b07d44164768794": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "76245f6337f3b695357319699b07d44164768794": {
+      "type": "Ybodychange",
+      "commitMessage": "Some simple changes to Iterators to reduce ProGuard retention and allocation.\n\nEffects on ProGuard retention:\n79026 bytes \u003d\u003e 75115 bytes\n41 classes \u003d\u003e 35 classes\n196 methods \u003d\u003e 175 methods\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d155124112\n",
+      "commitDate": 1493993098000,
+      "commitName": "76245f6337f3b695357319699b07d44164768794",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1493927020000,
+      "commitNameOld": "51310fb7ce3749f38165664966cd883395b643a7",
+      "commitAuthorOld": "lowasser",
+      "daysBetweenCommits": 0.76,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,11 @@\n   public static \u003cT\u003e T find(Iterator\u003cT\u003e iterator, Predicate\u003c? super T\u003e predicate) {\n-    return filter(iterator, predicate).next();\n+    checkNotNull(iterator);\n+    checkNotNull(predicate);\n+    while (iterator.hasNext()) {\n+      T t \u003d iterator.next();\n+      if (predicate.apply(t)) {\n+        return t;\n+      }\n+    }\n+    throw new NoSuchElementException();\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

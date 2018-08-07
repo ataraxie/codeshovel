@@ -1,0 +1,109 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/DetailAST.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/DetailAST.java
+index 3ac0cf64a..56b522656 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/DetailAST.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/DetailAST.java
+@@ -62,101 +62,103 @@ public final class DetailAST
+         mLineNo = aTok.getLine();
+         mColumnNo = aTok.getColumn() - 1; // expect columns to start @ 0
+     }
+ 
+     /** @see antlr.CommonAST **/
+     public void initialize(AST aAST)
+     {
+         final DetailAST da = (DetailAST) aAST;
+         setText(da.getText());
+         setType(da.getType());
+         mLineNo = da.getLineNo();
+         mColumnNo = da.getColumnNo();
+     }
+ 
+     /**
+      * Sets this AST's first Child
+      * @param aAST the new first child
+      */
+     public void setFirstChild(AST aAST)
+     {
+         mChildCount = NOT_INITIALIZED;
+         super.setFirstChild(aAST);
+     }
+ 
+ 
+ 
+     /**
+      * Returns the number of child nodes one level below this node. That is is
+      * does not recurse down the tree.
+      * @return the number of child nodes
+      */
+     public int getChildCount()
+     {
+         // lazy init
+         if (mChildCount == NOT_INITIALIZED) {
+             mChildCount = 0;
+             AST child = getFirstChild();
+ 
+             while (child != null) {
+                 mChildCount += 1;
+                 child = child.getNextSibling();
+             }
+         }
+         return mChildCount;
+     }
+ 
+     /**
+      * Set the parent token.
+      * @param aParent the parent token
+      */
+-    public void setParent(DetailAST aParent)
++    // TODO: should be private but that breaks the DetailASTTest
++    // until we manage parent in DetailAST instead of externally
++    void setParent(DetailAST aParent)
+     {
+         // TODO: Check visibility, could be private
+         // if set in setFirstChild() and friends
+         mParent = aParent;
+     }
+ 
+     /**
+      * Returns the parent token
+      * @return the parent token
+      */
+     public DetailAST getParent()
+     {
+         return mParent;
+     }
+ 
+     /** @return the line number **/
+     public int getLineNo()
+     {
+         if (mLineNo == NOT_INITIALIZED) {
+             // an inner AST that has been initialized
+             // with initialize(String text)
+             final DetailAST child = (DetailAST) getFirstChild();
+             final DetailAST sibling = (DetailAST) getNextSibling();
+             if (child != null) {
+                 return child.getLineNo();
+             }
+             else if (sibling != null) {
+                 return sibling.getLineNo();
+             }
+         }
+         return mLineNo;
+     }
+ 
+     /** @return the column number **/
+     public int getColumnNo()
+     {
+         if (mColumnNo == NOT_INITIALIZED) {
+             // an inner AST that has been initialized
+             // with initialize(String text)
+             final DetailAST child = (DetailAST) getFirstChild();
+             final DetailAST sibling = (DetailAST) getNextSibling();
+             if (child != null) {
+                 return child.getColumnNo();
+             }
+             else if (sibling != null) {
+                 return sibling.getColumnNo();
+             }
+         }
+         return mColumnNo;
+     }

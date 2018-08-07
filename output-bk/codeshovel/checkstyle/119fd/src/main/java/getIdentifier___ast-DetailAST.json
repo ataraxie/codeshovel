@@ -1,0 +1,87 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "getIdentifier___ast-DetailAST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 420,
+  "changeHistory": [
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c",
+    "e8d0f037a2a300da55df6ab28d3459a6af9990d8",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "fbe0d8d932d74d39801d15e3305fa3ef83b5032a"
+  ],
+  "changeHistoryShort": {
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c": "Ybodychange",
+    "e8d0f037a2a300da55df6ab28d3459a6af9990d8": "Ybodychange",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "fbe0d8d932d74d39801d15e3305fa3ef83b5032a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.checks and com.puppycrawl.tools.checkstyle\n",
+      "commitDate": 1492827278000,
+      "commitName": "de50d3465849b83d25910590e1f5f39a25fe6e2c",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1491393573000,
+      "commitNameOld": "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 16.59,
+      "commitsBetweenForRepo": 91,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,14 @@\n     private static String getIdentifier(DetailAST ast) {\n-        if (ast !\u003d null) {\n-            if (ast.getType() \u003d\u003d TokenTypes.IDENT) {\n-                return ast.getText();\n-            }\n-            else {\n-                return getIdentifier(ast.getFirstChild()) + \".\"\n-                        + getIdentifier(ast.getLastChild());\n-            }\n+        if (ast \u003d\u003d null) {\n+            throw new IllegalArgumentException(\"Identifier AST expected, but get null.\");\n         }\n-        throw new IllegalArgumentException(\"Identifier AST expected, but get null.\");\n+        final String identifier;\n+        if (ast.getType() \u003d\u003d TokenTypes.IDENT) {\n+            identifier \u003d ast.getText();\n+        }\n+        else {\n+            identifier \u003d getIdentifier(ast.getFirstChild()) + \".\"\n+                + getIdentifier(ast.getLastChild());\n+        }\n+        return identifier;\n     }\n\\ No newline at end of file\n"
+    },
+    "e8d0f037a2a300da55df6ab28d3459a6af9990d8": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1290: Coverage has been increased to 100% in SuppressWarningsHolder.\n",
+      "commitDate": 1443661529000,
+      "commitName": "e8d0f037a2a300da55df6ab28d3459a6af9990d8",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1443570779000,
+      "commitNameOld": "d877cb15cfeae5f06a5d546dcc860c2aa32caac4",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 1.05,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private static String getIdentifier(DetailAST ast) {\n         if (ast !\u003d null) {\n             if (ast.getType() \u003d\u003d TokenTypes.IDENT) {\n                 return ast.getText();\n             }\n-            else if (ast.getType() \u003d\u003d TokenTypes.DOT) {\n+            else {\n                 return getIdentifier(ast.getFirstChild()) + \".\"\n-                    + getIdentifier(ast.getLastChild());\n+                        + getIdentifier(ast.getLastChild());\n             }\n         }\n-        throw new IllegalArgumentException(\"Identifier AST expected: \" + ast);\n+        throw new IllegalArgumentException(\"Identifier AST expected, but get null.\");\n     }\n\\ No newline at end of file\n"
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "fbe0d8d932d74d39801d15e3305fa3ef83b5032a": {
+      "type": "Yintroduced",
+      "commitMessage": "Apply patch# #156 Check suppression with @SuppressWarnings\n",
+      "commitDate": 1371036488000,
+      "commitName": "fbe0d8d932d74d39801d15e3305fa3ef83b5032a",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

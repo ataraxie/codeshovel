@@ -1,0 +1,99 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java
+index 2cc29e721..eedc2ca46 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java
+@@ -67,92 +67,92 @@ public class DesignForExtensionCheck extends Check
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         // nothing to do for Interfaces
+         if (ScopeUtils.inInterfaceOrAnnotationBlock(aAST)) {
+             return;
+         }
+ 
+         // method is ok if it is private or abstract or final
+         final DetailAST modifiers = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         if (modifiers.branchContains(TokenTypes.LITERAL_PRIVATE)
+             || modifiers.branchContains(TokenTypes.ABSTRACT)
+             || modifiers.branchContains(TokenTypes.FINAL)
+             || modifiers.branchContains(TokenTypes.LITERAL_STATIC))
+         {
+             return;
+         }
+ 
+         // method is ok if containing class is not visible in API and
+         // cannot be extended by 3rd parties (bug #884035)
+         if (!ScopeUtils.getSurroundingScope(aAST).isIn(Scope.PROTECTED)) {
+             return;
+         }
+ 
+         // method is ok if it is implementation can verified to be empty
+         // Note: native methods don't have impl in java code, so
+         // implementation can be null even if method not abstract
+         final DetailAST implementation = aAST.findFirstToken(TokenTypes.SLIST);
+         if ((implementation != null)
+             && (implementation.getFirstChild().getType() == TokenTypes.RCURLY))
+         {
+             return;
+         }
+ 
+         // check if the containing class can be subclassed
+         final DetailAST classDef = findContainingClass(aAST);
+         final DetailAST classMods =
+             classDef.findFirstToken(TokenTypes.MODIFIERS);
+         if ((classDef.getType() == TokenTypes.ENUM_DEF)
+             || classMods.branchContains(TokenTypes.FINAL))
+         {
+             return;
+         }
+ 
+         // check if subclassing is prevented by having only private ctors
+         final DetailAST objBlock = classDef.findFirstToken(TokenTypes.OBJBLOCK);
+ 
+         boolean hasDefaultConstructor = true;
+         boolean hasExplNonPrivateCtor = false;
+ 
+-        DetailAST candidate = (DetailAST) objBlock.getFirstChild();
++        DetailAST candidate = objBlock.getFirstChild();
+ 
+         while (candidate != null) {
+             if (candidate.getType() == TokenTypes.CTOR_DEF) {
+                 hasDefaultConstructor = false;
+ 
+                 final DetailAST ctorMods =
+                     candidate.findFirstToken(TokenTypes.MODIFIERS);
+                 if (!ctorMods.branchContains(TokenTypes.LITERAL_PRIVATE)) {
+                     hasExplNonPrivateCtor = true;
+                     break;
+                 }
+             }
+-            candidate = (DetailAST) candidate.getNextSibling();
++            candidate = candidate.getNextSibling();
+         }
+ 
+         if (hasDefaultConstructor || hasExplNonPrivateCtor) {
+             final String name = aAST.findFirstToken(TokenTypes.IDENT).getText();
+             log(aAST.getLineNo(), aAST.getColumnNo(),
+                 "design.forExtension", name);
+         }
+ 
+ 
+ 
+     }
+ 
+     /**
+      * Searches the tree towards the root until it finds a CLASS_DEF node.
+      * @param aAST the start node for searching
+      * @return the CLASS_DEF node.
+      */
+     private DetailAST findContainingClass(DetailAST aAST)
+     {
+         DetailAST searchAST = aAST;
+         while ((searchAST.getType() != TokenTypes.CLASS_DEF)
+                && (searchAST.getType() != TokenTypes.ENUM_DEF))
+         {
+             searchAST = searchAST.getParent();
+         }
+         return searchAST;
+     }
+ }

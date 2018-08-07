@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DetailAST.java",
+  "functionName": "addNextSibling",
+  "functionId": "addNextSibling___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java",
+  "functionStartLine": 136,
+  "functionEndLine": 151,
+  "changeHistory": [
+    "94df4ad94faa1230f06521e9457472e0ebd2715a",
+    "4b7adec5ae396e24d3d0bf0d790919a45bac5421",
+    "2577c4121ca5a1f4809d2f705123a577dfb08d71",
+    "97956e1ae5d6842401ea0bfab121e8fb8d51c14d",
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "a24df47cafeab03fd65cf72b460aad3d2fafce3d"
+  ],
+  "changeHistoryShort": {
+    "94df4ad94faa1230f06521e9457472e0ebd2715a": "Ybodychange",
+    "4b7adec5ae396e24d3d0bf0d790919a45bac5421": "Ybodychange",
+    "2577c4121ca5a1f4809d2f705123a577dfb08d71": "Ybodychange",
+    "97956e1ae5d6842401ea0bfab121e8fb8d51c14d": "Ybodychange",
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "a24df47cafeab03fd65cf72b460aad3d2fafce3d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "94df4ad94faa1230f06521e9457472e0ebd2715a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4394: increase coverage of pitest-checkstyle-api profile to 96%\n",
+      "commitDate": 1500074888000,
+      "commitName": "94df4ad94faa1230f06521e9457472e0ebd2715a",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1497287515000,
+      "commitNameOld": "4a087c020c2b97130e94f9292b94cb4bc1f6ed93",
+      "commitAuthorOld": "sagar-shah94",
+      "daysBetweenCommits": 32.26,
+      "commitsBetweenForRepo": 200,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     public void addNextSibling(DetailAST ast) {\n         clearBranchTokenTypes();\n         clearChildCountCache(parent);\n         if (ast !\u003d null) {\n-            ast.setParent(parent);\n+            //parent is set in setNextSibling\n             final DetailAST nextSibling \u003d getNextSibling();\n \n             if (nextSibling !\u003d null) {\n                 ast.setNextSibling(nextSibling);\n                 nextSibling.previousSibling \u003d ast;\n             }\n \n             ast.previousSibling \u003d this;\n             setNextSibling(ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "4b7adec5ae396e24d3d0bf0d790919a45bac5421": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3486: clear childCount field cache in DetailAST",
+      "commitDate": 1475368053000,
+      "commitName": "4b7adec5ae396e24d3d0bf0d790919a45bac5421",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1475273624000,
+      "commitNameOld": "2577c4121ca5a1f4809d2f705123a577dfb08d71",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 1.09,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,16 @@\n     public void addNextSibling(DetailAST ast) {\n-        clearBranchTokenTypesCache();\n+        clearBranchTokenTypes();\n+        clearChildCountCache(parent);\n         if (ast !\u003d null) {\n             ast.setParent(parent);\n             final DetailAST nextSibling \u003d getNextSibling();\n \n             if (nextSibling !\u003d null) {\n                 ast.setNextSibling(nextSibling);\n                 nextSibling.previousSibling \u003d ast;\n             }\n \n             ast.previousSibling \u003d this;\n             setNextSibling(ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "2577c4121ca5a1f4809d2f705123a577dfb08d71": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3466: Clear branchTokenTypes field cache in DetailAST before changing its structure\n",
+      "commitDate": 1475273624000,
+      "commitName": "2577c4121ca5a1f4809d2f705123a577dfb08d71",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1455999924000,
+      "commitNameOld": "8ad9441bbb78695a924be63444222ae80cfcf114",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 223.08,
+      "commitsBetweenForRepo": 441,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,15 @@\n     public void addNextSibling(DetailAST ast) {\n+        clearBranchTokenTypesCache();\n         if (ast !\u003d null) {\n             ast.setParent(parent);\n             final DetailAST nextSibling \u003d getNextSibling();\n \n             if (nextSibling !\u003d null) {\n                 ast.setNextSibling(nextSibling);\n                 nextSibling.previousSibling \u003d ast;\n             }\n \n             ast.previousSibling \u003d this;\n             setNextSibling(ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "97956e1ae5d6842401ea0bfab121e8fb8d51c14d": {
+      "type": "Ybodychange",
+      "commitMessage": "Inline simple setters. #1555\n\nFixes `CallToSimpleSetterInClass` inspection violations.\n\nDescription:\n\u003eReports any calls to a simple property setter from within the property\u0027s class. A simple property setter is defined as one which simply assigns the value of its parameter to a field, and does no other calculation. Such simple setter calls may be safely inlined, at a small performance improvement. Some coding standards also suggest against the use of simple setters for code clarity reasons.\n",
+      "commitDate": 1440161574000,
+      "commitName": "97956e1ae5d6842401ea0bfab121e8fb8d51c14d",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440158741000,
+      "commitNameOld": "23a1b6253f6296c1a3888361953da47f2808ca3d",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     public void addNextSibling(DetailAST ast) {\n         if (ast !\u003d null) {\n             ast.setParent(parent);\n             final DetailAST nextSibling \u003d getNextSibling();\n \n             if (nextSibling !\u003d null) {\n                 ast.setNextSibling(nextSibling);\n-                nextSibling.setPreviousSibling(ast);\n+                nextSibling.previousSibling \u003d ast;\n             }\n \n-            ast.setPreviousSibling(this);\n+            ast.previousSibling \u003d this;\n             setNextSibling(ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary this keyword. #1555\n\nFixes `UnnecessaryThis` inspection violations.\n\nDescription:\n\u003eReports on any unnecessary uses of this in the code. Using this to disambiguate a code reference may easily become unnecessary via automatic refactorings, and is discouraged by many coding styles.\n For example:\n ```\n this.a \u003d 3;\n ```\n",
+      "commitDate": 1439131302000,
+      "commitName": "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439008721000,
+      "commitNameOld": "f1e80e4ecae727087ca135dfd02f72e2d6213efb",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.42,
+      "commitsBetweenForRepo": 60,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     public void addNextSibling(DetailAST ast) {\n         if (ast !\u003d null) {\n             ast.setParent(parent);\n-            final DetailAST nextSibling \u003d this.getNextSibling();\n+            final DetailAST nextSibling \u003d getNextSibling();\n \n             if (nextSibling !\u003d null) {\n                 ast.setNextSibling(nextSibling);\n                 nextSibling.setPreviousSibling(ast);\n             }\n \n             ast.setPreviousSibling(this);\n-            this.setNextSibling(ast);\n+            setNextSibling(ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "a24df47cafeab03fd65cf72b460aad3d2fafce3d": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #49. Added support of single-line and block comments\n",
+      "commitDate": 1413609550000,
+      "commitName": "a24df47cafeab03fd65cf72b460aad3d2fafce3d",
+      "commitAuthor": "Baratali Izmailov"
+    }
+  }
+}

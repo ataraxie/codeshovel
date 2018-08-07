@@ -1,0 +1,210 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+index eb4d18669..b90b791cc 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+@@ -451,101 +451,101 @@ public class RequireThisCheck extends AbstractCheck {
+         private final Set<DetailAST> varIdents;
+ 
+         /**
+          * Parent frame.
+          */
+         private final AbstractFrame parent;
+ 
+         /**
+          * Frame name.
+          */
+         private final String frameName;
+ 
+         /**
+          * Constructor -- invokable only via super() from subclasses.
+          *
+          * @param parent parent frame
+          * @param frameName frame name
+          */
+         protected AbstractFrame(AbstractFrame parent, String frameName) {
+             this.parent = parent;
+             this.frameName = frameName;
+             varIdents = Sets.newHashSet();
+         }
+ 
+         /**
+          * Get the type of the frame.
+          * @return a FrameType.
+          */
+         protected abstract FrameType getType();
+ 
+         /**
+          * Add a name to the frame.
+          * @param identToAdd the name we're adding
+          */
+         private void addIdent(DetailAST identToAdd) {
+             varIdents.add(identToAdd);
+         }
+ 
+         protected AbstractFrame getParent() {
+             return parent;
+         }
+ 
+         protected String getFrameName() {
+             return frameName;
+         }
+ 
+         /** Check whether the frame contains a field or a variable with the given name.
+          * @param nameToFind the IDENT ast of the name we're looking for
+          * @return whether it was found
+          */
+-        boolean containsFieldOrVariable(DetailAST nameToFind) {
++        protected boolean containsFieldOrVariable(DetailAST nameToFind) {
+             return containsFieldOrVariableDef(varIdents, nameToFind);
+         }
+ 
+         /** Check whether the frame contains a given name.
+          * @param nameToFind IDENT ast of the name we're looking for.
+          * @param lookForMethod whether we are looking for a method name.
+          * @return whether it was found.
+          */
+         protected AbstractFrame getIfContains(DetailAST nameToFind, boolean lookForMethod) {
+             final AbstractFrame frame;
+ 
+             if (!lookForMethod
+                 && containsFieldOrVariable(nameToFind)) {
+                 frame = this;
+             }
+             else {
+                 frame = parent.getIfContains(nameToFind, lookForMethod);
+             }
+             return frame;
+         }
+ 
+         /**
+          * Whether the set contains a declaration with the text of the specified
+          * IDENT ast and it is declared in a proper position.
+          * @param set the set of declarations.
+          * @param ident the specified IDENT ast
+          * @return true if the set contains a declaration with the text of the specified
+          *         IDENT ast and it is declared in a proper position.
+          */
+         protected boolean containsFieldOrVariableDef(Set<DetailAST> set, DetailAST ident) {
+             boolean result = false;
+             for (DetailAST ast: set) {
+                 if (isProperDefinition(ident, ast)) {
+                     result = true;
+                     break;
+                 }
+             }
+             return result;
+         }
+ 
+         /**
+          * Whether the definition is correspondent to the IDENT.
+          * @param ident the IDENT ast to check.
+          * @param ast the IDENT ast of the definition to check.
+          * @return true if ast is correspondent to ident.
+          */
+         protected boolean isProperDefinition(DetailAST ident, DetailAST ast) {
+             final String nameToFind = ident.getText();
+             return nameToFind.equals(ast.getText())
+                 && checkPosition(ast, ident);
+@@ -635,101 +635,101 @@ public class RequireThisCheck extends AbstractCheck {
+             staticMethods.add(ident);
+         }
+ 
+         /**
+          * Adds instance member's ident.
+          * @param ident an ident of instance member of the class
+          */
+         public void addInstanceMember(final DetailAST ident) {
+             instanceMembers.add(ident);
+         }
+ 
+         /**
+          * Adds instance method's name.
+          * @param ident an ident of instance method of the class
+          */
+         public void addInstanceMethod(final DetailAST ident) {
+             instanceMethods.add(ident);
+         }
+ 
+         /**
+          * Checks if a given name is a known instance member of the class.
+          * @param ident the IDENT ast of the name to check
+          * @return true is the given name is a name of a known
+          *         instance member of the class
+          */
+         public boolean hasInstanceMember(final DetailAST ident) {
+             return containsFieldOrVariableDef(instanceMembers, ident);
+         }
+ 
+         /**
+          * Checks if a given name is a known instance method of the class.
+          * @param ident the IDENT ast of the method call to check
+          * @return true if the given ast is correspondent to a known
+          *         instance method of the class
+          */
+         public boolean hasInstanceMethod(final DetailAST ident) {
+             return containsMethodDef(instanceMethods, ident);
+         }
+ 
+         /**
+          * Checks if a given name is a known static method of the class.
+          * @param ident the IDENT ast of the method call to check
+          * @return true is the given ast is correspondent to a known
+          *         instance method of the class
+          */
+         public boolean hasStaticMethod(final DetailAST ident) {
+             return containsMethodDef(staticMethods, ident);
+         }
+ 
+         @Override
+-        boolean containsFieldOrVariable(DetailAST nameToFind) {
++        protected boolean containsFieldOrVariable(DetailAST nameToFind) {
+             return containsFieldOrVariableDef(instanceMembers, nameToFind)
+                     || containsFieldOrVariableDef(staticMembers, nameToFind);
+         }
+ 
+         @Override
+         protected boolean isProperDefinition(DetailAST ident, DetailAST ast) {
+             final String nameToFind = ident.getText();
+             return nameToFind.equals(ast.getText());
+         }
+ 
+         @Override
+         protected AbstractFrame getIfContains(DetailAST nameToFind, boolean lookForMethod) {
+             AbstractFrame frame = null;
+ 
+             if (lookForMethod && containsMethod(nameToFind)
+                 || containsFieldOrVariable(nameToFind)) {
+                 frame = this;
+             }
+             else if (getParent() != null) {
+                 frame = getParent().getIfContains(nameToFind, lookForMethod);
+             }
+             return frame;
+         }
+ 
+         /**
+          * Check whether the frame contains a given method.
+          * @param methodToFind the AST of the method to find.
+          * @return true, if a method with the same name and number of parameters is found.
+          */
+         private boolean containsMethod(DetailAST methodToFind) {
+             return containsMethodDef(instanceMethods, methodToFind)
+                 || containsMethodDef(staticMethods, methodToFind);
+         }
+ 
+         /**
+          * Whether the set contains a method definition with the
+          *     same name and number of parameters.
+          * @param set the set of definitions.
+          * @param ident the specified method call IDENT ast.
+          * @return true if the set contains a definition with the
+          *     same name and number of parameters.
+          */
+         private boolean containsMethodDef(Set<DetailAST> set, DetailAST ident) {
+             boolean result = false;
+             for (DetailAST ast: set) {
+                 if (isSimilarSignature(ident, ast)) {
+                     result = true;
+                     break;
+                 }
+             }

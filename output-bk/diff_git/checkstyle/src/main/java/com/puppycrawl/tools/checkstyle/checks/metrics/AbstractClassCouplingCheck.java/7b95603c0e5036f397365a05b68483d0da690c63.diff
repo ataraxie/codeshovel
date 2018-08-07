@@ -1,0 +1,261 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+index 946bfaaa5..dee5aff84 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+@@ -1,171 +1,190 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2017 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.metrics;
+ 
+ import java.util.ArrayDeque;
++import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.Deque;
++import java.util.List;
+ import java.util.Set;
+ import java.util.TreeSet;
++import java.util.regex.Pattern;
+ import java.util.stream.Collectors;
+ 
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.utils.CheckUtils;
++import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * Base class for coupling calculation.
+  *
+  * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+  * @author o_sukhodolsky
+  */
+ public abstract class AbstractClassCouplingCheck extends AbstractCheck {
+     /** Class names to ignore. */
+     private static final Set<String> DEFAULT_EXCLUDED_CLASSES = Collections.unmodifiableSet(
+         Arrays.stream(new String[] {
+             // primitives
+             "boolean", "byte", "char", "double", "float", "int",
+             "long", "short", "void",
+             // wrappers
+             "Boolean", "Byte", "Character", "Double", "Float",
+             "Integer", "Long", "Short", "Void",
+             // java.lang.*
+             "Object", "Class",
+             "String", "StringBuffer", "StringBuilder",
+             // Exceptions
+             "ArrayIndexOutOfBoundsException", "Exception",
+             "RuntimeException", "IllegalArgumentException",
+             "IllegalStateException", "IndexOutOfBoundsException",
+             "NullPointerException", "Throwable", "SecurityException",
+             "UnsupportedOperationException",
+             // java.util.*
+             "List", "ArrayList", "Deque", "Queue", "LinkedList",
+             "Set", "HashSet", "SortedSet", "TreeSet",
+             "Map", "HashMap", "SortedMap", "TreeMap",
+         }).collect(Collectors.toSet()));
+ 
+     /** Stack of contexts. */
+     private final Deque<Context> contextStack = new ArrayDeque<>();
+ 
+     /** User-configured class names to ignore. */
+     private Set<String> excludedClasses = DEFAULT_EXCLUDED_CLASSES;
+     /** Allowed complexity. */
+     private int max;
+     /** Package of the file we check. */
+     private String packageName;
++    /** User-configured regular expressions to ignore classes. */
++    private List<Pattern> excludeClassesRegexps = new ArrayList<>();
+ 
+     /** Current context. */
+     private Context context = new Context("", 0, 0);
+ 
+     /**
+      * Creates new instance of the check.
+      * @param defaultMax default value for allowed complexity.
+      */
+     protected AbstractClassCouplingCheck(int defaultMax) {
+         max = defaultMax;
++        excludeClassesRegexps.add(CommonUtils.createPattern("^$"));
+     }
+ 
+     /**
+      * @return message key we use for log violations.
+      */
+     protected abstract String getLogMessageId();
+ 
+     @Override
+     public final int[] getDefaultTokens() {
+         return getRequiredTokens();
+     }
+ 
+     /**
+      * @return allowed complexity.
+      */
+     public final int getMax() {
+         return max;
+     }
+ 
+     /**
+      * Sets maximum allowed complexity.
+      * @param max allowed complexity.
+      */
+     public final void setMax(int max) {
+         this.max = max;
+     }
+ 
+     /**
+      * Sets user-excluded classes to ignore.
+      * @param excludedClasses the list of classes to ignore.
+      */
+     public final void setExcludedClasses(String... excludedClasses) {
+         this.excludedClasses =
+             Collections.unmodifiableSet(Arrays.stream(excludedClasses).collect(Collectors.toSet()));
+     }
+ 
++    /**
++     * Sets user-excluded regular expression of classes to ignore.
++     * @param from array representing regular expressions of classes to ignore.
++     */
++    public void setExcludeClassesRegexps(String... from) {
++        excludeClassesRegexps.clear();
++        excludeClassesRegexps.addAll(Arrays.asList(from.clone())
++                .stream()
++                .map(CommonUtils::createPattern)
++                .collect(Collectors.toSet()));
++    }
++
+     @Override
+     public final void beginTree(DetailAST ast) {
+         packageName = "";
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.PACKAGE_DEF:
+                 visitPackageDef(ast);
+                 break;
+             case TokenTypes.CLASS_DEF:
+             case TokenTypes.INTERFACE_DEF:
+             case TokenTypes.ANNOTATION_DEF:
+             case TokenTypes.ENUM_DEF:
+                 visitClassDef(ast);
+                 break;
+             case TokenTypes.TYPE:
+                 context.visitType(ast);
+                 break;
+             case TokenTypes.LITERAL_NEW:
+                 context.visitLiteralNew(ast);
+                 break;
+             case TokenTypes.LITERAL_THROWS:
+                 context.visitLiteralThrows(ast);
+                 break;
+             default:
+                 throw new IllegalArgumentException("Unknown type: " + ast);
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CLASS_DEF:
+             case TokenTypes.INTERFACE_DEF:
+             case TokenTypes.ANNOTATION_DEF:
+             case TokenTypes.ENUM_DEF:
+                 leaveClassDef();
+                 break;
+             default:
+                 // Do nothing
+         }
+     }
+ 
+     /**
+      * Stores package of current class we check.
+      * @param pkg package definition.
+      */
+     private void visitPackageDef(DetailAST pkg) {
+@@ -246,55 +265,64 @@ public abstract class AbstractClassCouplingCheck extends AbstractCheck {
+         public void visitType(DetailAST ast) {
+             final String fullTypeName = CheckUtils.createFullType(ast).getText();
+             context.addReferencedClassName(fullTypeName);
+         }
+ 
+         /**
+          * Visits NEW.
+          * @param ast NEW to process.
+          */
+         public void visitLiteralNew(DetailAST ast) {
+             context.addReferencedClassName(ast.getFirstChild());
+         }
+ 
+         /**
+          * Adds new referenced class.
+          * @param ast a node which represents referenced class.
+          */
+         private void addReferencedClassName(DetailAST ast) {
+             final String fullIdentName = FullIdent.createFullIdent(ast).getText();
+             addReferencedClassName(fullIdentName);
+         }
+ 
+         /**
+          * Adds new referenced class.
+          * @param referencedClassName class name of the referenced class.
+          */
+         private void addReferencedClassName(String referencedClassName) {
+             if (isSignificant(referencedClassName)) {
+                 referencedClassNames.add(referencedClassName);
+             }
+         }
+ 
+         /** Checks if coupling less than allowed or not. */
+         public void checkCoupling() {
+             referencedClassNames.remove(className);
+             referencedClassNames.remove(packageName + "." + className);
+ 
+             if (referencedClassNames.size() > max) {
+                 log(lineNo, columnNo, getLogMessageId(),
+                         referencedClassNames.size(), getMax(),
+                         referencedClassNames.toString());
+             }
+         }
+ 
+         /**
+          * Checks if given class shouldn't be ignored and not from java.lang.
+          * @param candidateClassName class to check.
+          * @return true if we should count this class.
+          */
+         private boolean isSignificant(String candidateClassName) {
+-            return !excludedClasses.contains(candidateClassName)
++            boolean result = !excludedClasses.contains(candidateClassName)
+                     && !candidateClassName.startsWith("java.lang.");
++            if (result) {
++                for (Pattern pattern : excludeClassesRegexps) {
++                    if (pattern.matcher(candidateClassName).matches()) {
++                        result = false;
++                        break;
++                    }
++                }
++            }
++            return result;
+         }
+     }
+ }

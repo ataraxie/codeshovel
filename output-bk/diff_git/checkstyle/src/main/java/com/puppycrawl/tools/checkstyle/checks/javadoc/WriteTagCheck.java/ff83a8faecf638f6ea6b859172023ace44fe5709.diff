@@ -1,0 +1,178 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/WriteTagCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/WriteTagCheck.java
+index ee6143556..ae46a9369 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/WriteTagCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/WriteTagCheck.java
+@@ -45,168 +45,167 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+  *</p>
+  * <pre>
+  * &lt;module name="WriteTag"&gt;
+  *    &lt;property name="tag" value="@author"/&gt;
+  *    &lt;property name="tagFormat" value="\S"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * <p> An example of how to configure the check to print warnings if an
+  * "@incomplete" tag is found, and not print anything if it is not found:
+  *</p>
+  * <pre>
+  * &lt;module name="WriteTag"&gt;
+  *    &lt;property name="tag" value="@incomplete"/&gt;
+  *    &lt;property name="tagFormat" value="\S"/&gt;
+  *    &lt;property name="severity" value="ignore"/&gt;
+  *    &lt;property name="tagSeverity" value="warning"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author Daniel Grenner
+  */
+ public class WriteTagCheck
+     extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_MISSING_TAG = "type.missingTag";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_WRITE_TAG = "javadoc.writeTag";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_TAG_FORMAT = "type.tagFormat";
+ 
+     /** Compiled regexp to match tag. **/
+     private Pattern tagRegExp;
+     /** Compiled regexp to match tag content. **/
+     private Pattern tagFormat;
+ 
+     /** Regexp to match tag. */
+     private String tag;
+     /** The severity level of found tag reports. */
+-    private SeverityLevel tagSeverityLevel = SeverityLevel.INFO;
++    private SeverityLevel tagSeverity = SeverityLevel.INFO;
+ 
+     /**
+      * Sets the tag to check.
+      * @param tag tag to check
+      */
+     public void setTag(String tag) {
+         this.tag = tag;
+         tagRegExp = CommonUtils.createPattern(tag + "\\s*(.*$)");
+     }
+ 
+     /**
+      * Set the tag format.
+      * @param pattern a {@code String} value
+      */
+     public void setTagFormat(Pattern pattern) {
+         tagFormat = pattern;
+     }
+ 
+     /**
+-     * Sets the tag severity level.  The string should be one of the names
+-     * defined in the {@code SeverityLevel} class.
++     * Sets the tag severity level.
+      *
+      * @param severity  The new severity level
+      * @see SeverityLevel
+      */
+-    public final void setTagSeverity(String severity) {
+-        tagSeverityLevel = SeverityLevel.getInstance(severity);
++    public final void setTagSeverity(SeverityLevel severity) {
++        tagSeverity = severity;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {TokenTypes.INTERFACE_DEF,
+                           TokenTypes.CLASS_DEF,
+                           TokenTypes.ENUM_DEF,
+                           TokenTypes.ANNOTATION_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.INTERFACE_DEF,
+                           TokenTypes.CLASS_DEF,
+                           TokenTypes.ENUM_DEF,
+                           TokenTypes.ANNOTATION_DEF,
+                           TokenTypes.METHOD_DEF,
+                           TokenTypes.CTOR_DEF,
+                           TokenTypes.ENUM_CONSTANT_DEF,
+                           TokenTypes.ANNOTATION_FIELD_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final FileContents contents = getFileContents();
+         final int lineNo = ast.getLineNo();
+         final TextBlock cmt =
+             contents.getJavadocBefore(lineNo);
+         if (cmt == null) {
+             log(lineNo, MSG_MISSING_TAG, tag);
+         }
+         else {
+             checkTag(lineNo, cmt.getText());
+         }
+     }
+ 
+     /**
+      * Verifies that a type definition has a required tag.
+      * @param lineNo the line number for the type definition.
+      * @param comment the Javadoc comment for the type definition.
+      */
+     private void checkTag(int lineNo, String... comment) {
+         if (tagRegExp != null) {
+             int tagCount = 0;
+             for (int i = 0; i < comment.length; i++) {
+                 final String commentValue = comment[i];
+                 final Matcher matcher = tagRegExp.matcher(commentValue);
+                 if (matcher.find()) {
+                     tagCount += 1;
+                     final int contentStart = matcher.start(1);
+                     final String content = commentValue.substring(contentStart);
+                     if (tagFormat == null || tagFormat.matcher(content).find()) {
+                         logTag(lineNo + i - comment.length, tag, content);
+                     }
+                     else {
+                         log(lineNo + i - comment.length, MSG_TAG_FORMAT, tag, tagFormat.pattern());
+                     }
+                 }
+             }
+             if (tagCount == 0) {
+                 log(lineNo, MSG_MISSING_TAG, tag);
+             }
+         }
+     }
+ 
+     /**
+      * Log a message.
+      *
+      * @param line the line number where the error was found
+      * @param tagName the javadoc tag to be logged
+      * @param tagValue the contents of the tag
+      *
+      * @see java.text.MessageFormat
+      */
+     protected final void logTag(int line, String tagName, String tagValue) {
+         final String originalSeverity = getSeverity();
+-        setSeverity(tagSeverityLevel.getName());
++        setSeverity(tagSeverity.getName());
+ 
+         log(line, MSG_WRITE_TAG, tagName, tagValue);
+ 
+         setSeverity(originalSeverity);
+     }
+ }

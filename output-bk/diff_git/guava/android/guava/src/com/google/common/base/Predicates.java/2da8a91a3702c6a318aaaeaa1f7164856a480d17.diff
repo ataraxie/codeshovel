@@ -1,0 +1,107 @@
+diff --git a/android/guava/src/com/google/common/base/Predicates.java b/android/guava/src/com/google/common/base/Predicates.java
+index 4f0bf9cfa..db1b7ea41 100644
+--- a/android/guava/src/com/google/common/base/Predicates.java
++++ b/android/guava/src/com/google/common/base/Predicates.java
+@@ -200,101 +200,101 @@ public final class Predicates {
+    * @since 10.0
+    */
+   @GwtIncompatible // Class.isAssignableFrom
+   @Beta
+   @Deprecated
+   public static Predicate<Class<?>> assignableFrom(Class<?> clazz) {
+     return subtypeOf(clazz);
+   }
+ 
+   /**
+    * Returns a predicate that evaluates to {@code true} if the class being tested is assignable
+    * to (is a subtype of) {@code clazz}. Example: <pre>   {@code
+    *
+    *   List<Class<?>> classes = Arrays.asList(
+    *       Object.class, String.class, Number.class, Long.class);
+    *   return Iterables.filter(classes, subtypeOf(Number.class));}</pre>
+    *
+    * The code above returns an iterable containing {@code Number.class} and {@code Long.class}.
+    *
+    * @since 20.0 (since 10.0 under the incorrect name {@code assignableFrom})
+    */
+   @GwtIncompatible // Class.isAssignableFrom
+   @Beta
+   public static Predicate<Class<?>> subtypeOf(Class<?> clazz) {
+     return new SubtypeOfPredicate(clazz);
+   }
+ 
+   /**
+    * Returns a predicate that evaluates to {@code true} if the object reference being tested is a
+    * member of the given collection. It does not defensively copy the collection passed in, so
+    * future changes to it will alter the behavior of the predicate.
+    *
+    * <p>This method can technically accept any {@code Collection<?>}, but using a typed collection
+    * helps prevent bugs. This approach doesn't block any potential users since it is always possible
+    * to use {@code Predicates.<Object>in()}.
+    *
+    * @param target the collection that may contain the function input
+    */
+   public static <T> Predicate<T> in(Collection<? extends T> target) {
+     return new InPredicate<T>(target);
+   }
+ 
+   /**
+    * Returns the composition of a function and a predicate. For every {@code x}, the generated
+    * predicate returns {@code predicate(function(x))}.
+    *
+    * @return the composition of the provided function and predicate
+    */
+   public static <A, B> Predicate<A> compose(
+       Predicate<B> predicate, Function<A, ? extends B> function) {
+-    return new CompositionPredicate<A, B>(predicate, function);
++    return new CompositionPredicate<>(predicate, function);
+   }
+ 
+   /**
+    * Returns a predicate that evaluates to {@code true} if the {@code CharSequence} being tested
+    * contains any match for the given regular expression pattern. The test used is equivalent to
+    * {@code Pattern.compile(pattern).matcher(arg).find()}
+    *
+    * @throws IllegalArgumentException if the pattern is invalid
+    * @since 3.0
+    */
+   @GwtIncompatible // Only used by other GWT-incompatible code.
+   public static Predicate<CharSequence> containsPattern(String pattern) {
+     return new ContainsPatternFromStringPredicate(pattern);
+   }
+ 
+   /**
+    * Returns a predicate that evaluates to {@code true} if the {@code CharSequence} being tested
+    * contains any match for the given regular expression pattern. The test used is equivalent to
+    * {@code pattern.matcher(arg).find()}
+    *
+    * @since 3.0
+    */
+   @GwtIncompatible(value = "java.util.regex.Pattern")
+   public static Predicate<CharSequence> contains(Pattern pattern) {
+     return new ContainsPatternPredicate(new JdkPattern(pattern));
+   }
+ 
+   // End public API, begin private implementation classes.
+ 
+   // Package private for GWT serialization.
+   enum ObjectPredicate implements Predicate<Object> {
+     /** @see Predicates#alwaysTrue() */
+     ALWAYS_TRUE {
+       @Override
+       public boolean apply(@Nullable Object o) {
+         return true;
+       }
+ 
+       @Override
+       public String toString() {
+         return "Predicates.alwaysTrue()";
+       }
+     },
+     /** @see Predicates#alwaysFalse() */
+     ALWAYS_FALSE {
+       @Override
+       public boolean apply(@Nullable Object o) {
+         return false;
+       }
+ 

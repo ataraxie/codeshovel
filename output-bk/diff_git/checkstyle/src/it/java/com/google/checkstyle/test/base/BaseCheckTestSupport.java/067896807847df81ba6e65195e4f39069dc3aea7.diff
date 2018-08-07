@@ -1,0 +1,66 @@
+diff --git a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+index bc24f6cda..cdd8b14da 100644
+--- a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
++++ b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+@@ -153,58 +153,58 @@ public abstract class BaseCheckTestSupport
+         assertEquals("unexpected output: " + lnr.readLine(),
+                      aExpected.length, errs);
+         aC.destroy();
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties'
+      * file.
+      *
+      * @param messageKey
+      *            the key of message in 'messages.properties' file.
+      */
+     public String getCheckMessage(Class<? extends AbstractViolationReporter> aClass,
+             String messageKey)
+     {
+         Properties pr = new Properties();
+         try {
+             pr.load(aClass.getResourceAsStream("messages.properties"));
+         }
+         catch (IOException e) {
+             return null;
+         }
+         return pr.getProperty(messageKey);
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties' file.
+      * @param messageKey the key of message in 'messages.properties' file.
+      * @param arguments the arguments of message in 'messages.properties' file.
+      */
+     public String getCheckMessage(Class<? extends AbstractViolationReporter> aClass,
+             String messageKey, Object ... arguments) {
+         return format(getCheckMessage(aClass, messageKey), arguments);
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties' file.
+      * @param messageKey the key of message in 'messages.properties' file.
+      * @param arguments the arguments of message in 'messages.properties' file.
+      */
+    public String getCheckMessage(Map<String, String> messages, String messageKey, Object ... arguments)
+    {
+        for (Map.Entry<String, String> entry : messages.entrySet()) {
+            if (messageKey.equals(entry.getKey())) {
+                return format(entry.getValue(), arguments);
+            }
+        }
+        return null;
+    }
+ 
+-   private static String removeDeviceFromPathOnWindows(String string) {
++   private static String removeDeviceFromPathOnWindows(String path) {
+        String os = System.getProperty("os.name", "Unix");
+        if (os.startsWith("Windows")) {
+-           return string.substring(string.indexOf(":") + 1);
++           return path.substring(path.indexOf(":") + 1);
+        }
+-       return string;
++       return path;
+    }
+ }

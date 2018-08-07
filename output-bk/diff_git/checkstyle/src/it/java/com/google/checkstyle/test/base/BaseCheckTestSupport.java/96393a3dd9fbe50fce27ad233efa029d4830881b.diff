@@ -1,0 +1,108 @@
+diff --git a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+index 478d15d2e..c70b8d015 100644
+--- a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
++++ b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+@@ -213,102 +213,101 @@ public class BaseCheckTestSupport {
+      * Gets the check message 'as is' from appropriate 'messages.properties'
+      * file.
+      *
+      * @param messageKey the key of message in 'messages.properties' file.
+      * @param arguments  the arguments of message in 'messages.properties' file.
+      */
+     protected String getCheckMessage(Class<? extends AbstractViolationReporter> aClass,
+             String messageKey, Object... arguments) {
+         final Properties pr = new Properties();
+         try {
+             pr.load(aClass.getResourceAsStream("messages.properties"));
+         }
+         catch (IOException ex) {
+             return null;
+         }
+         final MessageFormat formatter = new MessageFormat(pr.getProperty(messageKey),
+                 Locale.ROOT);
+         return formatter.format(arguments);
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties' file.
+      * @param messageKey the key of message in 'messages.properties' file.
+      * @param arguments the arguments of message in 'messages.properties' file.
+      */
+     protected String getCheckMessage(Map<String, String> messages, String messageKey,
+             Object... arguments) {
+         for (Map.Entry<String, String> entry : messages.entrySet()) {
+             if (messageKey.equals(entry.getKey())) {
+                 final MessageFormat formatter = new MessageFormat(entry.getValue(), Locale.ROOT);
+                 return formatter.format(arguments);
+             }
+         }
+         return null;
+     }
+ 
+     /**
+      * Returns {@link Configuration} instance for the given check name.
+      * This implementation uses {@link BaseCheckTestSupport#getConfiguration()} method inside.
+      * @param checkName check name.
+      * @return {@link Configuration} instance for the given check name.
+      * @throws CheckstyleException if exception occurs during configuration loading.
+      */
+     protected static Configuration getCheckConfig(String checkName) throws CheckstyleException {
+         final Configuration result;
+         final List<Configuration> configs = getCheckConfigs(checkName);
+         if (configs.size() == 1) {
+             result = configs.get(0);
+         }
+         else {
+-            result = configs.get(0);
+-            //throw new IllegalStateException("multiple instances of the same Check are detected");
++            throw new IllegalStateException("multiple instances of the same Check are detected");
+         }
+         return result;
+     }
+ 
+     /**
+      * Returns {@link Configuration} instance for the given check name.
+      * This implementation uses {@link BaseCheckTestSupport#getConfiguration()} method inside.
+      * @param checkName check name.
+      * @return {@link Configuration} instance for the given check name.
+      * @throws CheckstyleException if exception occurs during configuration loading.
+      */
+     protected static Configuration getCheckConfig(String checkName, String checkId)
+             throws CheckstyleException {
+         final Configuration result;
+         final List<Configuration> configs = getCheckConfigs(checkName);
+         if (configs.size() == 1) {
+             result = configs.get(0);
+         }
+         else {
+             result = configs.stream().filter(conf -> {
+                 try {
+                     return conf.getAttribute("id").equals(checkId);
+                 }
+                 catch (CheckstyleException ex) {
+                     throw new IllegalStateException("problem to get ID attribute from " + conf, ex);
+                 }
+             })
+             .findFirst().orElseGet(null);
+         }
+         return result;
+     }
+ 
+     /**
+      * Returns a list of all {@link Configuration} instances for the given check name.
+      * This implementation uses {@link BaseCheckTestSupport#getConfiguration()} method inside.
+      * @param checkName check name.
+      * @return {@link Configuration} instance for the given check name.
+      * @throws CheckstyleException if exception occurs during configuration loading.
+      */
+     protected static List<Configuration> getCheckConfigs(String checkName)
+             throws CheckstyleException {
+         final List<Configuration> result = new ArrayList<>();
+         for (Configuration currentConfig : getConfiguration().getChildren()) {
+             if ("TreeWalker".equals(currentConfig.getName())) {
+                 for (Configuration checkConfig : currentConfig.getChildren()) {
+                     if (checkName.equals(checkConfig.getName())) {
+                         result.add(checkConfig);
+                     }
+                 }
+             }

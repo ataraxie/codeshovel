@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "PropertyCacheFile.java",
+  "functionName": "fillCacheWithExternalResources",
+  "functionId": "fillCacheWithExternalResources___externalResources-Set__ExternalResource__",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/PropertyCacheFile.java",
+  "functionStartLine": 345,
+  "functionEndLine": 349,
+  "changeHistory": [
+    "de022d2434e58dd633fd50a7f9bb50565a8767b5",
+    "ecbeaa6e1df7cb021745e111b04395b9fbd509c7"
+  ],
+  "changeHistoryShort": {
+    "de022d2434e58dd633fd50a7f9bb50565a8767b5": "Ybodychange",
+    "ecbeaa6e1df7cb021745e111b04395b9fbd509c7": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "de022d2434e58dd633fd50a7f9bb50565a8767b5": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3233: Resolve IntelijIdea inspection violations for java8 migration (#3434)\n\n",
+      "commitDate": 1473337840000,
+      "commitName": "de022d2434e58dd633fd50a7f9bb50565a8767b5",
+      "commitAuthor": "Mariia Mykhailova",
+      "commitDateOld": 1469977049000,
+      "commitNameOld": "7790f3104d2770ac909c61e96ae66daba8d372ec",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 38.9,
+      "commitsBetweenForRepo": 31,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,5 @@\n     private void fillCacheWithExternalResources(Set\u003cExternalResource\u003e externalResources) {\n-        for (ExternalResource resource : externalResources) {\n-            if (!isResourceLocationInCache(resource.location)) {\n-                details.setProperty(resource.location, resource.contentHashSum);\n-            }\n-        }\n+        externalResources.stream()\n+            .filter(resource -\u003e !isResourceLocationInCache(resource.location))\n+            .forEach(resource -\u003e details.setProperty(resource.location, resource.contentHashSum));\n     }\n\\ No newline at end of file\n"
+    },
+    "ecbeaa6e1df7cb021745e111b04395b9fbd509c7": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #407: Fix cache usage in presence of modules which use external resources for configuration (#3092)",
+      "commitDate": 1463431992000,
+      "commitName": "ecbeaa6e1df7cb021745e111b04395b9fbd509c7",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

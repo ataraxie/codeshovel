@@ -1,0 +1,147 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java
+index 56949b8dc..1488046f4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java
+@@ -64,120 +64,141 @@ public class UnusedImportsCheck extends Check
+ 
+     /** flag to indicate when time to start collecting references. */
+     private boolean collect;
+     /** flag whether to process Javdoc comments. */
+     private boolean processJavadoc;
+ 
+     /** set of the imports. */
+     private final Set<FullIdent> imports = Sets.newHashSet();
+ 
+     /** set of references - possibly to imports or other things. */
+     private final Set<String> referenced = Sets.newHashSet();
+ 
+     /** Default constructor. */
+     public UnusedImportsCheck()
+     {
+     }
+ 
+     public void setProcessJavadoc(boolean value)
+     {
+         processJavadoc = value;
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST)
+     {
+         collect = false;
+         imports.clear();
+         referenced.clear();
+     }
+ 
+     @Override
+     public void finishTree(DetailAST rootAST)
+     {
+         // loop over all the imports to see if referenced.
+         for (final FullIdent imp : imports) {
+             if (!referenced.contains(Utils.baseClassname(imp.getText()))) {
+                 log(imp.getLineNo(),
+                     imp.getColumnNo(),
+                     "import.unused", imp.getText());
+             }
+         }
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.IMPORT,
+             TokenTypes.STATIC_IMPORT,
+-            // Definitions that may contain Javdoc...
++            // Definitions that may contain Javadoc...
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
++    @Override
++    public int[] getAcceptableTokens()
++    {
++        return new int[] {
++            TokenTypes.IDENT,
++            TokenTypes.IMPORT,
++            TokenTypes.STATIC_IMPORT,
++            // Definitions that may contain Javadoc...
++            TokenTypes.PACKAGE_DEF,
++            TokenTypes.ANNOTATION_DEF,
++            TokenTypes.ANNOTATION_FIELD_DEF,
++            TokenTypes.ENUM_DEF,
++            TokenTypes.ENUM_CONSTANT_DEF,
++            TokenTypes.CLASS_DEF,
++            TokenTypes.INTERFACE_DEF,
++            TokenTypes.METHOD_DEF,
++            TokenTypes.CTOR_DEF,
++            TokenTypes.VARIABLE_DEF,
++        };
++    }
++
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         if (ast.getType() == TokenTypes.IDENT) {
+             if (collect) {
+                 processIdent(ast);
+             }
+         }
+         else if (ast.getType() == TokenTypes.IMPORT) {
+             processImport(ast);
+         }
+         else if (ast.getType() == TokenTypes.STATIC_IMPORT) {
+             processStaticImport(ast);
+         }
+         else {
+             collect = true;
+             if (processJavadoc) {
+                 processJavadoc(ast);
+             }
+         }
+     }
+ 
+     /**
+      * Collects references made by IDENT.
+      * @param ast the IDENT node to process
+      */
+     private void processIdent(DetailAST ast)
+     {
+         final DetailAST parent = ast.getParent();
+         final int parentType = parent.getType();
+         if (((parentType != TokenTypes.DOT)
+             && (parentType != TokenTypes.METHOD_DEF))
+             || ((parentType == TokenTypes.DOT)
+                 && (ast.getNextSibling() != null)))
+         {
+             referenced.add(ast.getText());
+         }
+     }
+ 
+     /**
+      * Collects the details of imports.
+      * @param ast node containing the import details
+      */
+     private void processImport(DetailAST ast)
+     {
+         final FullIdent name = FullIdent.createFullIdentBelow(ast);
+         if ((name != null) && !name.getText().endsWith(".*")) {
+             imports.add(name);
+         }
+     }

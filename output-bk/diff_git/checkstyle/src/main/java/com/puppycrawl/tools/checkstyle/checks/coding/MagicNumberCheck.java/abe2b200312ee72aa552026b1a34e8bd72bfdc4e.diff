@@ -1,0 +1,116 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+index e4a172230..167e513e7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+@@ -37,100 +37,111 @@ import java.util.Arrays;
+  * &lt;module name="MagicNumber"&gt;
+  *    &lt;property name="ignoreNumbers" value="0, 1, 1.5, 2"/&gt;
+  *    &lt;property name="ignoreHashCodeMethod" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  * @author Lars Kühne
+  * @author Daniel Solano Gómez
+  */
+ public class MagicNumberCheck extends Check
+ {
+     /**
+      * The token types that are allowed in the AST path from the
+      * number literal to the enclosing constant definition.
+      */
+     private static final int[] ALLOWED_PATH_TOKENTYPES = {
+         TokenTypes.ASSIGN,
+         TokenTypes.ARRAY_INIT,
+         TokenTypes.EXPR,
+         TokenTypes.UNARY_PLUS,
+         TokenTypes.UNARY_MINUS,
+         TokenTypes.TYPECAST,
+         TokenTypes.ELIST,
+         TokenTypes.LITERAL_NEW,
+         TokenTypes.METHOD_CALL,
+         TokenTypes.STAR,
+     };
+ 
+     static {
+         Arrays.sort(ALLOWED_PATH_TOKENTYPES);
+     }
+ 
+     /** the numbers to ignore in the check, sorted */
+     private double[] ignoreNumbers = {-1, 0, 1, 2};
+     /** Whether to ignore magic numbers in a hash code method. */
+     private boolean ignoreHashCodeMethod;
+     /** Whether to ignore magic numbers in annotation. */
+     private boolean ignoreAnnotation;
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.NUM_DOUBLE,
+             TokenTypes.NUM_FLOAT,
+             TokenTypes.NUM_INT,
+             TokenTypes.NUM_LONG,
+         };
+     }
+ 
++    @Override
++    public int[] getAcceptableTokens()
++    {
++        return new int[] {
++            TokenTypes.NUM_DOUBLE,
++            TokenTypes.NUM_FLOAT,
++            TokenTypes.NUM_INT,
++            TokenTypes.NUM_LONG,
++        };
++    }
++
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         if (ignoreAnnotation && isInAnnotation(ast)) {
+             return;
+         }
+ 
+         if (inIgnoreList(ast)
+             || (ignoreHashCodeMethod && isInHashCodeMethod(ast)))
+         {
+             return;
+         }
+ 
+         final DetailAST constantDefAST = findContainingConstantDef(ast);
+ 
+         if (constantDefAST == null) {
+             reportMagicNumber(ast);
+         }
+         else {
+             DetailAST astNode = ast.getParent();
+             while (astNode != constantDefAST) {
+                 final int type = astNode.getType();
+                 if (Arrays.binarySearch(ALLOWED_PATH_TOKENTYPES, type) < 0) {
+                     reportMagicNumber(ast);
+                     break;
+                 }
+ 
+                 astNode = astNode.getParent();
+             }
+         }
+     }
+ 
+     /**
+      * Finds the constant definition that contains aAST.
+      * @param ast the AST
+      * @return the constant def or null if ast is not
+      * contained in a constant definition
+      */
+     private DetailAST findContainingConstantDef(DetailAST ast)
+     {
+         DetailAST varDefAST = ast;
+         while ((varDefAST != null)
+                 && (varDefAST.getType() != TokenTypes.VARIABLE_DEF)
+                 && (varDefAST.getType() != TokenTypes.ENUM_CONSTANT_DEF))
+         {
+             varDefAST = varDefAST.getParent();
+         }
+ 
+         // no containing variable definition?
+         if (varDefAST == null) {

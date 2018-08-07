@@ -1,0 +1,80 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AvoidInlineConditionalsCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AvoidInlineConditionalsCheck.java
+index bd246c068..0abd88860 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AvoidInlineConditionalsCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AvoidInlineConditionalsCheck.java
+@@ -1,67 +1,74 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.coding;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ 
+ /**
+  * Detects inline conditionals.
+  *
+  * An example inline conditional is this:
+  * <pre>
+  * String a = getParameter("a");
+  * String b = (a==null || a.length&lt;1) ? null : a.substring(1);
+  * </pre>
+  *
+  * Rationale: Some developers find inline conditionals hard to read,
+  * so their company's coding standards forbids them.
+  *
+  * @author lkuehne
+  */
+ public class AvoidInlineConditionalsCheck extends Check
+ {
++
++    /**
++     * A key is pointing to the warning message text in "messages.properties"
++     * file.
++     */
++    public static final String MSG_KEY = "inline.conditional.avoid";
++
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[]{TokenTypes.QUESTION};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[]{TokenTypes.QUESTION};
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         // the only place a QUESTION token can occur is in inline conditionals
+         // so no need to do any further tricks here - pretty trivial Check!
+ 
+-        log(ast.getLineNo(), ast.getColumnNo(), "inline.conditional.avoid");
++        log(ast.getLineNo(), ast.getColumnNo(), MSG_KEY);
+     }
+ }

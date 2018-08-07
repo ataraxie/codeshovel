@@ -1,0 +1,131 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+index 961704f19..236471e48 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+@@ -276,122 +276,122 @@ public class MagicNumberCheck extends Check {
+         final DetailAST modifiersAST =
+                 varDefAST.findFirstToken(TokenTypes.MODIFIERS);
+         if (modifiersAST.branchContains(TokenTypes.FINAL)) {
+             return varDefAST;
+         }
+ 
+         return null;
+     }
+ 
+     /**
+      * Reports aAST as a magic number, includes unary operators as needed.
+      * @param ast the AST node that contains the number to report
+      */
+     private void reportMagicNumber(DetailAST ast) {
+         String text = ast.getText();
+         final DetailAST parent = ast.getParent();
+         DetailAST reportAST = ast;
+         if (parent.getType() == TokenTypes.UNARY_MINUS) {
+             reportAST = parent;
+             text = "-" + text;
+         }
+         else if (parent.getType() == TokenTypes.UNARY_PLUS) {
+             reportAST = parent;
+             text = "+" + text;
+         }
+         log(reportAST.getLineNo(),
+                 reportAST.getColumnNo(),
+                 MSG_KEY,
+                 text);
+     }
+ 
+     /**
+      * Determines whether or not the given AST is in a valid hash code method.
+      * A valid hash code method is considered to be a method of the signature
+      * {@code public int hashCode()}.
+      *
+      * @param ast the AST from which to search for an enclosing hash code
+      * method definition
+      *
+      * @return {@code true} if {@code ast} is in the scope of a valid hash
+      * code method
+      */
+     private static boolean isInHashCodeMethod(DetailAST ast) {
+         // if not in a code block, can't be in hashCode()
+         if (!ScopeUtils.inCodeBlock(ast)) {
+             return false;
+         }
+ 
+         // find the method definition AST
+         DetailAST methodDefAST = ast.getParent();
+-        while (null != methodDefAST
+-                && TokenTypes.METHOD_DEF != methodDefAST.getType()) {
++        while (methodDefAST != null
++                && methodDefAST.getType() != TokenTypes.METHOD_DEF) {
+             methodDefAST = methodDefAST.getParent();
+         }
+ 
+-        if (null == methodDefAST) {
++        if (methodDefAST == null) {
+             return false;
+         }
+ 
+         // Check for 'hashCode' name.
+         final DetailAST identAST =
+             methodDefAST.findFirstToken(TokenTypes.IDENT);
+         if (!"hashCode".equals(identAST.getText())) {
+             return false;
+         }
+ 
+         // Check for no arguments.
+         final DetailAST paramAST =
+             methodDefAST.findFirstToken(TokenTypes.PARAMETERS);
+         // we are in a 'public int hashCode()' method! The compiler will ensure
+         // the method returns an 'int' and is public.
+-        return 0 == paramAST.getChildCount();
++        return paramAST.getChildCount() == 0;
+     }
+ 
+     /**
+      * Decides whether the number of an AST is in the ignore list of this
+      * check.
+      * @param ast the AST to check
+      * @return true if the number of ast is in the ignore list of this
+      * check.
+      */
+     private boolean inIgnoreList(DetailAST ast) {
+         double value = CheckUtils.parseDouble(ast.getText(), ast.getType());
+         final DetailAST parent = ast.getParent();
+         if (parent.getType() == TokenTypes.UNARY_MINUS) {
+             value = -1 * value;
+         }
+         return Arrays.binarySearch(ignoreNumbers, value) >= 0;
+     }
+ 
+     /**
+      * Determines whether or not the given AST is field declaration
+      *
+      * @param ast AST from which to search for an enclosing field declaration
+      *
+      * @return {@code true} if {@code ast} is in the scope of field declaration
+      */
+     private static boolean isFieldDeclaration(DetailAST ast) {
+         DetailAST varDefAST = ast;
+         while (varDefAST != null
+                 && varDefAST.getType() != TokenTypes.VARIABLE_DEF) {
+             varDefAST = varDefAST.getParent();
+         }
+ 
+         // contains variable declaration
+         // and it is directly inside class declaration
+         return varDefAST != null
+                 && varDefAST.getParent().getParent().getType()
+                     == TokenTypes.CLASS_DEF;
+     }
+ 
+     /**
+      * sets the tokens which are allowed between Magic Number and defined Object.
+      * @param tokens The string representation of the tokens interested in
+      */
+     public void setConstantWaiverParentToken(String... tokens) {
+         constantWaiverParentToken = new int[tokens.length];
+         for (int i = 0; i < tokens.length; i++) {
+             constantWaiverParentToken[i] = Utils.getTokenId(tokens[i]);
+         }
+         Arrays.sort(constantWaiverParentToken);
+     }

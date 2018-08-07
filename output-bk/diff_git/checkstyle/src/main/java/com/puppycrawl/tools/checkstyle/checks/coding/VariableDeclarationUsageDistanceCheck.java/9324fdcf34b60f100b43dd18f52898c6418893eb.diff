@@ -1,0 +1,221 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+index 9655dd9a8..fbae952d1 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+@@ -125,100 +125,105 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * for (int i = 0; i < 20; i++) {
+  *     a++;
+  *     b--;
+  *     sum++;
+  *     if (sum > 10) {
+  *         res = true;
+  *     }
+  * }</code>
+  * Distance for variable 'sum' = 3.
+  * </pre>
+  * <p>
+  * As the distance is more then the default one, the Check raises warning for variable
+  * 'sum' to move it into the 'for(...)' block. But there is situation when
+  * variable 'sum' hasn't to be 0 within each iteration. So, to avoid such
+  * warnings you can use Suppression Filter, provided by Checkstyle, for the
+  * whole class.
+  * </p>
+  *
+  * <p>
+  * An example how to configure this Check:
+  * </p>
+  * <pre>
+  * &lt;module name="VariableDeclarationUsageDistance"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure this Check:
+  *  - to set the allowed distance to 4;
+  *  - to ignore variables with prefix '^temp';
+  *  - to force the validation between scopes;
+  *  - to check the final variables;
+  * </p>
+  * <pre>
+  * &lt;module name="VariableDeclarationUsageDistance"&gt;
+  *     &lt;property name="allowedDistance" value="4"&gt;
+  *     &lt;property name="ignoreVariablePattern" value="^temp.*"&gt;
+  *     &lt;property name="validateBetweenScopes" value="true"&gt;
+  *     &lt;property name="mIgnoreFinal" value="false"&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author <a href="mailto:rd.ryly@gmail.com">Ruslan Diachenko</a>
+  * @author <a href="mailto:barataliba@gmail.com">Baratali Izmailov</a>
+  */
+ public class VariableDeclarationUsageDistanceCheck extends Check
+ {
+     /**
+      * Warning message key.
+      */
+     public static final String MSG_KEY = "variable.declaration.usage.distance";
+ 
++    /**
++     * Warning message key.
++     */
++    public static final String MSG_KEY_EXT = "variable.declaration.usage.distance.extend";
++
+     /**
+      * Default value of distance between declaration of variable and its first
+      * usage.
+      */
+     private static final int DEFAULT_DISTANCE = 3;
+ 
+     /** Allowed distance between declaration of variable and its first usage. */
+     private int mAllowedDistance = DEFAULT_DISTANCE;
+ 
+     /**
+      * RegExp pattern to ignore distance calculation for variables listed in
+      * this pattern.
+      */
+     private Pattern mIgnoreVariablePattern = Pattern.compile("");
+ 
+     /**
+      * Allows to calculate distance between declaration of variable and its
+      * first usage in different scopes.
+      */
+     private boolean mValidateBetweenScopes;
+ 
+     /** Allows to ignore variables with 'final' modifier. */
+     private boolean mIgnoreFinal = true;
+ 
+     /**
+      * Sets an allowed distance between declaration of variable and its first
+      * usage.
+      * @param aAllowedDistance
+      *        Allowed distance between declaration of variable and its first
+      *        usage.
+      */
+     public void setAllowedDistance(int aAllowedDistance)
+     {
+         this.mAllowedDistance = aAllowedDistance;
+     }
+ 
+     /**
+      * Sets RegExp pattern to ignore distance calculation for variables listed
+      * in this pattern.
+      * @param aIgnorePattern
+      *        Pattern contains ignored variables.
+      */
+     public void setIgnoreVariablePattern(String aIgnorePattern)
+     {
+         this.mIgnoreVariablePattern = Pattern.compile(aIgnorePattern);
+     }
+ 
+     /**
+      * Sets option which allows to calculate distance between declaration of
+      * variable and its first usage in different scopes.
+@@ -228,102 +233,108 @@ public class VariableDeclarationUsageDistanceCheck extends Check
+      */
+     public void setValidateBetweenScopes(boolean aValidateBetweenScopes)
+     {
+         this.mValidateBetweenScopes = aValidateBetweenScopes;
+     }
+ 
+     /**
+      * Sets ignore option for variables with 'final' modifier.
+      * @param aIgnoreFinal
+      *        Defines if ignore variables with 'final' modifier or not.
+      */
+     public void setIgnoreFinal(boolean aIgnoreFinal)
+     {
+         this.mIgnoreFinal = aIgnoreFinal;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         final int parentType = aAST.getParent().getType();
+         final DetailAST modifiers = aAST.getFirstChild();
+ 
+         if ((mIgnoreFinal && modifiers.branchContains(TokenTypes.FINAL))
+                 || parentType == TokenTypes.OBJBLOCK)
+         {
+             ;// no code
+         }
+         else {
+             final DetailAST variable = aAST.findFirstToken(TokenTypes.IDENT);
+ 
+             if (!isVariableMatchesIgnorePattern(variable.getText())) {
+                 final DetailAST semicolonAst = aAST.getNextSibling();
+                 Entry<DetailAST, Integer> entry = null;
+                 if (mValidateBetweenScopes) {
+                     entry = calculateDistanceBetweenScopes(semicolonAst, variable);
+                 }
+                 else {
+                     entry = calculateDistanceInSingleScope(semicolonAst, variable);
+                 }
+                 final DetailAST variableUsageAst = entry.getKey();
+                 final int dist = entry.getValue();
+                 if (dist > mAllowedDistance
+                         && !isInitializationSequence(variableUsageAst, variable.getText()))
+                 {
+-                    log(variable.getLineNo(),
+-                            MSG_KEY, variable.getText(), dist, mAllowedDistance);
++                    if (mIgnoreFinal) {
++                        log(variable.getLineNo(),
++                                MSG_KEY_EXT, variable.getText(), dist, mAllowedDistance);
++                    }
++                    else {
++                        log(variable.getLineNo(),
++                                MSG_KEY, variable.getText(), dist, mAllowedDistance);
++                    }
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Get name of instance whose method is called.
+      * @param aMethodCallAst
+      *        DetailAST of METHOD_CALL.
+      * @return name of instance.
+      */
+     private static String getInstanceName(DetailAST aMethodCallAst)
+     {
+         final String methodCallName =
+                 FullIdent.createFullIdentBelow(aMethodCallAst).getText();
+         final int lastDotIndex = methodCallName.lastIndexOf('.');
+         String instanceName = "";
+         if (lastDotIndex != -1) {
+             instanceName = methodCallName.substring(0, lastDotIndex);
+         }
+         return instanceName;
+     }
+ 
+     /**
+      * Processes statements until usage of variable to detect sequence of
+      * initialization methods.
+      * @param aVariableUsageAst
+      *        DetailAST of expression that uses variable named aVariableName.
+      * @param aVariableName
+      *        name of considered variable.
+      * @return true if statements between declaration and usage of variable are
+      *         initialization methods.
+      */
+     private static boolean isInitializationSequence(
+             DetailAST aVariableUsageAst, String aVariableName)
+     {
+         boolean result = true;
+         boolean isUsedVariableDeclarationFound = false;
+         DetailAST currentSiblingAst = aVariableUsageAst;
+         String initInstanceName = "";
+ 
+         while (result
+                 && !isUsedVariableDeclarationFound
+                 && currentSiblingAst != null)
+         {
+ 
+             switch (currentSiblingAst.getType()) {
+ 
+             case TokenTypes.EXPR:
+                 final DetailAST methodCallAst = currentSiblingAst.getFirstChild();

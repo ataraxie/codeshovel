@@ -1,0 +1,60 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalFinalVariableNameCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalFinalVariableNameCheck.java
+index 558ab2eb9..8930ed55a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalFinalVariableNameCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalFinalVariableNameCheck.java
+@@ -34,54 +34,54 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="LocalFinalVariableName"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check for names that are only upper case
+  * letters and digits is:
+  * </p>
+  * <pre>
+  * &lt;module name="LocalFinalVariableName"&gt;
+  *    &lt;property name="format" value="^[A-Z][A-Z0-9]*$"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author Rick Giles
+  */
+ public class LocalFinalVariableNameCheck
+     extends AbstractNameCheck {
+     /** Creates a new {@code LocalFinalVariableNameCheck} instance. */
+     public LocalFinalVariableNameCheck() {
+         super("^[a-z][a-zA-Z0-9]*$");
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.RESOURCE,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     protected final boolean mustCheckName(DetailAST ast) {
+         final DetailAST modifiersAST =
+             ast.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isFinal = ast.getType() == TokenTypes.RESOURCE
+-            || modifiersAST.branchContains(TokenTypes.FINAL);
++            || modifiersAST.findFirstToken(TokenTypes.FINAL) != null;
+         return isFinal && ScopeUtils.isLocalVariableDef(ast);
+     }
+ }

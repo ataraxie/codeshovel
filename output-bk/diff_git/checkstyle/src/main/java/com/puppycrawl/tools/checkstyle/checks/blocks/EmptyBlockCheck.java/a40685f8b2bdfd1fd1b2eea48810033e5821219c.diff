@@ -1,0 +1,68 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java
+index e3e1a7eae..105d37ce8 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java
+@@ -196,62 +196,63 @@ public class EmptyBlockCheck
+         }
+         else {
+             final String firstLine = lines[slistLineNo - 1].substring(slistColNo + 1);
+             final String lastLine = lines[rcurlyLineNo - 1].substring(0, rcurlyColNo);
+             if (CommonUtils.isBlank(firstLine)
+                     && CommonUtils.isBlank(lastLine)) {
+                 // check if all lines are also only whitespace
+                 returnValue = !checkIsAllLinesAreWhitespace(lines, slistLineNo, rcurlyLineNo);
+             }
+             else {
+                 returnValue = true;
+             }
+         }
+         return returnValue;
+     }
+ 
+     /**
+      * Checks is all lines in array contain whitespaces only.
+      *
+      * @param lines
+      *            array of lines
+      * @param lineFrom
+      *            check from this line number
+      * @param lineTo
+      *            check to this line numbers
+      * @return true if lines contain only whitespaces
+      */
+     private static boolean checkIsAllLinesAreWhitespace(String[] lines, int lineFrom, int lineTo) {
+         boolean result = true;
+         for (int i = lineFrom; i < lineTo - 1; i++) {
+             if (!CommonUtils.isBlank(lines[i])) {
+                 result = false;
+                 break;
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Calculates the left curly corresponding to the block to be checked.
+      *
+      * @param ast a {@code DetailAST} value
+      * @return the left curly corresponding to the block to be checked
+      */
+     private static DetailAST findLeftCurly(DetailAST ast) {
+         final DetailAST leftCurly;
+         final DetailAST slistAST = ast.findFirstToken(TokenTypes.SLIST);
+         if ((ast.getType() == TokenTypes.LITERAL_CASE
+                 || ast.getType() == TokenTypes.LITERAL_DEFAULT)
+                 && ast.getNextSibling() != null
++                && ast.getNextSibling().getFirstChild() != null
+                 && ast.getNextSibling().getFirstChild().getType() == TokenTypes.SLIST) {
+             leftCurly = ast.getNextSibling().getFirstChild();
+         }
+         else if (slistAST == null) {
+             leftCurly = ast.findFirstToken(TokenTypes.LCURLY);
+         }
+         else {
+             leftCurly = slistAST;
+         }
+         return leftCurly;
+     }
+ }

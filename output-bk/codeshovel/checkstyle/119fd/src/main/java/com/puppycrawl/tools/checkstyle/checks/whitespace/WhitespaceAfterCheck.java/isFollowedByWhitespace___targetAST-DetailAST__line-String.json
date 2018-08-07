@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "WhitespaceAfterCheck.java",
+  "functionName": "isFollowedByWhitespace",
+  "functionId": "isFollowedByWhitespace___targetAST-DetailAST__line-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java",
+  "functionStartLine": 133,
+  "functionEndLine": 145,
+  "changeHistory": [
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab",
+    "0e02e3565f37776783e6711ca46f1715af415ed3",
+    "18172eab38e9443539633d6ee3a30818c10c7bb1"
+  ],
+  "changeHistoryShort": {
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab": "Ybodychange",
+    "0e02e3565f37776783e6711ca46f1715af415ed3": "Ybodychange",
+    "18172eab38e9443539633d6ee3a30818c10c7bb1": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2661: Enforce LogicConditionNeedOptimizationCheck of sevntu-checkstyle over Checkstyle source code\n",
+      "commitDate": 1450994367000,
+      "commitName": "6ee4a0f805d528cdee03cfc175502d15b5722dab",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1440040911000,
+      "commitNameOld": "efa16e17bf710b7b24af828296c2337612912ba9",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 126.78,
+      "commitsBetweenForRepo": 975,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private static boolean isFollowedByWhitespace(DetailAST targetAST, String line) {\n         final int after \u003d\n             targetAST.getColumnNo() + targetAST.getText().length();\n         boolean followedByWhitespace \u003d true;\n \n         if (after \u003c line.length()) {\n             final char charAfter \u003d line.charAt(after);\n-            followedByWhitespace \u003d Character.isWhitespace(charAfter)\n-                || targetAST.getType() \u003d\u003d TokenTypes.SEMI\n-                    \u0026\u0026 (charAfter \u003d\u003d \u0027;\u0027 || charAfter \u003d\u003d \u0027)\u0027);\n+            followedByWhitespace \u003d charAfter \u003d\u003d \u0027;\u0027\n+                || charAfter \u003d\u003d \u0027)\u0027\n+                || Character.isWhitespace(charAfter);\n         }\n         return followedByWhitespace;\n     }\n\\ No newline at end of file\n"
+    },
+    "0e02e3565f37776783e6711ca46f1715af415ed3": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1289: \u0027WhitespaceAfterCheck\u0027 refactored, UT coverage improved\n",
+      "commitDate": 1437872196000,
+      "commitName": "0e02e3565f37776783e6711ca46f1715af415ed3",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1435330033000,
+      "commitNameOld": "18172eab38e9443539633d6ee3a30818c10c7bb1",
+      "commitAuthorOld": "MEZk",
+      "daysBetweenCommits": 29.42,
+      "commitsBetweenForRepo": 289,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,13 @@\n     private static boolean isFollowedByWhitespace(DetailAST targetAST, String line) {\n         final int after \u003d\n             targetAST.getColumnNo() + targetAST.getText().length();\n         boolean followedByWhitespace \u003d true;\n \n         if (after \u003c line.length()) {\n-\n             final char charAfter \u003d line.charAt(after);\n-            if (targetAST.getType() \u003d\u003d TokenTypes.SEMI\n-                \u0026\u0026 (charAfter \u003d\u003d \u0027;\u0027 || charAfter \u003d\u003d \u0027)\u0027)) {\n-                followedByWhitespace \u003d true;\n-            }\n-            else if (!Character.isWhitespace(charAfter) \u0026\u0026 !isEmptyForIterator(targetAST)) {\n-                followedByWhitespace \u003d false;\n-            }\n+            followedByWhitespace \u003d Character.isWhitespace(charAfter)\n+                || targetAST.getType() \u003d\u003d TokenTypes.SEMI\n+                    \u0026\u0026 (charAfter \u003d\u003d \u0027;\u0027 || charAfter \u003d\u003d \u0027)\u0027);\n         }\n-\n         return followedByWhitespace;\n     }\n\\ No newline at end of file\n"
+    },
+    "18172eab38e9443539633d6ee3a30818c10c7bb1": {
+      "type": "Yintroduced",
+      "commitMessage": "Replace hardcoded message in WhitespaceAfterCheck with property value (i18n), issue #967\n",
+      "commitDate": 1435330033000,
+      "commitName": "18172eab38e9443539633d6ee3a30818c10c7bb1",
+      "commitAuthor": "MEZk"
+    }
+  }
+}

@@ -1,0 +1,130 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+index 3e2980ac1..bcb890604 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+@@ -142,100 +142,125 @@ public abstract class ExpressionHandler
+                                     args);
+     }
+ 
+     /**
+      * Log child indentation error.
+      *
+      * @param aLine           the expression that caused the error
+      * @param aActualLevel   the actual indent level of the expression
+      * @param aExpectedLevel the expected indent level of the expression
+      */
+     private void logChildError(int aLine,
+                                int aActualLevel,
+                                IndentLevel aExpectedLevel)
+     {
+         Object[] args = new Object[] {
+             mTypeName,
+             new Integer(aActualLevel),
+             aExpectedLevel,
+         };
+         mIndentCheck.indentationLog(aLine,
+                                     "indentation.child.error",
+                                     args);
+     }
+ 
+     /**
+      * Determines if the given expression is at the start of a line.
+      *
+      * @param aAst   the expression to check
+      *
+      * @return true if it is, false otherwise
+      */
+     protected final boolean startsLine(DetailAST aAst)
+     {
+         return getLineStart(aAst) == expandedTabsColumnNo(aAst);
+     }
+ 
+     /**
+      * Determines if two expressions are on the same line.
+      *
+      * @param aAst1   the first expression
+      * @param aAst2   the second expression
+      *
+      * @return true if they are, false otherwise
+      */
+     static boolean areOnSameLine(DetailAST aAst1, DetailAST aAst2)
+     {
+         return aAst1 != null && aAst2 != null
+             && aAst1.getLineNo() == aAst2.getLineNo();
+     }
+ 
++    /**
++     * Searchs in given sub-tree (including given node) for the token
++     * which represents first symbol for this sub-tree in file.
++     * @param aAST a root of sub-tree in which the search shoul be performed.
++     * @return a token which occurs first in the file.
++     */
++    static DetailAST getFirstToken(DetailAST aAST)
++    {
++        DetailAST first = aAST;
++        DetailAST child = (DetailAST) aAST.getFirstChild();
++
++        while (child != null) {
++            DetailAST toTest = getFirstToken(child);
++            if (toTest.getLineNo() < first.getLineNo()
++                || (toTest.getLineNo() == first.getLineNo()
++                    && toTest.getColumnNo() < first.getColumnNo()))
++            {
++                first = toTest;
++            }
++            child = (DetailAST) child.getNextSibling();
++        }
++
++        return first;
++    }
++
+     /**
+      * Get the start of the line for the given expression.
+      *
+      * @param aAst   the expression to find the start of the line for
+      *
+      * @return the start of the line for the given expression
+      */
+     protected final int getLineStart(DetailAST aAst)
+     {
+         String line = mIndentCheck.getLines()[aAst.getLineNo() - 1];
+         return getLineStart(line);
+     }
+ 
+     // TODO: this whole checking of consecuitive/expression line indents is
+     // smelling pretty bad... and is in serious need of pruning.  But, I
+     // want to finish the invalid tests before I start messing around with
+     // it.
+ 
+     /**
+      * Check the indentation of consecutive lines for the expression we are
+      * handling.
+      *
+      * @param aStartLine     the first line to check
+      * @param aEndLine       the last line to check
+      * @param aIndentLevel   the required indent level
+      */
+     protected final void checkLinesIndent(int aStartLine, int aEndLine,
+                                           IndentLevel aIndentLevel)
+     {
+         // check first line
+         checkSingleLine(aStartLine, aIndentLevel);
+ 
+         // check following lines
+         aIndentLevel = new IndentLevel(aIndentLevel, getBasicOffset());
+         for (int i = aStartLine + 1; i <= aEndLine; i++) {
+             checkSingleLine(i, aIndentLevel);
+         }
+     }
+ 
+     /**
+      * @return true if indentation should be increased after
+      *              fisrt line in checkLinesIndent()
+      *         false otherwise
+      */
+     protected boolean shouldIncreaseIndent()
+     {
+         return true;
+     }
+ 
+     /**

@@ -1,0 +1,75 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java
+index 837ad3a29..2ba53f330 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java
+@@ -157,58 +157,67 @@ public class ModifierOrderCheck
+                     if (!isAnnotationOnType(modifier)) {
+                         //Annotation not at start of modifiers, bad
+                         offendingModifier = modifier;
+                     }
+                     break;
+                 }
+ 
+                 while (index < JLS_ORDER.length
+                        && !JLS_ORDER[index].equals(modifier.getText())) {
+                     index++;
+                 }
+ 
+                 if (index == JLS_ORDER.length) {
+                     //Current modifier is out of JLS order
+                     offendingModifier = modifier;
+                 }
+                 else if (iterator.hasNext()) {
+                     modifier = iterator.next();
+                 }
+                 else {
+                     //Reached end of modifiers without problem
+                     modifier = null;
+                 }
+             }
+         }
+         return offendingModifier;
+     }
+ 
+     /**
+      * Skip all annotations in modifier block.
+      * @param modifierIterator iterator for collection of modifiers
+      * @return modifier next to last annotation
+      */
+     private static DetailAST skipAnnotations(Iterator<DetailAST> modifierIterator) {
+         DetailAST modifier;
+         do {
+             modifier = modifierIterator.next();
+         }
+         while (modifierIterator.hasNext() && modifier.getType() == TokenTypes.ANNOTATION);
+         return modifier;
+     }
+ 
+     /**
+      * Checks whether annotation on type takes place.
+      * @param modifier modifier token.
+      * @return true if annotation on type takes place.
+      */
+     private static boolean isAnnotationOnType(DetailAST modifier) {
+         boolean annotationOnType = false;
+         final DetailAST modifiers = modifier.getParent();
+-        final int definitionTokenType = modifiers.getParent().getType();
+-        if (definitionTokenType == TokenTypes.VARIABLE_DEF
+-                || definitionTokenType == TokenTypes.PARAMETER_DEF) {
++        final DetailAST definition = modifiers.getParent();
++        final int definitionType = definition.getType();
++        if (definitionType == TokenTypes.VARIABLE_DEF
++                || definitionType == TokenTypes.PARAMETER_DEF
++                || definitionType == TokenTypes.CTOR_DEF) {
+             annotationOnType = true;
+         }
++        else if (definitionType == TokenTypes.METHOD_DEF) {
++            final DetailAST typeToken = definition.findFirstToken(TokenTypes.TYPE);
++            final int methodReturnType = typeToken.getLastChild().getType();
++            if (methodReturnType != TokenTypes.LITERAL_VOID) {
++                annotationOnType = true;
++            }
++        }
+         return annotationOnType;
+     }
+ }

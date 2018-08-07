@@ -1,0 +1,160 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+index e5ffaf8f3..b4255fb9c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+@@ -252,153 +252,152 @@ public class SuppressWithNearbyCommentFilter
+                 + "]; text='" + getText() + "']";
+         }
+     }
+ 
+     /** Format to turns checkstyle reporting off. */
+     private static final String DEFAULT_COMMENT_FORMAT =
+         "SUPPRESS CHECKSTYLE (\\w+)";
+ 
+     /** Default regex for checks that should be suppressed. */
+     private static final String DEFAULT_CHECK_FORMAT = ".*";
+ 
+     /** Default regex for messages that should be suppressed. */
+     private static final String DEFAULT_MESSAGE_FORMAT = null;
+ 
+     /** Default regex for lines that should be suppressed. */
+     private static final String DEFAULT_INFLUENCE_FORMAT = "0";
+ 
+     /** Whether to look for trigger in C-style comments. */
+     private boolean checkC = true;
+ 
+     /** Whether to look for trigger in C++-style comments. */
+     private boolean checkCPP = true;
+ 
+     /** Parsed comment regexp that marks checkstyle suppression region. */
+     private Pattern commentRegexp;
+ 
+     /** The comment pattern that triggers suppression. */
+     private String checkFormat;
+ 
+     /** The parsed check regexp. */
+     private Pattern checkRegexp;
+ 
+     /** The message format to suppress. */
+     private String messageFormat;
+ 
+     /** The influence of the suppression comment. */
+     private String influenceFormat;
+ 
+ 
+     //TODO: Investigate performance improvement with array
+     /** Tagged comments */
+     private final List<Tag> tags = Lists.newArrayList();
+ 
+     /**
+      * References the current FileContents for this filter.
+      * Since this is a weak reference to the FileContents, the FileContents
+      * can be reclaimed as soon as the strong references in TreeWalker
+      * and FileContentsHolder are reassigned to the next FileContents,
+      * at which time filtering for the current FileContents is finished.
+      */
+-    private WeakReference<FileContents> fileContentsReference =
+-        new WeakReference<FileContents>(null);
++    private WeakReference<FileContents> fileContentsReference = new WeakReference<>(null);
+ 
+     /**
+      * Constructs a SuppressionCommentFilter.
+      * Initializes comment on, comment off, and check formats
+      * to defaults.
+      */
+     public SuppressWithNearbyCommentFilter()
+     {
+         if (DEFAULT_COMMENT_FORMAT != null) {
+             setCommentFormat(DEFAULT_COMMENT_FORMAT);
+         }
+         if (DEFAULT_CHECK_FORMAT != null) {
+             setCheckFormat(DEFAULT_CHECK_FORMAT);
+         }
+         if (DEFAULT_MESSAGE_FORMAT != null) {
+             setMessageFormat(DEFAULT_MESSAGE_FORMAT);
+         }
+         if (DEFAULT_INFLUENCE_FORMAT != null) {
+             setInfluenceFormat(DEFAULT_INFLUENCE_FORMAT);
+         }
+     }
+ 
+     /**
+      * Set the format for a comment that turns off reporting.
+      * @param format a <code>String</code> value.
+      * @throws ConversionException unable to parse format.
+      */
+     public void setCommentFormat(String format)
+         throws ConversionException
+     {
+         try {
+             commentRegexp = Utils.getPattern(format);
+         }
+         catch (final PatternSyntaxException e) {
+             throw new ConversionException("unable to parse " + format, e);
+         }
+     }
+ 
+     /** @return the FileContents for this filter. */
+     public FileContents getFileContents()
+     {
+         return fileContentsReference.get();
+     }
+ 
+     /**
+      * Set the FileContents for this filter.
+      * @param fileContents the FileContents for this filter.
+      */
+     public void setFileContents(FileContents fileContents)
+     {
+-        fileContentsReference = new WeakReference<FileContents>(fileContents);
++        fileContentsReference = new WeakReference<>(fileContents);
+     }
+ 
+     /**
+      * Set the format for a check.
+      * @param format a <code>String</code> value
+      * @throws ConversionException unable to parse format
+      */
+     public void setCheckFormat(String format)
+         throws ConversionException
+     {
+         try {
+             checkRegexp = Utils.getPattern(format);
+             checkFormat = format;
+         }
+         catch (final PatternSyntaxException e) {
+             throw new ConversionException("unable to parse " + format, e);
+         }
+     }
+ 
+     /**
+      * Set the format for a message.
+      * @param format a <code>String</code> value
+      * @throws ConversionException unable to parse format
+      */
+     public void setMessageFormat(String format)
+         throws ConversionException
+     {
+         // check that format parses
+         try {
+             Utils.getPattern(format);
+         }
+         catch (final PatternSyntaxException e) {
+             throw new ConversionException("unable to parse " + format, e);
+         }
+         messageFormat = format;
+     }
+ 
+     /**
+      * Set the format for the influence of this check.
+      * @param format a <code>String</code> value
+      * @throws ConversionException unable to parse format
+      */
+     public void setInfluenceFormat(String format)
+         throws ConversionException
+     {
+         // check that format parses
+         try {
+             Utils.getPattern(format);
+         }
+         catch (final PatternSyntaxException e) {

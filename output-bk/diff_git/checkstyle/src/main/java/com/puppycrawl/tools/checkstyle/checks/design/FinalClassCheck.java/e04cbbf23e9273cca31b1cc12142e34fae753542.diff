@@ -1,0 +1,103 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/FinalClassCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/FinalClassCheck.java
+index aac168a93..682600411 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/FinalClassCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/FinalClassCheck.java
+@@ -87,92 +87,92 @@ public class FinalClassCheck
+                 desc.reportNonPrivateCtor();
+             }
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         if (ast.getType() != TokenTypes.CLASS_DEF) {
+             return;
+         }
+ 
+         final ClassDesc desc = classes.pop();
+         if (!desc.isDeclaredAsFinal()
+             && !desc.isDeclaredAsAbstract()
+             && desc.isWithPrivateCtor()
+             && !desc.isWithNonPrivateCtor()
+             && !ScopeUtils.isInInterfaceOrAnnotationBlock(ast)) {
+             final String className =
+                 ast.findFirstToken(TokenTypes.IDENT).getText();
+             log(ast.getLineNo(), MSG_KEY, className);
+         }
+     }
+ 
+     /** Maintains information about class' ctors. */
+     private static final class ClassDesc {
+         /** Is class declared as final. */
+         private final boolean declaredAsFinal;
+ 
+         /** Is class declared as abstract. */
+         private final boolean declaredAsAbstract;
+ 
+         /** Does class have non-private ctors. */
+         private boolean withNonPrivateCtor;
+ 
+         /** Does class have private ctors. */
+         private boolean withPrivateCtor;
+ 
+         /**
+          *  Create a new ClassDesc instance.
+          *  @param declaredAsFinal indicates if the
+          *         class declared as final
+          *  @param declaredAsAbstract indicates if the
+          *         class declared as abstract
+          */
+         ClassDesc(boolean declaredAsFinal, boolean declaredAsAbstract) {
+             this.declaredAsFinal = declaredAsFinal;
+             this.declaredAsAbstract = declaredAsAbstract;
+         }
+ 
+         /** Adds private ctor. */
+-        void reportPrivateCtor() {
++        private void reportPrivateCtor() {
+             withPrivateCtor = true;
+         }
+ 
+         /** Adds non-private ctor. */
+-        void reportNonPrivateCtor() {
++        private void reportNonPrivateCtor() {
+             withNonPrivateCtor = true;
+         }
+ 
+         /**
+          *  Does class have private ctors.
+          *  @return true if class has private ctors
+          */
+-        boolean isWithPrivateCtor() {
++        private boolean isWithPrivateCtor() {
+             return withPrivateCtor;
+         }
+ 
+         /**
+          *  Does class have non-private ctors.
+          *  @return true if class has non-private ctors
+          */
+-        boolean isWithNonPrivateCtor() {
++        private boolean isWithNonPrivateCtor() {
+             return withNonPrivateCtor;
+         }
+ 
+         /**
+          *  Is class declared as final.
+          *  @return true if class is declared as final
+          */
+-        boolean isDeclaredAsFinal() {
++        private boolean isDeclaredAsFinal() {
+             return declaredAsFinal;
+         }
+ 
+         /**
+          *  Is class declared as abstract.
+          *  @return true if class is declared as final
+          */
+-        boolean isDeclaredAsAbstract() {
++        private boolean isDeclaredAsAbstract() {
+             return declaredAsAbstract;
+         }
+     }
+ }

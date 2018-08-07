@@ -1,0 +1,123 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ParseTreeTableModel.java",
+  "functionName": "getChild",
+  "functionId": "getChild___parent-Object__index-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeTableModel.java",
+  "functionStartLine": 115,
+  "functionEndLine": 117,
+  "changeHistory": [
+    "07523b8de2b62b79677574b7528355763cd211f9",
+    "af4ecbf9b557808a05c7b84820b4ffd28990ee33",
+    "1487e5161886d95cb8c82e4fb1a8b447fa7e32d0",
+    "5f5142b2325051f9ed31130167c73d154d547211",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "d3433c91e0a791b0d1f44bf1975e930e15ed74b8"
+  ],
+  "changeHistoryShort": {
+    "07523b8de2b62b79677574b7528355763cd211f9": "Ybodychange",
+    "af4ecbf9b557808a05c7b84820b4ffd28990ee33": "Ymovefromfile",
+    "1487e5161886d95cb8c82e4fb1a8b447fa7e32d0": "Ybodychange",
+    "5f5142b2325051f9ed31130167c73d154d547211": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "d3433c91e0a791b0d1f44bf1975e930e15ed74b8": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "07523b8de2b62b79677574b7528355763cd211f9": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2609: Refactor ParseTreeTableModel\n",
+      "commitDate": 1454964988000,
+      "commitName": "07523b8de2b62b79677574b7528355763cd211f9",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1453646135000,
+      "commitNameOld": "0d8e93ce79ea33b72b3e904d8796984271ee3d8d",
+      "commitAuthorOld": "Bhavik Patel",
+      "daysBetweenCommits": 15.26,
+      "commitsBetweenForRepo": 51,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,3 @@\n     public Object getChild(Object parent, int index) {\n-        final DetailAST ast \u003d (DetailAST) parent;\n-        int currentIndex \u003d 0;\n-        AST child \u003d ast.getFirstChild();\n-        while (currentIndex \u003c index) {\n-            child \u003d child.getNextSibling();\n-            currentIndex++;\n-        }\n-        return child;\n+        return pModel.getChild(parent, index);\n     }\n\\ No newline at end of file\n"
+    },
+    "af4ecbf9b557808a05c7b84820b4ffd28990ee33": {
+      "type": "Ymovefromfile",
+      "commitMessage": "Issue #2609: Drop abstract class and interface in gui package\n",
+      "commitDate": 1449581945000,
+      "commitName": "af4ecbf9b557808a05c7b84820b4ffd28990ee33",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1449581693000,
+      "commitNameOld": "6ca2d5279ea5b03dfa91167a9001d55cca5db65d",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "1487e5161886d95cb8c82e4fb1a8b447fa7e32d0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2080: Fix typos in code\n",
+      "commitDate": 1445173437000,
+      "commitName": "1487e5161886d95cb8c82e4fb1a8b447fa7e32d0",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1444185186000,
+      "commitNameOld": "5f5142b2325051f9ed31130167c73d154d547211",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 11.44,
+      "commitsBetweenForRepo": 108,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public Object getChild(Object parent, int index) {\n         final DetailAST ast \u003d (DetailAST) parent;\n-        int indx \u003d 0;\n+        int currentIndex \u003d 0;\n         AST child \u003d ast.getFirstChild();\n-        while (indx \u003c index) {\n+        while (currentIndex \u003c index) {\n             child \u003d child.getNextSibling();\n-            indx++;\n+            currentIndex++;\n         }\n         return child;\n     }\n\\ No newline at end of file\n"
+    },
+    "5f5142b2325051f9ed31130167c73d154d547211": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #985: Fix PMD violations for ShortVariable rule\n",
+      "commitDate": 1444185186000,
+      "commitName": "5f5142b2325051f9ed31130167c73d154d547211",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1440887946000,
+      "commitNameOld": "c70cf22d39f9abbe0c0e2a42be4faed2ae75621c",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 38.16,
+      "commitsBetweenForRepo": 285,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public Object getChild(Object parent, int index) {\n         final DetailAST ast \u003d (DetailAST) parent;\n-        int i \u003d 0;\n+        int indx \u003d 0;\n         AST child \u003d ast.getFirstChild();\n-        while (i \u003c index) {\n+        while (indx \u003c index) {\n             child \u003d child.getNextSibling();\n-            i++;\n+            indx++;\n         }\n         return child;\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1151841139000,
+      "commitNameOld": "ef791720f010bcc2a05da76cac8021085bc71155",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 4.66,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     public Object getChild(Object parent, int index)\n     {\n-        DetailAST ast \u003d (DetailAST) parent;\n+        final DetailAST ast \u003d (DetailAST) parent;\n         int i \u003d 0;\n         AST child \u003d ast.getFirstChild();\n         while (i \u003c index) {\n             child \u003d child.getNextSibling();\n             i++;\n         }\n         return child;\n     }\n\\ No newline at end of file\n"
+    },
+    "d3433c91e0a791b0d1f44bf1975e930e15ed74b8": {
+      "type": "Yintroduced",
+      "commitMessage": "Added initial GUI.\n\nOliver, please check that the file headers do not\nlead to license problems with Sun - maybe we need to remove\nour own header and exclude the gui package from the run.checkstyle\ntarget?\n",
+      "commitDate": 1034813584000,
+      "commitName": "d3433c91e0a791b0d1f44bf1975e930e15ed74b8",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

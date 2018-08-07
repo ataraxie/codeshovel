@@ -1,0 +1,210 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index 7417fd10d..e655a0eeb 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -237,101 +237,101 @@ public class CheckStyleTask extends Task
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Setters for Checker configuration attributes
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /**
+      * Sets a properties file for use instead
+      * of individually setting them.
+      * @param aProps the properties File to use
+      */
+     public void setProperties(File aProps)
+     {
+         mPropertiesFile = aProps;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // The doers
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     @Override
+     public void execute() throws BuildException
+     {
+         final long startTime = System.currentTimeMillis();
+ 
+         try {
+             realExecute();
+         }
+         finally {
+             final long endTime = System.currentTimeMillis();
+             log("Total execution took " + (endTime - startTime) + " ms.",
+                 Project.MSG_VERBOSE);
+         }
+     }
+ 
+     /**
+      * Helper implementation to perform execution.
+      */
+     private void realExecute()
+     {
+         // output version info in debug mode
+         final ResourceBundle compilationProperties = ResourceBundle
+                 .getBundle("checkstylecompilation");
+         final String version = compilationProperties
+                 .getString("checkstyle.compile.version");
+         final String compileTimestamp = compilationProperties
+                 .getString("checkstyle.compile.timestamp");
+         log("checkstyle version " + version, Project.MSG_VERBOSE);
+         log("compiled on " + compileTimestamp, Project.MSG_VERBOSE);
+ 
+         // Check for no arguments
+-        if ((mFileName == null) && (mFileSets.size() == 0)) {
++        if ((mFileName == null) && mFileSets.isEmpty()) {
+             throw new BuildException(
+                     "Must specify at least one of 'file' or nested 'fileset'.",
+                     getLocation());
+         }
+ 
+         if (mConfigLocation == null) {
+             throw new BuildException("Must specify 'config'.", getLocation());
+         }
+ 
+         // Create the checker
+         Checker c = null;
+         try {
+             c = createChecker();
+ 
+             final SeverityLevelCounter warningCounter =
+                 new SeverityLevelCounter(SeverityLevel.WARNING);
+             c.addListener(warningCounter);
+ 
+             // Process the files
+             long startTime = System.currentTimeMillis();
+             final List<File> files = scanFileSets();
+             long endTime = System.currentTimeMillis();
+             log("To locate the files took " + (endTime - startTime) + " ms.",
+                 Project.MSG_VERBOSE);
+ 
+             log("Running Checkstyle " + version + " on " + files.size()
+                     + " files", Project.MSG_INFO);
+             log("Using configuration " + mConfigLocation, Project.MSG_VERBOSE);
+ 
+             startTime = System.currentTimeMillis();
+             final int numErrs = c.process(files);
+             endTime = System.currentTimeMillis();
+             log("To process the files took " + (endTime - startTime) + " ms.",
+                 Project.MSG_VERBOSE);
+             final int numWarnings = warningCounter.getCount();
+             final boolean ok = (numErrs <= mMaxErrors)
+                     && (numWarnings <= mMaxWarnings);
+ 
+             // Handle the return status
+             if (!ok) {
+                 final String failureMsg =
+                         "Got " + numErrs + " errors and " + numWarnings
+                                 + " warnings.";
+                 if (mFailureProperty != null) {
+                     getProject().setProperty(mFailureProperty, failureMsg);
+                 }
+ 
+                 if (mFailOnViolation) {
+                     throw new BuildException(failureMsg, getLocation());
+                 }
+@@ -402,101 +402,101 @@ public class CheckStyleTask extends Task
+             FileInputStream inStream = null;
+             try {
+                 inStream = new FileInputStream(mPropertiesFile);
+                 retVal.load(inStream);
+             }
+             catch (final FileNotFoundException e) {
+                 throw new BuildException("Could not find Properties file '"
+                         + mPropertiesFile + "'", e, getLocation());
+             }
+             catch (final IOException e) {
+                 throw new BuildException("Error loading Properties file '"
+                         + mPropertiesFile + "'", e, getLocation());
+             }
+             finally {
+                 Utils.closeQuietly(inStream);
+             }
+         }
+ 
+         // override with Ant properties like ${basedir}
+         final Hashtable<?, ?> antProps = this.getProject().getProperties();
+         for (Object name : antProps.keySet()) {
+             final String key = (String) name;
+             final String value = String.valueOf(antProps.get(key));
+             retVal.put(key, value);
+         }
+ 
+         // override with properties specified in subelements
+         for (Property p : mOverrideProps) {
+             retVal.put(p.getKey(), p.getValue());
+         }
+ 
+         return retVal;
+     }
+ 
+     /**
+      * Return the list of listeners set in this task.
+      * @return the list of listeners.
+      * @throws ClassNotFoundException if an error occurs
+      * @throws InstantiationException if an error occurs
+      * @throws IllegalAccessException if an error occurs
+      * @throws IOException if an error occurs
+      */
+     protected AuditListener[] getListeners() throws ClassNotFoundException,
+             InstantiationException, IllegalAccessException, IOException
+     {
+         final int formatterCount = Math.max(1, mFormatters.size());
+ 
+         final AuditListener[] listeners = new AuditListener[formatterCount];
+ 
+         // formatters
+-        if (mFormatters.size() == 0) {
++        if (mFormatters.isEmpty()) {
+             final OutputStream debug = new LogOutputStream(this,
+                     Project.MSG_DEBUG);
+             final OutputStream err = new LogOutputStream(this, Project.MSG_ERR);
+             listeners[0] = new DefaultLogger(debug, true, err, true);
+         }
+         else {
+             for (int i = 0; i < formatterCount; i++) {
+                 final Formatter f = mFormatters.get(i);
+                 listeners[i] = f.createListener(this);
+             }
+         }
+         return listeners;
+     }
+ 
+     /**
+      * returns the list of files (full path name) to process.
+      * @return the list of files included via the filesets.
+      */
+     protected List<File> scanFileSets()
+     {
+         final List<File> list = Lists.newArrayList();
+         if (mFileName != null) {
+             // oops we've got an additional one to process, don't
+             // forget it. No sweat, it's fully resolved via the setter.
+             log("Adding standalone file for audit", Project.MSG_VERBOSE);
+             list.add(new File(mFileName));
+         }
+         for (int i = 0; i < mFileSets.size(); i++) {
+             final FileSet fs = mFileSets.get(i);
+             final DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+             ds.scan();
+ 
+             final String[] names = ds.getIncludedFiles();
+             log(i + ") Adding " + names.length + " files from directory "
+                     + ds.getBasedir(), Project.MSG_VERBOSE);
+ 
+             for (String element : names) {
+                 final String pathname = ds.getBasedir() + File.separator
+                         + element;
+                 list.add(new File(pathname));
+             }
+         }
+ 
+         return list;
+     }
+ 
+     /**
+      * Poor mans enumeration for the formatter types.
+      * @author Oliver Burn
+      */

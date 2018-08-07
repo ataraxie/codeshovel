@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/DetailNodeTreeStringPrinter.java b/src/main/java/com/puppycrawl/tools/checkstyle/DetailNodeTreeStringPrinter.java
+index a25636d68..d83e5fe8e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/DetailNodeTreeStringPrinter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/DetailNodeTreeStringPrinter.java
+@@ -72,101 +72,101 @@ public final class DetailNodeTreeStringPrinter {
+         }
+         return status.getTree();
+     }
+ 
+     /**
+      * Parse javadoc comment to DetailNode tree.
+      * @param javadocComment javadoc comment content
+      * @return tree
+      */
+     private static DetailNode parseJavadocAsDetailNode(String javadocComment) {
+         final DetailAST blockComment = createFakeBlockComment(javadocComment);
+         return parseJavadocAsDetailNode(blockComment);
+     }
+ 
+     /**
+      * Builds error message base on ParseErrorMessage's message key, its arguments, etc.
+      * @param parseErrorMessage ParseErrorMessage
+      * @return error message
+      */
+     private static String getParseErrorMessage(ParseErrorMessage parseErrorMessage) {
+         final LocalizedMessage lmessage = new LocalizedMessage(
+                 parseErrorMessage.getLineNumber(),
+                 "com.puppycrawl.tools.checkstyle.checks.javadoc.messages",
+                 parseErrorMessage.getMessageKey(),
+                 parseErrorMessage.getMessageArguments(),
+                 "",
+                 DetailNodeTreeStringPrinter.class,
+                 null);
+         return "[ERROR:" + parseErrorMessage.getLineNumber() + "] " + lmessage.getMessage();
+     }
+ 
+     /**
+      * Print AST.
+      * @param ast the root AST node.
+      * @param rootPrefix prefix for the root node
+      * @param prefix prefix for other nodes
+      * @return string AST.
+      */
+     public static String printTree(DetailNode ast, String rootPrefix, String prefix) {
+         final StringBuilder messageBuilder = new StringBuilder();
+         DetailNode node = ast;
+         while (node != null) {
+             if (node.getType() == JavadocTokenTypes.JAVADOC) {
+                 messageBuilder.append(rootPrefix);
+             }
+             else {
+                 messageBuilder.append(prefix);
+             }
+             messageBuilder.append(getIndentation(node))
+                     .append(JavadocUtils.getTokenName(node.getType())).append(" -> ")
+-                    .append(JavadocUtils.excapeAllControlChars(node.getText())).append(" [")
++                    .append(JavadocUtils.escapeAllControlChars(node.getText())).append(" [")
+                     .append(node.getLineNumber()).append(':').append(node.getColumnNumber())
+                     .append(']').append(LINE_SEPARATOR)
+                     .append(printTree(JavadocUtils.getFirstChild(node), rootPrefix, prefix));
+             node = JavadocUtils.getNextSibling(node);
+         }
+         return messageBuilder.toString();
+     }
+ 
+     /**
+      * Get indentation for a node.
+      * @param node the DetailNode to get the indentation for.
+      * @return the indentation in String format.
+      */
+     private static String getIndentation(DetailNode node) {
+         final boolean isLastChild = JavadocUtils.getNextSibling(node) == null;
+         DetailNode currentNode = node;
+         final StringBuilder indentation = new StringBuilder();
+         while (currentNode.getParent() != null) {
+             currentNode = currentNode.getParent();
+             if (currentNode.getParent() == null) {
+                 if (isLastChild) {
+                     // only ASCII symbols must be used due to
+                     // problems with running tests on Windows
+                     indentation.append("`--");
+                 }
+                 else {
+                     indentation.append("|--");
+                 }
+             }
+             else {
+                 if (JavadocUtils.getNextSibling(currentNode) == null) {
+                     indentation.insert(0, "    ");
+                 }
+                 else {
+                     indentation.insert(0, "|   ");
+                 }
+             }
+         }
+         return indentation.toString();
+     }
+ 
+     /**
+      * Parse a file and return the parse tree.
+      * @param file the file to parse.
+      * @return the root node of the parse tree.
+      * @throws IOException if the file could not be read.
+      */
+     private static DetailNode parseFile(File file) throws IOException {
+         // Details: https://github.com/checkstyle/checkstyle/issues/3034
+         //noinspection MismatchedQueryAndUpdateOfCollection

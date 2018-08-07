@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "ImmutableList.java",
+  "functionName": "listIterator",
+  "functionId": "listIterator___index-int",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/ImmutableList.java",
+  "functionStartLine": 363,
+  "functionEndLine": 370,
+  "changeHistory": [
+    "ac985ef9cd1f60c4fdcfcb2cd929461cd46e714e",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "ac985ef9cd1f60c4fdcfcb2cd929461cd46e714e": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "ac985ef9cd1f60c4fdcfcb2cd929461cd46e714e": {
+      "type": "Ybodychange",
+      "commitMessage": "In Java 7 branch, don\u0027t bother using Iterators.forArray in RegularImmutable{List,Set}.  The default ImmutableList.listIterator implementation amounts to the same thing, an AbstractIndexedListIterator delegating to the array.\n\nEffects on ImmutableSetProGuard:\n22598 bytes \u003d\u003e 20871 bytes\n17 classes \u003d\u003e 15 classes\n147 methods \u003d\u003e 144 methods\n\nRELNOTES\u003dn/a\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d173922422\n",
+      "commitDate": 1509397546000,
+      "commitName": "ac985ef9cd1f60c4fdcfcb2cd929461cd46e714e",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1506540646000,
+      "commitNameOld": "e3b8c0b6f07c1017e80d86758191d6898517a546",
+      "commitAuthorOld": "cgdecker",
+      "daysBetweenCommits": 33.07,
+      "commitsBetweenForRepo": 62,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n   public UnmodifiableListIterator\u003cE\u003e listIterator(int index) {\n-    return new AbstractIndexedListIterator\u003cE\u003e(size(), index) {\n-      @Override\n-      protected E get(int index) {\n-        return ImmutableList.this.get(index);\n-      }\n-    };\n+    checkPositionIndex(index, size());\n+    if (isEmpty()) {\n+      return (UnmodifiableListIterator\u003cE\u003e) EMPTY_ITR;\n+    } else {\n+      return new Itr\u003cE\u003e(this, index);\n+    }\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

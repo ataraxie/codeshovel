@@ -1,0 +1,125 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
+index 511e628af..ceecab9a1 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
+@@ -10,114 +10,114 @@
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.coding;
+ 
+ import java.util.Deque;
+ import java.util.LinkedList;
+ 
+ import antlr.collections.AST;
+ import com.puppycrawl.tools.checkstyle.FileStatefulCheck;
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+ 
+ /**
+  * <p>
+  * Abstract class for checking that an overriding method with no parameters
+  * invokes the super method.
+  * </p>
+  * @author Rick Giles
+  */
+ @FileStatefulCheck
+ public abstract class AbstractSuperCheck
+         extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "missing.super.call";
+ 
+     /** Stack of methods. */
+     private final Deque<MethodNode> methodStack = new LinkedList<>();
+ 
+     /**
+      * Returns the name of the overriding method.
+      * @return the name of the overriding method.
+      */
+     protected abstract String getMethodName();
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return new int[] {
+-            TokenTypes.METHOD_DEF,
+-            TokenTypes.LITERAL_SUPER,
+-        };
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return getAcceptableTokens();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return getDefaultTokens();
++        return new int[] {
++            TokenTypes.METHOD_DEF,
++            TokenTypes.LITERAL_SUPER,
++        };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         methodStack.clear();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (isOverridingMethod(ast)) {
+             methodStack.add(new MethodNode(ast));
+         }
+         else if (isSuperCall(ast)) {
+             final MethodNode methodNode = methodStack.getLast();
+             methodNode.setCallingSuper();
+         }
+     }
+ 
+     /**
+      * Determines whether a 'super' literal is a call to the super method
+      * for this check.
+      * @param literalSuperAst the AST node of a 'super' literal.
+      * @return true if ast is a call to the super method for this check.
+      */
+     private boolean isSuperCall(DetailAST literalSuperAst) {
+         boolean superCall = false;
+ 
+         if (literalSuperAst.getType() == TokenTypes.LITERAL_SUPER) {
+             // dot operator?
+             final DetailAST dotAst = literalSuperAst.getParent();
+ 
+             if (!isSameNameMethod(literalSuperAst)
+                 && !hasArguments(dotAst)) {
+                 superCall = isSuperCallInOverridingMethod(dotAst);
+             }
+         }
+         return superCall;
+     }
+ 
+     /**
+      * Determines whether a super call in overriding method.
+      *
+      * @param ast The AST node of a 'dot operator' in 'super' call.
+      * @return true if super call in overriding method.
+      */
+     private boolean isSuperCallInOverridingMethod(DetailAST ast) {
+         boolean inOverridingMethod = false;
+         DetailAST dotAst = ast;
+ 
+         while (dotAst.getType() != TokenTypes.CTOR_DEF

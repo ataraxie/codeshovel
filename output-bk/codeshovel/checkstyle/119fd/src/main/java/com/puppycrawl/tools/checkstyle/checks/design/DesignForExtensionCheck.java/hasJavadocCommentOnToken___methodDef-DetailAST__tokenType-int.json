@@ -1,0 +1,104 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DesignForExtensionCheck.java",
+  "functionName": "hasJavadocCommentOnToken",
+  "functionId": "hasJavadocCommentOnToken___methodDef-DetailAST__tokenType-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java",
+  "functionStartLine": 173,
+  "functionEndLine": 176,
+  "changeHistory": [
+    "0ae9023d9f1dfb239c0776ae0283de1c6727b869",
+    "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba",
+    "06716249cfb86d9f213f33a26877112e8ab45adc",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+    "3a7ab7d24d0b865fd95a8c72ce7e765a801ea555"
+  ],
+  "changeHistoryShort": {
+    "0ae9023d9f1dfb239c0776ae0283de1c6727b869": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+    "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba": "Ymodifierchange",
+    "06716249cfb86d9f213f33a26877112e8ab45adc": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Ybodychange)",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a": "Ybodychange",
+    "3a7ab7d24d0b865fd95a8c72ce7e765a801ea555": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0ae9023d9f1dfb239c0776ae0283de1c6727b869": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #5255: fixed DesignForExtensionCheck for methods with no modifiers\n",
+      "commitDate": 1516116563000,
+      "commitName": "0ae9023d9f1dfb239c0776ae0283de1c6727b869",
+      "commitAuthor": "Roman_Zhigunov",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Issue #4726: fix MethodMayBeStatic idea violations\n",
+      "commitDate": 1500842894000,
+      "commitName": "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1500555330000,
+      "commitNameOld": "5029c7b77385320a3297dd944d1bd736eba3a84f",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 3.33,
+      "commitsBetweenForRepo": 27,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n-    private boolean hasJavadocComment(DetailAST methodDef) {\n+    private static boolean hasJavadocComment(DetailAST methodDef) {\n         final DetailAST modifiers \u003d methodDef.findFirstToken(TokenTypes.MODIFIERS);\n         return modifiers.branchContains(TokenTypes.BLOCK_COMMENT_BEGIN);\n     }\n\\ No newline at end of file\n"
+    },
+    "06716249cfb86d9f213f33a26877112e8ab45adc": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Issue #3102: DesignForExtension: consider overridable methods and javadoc\n",
+      "commitDate": 1477175779000,
+      "commitName": "06716249cfb86d9f213f33a26877112e8ab45adc",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436323201000,
+      "commitNameOld": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 10.09,
+      "commitsBetweenForRepo": 97,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n-    private boolean isPrivateOrFinalOrAbstract(DetailAST ast) {\n+    private static boolean isPrivateOrFinalOrAbstract(DetailAST ast) {\n         // method is ok if it is private or abstract or final\n         final DetailAST modifiers \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n         return modifiers.branchContains(TokenTypes.LITERAL_PRIVATE)\n                 || modifiers.branchContains(TokenTypes.ABSTRACT)\n                 || modifiers.branchContains(TokenTypes.FINAL)\n                 || modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n     }\n\\ No newline at end of file\n"
+    },
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a": {
+      "type": "Ybodychange",
+      "commitMessage": "Update Maven PMD Plugin to 3.5. #1300\n",
+      "commitDate": 1436323201000,
+      "commitName": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1434344165000,
+      "commitNameOld": "3a7ab7d24d0b865fd95a8c72ce7e765a801ea555",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 22.91,
+      "commitsBetweenForRepo": 141,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,8 @@\n     private boolean isPrivateOrFinalOrAbstract(DetailAST ast) {\n         // method is ok if it is private or abstract or final\n         final DetailAST modifiers \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n-        if (modifiers.branchContains(TokenTypes.LITERAL_PRIVATE)\n-            || modifiers.branchContains(TokenTypes.ABSTRACT)\n-            || modifiers.branchContains(TokenTypes.FINAL)\n-            || modifiers.branchContains(TokenTypes.LITERAL_STATIC)) {\n-            return true;\n-        }\n-        return false;\n+        return modifiers.branchContains(TokenTypes.LITERAL_PRIVATE)\n+                || modifiers.branchContains(TokenTypes.ABSTRACT)\n+                || modifiers.branchContains(TokenTypes.FINAL)\n+                || modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n     }\n\\ No newline at end of file\n"
+    },
+    "3a7ab7d24d0b865fd95a8c72ce7e765a801ea555": {
+      "type": "Yintroduced",
+      "commitMessage": "DesignForExtensionCheck  updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344165000,
+      "commitName": "3a7ab7d24d0b865fd95a8c72ce7e765a801ea555",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

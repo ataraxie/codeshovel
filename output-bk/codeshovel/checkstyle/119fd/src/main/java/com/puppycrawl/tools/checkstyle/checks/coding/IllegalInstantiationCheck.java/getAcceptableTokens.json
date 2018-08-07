@@ -1,0 +1,107 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IllegalInstantiationCheck.java",
+  "functionName": "getAcceptableTokens",
+  "functionId": "getAcceptableTokens",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java",
+  "functionStartLine": 99,
+  "functionEndLine": 106,
+  "changeHistory": [
+    "69e5f9319c141284382018fd11f0c2f2a8f68b9a",
+    "07ffe4625fe9df98233c9e72f4e7948c55b454a1",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "315033ff5647ef9896130573d9212fee6fe141db",
+    "9920857810ecc9efdbca19e2749b75abc0cbbf14",
+    "7feaf606e8826f4a857ce10a044f2c464164ea8f"
+  ],
+  "changeHistoryShort": {
+    "69e5f9319c141284382018fd11f0c2f2a8f68b9a": "Ybodychange",
+    "07ffe4625fe9df98233c9e72f4e7948c55b454a1": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "315033ff5647ef9896130573d9212fee6fe141db": "Ybodychange",
+    "9920857810ecc9efdbca19e2749b75abc0cbbf14": "Yfilerename",
+    "7feaf606e8826f4a857ce10a044f2c464164ea8f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "69e5f9319c141284382018fd11f0c2f2a8f68b9a": {
+      "type": "Ybodychange",
+      "commitMessage": "Corrected acceptable tokens for IllegalInstantiationCheck, issue #655\n",
+      "commitDate": 1440791300000,
+      "commitName": "69e5f9319c141284382018fd11f0c2f2a8f68b9a",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1440740265000,
+      "commitNameOld": "46378dadb508320f14737a44c75a832dc5c8120c",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 0.59,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,8 @@\n     public int[] getAcceptableTokens() {\n-        // Return an empty array to not allow user to change configuration.\n-        return ArrayUtils.EMPTY_INT_ARRAY;\n+        return new int[] {\n+            TokenTypes.IMPORT,\n+            TokenTypes.LITERAL_NEW,\n+            TokenTypes.PACKAGE_DEF,\n+            TokenTypes.CLASS_DEF,\n+        };\n     }\n\\ No newline at end of file\n"
+    },
+    "07ffe4625fe9df98233c9e72f4e7948c55b454a1": {
+      "type": "Ybodychange",
+      "commitMessage": "Use constants for arrays initialized with zero length. #1555\n\nFixes `ZeroLengthArrayInitialization` inspection violation\n\nDescription:\n\u003eReports on allocations of arrays with known lengths of zero. Since array lengths in Java are non-modifiable, it is almost always possible to share zero-length arrays, rather than repeatedly allocating new zero-length arrays. Such sharing may provide useful optimizations in program runtime or footprint. Note that this inspection does not report zero-length arrays allocated as static final fields, as it is assumed that those arrays are being used to implement array sharing.\n",
+      "commitDate": 1440498222000,
+      "commitName": "07ffe4625fe9df98233c9e72f4e7948c55b454a1",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440040911000,
+      "commitNameOld": "efa16e17bf710b7b24af828296c2337612912ba9",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 5.29,
+      "commitsBetweenForRepo": 72,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n     public int[] getAcceptableTokens() {\n         // Return an empty array to not allow user to change configuration.\n-        return new int[] {};\n+        return ArrayUtils.EMPTY_INT_ARRAY;\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "315033ff5647ef9896130573d9212fee6fe141db": {
+      "type": "Ybodychange",
+      "commitMessage": "Get rid of needless javadoc.\n",
+      "commitDate": 1200352313000,
+      "commitName": "315033ff5647ef9896130573d9212fee6fe141db",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200296548000,
+      "commitNameOld": "fd90bd5aa5cd623b08a2e44ef05e8fac8045d333",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.65,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,5 @@\n     public int[] getAcceptableTokens()\n     {\n+        // Return an empty array to not allow user to change configuration.\n         return new int[] {};\n     }\n\\ No newline at end of file\n"
+    },
+    "9920857810ecc9efdbca19e2749b75abc0cbbf14": {
+      "type": "Yfilerename",
+      "commitMessage": "Refactored the Coding checks\n",
+      "commitDate": 1055680780000,
+      "commitName": "9920857810ecc9efdbca19e2749b75abc0cbbf14",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1055612861000,
+      "commitNameOld": "e464c231eccec72f964131d9aeb5e49982c4b3bb",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 0.79,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "7feaf606e8826f4a857ce10a044f2c464164ea8f": {
+      "type": "Yintroduced",
+      "commitMessage": "Prevent user from changing tokens in the configuration.\n",
+      "commitDate": 1040291196000,
+      "commitName": "7feaf606e8826f4a857ce10a044f2c464164ea8f",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

@@ -1,0 +1,175 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/BooleanExpressionComplexityCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/BooleanExpressionComplexityCheck.java
+index dddce25c2..756874a0c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/BooleanExpressionComplexityCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/BooleanExpressionComplexityCheck.java
+@@ -50,108 +50,100 @@ public final class BooleanExpressionComplexityCheck extends AbstractCheck {
+ 
+     /** Stack of contexts. */
+     private final Deque<Context> contextStack = new ArrayDeque<>();
+     /** Maximum allowed complexity. */
+     private int max;
+     /** Current context. */
+     private Context context = new Context(false);
+ 
+     /** Creates new instance of the check. */
+     public BooleanExpressionComplexityCheck() {
+         max = DEFAULT_MAX;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.EXPR,
+             TokenTypes.LAND,
+             TokenTypes.BAND,
+             TokenTypes.LOR,
+             TokenTypes.BOR,
+             TokenTypes.BXOR,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.EXPR,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.EXPR,
+             TokenTypes.LAND,
+             TokenTypes.BAND,
+             TokenTypes.LOR,
+             TokenTypes.BOR,
+             TokenTypes.BXOR,
+         };
+     }
+ 
+-    /**
+-     * Getter for maximum allowed complexity.
+-     * @return value of maximum allowed complexity.
+-     */
+-    public int getMax() {
+-        return max;
+-    }
+-
+     /**
+      * Setter for maximum allowed complexity.
+      * @param max new maximum allowed complexity.
+      */
+     public void setMax(int max) {
+         this.max = max;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+                 visitMethodDef(ast);
+                 break;
+             case TokenTypes.EXPR:
+                 visitExpr();
+                 break;
+             case TokenTypes.BOR:
+                 if (!isPipeOperator(ast) && !isPassedInParameter(ast)) {
+                     context.visitBooleanOperator();
+                 }
+                 break;
+             case TokenTypes.BAND:
+             case TokenTypes.BXOR:
+                 if (!isPassedInParameter(ast)) {
+                     context.visitBooleanOperator();
+                 }
+                 break;
+             case TokenTypes.LAND:
+             case TokenTypes.LOR:
+                 context.visitBooleanOperator();
+                 break;
+             default:
+                 throw new IllegalArgumentException("Unknown type: " + ast);
+         }
+     }
+ 
+     /**
+      * Checks if logical operator is part of constructor or method call.
+      * @param logicalOperator logical operator
+      * @return true if logical operator is part of constructor or method call
+      */
+     private static boolean isPassedInParameter(DetailAST logicalOperator) {
+         return logicalOperator.getParent().getType() == TokenTypes.EXPR
+             && logicalOperator.getParent().getParent().getType() == TokenTypes.ELIST;
+     }
+ 
+     /**
+      * Checks if {@link TokenTypes#BOR binary OR} is applied to exceptions
+@@ -205,59 +197,59 @@ public final class BooleanExpressionComplexityCheck extends AbstractCheck {
+      * Restores previous context.
+      * @param ast expression we leave.
+      */
+     private void leaveExpr(DetailAST ast) {
+         context.checkCount(ast);
+         context = contextStack.pop();
+     }
+ 
+     /**
+      * Represents context (method/expression) in which we check complexity.
+      *
+      * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+      * @author o_sukhodolsky
+      */
+     private class Context {
+         /**
+          * Should we perform check in current context or not.
+          * Usually false if we are inside equals() method.
+          */
+         private final boolean checking;
+         /** Count of boolean operators. */
+         private int count;
+ 
+         /**
+          * Creates new instance.
+          * @param checking should we check in current context or not.
+          */
+         Context(boolean checking) {
+             this.checking = checking;
+             count = 0;
+         }
+ 
+         /**
+          * Getter for checking property.
+          * @return should we check in current context or not.
+          */
+         public boolean isChecking() {
+             return checking;
+         }
+ 
+         /** Increases operator counter. */
+         public void visitBooleanOperator() {
+             ++count;
+         }
+ 
+         /**
+          * Checks if we violates maximum allowed complexity.
+          * @param ast a node we check now.
+          */
+         public void checkCount(DetailAST ast) {
+-            if (checking && count > getMax()) {
++            if (checking && count > max) {
+                 final DetailAST parentAST = ast.getParent();
+ 
+                 log(parentAST.getLineNo(), parentAST.getColumnNo(),
+-                    MSG_KEY, count, getMax());
++                    MSG_KEY, count, max);
+             }
+         }
+     }
+ }

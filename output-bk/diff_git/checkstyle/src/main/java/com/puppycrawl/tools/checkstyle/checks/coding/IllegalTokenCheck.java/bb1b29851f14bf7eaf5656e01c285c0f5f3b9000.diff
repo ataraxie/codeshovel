@@ -1,0 +1,69 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenCheck.java
+index 3d867a072..d4679d52a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTokenCheck.java
+@@ -36,60 +36,60 @@ import java.util.Set;
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="IllegalToken"/&gt;
+  * </pre>
+  * <p> An example of how to configure the check to forbid
+  * a {@link TokenTypes#LITERAL_NATIVE LITERAL_NATIVE} token is:
+  * </p>
+  * <pre>
+  * &lt;module name="IllegalToken"&gt;
+  *     &lt;property name="tokens" value="LITERAL_NATIVE"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+  * @author Rick Giles
+  */
+ public class IllegalTokenCheck
+     extends Check
+ {
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.POST_INC,
+             TokenTypes.POST_DEC,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         // Any tokens set by property 'tokens' are acceptable
+         int[] tokensToCopy = getDefaultTokens();
+         final Set<String> tokenNames = getTokenNames();
+         if (!tokenNames.isEmpty()) {
+             tokensToCopy = new int[tokenNames.size()];
+             int i = 0;
+             for (String name : tokenNames) {
+                 tokensToCopy[i] = TokenTypes.getTokenId(name);
+                 i++;
+             }
+         }
+         final int[] copy = new int[tokensToCopy.length];
+         System.arraycopy(tokensToCopy, 0, copy, 0, tokensToCopy.length);
+         return copy;
+     }
+ 
+     @Override
+-    public void visitToken(DetailAST aAST)
++    public void visitToken(DetailAST ast)
+     {
+         log(
+-            aAST.getLineNo(),
+-            aAST.getColumnNo(),
++            ast.getLineNo(),
++            ast.getColumnNo(),
+             "illegal.token",
+-            aAST.getText());
++            ast.getText());
+     }
+ 
+ }

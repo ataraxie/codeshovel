@@ -1,0 +1,94 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java
+index 186ed7fb0..0d7388ea3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java
+@@ -97,85 +97,83 @@ public class HandlerFactory {
+      * Returns true if this type (form TokenTypes) is handled.
+      *
+      * @param type type from TokenTypes
+      * @return true if handler is registered, false otherwise
+      */
+     public boolean isHandledType(int type) {
+         final Set<Integer> typeSet = typeHandlers.keySet();
+         return typeSet.contains(type);
+     }
+ 
+     /**
+      * Gets list of registered handler types.
+      *
+      * @return int[] of TokenType types
+      */
+     public int[] getHandledTypes() {
+         final Set<Integer> typeSet = typeHandlers.keySet();
+         final int[] types = new int[typeSet.size()];
+         int index = 0;
+         for (final Integer val : typeSet) {
+             types[index++] = val;
+         }
+ 
+         return types;
+     }
+ 
+     /**
+      * Get the handler for an AST.
+      *
+      * @param indentCheck   the indentation check
+      * @param ast           ast to handle
+      * @param parent        the handler parent of this AST
+      *
+      * @return the ExpressionHandler for ast
+      */
+     public AbstractExpressionHandler getHandler(IndentationCheck indentCheck,
+         DetailAST ast, AbstractExpressionHandler parent) {
+         final AbstractExpressionHandler handler =
+             createdHandlers.get(ast);
+         if (handler != null) {
+             return handler;
+         }
+ 
+         if (ast.getType() == TokenTypes.METHOD_CALL) {
+             return createMethodCallHandler(indentCheck, ast, parent);
+         }
+ 
+         AbstractExpressionHandler expHandler = null;
+         final Constructor<?> handlerCtor =
+             typeHandlers.get(ast.getType());
+-        if (handlerCtor != null) {
+-            expHandler = (AbstractExpressionHandler) Utils.invokeConstructor(
+-                    handlerCtor, indentCheck, ast, parent);
+-        }
++        expHandler = (AbstractExpressionHandler) Utils.invokeConstructor(
++                handlerCtor, indentCheck, ast, parent);
+         return expHandler;
+     }
+ 
+     /**
+      * Create new instance of handler for METHOD_CALL.
+      *
+      * @param indentCheck   the indentation check
+      * @param ast           ast to handle
+      * @param parent        the handler parent of this AST
+      *
+      * @return new instance.
+      */
+     AbstractExpressionHandler createMethodCallHandler(IndentationCheck indentCheck,
+         DetailAST ast, AbstractExpressionHandler parent) {
+         AbstractExpressionHandler theParent = parent;
+         DetailAST astNode = ast.getFirstChild();
+-        while (astNode != null && astNode.getType() == TokenTypes.DOT) {
++        while (astNode.getType() == TokenTypes.DOT) {
+             astNode = astNode.getFirstChild();
+         }
+-        if (astNode != null && isHandledType(astNode.getType())) {
++        if (isHandledType(astNode.getType())) {
+             theParent = getHandler(indentCheck, astNode, theParent);
+             createdHandlers.put(astNode, theParent);
+         }
+         return new MethodCallHandler(indentCheck, ast, theParent);
+     }
+ 
+     /** Clears cache of created handlers. */
+     void clearCreatedHandlers() {
+         createdHandlers.clear();
+     }
+ }

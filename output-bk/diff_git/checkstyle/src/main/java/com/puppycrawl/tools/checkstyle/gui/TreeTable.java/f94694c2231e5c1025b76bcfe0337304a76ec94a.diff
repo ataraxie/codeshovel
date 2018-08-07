@@ -1,0 +1,72 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/TreeTable.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/TreeTable.java
+index 971c521d5..a35ea9277 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/TreeTable.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/TreeTable.java
+@@ -237,66 +237,66 @@ public final class TreeTable extends JTable {
+      */
+     public void setLinePositionMap(ImmutableList<Integer> linePositionMap) {
+         this.linePositionMap = linePositionMap;
+     }
+ 
+     /**
+      * TreeTableCellEditor implementation. Component returned is the
+      * JTree.
+      */
+     private class TreeTableCellEditor extends BaseCellEditor implements
+             TableCellEditor {
+ 
+         @Override
+         public Component getTableCellEditorComponent(JTable table,
+                 Object value,
+                 boolean isSelected,
+                 int row, int column) {
+             return tree;
+         }
+ 
+         /**
+          * Overridden to return false, and if the event is a mouse event
+          * it is forwarded to the tree.
+          *
+          * <p>The behavior for this is debatable, and should really be offered
+          * as a property. By returning false, all keyboard actions are
+          * implemented in terms of the table. By returning true, the
+          * tree would get a chance to do something with the keyboard
+          * events. For the most part this is ok. But for certain keys,
+          * such as left/right, the tree will expand/collapse where as
+          * the table focus should really move to a different column. Page
+          * up/down should also be implemented in terms of the table.
+          * By returning false this also has the added benefit that clicking
+          * outside of the bounds of the tree node, but still in the tree
+          * column will select the row, whereas if this returned true
+          * that wouldn't be the case.
+          *
+          * <p>By returning false we are also enforcing the policy that
+          * the tree will never be editable (at least by a key sequence).
+          *
+          * @see TableCellEditor
+          */
+         @Override
+         public boolean isCellEditable(EventObject event) {
+             if (event instanceof MouseEvent) {
+                 for (int counter = getColumnCount() - 1; counter >= 0;
+                      counter--) {
+                     if (getColumnClass(counter) == ParseTreeTableModel.class) {
+                         final MouseEvent mouseEvent = (MouseEvent) event;
+                         final MouseEvent newMouseEvent = new MouseEvent(tree, mouseEvent.getID(),
+-                                mouseEvent.getWhen(), mouseEvent.getModifiers(),
++                                mouseEvent.getWhen(), mouseEvent.getModifiersEx(),
+                                 mouseEvent.getX() - getCellRect(0, counter, true).x,
+                                 mouseEvent.getY(), mouseEvent.getClickCount(),
+                                 mouseEvent.isPopupTrigger());
+                         tree.dispatchEvent(newMouseEvent);
+                         break;
+                     }
+                 }
+             }
+ 
+             return false;
+         }
+ 
+     }
+ 
+ }

@@ -1,0 +1,138 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Check.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Check.java
+index 7b5e54a33..8fcbbd6d7 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Check.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Check.java
+@@ -1,116 +1,130 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2002  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.api;
+ 
+ import java.util.Map;
+ 
+ /**
+  * The base class for checks.
+  *
+  * @author <a href="mailto:checkstyle@puppycrawl.com">Oliver Burn</a>
+  * @version 1.0
+  */
+ public abstract class Check
+ {
+     /** name to store lines under */
+     private static final String LINES_ATTRIBUTE = "lines";
+     /** name to store filename under */
+     private static final String FILENAME_ATTRIBUTE = "filename";
+ 
+     /** the global context for the check */
+     private Map mGlobalContext;
++    /**
++     * the object for collecting messages. decided to not put in the global
++     * context for performance and ease of use.
++     */
++    private LocalizedMessages mMessages;
+     /** the context for the check across an AST */
+     private Map mTreeContext;
+     /** the context for a check across a token. */
+     private Map mTokenContext;
+ 
+     /**
+      * Returns the default token a check is interested in. Only used if the
+      * configuration for a check does not define the tokens.
+      * @return the default tokens
+      */
+     public abstract int[] getDefaultTokens();
+ 
+     /**
+      * Return the global context object for check. This context is valid for
+      * the lifetime of the check.
+      * @return the context object
+      */
+     public Map getGlobalContext()
+     {
+         return mGlobalContext;
+     }
+ 
+     /**
+      * Set the global context for the check.
+-     * @param aGlobalContext the global context
++     * @param aContext the context
++     */
++    public void setGlobalContext(Map aContext)
++    {
++        mGlobalContext = aContext;
++    }
++
++    /**
++     * Set the global object used to collect messages.
++     * @param aMessages the messages to log with
+      */
+-    public void setGlobalContext(Map aGlobalContext)
++    public void setMessages(LocalizedMessages aMessages)
+     {
+-        mGlobalContext = aGlobalContext;
++        mMessages = aMessages;
+     }
+ 
+     /**
+      * Return the tree context object for check. This context is valid for
+      * the lifetime of a abstract syntax tree.
+      * @return the context object
+      */
+     public Map getTreeContext()
+     {
+         return mTreeContext;
+     }
+ 
+     /**
+      * Set the tree context for the check.
+      * @param aContext the context
+      */
+     public void setTreeContext(Map aContext)
+     {
+         mTreeContext = aContext;
+     }
+ 
+     /**
+      * Return the tree context object for check. This context is valid for
+      * the lifetime of a abstract syntax tree.
+      * @return the context object
+      */
+     public Map getTokenContext()
+     {
+         return mTokenContext;
+     }
+ 
+     /**
+      * Set the token context for the check.
+      * @param aContext the global context
+      */
+     public void setTokenContext(Map aContext)
+     {
+         mTokenContext = aContext;
+     }
+ 
+     /**
+      * Initialse the check. This is the time to verify that the check has
+      * everything required to perform it job.
+      */
+     public void init()
+     {
+ 
+     }
+ 
+     /**

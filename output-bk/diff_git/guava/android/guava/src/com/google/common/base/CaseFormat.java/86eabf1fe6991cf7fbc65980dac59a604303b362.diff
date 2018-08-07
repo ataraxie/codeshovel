@@ -1,0 +1,61 @@
+diff --git a/android/guava/src/com/google/common/base/CaseFormat.java b/android/guava/src/com/google/common/base/CaseFormat.java
+index a9c110e5d..55acb1c98 100644
+--- a/android/guava/src/com/google/common/base/CaseFormat.java
++++ b/android/guava/src/com/google/common/base/CaseFormat.java
+@@ -155,55 +155,55 @@ public enum CaseFormat {
+   private static final class StringConverter extends Converter<String, String>
+       implements Serializable {
+ 
+     private final CaseFormat sourceFormat;
+     private final CaseFormat targetFormat;
+ 
+     StringConverter(CaseFormat sourceFormat, CaseFormat targetFormat) {
+       this.sourceFormat = checkNotNull(sourceFormat);
+       this.targetFormat = checkNotNull(targetFormat);
+     }
+ 
+     @Override
+     protected String doForward(String s) {
+       return sourceFormat.to(targetFormat, s);
+     }
+ 
+     @Override
+     protected String doBackward(String s) {
+       return targetFormat.to(sourceFormat, s);
+     }
+ 
+     @Override
+     public boolean equals(@NullableDecl Object object) {
+       if (object instanceof StringConverter) {
+         StringConverter that = (StringConverter) object;
+         return sourceFormat.equals(that.sourceFormat) && targetFormat.equals(that.targetFormat);
+       }
+       return false;
+     }
+ 
+     @Override
+     public int hashCode() {
+       return sourceFormat.hashCode() ^ targetFormat.hashCode();
+     }
+ 
+     @Override
+     public String toString() {
+       return sourceFormat + ".converterTo(" + targetFormat + ")";
+     }
+ 
+     private static final long serialVersionUID = 0L;
+   }
+ 
+   abstract String normalizeWord(String word);
+ 
+   private String normalizeFirstWord(String word) {
+     return (this == LOWER_CAMEL) ? Ascii.toLowerCase(word) : normalizeWord(word);
+   }
+ 
+   private static String firstCharOnlyToUpper(String word) {
+-    return (word.isEmpty())
++    return word.isEmpty()
+         ? word
+         : Ascii.toUpperCase(word.charAt(0)) + Ascii.toLowerCase(word.substring(1));
+   }
+ }

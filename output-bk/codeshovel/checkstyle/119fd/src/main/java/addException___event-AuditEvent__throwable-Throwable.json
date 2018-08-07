@@ -1,0 +1,132 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "addException___event-AuditEvent__throwable-Throwable",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 61,
+  "changeHistory": [
+    "290b5b083e2d00795b08446e6d0dd14f71df9bfd",
+    "ce196814d857a4244a80c51d5151cc35e90b6749",
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78",
+    "89005ddf6d5d8b494e4451d16df9fd8996c735a9",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "c1a79b112296dac813d0b4326043590f2eb2c378",
+    "54a09706ec1db32435b09e6b6910813325558f8d"
+  ],
+  "changeHistoryShort": {
+    "290b5b083e2d00795b08446e6d0dd14f71df9bfd": "Ybodychange",
+    "ce196814d857a4244a80c51d5151cc35e90b6749": "Yparameterchange",
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78": "Ybodychange",
+    "89005ddf6d5d8b494e4451d16df9fd8996c735a9": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "c1a79b112296dac813d0b4326043590f2eb2c378": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "54a09706ec1db32435b09e6b6910813325558f8d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "290b5b083e2d00795b08446e6d0dd14f71df9bfd": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4927: Use atomic counter to allow multi-thread access\n",
+      "commitDate": 1502976733000,
+      "commitName": "290b5b083e2d00795b08446e6d0dd14f71df9bfd",
+      "commitAuthor": "Andrew Kuchev",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 201.96,
+      "commitsBetweenForRepo": 792,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n     public void addException(AuditEvent event, Throwable throwable) {\n         if (level \u003d\u003d SeverityLevel.ERROR) {\n-            count++;\n+            count.incrementAndGet();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "ce196814d857a4244a80c51d5151cc35e90b6749": {
+      "type": "Yparameterchange",
+      "commitMessage": "Issue #2080: Fix typos in code\n",
+      "commitDate": 1445038509000,
+      "commitName": "ce196814d857a4244a80c51d5151cc35e90b6749",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440499762000,
+      "commitNameOld": "2071f9b5421f853e8515f309b2874399c895c43a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 52.53,
+      "commitsBetweenForRepo": 535,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    public void addException(AuditEvent evt, Throwable throwable) {\n+    public void addException(AuditEvent event, Throwable throwable) {\n         if (level \u003d\u003d SeverityLevel.ERROR) {\n             count++;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78": {
+      "type": "Ybodychange",
+      "commitMessage": "Move constants to left side of comparison. #1555\n\nFixes `ConstantOnLHSOfComparison` inspection violations.\n\nDescription:\n\u003eReports on comparison operations with constant values on their left-hand side. Some coding conventions specify that constants should be on the right-hand side of comparisons.\n",
+      "commitDate": 1439084780000,
+      "commitName": "4d6e2376db89b69167de867bfc28f8d8624a6b78",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1438566537000,
+      "commitNameOld": "30438ebdf9fd28a94613e2aaecde776d906349a7",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 6.0,
+      "commitsBetweenForRepo": 62,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n     public void addException(AuditEvent evt, Throwable throwable) {\n-        if (SeverityLevel.ERROR \u003d\u003d level) {\n+        if (level \u003d\u003d SeverityLevel.ERROR) {\n             count++;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "89005ddf6d5d8b494e4451d16df9fd8996c735a9": {
+      "type": "Ybodychange",
+      "commitMessage": "Replace calls to equals() on enums with identity comparison\n\nThis replacement is safe because two enum constants are equal only when they have the same identity.\n",
+      "commitDate": 1425998782000,
+      "commitName": "89005ddf6d5d8b494e4451d16df9fd8996c735a9",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 19.73,
+      "commitsBetweenForRepo": 102,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     public void addException(AuditEvent evt, Throwable throwable)\n     {\n-        if (SeverityLevel.ERROR.equals(level)) {\n+        if (SeverityLevel.ERROR \u003d\u003d level) {\n             count++;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "c1a79b112296dac813d0b4326043590f2eb2c378": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Added attributes maxErrors and maxWarnings to Ant task to allow finetuning of failure behaviour (request 783538)\nRefactored Checker to use new SeverityLevelCounter class instead of implementing the same funtionality in private inner class\n",
+      "commitDate": 1081767267000,
+      "commitName": "c1a79b112296dac813d0b4326043590f2eb2c378",
+      "commitAuthor": "Lars Kühne",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "54a09706ec1db32435b09e6b6910813325558f8d": {
+      "type": "Yintroduced",
+      "commitMessage": "Introduced MessageDispatcher interface so\nFileSetChecks do not need to be tightly coupled\nwith Checker to report errors.\n\nFileSetCheck implementations report errors now.\n\nError counting in Checker is now done via an\nAuditListener, no need to bother about that in\neach individual FileSetCheck.\n",
+      "commitDate": 1037733445000,
+      "commitName": "54a09706ec1db32435b09e6b6910813325558f8d",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

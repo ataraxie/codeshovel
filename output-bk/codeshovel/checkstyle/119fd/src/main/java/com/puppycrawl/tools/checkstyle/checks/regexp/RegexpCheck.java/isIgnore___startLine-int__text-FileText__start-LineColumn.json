@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RegexpCheck.java",
+  "functionName": "isIgnore",
+  "functionId": "isIgnore___startLine-int__text-FileText__start-LineColumn",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/RegexpCheck.java",
+  "functionStartLine": 242,
+  "functionEndLine": 260,
+  "changeHistory": [
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2",
+    "2880edd6554400955fb950bf8127311c436d2a7a",
+    "842c152be6b0bbcb754a346a6ce4b59c47469c17"
+  ],
+  "changeHistoryShort": {
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2": "Ybodychange",
+    "2880edd6554400955fb950bf8127311c436d2a7a": "Ybodychange",
+    "842c152be6b0bbcb754a346a6ce4b59c47469c17": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #4328: moved variables inside if blocks to reduce execution time",
+      "commitDate": 1494119754000,
+      "commitName": "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 99.45,
+      "commitsBetweenForRepo": 383,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     private boolean isIgnore(int startLine, FileText text, LineColumn start) {\n         final LineColumn end;\n         if (matcher.end() \u003d\u003d 0) {\n             end \u003d text.lineColumn(0);\n         }\n         else {\n             end \u003d text.lineColumn(matcher.end() - 1);\n         }\n-        final int startColumn \u003d start.getColumn();\n-        final int endLine \u003d end.getLine();\n-        final int endColumn \u003d end.getColumn();\n         boolean ignore \u003d false;\n         if (ignoreComments) {\n             final FileContents theFileContents \u003d getFileContents();\n+            final int startColumn \u003d start.getColumn();\n+            final int endLine \u003d end.getLine();\n+            final int endColumn \u003d end.getColumn();\n             ignore \u003d theFileContents.hasIntersectionWithComment(startLine,\n                 startColumn, endLine, endColumn);\n         }\n         return ignore;\n     }\n\\ No newline at end of file\n"
+    },
+    "2880edd6554400955fb950bf8127311c436d2a7a": {
+      "type": "Ybodychange",
+      "commitMessage": "Decrease scope of variables. #1538\n",
+      "commitDate": 1438566538000,
+      "commitName": "2880edd6554400955fb950bf8127311c436d2a7a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1438566092000,
+      "commitNameOld": "fd794d428cc0854ddd4d416f0208d49f1ee9cbe1",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,22 +1,19 @@\n     private boolean isIgnore(int startLine, FileText text, LineColumn start) {\n-        int startColumn;\n-        boolean ignore \u003d false;\n-        int endLine;\n-        int endColumn;\n         final LineColumn end;\n         if (matcher.end() \u003d\u003d 0) {\n             end \u003d text.lineColumn(0);\n         }\n         else {\n             end \u003d text.lineColumn(matcher.end() - 1);\n         }\n-        startColumn \u003d start.getColumn();\n-        endLine \u003d end.getLine();\n-        endColumn \u003d end.getColumn();\n+        final int startColumn \u003d start.getColumn();\n+        final int endLine \u003d end.getLine();\n+        final int endColumn \u003d end.getColumn();\n+        boolean ignore \u003d false;\n         if (ignoreComments) {\n             final FileContents theFileContents \u003d getFileContents();\n             ignore \u003d theFileContents.hasIntersectionWithComment(startLine,\n                 startColumn, endLine, endColumn);\n         }\n         return ignore;\n     }\n\\ No newline at end of file\n"
+    },
+    "842c152be6b0bbcb754a346a6ce4b59c47469c17": {
+      "type": "Yintroduced",
+      "commitMessage": "RegexpCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344165000,
+      "commitName": "842c152be6b0bbcb754a346a6ce4b59c47469c17",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

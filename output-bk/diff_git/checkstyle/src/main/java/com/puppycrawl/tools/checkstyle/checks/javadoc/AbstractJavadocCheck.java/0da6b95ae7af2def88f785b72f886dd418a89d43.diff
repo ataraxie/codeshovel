@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+index 6e9257320..2d777abf4 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+@@ -484,101 +484,101 @@ public abstract class AbstractJavadocCheck extends Check {
+ 
+                 if (waitsFor) {
+                     leaveJavadocToken(curNode);
+                 }
+ 
+                 toVisit = JavadocUtils.getNextSibling(curNode);
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+     }
+ 
+     /**
+      * Custom error listener for JavadocParser that prints user readable errors.
+      */
+     static class DescriptiveErrorListener extends BaseErrorListener {
+         /**
+          * Message key of error message. Missed close HTML tag breaks structure
+          * of parse tree, so parser stops parsing and generates such error
+          * message. This case is special because parser prints error like
+          * {@code "no viable alternative at input 'b \n *\n'"} and it is not
+          * clear that error is about missed close HTML tag.
+          */
+         static final String JAVADOC_MISSED_HTML_CLOSE = "javadoc.missed.html.close";
+ 
+         /**
+          * Message key of error message.
+          */
+         static final String JAVADOC_WRONG_SINGLETON_TAG =
+             "javadoc.wrong.singleton.html.tag";
+ 
+         /**
+          * Parse error while rule recognition.
+          */
+         private static final String JAVADOC_PARSE_RULE_ERROR = "javadoc.parse.rule.error";
+ 
+         /**
+          * Offset is line number of beginning of the Javadoc comment. Log
+          * messages should have line number in scope of file, not in scope of
+          * Javadoc comment.
+          */
+         private int offset;
+ 
+         /**
+          * Error message that appeared while parsing.
+          */
+         private ParseErrorMessage errorMessage;
+ 
+-        public ParseErrorMessage getErrorMessage() {
++        private ParseErrorMessage getErrorMessage() {
+             return errorMessage;
+         }
+ 
+         /**
+          * Sets offset. Offset is line number of beginning of the Javadoc
+          * comment. Log messages should have line number in scope of file, not
+          * in scope of Javadoc comment.
+          * @param offset
+          *        offset line number
+          */
+         public void setOffset(int offset) {
+             this.offset = offset;
+         }
+ 
+         /**
+          * Logs parser errors in Checkstyle manner. Parser can generate error
+          * messages. There is special error that parser can generate. It is
+          * missed close HTML tag. This case is special because parser prints
+          * error like {@code "no viable alternative at input 'b \n *\n'"} and it
+          * is not clear that error is about missed close HTML tag. Other error
+          * messages are not special and logged simply as "Parse Error...".
+          * <p>
+          * {@inheritDoc}
+          */
+         @Override
+         public void syntaxError(
+                 Recognizer<?, ?> recognizer, Object offendingSymbol,
+                 int line, int charPositionInLine,
+                 String msg, RecognitionException ex) {
+             final int lineNumber = offset + line;
+             final Token token = (Token) offendingSymbol;
+ 
+             if (JAVADOC_MISSED_HTML_CLOSE.equals(msg)) {
+                 errorMessage = new ParseErrorMessage(lineNumber,
+                         JAVADOC_MISSED_HTML_CLOSE, charPositionInLine, token.getText());
+ 
+                 throw new ParseCancellationException();
+             }
+             else if (JAVADOC_WRONG_SINGLETON_TAG.equals(msg)) {
+                 errorMessage = new ParseErrorMessage(lineNumber,
+                         JAVADOC_WRONG_SINGLETON_TAG, charPositionInLine, token.getText());
+ 
+                 throw new ParseCancellationException();
+             }
+             else {
+                 final int ruleIndex = ex.getCtx().getRuleIndex();
+                 final String ruleName = recognizer.getRuleNames()[ruleIndex];
+                 final String upperCaseRuleName = CaseFormat.UPPER_CAMEL.to(
+                         CaseFormat.UPPER_UNDERSCORE, ruleName);
+ 

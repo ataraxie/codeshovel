@@ -1,0 +1,333 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java
+index 7d750a11f..380dc565a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java
+@@ -1,210 +1,250 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2014  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.coding;
+ 
+ import com.google.common.collect.Sets;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.AbstractFormatCheck;
+ import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
++
++import java.util.ArrayList;
++import java.util.List;
+ import java.util.Set;
+ 
+ /**
+  * <p>
+  * Checks that particular class are never used as types in variable
+  * declarations, return values or parameters. Includes
+  * a pattern check that by default disallows abstract classes.
+  * </p>
+  * <p>
+  * Rationale:
+  * Helps reduce coupling on concrete classes. In addition abstract
+  * classes should be thought of a convenience base class
+  * implementations of interfaces and as such are not types themselves.
+  * </p>
+  * Check has following properties:
+  * <p>
+  * <b>format</b> - Pattern for illegal class names.
+  * </p>
+  * <p>
+  * <b>legalAbstractClassNames</b> - Abstract classes that may be used as types.
+  * </p>
+  * <p>
+  * <b>illegalClassNames</b> - Classes that should not be used as types in variable
+    declarations, return values or parameters.
+  * It is possible to set illegal class names via short or
+  * <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-6.html#jls-6.7">
+  *  canonical</a> name.
+  *  Specifying illegal type invokes analyzing imports and Check puts violations at
+  *   corresponding declarations
+  *  (of variables, methods or parameters). This helps to avoid ambiguous cases, e.g.:
+  * <p>
+  * <code>java.awt.List</code> was set as illegal class name, then, code like:
+  * <p>
+  * <code>
+  * import java.util.List;<br>
+  * ...<br>
+  * List list; //No violation here
+  * </code>
+  * </p>
+  * will be ok.
+  * </p>
+  * <p>
+- * <b>ignoredMethodNames</b> - Methods that should not be checked..
++ * <b>ignoredMethodNames</b> - Methods that should not be checked.
++ * </p>
++ * <p>
++ * <b>memberModifiers</b> - To check only methods and fields with only specified modifiers.
++ * </p>
++ * <p>
++ * In most cases it's justified to put following classes to <b>illegalClassNames</b>:
++ * <ul>
++ * <li>GregorianCalendar</li>
++ * <li>Hashtable</li>
++ * <li>ArrayList</li>
++ * <li>LinkedList</li>
++ * <li>Vector</li>
++ * </ul>
++ * as methods that are differ from interface methods are rear used, so in most cases user will
++ *  benefit from checking for them.
+  * </p>
+  *
+  * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+  * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+  */
+ public final class IllegalTypeCheck extends AbstractFormatCheck
+ {
+     /** Default value of pattern for illegal class name. */
+     private static final String DEFAULT_FORMAT = "^(.*[\\.])?Abstract.*$";
+     /** Abstract classes legal by default. */
+     private static final String[] DEFAULT_LEGAL_ABSTRACT_NAMES = {};
+     /** Types illegal by default. */
+     private static final String[] DEFAULT_ILLEGAL_TYPES = {
+-        "GregorianCalendar",
+-        "Hashtable",
+         "HashSet",
+         "HashMap",
+-        "ArrayList",
+-        "LinkedList",
+         "LinkedHashMap",
+         "LinkedHashSet",
+         "TreeSet",
+         "TreeMap",
+-        "Vector",
+-        "java.util.GregorianCalendar",
+-        "java.util.Hashtable",
+         "java.util.HashSet",
+         "java.util.HashMap",
+-        "java.util.ArrayList",
+-        "java.util.LinkedList",
+         "java.util.LinkedHashMap",
+         "java.util.LinkedHashSet",
+         "java.util.TreeSet",
+         "java.util.TreeMap",
+-        "java.util.Vector",
+     };
+ 
+     /** Default ignored method names. */
+     private static final String[] DEFAULT_IGNORED_METHOD_NAMES = {
+         "getInitialContext",
+         "getEnvironment",
+     };
+ 
+     /** illegal classes. */
+     private final Set<String> illegalClassNames = Sets.newHashSet();
+     /** legal abstract classes. */
+     private final Set<String> legalAbstractClassNames = Sets.newHashSet();
+     /** methods which should be ignored. */
+     private final Set<String> ignoredMethodNames = Sets.newHashSet();
++    /** check methods and fields with only corresponding modifiers. */
++    private List<Integer> memberModifiers;
+ 
+     /** Creates new instance of the check. */
+     public IllegalTypeCheck()
+     {
+         super(DEFAULT_FORMAT);
+         setIllegalClassNames(DEFAULT_ILLEGAL_TYPES);
+         setLegalAbstractClassNames(DEFAULT_LEGAL_ABSTRACT_NAMES);
+         setIgnoredMethodNames(DEFAULT_IGNORED_METHOD_NAMES);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.IMPORT,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         switch (ast.getType()) {
+             case TokenTypes.METHOD_DEF:
+-                visitMethodDef(ast);
++                if (isVerifiable(ast)) {
++                    visitMethodDef(ast);
++                }
+                 break;
+             case TokenTypes.VARIABLE_DEF:
+-                visitVariableDef(ast);
++                if (isVerifiable(ast)) {
++                    visitVariableDef(ast);
++                }
+                 break;
+             case TokenTypes.PARAMETER_DEF:
+                 visitParameterDef(ast);
+                 break;
+             case TokenTypes.IMPORT:
+                 visitImport(ast);
+                 break;
+             default:
+                 throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
++    /**
++     * Checks if current method's return type or variable's type is verifiable
++     * according to <b>memberModifiers</b> option.
++     * @param methodOrVariableDef METHOD_DEF or VARIABLE_DEF ast node.
++     * @return true if member is verifiable according to <b>memberModifiers</b> option.
++     */
++    private boolean isVerifiable(DetailAST methodOrVariableDef)
++    {
++        boolean result = true;
++        if (memberModifiers != null) {
++            result = false;
++            final DetailAST modifiersAst = methodOrVariableDef.
++                    findFirstToken(TokenTypes.MODIFIERS);
++            if (modifiersAst.getFirstChild() != null) {
++                for (DetailAST modifier = modifiersAst.getFirstChild(); modifier != null;
++                         modifier = modifier.getNextSibling())
++                {
++                    if (memberModifiers.contains(modifier.getType())) {
++                        result = true;
++                    }
++                }
++            }
++        }
++        return result;
++    }
++
+     /**
+      * Checks return type of a given method.
+      * @param methodDef method for check.
+      */
+     private void visitMethodDef(DetailAST methodDef)
+     {
+         if (isCheckedMethod(methodDef)) {
+             checkClassName(methodDef);
+         }
+     }
+ 
+     /**
+      * Checks type of parameters.
+      * @param paradef parameter list for check.
+      */
+     private void visitParameterDef(DetailAST paradef)
+     {
+         final DetailAST grandParentAST = paradef.getParent().getParent();
+ 
+         if ((grandParentAST.getType() == TokenTypes.METHOD_DEF)
+             && isCheckedMethod(grandParentAST))
+         {
+             checkClassName(paradef);
+         }
+     }
+ 
+     /**
+      * Checks type of given variable.
+      * @param variableDef variable to check.
+      */
+     private void visitVariableDef(DetailAST variableDef)
+     {
+         checkClassName(variableDef);
+     }
+ 
+     /**
+      * Checks imported type (as static and star imports are not supported by Check,
+      *  only type is in the consideration).<br>
+      * If this type is illegal due to Check's options - puts violation on it.
+      * @param importAst {@link TokenTypes#IMPORT Import}
+      */
+     private void visitImport(DetailAST importAst)
+     {
+         if (!isStarImport(importAst)) {
+             final String canonicalName = getCanonicalName(importAst);
+             extendIllegalClassNamesWithShortName(canonicalName);
+         }
+     }
+ 
+     /**
+@@ -357,51 +397,64 @@ public final class IllegalTypeCheck extends AbstractFormatCheck
+      */
+     public String[] getIllegalClassNames()
+     {
+         return illegalClassNames.toArray(
+             new String[illegalClassNames.size()]);
+     }
+ 
+     /**
+      * Set the list of ignore method names.
+      * @param methodNames array of ignored method names
+      */
+     public void setIgnoredMethodNames(String[] methodNames)
+     {
+         ignoredMethodNames.clear();
+         for (String element : methodNames) {
+             ignoredMethodNames.add(element);
+         }
+     }
+ 
+     /**
+      * Get the list of ignored method names.
+      * @return array of ignored method names
+      */
+     public String[] getIgnoredMethodNames()
+     {
+         return ignoredMethodNames.toArray(
+             new String[ignoredMethodNames.size()]);
+     }
+ 
+     /**
+      * Set the list of legal abstract class names.
+      * @param classNames array of legal abstract class names
+      */
+     public void setLegalAbstractClassNames(String[] classNames)
+     {
+         legalAbstractClassNames.clear();
+         for (String element : classNames) {
+             legalAbstractClassNames.add(element);
+         }
+     }
+ 
+     /**
+      * Get the list of legal abstract class names.
+      * @return array of legal abstract class names
+      */
+     public String[] getLegalAbstractClassNames()
+     {
+         return legalAbstractClassNames.toArray(
+             new String[legalAbstractClassNames.size()]);
+     }
++
++    /**
++     * Set the list of member modifiers (of methods and fields) which should be checked.
++     * @param modifiers String contains modifiers.
++     */
++    public void setMemberModifiers(String modifiers)
++    {
++        final List<Integer> modifiersList = new ArrayList<Integer>(modifiers.length());
++        for (String modifier : modifiers.split(", ")) {
++            modifiersList.add(TokenTypes.getTokenId(modifier));
++        }
++        this.memberModifiers = modifiersList;
++    }
+ }

@@ -1,0 +1,70 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TrailingCommentCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TrailingCommentCheck.java
+index 549480979..f469e678c 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TrailingCommentCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TrailingCommentCheck.java
+@@ -102,64 +102,64 @@ public class TrailingCommentCheck extends AbstractFormatCheck
+ {
+     /** default format for allowed blank line. */
+     private static final String DEFAULT_FORMAT = "^[\\s\\}\\);]*$";
+     /**
+      * Creates new instance of the check.
+      * @throws ConversionException unable to parse DEFAULT_FORMAT.
+      */
+     public TrailingCommentCheck() throws ConversionException
+     {
+         super(DEFAULT_FORMAT);
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getDefaultTokens()
+     {
+         return new int[0];
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         throw new IllegalStateException("visitToken() shouldn't be called.");
+     }
+ 
+     /** {@inheritDoc} */
+     public void beginTree(DetailAST aRootAST)
+     {
+         final RE blankLinePattern = getRegexp();
+         final Map cppComments = getFileContents().getCppComments();
+         final Map cComments = getFileContents().getCComments();
+         final Set lines = new HashSet();
+         lines.addAll(cppComments.keySet());
+         lines.addAll(cComments.keySet());
+ 
+         final Iterator linesIter = lines.iterator();
+         while (linesIter.hasNext()) {
+             final Integer lineNo = (Integer) linesIter.next();
+ 
+             final String line = getLines()[lineNo.intValue() - 1];
+             String lineBefore = "";
+             if (cppComments.containsKey(lineNo)) {
+                 final TextBlock comment = (TextBlock) cppComments.get(lineNo);
+                 lineBefore = line.substring(0, comment.getStartColNo());
+             }
+             else if (cComments.containsKey(lineNo)) {
+                 final List commentList = (List) cComments.get(lineNo);
+                 final TextBlock comment =
+                     (TextBlock) commentList.get(commentList.size() - 1);
+                 lineBefore = line.substring(0, comment.getStartColNo());
+                 if (comment.getText().length == 1) {
+-                    String lineAfter =
++                    final String lineAfter =
+                         line.substring(comment.getEndColNo() + 1).trim();
+                     if (!"".equals(lineAfter)) {
+                         // do not check comment which doesn't end line
+                         continue;
+                     }
+                 }
+             }
+             if (!blankLinePattern.match(lineBefore)) {
+                 log(lineNo.intValue(), "trailing.comments");
+             }
+         }
+     }
+ }

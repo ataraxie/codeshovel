@@ -1,0 +1,101 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "OverloadMethodsDeclarationOrderCheck.java",
+  "functionName": "checkOverloadMethodsGrouping",
+  "functionId": "checkOverloadMethodsGrouping___objectBlock-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OverloadMethodsDeclarationOrderCheck.java",
+  "functionStartLine": 94,
+  "functionEndLine": 119,
+  "changeHistory": [
+    "31f6765fdcf2233ca6c53730c2fc196576557f66",
+    "27149f3504a2f350b74f456a9bffbae76a460060",
+    "ff5cbc39c4882b3a3dcdbedcad9393e170148725",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "3a51c61b4aa4b8feaa7eae8648a28d94d62bab0c",
+    "6cd89ebebaec931a33ffde42b295eb6a20dc07e1"
+  ],
+  "changeHistoryShort": {
+    "31f6765fdcf2233ca6c53730c2fc196576557f66": "Ybodychange",
+    "27149f3504a2f350b74f456a9bffbae76a460060": "Ybodychange",
+    "ff5cbc39c4882b3a3dcdbedcad9393e170148725": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "3a51c61b4aa4b8feaa7eae8648a28d94d62bab0c": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "6cd89ebebaec931a33ffde42b295eb6a20dc07e1": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "31f6765fdcf2233ca6c53730c2fc196576557f66": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2080: Fix typos in code\n\nFixes some `SpellCheckingInspection` inspection violations.\n\nDescription:\n\u003eSpellchecker inspection helps locate typos and misspelling in your code, comments and literals.\n",
+      "commitDate": 1441403297000,
+      "commitName": "31f6765fdcf2233ca6c53730c2fc196576557f66",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439782863000,
+      "commitNameOld": "d56a2a366c6f9e3e8639d492d548ae562b75dc81",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 18.76,
+      "commitsBetweenForRepo": 421,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,26 @@\n     private void checkOverloadMethodsGrouping(DetailAST objectBlock) {\n         final int allowedDistance \u003d 1;\n         DetailAST currentToken \u003d objectBlock.getFirstChild();\n         final Map\u003cString, Integer\u003e methodIndexMap \u003d new HashMap\u003c\u003e();\n         final Map\u003cString, Integer\u003e methodLineNumberMap \u003d new HashMap\u003c\u003e();\n         int currentIndex \u003d 0;\n         while (currentToken !\u003d null) {\n             if (currentToken.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n                 currentIndex++;\n                 final String methodName \u003d\n                         currentToken.findFirstToken(TokenTypes.IDENT).getText();\n                 if (methodIndexMap.containsKey(methodName)) {\n-                    final int priviousIndex \u003d methodIndexMap.get(methodName);\n-                    if (currentIndex - priviousIndex \u003e allowedDistance) {\n+                    final int previousIndex \u003d methodIndexMap.get(methodName);\n+                    if (currentIndex - previousIndex \u003e allowedDistance) {\n                         final int previousLineWithOverloadMethod \u003d\n                                 methodLineNumberMap.get(methodName);\n                         log(currentToken.getLineNo(), MSG_KEY,\n                                 previousLineWithOverloadMethod);\n                     }\n                 }\n                 methodIndexMap.put(methodName, currentIndex);\n                 methodLineNumberMap.put(methodName, currentToken.getLineNo());\n             }\n             currentToken \u003d currentToken.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "27149f3504a2f350b74f456a9bffbae76a460060": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactored UTs, coding package, issue #537\n",
+      "commitDate": 1424437367000,
+      "commitName": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.66,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,27 +1,27 @@\n     private void checkOverloadMethodsGrouping(DetailAST objectBlock)\n     {\n         final int allowedDistance \u003d 1;\n         DetailAST currentToken \u003d objectBlock.getFirstChild();\n         final Map\u003cString, Integer\u003e methodIndexMap \u003d new HashMap\u003c\u003e();\n         final Map\u003cString, Integer\u003e methodLineNumberMap \u003d new HashMap\u003c\u003e();\n         int currentIndex \u003d 0;\n         while (currentToken !\u003d null) {\n             if (currentToken.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n                 currentIndex++;\n                 final String methodName \u003d\n                         currentToken.findFirstToken(TokenTypes.IDENT).getText();\n                 if (methodIndexMap.containsKey(methodName)) {\n                     final int priviousIndex \u003d methodIndexMap.get(methodName);\n                     if (currentIndex - priviousIndex \u003e allowedDistance) {\n                         final int previousLineWithOverloadMethod \u003d\n                                 methodLineNumberMap.get(methodName);\n-                        log(currentToken.getLineNo(), \"overload.methods.declaration\",\n+                        log(currentToken.getLineNo(), MSG_KEY,\n                                 previousLineWithOverloadMethod);\n                     }\n                 }\n                 methodIndexMap.put(methodName, currentIndex);\n                 methodLineNumberMap.put(methodName, currentToken.getLineNo());\n             }\n             currentToken \u003d currentToken.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "ff5cbc39c4882b3a3dcdbedcad9393e170148725": {
+      "type": "Ybodychange",
+      "commitMessage": "Replace verbose type arguments with diamond type \u003c\u003e\n\nThis syntax is not supported under Java 6 or earlier, but Checkstyle codebase uses Java 7 already.\n",
+      "commitDate": 1424017336000,
+      "commitName": "ff5cbc39c4882b3a3dcdbedcad9393e170148725",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1423431987000,
+      "commitNameOld": "abe2b200312ee72aa552026b1a34e8bd72bfdc4e",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 6.77,
+      "commitsBetweenForRepo": 19,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,27 +1,27 @@\n     private void checkOverloadMethodsGrouping(DetailAST objectBlock)\n     {\n         final int allowedDistance \u003d 1;\n         DetailAST currentToken \u003d objectBlock.getFirstChild();\n-        final Map\u003cString, Integer\u003e methodIndexMap \u003d new HashMap\u003cString, Integer\u003e();\n-        final Map\u003cString, Integer\u003e methodLineNumberMap \u003d new HashMap\u003cString, Integer\u003e();\n+        final Map\u003cString, Integer\u003e methodIndexMap \u003d new HashMap\u003c\u003e();\n+        final Map\u003cString, Integer\u003e methodLineNumberMap \u003d new HashMap\u003c\u003e();\n         int currentIndex \u003d 0;\n         while (currentToken !\u003d null) {\n             if (currentToken.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n                 currentIndex++;\n                 final String methodName \u003d\n                         currentToken.findFirstToken(TokenTypes.IDENT).getText();\n                 if (methodIndexMap.containsKey(methodName)) {\n                     final int priviousIndex \u003d methodIndexMap.get(methodName);\n                     if (currentIndex - priviousIndex \u003e allowedDistance) {\n                         final int previousLineWithOverloadMethod \u003d\n                                 methodLineNumberMap.get(methodName);\n                         log(currentToken.getLineNo(), \"overload.methods.declaration\",\n                                 previousLineWithOverloadMethod);\n                     }\n                 }\n                 methodIndexMap.put(methodName, currentIndex);\n                 methodLineNumberMap.put(methodName, currentToken.getLineNo());\n             }\n             currentToken \u003d currentToken.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "3a51c61b4aa4b8feaa7eae8648a28d94d62bab0c": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "OverrideMethodsDeclarationOrderCheck #32\n",
+      "commitDate": 1407428583000,
+      "commitName": "3a51c61b4aa4b8feaa7eae8648a28d94d62bab0c",
+      "commitAuthor": "Max",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "6cd89ebebaec931a33ffde42b295eb6a20dc07e1": {
+      "type": "Yintroduced",
+      "commitMessage": "Update for existing Check: DeclarationOrder #4\n",
+      "commitDate": 1404189450000,
+      "commitName": "6cd89ebebaec931a33ffde42b295eb6a20dc07e1",
+      "commitAuthor": "Max"
+    }
+  }
+}

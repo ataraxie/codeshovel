@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CommonUtils.java",
+  "functionName": "getUriByFilename",
+  "functionId": "getUriByFilename___filename-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java",
+  "functionStartLine": 489,
+  "functionEndLine": 522,
+  "changeHistory": [
+    "f65b17cbc30795247fef3077cce16a8bb53e9ffc",
+    "526c9d0cbabd8ed8f3a26c45a7a6bc0a5c158c0c"
+  ],
+  "changeHistoryShort": {
+    "f65b17cbc30795247fef3077cce16a8bb53e9ffc": "Ybodychange",
+    "526c9d0cbabd8ed8f3a26c45a7a6bc0a5c158c0c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "f65b17cbc30795247fef3077cce16a8bb53e9ffc": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2616: Fix CatchParameterName check violations in Checkstyle code\n",
+      "commitDate": 1449184604000,
+      "commitName": "f65b17cbc30795247fef3077cce16a8bb53e9ffc",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1446178343000,
+      "commitNameOld": "f2c6263e151e8a7300755b36fbb41511c0a0cca1",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 34.79,
+      "commitsBetweenForRepo": 173,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,34 +1,34 @@\n     public static URI getUriByFilename(String filename) throws CheckstyleException {\n         // figure out if this is a File or a URL\n         URI uri;\n         try {\n             final URL url \u003d new URL(filename);\n             uri \u003d url.toURI();\n         }\n         catch (final URISyntaxException | MalformedURLException ignored) {\n             uri \u003d null;\n         }\n \n         if (uri \u003d\u003d null) {\n             final File file \u003d new File(filename);\n             if (file.exists()) {\n                 uri \u003d file.toURI();\n             }\n             else {\n                 // check to see if the file is in the classpath\n                 try {\n                     final URL configUrl \u003d CommonUtils.class\n                             .getResource(filename);\n                     if (configUrl \u003d\u003d null) {\n                         throw new CheckstyleException(UNABLE_TO_FIND_EXCEPTION_PREFIX + filename);\n                     }\n                     uri \u003d configUrl.toURI();\n                 }\n-                catch (final URISyntaxException e) {\n-                    throw new CheckstyleException(UNABLE_TO_FIND_EXCEPTION_PREFIX + filename, e);\n+                catch (final URISyntaxException ex) {\n+                    throw new CheckstyleException(UNABLE_TO_FIND_EXCEPTION_PREFIX + filename, ex);\n                 }\n             }\n         }\n \n         return uri;\n     }\n\\ No newline at end of file\n"
+    },
+    "526c9d0cbabd8ed8f3a26c45a7a6bc0a5c158c0c": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #46: blocks of code should not be duplicated\n",
+      "commitDate": 1441931158000,
+      "commitName": "526c9d0cbabd8ed8f3a26c45a7a6bc0a5c158c0c",
+      "commitAuthor": "Ilja Dubinin"
+    }
+  }
+}

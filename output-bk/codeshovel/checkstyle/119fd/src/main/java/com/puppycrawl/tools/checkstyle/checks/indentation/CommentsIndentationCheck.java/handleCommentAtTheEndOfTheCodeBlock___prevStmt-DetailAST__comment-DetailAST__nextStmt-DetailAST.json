@@ -1,0 +1,69 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CommentsIndentationCheck.java",
+  "functionName": "handleCommentAtTheEndOfTheCodeBlock",
+  "functionId": "handleCommentAtTheEndOfTheCodeBlock___prevStmt-DetailAST__comment-DetailAST__nextStmt-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java",
+  "functionStartLine": 487,
+  "functionEndLine": 509,
+  "changeHistory": [
+    "43839b3d7107417095b5b915064e7dcf39e3b2b1",
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6",
+    "3defd234041f34854f50f1a77ae94d18fb730036",
+    "0f9490c4ab86e6df2cfe90db1ffe04e906a5edad"
+  ],
+  "changeHistoryShort": {
+    "43839b3d7107417095b5b915064e7dcf39e3b2b1": "Ybodychange",
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6": "Ymultichange(Yrename,Ybodychange)",
+    "3defd234041f34854f50f1a77ae94d18fb730036": "Ymultichange(Yrename,Ybodychange)",
+    "0f9490c4ab86e6df2cfe90db1ffe04e906a5edad": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "43839b3d7107417095b5b915064e7dcf39e3b2b1": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3220: CommentsIndentation: allow upper comments for following block at multi-block structures (#3270)\n\n",
+      "commitDate": 1465739431000,
+      "commitName": "43839b3d7107417095b5b915064e7dcf39e3b2b1",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1465439923000,
+      "commitNameOld": "e2e8e622a562ae4deda24f219a2e057cf2215786",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 3.47,
+      "commitsBetweenForRepo": 17,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,24 @@\n     private void handleCommentAtTheEndOfTheCodeBlock(DetailAST prevStmt, DetailAST comment,\n                                                      DetailAST nextStmt) {\n         if (prevStmt !\u003d null) {\n             if (prevStmt.getType() \u003d\u003d TokenTypes.LITERAL_CASE\n                     || prevStmt.getType() \u003d\u003d TokenTypes.CASE_GROUP\n                     || prevStmt.getType() \u003d\u003d TokenTypes.LITERAL_DEFAULT) {\n                 if (comment.getColumnNo() \u003c nextStmt.getColumnNo()) {\n                     log(comment.getLineNo(), getMessageKey(comment), nextStmt.getLineNo(),\n                         comment.getColumnNo(), nextStmt.getColumnNo());\n                 }\n             }\n+            else if (isCommentForMultiblock(nextStmt)) {\n+                if (!areSameLevelIndented(comment, prevStmt, nextStmt)) {\n+                    logMultilineIndentation(prevStmt, comment, nextStmt);\n+                }\n+            }\n             else if (!areSameLevelIndented(comment, prevStmt, prevStmt)) {\n                 final int prevStmtLineNo \u003d prevStmt.getLineNo();\n                 log(comment.getLineNo(), getMessageKey(comment), prevStmtLineNo,\n-                    comment.getColumnNo(), getLineStart(prevStmtLineNo));\n+                        comment.getColumnNo(), getLineStart(prevStmtLineNo));\n             }\n         }\n \n     }\n\\ No newline at end of file\n"
+    },
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "Issue #3126: Fix a lot of CommentsIndentationCheck false-positives and false-negatives\n",
+      "commitDate": 1464613701000,
+      "commitName": "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "3defd234041f34854f50f1a77ae94d18fb730036": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "Issue #2998: Fix CommentsIndentation Check false-positive at the end of a block (#3123)",
+      "commitDate": 1461504289000,
+      "commitName": "3defd234041f34854f50f1a77ae94d18fb730036",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "0f9490c4ab86e6df2cfe90db1ffe04e906a5edad": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2078: Fix FP violations at the end of the block and in the middle of the method\n",
+      "commitDate": 1446331712000,
+      "commitName": "0f9490c4ab86e6df2cfe90db1ffe04e906a5edad",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

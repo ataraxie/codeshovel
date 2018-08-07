@@ -1,0 +1,211 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+index 9f086ac4d..8046d684f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+@@ -117,101 +117,101 @@ public final class LocalizedMessage
+ 
+         if (!Arrays.equals(args, localizedMessage.args)) {
+             return false;
+         }
+         // ignoring bundle for perf reasons.
+ 
+         // we currently never load the same error from different bundles.
+ 
+         return true;
+     }
+ 
+     @Override
+     public int hashCode()
+     {
+         int result;
+         result = lineNo;
+         result = HASH_MULT * result + colNo;
+         result = HASH_MULT * result + key.hashCode();
+         for (final Object element : args) {
+             result = HASH_MULT * result + element.hashCode();
+         }
+         return result;
+     }
+ 
+     /**
+      * Creates a new <code>LocalizedMessage</code> instance.
+      *
+      * @param lineNo line number associated with the message
+      * @param colNo column number associated with the message
+      * @param bundle resource bundle name
+      * @param key the key to locate the translation
+      * @param args arguments for the translation
+      * @param severityLevel severity level for the message
+      * @param moduleId the id of the module the message is associated with
+      * @param sourceClass the Class that is the source of the message
+      * @param customMessage optional custom message overriding the default
+      */
+     public LocalizedMessage(int lineNo,
+                             int colNo,
+                             String bundle,
+                             String key,
+                             Object[] args,
+                             SeverityLevel severityLevel,
+                             String moduleId,
+                             Class<?> sourceClass,
+                             String customMessage)
+     {
+         this.lineNo = lineNo;
+         this.colNo = colNo;
+         this.key = key;
+-        this.args = (null == args) ? null : args.clone();
++        this.args = null == args ? null : args.clone();
+         this.bundle = bundle;
+         this.severityLevel = severityLevel;
+         this.moduleId = moduleId;
+         this.sourceClass = sourceClass;
+         this.customMessage = customMessage;
+     }
+ 
+     /**
+      * Creates a new <code>LocalizedMessage</code> instance.
+      *
+      * @param lineNo line number associated with the message
+      * @param colNo column number associated with the message
+      * @param bundle resource bundle name
+      * @param key the key to locate the translation
+      * @param args arguments for the translation
+      * @param moduleId the id of the module the message is associated with
+      * @param sourceClass the Class that is the source of the message
+      * @param customMessage optional custom message overriding the default
+      */
+     public LocalizedMessage(int lineNo,
+                             int colNo,
+                             String bundle,
+                             String key,
+                             Object[] args,
+                             String moduleId,
+                             Class<?> sourceClass,
+                             String customMessage)
+     {
+         this(lineNo,
+              colNo,
+              bundle,
+              key,
+              args,
+              DEFAULT_SEVERITY,
+              moduleId,
+              sourceClass,
+              customMessage);
+     }
+ 
+     /**
+      * Creates a new <code>LocalizedMessage</code> instance.
+      *
+      * @param lineNo line number associated with the message
+      * @param bundle resource bundle name
+      * @param key the key to locate the translation
+      * @param args arguments for the translation
+      * @param severityLevel severity level for the message
+      * @param moduleId the id of the module the message is associated with
+      * @param sourceClass the source class for the message
+      * @param customMessage optional custom message overriding the default
+@@ -336,101 +336,101 @@ public final class LocalizedMessage
+         return colNo;
+     }
+ 
+     /** @return the severity level **/
+     public SeverityLevel getSeverityLevel()
+     {
+         return severityLevel;
+     }
+ 
+     /** @return the module identifier. */
+     public String getModuleId()
+     {
+         return moduleId;
+     }
+ 
+     /**
+      * Returns the message key to locate the translation, can also be used
+      * in IDE plugins to map error messages to corrective actions.
+      *
+      * @return the message key
+      */
+     public String getKey()
+     {
+         return key;
+     }
+ 
+     /** @return the name of the source for this LocalizedMessage */
+     public String getSourceName()
+     {
+         return sourceClass.getName();
+     }
+ 
+     /** @param locale the locale to use for localization **/
+     public static void setLocale(Locale locale)
+     {
+         sLocale = locale;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Interface Comparable methods
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int compareTo(LocalizedMessage other)
+     {
+         if (getLineNo() == other.getLineNo()) {
+             if (getColumnNo() == other.getColumnNo()) {
+                 return getMessage().compareTo(other.getMessage());
+             }
+-            return (getColumnNo() < other.getColumnNo()) ? -1 : 1;
++            return getColumnNo() < other.getColumnNo() ? -1 : 1;
+         }
+ 
+-        return (getLineNo() < other.getLineNo()) ? -1 : 1;
++        return getLineNo() < other.getLineNo() ? -1 : 1;
+     }
+ 
+     /**
+      * <p>
+      * Custom ResourceBundle.Control implementation which allows explicitly read
+      * the properties files as UTF-8
+      * </p>
+      *
+      * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+      */
+     private static class UTF8Control extends Control
+     {
+         @Override
+         public ResourceBundle newBundle(String aBaseName, Locale aLocale, String aFormat,
+                  ClassLoader aLoader, boolean aReload) throws IllegalAccessException,
+                   InstantiationException, IOException
+         {
+             // The below is a copy of the default implementation.
+             final String bundleName = toBundleName(aBaseName, aLocale);
+             final String resourceName = toResourceName(bundleName, "properties");
+             ResourceBundle bundle = null;
+             InputStream stream = null;
+             if (aReload) {
+                 final URL url = aLoader.getResource(resourceName);
+                 if (url != null) {
+                     final URLConnection connection = url.openConnection();
+                     if (connection != null) {
+                         connection.setUseCaches(false);
+                         stream = connection.getInputStream();
+                     }
+                 }
+             }
+             else {
+                 stream = aLoader.getResourceAsStream(resourceName);
+             }
+             if (stream != null) {
+                 try (Reader streamReader = new InputStreamReader(stream, "UTF-8")) {
+                     // Only this line is changed to make it to read properties files as UTF-8.
+                     bundle = new PropertyResourceBundle(streamReader);
+                 } finally {
+                     stream.close();
+                 }
+             }
+             return bundle;
+         }
+     }
+ }

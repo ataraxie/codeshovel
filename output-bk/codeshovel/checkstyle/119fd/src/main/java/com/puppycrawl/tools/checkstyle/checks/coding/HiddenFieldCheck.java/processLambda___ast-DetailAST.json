@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "HiddenFieldCheck.java",
+  "functionName": "processLambda",
+  "functionId": "processLambda___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java",
+  "functionStartLine": 221,
+  "functionEndLine": 234,
+  "changeHistory": [
+    "b0493771961c1fd89c96271b397da62699877551",
+    "a82ecf6b468600079a0601f51b4d7ff718ae2e79"
+  ],
+  "changeHistoryShort": {
+    "b0493771961c1fd89c96271b397da62699877551": "Ybodychange",
+    "a82ecf6b468600079a0601f51b4d7ff718ae2e79": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b0493771961c1fd89c96271b397da62699877551": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5008: increase coverage of pitest-checks-coding to 97%\n",
+      "commitDate": 1506259735000,
+      "commitName": "b0493771961c1fd89c96271b397da62699877551",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1503206988000,
+      "commitNameOld": "6054b46c9b717a03cf000c7884d0256335fc01e9",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 35.33,
+      "commitsBetweenForRepo": 154,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,14 @@\n     private void processLambda(DetailAST ast) {\n         final DetailAST firstChild \u003d ast.getFirstChild();\n         if (firstChild.getType() \u003d\u003d TokenTypes.IDENT) {\n             final String untypedLambdaParameterName \u003d firstChild.getText();\n-            if (isStaticOrInstanceField(firstChild, untypedLambdaParameterName)) {\n+            if (frame.containsStaticField(untypedLambdaParameterName)\n+                || isInstanceField(firstChild, untypedLambdaParameterName)) {\n                 log(firstChild, MSG_KEY, untypedLambdaParameterName);\n             }\n         }\n         else {\n             // Type of lambda parameter is not omitted.\n             processVariable(ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "a82ecf6b468600079a0601f51b4d7ff718ae2e79": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2175: Add support of lambdas which parameter types are omitted for HiddenFieldCheck\n",
+      "commitDate": 1442757520000,
+      "commitName": "a82ecf6b468600079a0601f51b4d7ff718ae2e79",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

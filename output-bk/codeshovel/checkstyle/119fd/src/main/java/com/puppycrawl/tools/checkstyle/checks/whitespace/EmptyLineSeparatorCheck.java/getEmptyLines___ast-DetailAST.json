@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "EmptyLineSeparatorCheck.java",
+  "functionName": "getEmptyLines",
+  "functionId": "getEmptyLines___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java",
+  "functionStartLine": 361,
+  "functionEndLine": 378,
+  "changeHistory": [
+    "208cf3d5b6b9b1544c547681f39fad17bc199728",
+    "753e733c95f0a5183dfc3b29835f8b86e5df5316"
+  ],
+  "changeHistoryShort": {
+    "208cf3d5b6b9b1544c547681f39fad17bc199728": "Ybodychange",
+    "753e733c95f0a5183dfc3b29835f8b86e5df5316": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "208cf3d5b6b9b1544c547681f39fad17bc199728": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5003: increased coverage of pitest-checks-whitespace to 98%\n",
+      "commitDate": 1503783215000,
+      "commitName": "208cf3d5b6b9b1544c547681f39fad17bc199728",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1500858141000,
+      "commitNameOld": "077d38c93f290611e7bb4859d2ea0ef26ba645cb",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 33.86,
+      "commitsBetweenForRepo": 126,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,18 @@\n     private List\u003cInteger\u003e getEmptyLines(DetailAST ast) {\n         final DetailAST lastToken \u003d ast.getLastChild().getLastChild();\n         int lastTokenLineNo \u003d 0;\n         if (lastToken !\u003d null) {\n-            lastTokenLineNo \u003d lastToken.getLineNo();\n+            // -1 as count starts from 0\n+            // -2 as last token line cannot be empty, because it is a RCURLY\n+            lastTokenLineNo \u003d lastToken.getLineNo() - 2;\n         }\n         final List\u003cInteger\u003e emptyLines \u003d new ArrayList\u003c\u003e();\n         final FileContents fileContents \u003d getFileContents();\n \n-        for (int lineNo \u003d ast.getLineNo(); lineNo \u003c lastTokenLineNo; lineNo++) {\n+        for (int lineNo \u003d ast.getLineNo(); lineNo \u003c\u003d lastTokenLineNo; lineNo++) {\n             if (fileContents.lineIsBlank(lineNo)) {\n                 emptyLines.add(lineNo);\n             }\n         }\n         return emptyLines;\n     }\n\\ No newline at end of file\n"
+    },
+    "753e733c95f0a5183dfc3b29835f8b86e5df5316": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2944: add EmptyLineSeparator option to check empty lines inside methods\n",
+      "commitDate": 1459290303000,
+      "commitName": "753e733c95f0a5183dfc3b29835f8b86e5df5316",
+      "commitAuthor": "Vladislav Lisetskiy"
+    }
+  }
+}

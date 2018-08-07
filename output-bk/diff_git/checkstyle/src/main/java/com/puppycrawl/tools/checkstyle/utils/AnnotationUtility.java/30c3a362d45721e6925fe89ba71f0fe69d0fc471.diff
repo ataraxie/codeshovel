@@ -1,0 +1,70 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/AnnotationUtility.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/AnnotationUtility.java
+index b000607d8..98d99a80e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/AnnotationUtility.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/AnnotationUtility.java
+@@ -110,63 +110,63 @@ public final class AnnotationUtility {
+         }
+         else {
+             annotationHolder = ast.findFirstToken(TokenTypes.MODIFIERS);
+         }
+ 
+         return annotationHolder;
+     }
+ 
+     /**
+      * Checks to see if the AST is annotated with
+      * the passed in annotation and return the AST
+      * representing that annotation.
+      *
+      * <p>
+      * This method will not look for imports or package
+      * statements to detect the passed in annotation.
+      * </p>
+      *
+      * <p>
+      * To check if an AST contains a passed in annotation
+      * taking into account fully-qualified names
+      * (ex: java.lang.Override, Override)
+      * this method will need to be called twice. Once for each
+      * name given.
+      * </p>
+      *
+      * @param ast the current node
+      * @param annotation the annotation name to check for
+      * @return the AST representing that annotation
+      */
+     public static DetailAST getAnnotation(final DetailAST ast,
+         String annotation) {
+         if (ast == null) {
+             throw new IllegalArgumentException(THE_AST_IS_NULL);
+         }
+ 
+         if (annotation == null) {
+             throw new IllegalArgumentException("the annotation is null");
+         }
+ 
+         if (StringUtils.isBlank(annotation)) {
+             throw new IllegalArgumentException(
+                     "the annotation is empty or spaces");
+         }
+ 
+         final DetailAST holder = getAnnotationHolder(ast);
+ 
+         for (DetailAST child = holder.getFirstChild();
+             child != null; child = child.getNextSibling()) {
+             if (child.getType() == TokenTypes.ANNOTATION) {
+-                final DetailAST at = child.getFirstChild();
++                final DetailAST firstChild = child.getFirstChild();
+                 final String name =
+-                    FullIdent.createFullIdent(at.getNextSibling()).getText();
++                    FullIdent.createFullIdent(firstChild.getNextSibling()).getText();
+                 if (annotation.equals(name)) {
+                     return child;
+                 }
+             }
+         }
+ 
+         return null;
+     }
+ 
+ }

@@ -1,0 +1,65 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ParameterNameCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ParameterNameCheck.java
+index be01b3f70..0b448028b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ParameterNameCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ParameterNameCheck.java
+@@ -18,57 +18,57 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.naming;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+ * <p>
+  * Checks that parameter names conform to a format specified
+  * by the format property. The format is a
+  * {@link java.util.regex.Pattern regular expression}
+  * and defaults to
+  * <strong>^[a-z][a-zA-Z0-9]*$</strong>.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="ParameterName"/&gt;
+  * </pre>
+  * <p>
+   * An example of how to configure the check for names that begin with
+  * a lower case letter, followed by letters, digits, and underscores is:
+  * </p>
+  * <pre>
+  * &lt;module name="ParameterName"&gt;
+  *    &lt;property name="format" value="^^[a-z](_?[a-zA-Z0-9]+)*$"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author Oliver Burn
+  */
+ public class ParameterNameCheck
+     extends AbstractNameCheck
+ {
+     /**
+      * Creates a new <code>ParameterNameCheck</code> instance.
+      */
+     public ParameterNameCheck()
+     {
+         super("^[a-z][a-zA-Z0-9]*$");
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.PARAMETER_DEF};
+     }
+ 
+     @Override
+-    protected boolean mustCheckName(DetailAST aAST)
++    protected boolean mustCheckName(DetailAST ast)
+     {
+         return !(
+-            (aAST.getParent() != null)
+-                && (aAST.getParent().getType() == TokenTypes.LITERAL_CATCH));
++            (ast.getParent() != null)
++                && (ast.getParent().getType() == TokenTypes.LITERAL_CATCH));
+     }
+ }

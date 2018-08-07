@@ -1,0 +1,118 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "TodoCommentCheck.java",
+  "functionName": "visitToken",
+  "functionId": "visitToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/TodoCommentCheck.java",
+  "functionStartLine": 99,
+  "functionEndLine": 107,
+  "changeHistory": [
+    "a963f8a21bd47624ec9f1eea72c9326e2ca01c8a",
+    "5ede09997c283b4c418f0f540848e006be04fa87",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "3bd25d71c993420cfeb4782530882d1cdb620fca",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "04b0bd64047e8eee752405a01de145b67f5fb845",
+    "7514320e04e4d35a4317172876e5f11e69a2c891"
+  ],
+  "changeHistoryShort": {
+    "a963f8a21bd47624ec9f1eea72c9326e2ca01c8a": "Ybodychange",
+    "5ede09997c283b4c418f0f540848e006be04fa87": "Ybodychange",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "3bd25d71c993420cfeb4782530882d1cdb620fca": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "04b0bd64047e8eee752405a01de145b67f5fb845": "Yparameterchange",
+    "7514320e04e4d35a4317172876e5f11e69a2c891": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "a963f8a21bd47624ec9f1eea72c9326e2ca01c8a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3255: removed unnecessary string fields for patterns",
+      "commitDate": 1478802862000,
+      "commitName": "a963f8a21bd47624ec9f1eea72c9326e2ca01c8a",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1478694863000,
+      "commitNameOld": "8888fa5919dc31c6abe07ddc2f5fe0e29f66ef37",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 1.25,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public void visitToken(DetailAST ast) {\n         final String[] lines \u003d ast.getText().split(\"\\n\");\n \n         for (int i \u003d 0; i \u003c lines.length; i++) {\n-            if (regexp.matcher(lines[i]).find()) {\n-                log(ast.getLineNo() + i, MSG_KEY, format);\n+            if (format.matcher(lines[i]).find()) {\n+                log(ast.getLineNo() + i, MSG_KEY, format.pattern());\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "5ede09997c283b4c418f0f540848e006be04fa87": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactored UTs, checks package, issue #537\n",
+      "commitDate": 1424437367000,
+      "commitName": "5ede09997c283b4c418f0f540848e006be04fa87",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.66,
+      "commitsBetweenForRepo": 17,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public void visitToken(DetailAST ast)\n     {\n         final String[] lines \u003d ast.getText().split(\"\\n\");\n \n         for (int i \u003d 0; i \u003c lines.length; i++) {\n             if (regexp.matcher(lines[i]).find()) {\n-                log(ast.getLineNo() + i, \"todo.match\", format);\n+                log(ast.getLineNo() + i, MSG_KEY, format);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "3bd25d71c993420cfeb4782530882d1cdb620fca": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #49. Edited TodoCommentCheck to use new comment nodes in AST\n",
+      "commitDate": 1413609550000,
+      "commitName": "3bd25d71c993420cfeb4782530882d1cdb620fca",
+      "commitAuthor": "Baratali Izmailov",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "04b0bd64047e8eee752405a01de145b67f5fb845": {
+      "type": "Yparameterchange",
+      "commitMessage": "Last API change before release (I hope:-). Now when notifying of the start and\nfinish of tree, based the root node. Maybe useful to some checks.\n",
+      "commitDate": 1045363824000,
+      "commitName": "04b0bd64047e8eee752405a01de145b67f5fb845",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1039999056000,
+      "commitNameOld": "fa0c0353c280c30f2d1cfda01ecfe6597ff46f6b",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 62.09,
+      "commitsBetweenForRepo": 185,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n-    public void beginTree()\n+    public void beginTree(DetailAST aRootAST)\n     {\n         final FileContents contents \u003d getFileContents();\n         checkCppComments(contents);\n         checkBadComments(contents);\n     }\n\\ No newline at end of file\n"
+    },
+    "7514320e04e4d35a4317172876e5f11e69a2c891": {
+      "type": "Yintroduced",
+      "commitMessage": "Implemented the TODO check that goes against comments only.\n",
+      "commitDate": 1037153986000,
+      "commitName": "7514320e04e4d35a4317172876e5f11e69a2c891",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

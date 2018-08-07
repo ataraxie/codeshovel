@@ -1,0 +1,316 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+index ebb17a4d7..85e155403 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+@@ -98,129 +98,130 @@ public final class ConfigurationLoader
+         /** name of the severity property */
+         private static final String SEVERITY = "severity";
+ 
+         /**
+          * Creates a new InternalLoader.
+          * @throws SAXException if an error occurs
+          * @throws ParserConfigurationException if an error occurs
+          */
+         private InternalLoader()
+             throws SAXException, ParserConfigurationException
+         {
+             // super(DTD_PUBLIC_ID_1_1, DTD_RESOURCE_NAME_1_1);
+             super(createIdToResourceNameMap());
+         }
+ 
+         /** {@inheritDoc} **/
+         public void startElement(String aNamespaceURI,
+                                  String aLocalName,
+                                  String aQName,
+                                  Attributes aAtts)
+             throws SAXException
+         {
+             // TODO: debug logging for support puposes
+             if (aQName.equals(MODULE)) {
+                 //create configuration
+                 final String name = aAtts.getValue(NAME);
+                 final DefaultConfiguration conf =
+                     new DefaultConfiguration(name);
+ 
+                 if (mConfiguration == null) {
+                     mConfiguration = conf;
+                 }
+ 
+                 //add configuration to it's parent
+                 if (!mConfigStack.isEmpty()) {
+                     final DefaultConfiguration top =
+                         (DefaultConfiguration) mConfigStack.peek();
+                     top.addChild(conf);
+                 }
+ 
+                 mConfigStack.push(conf);
+             }
+             else if (aQName.equals(PROPERTY)) {
+                 //extract name and value
+                 final String name = aAtts.getValue(NAME);
+                 final String value;
+                 try {
+                     value = replaceProperties(aAtts.getValue(VALUE),
+                         mOverridePropsResolver, aAtts.getValue(DEFAULT));
+                 }
+-                catch (CheckstyleException ex) {
++                catch (final CheckstyleException ex) {
+                     throw new SAXException(ex.getMessage());
+                 }
+ 
+                 //add to attributes of configuration
+                 final DefaultConfiguration top =
+                     (DefaultConfiguration) mConfigStack.peek();
+                 top.addAttribute(name, value);
+             }
+         }
+ 
+         /** {@inheritDoc} **/
+         public void endElement(String aNamespaceURI,
+                                String aLocalName,
+                                String aQName)
+             throws SAXException
+         {
+             if (aQName.equals(MODULE)) {
+ 
+-                Configuration recentModule = (Configuration) mConfigStack.pop();
++                final Configuration recentModule =
++                    (Configuration) mConfigStack.pop();
+ 
+                 // remove modules with severity ignore if these modules should
+                 // be omitted
+                 SeverityLevel level = null;
+                 try {
+                     final String severity = recentModule.getAttribute(SEVERITY);
+                     level = SeverityLevel.getInstance(severity);
+                 }
+-                catch (CheckstyleException e) {
++                catch (final CheckstyleException e) {
+                     //severity not set -> ignore
+                     ;
+                 }
+ 
+                 // omit this module if these should be omitted and the module
+                 // has the severity 'ignore'
+                 final boolean omitModule = mOmitIgnoredModules
+                     && SeverityLevel.IGNORE.equals(level);
+ 
+                 if (omitModule && !mConfigStack.isEmpty()) {
+                     final DefaultConfiguration parentModule =
+                         (DefaultConfiguration) mConfigStack.peek();
+                     parentModule.removeChild(recentModule);
+                 }
+             }
+         }
+ 
+     }
+ 
+     /** the SAX document handler */
+     private InternalLoader mSaxHandler;
+ 
+     /** property resolver **/
+     private final PropertyResolver mOverridePropsResolver;
+     /** the loaded configurations **/
+     private final Stack mConfigStack = new Stack();
+     /** the Configuration that is being built */
+     private Configuration mConfiguration;
+ 
+     /** flags if modules with the severity 'ignore' should be omitted. */
+     private boolean mOmitIgnoredModules;
+ 
+     /**
+      * Creates mapping between local resources and dtd ids.
+      * @return map between local resources and dtd ids.
+      */
+     private static Map createIdToResourceNameMap()
+     {
+         final Map map = new HashMap();
+         map.put(DTD_PUBLIC_ID_1_0, DTD_RESOURCE_NAME_1_0);
+         map.put(DTD_PUBLIC_ID_1_1, DTD_RESOURCE_NAME_1_1);
+         map.put(DTD_PUBLIC_ID_1_2, DTD_RESOURCE_NAME_1_2);
+         return map;
+     }
+ 
+     /**
+      * Creates a new <code>ConfigurationLoader</code> instance.
+      * @param aOverrideProps resolver for overriding properties
+      * @param aOmitIgnoredModules <code>true</code> if ignored modules should be
+      *         omitted
+@@ -242,168 +243,168 @@ public final class ConfigurationLoader
+      * the caller to close the stream.
+      *
+      * @param aStream the stream that contains the configuration data
+      * @throws IOException if an error occurs
+      * @throws SAXException if an error occurs
+      */
+     private void parseInputStream(InputStream aStream)
+         throws IOException, SAXException
+     {
+         final InputStream configStream =
+             new BufferedInputStream(aStream, TWO_KB);
+         final InputSource inputSource = new InputSource(configStream);
+         mSaxHandler.parseInputSource(inputSource);
+     }
+ 
+     /**
+      * Returns the module configurations in a specified file.
+      * @param aConfig location of config file, can be either a URL or a filename
+      * @param aOverridePropsResolver overriding properties
+      * @return the check configurations
+      * @throws CheckstyleException if an error occurs
+      */
+     public static Configuration loadConfiguration(String aConfig,
+             PropertyResolver aOverridePropsResolver) throws CheckstyleException
+     {
+         return loadConfiguration(aConfig, aOverridePropsResolver, false);
+     }
+ 
+     /**
+      * Returns the module configurations in a specified file.
+      *
+      * @param aConfig location of config file, can be either a URL or a filename
+      * @param aOverridePropsResolver overriding properties
+      * @param aOmitIgnoredModules <code>true</code> if modules with severity
+      *            'ignore' should be omitted, <code>false</code> otherwise
+      * @return the check configurations
+      * @throws CheckstyleException if an error occurs
+      */
+     public static Configuration loadConfiguration(String aConfig,
+         PropertyResolver aOverridePropsResolver, boolean aOmitIgnoredModules)
+         throws CheckstyleException
+     {
+         InputStream bufferedStream = null;
+         try {
+             // figure out if this is a File or a URL
+             InputStream configStream;
+             try {
+                 final URL url = new URL(aConfig);
+                 configStream = url.openStream();
+             }
+-            catch (MalformedURLException ex) {
++            catch (final MalformedURLException ex) {
+                 configStream = new FileInputStream(aConfig);
+             }
+             bufferedStream = new BufferedInputStream(configStream);
+ 
+             return loadConfiguration(bufferedStream, aOverridePropsResolver,
+                     aOmitIgnoredModules);
+         }
+-        catch (FileNotFoundException e) {
++        catch (final FileNotFoundException e) {
+             throw new CheckstyleException("unable to find " + aConfig, e);
+         }
+-        catch (IOException e) {
++        catch (final IOException e) {
+             throw new CheckstyleException("unable to read " + aConfig, e);
+         }
+-        catch (CheckstyleException e) {
++        catch (final CheckstyleException e) {
+                 //wrap again to add file name info
+             throw new CheckstyleException("unable to read " + aConfig + " - "
+                     + e.getMessage(), e);
+         }
+         finally {
+             if (bufferedStream != null) {
+                 try {
+                     bufferedStream.close();
+                 }
+-                catch (IOException e) {
++                catch (final IOException e) {
+                     // cannot throw another exception.
+                     ;
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Returns the module configurations from a specified input stream.
+      * Note that clients are required to close the given stream by themselves
+      *
+      * @param aConfigStream the input stream to the Checkstyle configuration
+      * @param aOverridePropsResolver overriding properties
+      * @param aOmitIgnoredModules <code>true</code> if modules with severity
+      *            'ignore' should be omitted, <code>false</code> otherwise
+      * @return the check configurations
+      * @throws CheckstyleException if an error occurs
+      */
+     public static Configuration loadConfiguration(InputStream aConfigStream,
+         PropertyResolver aOverridePropsResolver, boolean aOmitIgnoredModules)
+         throws CheckstyleException
+     {
+         try {
+             final ConfigurationLoader loader =
+                 new ConfigurationLoader(aOverridePropsResolver,
+                                         aOmitIgnoredModules);
+             loader.parseInputStream(aConfigStream);
+             return loader.getConfiguration();
+         }
+-        catch (ParserConfigurationException e) {
++        catch (final ParserConfigurationException e) {
+             throw new CheckstyleException(
+                 "unable to parse configuration stream", e);
+         }
+-        catch (SAXParseException e) {
++        catch (final SAXParseException e) {
+             throw new CheckstyleException("unable to parse configuration stream"
+                     + " - " + e.getMessage() + ":" + e.getLineNumber()
+                     + ":" + e.getColumnNumber(), e);
+         }
+-        catch (SAXException e) {
++        catch (final SAXException e) {
+             throw new CheckstyleException("unable to parse configuration stream"
+                     + " - " + e.getMessage(), e);
+         }
+-        catch (IOException e) {
++        catch (final IOException e) {
+             throw new CheckstyleException("unable to read from stream", e);
+         }
+     }
+ 
+     /**
+      * Returns the configuration in the last file parsed.
+      * @return Configuration object
+      */
+     private Configuration getConfiguration()
+     {
+         return mConfiguration;
+     }
+ 
+     /**
+      * Replaces <code>${xxx}</code> style constructions in the given value
+      * with the string value of the corresponding data types.
+      *
+      * The method is package visible to facilitate testing.
+      *
+      * @param aValue The string to be scanned for property references.
+      *              May be <code>null</code>, in which case this
+      *              method returns immediately with no effect.
+      * @param aProps  Mapping (String to String) of property names to their
+      *              values. Must not be <code>null</code>.
+      * @param aDefaultValue default to use if one of the properties in aValue
+      *              cannot be resolved from aProps.
+      *
+      * @throws CheckstyleException if the string contains an opening
+      *                           <code>${</code> without a closing
+      *                           <code>}</code>
+      * @return the original string with the properties replaced, or
+      *         <code>null</code> if the original string is <code>null</code>.
+      *
+      * Code copied from ant -
+      * http://cvs.apache.org/viewcvs/jakarta-ant/src/main/org/apache/tools/ant/ProjectHelper.java
+      */
+     // Package visible for testing purposes
+     static String replaceProperties(
+             String aValue, PropertyResolver aProps, String aDefaultValue)
+         throws CheckstyleException
+     {
+         if (aValue == null) {
+             return null;
+         }
+ 
+         final List fragments = new ArrayList();
+         final List propertyRefs = new ArrayList();
+         parsePropertyString(aValue, fragments, propertyRefs);
+ 
+         final StringBuffer sb = new StringBuffer();

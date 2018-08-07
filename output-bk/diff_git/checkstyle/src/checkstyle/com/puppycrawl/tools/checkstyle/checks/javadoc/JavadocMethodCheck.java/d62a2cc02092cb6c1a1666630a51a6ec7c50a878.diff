@@ -1,0 +1,255 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index 6c4723c54..27227a7ea 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -463,134 +463,134 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck
+                         final String lFin = multilineCont.group(1);
+                         if (!lFin.equals(NEXT_TAG) && !lFin.equals(END_JAVADOC))
+                         {
+                             tags.add(new JavadocTag(currentLine, col, p1, p2));
+                         }
+                     }
+                     remIndex++;
+                 }
+             }
+             else if (noargMultilineStart.find()) {
+                 final String p1 = noargMultilineStart.group(1);
+                 int col = noargMultilineStart.start(1) - 1;
+                 if (i == 0) {
+                     col += aComment.getStartColNo();
+                 }
+ 
+                 // Look for the rest of the comment if all we saw was
+                 // the tag and the name. Stop when we see '*/' (end of
+                 // Javadoc), '@' (start of next tag), or anything that's
+                 // not whitespace or '*' characters.
+                 int remIndex = i + 1;
+                 while (remIndex < lines.length) {
+                     final Matcher multilineCont = MATCH_JAVADOC_MULTILINE_CONT
+                             .matcher(lines[remIndex]);
+                     if (multilineCont.find()) {
+                         remIndex = lines.length;
+                         final String lFin = multilineCont.group(1);
+                         if (!lFin.equals(NEXT_TAG) && !lFin.equals(END_JAVADOC))
+                         {
+                             tags.add(new JavadocTag(currentLine, col, p1));
+                         }
+                     }
+                     remIndex++;
+                 }
+             }
+         }
+         return tags;
+     }
+ 
+     /**
+      * Computes the parameter nodes for a method.
+      *
+      * @param aAST the method node.
+      * @return the list of parameter nodes for aAST.
+      */
+     private List<DetailAST> getParameters(DetailAST aAST)
+     {
+         final DetailAST params = aAST.findFirstToken(TokenTypes.PARAMETERS);
+         final List<DetailAST> retVal = Lists.newArrayList();
+ 
+-        DetailAST child = (DetailAST) params.getFirstChild();
++        DetailAST child = params.getFirstChild();
+         while (child != null) {
+             if (child.getType() == TokenTypes.PARAMETER_DEF) {
+                 final DetailAST ident = child.findFirstToken(TokenTypes.IDENT);
+                 retVal.add(ident);
+             }
+-            child = (DetailAST) child.getNextSibling();
++            child = child.getNextSibling();
+         }
+         return retVal;
+     }
+ 
+     /**
+      * Computes the exception nodes for a method.
+      *
+      * @param aAST the method node.
+      * @return the list of exception nodes for aAST.
+      */
+     private List<ExceptionInfo> getThrows(DetailAST aAST)
+     {
+         final List<ExceptionInfo> retVal = Lists.newArrayList();
+         final DetailAST throwsAST = aAST
+                 .findFirstToken(TokenTypes.LITERAL_THROWS);
+         if (throwsAST != null) {
+-            DetailAST child = (DetailAST) throwsAST.getFirstChild();
++            DetailAST child = throwsAST.getFirstChild();
+             while (child != null) {
+                 if ((child.getType() == TokenTypes.IDENT)
+                         || (child.getType() == TokenTypes.DOT))
+                 {
+                     final FullIdent fi = FullIdent.createFullIdent(child);
+                     final ExceptionInfo ei = new ExceptionInfo(new Token(fi),
+                             getCurrentClassName());
+                     retVal.add(ei);
+                 }
+-                child = (DetailAST) child.getNextSibling();
++                child = child.getNextSibling();
+             }
+         }
+         return retVal;
+     }
+ 
+     /**
+      * Checks a set of tags for matching parameters.
+      *
+      * @param aTags the tags to check
+      * @param aParent the node which takes the parameters
+      * @param aReportExpectedTags whether we should report if do not find
+      *            expected tag
+      */
+     private void checkParamTags(final List<JavadocTag> aTags,
+             final DetailAST aParent, boolean aReportExpectedTags)
+     {
+         final List<DetailAST> params = getParameters(aParent);
+         final List<DetailAST> typeParams = CheckUtils
+                 .getTypeParameters(aParent);
+ 
+         // Loop over the tags, checking to see they exist in the params.
+         final ListIterator<JavadocTag> tagIt = aTags.listIterator();
+         while (tagIt.hasNext()) {
+             final JavadocTag tag = tagIt.next();
+ 
+             if (!tag.isParamTag()) {
+                 continue;
+             }
+ 
+             tagIt.remove();
+ 
+             boolean found = false;
+ 
+             // Loop looking for matching param
+             final Iterator<DetailAST> paramIt = params.iterator();
+             while (paramIt.hasNext()) {
+                 final DetailAST param = paramIt.next();
+                 if (param.getText().equals(tag.getArg1())) {
+                     found = true;
+                     paramIt.remove();
+                     break;
+                 }
+             }
+ 
+             if (tag.getArg1().startsWith("<") && tag.getArg1().endsWith(">")) {
+                 // Loop looking for matching type param
+                 final Iterator<DetailAST> typeParamsIt = typeParams.iterator();
+                 while (typeParamsIt.hasNext()) {
+                     final DetailAST typeParam = typeParamsIt.next();
+                     if (typeParam.findFirstToken(TokenTypes.IDENT).getText()
+@@ -839,109 +839,109 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck
+         }
+ 
+         // Check the return type is void
+         if (type.getChildCount(TokenTypes.LITERAL_VOID) > 0) {
+             return false;
+         }
+ 
+         // Check that is had only one parameter
+         final DetailAST params = aAST.findFirstToken(TokenTypes.PARAMETERS);
+         if ((params == null)
+                 || (params.getChildCount(TokenTypes.PARAMETER_DEF) > 0))
+         {
+             return false;
+         }
+ 
+         // Now verify that the body consists of:
+         // SLIST -> RETURN
+         // RCURLY
+         final DetailAST slist = aAST.findFirstToken(TokenTypes.SLIST);
+         if ((slist == null) || (slist.getChildCount() != 2)) {
+             return false;
+         }
+ 
+         final AST expr = slist.getFirstChild();
+         if ((expr.getType() != TokenTypes.LITERAL_RETURN)
+                 || (expr.getFirstChild().getType() != TokenTypes.EXPR))
+         {
+             return false;
+         }
+ 
+         return true;
+     }
+ 
+     /**
+      * Returns is a method has the "@Override" annotation.
+      * @param aAST the AST to check with
+      * @return whether the AST represents a method that has the annotation.
+      */
+     private boolean isOverrideMethod(DetailAST aAST)
+     {
+         // Need it to be a method, cannot have an override on anything else.
+         // Must also have MODIFIERS token to hold the @Override
+         if ((TokenTypes.METHOD_DEF != aAST.getType())
+             || (TokenTypes.MODIFIERS != aAST.getFirstChild().getType()))
+         {
+             return false;
+         }
+ 
+         // Now loop over all nodes while they are annotations looking for
+         // an "@Override".
+-        DetailAST node = (DetailAST) aAST.getFirstChild().getFirstChild();
++        DetailAST node = aAST.getFirstChild().getFirstChild();
+         while ((null != node) && (TokenTypes.ANNOTATION == node.getType())) {
+             if ((node.getFirstChild().getType() == TokenTypes.AT)
+                 && (node.getFirstChild().getNextSibling().getType()
+                     == TokenTypes.IDENT)
+                 && ("Override".equals(
+                         node.getFirstChild().getNextSibling().getText())))
+             {
+                 return true;
+             }
+-            node = (DetailAST) node.getNextSibling();
++            node = node.getNextSibling();
+         }
+         return false;
+     }
+ 
+     /** Stores useful information about declared exception. */
+     private class ExceptionInfo
+     {
+         /** does the exception have throws tag associated with. */
+         private boolean mFound;
+         /** class information associated with this exception. */
+         private final ClassInfo mClassInfo;
+ 
+         /**
+          * Creates new instance for <code>FullIdent</code>.
+          *
+          * @param aIdent the exception
+          * @param aCurrentClass name of current class.
+          */
+         ExceptionInfo(Token aIdent, String aCurrentClass)
+         {
+             mClassInfo = createClassInfo(aIdent, aCurrentClass);
+         }
+ 
+         /** Mark that the exception has associated throws tag */
+         final void setFound()
+         {
+             mFound = true;
+         }
+ 
+         /** @return whether the exception has throws tag associated with */
+         final boolean isFound()
+         {
+             return mFound;
+         }
+ 
+         /** @return exception's name */
+         final Token getName()
+         {
+             return mClassInfo.getName();
+         }
+ 
+         /** @return class for this exception */
+         final Class<?> getClazz()
+         {
+             return mClassInfo.getClazz();
+         }
+     }
+ }

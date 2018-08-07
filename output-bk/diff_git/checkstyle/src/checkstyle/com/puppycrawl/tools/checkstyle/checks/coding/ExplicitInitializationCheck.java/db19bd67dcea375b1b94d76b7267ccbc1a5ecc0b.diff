@@ -1,0 +1,130 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/ExplicitInitializationCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/ExplicitInitializationCheck.java
+index 8f61e4b61..879edb1bb 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/ExplicitInitializationCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/ExplicitInitializationCheck.java
+@@ -43,121 +43,117 @@ import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
+  * coding is a hold-over from C/C++ style coding,
+  * and it shows that the developer isn't really confident that
+  * Java really initializes instance variables to default
+  * values.
+  * </p>
+  *
+  * @author o_sukhodolsky
+  */
+ public class ExplicitInitializationCheck extends Check
+ {
+     /** {@inheritDoc} */
+     public final int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     /** {@inheritDoc} */
+     public final int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         // do not check local variables
+         if (ScopeUtils.isLocalVariableDef(aAST)) {
+             return;
+         }
+         DetailAST assign = aAST.findFirstToken(TokenTypes.ASSIGN);
+         if (assign == null) {
+             // no assign - no check
+             return;
+         }
+ 
+         DetailAST modifiers = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         if (modifiers != null
+             && modifiers.branchContains(TokenTypes.FINAL))
+         {
+             // do not check final variables
+             return;
+         }
+ 
+         DetailAST type = aAST.findFirstToken(TokenTypes.TYPE);
+         DetailAST ident = aAST.findFirstToken(TokenTypes.IDENT);
+         DetailAST exprStart =
+             (DetailAST) assign.getFirstChild().getFirstChild();
+         if (isObjectType(type)
+             && exprStart.getType() == TokenTypes.LITERAL_NULL)
+         {
+-            log(ident.getLineNo(), ident.getColumnNo(),
+-                "explicit.init", ident.getText(), "null");
++            log(ident, "explicit.init", ident.getText(), "null");
+         }
+         int primitiveType = type.getFirstChild().getType();
+         if (primitiveType == TokenTypes.LITERAL_BOOLEAN
+             && exprStart.getType() == TokenTypes.LITERAL_FALSE)
+         {
+-            log(ident.getLineNo(), ident.getColumnNo(),
+-                "explicit.init", ident.getText(), "false");
++            log(ident, "explicit.init", ident.getText(), "false");
+         }
+         if (isNumericType(primitiveType) && isZero(exprStart)) {
+-            log(ident.getLineNo(), ident.getColumnNo(),
+-                "explicit.init", ident.getText(), "0");
++            log(ident, "explicit.init", ident.getText(), "0");
+         }
+         if (primitiveType == TokenTypes.LITERAL_CHAR
+             && (isZero(exprStart)
+                 || exprStart.getType() == TokenTypes.CHAR_LITERAL
+                 && "'\\0'".equals(exprStart.getText())))
+         {
+-            log(ident.getLineNo(), ident.getColumnNo(),
+-                "explicit.init", ident.getText(), "\\0");
++            log(ident, "explicit.init", ident.getText(), "\\0");
+         }
+     }
+ 
+     /**
+      * Determines if a giiven type is an object type.
+      * @param aType type to check.
+      * @return true if it is an object type.
+      */
+     private boolean isObjectType(DetailAST aType)
+     {
+         int type = aType.getFirstChild().getType();
+         return (type == TokenTypes.IDENT || type == TokenTypes.DOT
+                 || type == TokenTypes.ARRAY_DECLARATOR);
+     }
+ 
+     /**
+      * Determine if a given type is a numeric type.
+      * @param aType code of the type for check.
+      * @return true if it's a numeric type.
+      * @see TokenTypes
+      */
+     private boolean isNumericType(int aType)
+     {
+         return (aType == TokenTypes.LITERAL_BYTE
+                 || aType == TokenTypes.LITERAL_SHORT
+                 || aType == TokenTypes.LITERAL_INT
+                 || aType == TokenTypes.LITERAL_FLOAT
+                 || aType == TokenTypes.LITERAL_LONG
+                 || aType == TokenTypes.LITERAL_DOUBLE);
+     }
+ 
+     /**
+      * @param aExpr node to check.
+      * @return true if given node contains numeric constant for zero.
+      */
+     private boolean isZero(DetailAST aExpr)
+     {
+         final int type = aExpr.getType();
+         switch (type) {
+         case TokenTypes.NUM_FLOAT:
+         case TokenTypes.NUM_DOUBLE:
+         case TokenTypes.NUM_INT:
+         case TokenTypes.NUM_LONG:
+             final String text = aExpr.getText();
+             return (0 == CheckUtils.parseFloat(text, type));
+         default:
+             return false;
+         }
+     }
+ }

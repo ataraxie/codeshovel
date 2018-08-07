@@ -1,0 +1,89 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "checkTranslationKeys___bundle-ResourceBundle",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 449,
+  "changeHistory": [
+    "9b2f177a03d5696671c2b705d2b1b686f127dcce",
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020",
+    "d843dd8439cc5163bcd743443f970c392f4ae30e",
+    "e7c2ee96044adc4c63d98545defb70f809548f9e",
+    "b8f2d25b644bf719774c5516e0681d54e38f6e36"
+  ],
+  "changeHistoryShort": {
+    "9b2f177a03d5696671c2b705d2b1b686f127dcce": "Ybodychange",
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020": "Ybodychange",
+    "d843dd8439cc5163bcd743443f970c392f4ae30e": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+    "e7c2ee96044adc4c63d98545defb70f809548f9e": "Ybodychange",
+    "b8f2d25b644bf719774c5516e0681d54e38f6e36": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "9b2f177a03d5696671c2b705d2b1b686f127dcce": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4675: increase coverage of pitest-checks-misc to 100%\n",
+      "commitDate": 1505956257000,
+      "commitName": "9b2f177a03d5696671c2b705d2b1b686f127dcce",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1503319629000,
+      "commitNameOld": "74c41b3aaa97a1b013656d04bba3835920008bbd",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 30.52,
+      "commitsBetweenForRepo": 137,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     private void checkTranslationKeys(ResourceBundle bundle) {\n         final Set\u003cFile\u003e filesInBundle \u003d bundle.getFiles();\n-        if (filesInBundle.size() \u003e 1) {\n+        if (filesInBundle.size() \u003e\u003d 2) {\n             // build a map from files to the keys they contain\n             final Set\u003cString\u003e allTranslationKeys \u003d new HashSet\u003c\u003e();\n             final SetMultimap\u003cFile, String\u003e filesAssociatedWithKeys \u003d HashMultimap.create();\n             for (File currentFile : filesInBundle) {\n                 final Set\u003cString\u003e keysInCurrentFile \u003d getTranslationKeys(currentFile);\n                 allTranslationKeys.addAll(keysInCurrentFile);\n                 filesAssociatedWithKeys.putAll(currentFile, keysInCurrentFile);\n             }\n             checkFilesForConsistencyRegardingTheirKeys(filesAssociatedWithKeys, allTranslationKeys);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "fbf3f95c2273be23b966cba6e6ef89390a6fb020": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3433: Cut down on Checkstyle\u0027s dependencies on Guava (part 2) (#3454)\n\n",
+      "commitDate": 1474426326000,
+      "commitName": "fbf3f95c2273be23b966cba6e6ef89390a6fb020",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1467655792000,
+      "commitNameOld": "a2117301def721fe628b15e5e5d06a353ef03fef",
+      "commitAuthorOld": "Michael Simons",
+      "daysBetweenCommits": 78.36,
+      "commitsBetweenForRepo": 88,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     private void checkTranslationKeys(ResourceBundle bundle) {\n         final Set\u003cFile\u003e filesInBundle \u003d bundle.getFiles();\n         if (filesInBundle.size() \u003e 1) {\n             // build a map from files to the keys they contain\n-            final Set\u003cString\u003e allTranslationKeys \u003d Sets.newHashSet();\n+            final Set\u003cString\u003e allTranslationKeys \u003d new HashSet\u003c\u003e();\n             final SetMultimap\u003cFile, String\u003e filesAssociatedWithKeys \u003d HashMultimap.create();\n             for (File currentFile : filesInBundle) {\n                 final Set\u003cString\u003e keysInCurrentFile \u003d getTranslationKeys(currentFile);\n                 allTranslationKeys.addAll(keysInCurrentFile);\n                 filesAssociatedWithKeys.putAll(currentFile, keysInCurrentFile);\n             }\n             checkFilesForConsistencyRegardingTheirKeys(filesAssociatedWithKeys, allTranslationKeys);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d843dd8439cc5163bcd743443f970c392f4ae30e": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+      "commitMessage": "Issue #2204: Add \u0027baseName\u0027 option for TranslationCheck\n",
+      "commitDate": 1457803906000,
+      "commitName": "d843dd8439cc5163bcd743443f970c392f4ae30e",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "e7c2ee96044adc4c63d98545defb70f809548f9e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2243: Fix missing code coverage\n",
+      "commitDate": 1444069956000,
+      "commitName": "e7c2ee96044adc4c63d98545defb70f809548f9e",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1443304979000,
+      "commitNameOld": "b8f2d25b644bf719774c5516e0681d54e38f6e36",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 8.85,
+      "commitsBetweenForRepo": 45,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     private String getFullBundleName(Set\u003cFile\u003e filesInResourceBundle) {\n         final String fullBundleName;\n \n-        final File translationFile \u003d filesInResourceBundle.iterator().next();\n-        final String translationPath \u003d translationFile.getPath();\n+        final File firstTranslationFile \u003d Collections.min(filesInResourceBundle);\n+        final String translationPath \u003d firstTranslationFile.getPath();\n         final String extension \u003d getFileExtensions()[0];\n \n         final Pattern pattern \u003d Pattern.compile(\"^.+_[a-z]{2}\"\n             + extension + \"$\");\n         final Matcher matcher \u003d pattern.matcher(translationPath);\n         if (matcher.matches()) {\n             fullBundleName \u003d translationPath\n                 .substring(0, translationPath.lastIndexOf(\u0027_\u0027));\n         }\n         else {\n             fullBundleName \u003d translationPath\n                 .substring(0, translationPath.lastIndexOf(\u0027.\u0027));\n         }\n         return fullBundleName;\n     }\n\\ No newline at end of file\n"
+    },
+    "b8f2d25b644bf719774c5516e0681d54e38f6e36": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2166: Add \u0027requiredTranslations\u0027 option to Translation check\n",
+      "commitDate": 1443304979000,
+      "commitName": "b8f2d25b644bf719774c5516e0681d54e38f6e36",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

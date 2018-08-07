@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "FallThroughCheck.java",
+  "functionName": "checkIf",
+  "functionId": "checkIf___ast-DetailAST__useBreak-boolean__useContinue-boolean",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java",
+  "functionStartLine": 222,
+  "functionEndLine": 237,
+  "changeHistory": [
+    "0d66a67b0d3920031422d5bb02f0fc02ce580bae",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "553f3eb61ef4b3dfa22beaa37173c49d24374072"
+  ],
+  "changeHistoryShort": {
+    "0d66a67b0d3920031422d5bb02f0fc02ce580bae": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": "Ybodychange",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "553f3eb61ef4b3dfa22beaa37173c49d24374072": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0d66a67b0d3920031422d5bb02f0fc02ce580bae": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix FallThroughCheck fails on if with no else, issue #1395.\n",
+      "commitDate": 1437411741000,
+      "commitName": "0d66a67b0d3920031422d5bb02f0fc02ce580bae",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1437248369000,
+      "commitNameOld": "881f9b5079ed22cc6d39b9c27e581f1d1f1a7702",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 1.89,
+      "commitsBetweenForRepo": 22,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,16 @@\n     private boolean checkIf(final DetailAST ast, boolean useBreak,\n                             boolean useContinue) {\n         final DetailAST thenStmt \u003d ast.findFirstToken(TokenTypes.RPAREN)\n                 .getNextSibling();\n         final DetailAST elseStmt \u003d thenStmt.getNextSibling();\n         boolean isTerminated \u003d isTerminated(thenStmt, useBreak, useContinue);\n \n         if (isTerminated \u0026\u0026 elseStmt !\u003d null) {\n             isTerminated \u003d isTerminated(elseStmt.getFirstChild(),\n-                                        useBreak, useContinue);\n+                useBreak, useContinue);\n+        }\n+        else if (elseStmt \u003d\u003d null) {\n+            isTerminated \u003d false;\n         }\n         return isTerminated;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437367000,
+      "commitNameOld": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 18.36,
+      "commitsBetweenForRepo": 91,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     private boolean checkIf(final DetailAST ast, boolean useBreak,\n                             boolean useContinue)\n     {\n         final DetailAST thenStmt \u003d ast.findFirstToken(TokenTypes.RPAREN)\n                 .getNextSibling();\n         final DetailAST elseStmt \u003d thenStmt.getNextSibling();\n         boolean isTerminated \u003d isTerminated(thenStmt, useBreak, useContinue);\n \n-        if (isTerminated \u0026\u0026 (elseStmt !\u003d null)) {\n+        if (isTerminated \u0026\u0026 elseStmt !\u003d null) {\n             isTerminated \u003d isTerminated(elseStmt.getFirstChild(),\n                                         useBreak, useContinue);\n         }\n         return isTerminated;\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": {
+      "type": "Ybodychange",
+      "commitMessage": "Inspired by patch# 2111354 - changes to remove casting. Neat trick\n",
+      "commitDate": 1221737656000,
+      "commitName": "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200296548000,
+      "commitNameOld": "fd90bd5aa5cd623b08a2e44ef05e8fac8045d333",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 248.16,
+      "commitsBetweenForRepo": 71,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     private boolean checkIf(final DetailAST aAST, boolean aUseBreak,\n                             boolean aUseContinue)\n     {\n-        final DetailAST thenStmt \u003d (DetailAST)\n-            aAST.findFirstToken(TokenTypes.RPAREN).getNextSibling();\n-        final DetailAST elseStmt \u003d (DetailAST) thenStmt.getNextSibling();\n+        final DetailAST thenStmt \u003d aAST.findFirstToken(TokenTypes.RPAREN)\n+                .getNextSibling();\n+        final DetailAST elseStmt \u003d thenStmt.getNextSibling();\n         boolean isTerminated \u003d isTerminated(thenStmt, aUseBreak, aUseContinue);\n \n         if (isTerminated \u0026\u0026 (elseStmt !\u003d null)) {\n-            isTerminated \u003d isTerminated((DetailAST) elseStmt.getFirstChild(),\n+            isTerminated \u003d isTerminated(elseStmt.getFirstChild(),\n                                         aUseBreak, aUseContinue);\n         }\n         return isTerminated;\n     }\n\\ No newline at end of file\n"
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1137847382000,
+      "commitNameOld": "c38185458ab824874b8465c46b4dc42646440aaa",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 166.61,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     private boolean checkIf(final DetailAST aAST, boolean aUseBreak,\n                             boolean aUseContinue)\n     {\n         final DetailAST thenStmt \u003d (DetailAST)\n             aAST.findFirstToken(TokenTypes.RPAREN).getNextSibling();\n         final DetailAST elseStmt \u003d (DetailAST) thenStmt.getNextSibling();\n         boolean isTerminated \u003d isTerminated(thenStmt, aUseBreak, aUseContinue);\n \n-        if (isTerminated \u0026\u0026 elseStmt !\u003d null) {\n+        if (isTerminated \u0026\u0026 (elseStmt !\u003d null)) {\n             isTerminated \u003d isTerminated((DetailAST) elseStmt.getFirstChild(),\n                                         aUseBreak, aUseContinue);\n         }\n         return isTerminated;\n     }\n\\ No newline at end of file\n"
+    },
+    "553f3eb61ef4b3dfa22beaa37173c49d24374072": {
+      "type": "Yintroduced",
+      "commitMessage": "FallThrough check, request 754438.\n",
+      "commitDate": 1073589705000,
+      "commitName": "553f3eb61ef4b3dfa22beaa37173c49d24374072",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

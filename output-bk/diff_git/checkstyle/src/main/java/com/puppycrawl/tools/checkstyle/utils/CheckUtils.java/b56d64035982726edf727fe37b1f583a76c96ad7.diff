@@ -1,0 +1,196 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CheckUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CheckUtils.java
+index 05de49d6a..b1222916e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CheckUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CheckUtils.java
+@@ -29,184 +29,172 @@ import antlr.collections.AST;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.naming.AccessModifier;
+ 
+ /**
+  * Contains utility methods for the checks.
+  *
+  * @author Oliver Burn
+  * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+  * @author o_sukhodolsky
+  */
+ public final class CheckUtils {
+     // constants for parseDouble()
+     /** Octal radix. */
+     private static final int BASE_8 = 8;
+ 
+     /** Decimal radix. */
+     private static final int BASE_10 = 10;
+ 
+     /** Hex radix. */
+     private static final int BASE_16 = 16;
+ 
+     /** Maximum children allowed in setter/getter. */
+     private static final int SETTER_GETTER_MAX_CHILDREN = 7;
+ 
+     /** Maximum nodes allowed in a body of setter. */
+     private static final int SETTER_BODY_SIZE = 3;
+ 
+     /** Maximum nodes allowed in a body of getter. */
+     private static final int GETTER_BODY_SIZE = 2;
+ 
+     /** Pattern matching underscore characters ('_'). */
+     private static final Pattern UNDERSCORE_PATTERN = Pattern.compile("_");
+ 
+     /** Pattern matching names of setter methods. */
+     private static final Pattern SETTER_PATTERN = Pattern.compile("^set[A-Z].*");
+ 
+     /** Pattern matching names of getter methods. */
+     private static final Pattern GETTER_PATTERN = Pattern.compile("^(is|get)[A-Z].*");
+ 
+     /** Prevent instances. */
+     private CheckUtils() {
+     }
+ 
+     /**
+      * Creates {@code FullIdent} for given type node.
+      * @param typeAST a type node.
+      * @return {@code FullIdent} for given type.
+      */
+-    public static FullIdent createFullType(DetailAST typeAST) {
+-        final DetailAST arrayDeclaratorAST =
+-            typeAST.findFirstToken(TokenTypes.ARRAY_DECLARATOR);
+-        final FullIdent fullType;
++    public static FullIdent createFullType(final DetailAST typeAST) {
++        DetailAST ast = typeAST;
+ 
+-        if (arrayDeclaratorAST == null) {
+-            fullType = createFullTypeNoArrays(typeAST);
++        // ignore array part of type
++        while (ast.findFirstToken(TokenTypes.ARRAY_DECLARATOR) != null) {
++            ast = ast.findFirstToken(TokenTypes.ARRAY_DECLARATOR);
+         }
+-        else {
+-            fullType = createFullTypeNoArrays(arrayDeclaratorAST);
+-        }
+-        return fullType;
++
++        return FullIdent.createFullIdent(ast.getFirstChild());
+     }
+ 
+     /**
+      * Tests whether a method definition AST defines an equals covariant.
+      * @param ast the method definition AST to test.
+      *     Precondition: ast is a TokenTypes.METHOD_DEF node.
+      * @return true if ast defines an equals covariant.
+      */
+     public static boolean isEqualsMethod(DetailAST ast) {
+         boolean equalsMethod = false;
+ 
+         if (ast.getType() == TokenTypes.METHOD_DEF) {
+             final DetailAST modifiers = ast.findFirstToken(TokenTypes.MODIFIERS);
+             final boolean staticOrAbstract = modifiers.branchContains(TokenTypes.LITERAL_STATIC)
+                     || modifiers.branchContains(TokenTypes.ABSTRACT);
+ 
+             if (!staticOrAbstract) {
+                 final DetailAST nameNode = ast.findFirstToken(TokenTypes.IDENT);
+                 final String name = nameNode.getText();
+ 
+                 if ("equals".equals(name)) {
+                     // one parameter?
+                     final DetailAST paramsNode = ast.findFirstToken(TokenTypes.PARAMETERS);
+                     equalsMethod = paramsNode.getChildCount() == 1;
+                 }
+             }
+         }
+         return equalsMethod;
+     }
+ 
+     /**
+      * Returns whether a token represents an ELSE as part of an ELSE / IF set.
+      * @param ast the token to check
+      * @return whether it is
+      */
+     public static boolean isElseIf(DetailAST ast) {
+         final DetailAST parentAST = ast.getParent();
+ 
+         return ast.getType() == TokenTypes.LITERAL_IF
+             && (isElse(parentAST) || isElseWithCurlyBraces(parentAST));
+     }
+ 
+     /**
+      * Returns whether a token represents an ELSE.
+      * @param ast the token to check
+      * @return whether the token represents an ELSE
+      */
+     private static boolean isElse(DetailAST ast) {
+         return ast.getType() == TokenTypes.LITERAL_ELSE;
+     }
+ 
+     /**
+      * Returns whether a token represents an SLIST as part of an ELSE
+      * statement.
+      * @param ast the token to check
+      * @return whether the toke does represent an SLIST as part of an ELSE
+      */
+     private static boolean isElseWithCurlyBraces(DetailAST ast) {
+         return ast.getType() == TokenTypes.SLIST
+             && ast.getChildCount() == 2
+             && isElse(ast.getParent());
+     }
+ 
+-    /**
+-     * Returns FullIndent for given type.
+-     * @param typeAST a type node (no array)
+-     * @return {@code FullIdent} for given type.
+-     */
+-    private static FullIdent createFullTypeNoArrays(DetailAST typeAST) {
+-        return FullIdent.createFullIdent(typeAST.getFirstChild());
+-    }
+-
+     /**
+      * Returns the value represented by the specified string of the specified
+      * type. Returns 0 for types other than float, double, int, and long.
+      * @param text the string to be parsed.
+      * @param type the token type of the text. Should be a constant of
+      * {@link TokenTypes}.
+      * @return the double value represented by the string argument.
+      */
+     public static double parseDouble(String text, int type) {
+         String txt = UNDERSCORE_PATTERN.matcher(text).replaceAll("");
+         double result = 0;
+         switch (type) {
+             case TokenTypes.NUM_FLOAT:
+             case TokenTypes.NUM_DOUBLE:
+                 result = Double.parseDouble(txt);
+                 break;
+             case TokenTypes.NUM_INT:
+             case TokenTypes.NUM_LONG:
+                 int radix = BASE_10;
+                 if (txt.startsWith("0x") || txt.startsWith("0X")) {
+                     radix = BASE_16;
+                     txt = txt.substring(2);
+                 }
+                 else if (txt.charAt(0) == '0') {
+                     radix = BASE_8;
+                     txt = txt.substring(1);
+                 }
+                 if (CommonUtils.endsWithChar(txt, 'L') || CommonUtils.endsWithChar(txt, 'l')) {
+                     txt = txt.substring(0, txt.length() - 1);
+                 }
+                 if (!txt.isEmpty()) {
+                     if (type == TokenTypes.NUM_INT) {
+                         result = parseInt(txt, radix);
+                     }
+                     else {
+                         result = parseLong(txt, radix);
+                     }
+                 }
+                 break;
+             default:
+                 break;
+         }
+         return result;
+     }
+ 
+     /**
+      * Parses the string argument as a signed integer in the radix specified by
+      * the second argument. The characters in the string must all be digits of
+      * the specified radix. Handles negative values, which method
+      * java.lang.Integer.parseInt(String, int) does not.

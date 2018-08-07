@@ -1,0 +1,490 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 13ff5c148..1ba1c8939 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -99,321 +99,321 @@ public final class TreeWalker
+         }
+ 
+         /**
+          * Parser warning-reporting function, does nothing.
+          * @param aMsg the error message
+          */
+         public void reportWarning(String aMsg)
+         {
+         }
+     }
+ 
+     /** default distance between tab stops */
+     private static final int DEFAULT_TAB_WIDTH = 8;
+ 
+     /** maps from token name to checks */
+     private final Map mTokenToChecks = new HashMap();
+     /** all the registered checks */
+     private final Set mAllChecks = new HashSet();
+     /** the distance between tab stops */
+     private int mTabWidth = DEFAULT_TAB_WIDTH;
+     /** cache file **/
+     private PropertyCacheFile mCache = new PropertyCacheFile(null, null);
+ 
+     /** class loader to resolve classes with. **/
+     private ClassLoader mClassLoader;
+ 
+     /** context of child components */
+     private Context mChildContext;
+ 
+     /** a factory for creating submodules (i.e. the Checks) */
+     private ModuleFactory mModuleFactory;
+ 
+     /** controls whether we should use recursive or iterative
+      * algorithm for tree processing.
+      */
+     private final boolean mRecursive;
+ 
+     /** logger for debug purpose */
+     private static final Log LOG =
+         LogFactory.getLog("com.puppycrawl.tools.checkstyle.TreeWalker");
+ 
+     /**
+      * Creates a new <code>TreeWalker</code> instance.
+      */
+     public TreeWalker()
+     {
+         setFileExtensions(new String[]{"java"});
+         // Tree walker can use two possible algorithms for
+         // tree processing (iterative and recursive.
+         // Recursive is default for now.
+-        String recursive =
++        final String recursive =
+             System.getProperty("checkstyle.use.recursive.algorithm", "false");
+         mRecursive = "true".equals(recursive);
+         if (mRecursive) {
+             LOG.debug("TreeWalker uses recursive algorithm");
+         }
+         else {
+             LOG.debug("TreeWalker uses iterative algorithm");
+         }
+     }
+ 
+     /** @param aTabWidth the distance between tab stops */
+     public void setTabWidth(int aTabWidth)
+     {
+         mTabWidth = aTabWidth;
+     }
+ 
+     /** @param aFileName the cache file */
+     public void setCacheFile(String aFileName)
+     {
+         final Configuration configuration = getConfiguration();
+         mCache = new PropertyCacheFile(configuration, aFileName);
+     }
+ 
+     /** @param aClassLoader class loader to resolve classes with. */
+     public void setClassLoader(ClassLoader aClassLoader)
+     {
+         mClassLoader = aClassLoader;
+     }
+ 
+     /**
+      * Sets the module factory for creating child modules (Checks).
+      * @param aModuleFactory the factory
+      */
+     public void setModuleFactory(ModuleFactory aModuleFactory)
+     {
+         mModuleFactory = aModuleFactory;
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Configurable */
+     public void finishLocalSetup()
+     {
+-        DefaultContext checkContext = new DefaultContext();
++        final DefaultContext checkContext = new DefaultContext();
+         checkContext.add("classLoader", mClassLoader);
+         checkContext.add("messages", getMessageCollector());
+         checkContext.add("severity", getSeverity());
+         // TODO: hmmm.. this looks less than elegant
+         // we have just parsed the string,
+         // now we're recreating it only to parse it again a few moments later
+         checkContext.add("tabWidth", String.valueOf(mTabWidth));
+ 
+         mChildContext = checkContext;
+     }
+ 
+     /**
+      * Instantiates, configures and registers a Check that is specified
+      * in the provided configuration.
+      * {@inheritDoc}
+      */
+     public void setupChild(Configuration aChildConf)
+         throws CheckstyleException
+     {
+         // TODO: improve the error handing
+         final String name = aChildConf.getName();
+         final Object module = mModuleFactory.createModule(name);
+         if (!(module instanceof Check)) {
+             throw new CheckstyleException(
+                 "TreeWalker is not allowed as a parent of " + name);
+         }
+         final Check c = (Check) module;
+         c.contextualize(mChildContext);
+         c.configure(aChildConf);
+         c.init();
+ 
+         registerCheck(c);
+     }
+ 
+     /**
+      * Processes a specified file and reports all errors found.
+      * @param aFile the file to process
+      **/
+     private void process(File aFile)
+     {
+         // check if already checked and passed the file
+         final String fileName = aFile.getPath();
+         final long timestamp = aFile.lastModified();
+         if (mCache.alreadyChecked(fileName, timestamp)) {
+             return;
+         }
+ 
+         try {
+             getMessageDispatcher().fireFileStarted(fileName);
+             final String[] lines = Utils.getLines(fileName, getCharset());
+             final FileContents contents = new FileContents(fileName, lines);
+             final DetailAST rootAST = TreeWalker.parse(contents);
+             walk(rootAST, contents);
+         }
+-        catch (FileNotFoundException fnfe) {
++        catch (final FileNotFoundException fnfe) {
+             Utils.getExceptionLogger()
+                 .debug("FileNotFoundException occured.", fnfe);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     0,
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.fileNotFound",
+                     null,
+                     getId(),
+                     this.getClass()));
+         }
+-        catch (IOException ioe) {
++        catch (final IOException ioe) {
+             Utils.getExceptionLogger().debug("IOException occured.", ioe);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     0,
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {ioe.getMessage()},
+                     getId(),
+                     this.getClass()));
+         }
+-        catch (RecognitionException re) {
++        catch (final RecognitionException re) {
+             Utils.getExceptionLogger()
+                 .debug("RecognitionException occured.", re);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     re.getLine(),
+                     re.getColumn(),
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {re.getMessage()},
+                     getId(),
+                     this.getClass()));
+         }
+-        catch (TokenStreamRecognitionException tre) {
++        catch (final TokenStreamRecognitionException tre) {
+             Utils.getExceptionLogger()
+                 .debug("TokenStreamRecognitionException occured.", tre);
+             final RecognitionException re = tre.recog;
+             if (re != null) {
+                 getMessageCollector().add(
+                     new LocalizedMessage(
+                         re.getLine(),
+                         re.getColumn(),
+                         Defn.CHECKSTYLE_BUNDLE,
+                         "general.exception",
+                         new String[] {re.getMessage()},
+                         getId(),
+                         this.getClass()));
+             }
+             else {
+                 getMessageCollector().add(
+                     new LocalizedMessage(
+                         0,
+                         Defn.CHECKSTYLE_BUNDLE,
+                         "general.exception",
+                         new String[]
+                         {"TokenStreamRecognitionException occured."},
+                         getId(),
+                         this.getClass()));
+             }
+         }
+-        catch (TokenStreamException te) {
++        catch (final TokenStreamException te) {
+             Utils.getExceptionLogger()
+                 .debug("TokenStreamException occured.", te);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     0,
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {te.getMessage()},
+                     getId(),
+                     this.getClass()));
+         }
+-        catch (Throwable err) {
++        catch (final Throwable err) {
+             Utils.getExceptionLogger().debug("Throwable occured.", err);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     0,
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {"" + err},
+                     getId(),
+                     this.getClass()));
+         }
+ 
+         if (getMessageCollector().size() == 0) {
+             mCache.checkedOk(fileName, timestamp);
+         }
+         else {
+             fireErrors(fileName);
+         }
+ 
+         getMessageDispatcher().fireFileFinished(fileName);
+     }
+ 
+     /**
+      * Register a check for a given configuration.
+      * @param aCheck the check to register
+      * @throws CheckstyleException if an error occurs
+      */
+     private void registerCheck(Check aCheck)
+         throws CheckstyleException
+     {
+         int[] tokens = new int[] {}; //safety initialization
+         final Set checkTokens = aCheck.getTokenNames();
+         if (!checkTokens.isEmpty()) {
+             tokens = aCheck.getRequiredTokens();
+ 
+             //register configured tokens
+             final int acceptableTokens[] = aCheck.getAcceptableTokens();
+             Arrays.sort(acceptableTokens);
+             final Iterator it = checkTokens.iterator();
+             while (it.hasNext()) {
+                 final String token = (String) it.next();
+                 try {
+                     final int tokenId = TokenTypes.getTokenId(token);
+                     if (Arrays.binarySearch(acceptableTokens, tokenId) >= 0) {
+                         registerCheck(token, aCheck);
+                     }
+                     // TODO: else log warning
+                 }
+-                catch (IllegalArgumentException ex) {
++                catch (final IllegalArgumentException ex) {
+                     throw new CheckstyleException("illegal token \""
+                         + token + "\" in check " + aCheck, ex);
+                 }
+             }
+         }
+         else {
+             tokens = aCheck.getDefaultTokens();
+         }
+         for (int i = 0; i < tokens.length; i++) {
+             registerCheck(tokens[i], aCheck);
+         }
+         mAllChecks.add(aCheck);
+     }
+ 
+     /**
+      * Register a check for a specified token id.
+      * @param aTokenID the id of the token
+      * @param aCheck the check to register
+      */
+     private void registerCheck(int aTokenID, Check aCheck)
+     {
+         registerCheck(TokenTypes.getTokenName(aTokenID), aCheck);
+     }
+ 
+     /**
+      * Register a check for a specified token name
+      * @param aToken the name of the token
+      * @param aCheck the check to register
+      */
+     private void registerCheck(String aToken, Check aCheck)
+     {
+         ArrayList visitors = (ArrayList) mTokenToChecks.get(aToken);
+         if (visitors == null) {
+             visitors = new ArrayList();
+             mTokenToChecks.put(aToken, visitors);
+         }
+ 
+         visitors.add(aCheck);
+     }
+ 
+     /**
+      * Initiates the walk of an AST.
+      * @param aAST the root AST
+      * @param aContents the contents of the file the AST was generated from
+      */
+     private void walk(DetailAST aAST, FileContents aContents)
+     {
+         getMessageCollector().reset();
+         notifyBegin(aAST, aContents);
+ 
+@@ -487,151 +487,151 @@ public final class TreeWalker
+ 
+     /**
+      * Notify interested checks that visiting a node.
+      * @param aAST the node to notify for
+      */
+     private void notifyVisit(DetailAST aAST)
+     {
+         final ArrayList visitors =
+             (ArrayList) mTokenToChecks.get(
+                 TokenTypes.getTokenName(aAST.getType()));
+         if (visitors != null) {
+             for (int i = 0; i < visitors.size(); i++) {
+                 final Check check = (Check) visitors.get(i);
+                 check.visitToken(aAST);
+             }
+         }
+     }
+ 
+     /**
+      * Notify interested checks that leaving a node.
+      * @param aAST the node to notify for
+      */
+     private void notifyLeave(DetailAST aAST)
+     {
+         final ArrayList visitors =
+             (ArrayList) mTokenToChecks.get(
+                 TokenTypes.getTokenName(aAST.getType()));
+         if (visitors != null) {
+             for (int i = 0; i < visitors.size(); i++) {
+                 final Check check = (Check) visitors.get(i);
+                 check.leaveToken(aAST);
+             }
+         }
+     }
+ 
+     /**
+      * Static helper method to parses a Java source file.
+      * @param aContents contains the contents of the file
+      * @throws TokenStreamException if lexing failed
+      * @throws RecognitionException if parsing failed
+      * @return the root of the AST
+      */
+     public static DetailAST parse(FileContents aContents)
+         throws RecognitionException, TokenStreamException
+     {
+         DetailAST rootAST = null;
+ 
+         try {
+             rootAST = parse(aContents, true, true, true);
+         }
+-        catch (RecognitionException exception) {
++        catch (final RecognitionException exception) {
+             try {
+                 rootAST = parse(aContents, true, true, false);
+             }
+-            catch (RecognitionException exception2) {
++            catch (final RecognitionException exception2) {
+                 rootAST = parse(aContents, false, false, false);
+             }
+         }
+         return rootAST;
+     }
+ 
+     /**
+      * Static helper method to parses a Java source file with a given
+      * lexer class and parser class.
+      * @param aContents contains the contents of the file
+      * @param aSilentlyConsumeErrors flag to output errors to stdout or not
+      * @param aTreatAssertAsKeyword flag to treat 'assert' as a keyowrd
+      * @param aTreatEnumAsKeyword flag to treat 'enum' as a keyowrd
+      * @throws TokenStreamException if lexing failed
+      * @throws RecognitionException if parsing failed
+      * @return the root of the AST
+      */
+     private static DetailAST parse(
+         FileContents aContents,
+         boolean aSilentlyConsumeErrors,
+         boolean aTreatAssertAsKeyword,
+         boolean aTreatEnumAsKeyword)
+         throws RecognitionException, TokenStreamException
+     {
+         final Reader sar = new StringArrayReader(aContents.getLines());
+         final GeneratedJavaLexer lexer = new GeneratedJavaLexer(sar);
+         lexer.setFilename(aContents.getFilename());
+         lexer.setCommentListener(aContents);
+         lexer.setTreatAssertAsKeyword(aTreatAssertAsKeyword);
+         lexer.setTreatEnumAsKeyword(aTreatEnumAsKeyword);
+ 
+         final GeneratedJavaRecognizer parser =
+             aSilentlyConsumeErrors
+                 ? new SilentJavaRecognizer(lexer)
+                 : new GeneratedJavaRecognizer(lexer);
+         parser.setFilename(aContents.getFilename());
+         parser.setASTNodeClass(DetailAST.class.getName());
+         parser.compilationUnit();
+ 
+         return (DetailAST) parser.getAST();
+     }
+ 
+     /** {@inheritDoc} */
+     public void process(File[] aFiles)
+     {
+         final File[] javaFiles = filter(aFiles);
+ 
+         for (int i = 0; i < javaFiles.length; i++) {
+             process(javaFiles[i]);
+         }
+     }
+ 
+     /**
+      * @see com.puppycrawl.tools.checkstyle.api.FileSetCheck
+      */
+     public void destroy()
+     {
+-        for (Iterator it = mAllChecks.iterator(); it.hasNext();) {
++        for (final Iterator it = mAllChecks.iterator(); it.hasNext();) {
+             final Check c = (Check) it.next();
+             c.destroy();
+         }
+         mCache.destroy();
+         super.destroy();
+     }
+ 
+     /**
+      * @return true if we should use recursive algorithm
+      *         for tree processing, false for iterative one.
+      */
+     private boolean useRecursiveAlgorithm()
+     {
+         return mRecursive;
+     }
+ 
+     /**
+      * Processes a node calling interested checks at each node.
+      * Uses iterative algorithm.
+      * @param aRoot the root of tree for process
+      */
+     private void processIter(DetailAST aRoot)
+     {
+         DetailAST curNode = aRoot;
+         while (curNode != null) {
+             notifyVisit(curNode);
+             DetailAST toVisit = (DetailAST) curNode.getFirstChild();
+             while ((curNode != null) && (toVisit == null)) {
+                 notifyLeave(curNode);
+                 toVisit = (DetailAST) curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+     }
+ }

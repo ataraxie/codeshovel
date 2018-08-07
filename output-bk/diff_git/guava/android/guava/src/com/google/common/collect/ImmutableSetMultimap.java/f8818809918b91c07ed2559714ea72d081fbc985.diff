@@ -1,0 +1,110 @@
+diff --git a/android/guava/src/com/google/common/collect/ImmutableSetMultimap.java b/android/guava/src/com/google/common/collect/ImmutableSetMultimap.java
+index ba69972f4..022ad4253 100644
+--- a/android/guava/src/com/google/common/collect/ImmutableSetMultimap.java
++++ b/android/guava/src/com/google/common/collect/ImmutableSetMultimap.java
+@@ -439,98 +439,104 @@ public class ImmutableSetMultimap<K, V> extends ImmutableMultimap<K, V>
+     }
+ 
+     @Override
+     public UnmodifiableIterator<Entry<K, V>> iterator() {
+       return multimap.entryIterator();
+     }
+ 
+     @Override
+     boolean isPartialView() {
+       return false;
+     }
+   }
+ 
+   private static <V> ImmutableSet<V> valueSet(
+       @NullableDecl Comparator<? super V> valueComparator, Collection<? extends V> values) {
+     return (valueComparator == null)
+         ? ImmutableSet.copyOf(values)
+         : ImmutableSortedSet.copyOf(valueComparator, values);
+   }
+ 
+   private static <V> ImmutableSet<V> emptySet(@NullableDecl Comparator<? super V> valueComparator) {
+     return (valueComparator == null)
+         ? ImmutableSet.<V>of()
+         : ImmutableSortedSet.<V>emptySet(valueComparator);
+   }
+ 
+   private static <V> ImmutableSet.Builder<V> valuesBuilder(
+       @NullableDecl Comparator<? super V> valueComparator) {
+     return (valueComparator == null)
+         ? new ImmutableSet.Builder<V>()
+         : new ImmutableSortedSet.Builder<V>(valueComparator);
+   }
+ 
+   /**
+    * @serialData number of distinct keys, and then for each distinct key: the key, the number of
+    *     values for that key, and the key's values
+    */
+   @GwtIncompatible // java.io.ObjectOutputStream
+   private void writeObject(ObjectOutputStream stream) throws IOException {
+     stream.defaultWriteObject();
+     stream.writeObject(valueComparator());
+     Serialization.writeMultimap(this, stream);
+   }
+ 
+   @NullableDecl
+   Comparator<? super V> valueComparator() {
+     return emptySet instanceof ImmutableSortedSet
+         ? ((ImmutableSortedSet<V>) emptySet).comparator()
+         : null;
+   }
++  
++  @GwtIncompatible // java serialization
++  private static final class SetFieldSettersHolder {
++    static final Serialization.FieldSetter<ImmutableSetMultimap> EMPTY_SET_FIELD_SETTER =
++        Serialization.getFieldSetter(ImmutableSetMultimap.class, "emptySet");
++  }
+ 
+   @GwtIncompatible // java.io.ObjectInputStream
+   // Serialization type safety is at the caller's mercy.
+   @SuppressWarnings("unchecked")
+   private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+     stream.defaultReadObject();
+     Comparator<Object> valueComparator = (Comparator<Object>) stream.readObject();
+     int keyCount = stream.readInt();
+     if (keyCount < 0) {
+       throw new InvalidObjectException("Invalid key count " + keyCount);
+     }
+     ImmutableMap.Builder<Object, ImmutableSet<Object>> builder = ImmutableMap.builder();
+     int tmpSize = 0;
+ 
+     for (int i = 0; i < keyCount; i++) {
+       Object key = stream.readObject();
+       int valueCount = stream.readInt();
+       if (valueCount <= 0) {
+         throw new InvalidObjectException("Invalid value count " + valueCount);
+       }
+ 
+       ImmutableSet.Builder<Object> valuesBuilder = valuesBuilder(valueComparator);
+       for (int j = 0; j < valueCount; j++) {
+         valuesBuilder.add(stream.readObject());
+       }
+       ImmutableSet<Object> valueSet = valuesBuilder.build();
+       if (valueSet.size() != valueCount) {
+         throw new InvalidObjectException("Duplicate key-value pairs exist for key " + key);
+       }
+       builder.put(key, valueSet);
+       tmpSize += valueCount;
+     }
+ 
+     ImmutableMap<Object, ImmutableSet<Object>> tmpMap;
+     try {
+       tmpMap = builder.build();
+     } catch (IllegalArgumentException e) {
+       throw (InvalidObjectException) new InvalidObjectException(e.getMessage()).initCause(e);
+     }
+ 
+     FieldSettersHolder.MAP_FIELD_SETTER.set(this, tmpMap);
+     FieldSettersHolder.SIZE_FIELD_SETTER.set(this, tmpSize);
+-    FieldSettersHolder.EMPTY_SET_FIELD_SETTER.set(this, emptySet(valueComparator));
++    SetFieldSettersHolder.EMPTY_SET_FIELD_SETTER.set(this, emptySet(valueComparator));
+   }
+ 
+   @GwtIncompatible // not needed in emulated source.
+   private static final long serialVersionUID = 0;
+ }

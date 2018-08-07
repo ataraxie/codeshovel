@@ -1,0 +1,56 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "NoWhitespaceAfterCheck.java",
+  "functionName": "getPositionAfter",
+  "functionId": "getPositionAfter___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java",
+  "functionStartLine": 195,
+  "functionEndLine": 209,
+  "changeHistory": [
+    "c56dce9222a819b4741b4c0cd664d38c58b31050",
+    "d97a2df674716efb7deda50180ae933bdc46d68a",
+    "e6638c3344a90ec1716feb1830790efe430a123a"
+  ],
+  "changeHistoryShort": {
+    "c56dce9222a819b4741b4c0cd664d38c58b31050": "Ybodychange",
+    "d97a2df674716efb7deda50180ae933bdc46d68a": "Ymultichange(Yparameterchange,Ybodychange)",
+    "e6638c3344a90ec1716feb1830790efe430a123a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "c56dce9222a819b4741b4c0cd664d38c58b31050": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1013: Fix NoWhitespaceAfterCheck\n",
+      "commitDate": 1446329775000,
+      "commitName": "c56dce9222a819b4741b4c0cd664d38c58b31050",
+      "commitAuthor": "attatrol",
+      "commitDateOld": 1442844325000,
+      "commitNameOld": "03f2be49f7ad3fc9d0143782b020a169f28e50a9",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 40.34,
+      "commitsBetweenForRepo": 257,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     private static int getPositionAfter(DetailAST ast) {\n-        int after;\n-        //If target of possible redundant whitespace is in method definition\n+        final int after;\n+        //If target of possible redundant whitespace is in method definition.\n         if (ast.getType() \u003d\u003d TokenTypes.IDENT\n                 \u0026\u0026 ast.getNextSibling() !\u003d null\n                 \u0026\u0026 ast.getNextSibling().getType() \u003d\u003d TokenTypes.LPAREN) {\n             final DetailAST methodDef \u003d ast.getParent();\n             final DetailAST endOfParams \u003d methodDef.findFirstToken(TokenTypes.RPAREN);\n             after \u003d endOfParams.getColumnNo() + 1;\n         }\n         else {\n             after \u003d ast.getColumnNo() + ast.getText().length();\n         }\n         return after;\n     }\n\\ No newline at end of file\n"
+    },
+    "d97a2df674716efb7deda50180ae933bdc46d68a": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, whitespace, #512\n",
+      "commitDate": 1421677248000,
+      "commitName": "d97a2df674716efb7deda50180ae933bdc46d68a",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "e6638c3344a90ec1716feb1830790efe430a123a": {
+      "type": "Yintroduced",
+      "commitMessage": "No Whitespace After Check, fixed NPE, fixed false-positives at multidimensional arrays, issue #542\n",
+      "commitDate": 1419959319000,
+      "commitName": "e6638c3344a90ec1716feb1830790efe430a123a",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

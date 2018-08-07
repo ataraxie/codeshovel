@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+index ca2886d3f..c1ecdf9d5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+@@ -565,101 +565,101 @@ public class CustomImportOrderCheck extends Check
+             }
+         }
+         return 0;
+     }
+ 
+     /**
+      * Return class name from import full path.
+      * @param aStartFrom number of start.
+      * @param aImport import full path.
+      * @return class name.
+      */
+     private String getClassName(int aStartFrom, String aImport)
+     {
+         String className = aImport;
+         className = className.substring(aStartFrom, className.length());
+         final StringTokenizer token = new StringTokenizer(className, ".\r");
+         return token.nextToken();
+     }
+ 
+     /**
+      * Count number of domains.
+      * @param aImportPath current import.
+      * @return number of domains.
+      */
+     private static int countDomains(String aImportPath)
+     {
+         final StringTokenizer tokens = new StringTokenizer(aImportPath, ".");
+         int count = 0;
+ 
+         while (tokens.hasMoreTokens()) {
+             if (!Character.isUpperCase(tokens.nextToken().toString().charAt(0))) {
+                 count++;
+             }
+             else {
+                 break;
+             }
+         }
+         return count - 1;
+     }
+ 
+     /**
+      * Checks if a token has a empty line before.
+      * @param aLineNo
+      *        Line number of current import.
+      * @return true, if token have empty line before.
+      */
+     private boolean hasEmptyLineBefore(int aLineNo)
+     {
+         //  [lineNo - 2] is the number of the previous line
+         //  because the numbering starts from zero.
+-        final String lineBefore = getLines()[aLineNo - 2];
++        final String lineBefore = getLine(aLineNo - 2);
+         return lineBefore.trim().isEmpty();
+     }
+ 
+     /**
+      * Forms import full path.
+      * @param aToken
+      *        current token.
+      * @return full path or null.
+      */
+     private static String getFullImportIdent(DetailAST aToken)
+     {
+         return aToken != null ? FullIdent.createFullIdent(aToken.
+                 findFirstToken(TokenTypes.DOT)).getText() : "";
+     }
+ 
+     /**
+      * Parses ordering rule and adds it to the list with rules.
+      * @param aRule
+      *        String with rule.
+      */
+     private void addRulesToList(String aRule)
+     {
+         if (STATIC_RULE_GROUP.equals(aRule)
+                 || THIRD_PARTY_PACKAGE_RULE_GROUP.equals(aRule)
+                 || STANDARD_JAVA_PACKAGE_RULE_GROUP.equals(aRule)
+                 || SPECIAL_IMPORTS_RULE_GROUP.equals(aRule))
+         {
+             mCustomImportOrderRules.add(aRule);
+ 
+         }
+         else if (aRule.startsWith(SAME_PACKAGE_RULE_GROUP)) {
+ 
+             final String rule = aRule.substring(aRule.indexOf("(") + 1,
+                     aRule.indexOf(")"));
+             try {
+                 mSamePackageMatchingDepth = Integer.parseInt(rule);
+             }
+             catch (Exception e) {
+                 mSamePackageDomainsRegExp = rule;
+             }
+             mCustomImportOrderRules.add(SAME_PACKAGE_RULE_GROUP);
+ 
+         }
+         else {
+             throw new RuntimeException("Unexpected rule: " + aRule);
+         }
+     }
+ 
+     /**
+      * Creates mSamePackageDomainsRegExp of the first package domains.

@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IllegalTypeCheck.java",
+  "functionName": "isVerifiable",
+  "functionId": "isVerifiable___methodOrVariableDef-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java",
+  "functionStartLine": 224,
+  "functionEndLine": 232,
+  "changeHistory": [
+    "b69c169934b648eb7e4f841ea5c21d9106e6f134",
+    "603c5bb53ea12900f6a1c8af0c4a765af36786e3",
+    "677acc1e8491acffd24c859e553b06362da0d471"
+  ],
+  "changeHistoryShort": {
+    "b69c169934b648eb7e4f841ea5c21d9106e6f134": "Ybodychange",
+    "603c5bb53ea12900f6a1c8af0c4a765af36786e3": "Ybodychange",
+    "677acc1e8491acffd24c859e553b06362da0d471": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b69c169934b648eb7e4f841ea5c21d9106e6f134": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1555: Remove unused assignment\n\nFixes `UnusedAssignment` inspection violations.\n\nDescription:\n\u003eThis inspection points out the cases where a variable value is never used after its assignment, i.e.:\n  - the variable never gets read after assignment OR\n  - the value is always overwritten with another assignment before the next variable read OR\n  - the variable initializer is redundant (for one of the above two reasons) OR\n  - the variable is never used.\n",
+      "commitDate": 1440942808000,
+      "commitName": "b69c169934b648eb7e4f841ea5c21d9106e6f134",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440913618000,
+      "commitNameOld": "603c5bb53ea12900f6a1c8af0c4a765af36786e3",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.34,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,9 @@\n     private boolean isVerifiable(DetailAST methodOrVariableDef) {\n         boolean result \u003d true;\n         if (memberModifiers !\u003d null) {\n-            result \u003d false;\n             final DetailAST modifiersAst \u003d methodOrVariableDef\n                     .findFirstToken(TokenTypes.MODIFIERS);\n             result \u003d isContainVerifiableType(modifiersAst);\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "603c5bb53ea12900f6a1c8af0c4a765af36786e3": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #46: Statements shouldn\u0027t be nested too deep\n",
+      "commitDate": 1440913618000,
+      "commitName": "603c5bb53ea12900f6a1c8af0c4a765af36786e3",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440853936000,
+      "commitNameOld": "e2f265251a601054b36a9464d0f6e389371723d5",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.69,
+      "commitsBetweenForRepo": 32,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,10 @@\n     private boolean isVerifiable(DetailAST methodOrVariableDef) {\n         boolean result \u003d true;\n         if (memberModifiers !\u003d null) {\n             result \u003d false;\n             final DetailAST modifiersAst \u003d methodOrVariableDef\n                     .findFirstToken(TokenTypes.MODIFIERS);\n-            if (modifiersAst.getFirstChild() !\u003d null) {\n-                for (DetailAST modifier \u003d modifiersAst.getFirstChild(); modifier !\u003d null;\n-                         modifier \u003d modifier.getNextSibling()) {\n-                    if (memberModifiers.contains(modifier.getType())) {\n-                        result \u003d true;\n-                    }\n-                }\n-            }\n+            result \u003d isContainVerifiableType(modifiersAst);\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "677acc1e8491acffd24c859e553b06362da0d471": {
+      "type": "Yintroduced",
+      "commitMessage": "Illegal Type Check, updated default illegal types, added memberModifiers option, issue #567\n",
+      "commitDate": 1422650742000,
+      "commitName": "677acc1e8491acffd24c859e553b06362da0d471",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

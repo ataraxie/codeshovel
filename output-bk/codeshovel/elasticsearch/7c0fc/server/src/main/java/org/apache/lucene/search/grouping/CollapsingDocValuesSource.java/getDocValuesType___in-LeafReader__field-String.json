@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "CollapsingDocValuesSource.java",
+  "functionName": "getDocValuesType",
+  "functionId": "getDocValuesType___in-LeafReader__field-String",
+  "sourceFilePath": "server/src/main/java/org/apache/lucene/search/grouping/CollapsingDocValuesSource.java",
+  "functionStartLine": 255,
+  "functionEndLine": 261,
+  "changeHistory": [
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+    "e48bc2eed71b1808e5d98960976ec60e6e722d78"
+  ],
+  "changeHistoryShort": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": "Yfilerename",
+    "e48bc2eed71b1808e5d98960976ec60e6e722d78": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": {
+      "type": "Yfilerename",
+      "commitMessage": "Rename core module to server (#28180)\n\nThis is related to #27933. It renames the core module to server. This is\r\nthe first step towards introducing an elasticsearch-core jar.",
+      "commitDate": 1515695443000,
+      "commitName": "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+      "commitAuthor": "Tim Brooks",
+      "commitDateOld": 1515688270000,
+      "commitNameOld": "7d0eb3292b8f8ba27ef50dbbf38783dc68c70728",
+      "commitAuthorOld": "Martijn van Groningen",
+      "daysBetweenCommits": 0.08,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "e48bc2eed71b1808e5d98960976ec60e6e722d78": {
+      "type": "Yintroduced",
+      "commitMessage": "Add field collapsing for search request (#22337)\n\n* Add top hits collapsing to search request\r\n\r\nThe field collapsing is done with a custom top docs collector that \"collapse\" search hits with same field value.\r\nThe distributed aspect is resolve using the two passes that the regular search uses. The first pass \"collapse\" the top hits, then the coordinating node merge/collapse the top hits from each shard.\r\n\r\n```\r\nGET _search\r\n{\r\n   \"collapse\": {\r\n      \"field\": \"category\",\r\n   }\r\n}\r\n```\r\n\r\nThis change also adds an ExpandCollapseSearchResponseListener that intercepts the search response and expands collapsed hits using the CollapseBuilder#innerHit} options.\r\nThe retrieval of each inner_hits is done by sending a query to all shards filtered by the collapse key.\r\n\r\n```\r\nGET _search\r\n{\r\n   \"collapse\": {\r\n      \"field\": \"category\",\r\n      \"inner_hits\": {\r\n\t\"size\": 2\r\n      }\r\n   }\r\n}\r\n```\r\n",
+      "commitDate": 1485185631000,
+      "commitName": "e48bc2eed71b1808e5d98960976ec60e6e722d78",
+      "commitAuthor": "Jim Ferenczi"
+    }
+  }
+}

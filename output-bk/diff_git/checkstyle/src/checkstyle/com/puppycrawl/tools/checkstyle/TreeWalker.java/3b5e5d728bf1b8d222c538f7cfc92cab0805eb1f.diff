@@ -1,0 +1,113 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 82dfa6ee5..0bc9fc3b0 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -439,106 +439,106 @@ public final class TreeWalker
+         if (child != null) {
+             process(child);
+         }
+ 
+         notifyLeave(aAST);
+ 
+         final DetailAST sibling = (DetailAST) aAST.getNextSibling();
+         if (sibling != null) {
+             process(sibling);
+         }
+ 
+     }
+ 
+     /**
+      * Notify interested checks that visiting a node.
+      * @param aAST the node to notify for
+      */
+     private void notifyVisit(DetailAST aAST)
+     {
+         final ArrayList visitors =
+             (ArrayList) mTokenToChecks.get(
+                 TokenTypes.getTokenName(aAST.getType()));
+         if (visitors != null) {
+             for (int i = 0; i < visitors.size(); i++) {
+                 final Check check = (Check) visitors.get(i);
+                 check.visitToken(aAST);
+             }
+         }
+     }
+ 
+     /**
+      * Notify interested checks that leaving a node.
+      * @param aAST the node to notify for
+      */
+     private void notifyLeave(DetailAST aAST)
+     {
+         final ArrayList visitors =
+             (ArrayList) mTokenToChecks.get(
+                 TokenTypes.getTokenName(aAST.getType()));
+         if (visitors != null) {
+             for (int i = 0; i < visitors.size(); i++) {
+                 final Check check = (Check) visitors.get(i);
+                 check.leaveToken(aAST);
+             }
+         }
+     }
+ 
+     /**
+      * Static helper method to parses a Java source file.
+      * @param aContents contains the contents of the file
+-     * @return the root of the AST
+      * @throws RecognitionException if parsing failed
+      * @throws TokenStreamException if lexing failed
++     * @return the root of the AST
+      */
+     public static DetailAST parse(FileContents aContents)
+-        throws TokenStreamException, RecognitionException
++        throws RecognitionException, TokenStreamException
+     {
+         DetailAST rootAST;
+         try {
+             // try the 1.4 grammar first, this will succeed for
+             // all code that compiles without any warnings in JDK 1.4,
+             // that should cover most cases
+             final Reader sar = new StringArrayReader(aContents.getLines());
+             final GeneratedJava14Lexer jl = new GeneratedJava14Lexer(sar);
+             jl.setFilename(aContents.getFilename());
+             jl.setCommentListener(aContents);
+ 
+             final GeneratedJava14Recognizer jr =
+                 new SilentJava14Recognizer(jl);
+             jr.setFilename(aContents.getFilename());
+             jr.setASTNodeClass(DetailAST.class.getName());
+             jr.compilationUnit();
+             rootAST = (DetailAST) jr.getAST();
+         }
+         catch (RecognitionException re) {
+             // Parsing might have failed because the checked
+             // file contains "assert" as an identifier. Retry with a
+             // grammar that treats "assert" as an identifier
+             // and not as a keyword
+ 
+             // Arghh - the pain - duplicate code!
+             final Reader sar = new StringArrayReader(aContents.getLines());
+             final GeneratedJavaLexer jl = new GeneratedJavaLexer(sar);
+             jl.setFilename(aContents.getFilename());
+             jl.setCommentListener(aContents);
+ 
+             final GeneratedJavaRecognizer jr = new GeneratedJavaRecognizer(jl);
+             jr.setFilename(aContents.getFilename());
+             jr.setASTNodeClass(DetailAST.class.getName());
+             jr.compilationUnit();
+             rootAST = (DetailAST) jr.getAST();
+         }
+         return rootAST;
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.FileSetCheck */
+     public void process(File[] aFiles)
+     {
+         File[] javaFiles = filter(aFiles);
+ 
+         for (int i = 0; i < javaFiles.length; i++) {
+             process(javaFiles[i]);
+         }
+     }
+ 
+     /**

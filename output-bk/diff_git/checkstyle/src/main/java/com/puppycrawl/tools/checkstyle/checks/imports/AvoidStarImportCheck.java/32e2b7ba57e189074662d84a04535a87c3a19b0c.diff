@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/AvoidStarImportCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/AvoidStarImportCheck.java
+index 86dc8b4a1..224340a7e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/AvoidStarImportCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/AvoidStarImportCheck.java
+@@ -40,106 +40,106 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="AvoidStarImport"&gt;
+  *   &lt;property name="excludes" value="java.io,java.net,java.lang.Math"/&gt;
+  *   &lt;property name="allowClassImports" value="false"/&gt;
+  *   &lt;property name="allowStaticMemberImports" value="false"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * The optional "excludes" property allows for certain packages like
+  * java.io or java.net to be exempted from the rule. It also is used to
+  * allow certain classes like java.lang.Math or java.io.File to be
+  * excluded in order to support static member imports.
+  *
+  * <p>The optional "allowClassImports" when set to true, will allow starred
+  * class imports but will not affect static member imports.
+  *
+  * <p>The optional "allowStaticMemberImports" when set to true will allow
+  * starred static member imports but will not affect class imports.
+  *
+  * @author Oliver Burn
+  * @author <a href="bschneider@vecna.com">Bill Schneider</a>
+  * @author Travis Schneeberger
+  */
+ @StatelessCheck
+ public class AvoidStarImportCheck
+     extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "import.avoidStar";
+ 
+     /** Suffix for the star import. */
+     private static final String STAR_IMPORT_SUFFIX = ".*";
+ 
+     /** The packages/classes to exempt from this check. */
+     private final List<String> excludes = new ArrayList<>();
+ 
+     /** Whether to allow all class imports. */
+     private boolean allowClassImports;
+ 
+     /** Whether to allow all static member imports. */
+     private boolean allowStaticMemberImports;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         // original implementation checks both IMPORT and STATIC_IMPORT tokens to avoid ".*" imports
+         // however user can allow using "import" or "import static"
+         // by configuring allowClassImports and allowStaticMemberImports
+         // To avoid potential confusion when user specifies conflicting options on configuration
+         // (see example below) we are adding both tokens to Required list
+         //   <module name="AvoidStarImport">
+         //      <property name="tokens" value="IMPORT"/>
+         //      <property name="allowStaticMemberImports" value="false"/>
+         //   </module>
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     /**
+      * Sets the list of packages or classes to be exempt from the check.
+      * The excludes can contain a .* or not.
+      * @param excludesParam a list of package names/fully-qualifies class names
+      *     where star imports are ok.
+      */
+     public void setExcludes(String... excludesParam) {
+         for (final String exclude : excludesParam) {
+             if (exclude.endsWith(STAR_IMPORT_SUFFIX)) {
+                 excludes.add(exclude);
+             }
+             else {
+                 excludes.add(exclude + STAR_IMPORT_SUFFIX);
+             }
+         }
+     }
+ 
+     /**
+      * Sets whether or not to allow all non-static class imports.
+      * @param allow true to allow false to disallow
+      */
+     public void setAllowClassImports(boolean allow) {
+         allowClassImports = allow;
+     }
+ 
+     /**
+      * Sets whether or not to allow all static member imports.
+      * @param allow true to allow false to disallow
+      */
+     public void setAllowStaticMemberImports(boolean allow) {
+         allowStaticMemberImports = allow;
+     }
+ 
+     @Override

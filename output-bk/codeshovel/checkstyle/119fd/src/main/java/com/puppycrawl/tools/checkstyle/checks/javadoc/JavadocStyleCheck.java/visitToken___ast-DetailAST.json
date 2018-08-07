@@ -1,0 +1,152 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "JavadocStyleCheck.java",
+  "functionName": "visitToken",
+  "functionId": "visitToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java",
+  "functionStartLine": 146,
+  "functionEndLine": 157,
+  "changeHistory": [
+    "ce196814d857a4244a80c51d5151cc35e90b6749",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "eeee00819be1c526aaa6ac0d4fa2259842973b22",
+    "a031901307ecd3b1ae035d7ac185bc221472b396",
+    "cdf0ac0f4c4fb8ab63c4bb7d144a71682c6e400a",
+    "8fb2acd39b7db6223486f5e06126c7f0a2642a72",
+    "24ba45a971569b9702e6bf78c5c07c48beb25464",
+    "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3"
+  ],
+  "changeHistoryShort": {
+    "ce196814d857a4244a80c51d5151cc35e90b6749": "Ybodychange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "eeee00819be1c526aaa6ac0d4fa2259842973b22": "Ybodychange",
+    "a031901307ecd3b1ae035d7ac185bc221472b396": "Ybodychange",
+    "cdf0ac0f4c4fb8ab63c4bb7d144a71682c6e400a": "Ybodychange",
+    "8fb2acd39b7db6223486f5e06126c7f0a2642a72": "Ybodychange",
+    "24ba45a971569b9702e6bf78c5c07c48beb25464": "Ybodychange",
+    "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "ce196814d857a4244a80c51d5151cc35e90b6749": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2080: Fix typos in code\n",
+      "commitDate": 1445038509000,
+      "commitName": "ce196814d857a4244a80c51d5151cc35e90b6749",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1444185186000,
+      "commitNameOld": "5f5142b2325051f9ed31130167c73d154d547211",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 9.88,
+      "commitsBetweenForRepo": 95,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     public void visitToken(DetailAST ast) {\n         if (shouldCheck(ast)) {\n             final FileContents contents \u003d getFileContents();\n             // Need to start searching for the comment before the annotations\n             // that may exist. Even if annotations are not defined on the\n             // package, the ANNOTATIONS AST is defined.\n-            final TextBlock cmt \u003d\n+            final TextBlock textBlock \u003d\n                 contents.getJavadocBefore(ast.getFirstChild().getLineNo());\n \n-            checkComment(ast, cmt);\n+            checkComment(ast, textBlock);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "eeee00819be1c526aaa6ac0d4fa2259842973b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed JavadocStyle not handling package declarations that have annotations.(bug #2911363)\n",
+      "commitDate": 1267700275000,
+      "commitName": "eeee00819be1c526aaa6ac0d4fa2259842973b22",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1266029835000,
+      "commitNameOld": "523080bbf2be11354b94b851ac85d06e7e8a2c14",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 19.33,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,13 @@\n     public void visitToken(DetailAST aAST)\n     {\n         if (shouldCheck(aAST)) {\n             final FileContents contents \u003d getFileContents();\n+            // Need to start searching for the comment before the annotations\n+            // that may exist. Even if annotations are not defined on the\n+            // package, the ANNOTATIONS AST is defined.\n             final TextBlock cmt \u003d\n-                contents.getJavadocBefore(aAST.getLineNo());\n+                contents.getJavadocBefore(aAST.getFirstChild().getLineNo());\n \n             checkComment(aAST, cmt);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "a031901307ecd3b1ae035d7ac185bc221472b396": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix for 1185501.\n",
+      "commitDate": 1117930286000,
+      "commitName": "a031901307ecd3b1ae035d7ac185bc221472b396",
+      "commitAuthor": "Michael Studman",
+      "commitDateOld": 1115830091000,
+      "commitNameOld": "e27489c7721909245ea5055eac3b9c7c659081f6",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 24.31,
+      "commitsBetweenForRepo": 17,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public void visitToken(DetailAST aAST)\n     {\n         if (shouldCheck(aAST)) {\n             final FileContents contents \u003d getFileContents();\n             final TextBlock cmt \u003d\n                 contents.getJavadocBefore(aAST.getLineNo());\n \n-            checkComment(cmt);\n+            checkComment(aAST, cmt);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "cdf0ac0f4c4fb8ab63c4bb7d144a71682c6e400a": {
+      "type": "Ybodychange",
+      "commitMessage": "Scoping for javadoc checks\n",
+      "commitDate": 1080421817000,
+      "commitName": "cdf0ac0f4c4fb8ab63c4bb7d144a71682c6e400a",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1077866414000,
+      "commitNameOld": "4a1fc903352ce5a849ab05c556a6fe3ad6b01226",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 29.58,
+      "commitsBetweenForRepo": 24,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,27 +1,10 @@\n     public void visitToken(DetailAST aAST)\n     {\n-        if (!ScopeUtils.inCodeBlock(aAST)) {\n-            final DetailAST mods \u003d\n-                aAST.findFirstToken(TokenTypes.MODIFIERS);\n-            final Scope declaredScope \u003d ScopeUtils.getScopeFromMods(mods);\n-            final Scope variableScope \u003d\n-                ScopeUtils.inInterfaceBlock(aAST)\n-                    ? Scope.PUBLIC\n-                    : declaredScope;\n+        if (shouldCheck(aAST)) {\n+            final FileContents contents \u003d getFileContents();\n+            final TextBlock cmt \u003d\n+                contents.getJavadocBefore(aAST.getLineNo());\n \n-            if (variableScope.isIn(mScope)) {\n-                final Scope surroundingScope \u003d\n-                    ScopeUtils.getSurroundingScope(aAST);\n-\n-                if ((surroundingScope \u003d\u003d null)\n-                    || surroundingScope.isIn(mScope))\n-                {\n-                    final FileContents contents \u003d getFileContents();\n-                    final TextBlock cmt \u003d\n-                        contents.getJavadocBefore(aAST.getLineNo());\n-\n-                    checkComment(cmt);\n-                }\n-            }\n+            checkComment(cmt);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "8fb2acd39b7db6223486f5e06126c7f0a2642a72": {
+      "type": "Ybodychange",
+      "commitMessage": "replaced Comment class with TextBlock interface, Comment is now a package private implementation\n",
+      "commitDate": 1069656302000,
+      "commitName": "8fb2acd39b7db6223486f5e06126c7f0a2642a72",
+      "commitAuthor": "Lars Kühne",
+      "commitDateOld": 1069576421000,
+      "commitNameOld": "24ba45a971569b9702e6bf78c5c07c48beb25464",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 0.92,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,27 +1,27 @@\n     public void visitToken(DetailAST aAST)\n     {\n         if (!ScopeUtils.inCodeBlock(aAST)) {\n             final DetailAST mods \u003d\n                 aAST.findFirstToken(TokenTypes.MODIFIERS);\n             final Scope declaredScope \u003d ScopeUtils.getScopeFromMods(mods);\n             final Scope variableScope \u003d\n                 ScopeUtils.inInterfaceBlock(aAST)\n                     ? Scope.PUBLIC\n                     : declaredScope;\n \n             if (variableScope.isIn(mScope)) {\n                 final Scope surroundingScope \u003d\n                     ScopeUtils.getSurroundingScope(aAST);\n \n                 if ((surroundingScope \u003d\u003d null)\n                     || surroundingScope.isIn(mScope))\n                 {\n                     final FileContents contents \u003d getFileContents();\n-                    final Comment cmt \u003d\n+                    final TextBlock cmt \u003d\n                         contents.getJavadocBefore(aAST.getLineNo());\n \n                     checkComment(cmt);\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "24ba45a971569b9702e6bf78c5c07c48beb25464": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix for ArrayIndexOutOfBounds in JavadocStyle (bug 841942 )\n",
+      "commitDate": 1069576421000,
+      "commitName": "24ba45a971569b9702e6bf78c5c07c48beb25464",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1069327160000,
+      "commitNameOld": "fd6a743fd4b3c9283d62174327dd978bda694892",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 2.88,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,27 +1,27 @@\n     public void visitToken(DetailAST aAST)\n     {\n         if (!ScopeUtils.inCodeBlock(aAST)) {\n             final DetailAST mods \u003d\n                 aAST.findFirstToken(TokenTypes.MODIFIERS);\n             final Scope declaredScope \u003d ScopeUtils.getScopeFromMods(mods);\n             final Scope variableScope \u003d\n                 ScopeUtils.inInterfaceBlock(aAST)\n                     ? Scope.PUBLIC\n                     : declaredScope;\n \n             if (variableScope.isIn(mScope)) {\n                 final Scope surroundingScope \u003d\n                     ScopeUtils.getSurroundingScope(aAST);\n \n                 if ((surroundingScope \u003d\u003d null)\n                     || surroundingScope.isIn(mScope))\n                 {\n                     final FileContents contents \u003d getFileContents();\n-                    final String[] cmt \u003d\n+                    final Comment cmt \u003d\n                         contents.getJavadocBefore(aAST.getLineNo());\n \n-                    checkComment(aAST, cmt);\n+                    checkComment(cmt);\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3": {
+      "type": "Yintroduced",
+      "commitMessage": "New Javadoc style check from Chris Stillwell.\n",
+      "commitDate": 1058185912000,
+      "commitName": "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

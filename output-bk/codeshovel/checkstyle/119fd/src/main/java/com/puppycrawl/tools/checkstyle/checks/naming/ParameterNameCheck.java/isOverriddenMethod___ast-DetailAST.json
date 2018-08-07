@@ -1,0 +1,166 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ParameterNameCheck.java",
+  "functionName": "isOverriddenMethod",
+  "functionId": "isOverriddenMethod___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/ParameterNameCheck.java",
+  "functionStartLine": 176,
+  "functionEndLine": 192,
+  "changeHistory": [
+    "eb5b977a475c2240db5efc83aec8973d734895eb",
+    "75bbb441800de900e268cfa5ee82a64966b405b2",
+    "8381754587bee0de49489e9bfb11e5912f664e87",
+    "c9b625bcf0e456e4f9cc99a249860129cdae3df4",
+    "fa8b3ed7e1dfa251d0092263c77ddedbfd1d348e",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d80cbf61042a3901b2f61de7ad4494ff93ea0e3c",
+    "d83cf71c6ba2f3345feaa1a1cf03eee38a5339ce"
+  ],
+  "changeHistoryShort": {
+    "eb5b977a475c2240db5efc83aec8973d734895eb": "Ybodychange",
+    "75bbb441800de900e268cfa5ee82a64966b405b2": "Ybodychange",
+    "8381754587bee0de49489e9bfb11e5912f664e87": "Ybodychange",
+    "c9b625bcf0e456e4f9cc99a249860129cdae3df4": "Ymultichange(Yrename,Ymodifierchange,Ybodychange)",
+    "fa8b3ed7e1dfa251d0092263c77ddedbfd1d348e": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d80cbf61042a3901b2f61de7ad4494ff93ea0e3c": "Yfilerename",
+    "d83cf71c6ba2f3345feaa1a1cf03eee38a5339ce": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "eb5b977a475c2240db5efc83aec8973d734895eb": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #3293: Replace Guava\u0027s Optional with Java\u0027s native (#3293)\n\n",
+      "commitDate": 1466685482000,
+      "commitName": "eb5b977a475c2240db5efc83aec8973d734895eb",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1466112819000,
+      "commitNameOld": "40a0b5dcf7f9b45ae98ddcb1dec6e9e7c4eec676",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 6.63,
+      "commitsBetweenForRepo": 22,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     private static boolean isOverriddenMethod(DetailAST ast) {\n         boolean overridden \u003d false;\n \n         final DetailAST parent \u003d ast.getParent().getParent();\n         final Optional\u003cDetailAST\u003e annotation \u003d\n-            Optional.fromNullable(parent.getFirstChild().getFirstChild());\n+            Optional.ofNullable(parent.getFirstChild().getFirstChild());\n \n         if (annotation.isPresent() \u0026\u0026 annotation.get().getType() \u003d\u003d TokenTypes.ANNOTATION) {\n             final Optional\u003cDetailAST\u003e overrideToken \u003d\n-                Optional.fromNullable(annotation.get().findFirstToken(TokenTypes.IDENT));\n+                Optional.ofNullable(annotation.get().findFirstToken(TokenTypes.IDENT));\n             if (overrideToken.isPresent() \u0026\u0026 \"Override\".equals(overrideToken.get().getText())) {\n                 overridden \u003d true;\n             }\n         }\n         return overridden;\n     }\n\\ No newline at end of file\n"
+    },
+    "75bbb441800de900e268cfa5ee82a64966b405b2": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2678: Fix NPE in ParameterNameCheck\n",
+      "commitDate": 1449691194000,
+      "commitName": "75bbb441800de900e268cfa5ee82a64966b405b2",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1447854798000,
+      "commitNameOld": "c324b05dfdeb0ce41af355db95b7da3149f8f98a",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 21.25,
+      "commitsBetweenForRepo": 59,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,16 @@\n     private static boolean isOverriddenMethod(DetailAST ast) {\n         boolean overridden \u003d false;\n+\n         final DetailAST parent \u003d ast.getParent().getParent();\n-        if (parent.getFirstChild().getFirstChild() !\u003d null) {\n-            final DetailAST annotation \u003d parent.getFirstChild().getFirstChild();\n-            if (annotation.getType() \u003d\u003d TokenTypes.ANNOTATION) {\n-                final DetailAST overrideToken \u003d annotation.findFirstToken(TokenTypes.IDENT);\n-                if (\"Override\".equals(overrideToken.getText())) {\n-                    overridden \u003d true;\n-                }\n+        final Optional\u003cDetailAST\u003e annotation \u003d\n+            Optional.fromNullable(parent.getFirstChild().getFirstChild());\n+\n+        if (annotation.isPresent() \u0026\u0026 annotation.get().getType() \u003d\u003d TokenTypes.ANNOTATION) {\n+            final Optional\u003cDetailAST\u003e overrideToken \u003d\n+                Optional.fromNullable(annotation.get().findFirstToken(TokenTypes.IDENT));\n+            if (overrideToken.isPresent() \u0026\u0026 \"Override\".equals(overrideToken.get().getText())) {\n+                overridden \u003d true;\n             }\n         }\n         return overridden;\n     }\n\\ No newline at end of file\n"
+    },
+    "8381754587bee0de49489e9bfb11e5912f664e87": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2290: Fix NPE in isOverriddenMethod during validation of methods with implicit modifiers\n",
+      "commitDate": 1446785974000,
+      "commitName": "8381754587bee0de49489e9bfb11e5912f664e87",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1446673495000,
+      "commitNameOld": "c9b625bcf0e456e4f9cc99a249860129cdae3df4",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 1.3,
+      "commitsBetweenForRepo": 18,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,14 @@\n     private static boolean isOverriddenMethod(DetailAST ast) {\n         boolean overridden \u003d false;\n         final DetailAST parent \u003d ast.getParent().getParent();\n-        final DetailAST annotation \u003d parent.getFirstChild().getFirstChild();\n-        if (annotation.getType() \u003d\u003d TokenTypes.ANNOTATION) {\n-            final DetailAST overrideToken \u003d annotation.findFirstToken(TokenTypes.IDENT);\n-            if (\"Override\".equals(overrideToken.getText())) {\n-                overridden \u003d true;\n+        if (parent.getFirstChild().getFirstChild() !\u003d null) {\n+            final DetailAST annotation \u003d parent.getFirstChild().getFirstChild();\n+            if (annotation.getType() \u003d\u003d TokenTypes.ANNOTATION) {\n+                final DetailAST overrideToken \u003d annotation.findFirstToken(TokenTypes.IDENT);\n+                if (\"Override\".equals(overrideToken.getText())) {\n+                    overridden \u003d true;\n+                }\n             }\n         }\n         return overridden;\n     }\n\\ No newline at end of file\n"
+    },
+    "c9b625bcf0e456e4f9cc99a249860129cdae3df4": {
+      "type": "Ymultichange(Yrename,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Issue #2290: Add \u0027ignoreOverridden\u0027 option to skip methods with @Override annotation\n",
+      "commitDate": 1446673495000,
+      "commitName": "c9b625bcf0e456e4f9cc99a249860129cdae3df4",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yrename",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "fa8b3ed7e1dfa251d0092263c77ddedbfd1d348e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1288: \u0027ParameterNameCheck\u0027 refactored, UT coverage improved\n",
+      "commitDate": 1436322049000,
+      "commitName": "fa8b3ed7e1dfa251d0092263c77ddedbfd1d348e",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 51.61,
+      "commitsBetweenForRepo": 279,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,3 @@\n     protected boolean mustCheckName(DetailAST ast) {\n-        return !(\n-            ast.getParent() !\u003d null\n-                \u0026\u0026 ast.getParent().getType() \u003d\u003d TokenTypes.LITERAL_CATCH);\n+        return ast.getParent().getType() !\u003d TokenTypes.LITERAL_CATCH;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 20.02,
+      "commitsBetweenForRepo": 107,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     protected boolean mustCheckName(DetailAST ast)\n     {\n         return !(\n-            (ast.getParent() !\u003d null)\n-                \u0026\u0026 (ast.getParent().getType() \u003d\u003d TokenTypes.LITERAL_CATCH));\n+            ast.getParent() !\u003d null\n+                \u0026\u0026 ast.getParent().getType() \u003d\u003d TokenTypes.LITERAL_CATCH);\n     }\n\\ No newline at end of file\n"
+    },
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, naming, #512\n",
+      "commitDate": 1421677299000,
+      "commitName": "750b733bd124eaea34d4692a1bb8d0fd0fe90976",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d80cbf61042a3901b2f61de7ad4494ff93ea0e3c": {
+      "type": "Yfilerename",
+      "commitMessage": "Moved the Naming checks to a sub-package. I had some\nspare time between meetings today.\n",
+      "commitDate": 1054710881000,
+      "commitName": "d80cbf61042a3901b2f61de7ad4494ff93ea0e3c",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1054700509000,
+      "commitNameOld": "03ac7a087862456e949f377e2153c47d310ca61e",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 0.12,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d83cf71c6ba2f3345feaa1a1cf03eee38a5339ce": {
+      "type": "Yintroduced",
+      "commitMessage": "Fixed bug in parameter name check. did not handle catch blocks.\n",
+      "commitDate": 1037972149000,
+      "commitName": "d83cf71c6ba2f3345feaa1a1cf03eee38a5339ce",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

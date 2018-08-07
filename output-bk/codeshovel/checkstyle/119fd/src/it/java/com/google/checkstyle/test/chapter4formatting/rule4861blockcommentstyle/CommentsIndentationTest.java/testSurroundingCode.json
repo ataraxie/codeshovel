@@ -1,0 +1,91 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CommentsIndentationTest.java",
+  "functionName": "testSurroundingCode",
+  "functionId": "testSurroundingCode",
+  "sourceFilePath": "src/it/java/com/google/checkstyle/test/chapter4formatting/rule4861blockcommentstyle/CommentsIndentationTest.java",
+  "functionStartLine": 173,
+  "functionEndLine": 201,
+  "changeHistory": [
+    "cf436f1d9806016cb1886b5d7ec397f56aedc824",
+    "618e6934e2f841aa07b94d90452418adb93cb544",
+    "7a4ec11d123dc0bbf7db943af715d19814d2e332",
+    "662cb2e20e296d1546bb7c845e4661dcdcc77855",
+    "e21676f52f3d68294122244cea63b4ecbe92de8f"
+  ],
+  "changeHistoryShort": {
+    "cf436f1d9806016cb1886b5d7ec397f56aedc824": "Ybodychange",
+    "618e6934e2f841aa07b94d90452418adb93cb544": "Ybodychange",
+    "7a4ec11d123dc0bbf7db943af715d19814d2e332": "Ybodychange",
+    "662cb2e20e296d1546bb7c845e4661dcdcc77855": "Ybodychange",
+    "e21676f52f3d68294122244cea63b4ecbe92de8f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "cf436f1d9806016cb1886b5d7ec397f56aedc824": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4592: merged module test support and fileset test support",
+      "commitDate": 1501657005000,
+      "commitName": "cf436f1d9806016cb1886b5d7ec397f56aedc824",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1501610201000,
+      "commitNameOld": "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba",
+      "commitAuthorOld": "Subbu Dantu",
+      "daysBetweenCommits": 0.54,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,29 +1,29 @@\n     public void testSurroundingCode() throws Exception {\n         final String[] expected \u003d {\n             \"13: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 14, 14, 12),\n             \"23: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 24, 16, 12),\n             \"25: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 27, 16, 12),\n             \"28: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 31, 16, 12),\n             \"50: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 53, 27, 36),\n             \"51: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 53, 23, 36),\n             \"90: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 91, 14, 8),\n             \"98: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 100, 13, 8),\n             \"108: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 109, 33, 8),\n             };\n \n-        final Configuration checkConfig \u003d getCheckConfig(\"CommentsIndentation\");\n+        final Configuration checkConfig \u003d getModuleConfig(\"CommentsIndentation\");\n         final String filePath \u003d\n             getPath(\"InputCommentsIndentationSurroundingCode.java\");\n \n         final Integer[] warnList \u003d getLinesWithWarn(filePath);\n         verify(checkConfig, filePath, expected, warnList);\n     }\n\\ No newline at end of file\n"
+    },
+    "618e6934e2f841aa07b94d90452418adb93cb544": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3166: fix CommentsIndentation Check incorrect work with subsequent comments (#3275)\n\n",
+      "commitDate": 1466083948000,
+      "commitName": "618e6934e2f841aa07b94d90452418adb93cb544",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1464613701000,
+      "commitNameOld": "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 17.02,
+      "commitsBetweenForRepo": 41,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,29 +1,29 @@\n     public void testSurroundingCode() throws Exception {\n         final String[] expected \u003d {\n             \"13: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 14, 14, 12),\n             \"23: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 24, 16, 12),\n             \"25: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 27, 16, 12),\n             \"28: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 31, 16, 12),\n             \"50: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n-                51, 27, 23),\n+                53, 27, 36),\n             \"51: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 53, 23, 36),\n             \"90: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 91, 14, 8),\n             \"98: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n-                99, 13, 8),\n+                100, 13, 8),\n             \"108: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 109, 33, 8),\n             };\n \n         final Configuration checkConfig \u003d getCheckConfig(\"CommentsIndentation\");\n         final String filePath \u003d\n             getPath(\"InputCommentsIndentationSurroundingCode.java\");\n \n         final Integer[] warnList \u003d getLinesWithWarn(filePath);\n         verify(checkConfig, filePath, expected, warnList);\n     }\n\\ No newline at end of file\n"
+    },
+    "7a4ec11d123dc0bbf7db943af715d19814d2e332": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2589: Unify IT test code.",
+      "commitDate": 1447384120000,
+      "commitName": "7a4ec11d123dc0bbf7db943af715d19814d2e332",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1447252721000,
+      "commitNameOld": "6c49a05cb65fe91c3d71ebd301f6b3a3a49f020f",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.52,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,29 +1,29 @@\n     public void testSurroundingCode() throws Exception {\n         final String[] expected \u003d {\n             \"13: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 14, 14, 12),\n             \"23: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 24, 16, 12),\n             \"25: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 27, 16, 12),\n             \"28: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 31, 16, 12),\n             \"50: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 51, 27, 23),\n             \"51: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 53, 23, 36),\n             \"90: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 91, 14, 8),\n             \"98: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 99, 13, 8),\n             \"108: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 109, 33, 8),\n             };\n \n-        final Configuration checkConfig \u003d builder.getCheckConfig(\"CommentsIndentation\");\n+        final Configuration checkConfig \u003d getCheckConfig(\"CommentsIndentation\");\n         final String filePath \u003d\n-            builder.getFilePath(\"InputCommentsIndentationSurroundingCode\");\n+            getPath(\"InputCommentsIndentationSurroundingCode.java\");\n \n-        final Integer[] warnList \u003d builder.getLinesWithWarn(filePath);\n+        final Integer[] warnList \u003d getLinesWithWarn(filePath);\n         verify(checkConfig, filePath, expected, warnList);\n     }\n\\ No newline at end of file\n"
+    },
+    "662cb2e20e296d1546bb7c845e4661dcdcc77855": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2540: unify it input file names for chapter4formatting",
+      "commitDate": 1447163412000,
+      "commitName": "662cb2e20e296d1546bb7c845e4661dcdcc77855",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1446331712000,
+      "commitNameOld": "e21676f52f3d68294122244cea63b4ecbe92de8f",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 9.63,
+      "commitsBetweenForRepo": 83,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,29 +1,29 @@\n     public void testSurroundingCode() throws Exception {\n         final String[] expected \u003d {\n             \"13: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 14, 14, 12),\n             \"23: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 24, 16, 12),\n             \"25: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 27, 16, 12),\n             \"28: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 31, 16, 12),\n             \"50: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 51, 27, 23),\n             \"51: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.block\",\n                 53, 23, 36),\n             \"90: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 91, 14, 8),\n             \"98: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 99, 13, 8),\n             \"108: \" + getCheckMessage(CommentsIndentationCheck.class, \"comments.indentation.single\",\n                 109, 33, 8),\n             };\n \n         final Configuration checkConfig \u003d builder.getCheckConfig(\"CommentsIndentation\");\n         final String filePath \u003d\n-            builder.getFilePath(\"CommentsIndentationSurroundingCodeInput\");\n+            builder.getFilePath(\"InputCommentsIndentationSurroundingCode\");\n \n         final Integer[] warnList \u003d builder.getLinesWithWarn(filePath);\n         verify(checkConfig, filePath, expected, warnList);\n     }\n\\ No newline at end of file\n"
+    },
+    "e21676f52f3d68294122244cea63b4ecbe92de8f": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2078: Update ITs for CommentsIndentationCheck\n",
+      "commitDate": 1446331712000,
+      "commitName": "e21676f52f3d68294122244cea63b4ecbe92de8f",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

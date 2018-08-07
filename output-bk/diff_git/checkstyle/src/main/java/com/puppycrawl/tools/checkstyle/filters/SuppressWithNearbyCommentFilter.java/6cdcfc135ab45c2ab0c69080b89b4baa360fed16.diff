@@ -1,0 +1,216 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+index 0c1c33313..f3502b5a7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+@@ -1,84 +1,85 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.filters;
+ 
+ import com.google.common.collect.Lists;
+ import com.puppycrawl.tools.checkstyle.api.AuditEvent;
+ import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.Filter;
+ import com.puppycrawl.tools.checkstyle.api.TextBlock;
+ import com.puppycrawl.tools.checkstyle.Utils;
+ import com.puppycrawl.tools.checkstyle.checks.FileContentsHolder;
+ import java.lang.ref.WeakReference;
+ import java.util.Collection;
+ import java.util.Collections;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Objects;
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ import java.util.regex.PatternSyntaxException;
+ import org.apache.commons.beanutils.ConversionException;
+ 
+ /**
+  * <p>
+  * A filter that uses nearby comments to suppress audit events.
+  * </p>
+  * <p>
+  * This check is philosophically similar to {@link SuppressionCommentFilter}.
+  * Unlike {@link SuppressionCommentFilter}, this filter does not require
+  * pairs of comments.  This check may be used to suppress warnings in the
+  * current line:
+  * <pre>
+  *    offendingLine(for, whatever, reason); // SUPPRESS ParameterNumberCheck
+  * </pre>
+  * or it may be configured to span multiple lines, either forward:
+  * <pre>
+  *    // PERMIT MultipleVariableDeclarations NEXT 3 LINES
+  *    double x1 = 1.0, y1 = 0.0, z1 = 0.0;
+  *    double x2 = 0.0, y2 = 1.0, z2 = 0.0;
+  *    double x3 = 0.0, y3 = 0.0, z3 = 1.0;
+  * </pre>
+  * or reverse:
+  * <pre>
+  *   try {
+  *     thirdPartyLibrary.method();
+  *   } catch (RuntimeException e) {
+  *     // ALLOW ILLEGAL CATCH BECAUSE third party API wraps everything
+  *     // in RuntimeExceptions.
+  *     ...
+  *   }
+  * </pre>
+  *
+  * <p>
+  * See {@link SuppressionCommentFilter} for usage notes.
+  *
+  *
+  * @author Mick Killianey
+  */
+ public class SuppressWithNearbyCommentFilter
+     extends AutomaticBean
+     implements Filter
+ {
+     /**
+      * A Tag holds a suppression comment and its location.
+      */
+     public static class Tag implements Comparable<Tag>
+     {
+@@ -144,100 +145,125 @@ public class SuppressWithNearbyCommentFilter
+                 }
+                 else {
+                     firstLine = line + influence;
+                     lastLine = line;
+                 }
+             }
+             catch (final PatternSyntaxException e) {
+                 throw new ConversionException(
+                     "unable to parse expanded comment " + format,
+                     e);
+             }
+         }
+ 
+         /** @return the text of the tag. */
+         public String getText()
+         {
+             return text;
+         }
+ 
+         /** @return the line number of the first suppressed line. */
+         public int getFirstLine()
+         {
+             return firstLine;
+         }
+ 
+         /** @return the line number of the last suppressed line. */
+         public int getLastLine()
+         {
+             return lastLine;
+         }
+ 
+         /**
+          * Compares the position of this tag in the file
+          * with the position of another tag.
+          * @param other the tag to compare with this one.
+          * @return a negative number if this tag is before the other tag,
+          * 0 if they are at the same position, and a positive number if this
+          * tag is after the other tag.
+          * @see java.lang.Comparable#compareTo(java.lang.Object)
+          */
+         @Override
+         public int compareTo(Tag other)
+         {
+             if (firstLine == other.firstLine) {
+                 return lastLine - other.lastLine;
+             }
+ 
+             return firstLine - other.firstLine;
+         }
+ 
++        /** {@inheritDoc} */
++        @Override
++        public boolean equals(Object o)
++        {
++            if (this == o) {
++                return true;
++            }
++            if (o == null || getClass() != o.getClass()) {
++                return false;
++            }
++            final Tag tag = (Tag) o;
++            return Objects.equals(firstLine, tag.firstLine)
++                    && Objects.equals(lastLine, tag.lastLine)
++                    && Objects.equals(text, tag.text)
++                    && Objects.equals(tagCheckRegexp, tag.tagCheckRegexp)
++                    && Objects.equals(tagMessageRegexp, tag.tagMessageRegexp);
++        }
++
++        /** {@inheritDoc} */
++        @Override
++        public int hashCode()
++        {
++            return Objects.hash(text, firstLine, lastLine, tagCheckRegexp, tagMessageRegexp);
++        }
++
+         /**
+          * Determines whether the source of an audit event
+          * matches the text of this tag.
+          * @param event the <code>AuditEvent</code> to check.
+          * @return true if the source of event matches the text of this tag.
+          */
+         public boolean isMatch(AuditEvent event)
+         {
+             final int line = event.getLine();
+             if (line < firstLine) {
+                 return false;
+             }
+             if (line > lastLine) {
+                 return false;
+             }
+             final Matcher tagMatcher =
+                 tagCheckRegexp.matcher(event.getSourceName());
+             if (tagMatcher.find()) {
+                 return true;
+             }
+             if (tagMessageRegexp != null) {
+                 final Matcher messageMatcher =
+                     tagMessageRegexp.matcher(event.getMessage());
+                 return messageMatcher.find();
+             }
+             return false;
+         }
+ 
+         /**
+          * Expand based on a matching comment.
+          * @param comment the comment.
+          * @param string the string to expand.
+          * @param regexp the parsed expander.
+          * @return the expanded string
+          */
+         private String expandFrocomment(
+             String comment,
+             String string,
+             Pattern regexp)
+         {
+             final Matcher matcher = regexp.matcher(comment);
+             // Match primarily for effect.
+             if (!matcher.find()) {
+                 return string;
+             }
+             String result = string;
+             for (int i = 0; i <= matcher.groupCount(); i++) {
+                 // $n expands comment match like in Pattern.subst().
+                 result = result.replaceAll("\\$" + i, matcher.group(i));
+             }

@@ -1,0 +1,86 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CustomImportOrderCheck.java",
+  "functionName": "getCountOfEmptyLinesBefore",
+  "functionId": "getCountOfEmptyLinesBefore___lineNo-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java",
+  "functionStartLine": 712,
+  "functionEndLine": 724,
+  "changeHistory": [
+    "7609e96cc998cca40b396eb3f2d7ae82f60fcce1",
+    "914dd9994c9f108f54849a96bc35bbdd85de1053",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+    "cba6fc8b0a653a795107566f895d2b8f73e2c6c9",
+    "2a3be6769c4a97d090970ed52ca2333cb9aea706"
+  ],
+  "changeHistoryShort": {
+    "7609e96cc998cca40b396eb3f2d7ae82f60fcce1": "Ybodychange",
+    "914dd9994c9f108f54849a96bc35bbdd85de1053": "Ymultichange(Yrename,Yreturntypechange,Ybodychange)",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": "Ymultichange(Yparameterchange,Ybodychange)",
+    "cba6fc8b0a653a795107566f895d2b8f73e2c6c9": "Ybodychange",
+    "2a3be6769c4a97d090970ed52ca2333cb9aea706": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7609e96cc998cca40b396eb3f2d7ae82f60fcce1": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4342: Applied requested changes\n",
+      "commitDate": 1495136630000,
+      "commitName": "7609e96cc998cca40b396eb3f2d7ae82f60fcce1",
+      "commitAuthor": "Dmytro Kytsmen",
+      "commitDateOld": 1493045733000,
+      "commitNameOld": "d6f3a17328226debcddb53ed25c39501f2781764",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 24.2,
+      "commitsBetweenForRepo": 83,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,13 @@\n     private int getCountOfEmptyLinesBefore(int lineNo) {\n         int result \u003d 0;\n         final String[] lines \u003d getLines();\n         //  [lineNo - 2] is the number of the previous line\n         //  because the numbering starts from zero.\n         int lineBeforeIndex \u003d lineNo - 2;\n-        while (lineBeforeIndex \u003e\u003d 0 \u0026\u0026 lines[lineBeforeIndex].trim().isEmpty()) {\n+        while (lineBeforeIndex \u003e\u003d 0\n+                \u0026\u0026 CommonUtils.isBlank(lines[lineBeforeIndex])) {\n             lineBeforeIndex--;\n             result++;\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "914dd9994c9f108f54849a96bc35bbdd85de1053": {
+      "type": "Ymultichange(Yrename,Yreturntypechange,Ybodychange)",
+      "commitMessage": "Issue #3551: CustomImportOrder shows violation on multiple line separation\n",
+      "commitDate": 1483121659000,
+      "commitName": "914dd9994c9f108f54849a96bc35bbdd85de1053",
+      "commitAuthor": "kazachka",
+      "subchanges": [
+        "Yrename",
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, imports, #512\n",
+      "commitDate": 1421678111000,
+      "commitName": "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "cba6fc8b0a653a795107566f895d2b8f73e2c6c9": {
+      "type": "Ybodychange",
+      "commitMessage": "FileContents.getLines performance fix\n",
+      "commitDate": 1414957696000,
+      "commitName": "cba6fc8b0a653a795107566f895d2b8f73e2c6c9",
+      "commitAuthor": "sopov.ivan",
+      "commitDateOld": 1413245750000,
+      "commitNameOld": "f2e716b5e756a5cfc82b957f517d4a44e943f688",
+      "commitAuthorOld": "maxvetrenko",
+      "daysBetweenCommits": 19.81,
+      "commitsBetweenForRepo": 54,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     private boolean hasEmptyLineBefore(int aLineNo)\n     {\n         //  [lineNo - 2] is the number of the previous line\n         //  because the numbering starts from zero.\n-        final String lineBefore \u003d getLines()[aLineNo - 2];\n+        final String lineBefore \u003d getLine(aLineNo - 2);\n         return lineBefore.trim().isEmpty();\n     }\n\\ No newline at end of file\n"
+    },
+    "2a3be6769c4a97d090970ed52ca2333cb9aea706": {
+      "type": "Yintroduced",
+      "commitMessage": "CustomImportOrder was introduced #231\n",
+      "commitDate": 1407671579000,
+      "commitName": "2a3be6769c4a97d090970ed52ca2333cb9aea706",
+      "commitAuthor": "Max"
+    }
+  }
+}

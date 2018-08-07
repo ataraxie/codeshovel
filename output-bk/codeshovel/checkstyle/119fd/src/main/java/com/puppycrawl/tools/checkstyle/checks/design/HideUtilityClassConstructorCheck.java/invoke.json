@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "HideUtilityClassConstructorCheck.java",
+  "functionName": "invoke",
+  "functionId": "invoke",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/HideUtilityClassConstructorCheck.java",
+  "functionStartLine": 182,
+  "functionEndLine": 223,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "39f752cd88cee4ff894846a6c58469e363f65175",
+    "d88c251ae40a2636890f55d8257b23d075cf513a",
+    "7874cc4909f6e5104f42060528b9069669993533"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "39f752cd88cee4ff894846a6c58469e363f65175": "Ybodychange",
+    "d88c251ae40a2636890f55d8257b23d075cf513a": "Ybodychange",
+    "7874cc4909f6e5104f42060528b9069669993533": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1497287515000,
+      "commitNameOld": "4a087c020c2b97130e94f9292b94cb4bc1f6ed93",
+      "commitAuthorOld": "sagar-shah94",
+      "daysBetweenCommits": 135.4,
+      "commitsBetweenForRepo": 556,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,43 +1,43 @@\n         public void invoke() {\n             final DetailAST objBlock \u003d ast.findFirstToken(TokenTypes.OBJBLOCK);\n             hasMethodOrField \u003d false;\n             hasNonStaticMethodOrField \u003d false;\n             hasNonPrivateStaticMethodOrField \u003d false;\n             hasDefaultCtor \u003d true;\n             hasPublicCtor \u003d false;\n             DetailAST child \u003d objBlock.getFirstChild();\n \n             while (child !\u003d null) {\n                 final int type \u003d child.getType();\n                 if (type \u003d\u003d TokenTypes.METHOD_DEF\n                         || type \u003d\u003d TokenTypes.VARIABLE_DEF) {\n                     hasMethodOrField \u003d true;\n                     final DetailAST modifiers \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n                     final boolean isStatic \u003d\n-                        modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n+                        modifiers.findFirstToken(TokenTypes.LITERAL_STATIC) !\u003d null;\n                     final boolean isPrivate \u003d\n-                        modifiers.branchContains(TokenTypes.LITERAL_PRIVATE);\n+                        modifiers.findFirstToken(TokenTypes.LITERAL_PRIVATE) !\u003d null;\n \n                     if (!isStatic) {\n                         hasNonStaticMethodOrField \u003d true;\n                     }\n                     if (isStatic \u0026\u0026 !isPrivate) {\n                         hasNonPrivateStaticMethodOrField \u003d true;\n                     }\n                 }\n                 if (type \u003d\u003d TokenTypes.CTOR_DEF) {\n                     hasDefaultCtor \u003d false;\n                     final DetailAST modifiers \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n-                    if (!modifiers.branchContains(TokenTypes.LITERAL_PRIVATE)\n-                        \u0026\u0026 !modifiers.branchContains(TokenTypes.LITERAL_PROTECTED)) {\n+                    if (modifiers.findFirstToken(TokenTypes.LITERAL_PRIVATE) \u003d\u003d null\n+                        \u0026\u0026 modifiers.findFirstToken(TokenTypes.LITERAL_PROTECTED) \u003d\u003d null) {\n                         // treat package visible as public\n                         // for the purpose of this Check\n                         hasPublicCtor \u003d true;\n                     }\n \n                 }\n                 child \u003d child.getNextSibling();\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "39f752cd88cee4ff894846a6c58469e363f65175": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: VariableDeclarationUsageDistance violations fixed\n",
+      "commitDate": 1441027075000,
+      "commitName": "39f752cd88cee4ff894846a6c58469e363f65175",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440158741000,
+      "commitNameOld": "23a1b6253f6296c1a3888361953da47f2808ca3d",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 10.05,
+      "commitsBetweenForRepo": 258,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,43 +1,43 @@\n         public void invoke() {\n             final DetailAST objBlock \u003d ast.findFirstToken(TokenTypes.OBJBLOCK);\n-            DetailAST child \u003d objBlock.getFirstChild();\n             hasMethodOrField \u003d false;\n             hasNonStaticMethodOrField \u003d false;\n             hasNonPrivateStaticMethodOrField \u003d false;\n             hasDefaultCtor \u003d true;\n             hasPublicCtor \u003d false;\n+            DetailAST child \u003d objBlock.getFirstChild();\n \n             while (child !\u003d null) {\n                 final int type \u003d child.getType();\n                 if (type \u003d\u003d TokenTypes.METHOD_DEF\n                         || type \u003d\u003d TokenTypes.VARIABLE_DEF) {\n                     hasMethodOrField \u003d true;\n                     final DetailAST modifiers \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n                     final boolean isStatic \u003d\n                         modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n                     final boolean isPrivate \u003d\n                         modifiers.branchContains(TokenTypes.LITERAL_PRIVATE);\n \n                     if (!isStatic) {\n                         hasNonStaticMethodOrField \u003d true;\n                     }\n                     if (isStatic \u0026\u0026 !isPrivate) {\n                         hasNonPrivateStaticMethodOrField \u003d true;\n                     }\n                 }\n                 if (type \u003d\u003d TokenTypes.CTOR_DEF) {\n                     hasDefaultCtor \u003d false;\n                     final DetailAST modifiers \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n                     if (!modifiers.branchContains(TokenTypes.LITERAL_PRIVATE)\n                         \u0026\u0026 !modifiers.branchContains(TokenTypes.LITERAL_PROTECTED)) {\n                         // treat package visible as public\n                         // for the purpose of this Check\n                         hasPublicCtor \u003d true;\n                     }\n \n                 }\n                 child \u003d child.getNextSibling();\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "d88c251ae40a2636890f55d8257b23d075cf513a": {
+      "type": "Ybodychange",
+      "commitMessage": "HideUtilityClassConstructor was updated to follow Cyclomatic complexity. #954\n",
+      "commitDate": 1434432354000,
+      "commitName": "d88c251ae40a2636890f55d8257b23d075cf513a",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1434344165000,
+      "commitNameOld": "ec426aa0db5829cd799814d5e0e61b4cd2e42a46",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.02,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,43 +1,43 @@\n         public void invoke() {\n             final DetailAST objBlock \u003d ast.findFirstToken(TokenTypes.OBJBLOCK);\n             DetailAST child \u003d objBlock.getFirstChild();\n             hasMethodOrField \u003d false;\n             hasNonStaticMethodOrField \u003d false;\n             hasNonPrivateStaticMethodOrField \u003d false;\n             hasDefaultCtor \u003d true;\n             hasPublicCtor \u003d false;\n \n             while (child !\u003d null) {\n                 final int type \u003d child.getType();\n                 if (type \u003d\u003d TokenTypes.METHOD_DEF\n                         || type \u003d\u003d TokenTypes.VARIABLE_DEF) {\n                     hasMethodOrField \u003d true;\n                     final DetailAST modifiers \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n                     final boolean isStatic \u003d\n                         modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n                     final boolean isPrivate \u003d\n                         modifiers.branchContains(TokenTypes.LITERAL_PRIVATE);\n \n-                    if (!isStatic \u0026\u0026 !isPrivate) {\n+                    if (!isStatic) {\n                         hasNonStaticMethodOrField \u003d true;\n                     }\n                     if (isStatic \u0026\u0026 !isPrivate) {\n                         hasNonPrivateStaticMethodOrField \u003d true;\n                     }\n                 }\n                 if (type \u003d\u003d TokenTypes.CTOR_DEF) {\n                     hasDefaultCtor \u003d false;\n                     final DetailAST modifiers \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n                     if (!modifiers.branchContains(TokenTypes.LITERAL_PRIVATE)\n                         \u0026\u0026 !modifiers.branchContains(TokenTypes.LITERAL_PROTECTED)) {\n                         // treat package visible as public\n                         // for the purpose of this Check\n                         hasPublicCtor \u003d true;\n                     }\n \n                 }\n                 child \u003d child.getNextSibling();\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "7874cc4909f6e5104f42060528b9069669993533": {
+      "type": "Yintroduced",
+      "commitMessage": "HideUtilityClassConstructorCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344165000,
+      "commitName": "7874cc4909f6e5104f42060528b9069669993533",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

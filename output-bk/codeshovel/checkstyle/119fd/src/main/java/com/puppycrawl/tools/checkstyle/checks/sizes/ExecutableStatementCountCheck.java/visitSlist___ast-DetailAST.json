@@ -1,0 +1,136 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ExecutableStatementCountCheck.java",
+  "functionName": "visitSlist",
+  "functionId": "visitSlist___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/ExecutableStatementCountCheck.java",
+  "functionStartLine": 165,
+  "functionEndLine": 182,
+  "changeHistory": [
+    "cb8d98fb43494b7dfc415977083f9942768dcda3",
+    "0a70130d577d392c0100fee2807986bc6c811b02",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "20b7faa45014272fb58104d96041c50ae97c02a7",
+    "b0bb7e1b50237a03ce4e977af15665c07e20f078",
+    "b8f9b199ad7de16619cec1f288bd751fad8bc4a9"
+  ],
+  "changeHistoryShort": {
+    "cb8d98fb43494b7dfc415977083f9942768dcda3": "Ybodychange",
+    "0a70130d577d392c0100fee2807986bc6c811b02": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "20b7faa45014272fb58104d96041c50ae97c02a7": "Yfilerename",
+    "b0bb7e1b50237a03ce4e977af15665c07e20f078": "Ybodychange",
+    "b8f9b199ad7de16619cec1f288bd751fad8bc4a9": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "cb8d98fb43494b7dfc415977083f9942768dcda3": {
+      "type": "Ybodychange",
+      "commitMessage": "100% test coverage for ParameterNumberCheck, OuterTypeNumberCheck, MethodLengthCheck, LineLengthCheck, FileLengthCheck, ExecutableStatementCountCheck, AnonInnerLengthCheck, issue #1024\n",
+      "commitDate": 1433089165000,
+      "commitName": "cb8d98fb43494b7dfc415977083f9942768dcda3",
+      "commitAuthor": "MEZk",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 14.19,
+      "commitsBetweenForRepo": 75,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,19 @@\n     private void visitSlist(DetailAST ast) {\n         if (context.getAST() !\u003d null) {\n             // find member AST for the statement list\n             final DetailAST contextAST \u003d context.getAST();\n             DetailAST parent \u003d ast.getParent();\n-            while (parent !\u003d null) {\n-                final int type \u003d parent.getType();\n-                if (type \u003d\u003d TokenTypes.CTOR_DEF\n-                    || type \u003d\u003d TokenTypes.METHOD_DEF\n-                    || type \u003d\u003d TokenTypes.INSTANCE_INIT\n-                    || type \u003d\u003d TokenTypes.STATIC_INIT) {\n-                    if (parent \u003d\u003d contextAST) {\n-                        context.addCount(ast.getChildCount() / 2);\n-                    }\n-                    break;\n-                }\n+            int type \u003d parent.getType();\n+            while (type !\u003d TokenTypes.CTOR_DEF\n+                \u0026\u0026 type !\u003d TokenTypes.METHOD_DEF\n+                \u0026\u0026 type !\u003d TokenTypes.INSTANCE_INIT\n+                \u0026\u0026 type !\u003d TokenTypes.STATIC_INIT) {\n+\n                 parent \u003d parent.getParent();\n+                type \u003d parent.getType();\n+            }\n+            if (parent \u003d\u003d contextAST) {\n+                context.addCount(ast.getChildCount() / 2);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "0a70130d577d392c0100fee2807986bc6c811b02": {
+      "type": "Ybodychange",
+      "commitMessage": "Replace FastStack with ArrayDeque and avoid nulls, issue #86\n\n`FastStack` allows `null` as element while `ArrayDeque` doesn\u0027t. To aviod `NullPointerException` null objects were introduced as initial context.\n",
+      "commitDate": 1426740846000,
+      "commitName": "0a70130d577d392c0100fee2807986bc6c811b02",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1426023398000,
+      "commitNameOld": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 8.3,
+      "commitsBetweenForRepo": 64,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,22 +1,22 @@\n     private void visitSlist(DetailAST ast)\n     {\n-        if (context !\u003d null) {\n+        if (context.getAST() !\u003d null) {\n             // find member AST for the statement list\n             final DetailAST contextAST \u003d context.getAST();\n             DetailAST parent \u003d ast.getParent();\n             while (parent !\u003d null) {\n                 final int type \u003d parent.getType();\n                 if (type \u003d\u003d TokenTypes.CTOR_DEF\n                     || type \u003d\u003d TokenTypes.METHOD_DEF\n                     || type \u003d\u003d TokenTypes.INSTANCE_INIT\n                     || type \u003d\u003d TokenTypes.STATIC_INIT)\n                 {\n                     if (parent \u003d\u003d contextAST) {\n                         context.addCount(ast.getChildCount() / 2);\n                     }\n                     break;\n                 }\n                 parent \u003d parent.getParent();\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437365000,
+      "commitNameOld": "0dc48c7c567555a1efe8fb9cbf7ba1812034a5f2",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 18.36,
+      "commitsBetweenForRepo": 101,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,22 +1,22 @@\n     private void visitSlist(DetailAST ast)\n     {\n         if (context !\u003d null) {\n             // find member AST for the statement list\n             final DetailAST contextAST \u003d context.getAST();\n             DetailAST parent \u003d ast.getParent();\n             while (parent !\u003d null) {\n                 final int type \u003d parent.getType();\n-                if ((type \u003d\u003d TokenTypes.CTOR_DEF)\n-                    || (type \u003d\u003d TokenTypes.METHOD_DEF)\n-                    || (type \u003d\u003d TokenTypes.INSTANCE_INIT)\n-                    || (type \u003d\u003d TokenTypes.STATIC_INIT))\n+                if (type \u003d\u003d TokenTypes.CTOR_DEF\n+                    || type \u003d\u003d TokenTypes.METHOD_DEF\n+                    || type \u003d\u003d TokenTypes.INSTANCE_INIT\n+                    || type \u003d\u003d TokenTypes.STATIC_INIT)\n                 {\n                     if (parent \u003d\u003d contextAST) {\n                         context.addCount(ast.getChildCount() / 2);\n                     }\n                     break;\n                 }\n                 parent \u003d parent.getParent();\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, sizes, #512\n",
+      "commitDate": 1421677310000,
+      "commitName": "3fec4a92e39afc5b68b03c5fd023cb8d13408385",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "20b7faa45014272fb58104d96041c50ae97c02a7": {
+      "type": "Yfilerename",
+      "commitMessage": "Moved ExecutableStatementCountCheck to sizes package.\n",
+      "commitDate": 1062347161000,
+      "commitName": "20b7faa45014272fb58104d96041c50ae97c02a7",
+      "commitAuthor": "Rick Giles",
+      "commitDateOld": 1062329778000,
+      "commitNameOld": "258c092278eebfab70ca80a891fbdfe08ea18322",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 0.2,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "b0bb7e1b50237a03ce4e977af15665c07e20f078": {
+      "type": "Ybodychange",
+      "commitMessage": "Correct ExecutableStatementCountCheck counts for inner members when configured for a subset of tokens.\n",
+      "commitDate": 1062324267000,
+      "commitName": "b0bb7e1b50237a03ce4e977af15665c07e20f078",
+      "commitAuthor": "Rick Giles",
+      "commitDateOld": 1062278261000,
+      "commitNameOld": "b8f9b199ad7de16619cec1f288bd751fad8bc4a9",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 0.53,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,22 @@\n     private void visitSlist(DetailAST aAST)\n     {\n         if (mContext !\u003d null) {\n-            mContext.addCount(aAST.getChildCount() / 2);\n+            // find member AST for the statement list\n+            final DetailAST contextAST \u003d mContext.getAST();\n+            DetailAST parent \u003d aAST.getParent();\n+            while (parent !\u003d null) {\n+                final int type \u003d parent.getType();\n+                if ((type \u003d\u003d TokenTypes.CTOR_DEF)\n+                    || (type \u003d\u003d TokenTypes.METHOD_DEF)\n+                    || (type \u003d\u003d TokenTypes.INSTANCE_INIT)\n+                    || (type \u003d\u003d TokenTypes.STATIC_INIT))\n+                {\n+                    if (parent \u003d\u003d contextAST) {\n+                        mContext.addCount(aAST.getChildCount() / 2);\n+                    }\n+                    break;\n+                }\n+                parent \u003d parent.getParent();\n+            }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b8f9b199ad7de16619cec1f288bd751fad8bc4a9": {
+      "type": "Yintroduced",
+      "commitMessage": "Added ExecutableStatementCount check from Simon Harris (request 750751).\n",
+      "commitDate": 1062278261000,
+      "commitName": "b8f9b199ad7de16619cec1f288bd751fad8bc4a9",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

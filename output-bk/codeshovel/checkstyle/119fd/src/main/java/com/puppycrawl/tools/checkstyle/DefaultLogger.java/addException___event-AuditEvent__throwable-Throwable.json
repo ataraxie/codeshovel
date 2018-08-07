@@ -1,0 +1,101 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DefaultLogger.java",
+  "functionName": "addException",
+  "functionId": "addException___event-AuditEvent__throwable-Throwable",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/DefaultLogger.java",
+  "functionStartLine": 216,
+  "functionEndLine": 225,
+  "changeHistory": [
+    "a395453d23def10d75f85328a1d8ceca884865de",
+    "ce196814d857a4244a80c51d5151cc35e90b6749",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "add2bdfb27494bff5fa9c305d9782f57c6170b18",
+    "1d21af32b9949396bb3f010cd3f3addec4075b5d"
+  ],
+  "changeHistoryShort": {
+    "a395453d23def10d75f85328a1d8ceca884865de": "Ybodychange",
+    "ce196814d857a4244a80c51d5151cc35e90b6749": "Ymultichange(Yparameterchange,Ybodychange)",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "add2bdfb27494bff5fa9c305d9782f57c6170b18": "Ybodychange",
+    "1d21af32b9949396bb3f010cd3f3addec4075b5d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "a395453d23def10d75f85328a1d8ceca884865de": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3110: Modified DefaultLogger to remove hardcoded messages and to support i18n for the messages\n",
+      "commitDate": 1498519214000,
+      "commitName": "a395453d23def10d75f85328a1d8ceca884865de",
+      "commitAuthor": "Subbu Dantu",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 150.37,
+      "commitsBetweenForRepo": 513,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,10 @@\n     public void addException(AuditEvent event, Throwable throwable) {\n         synchronized (errorWriter) {\n-            errorWriter.println(\"Error auditing \" + event.getFileName());\n+            final LocalizedMessage addExceptionMessage \u003d new LocalizedMessage(0,\n+                Definitions.CHECKSTYLE_BUNDLE, ADD_EXCEPTION_MESSAGE,\n+                new String[] {event.getFileName()}, null,\n+                LocalizedMessage.class, null);\n+            errorWriter.println(addExceptionMessage.getMessage());\n             throwable.printStackTrace(errorWriter);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "ce196814d857a4244a80c51d5151cc35e90b6749": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #2080: Fix typos in code\n",
+      "commitDate": 1445038509000,
+      "commitName": "ce196814d857a4244a80c51d5151cc35e90b6749",
+      "commitAuthor": "Michal Kordas",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checkstyle, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java\n",
+      "commitDate": 1421678312000,
+      "commitName": "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "add2bdfb27494bff5fa9c305d9782f57c6170b18": {
+      "type": "Ybodychange",
+      "commitMessage": "fixed bug 561616 (ant task should log errors, not infos)\n\nThis required a redesign of the AuditListener interface, the get/setOutputStream methoeds have been removed, as there might be listeners that have no or more than one OutputStream.\n\nThe DefaultLogger now differentiates between info messages (\"started checking file ...\", etc.) and error messages (style errors found by checkstyle) by writing the messages to two different OutputStreams.\n",
+      "commitDate": 1025640517000,
+      "commitName": "add2bdfb27494bff5fa9c305d9782f57c6170b18",
+      "commitAuthor": "Lars Kühne",
+      "commitDateOld": 1019718220000,
+      "commitNameOld": "6970485b88600343de72af03a6bf87cf78e6cf55",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 68.55,
+      "commitsBetweenForRepo": 89,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     public void addException(AuditEvent aEvt, Throwable aThrowable)\n     {\n-        synchronized (mWriter) {\n-            mWriter.println(\"Error auditing \" + aEvt.getFileName());\n-            aThrowable.printStackTrace(mWriter);\n+        synchronized (mErrorWriter) {\n+            mErrorWriter.println(\"Error auditing \" + aEvt.getFileName());\n+            aThrowable.printStackTrace(mErrorWriter);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1d21af32b9949396bb3f010cd3f3addec4075b5d": {
+      "type": "Yintroduced",
+      "commitMessage": "first cut\n",
+      "commitDate": 999188480000,
+      "commitName": "1d21af32b9949396bb3f010cd3f3addec4075b5d",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

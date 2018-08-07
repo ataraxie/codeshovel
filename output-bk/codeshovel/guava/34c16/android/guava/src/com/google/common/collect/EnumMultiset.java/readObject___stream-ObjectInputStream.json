@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "EnumMultiset.java",
+  "functionName": "readObject",
+  "functionId": "readObject___stream-ObjectInputStream",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/EnumMultiset.java",
+  "functionStartLine": 295,
+  "functionEndLine": 303,
+  "changeHistory": [
+    "b89a6586f5da3a943e4b412bd61cc6bc199f451f",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "b89a6586f5da3a943e4b412bd61cc6bc199f451f": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b89a6586f5da3a943e4b412bd61cc6bc199f451f": {
+      "type": "Ybodychange",
+      "commitMessage": "Rewrite EnumMultiset to be directly backed by an E[] and an int[], avoiding allocation of boxing objects.\n\nIt turns out that copying the enum constants array allocates less, requires less code, and avoids boxing overhead.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d168250122\n",
+      "commitDate": 1505152302000,
+      "commitName": "b89a6586f5da3a943e4b412bd61cc6bc199f451f",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1501080336000,
+      "commitNameOld": "934e3840945d3b866f80c28135a0369cb32d7163",
+      "commitAuthorOld": "cpovirk",
+      "daysBetweenCommits": 47.13,
+      "commitsBetweenForRepo": 56,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,9 @@\n   private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {\n     stream.defaultReadObject();\n     @SuppressWarnings(\"unchecked\") // reading data stored by writeObject\n     Class\u003cE\u003e localType \u003d (Class\u003cE\u003e) stream.readObject();\n     type \u003d localType;\n-    setBackingMap(new EnumCountHashMap\u003cE\u003e(type));\n+    enumConstants \u003d type.getEnumConstants();\n+    counts \u003d new int[enumConstants.length];\n     Serialization.populateMultiset(this, stream);\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

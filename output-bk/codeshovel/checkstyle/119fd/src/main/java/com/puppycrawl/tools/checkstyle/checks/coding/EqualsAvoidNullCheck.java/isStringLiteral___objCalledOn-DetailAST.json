@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "EqualsAvoidNullCheck.java",
+  "functionName": "isStringLiteral",
+  "functionId": "isStringLiteral___objCalledOn-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java",
+  "functionStartLine": 318,
+  "functionEndLine": 321,
+  "changeHistory": [
+    "0024de5711531372850e883c970414563ab8e3ad",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+    "57f395fa2b2dcea7dd369ab3dd52d3d42f0e0893"
+  ],
+  "changeHistoryShort": {
+    "0024de5711531372850e883c970414563ab8e3ad": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a": "Ybodychange",
+    "57f395fa2b2dcea7dd369ab3dd52d3d42f0e0893": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0024de5711531372850e883c970414563ab8e3ad": {
+      "type": "Ybodychange",
+      "commitMessage": "reimplement EqualsAvoidNullCheck, #1377",
+      "commitDate": 1440758513000,
+      "commitName": "0024de5711531372850e883c970414563ab8e3ad",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1440739752000,
+      "commitNameOld": "cc7aeaec906dc3c864477e3050510009b2a946ee",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.22,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,4 @@\n     private static boolean isStringLiteral(DetailAST objCalledOn) {\n         return objCalledOn.getType() \u003d\u003d TokenTypes.STRING_LITERAL\n-                || objCalledOn.getType() \u003d\u003d TokenTypes.LITERAL_NEW\n-                || objCalledOn.getType() \u003d\u003d TokenTypes.DOT;\n+                || objCalledOn.getType() \u003d\u003d TokenTypes.LITERAL_NEW;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436709758000,
+      "commitNameOld": "6ebcf2733b6c635d5f044aa35caf2a610c7723ff",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 5.62,
+      "commitsBetweenForRepo": 61,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    private boolean isStringLiteral(DetailAST objCalledOn) {\n+    private static boolean isStringLiteral(DetailAST objCalledOn) {\n         return objCalledOn.getType() \u003d\u003d TokenTypes.STRING_LITERAL\n                 || objCalledOn.getType() \u003d\u003d TokenTypes.LITERAL_NEW\n                 || objCalledOn.getType() \u003d\u003d TokenTypes.DOT;\n     }\n\\ No newline at end of file\n"
+    },
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a": {
+      "type": "Ybodychange",
+      "commitMessage": "Update Maven PMD Plugin to 3.5. #1300\n",
+      "commitDate": 1436323201000,
+      "commitName": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1434261690000,
+      "commitNameOld": "57f395fa2b2dcea7dd369ab3dd52d3d42f0e0893",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 23.86,
+      "commitsBetweenForRepo": 152,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,5 @@\n     private boolean isStringLiteral(DetailAST objCalledOn) {\n-        if (objCalledOn.getType() \u003d\u003d TokenTypes.STRING_LITERAL\n+        return objCalledOn.getType() \u003d\u003d TokenTypes.STRING_LITERAL\n                 || objCalledOn.getType() \u003d\u003d TokenTypes.LITERAL_NEW\n-                || objCalledOn.getType() \u003d\u003d TokenTypes.DOT) {\n-            return true;\n-        }\n-        return false;\n+                || objCalledOn.getType() \u003d\u003d TokenTypes.DOT;\n     }\n\\ No newline at end of file\n"
+    },
+    "57f395fa2b2dcea7dd369ab3dd52d3d42f0e0893": {
+      "type": "Yintroduced",
+      "commitMessage": "EqualsAvoidNullCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434261690000,
+      "commitName": "57f395fa2b2dcea7dd369ab3dd52d3d42f0e0893",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

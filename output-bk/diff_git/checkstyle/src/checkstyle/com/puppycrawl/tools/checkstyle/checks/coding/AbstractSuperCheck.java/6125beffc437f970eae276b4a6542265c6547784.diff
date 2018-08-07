@@ -1,0 +1,69 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
+index c995c9a85..0807231f3 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/AbstractSuperCheck.java
+@@ -166,63 +166,63 @@ public abstract class AbstractSuperCheck
+             return false;
+         }
+         if (args.getChildCount() != 0) {
+             return false;
+         }
+ 
+         // in an overriding method for this check?
+         while (parent != null) {
+             if (parent.getType() == TokenTypes.METHOD_DEF) {
+                 return isOverridingMethod(parent);
+             }
+             else if ((parent.getType() == TokenTypes.CTOR_DEF)
+                 || (parent.getType() == TokenTypes.INSTANCE_INIT))
+             {
+                 return false;
+             }
+             parent = parent.getParent();
+         }
+         return false;
+     }
+ 
+     /**
+      *
+      * @see com.puppycrawl.tools.checkstyle.api.Check
+      */
+     public void leaveToken(DetailAST aAST)
+     {
+         if (isOverridingMethod(aAST)) {
+             final MethodNode methodNode =
+                 (MethodNode) mMethodStack.removeLast();
+             if (!methodNode.getCallsSuper()) {
+                 final DetailAST methodAST = methodNode.getMethod();
+                 final DetailAST nameAST =
+                     methodAST.findFirstToken(TokenTypes.IDENT);
+                 log(nameAST.getLineNo(), nameAST.getColumnNo(),
+                     "missing.super.call",
+                     new Object[] {nameAST.getText()});
+             }
+         }
+     }
+ 
+     /**
+      * Determines whether an AST is a method definition for this check,
+      * with 0 parameters.
+      * @param aAST the method definition AST.
+      * @return true if the method of aAST is a method for this check.
+      */
+     private boolean isOverridingMethod(DetailAST aAST)
+     {
+         if ((aAST.getType() != TokenTypes.METHOD_DEF)
+-            || ScopeUtils.inInterfaceBlock(aAST))
++            || ScopeUtils.inInterfaceOrAnnotationBlock(aAST))
+         {
+             return false;
+         }
+         final DetailAST nameAST = aAST.findFirstToken(TokenTypes.IDENT);
+         final String name = nameAST.getText();
+         if (!getMethodName().equals(name)) {
+             return false;
+         }
+         final DetailAST params = aAST.findFirstToken(TokenTypes.PARAMETERS);
+         return (params.getChildCount() == 0);
+     }
+ }

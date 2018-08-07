@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "AbstractBenchmark.java",
+  "functionName": "run",
+  "functionId": "run___args-String[]",
+  "sourceFilePath": "client/benchmark/src/main/java/org/elasticsearch/client/benchmark/AbstractBenchmark.java",
+  "functionStartLine": 44,
+  "functionEndLine": 62,
+  "changeHistory": [
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+    "b99a482992ff753b10c4556b65a43301e32a8de0",
+    "c33f85bc37bbfee87158738f538d380c0cc31d13"
+  ],
+  "changeHistoryShort": {
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": "Ybodychange",
+    "b99a482992ff753b10c4556b65a43301e32a8de0": "Ybodychange",
+    "c33f85bc37bbfee87158738f538d380c0cc31d13": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": {
+      "type": "Ybodychange",
+      "commitMessage": "Add client-benchmark-noop-api-plugin to stress clients even more in benchmarks (#20103)\n\n",
+      "commitDate": 1472195147000,
+      "commitName": "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+      "commitAuthor": "Daniel Mitterdorfer",
+      "commitDateOld": 1470140271000,
+      "commitNameOld": "b99a482992ff753b10c4556b65a43301e32a8de0",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 23.78,
+      "commitsBetweenForRepo": 323,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,48 +1,19 @@\n     public final void run(String[] args) throws Exception {\n-        if (args.length \u003c 6) {\n-            System.err.println(\n-                \"usage: benchmarkTargetHostIp indexFilePath indexName typeName numberOfDocuments bulkSize [search request body]\");\n+        if (args.length \u003c 1) {\n+            System.err.println(\"usage: [search|bulk]\");\n             System.exit(1);\n         }\n-        String benchmarkTargetHost \u003d args[0];\n-        String indexFilePath \u003d args[1];\n-        String indexName \u003d args[2];\n-        String typeName \u003d args[3];\n-        int totalDocs \u003d Integer.valueOf(args[4]);\n-        int bulkSize \u003d Integer.valueOf(args[5]);\n+        switch (args[0]) {\n+            case \"search\":\n+                runSearchBenchmark(args);\n+                break;\n+            case \"bulk\":\n+                runBulkIndexBenchmark(args);\n+                break;\n+            default:\n+                System.err.println(\"Unknown benchmark type [\" + args[0] + \"]\");\n+                System.exit(1);\n \n-        int totalIterationCount \u003d (int) Math.floor(totalDocs / bulkSize);\n-        // consider 40% of all iterations as warmup iterations\n-        int warmupIterations \u003d (int) (0.4d * totalIterationCount);\n-        int iterations \u003d totalIterationCount - warmupIterations;\n-        String searchBody \u003d (args.length \u003d\u003d 7) ? args[6] : null;\n-\n-        T client \u003d client(benchmarkTargetHost);\n-\n-        BenchmarkRunner benchmark \u003d new BenchmarkRunner(warmupIterations, iterations,\n-            new BulkBenchmarkTask(\n-                bulkRequestExecutor(client, indexName, typeName), indexFilePath, warmupIterations + iterations, bulkSize));\n-\n-        try {\n-            benchmark.run();\n-            if (searchBody !\u003d null) {\n-                for (int run \u003d 1; run \u003c\u003d 5; run++) {\n-                    System.out.println(\"\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\");\n-                    System.out.println(\" Trial run \" + run);\n-                    System.out.println(\"\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\");\n-\n-                    for (int throughput \u003d 100; throughput \u003c\u003d 100_000; throughput *\u003d 10) {\n-                        //GC between trials to reduce the likelihood of a GC occurring in the middle of a trial.\n-                        runGc();\n-                        BenchmarkRunner searchBenchmark \u003d new BenchmarkRunner(SEARCH_BENCHMARK_ITERATIONS, SEARCH_BENCHMARK_ITERATIONS,\n-                            new SearchBenchmarkTask(\n-                                searchRequestExecutor(client, indexName), searchBody, 2 * SEARCH_BENCHMARK_ITERATIONS, throughput));\n-                        System.out.printf(\"Target throughput \u003d %d ops / s%n\", throughput);\n-                        searchBenchmark.run();\n-                    }\n-                }\n-            }\n-        } finally {\n-            client.close();\n         }\n+\n     }\n\\ No newline at end of file\n"
+    },
+    "b99a482992ff753b10c4556b65a43301e32a8de0": {
+      "type": "Ybodychange",
+      "commitMessage": "Improve client benchmark (#19736)\n\n* Allow to run client benchmark as an uberjar\r\n* Busy wait to avoid accidental skew on low target throughput rates\r\n* Trigger and wait for full GC to happen between trials\r\n* Add missing SuppressForbidden to allow System.gc in client benchmark",
+      "commitDate": 1470140271000,
+      "commitName": "b99a482992ff753b10c4556b65a43301e32a8de0",
+      "commitAuthor": "Daniel Mitterdorfer",
+      "commitDateOld": 1469523682000,
+      "commitNameOld": "c33f85bc37bbfee87158738f538d380c0cc31d13",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 7.14,
+      "commitsBetweenForRepo": 108,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,49 +1,48 @@\n     public final void run(String[] args) throws Exception {\n         if (args.length \u003c 6) {\n             System.err.println(\n                 \"usage: benchmarkTargetHostIp indexFilePath indexName typeName numberOfDocuments bulkSize [search request body]\");\n             System.exit(1);\n         }\n         String benchmarkTargetHost \u003d args[0];\n         String indexFilePath \u003d args[1];\n         String indexName \u003d args[2];\n         String typeName \u003d args[3];\n         int totalDocs \u003d Integer.valueOf(args[4]);\n         int bulkSize \u003d Integer.valueOf(args[5]);\n \n         int totalIterationCount \u003d (int) Math.floor(totalDocs / bulkSize);\n         // consider 40% of all iterations as warmup iterations\n         int warmupIterations \u003d (int) (0.4d * totalIterationCount);\n         int iterations \u003d totalIterationCount - warmupIterations;\n         String searchBody \u003d (args.length \u003d\u003d 7) ? args[6] : null;\n \n         T client \u003d client(benchmarkTargetHost);\n \n         BenchmarkRunner benchmark \u003d new BenchmarkRunner(warmupIterations, iterations,\n             new BulkBenchmarkTask(\n                 bulkRequestExecutor(client, indexName, typeName), indexFilePath, warmupIterations + iterations, bulkSize));\n \n         try {\n             benchmark.run();\n             if (searchBody !\u003d null) {\n                 for (int run \u003d 1; run \u003c\u003d 5; run++) {\n                     System.out.println(\"\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\");\n                     System.out.println(\" Trial run \" + run);\n                     System.out.println(\"\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\");\n \n                     for (int throughput \u003d 100; throughput \u003c\u003d 100_000; throughput *\u003d 10) {\n-                        //request a GC between trials to reduce the likelihood of a GC occurring in the middle of a trial.\n-                        System.gc();\n-\n+                        //GC between trials to reduce the likelihood of a GC occurring in the middle of a trial.\n+                        runGc();\n                         BenchmarkRunner searchBenchmark \u003d new BenchmarkRunner(SEARCH_BENCHMARK_ITERATIONS, SEARCH_BENCHMARK_ITERATIONS,\n                             new SearchBenchmarkTask(\n                                 searchRequestExecutor(client, indexName), searchBody, 2 * SEARCH_BENCHMARK_ITERATIONS, throughput));\n                         System.out.printf(\"Target throughput \u003d %d ops / s%n\", throughput);\n                         searchBenchmark.run();\n                     }\n                 }\n             }\n         } finally {\n             client.close();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "c33f85bc37bbfee87158738f538d380c0cc31d13": {
+      "type": "Yintroduced",
+      "commitMessage": "Add client benchmark\n\nWith this commit we add a benchmark for the new REST client and the\nexisting transport client.\n\nCloses #19281\n",
+      "commitDate": 1469523682000,
+      "commitName": "c33f85bc37bbfee87158738f538d380c0cc31d13",
+      "commitAuthor": "Daniel Mitterdorfer"
+    }
+  }
+}

@@ -1,0 +1,83 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FileContents.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FileContents.java
+index ac80bad1a..e6f0aecf6 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FileContents.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/FileContents.java
+@@ -215,75 +215,75 @@ public final class FileContents implements CommentListener
+         return mLines;
+     }
+ 
+     /** @return the name of the file */
+     public String getFilename()
+     {
+         return mFilename;
+     }
+ 
+     /**
+      * Checks if the specified line is blank.
+      * @param aLineNo the line number to check
+      * @return if the specified line consists only of tabs and spaces.
+      **/
+     public boolean lineIsBlank(int aLineNo)
+     {
+         // possible improvement: avoid garbage creation in trim()
+         return "".equals(mLines[aLineNo].trim());
+     }
+ 
+     /**
+      * Checks if the specified line is a single-line comment without code.
+      * @param aLineNo  the line number to check
+      * @return if the specified line consists of only a single line comment
+      *         without code.
+      **/
+     public boolean lineIsComment(int aLineNo)
+     {
+       return MATCH_SINGLELINE_COMMENT.match(mLines[aLineNo]);
+     }
+ 
+     /**
+      * Checks if the specified position intersects with a comment.
+      * @param aStartLineNo the starting line number
+      * @param aStartColNo the starting column number
+      * @param aEndLineNo the ending line number
+      * @param aEndColNo the ending column number
+      * @return true if the positions intersects with a comment.
+      **/
+     public boolean hasIntersectionWithComment(
+             int aStartLineNo, int aStartColNo, int aEndLineNo, int aEndColNo)
+     {
+         // Check C comments (all comments should be checked)
+         Collection values = mCComments.values();
+ 
+         Iterator it = values.iterator();
+         while (it.hasNext()) {
+             List row = (List) it.next();
+             Iterator rowIterator = row.iterator();
+             while (rowIterator.hasNext()) {
+-                Comment comment = (Comment) rowIterator.next();
++                TextBlock comment = (TextBlock) rowIterator.next();
+                 if (comment.intersects(
+                         aStartLineNo, aStartColNo, aEndLineNo, aEndColNo))
+                 {
+                     return true;
+                 }
+             }
+         }
+ 
+         // Check CPP comments (line searching is possible)
+         for (int lineNumber = aStartLineNo; lineNumber <= aEndLineNo;
+             lineNumber++)
+         {
+-            Comment comment = (Comment) mCPlusPlusComments.get(
+-                new Integer(lineNumber));
++            TextBlock comment =
++                (TextBlock) mCPlusPlusComments.get(new Integer(lineNumber));
+             if (comment != null && comment.intersects(aStartLineNo, aStartColNo,
+                 aEndLineNo, aEndColNo))
+             {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+ }

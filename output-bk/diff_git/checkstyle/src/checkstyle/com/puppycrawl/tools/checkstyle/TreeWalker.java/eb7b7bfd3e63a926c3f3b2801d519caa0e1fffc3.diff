@@ -1,0 +1,167 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 8a95fe056..8595e727f 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -5,157 +5,161 @@
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.LocalizedMessages;
+ 
+ import java.util.Map;
+ import java.util.HashMap;
+ import java.util.Set;
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.ArrayList;
+ import java.lang.reflect.Field;
+ 
+ /**
+  * Responsible for walking an abstract syntax tree and notifying interested
+  * checks at each each node.
+  *
+  * @author <a href="mailto:checkstyle@puppycrawl.com">Oliver Burn</a>
+  * @version 1.0
+  */
+ class TreeWalker
+ {
+     // TODO: really need to optimise the performance of this class.
+ 
+     /** maps from a token name to value */
+     private static final Map TOKEN_NAME_TO_VALUE = new HashMap();
+     /** maps from a token value to name */
+     private static final Map TOKEN_VALUE_TO_NAME = new HashMap();
+ 
+     /** maps from token name to checks */
+     private final Map mTokenToChecks = new HashMap();
+     /** all the registered checks */
+     private final Set mAllChecks = new HashSet();
+     /** collects the error messages */
+     private final LocalizedMessages mMessages;
++    /** the tab width for error reporting */
++    private final int mTabWidth;
+ 
+     // initialise the constants
+     static {
+         final Field[] fields = Java14TokenTypes.class.getDeclaredFields();
+         for (int i = 0; i < fields.length; i++) {
+             final Field f = fields[i];
+             final String name = f.getName();
+             try {
+                 // this should NEVER fail (famous last words)
+                 final Integer value = new Integer(f.getInt(name));
+                 TOKEN_NAME_TO_VALUE.put(name, value);
+                 TOKEN_VALUE_TO_NAME.put(value, name);
+             }
+             catch (IllegalArgumentException e) {
+                 e.printStackTrace();
+                 System.exit(1);
+             }
+             catch (IllegalAccessException e) {
+                 e.printStackTrace();
+                 System.exit(1);
+             }
+         }
+ 
+     }
+ 
+     /**
+      * Creates a new <code>TreeWalker</code> instance.
+      *
+      * @param aMessages used to collect messages
+      */
+-    public TreeWalker(LocalizedMessages aMessages)
++    public TreeWalker(LocalizedMessages aMessages, int aTabWidth)
+     {
+         mMessages = aMessages;
++        mTabWidth = aTabWidth;
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param aID the ID of the token name to get
+      * @return a token name
+      */
+     static String getTokenName(int aID)
+     {
+         final String name = (String) TOKEN_VALUE_TO_NAME.get(new Integer(aID));
+         if (name == null) {
+             throw new IllegalArgumentException("given id " + aID);
+         }
+         return name;
+     }
+ 
+     /**
+      * Register a check for a given configuration.
+      * @param aCheck the check to register
+      * @param aConfig the configuration to use
+      */
+     void registerCheck(Check aCheck, CheckConfiguration aConfig)
+     {
+         aCheck.setMessages(mMessages);
++        aCheck.setTabWidth(mTabWidth);
+         if (!aConfig.getTokens().isEmpty()) {
+             final Iterator it = aConfig.getTokens().iterator();
+             while (it.hasNext()) {
+                 registerCheck((String) it.next(), aCheck);
+             }
+         }
+         else {
+             final int[] tokens = aCheck.getDefaultTokens();
+             for (int i = 0; i < tokens.length; i++) {
+                 registerCheck(tokens[i], aCheck);
+             }
+         }
+         mAllChecks.add(aCheck);
+     }
+ 
+     /**
+      * Register a check for a specified token id.
+      * @param aTokenID the id of the token
+      * @param aCheck the check to register
+      */
+     private void registerCheck(int aTokenID, Check aCheck)
+     {
+         registerCheck(getTokenName(aTokenID), aCheck);
+     }
+ 
+     /**
+      * Register a check for a specified token name
+      * @param aToken the name of the token
+      * @param aCheck the check to register
+      */
+     private void registerCheck(String aToken, Check aCheck)
+     {
+         ArrayList visitors = (ArrayList) mTokenToChecks.get(aToken);
+         if (visitors == null) {
+             visitors = new ArrayList();
+             mTokenToChecks.put(aToken, visitors);
+         }
+ 
+         visitors.add(aCheck);
+     }
+ 
+     /**
+      * Initiates the walk of an AST.
+      * @param aAST the root AST
+      * @param aLines the lines of the file the AST was generated from
+      * @param aFilename the file name of the file the AST was generated from
+      */
+     void walk(DetailAST aAST, String[] aLines, String aFilename)
+     {
+         mMessages.reset();

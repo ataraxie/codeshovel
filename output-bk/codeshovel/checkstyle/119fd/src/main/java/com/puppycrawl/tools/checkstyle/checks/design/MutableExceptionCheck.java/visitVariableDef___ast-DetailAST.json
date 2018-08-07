@@ -1,0 +1,136 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MutableExceptionCheck.java",
+  "functionName": "visitVariableDef",
+  "functionId": "visitVariableDef___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/MutableExceptionCheck.java",
+  "functionStartLine": 134,
+  "functionEndLine": 144,
+  "changeHistory": [
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "e912c46b5bb5c085323930bd1e500b180c1bea8d",
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f",
+    "4297ca50a95bd01c236ee1f4aeb13488298b104f",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "2f70947ed74ab968324fdcf83f808ff1d88df1fb",
+    "5245c14883aa9ddf9930804c09c13df1f34e70bc"
+  ],
+  "changeHistoryShort": {
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "e912c46b5bb5c085323930bd1e500b180c1bea8d": "Ybodychange",
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f": "Ymultichange(Yparameterchange,Ybodychange)",
+    "4297ca50a95bd01c236ee1f4aeb13488298b104f": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "2f70947ed74ab968324fdcf83f808ff1d88df1fb": "Ybodychange",
+    "5245c14883aa9ddf9930804c09c13df1f34e70bc": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437367000,
+      "commitNameOld": "e912c46b5bb5c085323930bd1e500b180c1bea8d",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 18.36,
+      "commitsBetweenForRepo": 92,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private void visitVariableDef(DetailAST ast)\n     {\n-        if (checking \u0026\u0026 (ast.getParent().getType() \u003d\u003d TokenTypes.OBJBLOCK)) {\n+        if (checking \u0026\u0026 ast.getParent().getType() \u003d\u003d TokenTypes.OBJBLOCK) {\n             final DetailAST modifiersAST \u003d\n                 ast.findFirstToken(TokenTypes.MODIFIERS);\n \n             if (modifiersAST.findFirstToken(TokenTypes.FINAL) \u003d\u003d null) {\n                 log(ast.getLineNo(),  ast.getColumnNo(), MSG_KEY,\n                         ast.findFirstToken(TokenTypes.IDENT).getText());\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "e912c46b5bb5c085323930bd1e500b180c1bea8d": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactored UTs, design package, issue #537\n",
+      "commitDate": 1424437367000,
+      "commitName": "e912c46b5bb5c085323930bd1e500b180c1bea8d",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.66,
+      "commitsBetweenForRepo": 15,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private void visitVariableDef(DetailAST ast)\n     {\n         if (checking \u0026\u0026 (ast.getParent().getType() \u003d\u003d TokenTypes.OBJBLOCK)) {\n             final DetailAST modifiersAST \u003d\n                 ast.findFirstToken(TokenTypes.MODIFIERS);\n \n             if (modifiersAST.findFirstToken(TokenTypes.FINAL) \u003d\u003d null) {\n-                log(ast.getLineNo(),  ast.getColumnNo(), \"mutable.exception\",\n+                log(ast.getLineNo(),  ast.getColumnNo(), MSG_KEY,\n                         ast.findFirstToken(TokenTypes.IDENT).getText());\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, design, #512\n",
+      "commitDate": 1421677275000,
+      "commitName": "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "4297ca50a95bd01c236ee1f4aeb13488298b104f": {
+      "type": "Ybodychange",
+      "commitMessage": "MutableException check requires class to explicitly extend some other class (for issue #60)\n",
+      "commitDate": 1419099165000,
+      "commitName": "4297ca50a95bd01c236ee1f4aeb13488298b104f",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1393953491000,
+      "commitNameOld": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthorOld": "Ivan Sopov",
+      "daysBetweenCommits": 291.04,
+      "commitsBetweenForRepo": 404,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private void visitVariableDef(DetailAST aAST)\n     {\n         if (mChecking \u0026\u0026 (aAST.getParent().getType() \u003d\u003d TokenTypes.OBJBLOCK)) {\n             final DetailAST modifiersAST \u003d\n                 aAST.findFirstToken(TokenTypes.MODIFIERS);\n \n-            if (!(modifiersAST.findFirstToken(TokenTypes.FINAL) !\u003d null)) {\n+            if (modifiersAST.findFirstToken(TokenTypes.FINAL) \u003d\u003d null) {\n                 log(aAST.getLineNo(),  aAST.getColumnNo(), \"mutable.exception\",\n                         aAST.findFirstToken(TokenTypes.IDENT).getText());\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1130786628000,
+      "commitNameOld": "1aee9d55cc5bd8cca011e17369f6e370efcc85bb",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 248.34,
+      "commitsBetweenForRepo": 40,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private void visitVariableDef(DetailAST aAST)\n     {\n-        if (mChecking \u0026\u0026 aAST.getParent().getType() \u003d\u003d TokenTypes.OBJBLOCK) {\n+        if (mChecking \u0026\u0026 (aAST.getParent().getType() \u003d\u003d TokenTypes.OBJBLOCK)) {\n             final DetailAST modifiersAST \u003d\n                 aAST.findFirstToken(TokenTypes.MODIFIERS);\n \n             if (!(modifiersAST.findFirstToken(TokenTypes.FINAL) !\u003d null)) {\n                 log(aAST.getLineNo(),  aAST.getColumnNo(), \"mutable.exception\",\n                         aAST.findFirstToken(TokenTypes.IDENT).getText());\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "2f70947ed74ab968324fdcf83f808ff1d88df1fb": {
+      "type": "Ybodychange",
+      "commitMessage": "Tighten up code\n",
+      "commitDate": 1093528034000,
+      "commitName": "2f70947ed74ab968324fdcf83f808ff1d88df1fb",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1074114639000,
+      "commitNameOld": "5670252b46f4915b276e647fa000361915eb4ff4",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 224.69,
+      "commitsBetweenForRepo": 139,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,12 @@\n     private void visitVariableDef(DetailAST aAST)\n     {\n         if (mChecking \u0026\u0026 aAST.getParent().getType() \u003d\u003d TokenTypes.OBJBLOCK) {\n-            DetailAST modifiersAST \u003d aAST.findFirstToken(TokenTypes.MODIFIERS);\n+            final DetailAST modifiersAST \u003d\n+                aAST.findFirstToken(TokenTypes.MODIFIERS);\n \n             if (!(modifiersAST.findFirstToken(TokenTypes.FINAL) !\u003d null)) {\n                 log(aAST.getLineNo(),  aAST.getColumnNo(), \"mutable.exception\",\n                         aAST.findFirstToken(TokenTypes.IDENT).getText());\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "5245c14883aa9ddf9930804c09c13df1f34e70bc": {
+      "type": "Yintroduced",
+      "commitMessage": "Added MutableException check (request 750750).\nThis is a very simple algorithm, but, I believe, it catches most of\nreal-life problems.\n",
+      "commitDate": 1061928418000,
+      "commitName": "5245c14883aa9ddf9930804c09c13df1f34e70bc",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

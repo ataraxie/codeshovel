@@ -1,0 +1,212 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+index cdc0c0588..f44a4e165 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+@@ -381,101 +381,102 @@ public class RequireThisCheck extends AbstractCheck {
+         final DetailAST ident = ast.findFirstToken(TokenTypes.IDENT);
+         if (frame.getType() == FrameType.CLASS_FRAME) {
+             final DetailAST mods =
+                     ast.findFirstToken(TokenTypes.MODIFIERS);
+             if (ScopeUtils.isInInterfaceBlock(ast)
+                     || mods.branchContains(TokenTypes.LITERAL_STATIC)) {
+                 ((ClassFrame) frame).addStaticMember(ident);
+             }
+             else {
+                 ((ClassFrame) frame).addInstanceMember(ident);
+             }
+         }
+         else {
+             frame.addIdent(ident);
+         }
+     }
+ 
+     /**
+      * Ends parsing of the AST for declarations.
+      * @param frameStack Stack containing the FrameTree being built.
+      * @param ast AST that was parsed.
+      */
+     private void endCollectingDeclarations(Queue<AbstractFrame> frameStack, DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CLASS_DEF :
+             case TokenTypes.INTERFACE_DEF :
+             case TokenTypes.ENUM_DEF :
+             case TokenTypes.ANNOTATION_DEF :
+             case TokenTypes.SLIST :
+             case TokenTypes.METHOD_DEF :
+             case TokenTypes.CTOR_DEF :
+                 frames.put(ast, frameStack.poll());
+                 break;
+             case TokenTypes.LITERAL_NEW :
+                 if (isAnonymousClassDef(ast)) {
+                     frames.put(ast, frameStack.poll());
+                 }
+                 break;
+             default :
+                 // do nothing
+         }
+     }
+ 
+     /**
+      * Whether the AST is a definition of an anonymous class.
+      * @param ast the AST to process.
+      * @return true if the AST is a definition of an anonymous class.
+      */
+     private static boolean isAnonymousClassDef(DetailAST ast) {
+         final DetailAST lastChild = ast.getLastChild();
+-        return lastChild != null && lastChild.getType() == TokenTypes.OBJBLOCK;
++        return lastChild != null
++            && lastChild.getType() == TokenTypes.OBJBLOCK;
+     }
+ 
+     /**
+      * Returns the class frame where violation is found (where the field is used without 'this')
+      * or null otherwise.
+      * @param ast IDENT ast to check.
+      * @return the class frame where violation is found or null otherwise.
+      */
+     // -@cs[CyclomaticComplexity] Method already invokes too many methods that fully explain
+     // a logic, additional abstraction will not make logic/algorithm more readable.
+     private AbstractFrame getClassFrameWhereViolationIsFound(DetailAST ast) {
+         AbstractFrame frameWhereViolationIsFound = null;
+         final AbstractFrame variableDeclarationFrame = findFrame(ast, false);
+         final FrameType variableDeclarationFrameType = variableDeclarationFrame.getType();
+         final DetailAST prevSibling = ast.getPreviousSibling();
+         if (variableDeclarationFrameType == FrameType.CLASS_FRAME
+                 && !validateOnlyOverlapping
+                 && prevSibling == null
+                 && canBeReferencedFromStaticContext(ast)) {
+             frameWhereViolationIsFound = variableDeclarationFrame;
+         }
+         else if (variableDeclarationFrameType == FrameType.METHOD_FRAME) {
+             if (isOverlappingByArgument(ast)) {
+                 if (!isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)
+                         && !isReturnedVariable(variableDeclarationFrame, ast)
+                         && canBeReferencedFromStaticContext(ast)
+                         && canAssignValueToClassField(ast)) {
+                     frameWhereViolationIsFound = findFrame(ast, true);
+                 }
+             }
+             else if (!validateOnlyOverlapping
+                      && prevSibling == null
+                      && isAssignToken(ast.getParent().getType())
+                      && !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)
+                      && canBeReferencedFromStaticContext(ast)
+                      && canAssignValueToClassField(ast)) {
+                 frameWhereViolationIsFound = findFrame(ast, true);
+ 
+             }
+         }
+         else if (variableDeclarationFrameType == FrameType.CTOR_FRAME
+                  && isOverlappingByArgument(ast)
+                  && !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)) {
+             frameWhereViolationIsFound = findFrame(ast, true);
+         }
+         else if (variableDeclarationFrameType == FrameType.BLOCK_FRAME) {
+             if (isOverlappingByLocalVariable(ast)) {
+                 if (canAssignValueToClassField(ast)
+                         && !isUserDefinedArrangementOfThis(variableDeclarationFrame, ast)
+                         && !isReturnedVariable(variableDeclarationFrame, ast)
+@@ -753,102 +754,101 @@ public class RequireThisCheck extends AbstractCheck {
+                     stack.push(vertex.getNextSibling());
+                 }
+                 vertex = vertex.getFirstChild();
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Collects all tokens which are equal to current token starting with the current ast node and
+      * which line number is lower or equal to the end line number.
+      * @param ast ast node.
+      * @param token token.
+      * @param endLineNumber end line number.
+      * @return a set of tokens which are equal to current token starting with the current ast node
+      *         and which line number is lower or equal to the end line number.
+      */
+     private static Set<DetailAST> getAllTokensWhichAreEqualToCurrent(DetailAST ast, DetailAST token,
+                                                                      int endLineNumber) {
+         DetailAST vertex = ast;
+         final Set<DetailAST> result = new HashSet<>();
+         final Deque<DetailAST> stack = new ArrayDeque<>();
+         while (vertex != null || !stack.isEmpty()) {
+             if (!stack.isEmpty()) {
+                 vertex = stack.pop();
+             }
+             while (vertex != null) {
+                 if (token.equals(vertex)
+                         && vertex.getLineNo() <= endLineNumber) {
+                     result.add(vertex);
+                 }
+                 if (vertex.getNextSibling() != null) {
+                     stack.push(vertex.getNextSibling());
+                 }
+                 vertex = vertex.getFirstChild();
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Returns the frame where the method is declared, if the given method is used without
+      * 'this' and null otherwise.
+      * @param ast the IDENT ast of the name to check.
+      * @return the frame where the method is declared, if the given method is used without
+      *         'this' and null otherwise.
+      */
+     private AbstractFrame getMethodWithoutThis(DetailAST ast) {
+         AbstractFrame result = null;
+         final AbstractFrame frame = findFrame(ast, true);
+-        if (frame != null
+-                && !validateOnlyOverlapping
++        if (!validateOnlyOverlapping
+                 && ((ClassFrame) frame).hasInstanceMethod(ast)
+                 && !((ClassFrame) frame).hasStaticMethod(ast)) {
+             result = frame;
+         }
+         return result;
+     }
+ 
+     /**
+      * Find the class frame containing declaration.
+      * @param name IDENT ast of the declaration to find.
+      * @param lookForMethod whether we are looking for a method name.
+      * @return AbstractFrame containing declaration or null.
+      */
+     private AbstractFrame findClassFrame(DetailAST name, boolean lookForMethod) {
+         AbstractFrame frame = current;
+ 
+         while (true) {
+             frame = findFrame(frame, name, lookForMethod);
+ 
+             if (frame == null || frame instanceof ClassFrame) {
+                 break;
+             }
+ 
+             frame = frame.getParent();
+         }
+ 
+         return frame;
+     }
+ 
+     /**
+      * Find frame containing declaration.
+      * @param name IDENT ast of the declaration to find.
+      * @param lookForMethod whether we are looking for a method name.
+      * @return AbstractFrame containing declaration or null.
+      */
+     private AbstractFrame findFrame(DetailAST name, boolean lookForMethod) {
+         return findFrame(current, name, lookForMethod);
+     }
+ 
+     /**
+      * Find frame containing declaration.
+      * @param frame The parent frame to searching in.
+      * @param name IDENT ast of the declaration to find.
+      * @param lookForMethod whether we are looking for a method name.
+      * @return AbstractFrame containing declaration or null.
+      */
+     private static AbstractFrame findFrame(AbstractFrame frame, DetailAST name,
+             boolean lookForMethod) {
+         final AbstractFrame result;
+         if (frame == null) {

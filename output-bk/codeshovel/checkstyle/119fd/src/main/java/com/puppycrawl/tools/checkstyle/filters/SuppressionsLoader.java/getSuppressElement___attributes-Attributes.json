@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SuppressionsLoader.java",
+  "functionName": "getSuppressElement",
+  "functionId": "getSuppressElement___attributes-Attributes",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java",
+  "functionStartLine": 143,
+  "functionEndLine": 163,
+  "changeHistory": [
+    "70fd1618553f9bff32c4cfc39754ea3c2e99fc88",
+    "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec"
+  ],
+  "changeHistoryShort": {
+    "70fd1618553f9bff32c4cfc39754ea3c2e99fc88": "Ybodychange",
+    "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "70fd1618553f9bff32c4cfc39754ea3c2e99fc88": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2804: allow suppression by message",
+      "commitDate": 1512921364000,
+      "commitName": "70fd1618553f9bff32c4cfc39754ea3c2e99fc88",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1512921364000,
+      "commitNameOld": "7cf7ce23adb0b05886a32891df984d326a38c4f2",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,21 @@\n     private static SuppressElement getSuppressElement(Attributes attributes) throws SAXException {\n         final String checks \u003d attributes.getValue(ATTRIBUTE_NAME_CHECKS);\n         final String modId \u003d attributes.getValue(ATTRIBUTE_NAME_ID);\n-        if (checks \u003d\u003d null \u0026\u0026 modId \u003d\u003d null) {\n+        final String message \u003d attributes.getValue(ATTRIBUTE_NAME_MESSAGE);\n+        if (checks \u003d\u003d null \u0026\u0026 modId \u003d\u003d null \u0026\u0026 message \u003d\u003d null) {\n             // -@cs[IllegalInstantiation] SAXException is in the overridden method signature\n-            throw new SAXException(\"missing checks and id attribute\");\n+            throw new SAXException(\"missing checks or id or message attribute\");\n         }\n         final SuppressElement suppress;\n         try {\n             final String files \u003d attributes.getValue(ATTRIBUTE_NAME_FILES);\n             final String lines \u003d attributes.getValue(ATTRIBUTE_NAME_LINES);\n             final String columns \u003d attributes.getValue(ATTRIBUTE_NAME_COLUMNS);\n-            suppress \u003d new SuppressElement(files, checks, modId, lines, columns);\n+            suppress \u003d new SuppressElement(files, checks, message, modId, lines, columns);\n         }\n         catch (final PatternSyntaxException ex) {\n             // -@cs[IllegalInstantiation] SAXException is in the overridden method signature\n-            throw new SAXException(\"invalid files or checks format\", ex);\n+            throw new SAXException(\"invalid files or checks or message format\", ex);\n         }\n         return suppress;\n     }\n\\ No newline at end of file\n"
+    },
+    "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #4421: Support suppression-xpath element in SuppressionLoader\n",
+      "commitDate": 1506566816000,
+      "commitName": "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec",
+      "commitAuthor": "Timur"
+    }
+  }
+}

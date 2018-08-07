@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+index 7c96b218a..bb17e957e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+@@ -156,101 +156,102 @@ public class FinalLocalVariableCheck extends AbstractCheck {
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+             TokenTypes.LITERAL_BREAK,
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+             TokenTypes.LITERAL_BREAK,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     // -@cs[CyclomaticComplexity] The only optimization which can be done here is moving CASE-block
+     // expressions to separate methods, but that will not increase readability.
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.CTOR_DEF:
+                 scopeStack.push(new ScopeData());
+                 break;
+             case TokenTypes.SLIST:
+                 currentScopeAssignedVariables.push(new ArrayDeque<>());
+                 if (ast.getParent().getType() != TokenTypes.CASE_GROUP
+                     || ast.getParent().getParent().findFirstToken(TokenTypes.CASE_GROUP)
+                     == ast.getParent()) {
+                     storePrevScopeUninitializedVariableData();
+                     scopeStack.push(new ScopeData());
+                 }
+                 break;
+             case TokenTypes.PARAMETER_DEF:
+                 if (!isInLambda(ast)
+-                        && !ast.branchContains(TokenTypes.FINAL)
++                        && ast.findFirstToken(TokenTypes.MODIFIERS)
++                            .findFirstToken(TokenTypes.FINAL) == null
+                         && !isInAbstractOrNativeMethod(ast)
+                         && !ScopeUtils.isInInterfaceBlock(ast)
+                         && !isMultipleTypeCatch(ast)) {
+                     insertParameter(ast);
+                 }
+                 break;
+             case TokenTypes.VARIABLE_DEF:
+                 if (ast.getParent().getType() != TokenTypes.OBJBLOCK
+                         && ast.findFirstToken(TokenTypes.MODIFIERS)
+                             .findFirstToken(TokenTypes.FINAL) == null
+                         && !isVariableInForInit(ast)
+                         && shouldCheckEnhancedForLoopVariable(ast)) {
+                     insertVariable(ast);
+                 }
+                 break;
+             case TokenTypes.IDENT:
+                 final int parentType = ast.getParent().getType();
+                 if (isAssignOperator(parentType) && isFirstChild(ast)) {
+                     final Optional<FinalVariableCandidate> candidate = getFinalCandidate(ast);
+                     if (candidate.isPresent()) {
+                         determineAssignmentConditions(ast, candidate.get());
+                         currentScopeAssignedVariables.peek().add(ast);
+                     }
+                     removeFinalVariableCandidateFromStack(ast);
+                 }
+                 break;
+             case TokenTypes.LITERAL_BREAK:
+                 scopeStack.peek().containsBreak = true;
+                 break;
+             default:
+                 throw new IllegalStateException("Incorrect token type");
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         Map<String, FinalVariableCandidate> scope = null;
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+                 scope = scopeStack.pop().scope;
+                 break;
+             case TokenTypes.SLIST:
+                 // -@cs[MoveVariableInsideIf] assignment value is modified later so it can't be
+                 // moved
+                 final Deque<DetailAST> prevScopeUnitializedVariableData =
+                     prevScopeUninitializedVariables.peek();
+                 boolean containsBreak = false;
+                 if (ast.getParent().getType() != TokenTypes.CASE_GROUP

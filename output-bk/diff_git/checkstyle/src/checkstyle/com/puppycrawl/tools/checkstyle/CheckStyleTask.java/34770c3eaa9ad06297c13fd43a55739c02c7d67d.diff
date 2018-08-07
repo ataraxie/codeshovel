@@ -1,0 +1,201 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index 7a7123bde..a7eb5544e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -636,190 +636,192 @@ public class CheckStyleTask
+     /** @param aTo the right curly placement option **/
+     public void setRCurly(final String aTo)
+     {
+         mOptionMemory.add(new Runnable()
+             {
+                 public void run()
+                 {
+                     mConfig.setRCurly(extractRightCurlyOption(aTo));
+                 }
+             });
+     }
+ 
+     /** @param aTo the catch block option **/
+     public void setCatchBlock(final String aTo)
+     {
+         mOptionMemory.add(new Runnable()
+             {
+                 public void run()
+                 {
+                     mConfig.setCatchBlock(extractCatchBlockOption(aTo));
+                 }
+             });
+     }
+ 
+     /** @param aTo the parenthesis padding option **/
+     public void setParenPad(final String aTo)
+     {
+         mOptionMemory.add(new Runnable()
+             {
+                 public void run()
+                 {
+                     mConfig.setParenPadOption(extractPadOption(aTo));
+                 }
+             });
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // The doers
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /**
+      * Actually checks the files specified. All errors are reported to
+      * System.out. Will fail if any errors occurred.
+      * @throws BuildException an error occurred
+      **/
+     public void execute()
+         throws BuildException
+     {
+         // Check for no arguments
+         if ((mFileName == null) && (mFileSets.size() == 0)) {
+-            throw new BuildException("Must specify atleast one of 'file' " +
+-                                     "or nested 'fileset'.", location);
++            throw new BuildException(
++                "Must specify atleast one of 'file' or nested 'fileset'.",
++                location);
+         }
+ 
+         // Create the checker
+         Checker c = null;
+         try {
+             try {
+                 applyExplicitOptions();
+                 c = new Checker(mConfig);
+                 // setup the listeners
+                 AuditListener[] listeners = getListeners();
+                 for (int i = 0; i < listeners.length; i++) {
+                     c.addListener(listeners[i]);
+                 }
+             }
+             catch (Exception e) {
+                 throw new BuildException("Unable to create a Checker", e);
+             }
+ 
+             // Process the files
+             final String[] files = scanFileSets();
+             final int numErrs = c.process(files);
+ 
+             // Handle the return status
+             if ((numErrs > 0) && mFailureProperty != null) {
+                 getProject().setProperty(mFailureProperty, "true");
+             }
+ 
+             if ((numErrs > 0) && mFailOnViolation) {
+                 throw new BuildException("Got " + numErrs + " errors.",
+                                          location);
+             }
+         }
+         finally {
+             if (c != null) {
+                 c.destroy();
+             }
+         }
+     }
+ 
+     /**
+      * Return the list of listeners set in this task.
+      * @return the list of listeners.
+      * @throws ClassNotFoundException if an error occurs
+      * @throws InstantiationException if an error occurs
+      * @throws IllegalAccessException if an error occurs
+      * @throws IOException if an error occurs
+      */
+     protected AuditListener[] getListeners()
+         throws ClassNotFoundException, InstantiationException,
+         IllegalAccessException, IOException
+     {
+         if (mFormatters.size() == 0) {
+             final Formatter f = new Formatter();
+             final FormatterType type = new FormatterType();
+             type.setValue(E_PLAIN);
+             f.setType(type);
+             mFormatters.add(f);
+         }
+ 
+         final AuditListener[] listeners = new AuditListener[mFormatters.size()];
+         for (int i = 0; i < listeners.length; i++) {
+             final Formatter f = (Formatter) mFormatters.get(i);
+             listeners[i] = f.createListener(this);
+         }
+         return listeners;
+     }
+ 
+     /**
+      * returns the list of files (full path name) to process.
+      * @return the list of files included via the filesets.
+      */
+     protected String[] scanFileSets()
+     {
+         final ArrayList list = new ArrayList();
+         if (mFileName != null) {
+             // oops we've got an additional one to process, don't
+             // forget it. No sweat, it's fully resolved via the setter.
+             log("Adding standalone file for audit", Project.MSG_VERBOSE);
+             list.add(mFileName);
+         }
+         for (int i = 0; i < mFileSets.size(); i++) {
+             final FileSet fs = (FileSet) mFileSets.get(i);
+             final DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+             ds.scan();
+ 
+             final String[] names = ds.getIncludedFiles();
+-            log(i + ") Adding " + names.length + " files from directory " +
+-                ds.getBasedir(), Project.MSG_VERBOSE);
++            log(i + ") Adding " + names.length + " files from directory "
++                + ds.getBasedir(),
++                Project.MSG_VERBOSE);
+ 
+             for (int j = 0; j < names.length; j++) {
+                 final String pathname =
+                     ds.getBasedir() + File.separator + names[j];
+                 list.add(pathname);
+             }
+         }
+ 
+         return (String[]) list.toArray(new String[0]);
+     }
+ 
+     /**
+      * Poor mans enumeration for the formatter types.
+      * @author <a href="mailto:oliver@puppycrawl.com">Oliver Burn</a>
+      */
+     public static class FormatterType
+         extends EnumeratedAttribute
+     {
+         /** my possible values **/
+         private static final String[] VALUES = {E_XML, E_PLAIN};
+ 
+         /** @see EnumeratedAttribute **/
+         public String[] getValues()
+         {
+             return VALUES;
+         }
+     }
+ 
+     /**
+      * Details about a formatter to be used.
+      * @author <a href="mailto:oliver@puppycrawl.com">Oliver Burn</a>
+      */
+     public static class Formatter
+     {
+         /** class name of formatter **/
+         private String mClassName = null;
+         /** the file to output to **/
+         private File mToFile = null;
+ 
+         /**
+          * Set the type of the formatter.
+          * @param aType the type
+          */
+         public void setType(FormatterType aType)
+         {
+             final String val = aType.getValue();
+             if (E_XML.equals(val)) {
+                 setClassname(XMLLogger.class.getName());
+             }
+             else if (E_PLAIN.equals(val)) {

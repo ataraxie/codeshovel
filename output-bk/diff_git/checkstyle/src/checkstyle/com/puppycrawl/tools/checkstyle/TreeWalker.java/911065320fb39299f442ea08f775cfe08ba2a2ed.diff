@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 8d64ba88a..34287f92f 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -249,101 +249,101 @@ public final class TreeWalker
+                         Defn.CHECKSTYLE_BUNDLE,
+                         "general.exception",
+                         new String[]
+                         {"TokenStreamRecognitionException occured."},
+                         getId(),
+                         this.getClass()));
+             }
+         }
+         catch (final TokenStreamException te) {
+             Utils.getExceptionLogger()
+                 .debug("TokenStreamException occured.", te);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     0,
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {te.getMessage()},
+                     getId(),
+                     this.getClass()));
+         }
+         catch (final Throwable err) {
+             Utils.getExceptionLogger().debug("Throwable occured.", err);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     0,
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {"" + err},
+                     getId(),
+                     this.getClass()));
+         }
+ 
+         if (getMessageCollector().size() == 0) {
+             mCache.checkedOk(fileName, timestamp);
+         }
+         else {
+             fireErrors(fileName);
+         }
+ 
+         getMessageDispatcher().fireFileFinished(fileName);
+     }
+ 
+     /**
+      * Register a check for a given configuration.
+      * @param aCheck the check to register
+      * @throws CheckstyleException if an error occurs
+      */
+     private void registerCheck(Check aCheck)
+         throws CheckstyleException
+     {
+-        int[] tokens = new int[] {}; //safety initialization
++        final int[] tokens;
+         final Set<String> checkTokens = aCheck.getTokenNames();
+         if (!checkTokens.isEmpty()) {
+             tokens = aCheck.getRequiredTokens();
+ 
+             //register configured tokens
+             final int acceptableTokens[] = aCheck.getAcceptableTokens();
+             Arrays.sort(acceptableTokens);
+             for (String token : checkTokens) {
+                 try {
+                     final int tokenId = TokenTypes.getTokenId(token);
+                     if (Arrays.binarySearch(acceptableTokens, tokenId) >= 0) {
+                         registerCheck(token, aCheck);
+                     }
+                     // TODO: else log warning
+                 }
+                 catch (final IllegalArgumentException ex) {
+                     throw new CheckstyleException("illegal token \""
+                         + token + "\" in check " + aCheck, ex);
+                 }
+             }
+         }
+         else {
+             tokens = aCheck.getDefaultTokens();
+         }
+         for (int element : tokens) {
+             registerCheck(element, aCheck);
+         }
+         mAllChecks.add(aCheck);
+     }
+ 
+     /**
+      * Register a check for a specified token id.
+      * @param aTokenID the id of the token
+      * @param aCheck the check to register
+      */
+     private void registerCheck(int aTokenID, Check aCheck)
+     {
+         registerCheck(TokenTypes.getTokenName(aTokenID), aCheck);
+     }
+ 
+     /**
+      * Register a check for a specified token name
+      * @param aToken the name of the token
+      * @param aCheck the check to register
+      */
+     private void registerCheck(String aToken, Check aCheck)
+     {
+         mTokenToChecks.put(aToken, aCheck);
+     }
+ 

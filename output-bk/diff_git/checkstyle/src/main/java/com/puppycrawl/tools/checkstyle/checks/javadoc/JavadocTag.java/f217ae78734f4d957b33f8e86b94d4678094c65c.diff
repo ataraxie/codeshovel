@@ -1,0 +1,102 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTag.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTag.java
+index 0256ca94f..2215a48d6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTag.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTag.java
+@@ -34,95 +34,95 @@ public class JavadocTag {
+     private final String arg1;
+     /** the JavadocTagInfo representing this tag **/
+     private final JavadocTagInfo tagInfo;
+ 
+     /**
+      * Constructs the object.
+      * @param line the line number of the tag
+      * @param column the column number of the tag
+      * @param tag the tag string
+      * @param arg1 the tag argument
+      **/
+     public JavadocTag(int line, int column, String tag, String arg1) {
+         lineNo = line;
+         columnNo = column;
+         this.arg1 = arg1;
+         tagInfo = JavadocTagInfo.fromName(tag);
+     }
+ 
+     /**
+      * Constructs the object.
+      * @param line the line number of the tag
+      * @param column the column number of the tag
+      * @param tag the tag string
+      **/
+     public JavadocTag(int line, int column, String tag) {
+         this(line, column, tag, null);
+     }
+ 
+     /** @return the tag string **/
+     public String getTagName() {
+         return tagInfo.getName();
+     }
+ 
+     /** @return the first argument. null if not set. **/
+     public String getArg1() {
+         return arg1;
+     }
+ 
+     /** @return the line number **/
+     public int getLineNo() {
+         return lineNo;
+     }
+ 
+     /** @return the column number */
+     public int getColumnNo() {
+         return columnNo;
+     }
+ 
+     @Override
+     public String toString() {
+-        return "{Tag = '" + getTagName() + "', lineNo = " + getLineNo()
+-            + ", columnNo=" + columnNo + ", Arg1 = '" + getArg1() + "'}";
++        return "JavadocTag{tag='" + getTagName() + "' lineNo=" + lineNo + ", columnNo=" + columnNo
++                + ", arg1='" + arg1 + "'}";
+     }
+ 
+     /** @return whether the tag is an 'author' tag **/
+     public boolean isAuthorTag() {
+         return JavadocTagInfo.AUTHOR == tagInfo;
+     }
+ 
+     /** @return whether the tag is an 'return' tag **/
+     public boolean isReturnTag() {
+         return JavadocTagInfo.RETURN == tagInfo;
+     }
+ 
+     /** @return whether the tag is an 'param' tag **/
+     public boolean isParamTag() {
+         return JavadocTagInfo.PARAM == tagInfo;
+     }
+ 
+     /** @return whether the tag is an 'throws' or 'exception' tag **/
+     public boolean isThrowsTag() {
+         return JavadocTagInfo.THROWS == tagInfo
+             || JavadocTagInfo.EXCEPTION == tagInfo;
+     }
+ 
+     /** @return whether the tag is a 'see' or 'inheritDoc' tag **/
+     public boolean isSeeOrInheritDocTag() {
+         return JavadocTagInfo.SEE == tagInfo || isInheritDocTag();
+     }
+ 
+     /** @return whether the tag is a 'inheritDoc' tag **/
+     public boolean isInheritDocTag() {
+         return JavadocTagInfo.INHERIT_DOC == tagInfo;
+     }
+ 
+     /** @return whether the tag can contain references to imported classes **/
+     public boolean canReferenceImports() {
+         return JavadocTagInfo.SEE == tagInfo
+                 || JavadocTagInfo.LINK == tagInfo
+                 || JavadocTagInfo.LINKPLAIN == tagInfo
+                 || JavadocTagInfo.THROWS == tagInfo
+                 || JavadocTagInfo.EXCEPTION == tagInfo;
+     }
+ }
+ 

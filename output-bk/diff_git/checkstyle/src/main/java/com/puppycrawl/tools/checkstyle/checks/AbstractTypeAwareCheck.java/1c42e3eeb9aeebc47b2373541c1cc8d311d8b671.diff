@@ -1,0 +1,111 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+index 01015ebc9..d87754bb3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+@@ -113,104 +113,104 @@ public abstract class AbstractTypeAwareCheck extends Check
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.IMPORT,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.ENUM_DEF,
+         };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST)
+     {
+         packageFullIdent = FullIdent.createFullIdent(null);
+         imports.clear();
+         // add java.lang.* since it's always imported
+         imports.add("java.lang.*");
+         classResolver = null;
+         currentClass = "";
+         typeParams.clear();
+     }
+ 
+     @Override
+     public final void visitToken(DetailAST ast)
+     {
+         if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+             processPackage(ast);
+         }
+         else if (ast.getType() == TokenTypes.IMPORT) {
+             processImport(ast);
+         }
+         else if (ast.getType() == TokenTypes.CLASS_DEF
+                  || ast.getType() == TokenTypes.INTERFACE_DEF
+                  || ast.getType() == TokenTypes.ENUM_DEF)
+         {
+             processClass(ast);
+         }
+         else {
+             if (ast.getType() == TokenTypes.METHOD_DEF) {
+                 processTypeParams(ast);
+             }
+             processAST(ast);
+         }
+     }
+ 
+     @Override
+     public final void leaveToken(DetailAST ast)
+     {
+         if (ast.getType() == TokenTypes.CLASS_DEF
+             || ast.getType() == TokenTypes.ENUM_DEF)
+         {
+             // perhaps it was inner class
+-            int dotIdx = currentClass.lastIndexOf("$");
++            int dotIdx = currentClass.lastIndexOf('$');
+             if (dotIdx == -1) {
+                 // perhaps just a class
+-                dotIdx = currentClass.lastIndexOf(".");
++                dotIdx = currentClass.lastIndexOf('.');
+             }
+             if (dotIdx == -1) {
+                 // looks like a topmost class
+                 currentClass = "";
+             }
+             else {
+                 currentClass = currentClass.substring(0, dotIdx);
+             }
+             typeParams.pop();
+         }
+         else if (ast.getType() == TokenTypes.METHOD_DEF) {
+             typeParams.pop();
+         }
+         else if (ast.getType() != TokenTypes.PACKAGE_DEF
+                  && ast.getType() != TokenTypes.IMPORT)
+         {
+             leaveAST(ast);
+         }
+     }
+ 
+     /**
+      * Called when exiting an AST. A no-op by default, extending classes
+      * may choose to override this to augment their processing.
+      * @param ast the AST we are departing. Guaranteed to not be PACKAGE_DEF,
+      *             CLASS_DEF, or IMPORT
+      */
+     protected void leaveAST(DetailAST ast)
+     {
+     }
+ 
+     /**
+      * Is exception is unchecked (subclass of <code>RuntimeException</code>
+      * or <code>Error</code>
+      *
+      * @param exception <code>Class</code> of exception to check
+      * @return true  if exception is unchecked
+      *         false if exception is checked
+      */
+     protected boolean isUnchecked(Class<?> exception)
+     {
+         return isSubclass(exception, RuntimeException.class)
+             || isSubclass(exception, Error.class);
+     }
+ 
+     /**
+      * Checks if one class is subclass of another
+      *
+      * @param child <code>Class</code> of class
+      *               which should be child
+      * @param parent <code>Class</code> of class

@@ -1,0 +1,87 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "getMessageBundle",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 117,
+  "changeHistory": [
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "3bf83180c94eb14314d929682b260d1ce43eadb3",
+    "d216ec75255a120ce7c24e51da7df63a2b9864de",
+    "3aa99fde8e937ab19b8e0e31f6ce52f6ced58bf1"
+  ],
+  "changeHistoryShort": {
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "3bf83180c94eb14314d929682b260d1ce43eadb3": "Ybodychange",
+    "d216ec75255a120ce7c24e51da7df63a2b9864de": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "3aa99fde8e937ab19b8e0e31f6ce52f6ced58bf1": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary this keyword. #1555\n\nFixes `UnnecessaryThis` inspection violations.\n\nDescription:\n\u003eReports on any unnecessary uses of this in the code. Using this to disambiguate a code reference may easily become unnecessary via automatic refactorings, and is discouraged by many coding styles.\n For example:\n ```\n this.a \u003d 3;\n ```\n",
+      "commitDate": 1439131302000,
+      "commitName": "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437195084000,
+      "commitNameOld": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 22.41,
+      "commitsBetweenForRepo": 289,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n     protected String getMessageBundle() {\n-        final String className \u003d this.getClass().getName();\n+        final String className \u003d getClass().getName();\n         return getMessageBundle(className);\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "3bf83180c94eb14314d929682b260d1ce43eadb3": {
+      "type": "Ybodychange",
+      "commitMessage": "fixed bug reported by Oleg Sukhodolsky in patch #713239\n",
+      "commitDate": 1049227539000,
+      "commitName": "3bf83180c94eb14314d929682b260d1ce43eadb3",
+      "commitAuthor": "Lars Kühne",
+      "commitDateOld": 1048760260000,
+      "commitNameOld": "0ac2db237ecae4cb7afa0d4fd14c16632fe5bb40",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 5.41,
+      "commitsBetweenForRepo": 20,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,5 @@\n     protected String getMessageBundle()\n     {\n         final String className \u003d this.getClass().getName();\n-        final int endIndex \u003d className.lastIndexOf(\u0027.\u0027);\n-        final String packageName \u003d className.substring(0, endIndex);\n-        return packageName + \".\" + \"messages\";\n+        return getMessageBundle(className);\n     }\n\\ No newline at end of file\n"
+    },
+    "d216ec75255a120ce7c24e51da7df63a2b9864de": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Major refactorings to allow the use of SeverityLevels in FileSetChecks\nas well as in Checks and to simplify logging of messages in FileSetChecks.\n\nIntroduction of a new class called AbstractViolationReporter, from which\nboth Check and FileSetCheck are derived.\n\nSeverity is passed to submodules by means of the Contextualizable\nmechanism. This means that the user can f.ex. set severity to INFO\nin a TreeWalker and all Checks below that TreeWalker will use severity INFO.\n",
+      "commitDate": 1048708350000,
+      "commitName": "d216ec75255a120ce7c24e51da7df63a2b9864de",
+      "commitAuthor": "Lars Kühne",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "3aa99fde8e937ab19b8e0e31f6ce52f6ced58bf1": {
+      "type": "Yintroduced",
+      "commitMessage": "removed duplicate code in PackageHtml and Translation\nby introducing a protected helper method in AbstractFileSetCheck\n",
+      "commitDate": 1045325249000,
+      "commitName": "3aa99fde8e937ab19b8e0e31f6ce52f6ced58bf1",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

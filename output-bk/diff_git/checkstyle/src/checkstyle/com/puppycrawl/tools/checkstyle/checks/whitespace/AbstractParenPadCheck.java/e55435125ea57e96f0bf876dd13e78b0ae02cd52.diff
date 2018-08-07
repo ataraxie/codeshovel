@@ -1,0 +1,69 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/AbstractParenPadCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/AbstractParenPadCheck.java
+index 84e41732a..b6570d6d0 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/AbstractParenPadCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/AbstractParenPadCheck.java
+@@ -30,62 +30,62 @@ import com.puppycrawl.tools.checkstyle.checks.AbstractOptionCheck;
+  * @author Oliver Burn
+  * @version 1.0
+  */
+ abstract class AbstractParenPadCheck
+     extends AbstractOptionCheck
+ {
+     /**
+      * Sets the paren pad otion to nospace.
+      */
+     AbstractParenPadCheck()
+     {
+         super(PadOption.NOSPACE);
+     }
+ 
+     /**
+      * Process a token representing a left parentheses.
+      * @param aAST the token representing a left parentheses
+      */
+     protected void processLeft(DetailAST aAST)
+     {
+         final String line = getLines()[aAST.getLineNo() - 1];
+         final int after = aAST.getColumnNo() + 1;
+         if (after < line.length()) {
+             if ((PadOption.NOSPACE == getAbstractOption())
+                 && (Character.isWhitespace(line.charAt(after))))
+             {
+                 log(aAST.getLineNo(), after, "ws.followed", "(");
+             }
+             else if ((PadOption.SPACE == getAbstractOption())
+                      && !Character.isWhitespace(line.charAt(after))
+                      && (line.charAt(after) != ')'))
+             {
+                 log(aAST.getLineNo(), after, "ws.notFollowed", "(");
+             }
+         }
+     }
+ 
+     /**
+      * Process a token representing a right parentheses.
+      * @param aAST the token representing a right parentheses
+      */
+     protected void processRight(DetailAST aAST)
+     {
+         final String line = getLines()[aAST.getLineNo() - 1];
+         final int before = aAST.getColumnNo() - 1;
+         if (before >= 0) {
+             if ((PadOption.NOSPACE == getAbstractOption())
+                 && Character.isWhitespace(line.charAt(before))
+                 && !Utils.whitespaceBefore(before, line))
+             {
+-                log(aAST.getLineNo(), before, "ws.preceeded", ")");
++                log(aAST.getLineNo(), before, "ws.preceded", ")");
+             }
+             else if ((PadOption.SPACE == getAbstractOption())
+                 && !Character.isWhitespace(line.charAt(before))
+                 && (line.charAt(before) != '('))
+             {
+                 log(aAST.getLineNo(), aAST.getColumnNo(),
+-                    "ws.notPreceeded", ")");
++                    "ws.notPreceded", ")");
+             }
+         }
+     }
+ }

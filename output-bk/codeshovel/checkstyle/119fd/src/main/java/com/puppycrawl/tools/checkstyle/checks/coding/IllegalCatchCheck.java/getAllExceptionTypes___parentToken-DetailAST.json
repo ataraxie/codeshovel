@@ -1,0 +1,104 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IllegalCatchCheck.java",
+  "functionName": "getAllExceptionTypes",
+  "functionId": "getAllExceptionTypes___parentToken-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalCatchCheck.java",
+  "functionStartLine": 105,
+  "functionEndLine": 124,
+  "changeHistory": [
+    "094934929f860d86692f5fc8bb9e6a9e6e239099",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "a733182557aa0dc686be57f7f5a7009a7015274b",
+    "ff5cbc39c4882b3a3dcdbedcad9393e170148725",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "023b564417ff157c7333acc2f04b6ddba289c463"
+  ],
+  "changeHistoryShort": {
+    "094934929f860d86692f5fc8bb9e6a9e6e239099": "Ymodifierchange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "a733182557aa0dc686be57f7f5a7009a7015274b": "Ybodychange",
+    "ff5cbc39c4882b3a3dcdbedcad9393e170148725": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "023b564417ff157c7333acc2f04b6ddba289c463": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "094934929f860d86692f5fc8bb9e6a9e6e239099": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Issue #2451: isolated check methods",
+      "commitDate": 1446353414000,
+      "commitName": "094934929f860d86692f5fc8bb9e6a9e6e239099",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1446353363000,
+      "commitNameOld": "53ad5f4a6bf3a073b7ccaea51ce4ac85151ca672",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n-    public static List\u003cDetailAST\u003e getAllExceptionTypes(DetailAST parentToken) {\n+    private static List\u003cDetailAST\u003e getAllExceptionTypes(DetailAST parentToken) {\n         DetailAST currentNode \u003d parentToken.getFirstChild();\n         final List\u003cDetailAST\u003e exceptionTypes \u003d new LinkedList\u003c\u003e();\n         if (currentNode.getType() \u003d\u003d TokenTypes.BOR) {\n             exceptionTypes.addAll(getAllExceptionTypes(currentNode));\n             currentNode \u003d currentNode.getNextSibling();\n             if (currentNode !\u003d null) {\n                 exceptionTypes.add(currentNode);\n             }\n         }\n         else {\n             exceptionTypes.add(currentNode);\n             currentNode \u003d currentNode.getNextSibling();\n             while (currentNode !\u003d null) {\n                 exceptionTypes.add(currentNode);\n                 currentNode \u003d currentNode.getNextSibling();\n             }\n         }\n         return exceptionTypes;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 61.71,
+      "commitsBetweenForRepo": 387,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n-    public List\u003cDetailAST\u003e getAllExceptionTypes(DetailAST parentToken) {\n+    public static List\u003cDetailAST\u003e getAllExceptionTypes(DetailAST parentToken) {\n         DetailAST currentNode \u003d parentToken.getFirstChild();\n         final List\u003cDetailAST\u003e exceptionTypes \u003d new LinkedList\u003c\u003e();\n         if (currentNode.getType() \u003d\u003d TokenTypes.BOR) {\n             exceptionTypes.addAll(getAllExceptionTypes(currentNode));\n             currentNode \u003d currentNode.getNextSibling();\n             if (currentNode !\u003d null) {\n                 exceptionTypes.add(currentNode);\n             }\n         }\n         else {\n             exceptionTypes.add(currentNode);\n             currentNode \u003d currentNode.getNextSibling();\n             while (currentNode !\u003d null) {\n                 exceptionTypes.add(currentNode);\n                 currentNode \u003d currentNode.getNextSibling();\n             }\n         }\n         return exceptionTypes;\n     }\n\\ No newline at end of file\n"
+    },
+    "a733182557aa0dc686be57f7f5a7009a7015274b": {
+      "type": "Ybodychange",
+      "commitMessage": "PMD Rule:AssignmentInOperand Priority:3 Avoid assignments in operands. Issue #744\n",
+      "commitDate": 1429735057000,
+      "commitName": "a733182557aa0dc686be57f7f5a7009a7015274b",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1424437367000,
+      "commitNameOld": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 61.32,
+      "commitsBetweenForRepo": 277,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,21 @@\n     public List\u003cDetailAST\u003e getAllExceptionTypes(DetailAST parentToken)\n     {\n         DetailAST currentNode \u003d parentToken.getFirstChild();\n         final List\u003cDetailAST\u003e exceptionTypes \u003d new LinkedList\u003c\u003e();\n         if (currentNode.getType() \u003d\u003d TokenTypes.BOR) {\n             exceptionTypes.addAll(getAllExceptionTypes(currentNode));\n             currentNode \u003d currentNode.getNextSibling();\n             if (currentNode !\u003d null) {\n                 exceptionTypes.add(currentNode);\n             }\n         }\n         else {\n             exceptionTypes.add(currentNode);\n-            while ((currentNode \u003d currentNode.getNextSibling()) !\u003d null) {\n+            currentNode \u003d currentNode.getNextSibling();\n+            while (currentNode !\u003d null) {\n                 exceptionTypes.add(currentNode);\n+                currentNode \u003d currentNode.getNextSibling();\n             }\n         }\n         return exceptionTypes;\n     }\n\\ No newline at end of file\n"
+    },
+    "ff5cbc39c4882b3a3dcdbedcad9393e170148725": {
+      "type": "Ybodychange",
+      "commitMessage": "Replace verbose type arguments with diamond type \u003c\u003e\n\nThis syntax is not supported under Java 6 or earlier, but Checkstyle codebase uses Java 7 already.\n",
+      "commitDate": 1424017336000,
+      "commitName": "ff5cbc39c4882b3a3dcdbedcad9393e170148725",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1423431987000,
+      "commitNameOld": "abe2b200312ee72aa552026b1a34e8bd72bfdc4e",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 6.77,
+      "commitsBetweenForRepo": 19,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     public List\u003cDetailAST\u003e getAllExceptionTypes(DetailAST parentToken)\n     {\n         DetailAST currentNode \u003d parentToken.getFirstChild();\n-        final List\u003cDetailAST\u003e exceptionTypes \u003d new LinkedList\u003cDetailAST\u003e();\n+        final List\u003cDetailAST\u003e exceptionTypes \u003d new LinkedList\u003c\u003e();\n         if (currentNode.getType() \u003d\u003d TokenTypes.BOR) {\n             exceptionTypes.addAll(getAllExceptionTypes(currentNode));\n             currentNode \u003d currentNode.getNextSibling();\n             if (currentNode !\u003d null) {\n                 exceptionTypes.add(currentNode);\n             }\n         }\n         else {\n             exceptionTypes.add(currentNode);\n             while ((currentNode \u003d currentNode.getNextSibling()) !\u003d null) {\n                 exceptionTypes.add(currentNode);\n             }\n         }\n         return exceptionTypes;\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "023b564417ff157c7333acc2f04b6ddba289c463": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue 165 fixed. New rule only for catch types has been added. IllegalCatchCheck has been extended to use catch with few exception types.\n",
+      "commitDate": 1406239680000,
+      "commitName": "023b564417ff157c7333acc2f04b6ddba289c463",
+      "commitAuthor": "Ilja Dubinin"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/MethodNameCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/MethodNameCheck.java
+index ef8f86d32..a94f1cb69 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/MethodNameCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/MethodNameCheck.java
+@@ -82,66 +82,66 @@ public class MethodNameCheck
+      * {@link Override Override} annotation name.
+      */
+     private static final String OVERRIDE = "Override";
+ 
+     /**
+      * Canonical {@link Override Override} annotation name.
+      */
+     private static final String CANONICAL_OVERRIDE = "java.lang." + OVERRIDE;
+ 
+     /**
+      * for allowing method name to be the same as the class name.
+      */
+     private boolean allowClassName;
+ 
+     /** Creates a new <code>MethodNameCheck</code> instance. */
+     public MethodNameCheck() {
+         super("^[a-z][a-zA-Z0-9]*$");
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {TokenTypes.METHOD_DEF, };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.METHOD_DEF, };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (!AnnotationUtility.containsAnnotation(ast, OVERRIDE)
+             && !AnnotationUtility.containsAnnotation(ast, CANONICAL_OVERRIDE)) {
+             super.visitToken(ast); // Will check the name against the format.
+         }
+ 
+         if (!allowClassName) {
+             final DetailAST method =
+                 ast.findFirstToken(TokenTypes.IDENT);
+             //in all cases this will be the classDef type except anon inner
+             //with anon inner classes this will be the Literal_New keyword
+             final DetailAST classDefOrNew = ast.getParent().getParent();
+             final DetailAST classIdent =
+                 classDefOrNew.findFirstToken(TokenTypes.IDENT);
+             // Following logic is to handle when a classIdent can not be
+             // found. This is when you have a Literal_New keyword followed
+             // a DOT, which is when you have:
+             // new Outclass.InnerInterface(x) { ... }
+             // Such a rare case, will not have the logic to handle parsing
+             // down the tree looking for the first ident.
+-            if (null != classIdent
++            if (classIdent != null
+                 && method.getText().equals(classIdent.getText())) {
+                 log(method.getLineNo(), method.getColumnNo(),
+                     MSG_KEY, method.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Sets the property for allowing a method to be the same name as a class.
+      * @param allowClassName true to allow false to disallow
+      */
+     public void setAllowClassName(boolean allowClassName) {
+         this.allowClassName = allowClassName;
+     }
+ }

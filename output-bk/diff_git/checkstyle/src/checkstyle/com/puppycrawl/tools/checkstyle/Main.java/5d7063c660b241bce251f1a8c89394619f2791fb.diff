@@ -1,0 +1,112 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+index cd0130b2f..6b4832fa3 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+@@ -212,105 +212,105 @@ public final class Main
+             usage();
+         }
+         return listener;
+     }
+ 
+     /**
+      * Loads the packages, or exists if unable to.
+      *
+      * @param aLine the supplied command line options
+      * @return a fresh new <code>ModuleFactory</code>
+      */
+     private static ModuleFactory loadPackages(CommandLine aLine)
+     {
+         try {
+             return PackageNamesLoader.loadModuleFactory(
+                 aLine.getOptionValue("n"));
+         }
+         catch (CheckstyleException e) {
+             System.out.println("Error loading package names file");
+             e.printStackTrace(System.out);
+             System.exit(1);
+             return null; // never get here
+         }
+     }
+ 
+     /**
+      * Loads the configuration file. Will exit if unable to load.
+      *
+      * @param aLine specifies the location of the configuration
+      * @param aProps the properties to resolve with the configuration
+      * @return a fresh new configuration
+      */
+     private static Configuration loadConfig(CommandLine aLine,
+                                             Properties aProps)
+     {
+         try {
+             return ConfigurationLoader.loadConfiguration(
+                     aLine.getOptionValue("c"), new PropertiesExpander(aProps));
+         }
+         catch (CheckstyleException e) {
+             System.out.println("Error loading configuration file");
+             e.printStackTrace(System.out);
+             System.exit(1);
+             return null; // can never get here
+         }
+     }
+ 
+     /** Prints the usage information. **/
+     private static void usage()
+     {
+-        HelpFormatter hf = new HelpFormatter();
++        final HelpFormatter hf = new HelpFormatter();
+         hf.printHelp(
+             "java "
+                 + Main.class.getName()
+                 + " [options] -c <config.xml> file...",
+             OPTS);
+         System.exit(1);
+     }
+ 
+     /**
+      * Traverses a specified node looking for files to check. Found
+      * files are added to a specified list. Subdirectories are also
+      * traversed.
+      *
+      * @param aNode the node to process
+      * @param aFiles list to add found files to
+      */
+     private static void traverse(File aNode, List aFiles)
+     {
+         if (aNode.canRead()) {
+             if (aNode.isDirectory()) {
+                 final File[] nodes = aNode.listFiles();
+                 for (int i = 0; i < nodes.length; i++) {
+                     traverse(nodes[i], aFiles);
+                 }
+             }
+             else if (aNode.isFile()) {
+                 aFiles.add(aNode);
+             }
+         }
+     }
+ 
+     /**
+      * Loads properties from a File.
+      * @param aFile the properties file
+      * @return the properties in aFile
+      */
+     private static Properties loadProperties(File aFile)
+     {
+-        Properties properties = new Properties();
++        final Properties properties = new Properties();
+         try {
+             FileInputStream fis = null;
+             fis = new FileInputStream(aFile);
+             properties.load(fis);
+             fis.close();
+         }
+         catch (IOException ex) {
+             System.out.println("Unable to load properties from file: "
+                                + aFile.getAbsolutePath());
+             ex.printStackTrace(System.out);
+             System.exit(1);
+         }
+         return properties;
+     }
+ }

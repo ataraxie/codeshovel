@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ConfigurationLoader.java",
+  "functionName": "loadConfiguration",
+  "functionId": "loadConfiguration___configStream-InputStream__overridePropsResolver-PropertyResolver__omitIgnoredModules-boolean",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java",
+  "functionStartLine": 269,
+  "functionEndLine": 274,
+  "changeHistory": [
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "073d09569f471061fd82899efac4f823269dd265",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "d9ef0ac5eed2084dc0298ec981f6fc04cf628e85"
+  ],
+  "changeHistoryShort": {
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "073d09569f471061fd82899efac4f823269dd265": "Ybodychange",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "d9ef0ac5eed2084dc0298ec981f6fc04cf628e85": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checkstyle, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java\n",
+      "commitDate": 1421678312000,
+      "commitName": "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "073d09569f471061fd82899efac4f823269dd265": {
+      "type": "Ybodychange",
+      "commitMessage": "Improve ConfigurationLoader to use a InputSource. Thanks to Martin von Gagern for patch #2782627.\n",
+      "commitDate": 1260697768000,
+      "commitName": "073d09569f471061fd82899efac4f823269dd265",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1237695418000,
+      "commitNameOld": "216fcb79f9f5bbd05244364e926f261a90e697d1",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 266.23,
+      "commitsBetweenForRepo": 43,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,7 @@\n     public static Configuration loadConfiguration(InputStream aConfigStream,\n         PropertyResolver aOverridePropsResolver, boolean aOmitIgnoredModules)\n         throws CheckstyleException\n     {\n-        try {\n-            final ConfigurationLoader loader \u003d\n-                new ConfigurationLoader(aOverridePropsResolver,\n-                                        aOmitIgnoredModules);\n-            loader.parseInputStream(aConfigStream);\n-            return loader.getConfiguration();\n-        }\n-        catch (final ParserConfigurationException e) {\n-            throw new CheckstyleException(\n-                \"unable to parse configuration stream\", e);\n-        }\n-        catch (final SAXParseException e) {\n-            throw new CheckstyleException(\"unable to parse configuration stream\"\n-                    + \" - \" + e.getMessage() + \":\" + e.getLineNumber()\n-                    + \":\" + e.getColumnNumber(), e);\n-        }\n-        catch (final SAXException e) {\n-            throw new CheckstyleException(\"unable to parse configuration stream\"\n-                    + \" - \" + e.getMessage(), e);\n-        }\n-        catch (final IOException e) {\n-            throw new CheckstyleException(\"unable to read from stream\", e);\n-        }\n+        return loadConfiguration(new InputSource(aConfigStream),\n+                                 aOverridePropsResolver, aOmitIgnoredModules);\n     }\n\\ No newline at end of file\n"
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1141904900000,
+      "commitNameOld": "d9ef0ac5eed2084dc0298ec981f6fc04cf628e85",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 119.66,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,28 @@\n     public static Configuration loadConfiguration(InputStream aConfigStream,\n         PropertyResolver aOverridePropsResolver, boolean aOmitIgnoredModules)\n         throws CheckstyleException\n     {\n         try {\n             final ConfigurationLoader loader \u003d\n                 new ConfigurationLoader(aOverridePropsResolver,\n                                         aOmitIgnoredModules);\n             loader.parseInputStream(aConfigStream);\n             return loader.getConfiguration();\n         }\n-        catch (ParserConfigurationException e) {\n+        catch (final ParserConfigurationException e) {\n             throw new CheckstyleException(\n                 \"unable to parse configuration stream\", e);\n         }\n-        catch (SAXParseException e) {\n+        catch (final SAXParseException e) {\n             throw new CheckstyleException(\"unable to parse configuration stream\"\n                     + \" - \" + e.getMessage() + \":\" + e.getLineNumber()\n                     + \":\" + e.getColumnNumber(), e);\n         }\n-        catch (SAXException e) {\n+        catch (final SAXException e) {\n             throw new CheckstyleException(\"unable to parse configuration stream\"\n                     + \" - \" + e.getMessage(), e);\n         }\n-        catch (IOException e) {\n+        catch (final IOException e) {\n             throw new CheckstyleException(\"unable to read from stream\", e);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d9ef0ac5eed2084dc0298ec981f6fc04cf628e85": {
+      "type": "Yintroduced",
+      "commitMessage": "Applied patch 1386388 to enable ConfigurationLoader to load from\nInputStream.\n",
+      "commitDate": 1141904900000,
+      "commitName": "d9ef0ac5eed2084dc0298ec981f6fc04cf628e85",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

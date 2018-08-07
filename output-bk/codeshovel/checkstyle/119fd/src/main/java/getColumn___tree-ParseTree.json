@@ -1,0 +1,71 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "getColumn___tree-ParseTree",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 382,
+  "changeHistory": [
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c",
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "ff12c1b012a1b18da8a1cd2101efd0173c612534"
+  ],
+  "changeHistoryShort": {
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c": "Ybodychange",
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a": "Ymovefromfile",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "ff12c1b012a1b18da8a1cd2101efd0173c612534": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.checks and com.puppycrawl.tools.checkstyle\n",
+      "commitDate": 1492827278000,
+      "commitName": "de50d3465849b83d25910590e1f5f39a25fe6e2c",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1488165925000,
+      "commitNameOld": "ce21086e087661553f3a774c38362327ee88996a",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 53.95,
+      "commitsBetweenForRepo": 189,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,11 @@\n     private static int getColumn(ParseTree tree) {\n+        final int column;\n         if (tree instanceof TerminalNode) {\n-            return ((TerminalNode) tree).getSymbol().getCharPositionInLine();\n+            column \u003d ((TerminalNode) tree).getSymbol().getCharPositionInLine();\n         }\n         else {\n             final ParserRuleContext rule \u003d (ParserRuleContext) tree;\n-            return rule.start.getCharPositionInLine();\n+            column \u003d rule.start.getCharPositionInLine();\n         }\n+        return column;\n     }\n\\ No newline at end of file\n"
+    },
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a": {
+      "type": "Ymovefromfile",
+      "commitMessage": "Issue #652: New CLI option to print Javadoc comment parse tree\n",
+      "commitDate": 1458220789000,
+      "commitName": "68b49fd2843f23f55dc711a89213d59f2acf3a0a",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1458153137000,
+      "commitNameOld": "888594049a74a7d8e9bbdfb5672c07db1f7ba220",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 0.78,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "ff12c1b012a1b18da8a1cd2101efd0173c612534": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #49. Added support of Javadoc comments. Extended API to create Javadoc Checks.\n",
+      "commitDate": 1413750761000,
+      "commitName": "ff12c1b012a1b18da8a1cd2101efd0173c612534",
+      "commitAuthor": "Baratali Izmailov"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DesignForExtensionCheck.java",
+  "functionName": "hasIgnoredAnnotation",
+  "functionId": "hasIgnoredAnnotation___methodDef-DetailAST__annotations-Set__String__",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java",
+  "functionStartLine": 233,
+  "functionEndLine": 247,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "257d13b6bb53245d2491e50d4ca8e39ddfc80035",
+    "06716249cfb86d9f213f33a26877112e8ab45adc"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "257d13b6bb53245d2491e50d4ca8e39ddfc80035": "Ybodychange",
+    "06716249cfb86d9f213f33a26877112e8ab45adc": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1500842894000,
+      "commitNameOld": "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 94.25,
+      "commitsBetweenForRepo": 304,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     private static boolean hasIgnoredAnnotation(DetailAST methodDef, Set\u003cString\u003e annotations) {\n         final DetailAST modifiers \u003d methodDef.findFirstToken(TokenTypes.MODIFIERS);\n         boolean hasIgnoredAnnotation \u003d false;\n-        if (modifiers.branchContains(TokenTypes.ANNOTATION)) {\n+        if (modifiers.findFirstToken(TokenTypes.ANNOTATION) !\u003d null) {\n             final Optional\u003cDetailAST\u003e annotation \u003d TokenUtils.findFirstTokenByPredicate(modifiers,\n                 currentToken -\u003e {\n                     return currentToken.getType() \u003d\u003d TokenTypes.ANNOTATION\n                         \u0026\u0026 annotations.contains(getAnnotationName(currentToken));\n                 });\n             if (annotation.isPresent()) {\n                 hasIgnoredAnnotation \u003d true;\n             }\n         }\n         return hasIgnoredAnnotation;\n     }\n\\ No newline at end of file\n"
+    },
+    "257d13b6bb53245d2491e50d4ca8e39ddfc80035": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3830: Fix bug in DesignForExtension when order of annotations changes violation\n",
+      "commitDate": 1487890316000,
+      "commitName": "257d13b6bb53245d2491e50d4ca8e39ddfc80035",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1487545764000,
+      "commitNameOld": "3eaa031fb7de67dc205fbbff370712bb92fc8259",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 3.99,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,15 @@\n     private static boolean hasIgnoredAnnotation(DetailAST methodDef, Set\u003cString\u003e annotations) {\n-        return annotations.stream().filter(annotation -\u003e hasAnnotation(methodDef, annotation))\n-            .findAny().isPresent();\n+        final DetailAST modifiers \u003d methodDef.findFirstToken(TokenTypes.MODIFIERS);\n+        boolean hasIgnoredAnnotation \u003d false;\n+        if (modifiers.branchContains(TokenTypes.ANNOTATION)) {\n+            final Optional\u003cDetailAST\u003e annotation \u003d TokenUtils.findFirstTokenByPredicate(modifiers,\n+                currentToken -\u003e {\n+                    return currentToken.getType() \u003d\u003d TokenTypes.ANNOTATION\n+                        \u0026\u0026 annotations.contains(getAnnotationName(currentToken));\n+                });\n+            if (annotation.isPresent()) {\n+                hasIgnoredAnnotation \u003d true;\n+            }\n+        }\n+        return hasIgnoredAnnotation;\n     }\n\\ No newline at end of file\n"
+    },
+    "06716249cfb86d9f213f33a26877112e8ab45adc": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #3102: DesignForExtension: consider overridable methods and javadoc\n",
+      "commitDate": 1477175779000,
+      "commitName": "06716249cfb86d9f213f33a26877112e8ab45adc",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

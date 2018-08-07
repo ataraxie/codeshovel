@@ -1,0 +1,150 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/RedundantModifierCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/RedundantModifierCheck.java
+index 4f72344d4..e1f728444 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/RedundantModifierCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/RedundantModifierCheck.java
+@@ -1,128 +1,139 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2004  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.ScopeUtils;
+ 
+ /**
+- * Checks for redundant modifiers in interface definitions.
++ * Checks for redundant modifiers in interface and annotation definitions.
++ * Also checks for redundant final modifiers on methods of final classes.
+  *
+  * <p>
+  * Rationale: The Java Language Specification strongly discourages the usage
+  * of "public" and "abstract" for method declarations in interface definitions
+  * as a matter of style.
+  * </p>
+  * <p>
+- * Variables in interfaces are automatically public, static and final, so these
+- * modifiers are redundant as well.
++ * Variables in interfaces and annotations are automatically public, static and
++ * final, so these modifiers are redundant as well.
++ * </p>
++ * <p>
++ * As annotations are a form of interface, their fields are also automatically
++ * public, static and final just as their annotation fields are automatically
++ * public and abstract.
++ * </p>
++ * <p>
++ * Final classes by definition can not be extended so the final modifier on the
++ * method of a final class is redundant.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="RedundantModifier"/&gt;
+  * </pre>
+  * @author lkuehne
+  */
+ public class RedundantModifierCheck
+     extends Check
+ {
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.METHOD_DEF,
+             TokenTypes.VARIABLE_DEF,
++            TokenTypes.ANNOTATION_FIELD_DEF,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getRequiredTokens()
+     {
+         return new int[] {};
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void visitToken(DetailAST aAST)
+     {
+-        if (ScopeUtils.inInterfaceBlock(aAST)) {
++        if (ScopeUtils.inInterfaceOrAnnotationBlock(aAST)) {
+             final DetailAST modifiers =
+                 aAST.findFirstToken(TokenTypes.MODIFIERS);
+ 
+             DetailAST modifier = (DetailAST) modifiers.getFirstChild();
+             while (modifier != null) {
+ 
+                 // javac does not allow final or static in interface methods
+-                // hence no need to check that this is not a method
++                // order annotation fields hence no need to check that this
++                // is not a method or annotation field
+ 
+                 final int type = modifier.getType();
+                 if (type == TokenTypes.LITERAL_PUBLIC
+                     || type == TokenTypes.ABSTRACT
+                     || type == TokenTypes.LITERAL_STATIC
+                     || type == TokenTypes.FINAL)
+                 {
+                     log(modifier.getLineNo(),
+                         modifier.getColumnNo(),
+                         "redundantModifier",
+                         new String[] {modifier.getText()});
+                     break;
+                 }
+ 
+                 modifier = (DetailAST) modifier.getNextSibling();
+             }
+         }
+         else if (aAST.getType() == TokenTypes.METHOD_DEF) {
+             final DetailAST modifiers =
+                             aAST.findFirstToken(TokenTypes.MODIFIERS);
+             // private method?
+             boolean checkFinal =
+                 modifiers.branchContains(TokenTypes.LITERAL_PRIVATE);
+             // declared in a final class?
+             DetailAST parent = aAST.getParent();
+             while (parent != null) {
+                 if (parent.getType() == TokenTypes.CLASS_DEF) {
+                     final DetailAST classModifiers =
+                         parent.findFirstToken(TokenTypes.MODIFIERS);
+                     checkFinal |=
+                         classModifiers.branchContains(TokenTypes.FINAL);
+                     break;
+                 }
+                 parent = parent.getParent();
+             }
+             if (checkFinal) {
+                 DetailAST modifier = (DetailAST) modifiers.getFirstChild();
+                 while (modifier != null) {
+                     final int type = modifier.getType();
+                     if (type == TokenTypes.FINAL) {
+                         log(modifier.getLineNo(),
+                             modifier.getColumnNo(),
+                             "redundantModifier",
+                             new String[] {modifier.getText()});
+                         break;
+                     }
+                     modifier = (DetailAST) modifier.getNextSibling();
+                 }
+             }
+         }
+     }
+-
+ }

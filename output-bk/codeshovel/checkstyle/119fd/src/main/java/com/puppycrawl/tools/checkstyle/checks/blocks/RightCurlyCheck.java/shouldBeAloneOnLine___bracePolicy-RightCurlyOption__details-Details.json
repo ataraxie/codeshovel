@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RightCurlyCheck.java",
+  "functionName": "shouldBeAloneOnLine",
+  "functionId": "shouldBeAloneOnLine___bracePolicy-RightCurlyOption__details-Details",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java",
+  "functionStartLine": 246,
+  "functionEndLine": 253,
+  "changeHistory": [
+    "e0bb421ead241b65c5d8b4acafe5f8247aea8576",
+    "2551676ccf743822951d42658085c70e7aa869bd",
+    "b0d5b01b3cd174004843fb6fcc91cb971f17f7a2",
+    "b576ccf8793690e8459a6620cc1611531f3f9890",
+    "f32bcd07ee2791708e97c5202ad688a84605d375"
+  ],
+  "changeHistoryShort": {
+    "e0bb421ead241b65c5d8b4acafe5f8247aea8576": "Ybodychange",
+    "2551676ccf743822951d42658085c70e7aa869bd": "Ybodychange",
+    "b0d5b01b3cd174004843fb6fcc91cb971f17f7a2": "Ybodychange",
+    "b576ccf8793690e8459a6620cc1611531f3f9890": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f32bcd07ee2791708e97c5202ad688a84605d375": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e0bb421ead241b65c5d8b4acafe5f8247aea8576": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4091: False negative on multiblock tokens with ALONE_OR_SINGLELINE option\n",
+      "commitDate": 1491402064000,
+      "commitName": "e0bb421ead241b65c5d8b4acafe5f8247aea8576",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1490042350000,
+      "commitNameOld": "e76321214095de771762216c5dbbe3db0203c541",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 15.74,
+      "commitsBetweenForRepo": 46,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,8 @@\n     private static boolean shouldBeAloneOnLine(RightCurlyOption bracePolicy, Details details) {\n         return bracePolicy \u003d\u003d RightCurlyOption.ALONE\n-                \u0026\u0026 !isAloneOnLine(details)\n-                \u0026\u0026 !isEmptyBody(details.lcurly)\n+                    \u0026\u0026 shouldBeAloneOnLineWithAloneOption(details)\n                 || bracePolicy \u003d\u003d RightCurlyOption.ALONE_OR_SINGLELINE\n-                \u0026\u0026 !isAloneOnLine(details)\n-                \u0026\u0026 !isSingleLineBlock(details)\n-                \u0026\u0026 !isAnonInnerClassInit(details.lcurly)\n-                \u0026\u0026 !isEmptyBody(details.lcurly);\n+                    \u0026\u0026 shouldBeAloneOnLineWithAloneOrSinglelineOption(details)\n+                || details.shouldCheckLastRcurly\n+                    \u0026\u0026 details.rcurly.getLineNo() \u003d\u003d details.nextToken.getLineNo();\n     }\n\\ No newline at end of file\n"
+    },
+    "2551676ccf743822951d42658085c70e7aa869bd": {
+      "type": "Ybodychange",
+      "commitMessage": "Revert \"Issue #3546: add lambda in a rightcurlycheck\"\n\nThis reverts commit b0d5b01b3cd174004843fb6fcc91cb971f17f7a2.\n",
+      "commitDate": 1485641699000,
+      "commitName": "2551676ccf743822951d42658085c70e7aa869bd",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1485641674000,
+      "commitNameOld": "b0d5b01b3cd174004843fb6fcc91cb971f17f7a2",
+      "commitAuthorOld": "MaksimP",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,10 @@\n     private static boolean shouldBeAloneOnLine(RightCurlyOption bracePolicy, Details details) {\n-        final int tokenLambda \u003d details.lcurly.getParent().getType();\n         return bracePolicy \u003d\u003d RightCurlyOption.ALONE\n-                \u0026\u0026 tokenLambda !\u003d TokenTypes.LAMBDA\n                 \u0026\u0026 !isAloneOnLine(details)\n                 \u0026\u0026 !isEmptyBody(details.lcurly)\n                 || bracePolicy \u003d\u003d RightCurlyOption.ALONE_OR_SINGLELINE\n                 \u0026\u0026 !isAloneOnLine(details)\n                 \u0026\u0026 !isSingleLineBlock(details)\n                 \u0026\u0026 !isAnonInnerClassInit(details.lcurly)\n-                \u0026\u0026 !isEmptyBody(details.lcurly)\n-                || bracePolicy \u003d\u003d RightCurlyOption.ALONE\n-                \u0026\u0026 tokenLambda \u003d\u003d TokenTypes.LAMBDA\n-                \u0026\u0026 !isAloneLambda(details);\n+                \u0026\u0026 !isEmptyBody(details.lcurly);\n     }\n\\ No newline at end of file\n"
+    },
+    "b0d5b01b3cd174004843fb6fcc91cb971f17f7a2": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3546: add lambda in a rightcurlycheck\n",
+      "commitDate": 1485641674000,
+      "commitName": "b0d5b01b3cd174004843fb6fcc91cb971f17f7a2",
+      "commitAuthor": "MaksimP",
+      "commitDateOld": 1485547897000,
+      "commitNameOld": "4cda2565674ea4260547e663e9660df0029709d1",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 1.09,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,15 @@\n     private static boolean shouldBeAloneOnLine(RightCurlyOption bracePolicy, Details details) {\n+        final int tokenLambda \u003d details.lcurly.getParent().getType();\n         return bracePolicy \u003d\u003d RightCurlyOption.ALONE\n+                \u0026\u0026 tokenLambda !\u003d TokenTypes.LAMBDA\n                 \u0026\u0026 !isAloneOnLine(details)\n                 \u0026\u0026 !isEmptyBody(details.lcurly)\n                 || bracePolicy \u003d\u003d RightCurlyOption.ALONE_OR_SINGLELINE\n                 \u0026\u0026 !isAloneOnLine(details)\n                 \u0026\u0026 !isSingleLineBlock(details)\n                 \u0026\u0026 !isAnonInnerClassInit(details.lcurly)\n-                \u0026\u0026 !isEmptyBody(details.lcurly);\n+                \u0026\u0026 !isEmptyBody(details.lcurly)\n+                || bracePolicy \u003d\u003d RightCurlyOption.ALONE\n+                \u0026\u0026 tokenLambda \u003d\u003d TokenTypes.LAMBDA\n+                \u0026\u0026 !isAloneLambda(details);\n     }\n\\ No newline at end of file\n"
+    },
+    "b576ccf8793690e8459a6620cc1611531f3f9890": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #1566: Fixed CyclomaticComplexity violations in RightCurlyCheck\n",
+      "commitDate": 1440942855000,
+      "commitName": "b576ccf8793690e8459a6620cc1611531f3f9890",
+      "commitAuthor": "Baratali Izmailov",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f32bcd07ee2791708e97c5202ad688a84605d375": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1566: Fixed CyclomaticCompexityCheck violation in RightCurlyCheck\n",
+      "commitDate": 1440874042000,
+      "commitName": "f32bcd07ee2791708e97c5202ad688a84605d375",
+      "commitAuthor": "Baratali Izmailov"
+    }
+  }
+}

@@ -1,0 +1,171 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+index ce744b0bc..65fa95ab9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+@@ -269,164 +269,164 @@ public class VisibilityModifierCheck
+     /** List of immutable classes canonical names. */
+     private List<String> immutableClassCanonicalNames = new ArrayList<>(DEFAULT_IMMUTABLE_TYPES);
+ 
+     /** List of immutable classes short names. */
+     private final List<String> immutableClassShortNames =
+             getClassShortNames(DEFAULT_IMMUTABLE_TYPES);
+ 
+     /** Default immutable types canonical names. */
+     private static final List<String> DEFAULT_IMMUTABLE_TYPES = ImmutableList.of(
+         "java.lang.String",
+         "java.lang.Integer",
+         "java.lang.Byte",
+         "java.lang.Character",
+         "java.lang.Short",
+         "java.lang.Boolean",
+         "java.lang.Long",
+         "java.lang.Double",
+         "java.lang.Float",
+         "java.lang.StackTraceElement",
+         "java.math.BigInteger",
+         "java.math.BigDecimal",
+         "java.io.File",
+         "java.util.Locale",
+         "java.util.UUID",
+         "java.net.URL",
+         "java.net.URI",
+         "java.net.Inet4Address",
+         "java.net.Inet6Address",
+         "java.net.InetSocketAddress"
+     );
+ 
+     /** Default ignore annotations canonical names. */
+     private static final List<String> DEFAULT_IGNORE_ANNOTATIONS = ImmutableList.of(
+         "org.junit.Rule",
+         "com.google.common.annotations.VisibleForTesting"
+     );
+ 
+     /** contains explicit access modifiers. */
+     private static final String[] EXPLICIT_MODS = {"public", "private", "protected"};
+ 
+     /** @return whether protected members are allowed */
+     public boolean isProtectedAllowed()
+     {
+         return protectedAllowed;
+     }
+ 
+     /**
+      * Set the list of ignore annotations.
+      * @param annotationNames array of ignore annotations canonical names.
+      */
+-    public void setIgnoreAnnotationCanonicalNames(String[] annotationNames)
++    public void setIgnoreAnnotationCanonicalNames(String... annotationNames)
+     {
+         ignoreAnnotationCanonicalNames = Arrays.asList(annotationNames);
+     }
+ 
+     /**
+      * Set whether protected members are allowed.
+      * @param protectedAllowed whether protected members are allowed
+      */
+     public void setProtectedAllowed(boolean protectedAllowed)
+     {
+         this.protectedAllowed = protectedAllowed;
+     }
+ 
+     /** @return whether package visible members are allowed */
+     public boolean isPackageAllowed()
+     {
+         return packageAllowed;
+     }
+ 
+     /**
+      * Set whether package visible members are allowed.
+      * @param packageAllowed whether package visible members are allowed
+      */
+     public void setPackageAllowed(boolean packageAllowed)
+     {
+         this.packageAllowed = packageAllowed;
+     }
+ 
+     /**
+      * Set the pattern for public members to ignore.
+      * @param pattern
+      *        pattern for public members to ignore.
+      * @throws org.apache.commons.beanutils.ConversionException
+      *         if unable to create Pattern object
+      */
+     public void setPublicMemberPattern(String pattern)
+     {
+         publicMemberPattern = Utils.createPattern(pattern);
+         publicMemberFormat = pattern;
+     }
+ 
+     /**
+      * @return the regexp for public members to ignore.
+      */
+     private Pattern getPublicMemberRegexp()
+     {
+         return publicMemberPattern;
+     }
+ 
+     /**
+      * Sets whether public immutable are allowed.
+      * @param allow user's value.
+      */
+     public void setAllowPublicImmutableFields(boolean allow)
+     {
+         this.allowPublicImmutableFields = allow;
+     }
+ 
+     /**
+      * Set the list of immutable classes types names.
+      * @param classNames array of immutable types canonical names.
+      */
+-    public void setImmutableClassCanonicalNames(String[] classNames)
++    public void setImmutableClassCanonicalNames(String... classNames)
+     {
+         immutableClassCanonicalNames = Arrays.asList(classNames);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.IMPORT,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.OBJBLOCK,
+             TokenTypes.IMPORT,
+         };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAst)
+     {
+         immutableClassShortNames.clear();
+         final List<String> classShortNames =
+                 getClassShortNames(immutableClassCanonicalNames);
+         immutableClassShortNames.addAll(classShortNames);
+ 
+         ignoreAnnotationShortNames.clear();
+         final List<String> annotationShortNames =
+                 getClassShortNames(ignoreAnnotationCanonicalNames);
+         ignoreAnnotationShortNames.addAll(annotationShortNames);
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         switch (ast.getType()) {
+             case TokenTypes.VARIABLE_DEF:
+                 if (!isAnonymousClassVariable(ast)) {
+                     visitVariableDef(ast);
+                 }
+                 break;
+             case TokenTypes.IMPORT:
+                 visitImport(ast);
+                 break;
+             default:

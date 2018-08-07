@@ -1,0 +1,108 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+index 273e61ad7..939162d8b 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+@@ -53,101 +53,102 @@ public final class Main
+             true,
+             "Sets the output format. (plain|xml). Defaults to plain");
+     }
+ 
+     /**
+      * Loops over the files specified checking them for errors. The exit code
+      * is the number of errors found in all the files.
+      * @param aArgs the command line arguments
+      **/
+     public static void main(String[] aArgs)
+     {
+         // parse the parameters
+         final CommandLineParser clp = new PosixParser();
+         CommandLine line = null;
+         try {
+             line = clp.parse(OPTS, aArgs);
+         }
+         catch (ParseException e) {
+             e.printStackTrace();
+             usage();
+         }
+ 
+         // setup the properties
+         final Properties props =
+             line.hasOption("p")
+                 ? loadProperties(new File(line.getOptionValue("p")))
+                 : System.getProperties();
+ 
+         // ensure a config file is specified
+         if (!line.hasOption("c")) {
+             System.out.println("Must specify a config XML file.");
+             usage();
+         }
+ 
+         // Load the config file
+ //        CheckConfiguration[] checkConfigs = null;
+ //        try {
+ //            checkConfigs =
+ //                ConfigurationLoader.loadConfigs(line.getOptionValue("c"));
+ //        }
+ //        catch (CheckstyleException e) {
+ //            System.out.println("Error loading configuration file");
+ //            e.printStackTrace(System.out);
+ //            System.exit(1);
+ //        }
+ 
+         // Load the config file
+         Configuration config = null;
+         try {
+             config =
+-                ConfigurationLoader.loadConfiguration(line.getOptionValue("c"));
++                ConfigurationLoader.loadConfiguration(line.getOptionValue("c"),
++                                                      props);
+         }
+         catch (CheckstyleException e) {
+             System.out.println("Error loading configuration file");
+             e.printStackTrace(System.out);
+             System.exit(1);
+         }
+ 
+         // setup the output stream
+         OutputStream out = null;
+         boolean closeOut = false;
+         if (line.hasOption("o")) {
+             final String fname = line.getOptionValue("o");
+             try {
+                 out = new FileOutputStream(fname);
+                 closeOut = true;
+             }
+             catch (FileNotFoundException e) {
+                 System.out.println("Could not find file: '" + fname + "'");
+                 System.exit(1);
+             }
+         }
+         else {
+             out = System.out;
+             closeOut = false;
+         }
+ 
+         // create the appropriate listener
+         final String format =
+             line.hasOption("f") ? line.getOptionValue("f") : "plain";
+ 
+         AuditListener listener = null;
+         if ("xml".equals(format)) {
+             listener = new XMLLogger(out, closeOut);
+         }
+         else if ("plain".equals(format)) {
+             listener = new DefaultLogger(out, closeOut);
+         }
+         else {
+             System.out.println("Invalid format: (" + format
+                                + "). Must be 'plain' or 'xml'.");
+             usage();
+         }
+ 
+         // Get all the Java files
+         final List files = new ArrayList();
+         if (line.hasOption("r")) {
+             final String[] values = line.getOptionValues("r");
+             for (int i = 0; i < values.length; i++) {
+                 traverse(new File(values[i]), files);
+             }

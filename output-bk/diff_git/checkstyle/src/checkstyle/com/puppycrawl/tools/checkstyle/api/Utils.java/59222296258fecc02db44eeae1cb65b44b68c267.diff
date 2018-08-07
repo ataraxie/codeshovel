@@ -1,0 +1,162 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Utils.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Utils.java
+index a14a80110..386720c65 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Utils.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Utils.java
+@@ -1,82 +1,83 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2002  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.api;
+ 
+ import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.Map;
+ import java.util.Properties;
+ import java.util.Set;
+ import java.util.ArrayList;
+ import java.io.IOException;
+ import java.io.LineNumberReader;
+ import java.io.FileReader;
+ 
+ import org.apache.regexp.RE;
+ import org.apache.regexp.RESyntaxException;
++import org.apache.commons.beanutils.ConversionException;
+ import antlr.collections.AST;
+ 
+ /**
+  * Contains utility methods.
+  *
+  * @author <a href="mailto:oliver@puppycrawl.com">Oliver Burn</a>
+  * @version 1.0
+  */
+ public final class Utils
+ {
+     /** Map of all created regular expressions **/
+     private static final Map CREATED_RES = new HashMap();
+ 
+     /** stop instances being created **/
+     private Utils()
+     {
+     }
+ 
+     /**
+      * Returns whether the specified string contains only whitespace up to the
+      * specified index.
+      *
+      * @param aIndex index to check up to
+      * @param aLine the line to check
+      * @return whether there is only whitespace
+      */
+     public static boolean whitespaceBefore(int aIndex, String aLine)
+     {
+         for (int i = 0; i < aIndex; i++) {
+             if (!Character.isWhitespace(aLine.charAt(i))) {
+                 return false;
+             }
+         }
+         return true;
+     }
+ 
+     /**
+      * Returns the length of a string ignoring all trailing whitespace. It is a
+      * pity that there is not a trim() like method that only removed the
+      * trailing whitespace.
+      * @param aLine the string to process
+      * @return the length of the string ignoring all trailing whitespace
+      **/
+     public static int lengthMinusTrailingWhitespace(String aLine)
+     {
+         int len = aLine.length();
+         for (int i = len - 1; i >= 0; i--) {
+             if (!Character.isWhitespace(aLine.charAt(i))) {
+                 break;
+             }
+@@ -190,51 +191,73 @@ public final class Utils
+     /**
+      * Return the last sibling for an AST.
+      * @param aAST the AST to start navigating from
+      * @return the last sibling
+      */
+     public static DetailAST getLastSibling(final AST aAST)
+     {
+         AST retVal = aAST;
+         AST nextSibling = retVal.getNextSibling();
+         while (nextSibling != null) {
+             retVal = nextSibling;
+             nextSibling = nextSibling.getNextSibling();
+         }
+         return (DetailAST) retVal;
+     }
+ 
+     /**
+      * Returns the first sibling token that makes a specified type.
+      * @param aFrom the token to search from
+      * @param aType the token type to match
+      * @return the matching token, or null if no match
+      */
+     public static DetailAST findFirstToken(AST aFrom, int aType)
+     {
+         DetailAST retVal = null;
+         for (AST i = aFrom; i != null; i = i.getNextSibling()) {
+             if (i.getType() == aType) {
+                 retVal = (DetailAST) i;
+                 break;
+             }
+         }
+         return retVal;
+     }
+ 
+     /**
+      * Returns the number of sibling tokens that are of a specified type.
+      * @param aFrom the token to search from
+      * @param aType the token type to match
+      * @return the number of matching token
+      */
+     public static int countTokens(AST aFrom, int aType)
+     {
+         int count = 0;
+         for (AST i = aFrom; i != null; i = i.getNextSibling()) {
+             if (i.getType() == aType) {
+                 count++;
+             }
+         }
+         return count;
+     }
++
++    /**
++     * Helper method to create a regular expression.
++     * @param aPattern the pattern to match
++     * @return a created regexp object
++     * @throws ConversionException if unable to create RE object.
++     **/
++    public static RE createRE(String aPattern)
++    {
++        RE retVal = null;
++        try {
++            retVal = getRE(aPattern);
++        }
++        catch (RESyntaxException e) {
++            System.out.println("Failed to initialise regexp expression "
++                               + aPattern);
++            e.printStackTrace(System.out);
++            throw new ConversionException(
++                "Failed to initialise regexp expression " + aPattern, e);
++        }
++        return retVal;
++    }
+ }

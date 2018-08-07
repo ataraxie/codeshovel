@@ -1,0 +1,62 @@
+diff --git a/src/it/java/com/google/checkstyle/test/chapter4formatting/rule4842fallthrough/FallThroughTest.java b/src/it/java/com/google/checkstyle/test/chapter4formatting/rule4842fallthrough/FallThroughTest.java
+index 00188d0a5..3d3fabc62 100644
+--- a/src/it/java/com/google/checkstyle/test/chapter4formatting/rule4842fallthrough/FallThroughTest.java
++++ b/src/it/java/com/google/checkstyle/test/chapter4formatting/rule4842fallthrough/FallThroughTest.java
+@@ -11,56 +11,56 @@
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.google.checkstyle.test.chapter4formatting.rule4842fallthrough;
+ 
+ import java.io.File;
+ 
+ import org.junit.BeforeClass;
+ import org.junit.Test;
+ 
+ import com.google.checkstyle.test.base.BaseCheckTestSupport;
+ import com.google.checkstyle.test.base.ConfigurationBuilder;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import com.puppycrawl.tools.checkstyle.checks.coding.FallThroughCheck;
+ 
+ public class FallThroughTest extends BaseCheckTestSupport {
+ 
+     private static ConfigurationBuilder builder;
+ 
+     @BeforeClass
+     public static void setConfigurationBuilder() {
+         builder = new ConfigurationBuilder(new File("src/it/"));
+     }
+ 
+     @Test
+     public void fallThroughTest() throws Exception {
+ 
+         final String msg = getCheckMessage(FallThroughCheck.class, "fall.through");
+ 
+         final String[] expected = {
+             "14:13: " + msg,
+             "38:13: " + msg,
+             "47:13: " + msg,
+             "53:13: " + msg,
+             "70:13: " + msg,
+             "87:13: " + msg,
+             "123:13: " + msg,
+             "179:11: " + msg,
+             "369:11: " + msg,
+             "372:11: " + msg,
+             "374:41: " + msg,
+         };
+ 
+         final Configuration checkConfig = builder.getCheckConfig("FallThrough");
+-        final String filePath = builder.getFilePath("FallThroughInput");
++        final String filePath = builder.getFilePath("InputFallThrough");
+ 
+         final Integer[] warnList = builder.getLinesWithWarn(filePath);
+         verify(checkConfig, filePath, expected, warnList);
+     }
+ }

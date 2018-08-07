@@ -1,0 +1,174 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index d5682a723..5cec2da27 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -233,134 +233,139 @@ public class JavadocStyleCheck
+                 }
+                 else if (aLine.regionMatches(i, "*/", 0, 2)) {
+                     i++;
+                 }
+                 else if (aLine.charAt(i) != '*') {
+                     textStart = i;
+                     break;
+                 }
+             }
+         }
+         return textStart;
+     }
+ 
+     /**
+      * Trims any trailing whitespace or the end of Javadoc comment string.
+      * @param aBuffer the StringBuffer to trim.
+      */
+     private void trimTail(StringBuffer aBuffer)
+     {
+         for (int i = aBuffer.length() - 1; i >= 0; i--) {
+             if (Character.isWhitespace(aBuffer.charAt(i))) {
+                 aBuffer.deleteCharAt(i);
+             }
+             else if ((i > 0)
+                      && (aBuffer.charAt(i - 1) == '*')
+                      && (aBuffer.charAt(i) == '/'))
+             {
+                 aBuffer.deleteCharAt(i);
+                 aBuffer.deleteCharAt(i - 1);
+                 i--;
+             }
+             else {
+                 break;
+             }
+         }
+     }
+ 
+     /**
+      * Checks the comment for HTML tags that do not have a corresponding close
+      * tag or a close tage that has no previous open tag.  This code was
+      * primarily copied from the DocCheck checkHtml method.
+      *
+      * @param aAST (Abstract Syntax Tree) the token to process.
+      * @param aComment the source lines that make up the Javadoc comment.
+      */
+     private void checkHtml(DetailAST aAST, String[] aComment)
+     {
+         final int lineno = aAST.getLineNo() - aComment.length;
+         final Stack htmlStack = new Stack();
+ 
+-        for (int i = 0; i < aComment.length; i++) {
+-            TagParser parser = null;
+-            try {
+-                // Can throw NoSuchElementException when tokenizing encounters
+-                // "<" at end of aComment[i].
+-                parser = new TagParser(aComment[i], lineno + i);
+-            }
+-            catch (NoSuchElementException e) {
+-                log(
+-                    lineno + i,
+-                    "javadoc.incompleteTag",
+-                    new Object[] {aComment[i]});
++        TagParser parser = null;
++        try {
++            // Can throw NoSuchElementException when tokenizing encounters
++            // "<" at end of aComment[i].
++            parser = new TagParser(aComment, lineno);
++        }
++        catch (NoSuchElementException e) {
++            log(lineno, "javadoc.incompleteTag", new Object[] {aComment[0]});
++            return;
++        }
++
++        while (parser.hasNextTag()) {
++            final HtmlTag tag = parser.nextTag();
++
++            if (tag.isIncompleteTag()) {
++                log(tag.getLineno(), "javadoc.incompleteTag",
++                    new Object[] {aComment[tag.getLineno() - lineno]});
+                 return;
+             }
+-            while (parser.hasNextTag()) {
+-                final HtmlTag tag = parser.nextTag();
+-
+-                if (!tag.isCloseTag()) {
+-                    htmlStack.push(tag);
++            if (tag.isClosedTag()) {
++                //do nothing
++                continue;
++            }
++            if (!tag.isCloseTag()) {
++                htmlStack.push(tag);
++            }
++            else {
++                // We have found a close tag.
++                if (isExtraHtml(tag.getId(), htmlStack)) {
++                    // No corresponding open tag was found on the stack.
++                    log(tag.getLineno(),
++                        tag.getPosition(),
++                        EXTRA_HTML,
++                        tag);
+                 }
+                 else {
+-                    // We have found a close tag.
+-                    if (isExtraHtml(tag.getId(), htmlStack)) {
+-                        // No corresponding open tag was found on the stack.
+-                        log(tag.getLineno(),
+-                            tag.getPosition(),
+-                            EXTRA_HTML,
+-                            tag);
+-                    }
+-                    else {
+-                        // See if there are any unclosed tags that were opened
+-                        // after this one.
+-                        checkUnclosedTags(htmlStack, tag.getId());
+-                    }
++                    // See if there are any unclosed tags that were opened
++                    // after this one.
++                    checkUnclosedTags(htmlStack, tag.getId());
+                 }
+             }
+         }
+ 
+         // Identify any tags left on the stack.
+         String lastFound = ""; // Skip multiples, like <b>...<b>
+         for (int i = 0; i < htmlStack.size(); i++) {
+             final HtmlTag htag = (HtmlTag) htmlStack.elementAt(i);
+             if (!isSingleTag(htag) && !htag.getId().equals(lastFound)) {
+                 log(htag.getLineno(), htag.getPosition(), UNCLOSED_HTML, htag);
+                 lastFound = htag.getId();
+             }
+         }
+     }
+ 
+     /**
+      * Checks to see if there are any unclosed tags on the stack.  The token
+      * represents a html tag that has been closed and has a corresponding open
+      * tag on the stack.  Any tags, except single tags, that were opened
+      * (pushed on the stack) after the token are missing a close.
+      *
+      * @param aHtmlStack the stack of opened HTML tags.
+      * @param aToken the current HTML tag name that has been closed.
+      */
+     private void checkUnclosedTags(Stack aHtmlStack, String aToken)
+     {
+         final Stack unclosedTags = new Stack();
+         HtmlTag lastOpenTag = (HtmlTag) aHtmlStack.pop();
+         while (!aToken.equalsIgnoreCase(lastOpenTag.getId())) {
+             // Find unclosed elements. Put them on a stack so the
+             // output order won't be back-to-front.
+             if (isSingleTag(lastOpenTag)) {
+                 lastOpenTag = (HtmlTag) aHtmlStack.pop();
+             }
+             else {
+                 unclosedTags.push(lastOpenTag);
+                 lastOpenTag = (HtmlTag) aHtmlStack.pop();
+             }
+         }
+ 
+         // Output the unterminated tags, if any
+         String lastFound = ""; // Skip multiples, like <b>..<b>
+         for (int i = 0; i < unclosedTags.size(); i++) {
+             lastOpenTag = (HtmlTag) unclosedTags.get(i);
+             if (lastOpenTag.getId().equals(lastFound)) {
+                 continue;
+             }
+             lastFound = lastOpenTag.getId();
+             log(lastOpenTag.getLineno(),
+                 lastOpenTag.getPosition(),

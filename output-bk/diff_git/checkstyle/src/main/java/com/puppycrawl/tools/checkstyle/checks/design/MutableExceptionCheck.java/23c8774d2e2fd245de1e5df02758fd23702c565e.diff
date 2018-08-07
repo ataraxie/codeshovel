@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/MutableExceptionCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/MutableExceptionCheck.java
+index d0d2ffb7a..a62643b37 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/MutableExceptionCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/MutableExceptionCheck.java
+@@ -64,101 +64,101 @@ public final class MutableExceptionCheck extends AbstractFormatCheck {
+ 
+     /**
+      * Sets the format of extended class name to the specified regular expression.
+      * @param extendedClassNameFormat a {@code String} value
+      */
+     public void setExtendedClassNameFormat(String extendedClassNameFormat) {
+         this.extendedClassNameFormat = extendedClassNameFormat;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {TokenTypes.CLASS_DEF, TokenTypes.VARIABLE_DEF};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getDefaultTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.CLASS_DEF, TokenTypes.VARIABLE_DEF};
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CLASS_DEF:
+                 visitClassDef(ast);
+                 break;
+             case TokenTypes.VARIABLE_DEF:
+                 visitVariableDef(ast);
+                 break;
+             default:
+                 throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.CLASS_DEF) {
+             leaveClassDef();
+         }
+     }
+ 
+     /**
+      * Called when we start processing class definition.
+      * @param ast class definition node
+      */
+     private void visitClassDef(DetailAST ast) {
+-        checkingStack.push(checking ? Boolean.TRUE : Boolean.FALSE);
++        checkingStack.push(checking);
+         checking = isNamedAsException(ast) && isExtendedClassNamedAsException(ast);
+     }
+ 
+     /** Called when we leave class definition. */
+     private void leaveClassDef() {
+         checking = checkingStack.pop();
+     }
+ 
+     /**
+      * Checks variable definition.
+      * @param ast variable def node for check
+      */
+     private void visitVariableDef(DetailAST ast) {
+         if (checking && ast.getParent().getType() == TokenTypes.OBJBLOCK) {
+             final DetailAST modifiersAST =
+                 ast.findFirstToken(TokenTypes.MODIFIERS);
+ 
+             if (modifiersAST.findFirstToken(TokenTypes.FINAL) == null) {
+                 log(ast.getLineNo(),  ast.getColumnNo(), MSG_KEY,
+                         ast.findFirstToken(TokenTypes.IDENT).getText());
+             }
+         }
+     }
+ 
+     /**
+      * @param ast class definition node
+      * @return true if a class name conforms to specified format
+      */
+     private boolean isNamedAsException(DetailAST ast) {
+         final String className = ast.findFirstToken(TokenTypes.IDENT).getText();
+         return getRegexp().matcher(className).find();
+     }
+ 
+     /**
+      * @param ast class definition node
+      * @return true if extended class name conforms to specified format
+      */
+     private boolean isExtendedClassNamedAsException(DetailAST ast) {
+         final DetailAST extendsClause = ast.findFirstToken(TokenTypes.EXTENDS_CLAUSE);
+         if (extendsClause != null) {
+             DetailAST currentNode = extendsClause;
+             while (currentNode.getType() != TokenTypes.IDENT) {
+                 currentNode = currentNode.getLastChild();
+             }
+             final String extendedClassName = currentNode.getText();
+             return extendedClassName.matches(extendedClassNameFormat);
+         }
+         return false;
+     }
+ }

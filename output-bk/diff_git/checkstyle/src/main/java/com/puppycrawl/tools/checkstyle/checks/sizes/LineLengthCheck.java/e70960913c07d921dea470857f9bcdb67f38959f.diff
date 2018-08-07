@@ -1,0 +1,60 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/LineLengthCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/LineLengthCheck.java
+index 50ebbef7a..46494147a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/LineLengthCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/LineLengthCheck.java
+@@ -82,54 +82,54 @@ public class LineLengthCheck extends Check {
+     public static final String MSG_KEY = "maxLineLen";
+ 
+     /** default maximum number of columns in a line */
+     private static final int DEFAULT_MAX_COLUMNS = 80;
+ 
+     /** the maximum number of columns in a line */
+     private int max = DEFAULT_MAX_COLUMNS;
+ 
+     /** the regexp when long lines are ignored */
+     private Pattern ignorePattern;
+ 
+     /**
+      * Creates a new <code>LineLengthCheck</code> instance.
+      */
+     public LineLengthCheck() {
+         setIgnorePattern("^$");
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[0];
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         final String[] lines = getLines();
+         for (int i = 0; i < lines.length; i++) {
+ 
+             final String line = lines[i];
+             final int realLength = Utils.lengthExpandedTabs(
+                 line, line.length(), getTabWidth());
+ 
+             if (realLength > max
+                 && !ignorePattern.matcher(line).find()) {
+                 log(i + 1, MSG_KEY, max, realLength);
+             }
+         }
+     }
+ 
+     /**
+      * @param length the maximum length of a line
+      */
+     public void setMax(int length) {
+         max = length;
+     }
+ 
+     /**
+      * Set the ignore pattern.
+      * @param format a <code>String</code> value
+      */
+-    public void setIgnorePattern(String format) {
++    public final void setIgnorePattern(String format) {
+         ignorePattern = Utils.createPattern(format);
+     }
+ }

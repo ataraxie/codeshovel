@@ -1,0 +1,135 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/naming/MemberNameCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/naming/MemberNameCheck.java
+index a95c85f65..96f62e542 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/naming/MemberNameCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/naming/MemberNameCheck.java
+@@ -35,126 +35,127 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * </p>
+  * <pre>
+  * &lt;module name="MemberName"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check for names that begin with
+  * &quot;m&quot;, followed by an upper case letter, and then letters and
+  * digits is:
+  * </p>
+  * <pre>
+  * &lt;module name="MemberName"&gt;
+  *    &lt;property name="format" value="^m[A-Z][a-zA-Z0-9]*$"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  * @version 1.0
+  */
+ public class MemberNameCheck
+     extends AbstractNameCheck
+ {
+     /** Should we apply check to public.*/
+     private boolean mApplyToPublic = true;
+     /** Should we apply check to protected.*/
+     private boolean mApplyToProtected = true;
+     /** Should we apply check to package.*/
+     private boolean mApplyToPackage = true;
+     /** Should we apply check to private.*/
+     private boolean mApplyToPrivate = true;
+ 
+     /** Creates a new <code>MemberNameCheck</code> instance. */
+     public MemberNameCheck()
+     {
+         super("^[a-z][a-zA-Z0-9]*$");
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     /** {@inheritDoc} */
+     protected final boolean mustCheckName(DetailAST aAST)
+     {
+         DetailAST modifiersAST = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isStatic = (modifiersAST != null)
+             && modifiersAST.branchContains(TokenTypes.LITERAL_STATIC);
+ 
+         return (!isStatic && !ScopeUtils.inInterfaceOrAnnotationBlock(aAST)
+             && !ScopeUtils.isLocalVariableDef(aAST))
+-            && modifiersAST != null
++            && (modifiersAST != null)
+             && shouldCheckInScope(modifiersAST);
+     }
+ 
+     /**
+      * Should we check member with given modifiers.
+      * @param aModifiers modifiers of member to check.
+      * @return true if we should check such member.
+      */
+     private boolean shouldCheckInScope(DetailAST aModifiers)
+     {
+         if (aModifiers == null) {
+             // if there are no modifaiers it is a package-private
+             return mApplyToPackage;
+         }
+ 
+         final boolean isPublic =
+             aModifiers.branchContains(TokenTypes.LITERAL_PUBLIC);
+         final boolean isProtected =
+             aModifiers.branchContains(TokenTypes.LITERAL_PROTECTED);
+         final boolean isPrivate =
+             aModifiers.branchContains(TokenTypes.LITERAL_PRIVATE);
+         final boolean isPackage = !(isPublic || isProtected || isPrivate);
+ 
+-        return mApplyToPublic && isPublic || mApplyToProtected && isProtected
+-            || mApplyToPackage && isPackage || mApplyToPrivate && isPrivate;
++        return (mApplyToPublic && isPublic)
++            || (mApplyToProtected && isProtected)
++            || (mApplyToPackage && isPackage) || (mApplyToPrivate && isPrivate);
+     }
+ 
+     /**
+      * Sets whether we should apply the check to public members.
+      * @param aApplyTo new value of the property.
+      */
+     public void setApplyToPublic(boolean aApplyTo)
+     {
+         mApplyToPublic = aApplyTo;
+     }
+ 
+     /** @return true if the check should be applied to public members.*/
+     public boolean getApplyToPublic()
+     {
+         return mApplyToPublic;
+     }
+ 
+     /**
+      * Sets whether we should apply the check to protected members.
+      * @param aApplyTo new value of the property.
+      */
+     public void setApplyToProtected(boolean aApplyTo)
+     {
+         mApplyToProtected = aApplyTo;
+     }
+ 
+     /** @return true if the check should be applied to protected members.*/
+     public boolean getApplyToProtected()
+     {
+         return mApplyToProtected;
+     }
+ 
+     /**
+      * Sets whether we should apply the check to package-private members.
+      * @param aApplyTo new value of the property.
+      */
+     public void setApplyToPackage(boolean aApplyTo)
+     {
+         mApplyToPackage = aApplyTo;
+     }
+ 
+     /**
+      * @return true if the check should be applied to package-private members.
+      */
+     public boolean getApplyToPackage()
+     {
+         return mApplyToPackage;
+     }
+ 
+     /**

@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+index 90d1df514..00d158b1d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+@@ -370,107 +370,103 @@ public class CheckstyleAntTask extends Task {
+             throw new BuildException("Unable to create a Checker: "
+                     + e.getMessage(), e);
+         }
+ 
+         return checker;
+     }
+ 
+     /**
+      * Create the Properties object based on the arguments specified
+      * to the ANT task.
+      * @return the properties for property expansion expansion
+      * @throws BuildException if an error occurs
+      */
+     private Properties createOverridingProperties() {
+         final Properties retVal = new Properties();
+ 
+         // Load the properties file if specified
+         if (propertiesFile != null) {
+             FileInputStream inStream = null;
+             try {
+                 inStream = new FileInputStream(propertiesFile);
+                 retVal.load(inStream);
+             }
+             catch (final IOException e) {
+                 throw new BuildException("Error loading Properties file '"
+                         + propertiesFile + "'", e, getLocation());
+             }
+             finally {
+                 Closeables.closeQuietly(inStream);
+             }
+         }
+ 
+         // override with Ant properties like ${basedir}
+         final Map<String, Object> antProps = this.getProject().getProperties();
+         for (Map.Entry<String, Object> entry : antProps.entrySet()) {
+             final String value = String.valueOf(entry.getValue());
+             retVal.setProperty(entry.getKey(), value);
+         }
+ 
+         // override with properties specified in subelements
+         for (Property p : overrideProps) {
+             retVal.setProperty(p.getKey(), p.getValue());
+         }
+ 
+         return retVal;
+     }
+ 
+     /**
+      * Return the list of listeners set in this task.
+      * @return the list of listeners.
+-     * @throws ClassNotFoundException if an error occurs
+-     * @throws InstantiationException if an error occurs
+-     * @throws IllegalAccessException if an error occurs
+      * @throws IOException if an error occurs
+      */
+-    private AuditListener[] getListeners() throws ClassNotFoundException,
+-            InstantiationException, IllegalAccessException, IOException {
++    private AuditListener[] getListeners() throws IOException {
+         final int formatterCount = Math.max(1, formatters.size());
+ 
+         final AuditListener[] listeners = new AuditListener[formatterCount];
+ 
+         // formatters
+         if (formatters.isEmpty()) {
+             final OutputStream debug = new LogOutputStream(this,
+                     Project.MSG_DEBUG);
+             final OutputStream err = new LogOutputStream(this, Project.MSG_ERR);
+             listeners[0] = new DefaultLogger(debug, true, err, true);
+         }
+         else {
+             for (int i = 0; i < formatterCount; i++) {
+                 final Formatter formatter = formatters.get(i);
+                 listeners[i] = formatter.createListener(this);
+             }
+         }
+         return listeners;
+     }
+ 
+     /**
+      * returns the list of files (full path name) to process.
+      * @return the list of files included via the filesets.
+      */
+     protected List<File> scanFileSets() {
+         final List<File> list = Lists.newArrayList();
+         if (fileName != null) {
+             // oops we've got an additional one to process, don't
+             // forget it. No sweat, it's fully resolved via the setter.
+             log("Adding standalone file for audit", Project.MSG_VERBOSE);
+             list.add(new File(fileName));
+         }
+         for (int i = 0; i < fileSets.size(); i++) {
+             final FileSet fs = fileSets.get(i);
+             final DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+             ds.scan();
+ 
+             final String[] names = ds.getIncludedFiles();
+             log(i + ") Adding " + names.length + " files from directory "
+                     + ds.getBasedir(), Project.MSG_VERBOSE);
+ 
+             for (String element : names) {
+                 final String pathname = ds.getBasedir() + File.separator
+                         + element;
+                 list.add(new File(pathname));
+             }
+         }
+ 
+         return list;
+     }

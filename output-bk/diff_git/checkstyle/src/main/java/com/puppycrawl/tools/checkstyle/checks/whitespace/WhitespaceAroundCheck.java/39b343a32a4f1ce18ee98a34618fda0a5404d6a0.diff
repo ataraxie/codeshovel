@@ -1,0 +1,147 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
+index d368b0c0f..8bf4d05f9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
+@@ -317,123 +317,121 @@ public class WhitespaceAroundCheck extends AbstractCheck {
+      * @param allow {@code true} to allow empty method bodies.
+      */
+     public void setAllowEmptyMethods(boolean allow) {
+         allowEmptyMethods = allow;
+     }
+ 
+     /**
+      * Sets whether or not empty constructor bodies are allowed.
+      * @param allow {@code true} to allow empty constructor bodies.
+      */
+     public void setAllowEmptyConstructors(boolean allow) {
+         allowEmptyConstructors = allow;
+     }
+ 
+     /**
+      * Sets whether or not to ignore the whitespace around the
+      * colon in an enhanced for loop.
+      * @param ignore {@code true} to ignore enhanced for colon.
+      */
+     public void setIgnoreEnhancedForColon(boolean ignore) {
+         ignoreEnhancedForColon = ignore;
+     }
+ 
+     /**
+      * Sets whether or not empty type bodies are allowed.
+      * @param allow {@code true} to allow empty type bodies.
+      */
+     public void setAllowEmptyTypes(boolean allow) {
+         allowEmptyTypes = allow;
+     }
+ 
+     /**
+      * Sets whether or not empty loop bodies are allowed.
+      * @param allow {@code true} to allow empty loops bodies.
+      */
+     public void setAllowEmptyLoops(boolean allow) {
+         allowEmptyLoops = allow;
+     }
+ 
+     /**
+      * Sets whether or not empty lambdas bodies are allowed.
+      * @param allow {@code true} to allow empty lambda expressions.
+      */
+     public void setAllowEmptyLambdas(boolean allow) {
+         allowEmptyLambdas = allow;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final int currentType = ast.getType();
+-        if (isNotRelevantSituation(ast, currentType)) {
+-            return;
+-        }
+-
+-        final String line = getLine(ast.getLineNo() - 1);
+-        final int before = ast.getColumnNo() - 1;
+-        final int after = ast.getColumnNo() + ast.getText().length();
+-
+-        if (before >= 0) {
+-            final char prevChar = line.charAt(before);
+-            if (shouldCheckSeparationFromPreviousToken(ast)
+-                    && !Character.isWhitespace(prevChar)) {
+-                log(ast.getLineNo(), ast.getColumnNo(),
+-                        MSG_WS_NOT_PRECEDED, ast.getText());
++        if (!isNotRelevantSituation(ast, currentType)) {
++            final String line = getLine(ast.getLineNo() - 1);
++            final int before = ast.getColumnNo() - 1;
++            final int after = ast.getColumnNo() + ast.getText().length();
++
++            if (before >= 0) {
++                final char prevChar = line.charAt(before);
++                if (shouldCheckSeparationFromPreviousToken(ast)
++                        && !Character.isWhitespace(prevChar)) {
++                    log(ast.getLineNo(), ast.getColumnNo(),
++                            MSG_WS_NOT_PRECEDED, ast.getText());
++                }
+             }
+-        }
+ 
+-        if (after < line.length()) {
+-            final char nextChar = line.charAt(after);
+-            if (shouldCheckSeparationFromNextToken(ast, nextChar)
+-                    && !Character.isWhitespace(nextChar)) {
+-                log(ast.getLineNo(), ast.getColumnNo() + ast.getText().length(),
+-                        MSG_WS_NOT_FOLLOWED, ast.getText());
++            if (after < line.length()) {
++                final char nextChar = line.charAt(after);
++                if (shouldCheckSeparationFromNextToken(ast, nextChar)
++                        && !Character.isWhitespace(nextChar)) {
++                    log(ast.getLineNo(), ast.getColumnNo() + ast.getText().length(),
++                            MSG_WS_NOT_FOLLOWED, ast.getText());
++                }
+             }
+         }
+     }
+ 
+     /**
+      * Is ast not a target of Check.
+      * @param ast ast
+      * @param currentType type of ast
+      * @return true is ok to skip validation
+      */
+     private boolean isNotRelevantSituation(DetailAST ast, int currentType) {
+         final int parentType = ast.getParent().getType();
+         final boolean starImport = currentType == TokenTypes.STAR
+                 && parentType == TokenTypes.DOT;
+         final boolean slistInsideCaseGroup = currentType == TokenTypes.SLIST
+                 && parentType == TokenTypes.CASE_GROUP;
+ 
+         final boolean starImportOrSlistInsideCaseGroup = starImport || slistInsideCaseGroup;
+         final boolean colonOfCaseOrDefaultOrForEach =
+                 isColonOfCaseOrDefault(currentType, parentType)
+                         || isColonOfForEach(currentType, parentType);
+         final boolean emptyBlockOrType =
+                 isEmptyBlock(ast, parentType)
+                     || allowEmptyTypes && isEmptyType(ast);
+ 
+         return starImportOrSlistInsideCaseGroup
+                 || colonOfCaseOrDefaultOrForEach
+                 || emptyBlockOrType
+                 || isArrayInitialization(currentType, parentType);
+     }
+ 
+     /**
+      * Check if it should be checked if previous token is separated from current by
+      * whitespace.
+      * This function is needed to recognise double brace initialization as valid,
+      * unfortunately its not possible to implement this functionality
+      * in isNotRelevantSituation method, because in this method when we return
+      * true(is not relevant) ast is later doesnt check at all. For example:
+      * new Properties() {{setProperty("double curly braces", "are not a style error");
+      * }};
+      * For second left curly brace in first line when we would return true from
+      * isNotRelevantSituation it wouldn't later check that the next token(setProperty)
+      * is not separated from previous token.
+      * @param ast current AST.
+      * @return true if it should be checked if previous token is separated by whitespace,
+      *      false otherwise.
+      */
+     private static boolean shouldCheckSeparationFromPreviousToken(DetailAST ast) {
+         return !isPartOfDoubleBraceInitializerForPreviousToken(ast);
+     }

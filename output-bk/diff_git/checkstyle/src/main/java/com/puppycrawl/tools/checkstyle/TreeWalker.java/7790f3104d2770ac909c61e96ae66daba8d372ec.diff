@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 0860815af..2cd37dd42 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -434,101 +434,101 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
+         filter.hide(TokenTypes.BLOCK_COMMENT_BEGIN);
+ 
+         final GeneratedJavaRecognizer parser =
+             new GeneratedJavaRecognizer(filter);
+         parser.setFilename(contents.getFileName());
+         parser.setASTNodeClass(DetailAST.class.getName());
+         parser.compilationUnit();
+ 
+         return (DetailAST) parser.getAST();
+     }
+ 
+     /**
+      * Parses Java source file. Result AST contains comment nodes.
+      * @param contents source file content
+      * @return DetailAST tree
+      * @throws RecognitionException if parser failed
+      * @throws TokenStreamException if lexer failed
+      */
+     public static DetailAST parseWithComments(FileContents contents)
+             throws RecognitionException, TokenStreamException {
+         return appendHiddenCommentNodes(parse(contents));
+     }
+ 
+     @Override
+     public void destroy() {
+         for (AbstractCheck check : ordinaryChecks) {
+             check.destroy();
+         }
+         for (AbstractCheck check : commentChecks) {
+             check.destroy();
+         }
+         super.destroy();
+     }
+ 
+     @Override
+     public Set<String> getExternalResourceLocations() {
+         final Set<String> orinaryChecksResources = getExternalResourceLocations(ordinaryChecks);
+         final Set<String> commentChecksResources = getExternalResourceLocations(commentChecks);
+         final int resultListSize = orinaryChecksResources.size() + commentChecksResources.size();
+         final Set<String> resourceLocations = new HashSet<>(resultListSize);
+         resourceLocations.addAll(orinaryChecksResources);
+         resourceLocations.addAll(commentChecksResources);
+         return resourceLocations;
+     }
+ 
+     /**
+      * Returns a set of external configuration resource locations which are used by the checks set.
+      * @param checks a set of checks.
+      * @return a set of external configuration resource locations which are used by the checks set.
+      */
+-    private Set<String> getExternalResourceLocations(Set<AbstractCheck> checks) {
++    private static Set<String> getExternalResourceLocations(Set<AbstractCheck> checks) {
+         final Set<String> externalConfigurationResources = Sets.newHashSet();
+         for (AbstractCheck check : checks) {
+             if (check instanceof ExternalResourceHolder) {
+                 final Set<String> checkExternalResources =
+                     ((ExternalResourceHolder) check).getExternalResourceLocations();
+                 externalConfigurationResources.addAll(checkExternalResources);
+             }
+         }
+         return externalConfigurationResources;
+     }
+ 
+     /**
+      * Processes a node calling interested checks at each node.
+      * Uses iterative algorithm.
+      * @param root the root of tree for process
+      * @param astState state of AST.
+      */
+     private void processIter(DetailAST root, AstState astState) {
+         DetailAST curNode = root;
+         while (curNode != null) {
+             notifyVisit(curNode, astState);
+             DetailAST toVisit = curNode.getFirstChild();
+             while (curNode != null && toVisit == null) {
+                 notifyLeave(curNode, astState);
+                 toVisit = curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+     }
+ 
+     /**
+      * Appends comment nodes to existing AST.
+      * It traverses each node in AST, looks for hidden comment tokens
+      * and appends found comment tokens as nodes in AST.
+      * @param root
+      *        root of AST.
+      * @return root of AST with comment nodes.
+      */
+     private static DetailAST appendHiddenCommentNodes(DetailAST root) {
+         DetailAST result = root;
+         DetailAST curNode = root;
+         DetailAST lastNode = root;
+ 
+         while (curNode != null) {
+             if (isPositionGreater(curNode, lastNode)) {
+                 lastNode = curNode;
+             }

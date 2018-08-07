@@ -1,0 +1,147 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/Check.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/Check.java
+index bf1995e8d..b9a07bab4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/Check.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/Check.java
+@@ -123,139 +123,139 @@ public abstract class Check extends AbstractViolationReporter {
+     public void init() {
+         // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Destroy the check. It is being retired from service.
+      */
+     public void destroy() {
+         // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Called before the starting to process a tree. Ideal place to initialise
+      * information that is to be collected whilst processing a tree.
+      * @param rootAST the root of the tree
+      */
+     public void beginTree(DetailAST rootAST) {
+         // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Called after finished processing a tree. Ideal place to report on
+      * information collected whilst processing a tree.
+      * @param rootAST the root of the tree
+      */
+     public void finishTree(DetailAST rootAST) {
+         // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Called to process a token.
+      * @param ast the token to process
+      */
+     public void visitToken(DetailAST ast) {
+         // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Called after all the child nodes have been process.
+      * @param ast the token leaving
+      */
+     public void leaveToken(DetailAST ast) {
+         // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Returns the lines associated with the tree.
+      * @return the file contents
+      */
+     public final String[] getLines() {
+-        return getFileContents().getLines();
++        return fileContents.getLines();
+     }
+ 
+     /**
+      * Returns the line associated with the tree.
+      * @param index index of the line
+      * @return the line from the file contents
+      */
+     public final String getLine(int index) {
+-        return getFileContents().getLine(index);
++        return fileContents.getLine(index);
+     }
+ 
+     /**
+      * Set the file contents associated with the tree.
+      * @param contents the manager
+      */
+     public final void setFileContents(FileContents contents) {
+         fileContents = contents;
+     }
+ 
+     /**
+      * Returns the file contents associated with the tree.
+      * @return the file contents
+      */
+     public final FileContents getFileContents() {
+         return fileContents;
+     }
+ 
+     /**
+      * Set the class loader associated with the tree.
+      * @param classLoader the class loader
+      */
+     public final void setClassLoader(ClassLoader classLoader) {
+         this.classLoader = classLoader;
+     }
+ 
+     /**
+      * Returns the class loader associated with the tree.
+      * @return the class loader
+      */
+     public final ClassLoader getClassLoader() {
+         return classLoader;
+     }
+ 
+     /** @return the tab width to report errors with */
+     protected final int getTabWidth() {
+         return tabWidth;
+     }
+ 
+     /**
+      * Set the tab width to report errors with.
+      * @param tabWidth an {@code int} value
+      */
+     public final void setTabWidth(int tabWidth) {
+         this.tabWidth = tabWidth;
+     }
+ 
+     @Override
+     public final void log(int line, String key, Object... args) {
+         messages.add(
+             new LocalizedMessage(
+                 line,
+                 getMessageBundle(),
+                 key,
+                 args,
+                 getSeverityLevel(),
+                 getId(),
+                 getClass(),
+                 getCustomMessages().get(key)));
+     }
+ 
+     @Override
+     public final void log(int lineNo, int colNo, String key,
+             Object... args) {
+         final int col = 1 + Utils.lengthExpandedTabs(
+-            getLines()[lineNo - 1], colNo, getTabWidth());
++            getLines()[lineNo - 1], colNo, tabWidth);
+         messages.add(
+             new LocalizedMessage(
+                 lineNo,
+                 col,
+                 getMessageBundle(),
+                 key,
+                 args,
+                 getSeverityLevel(),
+                 getId(),
+                 getClass(),
+                 getCustomMessages().get(key)));
+     }
+ }

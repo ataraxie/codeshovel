@@ -1,0 +1,206 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+index f06fcf502..ebb17a4d7 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+@@ -230,144 +230,181 @@ public final class ConfigurationLoader
+     private ConfigurationLoader(final PropertyResolver aOverrideProps,
+                                 final boolean aOmitIgnoredModules)
+         throws ParserConfigurationException, SAXException
+     {
+         mSaxHandler = new InternalLoader();
+         mOverridePropsResolver = aOverrideProps;
+         mOmitIgnoredModules = aOmitIgnoredModules;
+     }
+ 
+     /**
+      * Parses the specified stream loading the configuration information.
+      * The stream is NOT closed after parsing, it is the responsibility of
+      * the caller to close the stream.
+      *
+      * @param aStream the stream that contains the configuration data
+      * @throws IOException if an error occurs
+      * @throws SAXException if an error occurs
+      */
+     private void parseInputStream(InputStream aStream)
+         throws IOException, SAXException
+     {
+         final InputStream configStream =
+             new BufferedInputStream(aStream, TWO_KB);
+         final InputSource inputSource = new InputSource(configStream);
+         mSaxHandler.parseInputSource(inputSource);
+     }
+ 
+     /**
+      * Returns the module configurations in a specified file.
+      * @param aConfig location of config file, can be either a URL or a filename
+      * @param aOverridePropsResolver overriding properties
+      * @return the check configurations
+      * @throws CheckstyleException if an error occurs
+      */
+     public static Configuration loadConfiguration(String aConfig,
+             PropertyResolver aOverridePropsResolver) throws CheckstyleException
+     {
+         return loadConfiguration(aConfig, aOverridePropsResolver, false);
+     }
+ 
+     /**
+      * Returns the module configurations in a specified file.
+      *
+      * @param aConfig location of config file, can be either a URL or a filename
+      * @param aOverridePropsResolver overriding properties
+      * @param aOmitIgnoredModules <code>true</code> if modules with severity
+      *            'ignore' should be omitted, <code>false</code> otherwise
+      * @return the check configurations
+      * @throws CheckstyleException if an error occurs
+      */
+-    public static Configuration loadConfiguration(
+-        String aConfig,
+-        PropertyResolver aOverridePropsResolver,
+-        boolean aOmitIgnoredModules)
++    public static Configuration loadConfiguration(String aConfig,
++        PropertyResolver aOverridePropsResolver, boolean aOmitIgnoredModules)
+         throws CheckstyleException
+     {
++        InputStream bufferedStream = null;
+         try {
+-            final ConfigurationLoader loader =
+-                new ConfigurationLoader(aOverridePropsResolver,
+-                                        aOmitIgnoredModules);
+             // figure out if this is a File or a URL
+             InputStream configStream;
+             try {
+                 final URL url = new URL(aConfig);
+                 configStream = url.openStream();
+             }
+             catch (MalformedURLException ex) {
+                 configStream = new FileInputStream(aConfig);
+             }
+-            final InputStream bufferedStream =
+-                new BufferedInputStream(configStream);
+-            loader.parseInputStream(bufferedStream);
+-            bufferedStream.close();
+-            return loader.getConfiguration();
++            bufferedStream = new BufferedInputStream(configStream);
++
++            return loadConfiguration(bufferedStream, aOverridePropsResolver,
++                    aOmitIgnoredModules);
+         }
+         catch (FileNotFoundException e) {
+-            throw new CheckstyleException(
+-                "unable to find " + aConfig, e);
++            throw new CheckstyleException("unable to find " + aConfig, e);
++        }
++        catch (IOException e) {
++            throw new CheckstyleException("unable to read " + aConfig, e);
++        }
++        catch (CheckstyleException e) {
++                //wrap again to add file name info
++            throw new CheckstyleException("unable to read " + aConfig + " - "
++                    + e.getMessage(), e);
++        }
++        finally {
++            if (bufferedStream != null) {
++                try {
++                    bufferedStream.close();
++                }
++                catch (IOException e) {
++                    // cannot throw another exception.
++                    ;
++                }
++            }
++        }
++    }
++
++    /**
++     * Returns the module configurations from a specified input stream.
++     * Note that clients are required to close the given stream by themselves
++     *
++     * @param aConfigStream the input stream to the Checkstyle configuration
++     * @param aOverridePropsResolver overriding properties
++     * @param aOmitIgnoredModules <code>true</code> if modules with severity
++     *            'ignore' should be omitted, <code>false</code> otherwise
++     * @return the check configurations
++     * @throws CheckstyleException if an error occurs
++     */
++    public static Configuration loadConfiguration(InputStream aConfigStream,
++        PropertyResolver aOverridePropsResolver, boolean aOmitIgnoredModules)
++        throws CheckstyleException
++    {
++        try {
++            final ConfigurationLoader loader =
++                new ConfigurationLoader(aOverridePropsResolver,
++                                        aOmitIgnoredModules);
++            loader.parseInputStream(aConfigStream);
++            return loader.getConfiguration();
+         }
+         catch (ParserConfigurationException e) {
+             throw new CheckstyleException(
+-                "unable to parse " + aConfig, e);
++                "unable to parse configuration stream", e);
+         }
+         catch (SAXParseException e) {
+-            throw new CheckstyleException("unable to parse "
+-                    + aConfig + " - " + e.getMessage() + ":" + e.getLineNumber()
++            throw new CheckstyleException("unable to parse configuration stream"
++                    + " - " + e.getMessage() + ":" + e.getLineNumber()
+                     + ":" + e.getColumnNumber(), e);
+         }
+         catch (SAXException e) {
+-            throw new CheckstyleException("unable to parse "
+-                    + aConfig + " - " + e.getMessage(), e);
++            throw new CheckstyleException("unable to parse configuration stream"
++                    + " - " + e.getMessage(), e);
+         }
+         catch (IOException e) {
+-            throw new CheckstyleException("unable to read " + aConfig, e);
++            throw new CheckstyleException("unable to read from stream", e);
+         }
+     }
+ 
+     /**
+      * Returns the configuration in the last file parsed.
+      * @return Configuration object
+      */
+     private Configuration getConfiguration()
+     {
+         return mConfiguration;
+     }
+ 
+     /**
+      * Replaces <code>${xxx}</code> style constructions in the given value
+      * with the string value of the corresponding data types.
+      *
+      * The method is package visible to facilitate testing.
+      *
+      * @param aValue The string to be scanned for property references.
+      *              May be <code>null</code>, in which case this
+      *              method returns immediately with no effect.
+      * @param aProps  Mapping (String to String) of property names to their
+      *              values. Must not be <code>null</code>.
+      * @param aDefaultValue default to use if one of the properties in aValue
+      *              cannot be resolved from aProps.
+      *
+      * @throws CheckstyleException if the string contains an opening
+      *                           <code>${</code> without a closing
+      *                           <code>}</code>
+      * @return the original string with the properties replaced, or
+      *         <code>null</code> if the original string is <code>null</code>.
+      *
+      * Code copied from ant -
+      * http://cvs.apache.org/viewcvs/jakarta-ant/src/main/org/apache/tools/ant/ProjectHelper.java
+      */
+     // Package visible for testing purposes
+     static String replaceProperties(
+             String aValue, PropertyResolver aProps, String aDefaultValue)
+         throws CheckstyleException
+     {
+         if (aValue == null) {
+             return null;
+         }
+ 
+         final List fragments = new ArrayList();
+         final List propertyRefs = new ArrayList();
+         parsePropertyString(aValue, fragments, propertyRefs);
+ 
+         final StringBuffer sb = new StringBuffer();
+         final Iterator i = fragments.iterator();

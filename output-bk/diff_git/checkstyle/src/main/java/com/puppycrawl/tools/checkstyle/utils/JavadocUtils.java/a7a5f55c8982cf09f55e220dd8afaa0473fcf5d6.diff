@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
+index b744167cd..c0e5d8620 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java
+@@ -296,101 +296,101 @@ public final class JavadocUtils {
+             final DetailNode[] children = parent.getChildren();
+             if (nextSiblingIndex <= children.length - 1) {
+                 nextSibling = children[nextSiblingIndex];
+             }
+         }
+         return nextSibling;
+     }
+ 
+     /**
+      * Gets next sibling of specified node with the specified type.
+      *
+      * @param node DetailNode
+      * @param tokenType javadoc token type
+      * @return next sibling.
+      */
+     public static DetailNode getNextSibling(DetailNode node, int tokenType) {
+         DetailNode nextSibling = getNextSibling(node);
+         while (nextSibling != null && nextSibling.getType() != tokenType) {
+             nextSibling = getNextSibling(nextSibling);
+         }
+         return nextSibling;
+     }
+ 
+     /**
+      * Gets previous sibling of specified node.
+      * @param node DetailNode
+      * @return previous sibling
+      */
+     public static DetailNode getPreviousSibling(DetailNode node) {
+         DetailNode previousSibling = null;
+         final int previousSiblingIndex = node.getIndex() - 1;
+         if (previousSiblingIndex >= 0) {
+             final DetailNode parent = node.getParent();
+             final DetailNode[] children = parent.getChildren();
+             previousSibling = children[previousSiblingIndex];
+         }
+         return previousSibling;
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param id
+      *        the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int id) {
+         final String name;
+         if (id == JavadocTokenTypes.EOF) {
+             name = "EOF";
+         }
+-        else if (id > TOKEN_VALUE_TO_NAME.length - 1) {
++        else if (id >= TOKEN_VALUE_TO_NAME.length) {
+             throw new IllegalArgumentException(UNKNOWN_JAVADOC_TOKEN_ID_EXCEPTION_MESSAGE + id);
+         }
+         else {
+             name = TOKEN_VALUE_TO_NAME[id];
+             if (name == null) {
+                 throw new IllegalArgumentException(UNKNOWN_JAVADOC_TOKEN_ID_EXCEPTION_MESSAGE + id);
+             }
+         }
+         return name;
+     }
+ 
+     /**
+      * Returns the ID of a token for a given name.
+      * @param name
+      *        the name of the token ID to get
+      * @return a token ID
+      */
+     public static int getTokenId(String name) {
+         final Integer id = TOKEN_NAME_TO_VALUE.get(name);
+         if (id == null) {
+             throw new IllegalArgumentException("Unknown javadoc token name. Given name " + name);
+         }
+         return id;
+     }
+ 
+     /**
+      * Gets tag name from javadocTagSection.
+      *
+      * @param javadocTagSection to get tag name from.
+      * @return name, of the javadocTagSection's tag.
+      */
+     public static String getTagName(DetailNode javadocTagSection) {
+         final String javadocTagName;
+         if (javadocTagSection.getType() == JavadocTokenTypes.JAVADOC_INLINE_TAG) {
+             javadocTagName = getNextSibling(
+                     getFirstChild(javadocTagSection)).getText();
+         }
+         else {
+             javadocTagName = getFirstChild(javadocTagSection).getText();
+         }
+         return javadocTagName;
+     }
+ 
+     /**
+      * Replace all control chars with escaped symbols.
+      * @param text the String to process.
+      * @return the processed String with all control chars escaped.
+      */
+     public static String escapeAllControlChars(String text) {
+         final String textWithoutNewlines = NEWLINE.matcher(text).replaceAll("\\\\n");

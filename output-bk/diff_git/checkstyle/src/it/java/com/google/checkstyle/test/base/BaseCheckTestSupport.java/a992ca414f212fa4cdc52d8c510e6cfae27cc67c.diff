@@ -1,0 +1,173 @@
+diff --git a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+index 98486851b..d7e5a68e3 100644
+--- a/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
++++ b/src/it/java/com/google/checkstyle/test/base/BaseCheckTestSupport.java
+@@ -1,64 +1,65 @@
+ package com.google.checkstyle.test.base;
+ 
+ import static java.text.MessageFormat.format;
+ import static org.junit.Assert.assertEquals;
+ 
+ import java.io.ByteArrayInputStream;
+ import java.io.ByteArrayOutputStream;
+ import java.io.File;
+ import java.io.IOException;
+ import java.io.InputStreamReader;
+ import java.io.LineNumberReader;
+ import java.io.OutputStream;
+ import java.io.PrintStream;
+ import java.io.UnsupportedEncodingException;
++import java.nio.charset.StandardCharsets;
+ import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.Properties;
+ 
+ import com.google.common.collect.Lists;
+ import com.puppycrawl.tools.checkstyle.Checker;
+ import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+ import com.puppycrawl.tools.checkstyle.DefaultLogger;
+ import com.puppycrawl.tools.checkstyle.TreeWalker;
+ import com.puppycrawl.tools.checkstyle.api.AbstractViolationReporter;
+ import com.puppycrawl.tools.checkstyle.api.AuditEvent;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ 
+ public abstract class BaseCheckTestSupport
+ {
+     /** A brief logger that only display info about errors */
+     protected static class BriefLogger
+         extends DefaultLogger
+     {
+         public BriefLogger(OutputStream out) throws UnsupportedEncodingException
+         {
+             super(out, true);
+         }
+         @Override
+         public void auditStarted(AuditEvent evt) {}
+     }
+ 
+     protected final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+     protected final PrintStream stream = new PrintStream(baos);
+     protected final Properties props = new Properties();
+ 
+     public static DefaultConfiguration createCheckConfig(Class<?> aClazz)
+     {
+         return new DefaultConfiguration(aClazz.getName());
+     }
+ 
+     protected Checker createChecker(Configuration aCheckConfig)
+         throws Exception
+     {
+         final DefaultConfiguration dc = createCheckerConfig(aCheckConfig);
+         final Checker checker = new Checker();
+         // make sure the tests always run with english error messages
+         // so the tests don't fail in supported locales like german
+         final Locale locale = Locale.ENGLISH;
+         checker.setLocaleCountry(locale.getCountry());
+         checker.setLocaleLanguage(locale.getLanguage());
+         checker.setModuleClassLoader(Thread.currentThread().getContextClassLoader());
+@@ -83,101 +84,101 @@ public abstract class BaseCheckTestSupport
+         throws IOException
+     {
+         return new File("src/main/java/com/google/checkstyle/test/filebasic/" + aFilename).getCanonicalPath();
+     }
+ 
+     protected static String getSrcPath(String aFilename) throws IOException
+     {
+ 
+         return new File("src/test/java/com/puppycrawl/tools/checkstyle/" + aFilename).getCanonicalPath();
+     }
+ 
+     protected void verify(Configuration aConfig, String aFileName, String[] aExpected, Integer... aWarnsExpected)
+             throws Exception
+     {
+         verify(createChecker(aConfig), aFileName, aFileName, aExpected, aWarnsExpected);
+     }
+ 
+     protected void verify(Checker aC, String aFileName, String[] aExpected, Integer... aWarnsExpected)
+             throws Exception
+     {
+         verify(aC, aFileName, aFileName, aExpected, aWarnsExpected);
+     }
+ 
+     protected void verify(Checker aC,
+                           String aProcessedFilename,
+                           String aMessageFileName,
+                           String[] aExpected, Integer... aWarnsExpected)
+         throws Exception
+     {
+         verify(aC,
+             new File[] {new File(aProcessedFilename)},
+             aMessageFileName, aExpected, aWarnsExpected);
+     }
+ 
+     protected void verify(Checker aC,
+                           File[] aProcessedFiles,
+                           String aMessageFileName,
+                           String[] aExpected,
+                           Integer... aWarnsExpected)
+         throws Exception
+     {
+         stream.flush();
+         final List<File> theFiles = Lists.newArrayList();
+         Collections.addAll(theFiles, aProcessedFiles);
+         final int errs = aC.process(theFiles);
+ 
+         // process each of the lines
+         final ByteArrayInputStream bais =
+             new ByteArrayInputStream(baos.toByteArray());
+         final LineNumberReader lnr =
+-            new LineNumberReader(new InputStreamReader(bais));
++            new LineNumberReader(new InputStreamReader(bais, StandardCharsets.UTF_8));
+ 
+         for (int i = 0; i < aExpected.length; i++) {
+             final String expected = aMessageFileName + ":" + aExpected[i];
+             String actual = lnr.readLine();
+             assertEquals("error message " + i, expected, actual);
+             String parseInt = removeDeviceFromPathOnWindows(actual);
+             parseInt = parseInt.substring(parseInt.indexOf(':') + 1);
+             parseInt = parseInt.substring(0, parseInt.indexOf(':'));
+             int lineNumber = Integer.parseInt(parseInt);
+ 			Integer integer = Arrays.asList(aWarnsExpected).contains(lineNumber) ? lineNumber : 0;
+             assertEquals("error message " + i, (long) integer, lineNumber);
+         }
+ 
+         assertEquals("unexpected output: " + lnr.readLine(),
+                      aExpected.length, errs);
+         aC.destroy();
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties'
+      * file.
+      *
+      * @param messageKey
+      *            the key of message in 'messages.properties' file.
+      */
+     public String getCheckMessage(Class<? extends AbstractViolationReporter> aClass,
+             String messageKey)
+     {
+         Properties pr = new Properties();
+         try {
+             pr.load(aClass.getResourceAsStream("messages.properties"));
+         }
+         catch (IOException e) {
+             return null;
+         }
+         return pr.getProperty(messageKey);
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties' file.
+      * @param messageKey the key of message in 'messages.properties' file.
+      * @param arguments the arguments of message in 'messages.properties' file.
+      */
+     public String getCheckMessage(Class<? extends AbstractViolationReporter> aClass,
+             String messageKey, Object ... arguments) {
+         return format(getCheckMessage(aClass, messageKey), arguments);
+     }
+ 
+     /**
+      * Gets the check message 'as is' from appropriate 'messages.properties' file.

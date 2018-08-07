@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+index 6336a452f..d80d39ee0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+@@ -429,103 +429,105 @@ public abstract class AbstractTypeAwareCheck extends AbstractCheck {
+         public final Token getName() {
+             return name;
+         }
+     }
+ 
+     /** Represents regular classes/enums. */
+     private static final class RegularClass extends AbstractClassInfo {
+         /** Name of surrounding class. */
+         private final String surroundingClass;
+         /** The check we use to resolve classes. */
+         private final AbstractTypeAwareCheck check;
+         /** Is class loadable. */
+         private boolean loadable = true;
+         /** {@code Class} object of this class if it's loadable. */
+         private Class<?> classObj;
+ 
+         /**
+          * Creates new instance of of class information object.
+          * @param name {@code FullIdent} associated with new object.
+          * @param surroundingClass name of current surrounding class.
+          * @param check the check we use to load class.
+          */
+         RegularClass(final Token name,
+                              final String surroundingClass,
+                              final AbstractTypeAwareCheck check) {
+             super(name);
+             this.surroundingClass = surroundingClass;
+             this.check = check;
+         }
+ 
+         @Override
+         public Class<?> getClazz() {
+             if (loadable && classObj == null) {
+                 setClazz(check.tryLoadClass(getName(), surroundingClass));
+             }
+             return classObj;
+         }
+ 
+         /**
+          * Associates {@code Class} with an object.
+          * @param clazz {@code Class} to associate with.
+          */
+         private void setClazz(Class<?> clazz) {
+             classObj = clazz;
+             loadable = clazz != null;
+         }
+ 
+         @Override
+         public String toString() {
+             return "RegularClass[name=" + getName()
+-                + ", in class=" + surroundingClass
+-                + ", loadable=" + loadable
+-                + ", class=" + classObj + "]";
++                    + ", in class='" + surroundingClass + '\''
++                    + ", check=" + check.hashCode()
++                    + ", loadable=" + loadable
++                    + ", class=" + classObj
++                    + ']';
+         }
+     }
+ 
+     /** Represents type param which is "alias" for real type. */
+     private static class ClassAlias extends AbstractClassInfo {
+         /** Class information associated with the alias. */
+         private final AbstractClassInfo classInfo;
+ 
+         /**
+          * Creates new instance of the class.
+          * @param name token which represents name of class alias.
+          * @param classInfo class information associated with the alias.
+          */
+         ClassAlias(final Token name, AbstractClassInfo classInfo) {
+             super(name);
+             this.classInfo = classInfo;
+         }
+ 
+         @Override
+         public final Class<?> getClazz() {
+             return classInfo.getClazz();
+         }
+ 
+         @Override
+         public String toString() {
+             return "ClassAlias[alias " + getName() + " for " + classInfo.getName() + "]";
+         }
+     }
+ 
+     /**
+      * Represents text element with location in the text.
+      * @noinspection ProtectedInnerClass
+      */
+     protected static class Token {
+         /** Token's column number. */
+         private final int columnNo;
+         /** Token's line number. */
+         private final int lineNo;
+         /** Token's text. */
+         private final String text;
+ 
+         /**
+          * Creates token.
+          * @param text token's text
+          * @param lineNo token's line number
+          * @param columnNo token's column number
+          */
+         public Token(String text, int lineNo, int columnNo) {
+             this.text = text;
+             this.lineNo = lineNo;

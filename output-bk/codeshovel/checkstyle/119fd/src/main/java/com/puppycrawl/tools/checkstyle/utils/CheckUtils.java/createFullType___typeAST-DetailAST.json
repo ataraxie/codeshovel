@@ -1,0 +1,136 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CheckUtils.java",
+  "functionName": "createFullType",
+  "functionId": "createFullType___typeAST-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/utils/CheckUtils.java",
+  "functionStartLine": 80,
+  "functionEndLine": 89,
+  "changeHistory": [
+    "b56d64035982726edf727fe37b1f583a76c96ad7",
+    "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "5d7063c660b241bce251f1a8c89394619f2791fb",
+    "9aa9d751071e0597b268235f2dff4fc6373b2d5f"
+  ],
+  "changeHistoryShort": {
+    "b56d64035982726edf727fe37b1f583a76c96ad7": "Ybodychange",
+    "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0": "Ybodychange",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": "Yfilerename",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": "Ybodychange",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "5d7063c660b241bce251f1a8c89394619f2791fb": "Ybodychange",
+    "9aa9d751071e0597b268235f2dff4fc6373b2d5f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b56d64035982726edf727fe37b1f583a76c96ad7": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4425: fixed multidimensional array types\n",
+      "commitDate": 1506082309000,
+      "commitName": "b56d64035982726edf727fe37b1f583a76c96ad7",
+      "commitAuthor": "Ruslan Iagudin",
+      "commitDateOld": 1500933567000,
+      "commitNameOld": "1d9b547ac98d69166db532a7cb275080206ff097",
+      "commitAuthorOld": "vasylieva",
+      "daysBetweenCommits": 59.59,
+      "commitsBetweenForRepo": 238,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,10 @@\n-    public static FullIdent createFullType(DetailAST typeAST) {\n-        final DetailAST arrayDeclaratorAST \u003d\n-            typeAST.findFirstToken(TokenTypes.ARRAY_DECLARATOR);\n-        final FullIdent fullType;\n+    public static FullIdent createFullType(final DetailAST typeAST) {\n+        DetailAST ast \u003d typeAST;\n \n-        if (arrayDeclaratorAST \u003d\u003d null) {\n-            fullType \u003d createFullTypeNoArrays(typeAST);\n+        // ignore array part of type\n+        while (ast.findFirstToken(TokenTypes.ARRAY_DECLARATOR) !\u003d null) {\n+            ast \u003d ast.findFirstToken(TokenTypes.ARRAY_DECLARATOR);\n         }\n-        else {\n-            fullType \u003d createFullTypeNoArrays(arrayDeclaratorAST);\n-        }\n-        return fullType;\n+\n+        return FullIdent.createFullIdent(ast.getFirstChild());\n     }\n\\ No newline at end of file\n"
+    },
+    "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix typos in utlis package. #1555\n\nFixes some `SpellCheckingInspection` inspection violations.\n\nDescription:\n\u003eSpellchecker inspection helps locate typos and misspelling in your code, comments and literals.\n",
+      "commitDate": 1440739587000,
+      "commitName": "7eb80732e99d1018810eb8cba29d2e3bec9b7ae0",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440694468000,
+      "commitNameOld": "a21164df1fbaff36ba020968b3a6128ab8476756",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 0.52,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     public static FullIdent createFullType(DetailAST typeAST) {\n-        final DetailAST arrayDeclAST \u003d\n+        final DetailAST arrayDeclaratorAST \u003d\n             typeAST.findFirstToken(TokenTypes.ARRAY_DECLARATOR);\n         final FullIdent fullType;\n \n-        if (arrayDeclAST \u003d\u003d null) {\n+        if (arrayDeclaratorAST \u003d\u003d null) {\n             fullType \u003d createFullTypeNoArrays(typeAST);\n         }\n         else {\n-            fullType \u003d createFullTypeNoArrays(arrayDeclAST);\n+            fullType \u003d createFullTypeNoArrays(arrayDeclaratorAST);\n         }\n         return fullType;\n     }\n\\ No newline at end of file\n"
+    },
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": {
+      "type": "Yfilerename",
+      "commitMessage": "Utils classes have been moved to utils package. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440637702000,
+      "commitNameOld": "f6113bb56d695719a8803274effb3596cb82120f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.46,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: AvoidInlineConditional violations fixed\n",
+      "commitDate": 1439784080000,
+      "commitName": "23c8774d2e2fd245de1e5df02758fd23702c565e",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439610313000,
+      "commitNameOld": "020d8b24693d7208a8892e3ba857cfe2d90a43bc",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 2.01,
+      "commitsBetweenForRepo": 36,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,13 @@\n     public static FullIdent createFullType(DetailAST typeAST) {\n         final DetailAST arrayDeclAST \u003d\n             typeAST.findFirstToken(TokenTypes.ARRAY_DECLARATOR);\n+        final FullIdent fullType;\n \n-        return createFullTypeNoArrays(arrayDeclAST \u003d\u003d null ? typeAST\n-                                                           : arrayDeclAST);\n+        if (arrayDeclAST \u003d\u003d null) {\n+            fullType \u003d createFullTypeNoArrays(typeAST);\n+        }\n+        else {\n+            fullType \u003d createFullTypeNoArrays(arrayDeclAST);\n+        }\n+        return fullType;\n     }\n\\ No newline at end of file\n"
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "5d7063c660b241bce251f1a8c89394619f2791fb": {
+      "type": "Ybodychange",
+      "commitMessage": "Tighten up code\n",
+      "commitDate": 1093527252000,
+      "commitName": "5d7063c660b241bce251f1a8c89394619f2791fb",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1075282562000,
+      "commitNameOld": "969678107261e649c968b56dbace0064304bfb56",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 211.17,
+      "commitsBetweenForRepo": 119,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     public static FullIdent createFullType(DetailAST aTypeAST)\n     {\n-        DetailAST arrayDeclAST \u003d\n+        final DetailAST arrayDeclAST \u003d\n             aTypeAST.findFirstToken(TokenTypes.ARRAY_DECLARATOR);\n \n         return createFullTypeNoArrays(arrayDeclAST \u003d\u003d null ? aTypeAST\n                                                            : arrayDeclAST);\n     }\n\\ No newline at end of file\n"
+    },
+    "9aa9d751071e0597b268235f2dff4fc6373b2d5f": {
+      "type": "Yintroduced",
+      "commitMessage": "IllegalCatchCheck (request 750746).\n",
+      "commitDate": 1061496286000,
+      "commitName": "9aa9d751071e0597b268235f2dff4fc6373b2d5f",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

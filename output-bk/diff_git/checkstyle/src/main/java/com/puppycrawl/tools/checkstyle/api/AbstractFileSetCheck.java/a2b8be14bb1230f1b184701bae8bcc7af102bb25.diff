@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
+index 73d234d35..30062197f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.java
+@@ -85,101 +85,101 @@ public abstract class AbstractFileSetCheck
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void finishProcessing()
+     {
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public final void setMessageDispatcher(MessageDispatcher dispatcher)
+     {
+         this.dispatcher = dispatcher;
+     }
+ 
+     /**
+      * A message dispatcher is used to fire violation messages to
+      * interested audit listeners.
+      *
+      * @return the current MessageDispatcher.
+      */
+     protected final MessageDispatcher getMessageDispatcher()
+     {
+         return dispatcher;
+     }
+ 
+     /**
+      * @return file extensions that identify the files that pass the
+      * filter of this FileSetCheck.
+      */
+     public String[] getFileExtensions()
+     {
+         return Arrays.copyOf(fileExtensions, fileExtensions.length);
+     }
+ 
+     /**
+      * Sets the file extensions that identify the files that pass the
+      * filter of this FileSetCheck.
+      * @param extensions the set of file extensions. A missing
+      * initial '.' character of an extension is automatically added.
+      */
+     public final void setFileExtensions(String... extensions)
+     {
+         if (extensions == null) {
+             fileExtensions = null;
+             return;
+         }
+ 
+         fileExtensions = new String[extensions.length];
+         for (int i = 0; i < extensions.length; i++) {
+             final String extension = extensions[i];
+-            if (extension.startsWith(".")) {
++            if (Utils.startsWithChar(extension, '.')) {
+                 fileExtensions[i] = extension;
+             }
+             else {
+                 fileExtensions[i] = "." + extension;
+             }
+         }
+     }
+ 
+     /**
+      * Returns the collector for violation messages.
+      * Subclasses can use the collector to find out the violation
+      * messages to fire via the message dispatcher.
+      *
+      * @return the collector for localized messages.
+      */
+     protected final LocalizedMessages getMessageCollector()
+     {
+         return messages;
+     }
+ 
+     @Override
+     public final void log(int line, String key, Object... args)
+     {
+         log(line, 0, key, args);
+     }
+ 
+     @Override
+     public final void log(int lineNo, int colNo, String key,
+             Object... args)
+     {
+         getMessageCollector().add(
+             new LocalizedMessage(lineNo,
+                                  colNo,
+                                  getMessageBundle(),
+                                  key,
+                                  args,
+                                  getSeverityLevel(),
+                                  getId(),
+                                  this.getClass(),
+                                  this.getCustomMessages().get(key)));
+     }
+ 
+     /**
+      * Notify all listeners about the errors in a file.
+      * Calls <code>MessageDispatcher.fireErrors()</code> with
+      * all logged errors and than clears errors' list.
+      * @param fileName the audited file
+      */
+     protected final void fireErrors(String fileName)
+     {

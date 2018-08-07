@@ -1,0 +1,136 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+index fb5ee5ee3..cb6fc888c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+@@ -527,129 +527,129 @@ public class CheckstyleAntTask extends Task {
+     /**
+      * Details about a formatter to be used.
+      * @author Oliver Burn
+      */
+     public static class Formatter {
+         /** The formatter type. */
+         private FormatterType formatterType;
+         /** The file to output to. */
+         private File toFile;
+         /** Whether or not the write to the named file. */
+         private boolean useFile = true;
+ 
+         /**
+          * Set the type of the formatter.
+          * @param type the type
+          */
+         public void setType(FormatterType type) {
+             final String val = type.getValue();
+             if (!E_XML.equals(val) && !E_PLAIN.equals(val)) {
+                 throw new BuildException("Invalid formatter type: " + val);
+             }
+ 
+             formatterType = type;
+         }
+ 
+         /**
+          * Set the file to output to.
+          * @param destination destination the file to output to
+          */
+         public void setTofile(File destination) {
+             toFile = destination;
+         }
+ 
+         /**
+          * Sets whether or not we write to a file if it is provided.
+          * @param use whether not not to use provided file.
+          */
+         public void setUseFile(boolean use) {
+             useFile = use;
+         }
+ 
+         /**
+          * Creates a listener for the formatter.
+          * @param task the task running
+          * @return a listener
+          * @throws IOException if an error occurs
+          */
+         public AuditListener createListener(Task task) throws IOException {
+             if (formatterType != null
+                     && E_XML.equals(formatterType.getValue())) {
+-                return createXMLLogger(task);
++                return createXmlLogger(task);
+             }
+             return createDefaultLogger(task);
+         }
+ 
+         /**
+          * Creates default logger.
+          * @param task the task to possibly log to
+          * @return a DefaultLogger instance
+          * @throws IOException if an error occurs
+          */
+         private AuditListener createDefaultLogger(Task task)
+             throws IOException {
+             if (toFile == null || !useFile) {
+                 return new DefaultLogger(
+                     new LogOutputStream(task, Project.MSG_DEBUG),
+                     true, new LogOutputStream(task, Project.MSG_ERR), true);
+             }
+             final FileOutputStream infoStream = new FileOutputStream(toFile);
+             return new DefaultLogger(infoStream, true, infoStream, false, true);
+         }
+ 
+         /**
+          * Creates XML logger.
+          * @param task the task to possibly log to
+          * @return an XMLLogger instance
+          * @throws IOException if an error occurs
+          */
+-        private AuditListener createXMLLogger(Task task) throws IOException {
++        private AuditListener createXmlLogger(Task task) throws IOException {
+             if (toFile == null || !useFile) {
+                 return new XMLLogger(new LogOutputStream(task,
+                         Project.MSG_INFO), true);
+             }
+             return new XMLLogger(new FileOutputStream(toFile), true);
+         }
+     }
+ 
+     /**
+      * Represents a property that consists of a key and value.
+      */
+     public static class Property {
+         /** The property key. */
+         private String key;
+         /** The property value. */
+         private String value;
+ 
+         /**
+          * Gets key.
+          * @return the property key
+          */
+         public String getKey() {
+             return key;
+         }
+ 
+         /**
+          * Sets key.
+          * @param key sets the property key
+          */
+         public void setKey(String key) {
+             this.key = key;
+         }
+ 
+         /**
+          * Gets value.
+          * @return the property value
+          */
+         public String getValue() {
+             return value;
+         }
+ 
+         /**
+          * Sets value.
+          * @param value set the property value
+          */
+         public void setValue(String value) {
+             this.value = value;
+         }
+ 
+         /**

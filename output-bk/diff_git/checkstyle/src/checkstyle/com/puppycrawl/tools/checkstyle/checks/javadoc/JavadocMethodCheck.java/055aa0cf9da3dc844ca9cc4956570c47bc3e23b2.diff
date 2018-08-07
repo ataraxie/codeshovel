@@ -1,0 +1,112 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index accc72a6c..60c7ca13b 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -765,104 +765,105 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck
+         }
+ 
+         // Check the return type is void
+         if (type.getChildCount(TokenTypes.LITERAL_VOID) == 0) {
+             return false;
+         }
+ 
+         // Check that is had only one parameter
+         final DetailAST params = aAST.findFirstToken(TokenTypes.PARAMETERS);
+         if ((params == null)
+             || (params.getChildCount(TokenTypes.PARAMETER_DEF) != 1))
+         {
+             return false;
+         }
+ 
+         // Now verify that the body consists of:
+         // SLIST -> EXPR -> ASSIGN
+         // SEMI
+         // RCURLY
+         final DetailAST slist = aAST.findFirstToken(TokenTypes.SLIST);
+         if ((slist == null) || (slist.getChildCount() != 3)) {
+             return false;
+         }
+ 
+         final AST expr = slist.getFirstChild();
+         if ((expr.getType() != TokenTypes.EXPR)
+             || (expr.getFirstChild().getType() != TokenTypes.ASSIGN))
+         {
+             return false;
+         }
+ 
+         return true;
+     }
+ 
+     /**
+      * Returns whether an AST represents a getter method.
+      * @param aAST the AST to check with
+      * @return whether the AST represents a getter method
+      */
+     private boolean isGetterMethod(final DetailAST aAST)
+     {
+         // Check have a method with exactly 7 children which are all that
+         // is allowed in a proper getter method which does not throw any
+         // exceptions.
+         if ((aAST.getType() != TokenTypes.METHOD_DEF)
+             || (aAST.getChildCount() != 7))
+         {
+             return false;
+         }
+ 
+-        // Check the name matches format getX...
++        // Check the name matches format of getX or isX. Technically I should
++        // check that the format isX is only used with a boolean type.
+         final DetailAST type = aAST.findFirstToken(TokenTypes.TYPE);
+         final String name = type.getNextSibling().getText();
+-        if (!name.matches("^get[A-Z].*")) { // Depends on JDK 1.4
++        if (!name.matches("^(is|get)[A-Z].*")) { // Depends on JDK 1.4
+             return false;
+         }
+ 
+         // Check the return type is void
+         if (type.getChildCount(TokenTypes.LITERAL_VOID) > 0) {
+             return false;
+         }
+ 
+         // Check that is had only one parameter
+         final DetailAST params = aAST.findFirstToken(TokenTypes.PARAMETERS);
+         if ((params == null)
+             || (params.getChildCount(TokenTypes.PARAMETER_DEF) > 0))
+         {
+             return false;
+         }
+ 
+         // Now verify that the body consists of:
+         // SLIST -> RETURN
+         // RCURLY
+         final DetailAST slist = aAST.findFirstToken(TokenTypes.SLIST);
+         if ((slist == null) || (slist.getChildCount() != 2)) {
+             return false;
+         }
+ 
+         final AST expr = slist.getFirstChild();
+         if ((expr.getType() != TokenTypes.LITERAL_RETURN)
+             || (expr.getFirstChild().getType() != TokenTypes.EXPR))
+         {
+             return false;
+         }
+ 
+         return true;
+     }
+ 
+     /** Stores useful information about declared exception. */
+     class ExceptionInfo extends ClassInfo
+     {
+         /** does the exception have throws tag associated with. */
+         private boolean mFound;
+ 
+         /**
+          * Creates new instance for <code>FullIdent</code>.
+          *
+          * @param aIdent <code>FullIdent</code> of the exception
+          * @param aCurrentClass name of current class.
+          */
+         ExceptionInfo(FullIdent aIdent, String aCurrentClass)
+         {
+             super(aIdent, aCurrentClass);
+         }

@@ -1,0 +1,110 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+index 0603e875c..3d0e4cede 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+@@ -23,103 +23,103 @@ import com.google.common.collect.Maps;
+ import com.google.common.collect.Sets;
+ import com.puppycrawl.tools.checkstyle.Defn;
+ import com.puppycrawl.tools.checkstyle.api.AbstractFileSetCheck;
+ import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
+ import com.puppycrawl.tools.checkstyle.api.MessageDispatcher;
+ import com.puppycrawl.tools.checkstyle.api.Utils;
+ import java.io.File;
+ import java.io.FileInputStream;
+ import java.io.FileNotFoundException;
+ import java.io.IOException;
+ import java.io.InputStream;
+ import java.util.Enumeration;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Properties;
+ import java.util.Set;
+ import java.util.TreeSet;
+ import java.util.Map.Entry;
+ 
+ /**
+  * <p>
+  * The TranslationCheck class helps to ensure the correct translation of code by
+  * checking property files for consistency regarding their keys.
+  * Two property files describing one and the same context are consistent if they
+  * contain the same keys.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="Translation"/&gt;
+  * </pre>
+  * @author Alexandra Bunge
+  * @author lkuehne
+  */
+ public class TranslationCheck
+     extends AbstractFileSetCheck
+ {
+     /** The property files to process. */
+     private final List<File> mPropertyFiles = Lists.newArrayList();
+ 
+     /**
+      * Creates a new <code>TranslationCheck</code> instance.
+      */
+     public TranslationCheck()
+     {
+         setFileExtensions(new String[]{"properties"});
+     }
+ 
+     @Override
+-    public void beginProcessing()
++    public void beginProcessing(String aCharset)
+     {
+-        super.beginProcessing();
++        super.beginProcessing(aCharset);
+         mPropertyFiles.clear();
+     }
+ 
+     @Override
+     protected void processFiltered(File aFile, List<String> aLines)
+     {
+         mPropertyFiles.add(aFile);
+     }
+ 
+     @Override
+     public void finishProcessing()
+     {
+         super.finishProcessing();
+         final Map<String, Set<File>> propFilesMap =
+             arrangePropertyFiles(mPropertyFiles);
+         checkPropertyFileSets(propFilesMap);
+     }
+ 
+     /**
+      * Gets the basename (the unique prefix) of a property file. For example
+      * "xyz/messages" is the basename of "xyz/messages.properties",
+      * "xyz/messages_de_AT.properties", "xyz/messages_en.properties", etc.
+      *
+      * @param aFile the file
+      * @return the extracted basename
+      */
+     private static String extractPropertyIdentifier(final File aFile)
+     {
+         final String filePath = aFile.getPath();
+         final int dirNameEnd = filePath.lastIndexOf(File.separatorChar);
+         final int baseNameStart = dirNameEnd + 1;
+         final int underscoreIdx = filePath.indexOf('_', baseNameStart);
+         final int dotIdx = filePath.indexOf('.', baseNameStart);
+         final int cutoffIdx = (underscoreIdx != -1) ? underscoreIdx : dotIdx;
+         return filePath.substring(0, cutoffIdx);
+     }
+ 
+     /**
+      * Arranges a set of property files by their prefix.
+      * The method returns a Map object. The filename prefixes
+      * work as keys each mapped to a set of files.
+      * @param aPropFiles the set of property files
+      * @return a Map object which holds the arranged property file sets
+      */
+     private static Map<String, Set<File>> arrangePropertyFiles(
+         List<File> aPropFiles)
+     {
+         final Map<String, Set<File>> propFileMap = Maps.newHashMap();
+ 
+         for (final File f : aPropFiles) {

@@ -1,0 +1,215 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java
+index 1a5fe911e..67fc54d50 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/AbstractExpressionHandler.java
+@@ -189,208 +189,171 @@ public abstract class AbstractExpressionHandler {
+     /**
+      * Searches in given sub-tree (including given node) for the token
+      * which represents first symbol for this sub-tree in file.
+      * @param ast a root of sub-tree in which the search should be performed.
+      * @return a token which occurs first in the file.
+      */
+     public static DetailAST getFirstToken(DetailAST ast) {
+         DetailAST first = ast;
+         DetailAST child = ast.getFirstChild();
+ 
+         while (child != null) {
+             final DetailAST toTest = getFirstToken(child);
+             if (toTest.getColumnNo() < first.getColumnNo()) {
+                 first = toTest;
+             }
+             child = child.getNextSibling();
+         }
+ 
+         return first;
+     }
+ 
+     /**
+      * Get the start of the line for the given expression.
+      *
+      * @param ast   the expression to find the start of the line for
+      *
+      * @return the start of the line for the given expression
+      */
+     protected final int getLineStart(DetailAST ast) {
+         return getLineStart(ast.getLineNo());
+     }
+ 
+     /**
+      * Get the start of the line for the given line number.
+      *
+      * @param lineNo   the line number to find the start for
+      *
+      * @return the start of the line for the given expression
+      */
+     protected final int getLineStart(int lineNo) {
+         return getLineStart(indentCheck.getLine(lineNo - 1));
+     }
+ 
+     /**
+      * Get the start of the specified line.
+      *
+      * @param line   the specified line number
+      *
+      * @return the start of the specified line
+      */
+-    protected final int getLineStart(String line) {
++    private int getLineStart(String line) {
+         int index = 0;
+-        while (index < line.length() && Character.isWhitespace(line.charAt(index))) {
++        while (Character.isWhitespace(line.charAt(index))) {
+             index++;
+         }
+         return CommonUtils.lengthExpandedTabs(
+             line, index, indentCheck.getIndentationTabWidth());
+     }
+ 
+     /**
+      * Checks that indentation should be increased after first line in checkLinesIndent().
+      * @return true if indentation should be increased after
+      *              first line in checkLinesIndent()
+      *         false otherwise
+      */
+     protected boolean shouldIncreaseIndent() {
+         return true;
+     }
+ 
+-    /**
+-     * Check the indentation of consecutive lines for the expression we are
+-     * handling.
+-     *
+-     * @param startLine     the first line to check
+-     * @param endLine       the last line to check
+-     * @param indentLevel   the required indent level
+-     */
+-    protected final void checkLinesIndent(int startLine, int endLine,
+-        IndentLevel indentLevel) {
+-        // check first line
+-        checkLineIndent(startLine, indentLevel);
+-
+-        // check following lines
+-        final IndentLevel offsetLevel =
+-            new IndentLevel(indentLevel, getBasicOffset());
+-        for (int i = startLine + 1; i <= endLine; i++) {
+-            checkLineIndent(i, offsetLevel);
+-        }
+-    }
+-
+     /**
+      * Check the indentation for a set of lines.
+      *
+      * @param lines              the set of lines to check
+      * @param indentLevel        the indentation level
+      * @param firstLineMatches   whether or not the first line has to match
+      * @param firstLine          first line of whole expression
+      */
+     private void checkLinesIndent(LineSet lines,
+                                   IndentLevel indentLevel,
+                                   boolean firstLineMatches,
+                                   int firstLine) {
+         if (!lines.isEmpty()) {
+             // check first line
+             final int startLine = lines.firstLine();
+             final int endLine = lines.lastLine();
+             final int startCol = lines.firstLineCol();
+ 
+             final int realStartCol =
+                 getLineStart(indentCheck.getLine(startLine - 1));
+ 
+             if (realStartCol == startCol) {
+                 checkLineIndent(startLine, startCol, indentLevel,
+                     firstLineMatches);
+             }
+ 
+             // if first line starts the line, following lines are indented
+             // one level; but if the first line of this expression is
+             // nested with the previous expression (which is assumed if it
+             // doesn't start the line) then don't indent more, the first
+             // indentation is absorbed by the nesting
+ 
+             IndentLevel theLevel = indentLevel;
+             if (firstLineMatches
+                 || firstLine > mainAst.getLineNo() && shouldIncreaseIndent()) {
+                 theLevel = new IndentLevel(indentLevel, getBasicOffset());
+             }
+ 
+             // check following lines
+             for (int i = startLine + 1; i <= endLine; i++) {
+                 final Integer col = lines.getStartColumn(i);
+                 // startCol could be null if this line didn't have an
+                 // expression that was required to be checked (it could be
+                 // checked by a child expression)
+ 
+                 if (col != null) {
+                     checkLineIndent(i, col, theLevel, false);
+                 }
+             }
+         }
+     }
+ 
+-    /**
+-     * Check the indent level for a single line.
+-     *
+-     * @param lineNum       the line number to check
+-     * @param indentLevel   the required indent level
+-     */
+-    private void checkLineIndent(int lineNum, IndentLevel indentLevel) {
+-        final String line = indentCheck.getLine(lineNum - 1);
+-        if (!line.isEmpty()) {
+-            final int start = getLineStart(line);
+-            if (indentLevel.isGreaterThan(start)) {
+-                logChildError(lineNum, start, indentLevel);
+-            }
+-        }
+-    }
+-
+     /**
+      * Check the indentation for a single line.
+      *
+      * @param lineNum       the number of the line to check
+      * @param colNum        the column number we are starting at
+      * @param indentLevel   the indentation level
+      * @param mustMatch     whether or not the indentation level must match
+      */
+     private void checkLineIndent(int lineNum, int colNum,
+         IndentLevel indentLevel, boolean mustMatch) {
+         final String line = indentCheck.getLine(lineNum - 1);
+         final int start = getLineStart(line);
+         // if must match is set, it is an error if the line start is not
+         // at the correct indention level; otherwise, it is an only an
+         // error if this statement starts the line and it is less than
+         // the correct indentation level
+         if (mustMatch && !indentLevel.isAcceptable(start)
+                 || !mustMatch && colNum == start && indentLevel.isGreaterThan(start)) {
+             logChildError(lineNum, start, indentLevel);
+         }
+     }
+ 
+     /**
+      * Checks indentation on wrapped lines between and including
+      * {@code firstNode} and {@code lastNode}.
+      *
+      * @param firstNode First node to start examining.
+      * @param lastNode Last node to examine inclusively.
+      */
+     protected void checkWrappingIndentation(DetailAST firstNode, DetailAST lastNode) {
+         indentCheck.getLineWrappingHandler().checkIndentation(firstNode, lastNode);
+     }
+ 
+     /**
+      * Checks indentation on wrapped lines between and including
+      * {@code firstNode} and {@code lastNode}.
+      *
+      * @param firstNode First node to start examining.
+      * @param lastNode Last node to examine inclusively.
+      * @param wrappedIndentLevel Indentation all wrapped lines should use.
+      * @param startIndent Indentation first line before wrapped lines used.
+      * @param ignoreFirstLine Test if first line's indentation should be checked or not.
+      */
+     protected void checkWrappingIndentation(DetailAST firstNode, DetailAST lastNode,
+             int wrappedIndentLevel, int startIndent, boolean ignoreFirstLine) {
+         indentCheck.getLineWrappingHandler().checkIndentation(firstNode, lastNode,
+                 wrappedIndentLevel, startIndent, ignoreFirstLine);
+     }
+ 
+     /**

@@ -1,0 +1,151 @@
+diff --git a/android/guava/src/com/google/common/base/Suppliers.java b/android/guava/src/com/google/common/base/Suppliers.java
+index 034b018ab..7923716d5 100644
+--- a/android/guava/src/com/google/common/base/Suppliers.java
++++ b/android/guava/src/com/google/common/base/Suppliers.java
+@@ -90,139 +90,144 @@ public final class Suppliers {
+    * most once unless the underlying {@code get()} throws an exception. The supplier's serialized
+    * form does not contain the cached value, which will be recalculated when {@code get()} is called
+    * on the reserialized instance.
+    *
+    * <p>When the underlying delegate throws an exception then this memoizing supplier will keep
+    * delegating calls until it returns valid data.
+    *
+    * <p>If {@code delegate} is an instance created by an earlier call to {@code memoize}, it is
+    * returned directly.
+    */
+   public static <T> Supplier<T> memoize(Supplier<T> delegate) {
+     if (delegate instanceof NonSerializableMemoizingSupplier
+         || delegate instanceof MemoizingSupplier) {
+       return delegate;
+     }
+     return delegate instanceof Serializable
+         ? new MemoizingSupplier<T>(delegate)
+         : new NonSerializableMemoizingSupplier<T>(delegate);
+   }
+ 
+   @VisibleForTesting
+   static class MemoizingSupplier<T> implements Supplier<T>, Serializable {
+     final Supplier<T> delegate;
+     transient volatile boolean initialized;
+     // "value" does not need to be volatile; visibility piggy-backs
+     // on volatile read of "initialized".
+     @NullableDecl transient T value;
+ 
+     MemoizingSupplier(Supplier<T> delegate) {
+       this.delegate = Preconditions.checkNotNull(delegate);
+     }
+ 
+     @Override
+     public T get() {
+       // A 2-field variant of Double Checked Locking.
+       if (!initialized) {
+         synchronized (this) {
+           if (!initialized) {
+             T t = delegate.get();
+             value = t;
+             initialized = true;
+             return t;
+           }
+         }
+       }
+       return value;
+     }
+ 
+     @Override
+     public String toString() {
+-      return "Suppliers.memoize(" + delegate + ")";
++      return "Suppliers.memoize("
++          + (initialized ? "<supplier that returned " + value + ">" : delegate)
++          + ")";
+     }
+ 
+     private static final long serialVersionUID = 0;
+   }
+ 
+   @VisibleForTesting
+   static class NonSerializableMemoizingSupplier<T> implements Supplier<T> {
+     volatile Supplier<T> delegate;
+     volatile boolean initialized;
+     // "value" does not need to be volatile; visibility piggy-backs
+     // on volatile read of "initialized".
+     @NullableDecl T value;
+ 
+     NonSerializableMemoizingSupplier(Supplier<T> delegate) {
+       this.delegate = Preconditions.checkNotNull(delegate);
+     }
+ 
+     @Override
+     public T get() {
+       // A 2-field variant of Double Checked Locking.
+       if (!initialized) {
+         synchronized (this) {
+           if (!initialized) {
+             T t = delegate.get();
+             value = t;
+             initialized = true;
+             // Release the delegate to GC.
+             delegate = null;
+             return t;
+           }
+         }
+       }
+       return value;
+     }
+ 
+     @Override
+     public String toString() {
+-      return "Suppliers.memoize(" + delegate + ")";
++      Supplier<T> delegate = this.delegate;
++      return "Suppliers.memoize("
++          + (delegate == null ? "<supplier that returned " + value + ">" : delegate)
++          + ")";
+     }
+   }
+ 
+   /**
+    * Returns a supplier that caches the instance supplied by the delegate and removes the cached
+    * value after the specified time has passed. Subsequent calls to {@code get()} return the cached
+    * value if the expiration time has not passed. After the expiration time, a new value is
+    * retrieved, cached, and returned. See: <a
+    * href="http://en.wikipedia.org/wiki/Memoization">memoization</a>
+    *
+    * <p>The returned supplier is thread-safe. The supplier's serialized form does not contain the
+    * cached value, which will be recalculated when {@code get()} is called on the reserialized
+    * instance. The actual memoization does not happen when the underlying delegate throws an
+    * exception.
+    *
+    * <p>When the underlying delegate throws an exception then this memoizing supplier will keep
+    * delegating calls until it returns valid data.
+    *
+    * @param duration the length of time after a value is created that it should stop being returned
+    *     by subsequent {@code get()} calls
+    * @param unit the unit that {@code duration} is expressed in
+    * @throws IllegalArgumentException if {@code duration} is not positive
+    * @since 2.0
+    */
+   public static <T> Supplier<T> memoizeWithExpiration(
+       Supplier<T> delegate, long duration, TimeUnit unit) {
+     return new ExpiringMemoizingSupplier<T>(delegate, duration, unit);
+   }
+ 
+   @VisibleForTesting
+   static class ExpiringMemoizingSupplier<T> implements Supplier<T>, Serializable {
+     final Supplier<T> delegate;
+     final long durationNanos;
+     @NullableDecl transient volatile T value;
+     // The special value 0 means "not yet initialized".
+     transient volatile long expirationNanos;
+ 
+     ExpiringMemoizingSupplier(Supplier<T> delegate, long duration, TimeUnit unit) {
+       this.delegate = Preconditions.checkNotNull(delegate);
+       this.durationNanos = unit.toNanos(duration);
+       Preconditions.checkArgument(duration > 0);
+     }
+ 
+     @Override
+     public T get() {
+       // Another variant of Double Checked Locking.
+       //
+       // We use two volatile reads. We could reduce this to one by
+       // putting our fields into a holder class, but (at least on x86)
+       // the extra memory consumption and indirection are more

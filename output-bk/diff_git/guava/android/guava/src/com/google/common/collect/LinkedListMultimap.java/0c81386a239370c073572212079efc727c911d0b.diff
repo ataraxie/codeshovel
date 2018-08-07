@@ -1,0 +1,257 @@
+diff --git a/android/guava/src/com/google/common/collect/LinkedListMultimap.java b/android/guava/src/com/google/common/collect/LinkedListMultimap.java
+index 2677caa6b..366ebd753 100644
+--- a/android/guava/src/com/google/common/collect/LinkedListMultimap.java
++++ b/android/guava/src/com/google/common/collect/LinkedListMultimap.java
+@@ -123,159 +123,159 @@ public class LinkedListMultimap<K, V> extends AbstractMultimap<K, V>
+ 
+     @Override
+     public K getKey() {
+       return key;
+     }
+ 
+     @Override
+     public V getValue() {
+       return value;
+     }
+ 
+     @Override
+     public V setValue(@Nullable V newValue) {
+       V result = value;
+       this.value = newValue;
+       return result;
+     }
+   }
+ 
+   private static class KeyList<K, V> {
+     Node<K, V> head;
+     Node<K, V> tail;
+     int count;
+ 
+     KeyList(Node<K, V> firstNode) {
+       this.head = firstNode;
+       this.tail = firstNode;
+       firstNode.previousSibling = null;
+       firstNode.nextSibling = null;
+       this.count = 1;
+     }
+   }
+ 
+   private transient Node<K, V> head; // the head for all keys
+   private transient Node<K, V> tail; // the tail for all keys
+   private transient Map<K, KeyList<K, V>> keyToKeyList;
+   private transient int size;
+ 
+   /*
+    * Tracks modifications to keyToKeyList so that addition or removal of keys invalidates
+    * preexisting iterators. This does *not* track simple additions and removals of values
+    * that are not the first to be added or last to be removed for their key.
+    */
+   private transient int modCount;
+ 
+   /**
+    * Creates a new, empty {@code LinkedListMultimap} with the default initial
+    * capacity.
+    */
+   public static <K, V> LinkedListMultimap<K, V> create() {
+-    return new LinkedListMultimap<K, V>();
++    return new LinkedListMultimap<>();
+   }
+ 
+   /**
+    * Constructs an empty {@code LinkedListMultimap} with enough capacity to hold
+    * the specified number of keys without rehashing.
+    *
+    * @param expectedKeys the expected number of distinct keys
+    * @throws IllegalArgumentException if {@code expectedKeys} is negative
+    */
+   public static <K, V> LinkedListMultimap<K, V> create(int expectedKeys) {
+-    return new LinkedListMultimap<K, V>(expectedKeys);
++    return new LinkedListMultimap<>(expectedKeys);
+   }
+ 
+   /**
+    * Constructs a {@code LinkedListMultimap} with the same mappings as the
+    * specified {@code Multimap}. The new multimap has the same
+    * {@link Multimap#entries()} iteration order as the input multimap.
+    *
+    * @param multimap the multimap whose contents are copied to this multimap
+    */
+   public static <K, V> LinkedListMultimap<K, V> create(
+       Multimap<? extends K, ? extends V> multimap) {
+-    return new LinkedListMultimap<K, V>(multimap);
++    return new LinkedListMultimap<>(multimap);
+   }
+ 
+   LinkedListMultimap() {
+     keyToKeyList = Maps.newHashMap();
+   }
+ 
+   private LinkedListMultimap(int expectedKeys) {
+-    keyToKeyList = new HashMap<K, KeyList<K, V>>(expectedKeys);
++    keyToKeyList = new HashMap<>(expectedKeys);
+   }
+ 
+   private LinkedListMultimap(Multimap<? extends K, ? extends V> multimap) {
+     this(multimap.keySet().size());
+     putAll(multimap);
+   }
+ 
+   /**
+    * Adds a new node for the specified key-value pair before the specified
+    * {@code nextSibling} element, or at the end of the list if {@code
+    * nextSibling} is null. Note: if {@code nextSibling} is specified, it MUST be
+    * for an node for the same {@code key}!
+    */
+   @CanIgnoreReturnValue
+   private Node<K, V> addNode(@Nullable K key, @Nullable V value, @Nullable Node<K, V> nextSibling) {
+-    Node<K, V> node = new Node<K, V>(key, value);
++    Node<K, V> node = new Node<>(key, value);
+     if (head == null) { // empty list
+       head = tail = node;
+       keyToKeyList.put(key, new KeyList<K, V>(node));
+       modCount++;
+     } else if (nextSibling == null) { // non-empty list, add to tail
+       tail.next = node;
+       node.previous = tail;
+       tail = node;
+       KeyList<K, V> keyList = keyToKeyList.get(key);
+       if (keyList == null) {
+-        keyToKeyList.put(key, keyList = new KeyList<K, V>(node));
++        keyToKeyList.put(key, keyList = new KeyList<>(node));
+         modCount++;
+       } else {
+         keyList.count++;
+         Node<K, V> keyTail = keyList.tail;
+         keyTail.nextSibling = node;
+         node.previousSibling = keyTail;
+         keyList.tail = node;
+       }
+     } else { // non-empty list, insert before nextSibling
+       KeyList<K, V> keyList = keyToKeyList.get(key);
+       keyList.count++;
+       node.previous = nextSibling.previous;
+       node.previousSibling = nextSibling.previousSibling;
+       node.next = nextSibling;
+       node.nextSibling = nextSibling;
+       if (nextSibling.previousSibling == null) { // nextSibling was key head
+         keyToKeyList.get(key).head = node;
+       } else {
+         nextSibling.previousSibling.nextSibling = node;
+       }
+       if (nextSibling.previous == null) { // nextSibling was head
+         head = node;
+       } else {
+         nextSibling.previous.next = node;
+       }
+       nextSibling.previous = node;
+       nextSibling.previousSibling = node;
+     }
+     size++;
+     return node;
+   }
+ 
+   /**
+    * Removes the specified node from the linked list. This method is only
+    * intended to be used from the {@code Iterator} classes. See also {@link
+    * LinkedListMultimap#removeAllNodes(Object)}.
+    */
+   private void removeNode(Node<K, V> node) {
+     if (node.previous != null) {
+       node.previous.next = node.next;
+     } else { // node was head
+       head = node.next;
+     }
+     if (node.next != null) {
+       node.next.previous = node.previous;
+     } else { // node was tail
+       tail = node.previous;
+     }
+     if (node.previousSibling == null && node.nextSibling == null) {
+       KeyList<K, V> keyList = keyToKeyList.remove(node.key);
+@@ -772,85 +772,85 @@ public class LinkedListMultimap<K, V> extends AbstractMultimap<K, V>
+     return new ValuesImpl();
+   }
+ 
+   /**
+    * {@inheritDoc}
+    *
+    * <p>The iterator generated by the returned collection traverses the entries
+    * in the order they were added to the multimap. Because the entries may have
+    * duplicates and follow the insertion ordering, this method returns a {@link
+    * List}, instead of the {@link Collection} specified in the {@link
+    * ListMultimap} interface.
+    *
+    * <p>An entry's {@link Entry#getKey} method always returns the same key,
+    * regardless of what happens subsequently. As long as the corresponding
+    * key-value mapping is not removed from the multimap, {@link Entry#getValue}
+    * returns the value from the multimap, which may change over time, and {@link
+    * Entry#setValue} modifies that value. Removing the mapping from the
+    * multimap does not alter the value returned by {@code getValue()}, though a
+    * subsequent {@code setValue()} call won't update the multimap but will lead
+    * to a revised value being returned by {@code getValue()}.
+    */
+   @Override
+   public List<Entry<K, V>> entries() {
+     return (List<Entry<K, V>>) super.entries();
+   }
+ 
+   @Override
+   List<Entry<K, V>> createEntries() {
+     @WeakOuter
+     class EntriesImpl extends AbstractSequentialList<Entry<K, V>> {
+       @Override
+       public int size() {
+         return size;
+       }
+ 
+       @Override
+       public ListIterator<Entry<K, V>> listIterator(int index) {
+         return new NodeIterator(index);
+       }
+     }
+     return new EntriesImpl();
+   }
+ 
+   @Override
+   Iterator<Entry<K, V>> entryIterator() {
+     throw new AssertionError("should never be called");
+   }
+ 
+   @Override
+   Map<K, Collection<V>> createAsMap() {
+-    return new Multimaps.AsMap<K, V>(this);
++    return new Multimaps.AsMap<>(this);
+   }
+ 
+   /**
+    * @serialData the number of distinct keys, and then for each distinct key:
+    *     the first key, the number of values for that key, and the key's values,
+    *     followed by successive keys and values from the entries() ordering
+    */
+   @GwtIncompatible // java.io.ObjectOutputStream
+   private void writeObject(ObjectOutputStream stream) throws IOException {
+     stream.defaultWriteObject();
+     stream.writeInt(size());
+     for (Entry<K, V> entry : entries()) {
+       stream.writeObject(entry.getKey());
+       stream.writeObject(entry.getValue());
+     }
+   }
+ 
+   @GwtIncompatible // java.io.ObjectInputStream
+   private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+     stream.defaultReadObject();
+     keyToKeyList = Maps.newLinkedHashMap();
+     int size = stream.readInt();
+     for (int i = 0; i < size; i++) {
+       @SuppressWarnings("unchecked") // reading data stored by writeObject
+       K key = (K) stream.readObject();
+       @SuppressWarnings("unchecked") // reading data stored by writeObject
+       V value = (V) stream.readObject();
+       put(key, value);
+     }
+   }
+ 
+   @GwtIncompatible // java serialization not supported
+   private static final long serialVersionUID = 0;
+ }

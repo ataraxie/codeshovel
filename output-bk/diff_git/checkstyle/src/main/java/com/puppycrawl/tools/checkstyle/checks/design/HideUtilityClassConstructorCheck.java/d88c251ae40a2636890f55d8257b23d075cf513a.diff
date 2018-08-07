@@ -1,0 +1,80 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/HideUtilityClassConstructorCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/HideUtilityClassConstructorCheck.java
+index dcf145c57..b48bbf08d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/HideUtilityClassConstructorCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/HideUtilityClassConstructorCheck.java
+@@ -143,74 +143,74 @@ public class HideUtilityClassConstructorCheck extends Check {
+         }
+ 
+         /**
+          * getter
+          * @return boolean
+          */
+         public boolean isHasNonPrivateStaticMethodOrField() {
+             return hasNonPrivateStaticMethodOrField;
+         }
+ 
+         /**
+          * getter
+          * @return boolean
+          */
+         public boolean isHasDefaultCtor() {
+             return hasDefaultCtor;
+         }
+ 
+         /**
+          * getter
+          * @return boolean
+          */
+         public boolean isHasPublicCtor() {
+             return hasPublicCtor;
+         }
+ 
+         /**
+          *  main method to gather statistics
+          */
+         public void invoke() {
+             final DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);
+             DetailAST child = objBlock.getFirstChild();
+             hasMethodOrField = false;
+             hasNonStaticMethodOrField = false;
+             hasNonPrivateStaticMethodOrField = false;
+             hasDefaultCtor = true;
+             hasPublicCtor = false;
+ 
+             while (child != null) {
+                 final int type = child.getType();
+                 if (type == TokenTypes.METHOD_DEF
+                         || type == TokenTypes.VARIABLE_DEF) {
+                     hasMethodOrField = true;
+                     final DetailAST modifiers =
+                         child.findFirstToken(TokenTypes.MODIFIERS);
+                     final boolean isStatic =
+                         modifiers.branchContains(TokenTypes.LITERAL_STATIC);
+                     final boolean isPrivate =
+                         modifiers.branchContains(TokenTypes.LITERAL_PRIVATE);
+ 
+-                    if (!isStatic && !isPrivate) {
++                    if (!isStatic) {
+                         hasNonStaticMethodOrField = true;
+                     }
+                     if (isStatic && !isPrivate) {
+                         hasNonPrivateStaticMethodOrField = true;
+                     }
+                 }
+                 if (type == TokenTypes.CTOR_DEF) {
+                     hasDefaultCtor = false;
+                     final DetailAST modifiers =
+                         child.findFirstToken(TokenTypes.MODIFIERS);
+                     if (!modifiers.branchContains(TokenTypes.LITERAL_PRIVATE)
+                         && !modifiers.branchContains(TokenTypes.LITERAL_PROTECTED)) {
+                         // treat package visible as public
+                         // for the purpose of this Check
+                         hasPublicCtor = true;
+                     }
+ 
+                 }
+                 child = child.getNextSibling();
+             }
+         }
+     }
+ }

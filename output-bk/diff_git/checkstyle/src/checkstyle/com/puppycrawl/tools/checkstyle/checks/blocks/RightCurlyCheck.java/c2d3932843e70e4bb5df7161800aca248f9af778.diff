@@ -1,0 +1,106 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+index 5588a3887..31a2b9e84 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+@@ -100,99 +100,99 @@ public class RightCurlyCheck extends AbstractOptionCheck
+         DetailAST rcurly;
+         DetailAST lcurly;
+         DetailAST nextToken;
+         boolean shouldCheckLastRcurly = false;
+ 
+         switch (aAST.getType()) {
+         case TokenTypes.LITERAL_TRY:
+             lcurly = (DetailAST) aAST.getFirstChild();
+             nextToken = (DetailAST) lcurly.getNextSibling();
+             rcurly = lcurly.getLastChild();
+             break;
+         case TokenTypes.LITERAL_CATCH:
+             nextToken = (DetailAST) aAST.getNextSibling();
+             lcurly = aAST.getLastChild();
+             rcurly = lcurly.getLastChild();
+             if (nextToken == null) {
+                 shouldCheckLastRcurly = true;
+                 nextToken = getNextToken(aAST);
+             }
+             break;
+         case TokenTypes.LITERAL_IF:
+             nextToken = aAST.findFirstToken(TokenTypes.LITERAL_ELSE);
+             if (nextToken != null) {
+                 lcurly = nextToken.getPreviousSibling();
+                 rcurly = lcurly.getLastChild();
+             }
+             else {
+                 shouldCheckLastRcurly = true;
+                 nextToken = getNextToken(aAST);
+                 lcurly = aAST.getLastChild();
+                 rcurly = lcurly.getLastChild();
+             }
+             break;
+         case TokenTypes.LITERAL_ELSE:
+             shouldCheckLastRcurly = true;
+             nextToken = getNextToken(aAST);
+             lcurly = (DetailAST) aAST.getFirstChild();
+             rcurly = lcurly.getLastChild();
+             break;
+         case TokenTypes.LITERAL_FINALLY:
+             shouldCheckLastRcurly = true;
+             nextToken = getNextToken(aAST);
+             lcurly = (DetailAST) aAST.getFirstChild();
+             rcurly = lcurly.getLastChild();
+             break;
+         default:
+             throw new RuntimeException("Unexpected token type ("
+                     + TokenTypes.getTokenName(aAST.getType()) + ")");
+         }
+ 
+-        if (rcurly == null || rcurly.getType() != TokenTypes.RCURLY) {
++        if ((rcurly == null) || (rcurly.getType() != TokenTypes.RCURLY)) {
+             // we need to have both tokens to perform the check
+             return;
+         }
+ 
+         if (shouldCheckLastRcurly) {
+             if (rcurly.getLineNo() == nextToken.getLineNo()) {
+                 log(rcurly, "line.alone", "}");
+             }
+         }
+         else if ((getAbstractOption() == RightCurlyOption.SAME)
+             && (rcurly.getLineNo() != nextToken.getLineNo()))
+         {
+             log(rcurly, "line.same", "}");
+         }
+         else if ((getAbstractOption() == RightCurlyOption.ALONE)
+                  && (rcurly.getLineNo() == nextToken.getLineNo()))
+         {
+             log(rcurly, "line.alone", "}");
+         }
+ 
+         if (!mShouldStartLine) {
+             return;
+         }
+         final boolean startsLine =
+             Utils.whitespaceBefore(rcurly.getColumnNo(),
+                                    getLines()[rcurly.getLineNo() - 1]);
+ 
+         if (!startsLine && (lcurly.getLineNo() != rcurly.getLineNo())) {
+             log(rcurly, "line.new", "}");
+         }
+     }
+ 
+     /**
+      * Finds next token after the given one.
+      * @param aAST the given node.
+      * @return the token which represents next lexical item.
+      */
+     private DetailAST getNextToken(DetailAST aAST)
+     {
+         DetailAST next = null;
+         DetailAST parent = aAST;
+-        while (parent != null && next == null) {
++        while ((parent != null) && (next == null)) {
+             next = (DetailAST) parent.getNextSibling();
+             parent = parent.getParent();
+         }
+         return CheckUtils.getFirstNode(next);
+     }
+ }

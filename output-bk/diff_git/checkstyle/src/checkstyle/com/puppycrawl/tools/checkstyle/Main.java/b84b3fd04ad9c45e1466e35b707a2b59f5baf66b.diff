@@ -1,0 +1,118 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+index 6afd4153b..6202af258 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+@@ -53,109 +53,104 @@ public final class Main
+         final ArrayList files = new ArrayList();
+         for (int i = 0; i < aArgs.length; i++) {
+             if ("-f".equals(aArgs[i])) {
+                 format = aArgs[++i];
+             }
+             else if ("-o".equals(aArgs[i])) {
+                 output = aArgs[++i];
+             }
+             else if ("-r".equals(aArgs[i])) {
+                 traverse(new File(aArgs[++i]), files);
+             }
+             else if ("-p".equals(aArgs[i])) {
+                 properties = loadProperties(new File(aArgs[++i]));
+             }
+             else {
+                 files.add(aArgs[i]);
+             }
+         }
+ 
+         // create the appropriate listener
+         OutputStream out = System.out;
+         boolean closeOut = false;
+         if (output != null) {
+             try {
+                 out = new FileOutputStream(output);
+                 closeOut = true;
+             }
+             catch (FileNotFoundException e) {
+                 System.out.println("Could not find file: '" + output + "'");
+                 System.exit(1);
+             }
+         }
+         AuditListener listener = null;
+         if ("xml".equals(format)) {
+             listener = new XMLLogger(out, closeOut);
+         }
+         else if ("plain".equals(format)) {
+             listener = new DefaultLogger(out, closeOut);
+         }
+         else {
+             System.out.println("Invalid format: (" + format
+                                + "). Must be 'plain' or 'xml'.");
+             usage();
+         }
+ 
+         Checker c = null;
+         try {
+             c = new Checker(new Configuration(properties, System.out));
+             c.addListener(listener);
+         }
+-        catch (RESyntaxException rese) {
+-            System.out.println("Unable to create an regexp object: "
+-                               + rese.getMessage());
+-            rese.printStackTrace(System.out);
+-            System.exit(1);
+-        }
+-        catch (IOException ex) {
+-            System.out.println("I/O error occurred: " + ex.getMessage());
+-            ex.printStackTrace(System.out);
++        catch (Exception e) {
++            System.out.println("Unable to create Checker: "
++                               + e.getMessage());
++            e.printStackTrace(System.out);
+             System.exit(1);
+         }
+ 
+         final int numErrs =
+             c.process((String[]) files.toArray(new String[files.size()]));
+         c.destroy();
+         System.exit(numErrs);
+     }
+ 
+     /** Prints the usage information. **/
+     private static void usage()
+     {
+         System.out.println(
+             "Usage: java " + Main.class.getName() + " <options> <file>......");
+         System.out.println("Options");
+         System.out.println(
+             "\t-f <format>\tsets output format. (plain|xml). "
+             + "Default to plain.");
+         System.out.println("\t-o <file>\tsets output file name. "
+                            + "Defaults to stdout");
+         System.out.println("\t-r <dir>\ttraverses the directory for Java"
+                            + " source files.");
+         System.out.println("\t-p <file>\tuses a properties file"
+                            + " instead of the system properties.");
+         System.exit(1);
+     }
+ 
+     /**
+      * Traverses a specified node looking for Java source files. Found Java
+      * source files are added to a specified list. Subdirectories are also
+      * traversed.
+      *
+      * @param aNode the node to process
+      * @param aFiles list to add found files to
+      */
+     private static void traverse(File aNode, List aFiles)
+     {
+         if (aNode.canRead()) {
+             if (aNode.isDirectory()) {
+                 final File[] nodes = aNode.listFiles();
+                 for (int i = 0; i < nodes.length; i++) {
+                     traverse(nodes[i], aFiles);
+                 }
+             }
+             else if (aNode.isFile() && aNode.getPath().endsWith(".java")) {
+                 aFiles.add(aNode.getPath());
+             }
+         }
+     }
+ 

@@ -1,0 +1,104 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MethodCountCheck.java",
+  "functionName": "increment",
+  "functionId": "increment___scope-Scope",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodCountCheck.java",
+  "functionStartLine": 269,
+  "functionEndLine": 277,
+  "changeHistory": [
+    "e04cbbf23e9273cca31b1cc12142e34fae753542",
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "94ea38f6cf5179e6e9998b864664df32349e42e9",
+    "45b1afd66692e017852016b7148c44ee4760f5d6",
+    "afa1c0d8cd66b51f02b750594cbb9c9855e3e74a"
+  ],
+  "changeHistoryShort": {
+    "e04cbbf23e9273cca31b1cc12142e34fae753542": "Ymodifierchange",
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "94ea38f6cf5179e6e9998b864664df32349e42e9": "Yfilerename",
+    "45b1afd66692e017852016b7148c44ee4760f5d6": "Ybodychange",
+    "afa1c0d8cd66b51f02b750594cbb9c9855e3e74a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e04cbbf23e9273cca31b1cc12142e34fae753542": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Issue #957: Decrease visibility of package-private methods\n",
+      "commitDate": 1444773208000,
+      "commitName": "e04cbbf23e9273cca31b1cc12142e34fae753542",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1441051115000,
+      "commitNameOld": "49a0ee81710e0c43ed06a01f1d64ac7f5598a934",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 43.08,
+      "commitsBetweenForRepo": 304,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n-        void increment(Scope scope) {\n+        private void increment(Scope scope) {\n             total++;\n             if (inInterface) {\n                 counts.put(Scope.PUBLIC, 1 + value(Scope.PUBLIC));\n             }\n             else {\n                 counts.put(scope, 1 + value(scope));\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "3fec4a92e39afc5b68b03c5fd023cb8d13408385": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, sizes, #512\n",
+      "commitDate": 1421677310000,
+      "commitName": "3fec4a92e39afc5b68b03c5fd023cb8d13408385",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "94ea38f6cf5179e6e9998b864664df32349e42e9": {
+      "type": "Yfilerename",
+      "commitMessage": "Move to a better home. It is a better fit.\n",
+      "commitDate": 1285894042000,
+      "commitName": "94ea38f6cf5179e6e9998b864664df32349e42e9",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1285892858000,
+      "commitNameOld": "5c6e03a868c0f756ccd3bb9b796febbbbf25bd4e",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "45b1afd66692e017852016b7148c44ee4760f5d6": {
+      "type": "Ybodychange",
+      "commitMessage": "Wrote the unit tests, and found a potential bug. Well worth it :-)\n",
+      "commitDate": 1285849375000,
+      "commitName": "45b1afd66692e017852016b7148c44ee4760f5d6",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1285830565000,
+      "commitNameOld": "5320065461ca38393ab2402c7402cc8f65c331d4",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.22,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,10 @@\n         void increment(Scope aScope)\n         {\n-            mCounts.put(aScope, 1 + value(aScope));\n+            mTotal++;\n+            if (mInInterface) {\n+                mCounts.put(Scope.PUBLIC, 1 + value(Scope.PUBLIC));\n+            }\n+            else {\n+                mCounts.put(aScope, 1 + value(aScope));\n+            }\n         }\n\\ No newline at end of file\n"
+    },
+    "afa1c0d8cd66b51f02b750594cbb9c9855e3e74a": {
+      "type": "Yintroduced",
+      "commitMessage": "Record a first cut.\n",
+      "commitDate": 1285827639000,
+      "commitName": "afa1c0d8cd66b51f02b750594cbb9c9855e3e74a",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "Iterators.java",
+  "functionName": "consumingForArray",
+  "functionId": "consumingForArray___elements-T",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/Iterators.java",
+  "functionStartLine": 451,
+  "functionEndLine": 471,
+  "changeHistory": [
+    "4068f7b94c63ffd1d81636be79c42542876c8fd6"
+  ],
+  "changeHistoryShort": {
+    "4068f7b94c63ffd1d81636be79c42542876c8fd6": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4068f7b94c63ffd1d81636be79c42542876c8fd6": {
+      "type": "Yintroduced",
+      "commitMessage": "Roll forward of [] going back to exactly the original semantics while we\u0027re at it.\n\n*** Reason for rollback ***\n\nFixed the targets that were really broken deep down, but we also reverted the slight semantics change that exposed the issues.  I think the changed semantics were fine, but I don\u0027t think it\u0027s important enough to make a fuss.\n\nNew effects on IterablesProGuard:\n95045 bytes \u003d\u003e 94834 bytes\n53 classes \u003d\u003e 52 classes\n265 methods \u003d\u003e 263 methods\n\nAdditionally, added IterablesAllocationTest, which measures the actual effects of this optimization.\n\nWalking concat(collection1, collection2) changed from requiring 13 allocations to requiring 8.\nWalking concat(concat(c1, c2), concat(c3, c4)) changed from requiring 41 allocations to requiring 22.\n\n*** Original change description ***\n\nAutomated g4 rollback of changelist 156329581.\n\n*** Reason for rollback ***\n\nBroke some tests.  (I think they\u0027re doing something that should\u0027ve failed and this just revealed the error, but I\u0027m still attempting to discern what really happened.)\n\n*** Original change description ***\n\nSimplify Iterators.concat and optimize it for minimizing allocations, while preserving the smart behavior for nested Iterators.concats.\n\nEffects on IterablesProGuard:\n97559 bytes \u003d\u003e 95471 bytes\n57 classes \u003d\u003e 54 class...\n\n***\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d156493253\n",
+      "commitDate": 1495206622000,
+      "commitName": "4068f7b94c63ffd1d81636be79c42542876c8fd6",
+      "commitAuthor": "lowasser"
+    }
+  }
+}

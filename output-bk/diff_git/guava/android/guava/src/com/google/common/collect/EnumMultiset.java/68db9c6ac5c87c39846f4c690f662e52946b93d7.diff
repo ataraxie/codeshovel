@@ -1,0 +1,109 @@
+diff --git a/android/guava/src/com/google/common/collect/EnumMultiset.java b/android/guava/src/com/google/common/collect/EnumMultiset.java
+index 696c6181c..d1c50046d 100644
+--- a/android/guava/src/com/google/common/collect/EnumMultiset.java
++++ b/android/guava/src/com/google/common/collect/EnumMultiset.java
+@@ -122,101 +122,103 @@ public final class EnumMultiset<E extends Enum<E>> extends AbstractMultiset<E>
+ 
+   @Override
+   public int size() {
+     return Ints.saturatedCast(size);
+   }
+ 
+   @Override
+   public int count(@Nullable Object element) {
+     if (element == null || !isActuallyE(element)) {
+       return 0;
+     }
+     Enum<?> e = (Enum<?>) element;
+     return counts[e.ordinal()];
+   }
+ 
+   // Modification Operations
+   @CanIgnoreReturnValue
+   @Override
+   public int add(E element, int occurrences) {
+     checkIsE(element);
+     checkNonnegative(occurrences, "occurrences");
+     if (occurrences == 0) {
+       return count(element);
+     }
+     int index = element.ordinal();
+     int oldCount = counts[index];
+     long newCount = (long) oldCount + occurrences;
+     checkArgument(newCount <= Integer.MAX_VALUE, "too many occurrences: %s", newCount);
+     counts[index] = (int) newCount;
+     if (oldCount == 0) {
+       distinctElements++;
+     }
+     size += occurrences;
+     return oldCount;
+   }
+ 
+   // Modification Operations
+   @CanIgnoreReturnValue
+   @Override
+   public int remove(@Nullable Object element, int occurrences) {
+     if (element == null || !isActuallyE(element)) {
+       return 0;
+     }
+     Enum<?> e = (Enum<?>) element;
+     checkNonnegative(occurrences, "occurrences");
+     if (occurrences == 0) {
+       return count(element);
+     }
+     int index = e.ordinal();
+     int oldCount = counts[index];
+-    if (oldCount <= occurrences) {
++    if (oldCount == 0) {
++      return 0;
++    } else if (oldCount <= occurrences) {
+       counts[index] = 0;
+       distinctElements--;
+       size -= oldCount;
+     } else {
+       counts[index] = oldCount - occurrences;
+       size -= occurrences;
+     }
+     return oldCount;
+   }
+ 
+   // Modification Operations
+   @CanIgnoreReturnValue
+   @Override
+   public int setCount(E element, int count) {
+     checkIsE(element);
+     checkNonnegative(count, "count");
+     int index = element.ordinal();
+     int oldCount = counts[index];
+     counts[index] = count;
+     size += count - oldCount;
+     if (oldCount == 0 && count > 0) {
+       distinctElements++;
+     } else if (oldCount > 0 && count == 0) {
+       distinctElements--;
+     }
+     return oldCount;
+   }
+ 
+   @Override
+   public void clear() {
+     Arrays.fill(counts, 0);
+     size = 0;
+     distinctElements = 0;
+   }
+ 
+   abstract class Itr<T> implements Iterator<T> {
+     int index = 0;
+     int toRemove = -1;
+ 
+     abstract T output(int index);
+ 
+     @Override
+     public boolean hasNext() {
+       for (; index < enumConstants.length; index++) {
+         if (counts[index] > 0) {
+           return true;
+         }
+       }
+       return false;
+     }

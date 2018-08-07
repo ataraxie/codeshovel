@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+index 95f680827..342d2b7ff 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+@@ -292,101 +292,101 @@ public class JavaNCSSCheck extends Check {
+         boolean countable = true;
+ 
+         final int tokenType = ast.getType();
+ 
+         //check if an expression is countable
+         if (tokenType == TokenTypes.EXPR) {
+             countable = isExpressionCountable(ast);
+         }
+         //check if an variable definition is countable
+         else if (tokenType == TokenTypes.VARIABLE_DEF) {
+             countable = isVariableDefCountable(ast);
+         }
+         return countable;
+     }
+ 
+     /**
+      * Checks if a variable definition is countable.
+      *
+      * @param ast the AST
+      * @return true if the variable definition is countable, false otherwise
+      */
+     private static boolean isVariableDefCountable(DetailAST ast) {
+         boolean countable = false;
+ 
+         //count variable definitions only if they are direct child to a slist or
+         // object block
+         final int parentType = ast.getParent().getType();
+ 
+         if (parentType == TokenTypes.SLIST
+             || parentType == TokenTypes.OBJBLOCK) {
+             final DetailAST prevSibling = ast.getPreviousSibling();
+ 
+             //is countable if no previous sibling is found or
+             //the sibling is no COMMA.
+             //This is done because multiple assignment on one line are counted
+             // as 1
+             countable = prevSibling == null
+                     || prevSibling.getType() != TokenTypes.COMMA;
+         }
+ 
+         return countable;
+     }
+ 
+     /**
+      * Checks if an expression is countable for the ncss metric.
+      *
+      * @param ast the AST
+      * @return true if the expression is countable, false otherwise
+      */
+     private static boolean isExpressionCountable(DetailAST ast) {
+-        boolean countable;
++        final boolean countable;
+ 
+         //count expressions only if they are direct child to a slist (method
+         // body, for loop...)
+         //or direct child of label,if,else,do,while,for
+         final int parentType = ast.getParent().getType();
+         switch (parentType) {
+             case TokenTypes.SLIST :
+             case TokenTypes.LABELED_STAT :
+             case TokenTypes.LITERAL_FOR :
+             case TokenTypes.LITERAL_DO :
+             case TokenTypes.LITERAL_WHILE :
+             case TokenTypes.LITERAL_IF :
+             case TokenTypes.LITERAL_ELSE :
+                 //don't count if or loop conditions
+                 final DetailAST prevSibling = ast.getPreviousSibling();
+                 countable = prevSibling == null
+                     || prevSibling.getType() != TokenTypes.LPAREN;
+                 break;
+             default :
+                 countable = false;
+                 break;
+         }
+         return countable;
+     }
+ 
+     /**
+      * Class representing a counter.
+      *
+      * @author Lars Ködderitzsch
+      */
+     private static class Counter {
+         /** The counters internal integer. */
+         private int count;
+ 
+         /**
+          * Increments the counter.
+          */
+         public void increment() {
+             count++;
+         }
+ 
+         /**
+          * Gets the counters value.
+          *
+          * @return the counter
+          */
+         public int getCount() {
+             return count;
+         }
+     }

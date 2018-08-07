@@ -1,0 +1,123 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index 492f8e5f5..f53369601 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -112,116 +112,116 @@ public class JavadocStyleCheck
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+             TokenTypes.PACKAGE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (shouldCheck(ast)) {
+             final FileContents contents = getFileContents();
+             // Need to start searching for the comment before the annotations
+             // that may exist. Even if annotations are not defined on the
+             // package, the ANNOTATIONS AST is defined.
+             final TextBlock cmt =
+                 contents.getJavadocBefore(ast.getFirstChild().getLineNo());
+ 
+             checkComment(ast, cmt);
+         }
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param ast a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST ast) {
+         if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+             return getFileContents().inPackageInfo();
+         }
+ 
+-        if (ScopeUtils.inCodeBlock(ast)) {
++        if (ScopeUtils.isInCodeBlock(ast)) {
+             return false;
+         }
+ 
+         final Scope declaredScope;
+         if (ast.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+             declaredScope = Scope.PUBLIC;
+         }
+         else {
+             declaredScope = ScopeUtils.getScopeFromMods(
+                 ast.findFirstToken(TokenTypes.MODIFIERS));
+         }
+ 
+         final Scope customScope;
+ 
+-        if (ScopeUtils.inInterfaceOrAnnotationBlock(ast)) {
++        if (ScopeUtils.isInInterfaceOrAnnotationBlock(ast)) {
+             customScope = Scope.PUBLIC;
+         }
+         else {
+             customScope = declaredScope;
+         }
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(ast);
+ 
+         return customScope.isIn(scope)
+             && (surroundingScope == null || surroundingScope.isIn(scope))
+             && (excludeScope == null
+                 || !customScope.isIn(excludeScope)
+                 || surroundingScope != null
+                 && !surroundingScope.isIn(excludeScope));
+     }
+ 
+     /**
+      * Performs the various checks agains the Javadoc comment.
+      *
+      * @param ast the AST of the element being documented
+      * @param comment the source lines that make up the Javadoc comment.
+      *
+      * @see #checkFirstSentenceEnding(DetailAST, TextBlock)
+      * @see #checkHtmlTags(DetailAST, TextBlock)
+      */
+     private void checkComment(final DetailAST ast, final TextBlock comment) {
+         if (comment == null) {
+             /*checking for missing docs in JavadocStyleCheck is not consistent
+             with the rest of CheckStyle...  Even though, I didn't think it
+             made sense to make another csheck just to ensure that the
+             package-info.java file actually contains package Javadocs.*/
+             if (getFileContents().inPackageInfo()) {
+                 log(ast.getLineNo(), JAVADOC_MISSING);
+             }
+             return;
+         }
+ 
+         if (checkFirstSentence) {
+             checkFirstSentenceEnding(ast, comment);
+         }
+ 
+         if (checkHtml) {
+             checkHtmlTags(ast, comment);
+         }
+ 
+         if (checkEmptyJavadoc) {
+             checkJavadocIsNotEmpty(comment);
+         }
+     }
+ 
+     /**

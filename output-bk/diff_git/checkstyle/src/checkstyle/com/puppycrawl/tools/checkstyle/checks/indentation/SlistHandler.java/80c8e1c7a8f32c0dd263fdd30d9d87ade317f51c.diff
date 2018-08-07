@@ -1,0 +1,115 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java
+index 1e05d07fa..8e54338e6 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java
+@@ -23,108 +23,106 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Handler for a list of statements.
+  *
+  * @author jrichard
+  */
+ public class SlistHandler extends BlockParentHandler
+ {
+     /**
+      * Construct an instance of this handler with the given indentation check,
+      * abstract syntax tree, and parent handler.
+      *
+      * @param aIndentCheck   the indentation check
+      * @param aAst           the abstract syntax tree
+      * @param aParent        the parent handler
+      */
+     public SlistHandler(IndentationCheck aIndentCheck,
+         DetailAST aAst, ExpressionHandler aParent)
+     {
+         super(aIndentCheck, "block", aAst, aParent);
+     }
+ 
+     /**
+      * Indentation level suggested for a child element. Children don't have
+      * to respect this, but most do.
+      *
+      * @param aChild  child AST (so suggestion level can differ based on child
+      *                  type)
+      *
+      * @return suggested indentation for child
+      */
+     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)
+     {
+         // this is:
+         //  switch (var) {
+         //     case 3: {
+         //        break;
+         //     }
+         //  }
+         //  ... the case SLIST is followed by a user-created SLIST and
+         //  preceded by a switch
+ 
+         // if our parent is a block handler we want to be transparent
+         if ((getParent() instanceof BlockParentHandler
+                 && !(getParent() instanceof SlistHandler))
+             || (getParent() instanceof CaseHandler
+                 && aChild instanceof SlistHandler))
+         {
+             return getParent().suggestedChildLevel(aChild);
+         }
+-        else {
+-            return super.suggestedChildLevel(aChild);
+-        }
++        return super.suggestedChildLevel(aChild);
+     }
+ 
+     /**
+      * Get the child element that is not a list of statements.
+-     *
++     * 
+      * @return the non-list child element
+      */
+     protected DetailAST getNonlistChild()
+     {
+         // blocks always have either block children or they are transparent
+         // and aren't checking children at all.  In the later case, the
+         // superclass will want to check single children, so when it
+         // does tell it we have none.
+         return null;
+     }
+ 
+     /**
+      * Get the child element representing the list of statements.
+      *
+      * @return the statement list child
+      */
+     protected DetailAST getListChild()
+     {
+         return getMainAst();
+     }
+ 
+     /**
+      * Get the left curly brace portion of the expression we are handling.
+      *
+      * @return the left curly brace expression
+      */
+     protected DetailAST getLCurly()
+     {
+         return getMainAst();
+     }
+ 
+     /**
+      * Get the right curly brace portion of the expression we are handling.
+      *
+      * @return the right curly brace expression
+      */
+     protected DetailAST getRCurly()
+     {
+         return getMainAst().findFirstToken(TokenTypes.RCURLY);
+     }
+ 
+     /**
+      * There is no top level expression for this handler.
+      *
+      * @return null
+      */
+     protected DetailAST getToplevelAST()
+     {
+         return null;
+     }

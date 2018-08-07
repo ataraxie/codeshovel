@@ -1,0 +1,70 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
+index 0a33cd6fb..c5c4ec07e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
+@@ -341,51 +341,65 @@ public class TokenTypes
+     // The interesting code goes here
+     ////////////////////////////////////////////////////////////////////////
+ 
+     /** maps from a token name to value */
+     private static final Map TOKEN_NAME_TO_VALUE = new HashMap();
+     /** maps from a token value to name */
+     private static final Map TOKEN_VALUE_TO_NAME = new HashMap();
+ 
+     // initialise the constants
+     static {
+         final Field[] fields = TokenTypes.class.getDeclaredFields();
+         for (int i = 0; i < fields.length; i++) {
+             final Field f = fields[i];
+ 
+             // Only process the int declarations.
+             if (f.getType() != Integer.TYPE) {
+                 continue;
+             }
+ 
+             final String name = f.getName();
+             try {
+                 // this should NEVER fail (famous last words)
+                 final Integer value = new Integer(f.getInt(name));
+                 TOKEN_NAME_TO_VALUE.put(name, value);
+                 TOKEN_VALUE_TO_NAME.put(value, name);
+             }
+             catch (IllegalArgumentException e) {
+                 e.printStackTrace();
+                 System.exit(1);
+             }
+             catch (IllegalAccessException e) {
+                 e.printStackTrace();
+                 System.exit(1);
+             }
+         }
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param aID the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int aID)
+     {
+         final String name = (String) TOKEN_VALUE_TO_NAME.get(new Integer(aID));
+         if (name == null) {
+             throw new IllegalArgumentException("given id " + aID);
+         }
+         return name;
+     }
++
++    /**
++     * Returns the ID of a token for a given name.
++     * @param aName the name of the token ID to get
++     * @return a token ID
++     */
++    public static int getTokenId(String aName)
++    {
++        final Integer id = (Integer) TOKEN_NAME_TO_VALUE.get(aName);
++        if (id == null) {
++            throw new IllegalArgumentException("given name " + aName);
++        }
++        return id.intValue();
++    }
+ }

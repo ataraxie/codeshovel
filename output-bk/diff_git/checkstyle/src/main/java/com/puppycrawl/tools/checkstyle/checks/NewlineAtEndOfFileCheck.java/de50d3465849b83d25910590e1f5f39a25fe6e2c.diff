@@ -1,0 +1,81 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java
+index d75944541..460c6e098 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java
+@@ -76,64 +76,68 @@ public class NewlineAtEndOfFileCheck
+ 
+     @Override
+     protected void processFiltered(File file, List<String> lines) {
+         // Cannot use lines as the line separators have been removed!
+         try {
+             final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+             boolean threw = true;
+             try {
+                 if (!endsWithNewline(randomAccessFile)) {
+                     log(0, MSG_KEY_NO_NEWLINE_EOF, file.getPath());
+                 }
+                 threw = false;
+             }
+             finally {
+                 Closeables.close(randomAccessFile, threw);
+             }
+         }
+         catch (final IOException ignored) {
+             log(0, MSG_KEY_UNABLE_OPEN, file.getPath());
+         }
+     }
+ 
+     /**
+      * Sets the line separator to one of 'crlf', 'lf','cr', 'lf_cr_crlf' or 'system'.
+      *
+      * @param lineSeparatorParam The line separator to set
+      * @throws IllegalArgumentException If the specified line separator is not
+      *         one of 'crlf', 'lf', 'cr', 'lf_cr_crlf' or 'system'
+      */
+     public void setLineSeparator(String lineSeparatorParam) {
+         try {
+             lineSeparator =
+                 Enum.valueOf(LineSeparatorOption.class, lineSeparatorParam.trim()
+                     .toUpperCase(Locale.ENGLISH));
+         }
+         catch (IllegalArgumentException iae) {
+             throw new IllegalArgumentException("unable to parse " + lineSeparatorParam, iae);
+         }
+     }
+ 
+     /**
+      * Checks whether the content provided by the Reader ends with the platform
+      * specific line separator.
+      * @param randomAccessFile The reader for the content to check
+      * @return boolean Whether the content ends with a line separator
+      * @throws IOException When an IO error occurred while reading from the
+      *         provided reader
+      */
+     private boolean endsWithNewline(RandomAccessFile randomAccessFile)
+             throws IOException {
++        final boolean result;
+         final int len = lineSeparator.length();
+         if (randomAccessFile.length() < len) {
+-            return false;
++            result = false;
+         }
+-        randomAccessFile.seek(randomAccessFile.length() - len);
+-        final byte[] lastBytes = new byte[len];
+-        final int readBytes = randomAccessFile.read(lastBytes);
+-        if (readBytes != len) {
+-            throw new IOException("Unable to read " + len + " bytes, got "
+-                    + readBytes);
++        else {
++            randomAccessFile.seek(randomAccessFile.length() - len);
++            final byte[] lastBytes = new byte[len];
++            final int readBytes = randomAccessFile.read(lastBytes);
++            if (readBytes != len) {
++                throw new IOException("Unable to read " + len + " bytes, got "
++                        + readBytes);
++            }
++            result = lineSeparator.matches(lastBytes);
+         }
+-        return lineSeparator.matches(lastBytes);
++        return result;
+     }
+ }

@@ -1,0 +1,307 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index 97c083575..400d08b2a 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -1,85 +1,86 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2003  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.javadoc;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.Scope;
+ import com.puppycrawl.tools.checkstyle.api.ScopeUtils;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.Utils;
+ import com.puppycrawl.tools.checkstyle.checks.AbstractTypeAwareCheck;
+-import com.puppycrawl.tools.checkstyle.checks.ClassResolver;
++
+ import java.util.ArrayList;
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.ListIterator;
+ import java.util.Set;
++
+ import org.apache.regexp.RE;
+ 
+ /**
+  * <p>
+  * Checks the Javadoc of a method or constructor.
+  * By default, does not check for unused throws.
+  * To allow documented <code>java.lang.RuntimeException</code>s
+  * that are not declared, set property allowUndeclaredRTE to true.
+  * The scope to verify is specified using the {@link Scope} class and
+  * defaults to {@link Scope#PRIVATE}. To verify another scope,
+  * set property scope to one of the {@link Scope} constants.
+  * </p>
+  * <p>
+  * Error messages about parameters for which no param tags are
+  * present can be suppressed by defining property
+  * <code>allowMissingParamTags</code>.
+  * Error messages about exceptions which are declared to be thrown,
+  * but for which no throws tag is present can be suppressed by
+  * defining property <code>allowMissingThrowsTags</code>.
+  * Error messages about methods which return non-void but for
+  * which no return tag is present can be suppressed by defining
+  * property <code>allowMissingReturnTag</code>.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="JavadocMethod"/&gt;
+  * </pre>
+  * <p> An example of how to configure the check to check to allow
+  * documentation of undeclared RuntimeExceptions
+  * and for the {@link Scope#PUBLIC} scope, while ignoring any missing
+  * param tags is:
+  *</p>
+  * <pre>
+  * &lt;module name="JavadocMethod"&gt;
+  *    &lt;property name="scope" value="public"/&gt;
+  *    &lt;property name="allowUndeclaredRTE" value="true"/&gt;
+  *    &lt;property name="allowMissingParamTags" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author Oliver Burn
+  * @author Rick Giles
+  * @author o_sukhodoslky
+  * @version 1.1
+  */
+ public class JavadocMethodCheck
+     extends AbstractTypeAwareCheck
+ {
+@@ -523,163 +524,146 @@ public class JavadocMethodCheck
+      * @param aTags the tags to check
+      * @param aLineNo the line number of the expected tag
+      **/
+     private void checkReturnTag(List aTags, int aLineNo)
+     {
+         // Loop over tags finding return tags. After the first one, report an
+         // error.
+         boolean found = false;
+         final ListIterator it = aTags.listIterator();
+         while (it.hasNext()) {
+             final JavadocTag jt = (JavadocTag) it.next();
+             if (jt.isReturnTag()) {
+                 if (found) {
+                     log(jt.getLineNo(), "javadoc.return.duplicate");
+                 }
+                 found = true;
+                 it.remove();
+             }
+         }
+ 
+         // Handle there being no @return tags :- unless
+         // the user has chosen to suppress these problems
+         if (!found && !mAllowMissingReturnTag) {
+             log(aLineNo, "javadoc.return.expected");
+         }
+     }
+ 
+ 
+     /**
+      * Checks a set of tags for matching throws.
+      * @param aTags the tags to check
+      * @param aThrows the throws to check
+      **/
+     private void checkThrowsTags(List aTags, List aThrows)
+     {
+         // Loop over the tags, checking to see they exist in the throws.
+         final Set foundThrows = new HashSet(); //used for performance only
+         final ListIterator tagIt = aTags.listIterator();
+         while (tagIt.hasNext()) {
+             final JavadocTag tag = (JavadocTag) tagIt.next();
+ 
+             if (!tag.isThrowsTag()) {
+                 continue;
+             }
+ 
+             tagIt.remove();
+ 
+             // Loop looking for matching throw
+             final String documentedEx = tag.getArg1();
+             boolean found = foundThrows.contains(documentedEx);
++            Class documentedClass = null;
++            if (!found
++                && (mAllowThrowsTagsForSubclasses || mAllowUndeclaredRTE))
++            {
++                documentedClass = resolveClass(documentedEx);
++                if (documentedClass == null) {
++                    log(tag.getLineNo(), "javadoc.classInfo",
++                        "@throws", documentedEx);
++                }
++            }
++
+             final ListIterator throwIt = aThrows.listIterator();
+             while (!found && throwIt.hasNext()) {
+                 final ExceptionInfo ei = (ExceptionInfo) throwIt.next();
+-                final FullIdent fi = ei.getFullIdent();
++                final FullIdent fi = ei.getName();
+                 final String declaredEx = fi.getText();
+                 if (isSameType(declaredEx, documentedEx)) {
+                     found = true;
+                     ei.setFound();
+                     foundThrows.add(documentedEx);
+                 }
+-                else if (mAllowThrowsTagsForSubclasses) {
+-                    final ClassResolver cr = getClassResolver();
+-                    try {
+-                        final Class documentedClass = cr.resolve(documentedEx);
+-                        try {
+-                            final Class declaredClass = cr.resolve(declaredEx);
+-                            found =
+-                                declaredClass.isAssignableFrom(documentedClass);
+-                            if (found) {
+-                                ei.setFound();
+-                            }
+-                        }
+-                        catch (ClassNotFoundException e) {
+-                            log(tag.getLineNo(), "javadoc.classInfo",
++                else if (mAllowThrowsTagsForSubclasses
++                         && documentedClass != null)
++                {
++                    if (ei.isLoadable() && ei.getClazz() == null) {
++                        // if the class is not loaded yet.
++                        // try to load it.
++                        ei.setClazz(resolveClass(declaredEx));
++                        if (!ei.isLoadable()) {
++                            log(fi.getLineNo(), "javadoc.classInfo",
+                                 "@throws", declaredEx);
+                         }
+                     }
+-                    catch (ClassNotFoundException e) {
+-                        log(tag.getLineNo(), "javadoc.classInfo",
+-                                      "@throws", documentedEx);
++
++                    found = isSubclass(documentedClass, ei.getClazz());
++                    if (found) {
++                        ei.setFound();
+                     }
+                 }
+             }
+ 
+             // Handle extra JavadocTag.
+             if (!found) {
+                 boolean reqd = true;
+-                if (mAllowUndeclaredRTE) {
+-                    final ClassResolver cr = getClassResolver();
+-                    try {
+-                        final Class clazz = cr.resolve(tag.getArg1());
+-                        reqd =
+-                            !RuntimeException.class.isAssignableFrom(clazz)
+-                                && !Error.class.isAssignableFrom(clazz);
+-                    }
+-                    catch (ClassNotFoundException e) {
+-                        log(tag.getLineNo(), "javadoc.classInfo",
+-                                      "@throws", tag.getArg1());
+-                    }
++                if (mAllowUndeclaredRTE && documentedClass != null) {
++                    reqd = !isUnchecked(documentedClass);
+                 }
+ 
+                 if (reqd) {
+                     log(tag.getLineNo(), "javadoc.unusedTag",
+                                   "@throws", tag.getArg1());
+                 }
+             }
+         }
+ 
+         // Now dump out all throws without tags :- unless
+         // the user has chosen to suppress these problems
+         if (!mAllowMissingThrowsTags) {
+             final ListIterator throwIt = aThrows.listIterator();
+             while (throwIt.hasNext()) {
+                 final ExceptionInfo ei = (ExceptionInfo) throwIt.next();
+                 if (!ei.isFound()) {
+-                    final FullIdent fi = ei.getFullIdent();
++                    final FullIdent fi = ei.getName();
+                     log(fi.getLineNo(), fi.getColumnNo(),
+                         "javadoc.expectedTag", "@throws", fi.getText());
+                 }
+             }
+         }
+     }
+-}
+-
+-/**
+- * Stores useful information about declared exception.
+- * @author o_sukhodoslky
+- */
+-final class ExceptionInfo
+-{
+-    /** <code>FullIdent</code> of the exception. */
+-    private final FullIdent mIdent;
+-
+-    /** does the exception have throws tag associated with. */
+-    private boolean mFound;
+ 
+-    /**
+-     * Creates new instance for <code>FullIdent</code>.
+-     * @param aIdent <code>FullIdent</code> of the exception
+-     */
+-    ExceptionInfo(FullIdent aIdent)
+-    {
+-        mIdent = aIdent;
+-    }
+-
+-    /** @return <code>FullIdent</code> of the exception. */
+-    FullIdent getFullIdent()
++    /** Stores useful information about declared exception. */
++    static class ExceptionInfo extends ClassInfo
+     {
+-        return mIdent;
+-    }
+-
+-    /** Mark that the exception has associated throws tag */
+-    void setFound()
+-    {
+-        mFound = true;
+-    }
+-
+-    /** @return whether the exception has throws tag associated with */
+-    boolean isFound()
+-    {
+-        return mFound;
++        /** does the exception have throws tag associated with. */
++        private boolean mFound;
++
++        /**
++         * Creates new instance for <code>FullIdent</code>.
++         * @param aIdent <code>FullIdent</code> of the exception
++         */
++        ExceptionInfo(FullIdent aIdent)
++        {
++            super(aIdent);
++        }
++        /** Mark that the exception has associated throws tag */
++        final void setFound()
++        {
++            mFound = true;
++        }
++        /** @return whether the exception has throws tag associated with */
++        final boolean isFound()
++        {
++            return mFound;
++        }
+     }
+ }

@@ -1,0 +1,80 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java
+index 983a14169..6433f61e9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/UnusedImportsCheck.java
+@@ -253,55 +253,74 @@ public class UnusedImportsCheck extends AbstractCheck {
+         // INLINE tags inside BLOCKs get hidden when using ALL
+         tags.addAll(getValidTags(textBlock, JavadocUtils.JavadocTagType.INLINE));
+         // gather all the block-level tags, like @throws and @see
+         tags.addAll(getValidTags(textBlock, JavadocUtils.JavadocTagType.BLOCK));
+ 
+         final Set<String> references = new HashSet<>();
+ 
+         tags.stream()
+             .filter(JavadocTag::canReferenceImports)
+             .forEach(tag -> references.addAll(processJavadocTag(tag)));
+         return references;
+     }
+ 
+     /**
+      * Returns the list of valid tags found in a javadoc {@link TextBlock}.
+      * @param cmt The javadoc block to parse
+      * @param tagType The type of tags we're interested in
+      * @return the list of tags
+      */
+     private static List<JavadocTag> getValidTags(TextBlock cmt,
+             JavadocUtils.JavadocTagType tagType) {
+         return JavadocUtils.getJavadocTags(cmt, tagType).getValidTags();
+     }
+ 
+     /**
+      * Returns a list of references found in a javadoc {@link JavadocTag}.
+      * @param tag The javadoc tag to parse
+      * @return A list of references found in this tag
+      */
+     private static Set<String> processJavadocTag(JavadocTag tag) {
+         final Set<String> references = new HashSet<>();
+         final String identifier = tag.getFirstArg().trim();
+         for (Pattern pattern : new Pattern[]
+         {FIRST_CLASS_NAME, ARGUMENT_NAME}) {
+             references.addAll(matchPattern(identifier, pattern));
+         }
+         return references;
+     }
+ 
+     /**
+      * Extracts a list of texts matching a {@link Pattern} from a
+      * {@link String}.
+      * @param identifier The String to match the pattern against
+      * @param pattern The Pattern used to extract the texts
+      * @return A list of texts which matched the pattern
+      */
+     private static Set<String> matchPattern(String identifier, Pattern pattern) {
+         final Set<String> references = new HashSet<>();
+         final Matcher matcher = pattern.matcher(identifier);
+         while (matcher.find()) {
+-            references.add(matcher.group(1));
++            references.add(topLevelType(matcher.group(1)));
+         }
+         return references;
+     }
++
++    /**
++     * If the given type string contains "." (e.g. "Map.Entry"), returns the
++     * top level type (e.g. "Map"), as that is what must be imported for the
++     * type to resolve. Otherwise, returns the type as-is.
++     * @param type A possibly qualified type name
++     * @return The simple name of the top level type
++     */
++    private static String topLevelType(String type) {
++        final String topLevelType;
++        final int dotIndex = type.indexOf('.');
++        if (dotIndex == -1) {
++            topLevelType = type;
++        }
++        else {
++            topLevelType = type.substring(0, dotIndex);
++        }
++        return topLevelType;
++    }
+ }

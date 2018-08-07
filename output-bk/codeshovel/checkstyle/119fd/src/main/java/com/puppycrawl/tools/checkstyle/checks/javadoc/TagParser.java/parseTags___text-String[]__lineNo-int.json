@@ -1,0 +1,165 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "TagParser.java",
+  "functionName": "parseTags",
+  "functionId": "parseTags___text-String[]__lineNo-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java",
+  "functionStartLine": 94,
+  "functionEndLine": 110,
+  "changeHistory": [
+    "44119413b68542bb1db3f50d2585834b9d00d1b3",
+    "88830ca708e2deb22cae333057ebddd15f7f9c57",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e",
+    "1bc8a685f64ec17d87b465cb765127cc5f0db1ca",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "fd6a743fd4b3c9283d62174327dd978bda694892",
+    "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3"
+  ],
+  "changeHistoryShort": {
+    "44119413b68542bb1db3f50d2585834b9d00d1b3": "Ybodychange",
+    "88830ca708e2deb22cae333057ebddd15f7f9c57": "Ybodychange",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": "Ybodychange",
+    "1bc8a685f64ec17d87b465cb765127cc5f0db1ca": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "fd6a743fd4b3c9283d62174327dd978bda694892": "Ymultichange(Yparameterchange,Ybodychange)",
+    "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "44119413b68542bb1db3f50d2585834b9d00d1b3": {
+      "type": "Ybodychange",
+      "commitMessage": "minor: fix IntelijIdea violations of \u0027Scope of variable lnr is too broad\u0027\n",
+      "commitDate": 1468298833000,
+      "commitName": "44119413b68542bb1db3f50d2585834b9d00d1b3",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 189.18,
+      "commitsBetweenForRepo": 466,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,17 @@\n     private void parseTags(String[] text, int lineNo) {\n         final int nLines \u003d text.length;\n-        Point position \u003d new Point(0, 0);\n-\n-        position \u003d findChar(text, \u0027\u003c\u0027, position);\n+        Point position \u003d findChar(text, \u0027\u003c\u0027, new Point(0, 0));\n         while (position.getLineNo() \u003c nLines) {\n             // if this is html comment then skip it\n             if (isCommentTag(text, position)) {\n                 position \u003d skipHtmlComment(text, position);\n             }\n             else if (isTag(text, position)) {\n                 position \u003d parseTag(text, lineNo, nLines, position);\n             }\n             else {\n                 position \u003d getNextCharPos(text, position);\n             }\n             position \u003d findChar(text, \u0027\u003c\u0027, position);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "88830ca708e2deb22cae333057ebddd15f7f9c57": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #974: PMD violation ConfusingTernary (partial fix)\n",
+      "commitDate": 1444265764000,
+      "commitName": "88830ca708e2deb22cae333057ebddd15f7f9c57",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1444178762000,
+      "commitNameOld": "30c3a362d45721e6925fe89ba71f0fe69d0fc471",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.01,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,43 +1,19 @@\n     private void parseTags(String[] text, int lineNo) {\n         final int nLines \u003d text.length;\n         Point position \u003d new Point(0, 0);\n \n         position \u003d findChar(text, \u0027\u003c\u0027, position);\n         while (position.getLineNo() \u003c nLines) {\n             // if this is html comment then skip it\n             if (isCommentTag(text, position)) {\n                 position \u003d skipHtmlComment(text, position);\n             }\n-            else if (!isTag(text, position)) {\n-                position \u003d getNextCharPos(text, position);\n+            else if (isTag(text, position)) {\n+                position \u003d parseTag(text, lineNo, nLines, position);\n             }\n             else {\n-                // find end of tag\n-                final Point endTag \u003d findChar(text, \u0027\u003e\u0027, position);\n-                final boolean incompleteTag \u003d endTag.getLineNo() \u003e\u003d nLines;\n-                // get tag id (one word)\n-                final String tagId;\n-\n-                if (incompleteTag) {\n-                    tagId \u003d \"\";\n-                }\n-                else {\n-                    tagId \u003d getTagId(text, position);\n-                }\n-                // is this closed tag\n-                final boolean closedTag \u003d\n-                        endTag.getLineNo() \u003c nLines\n-                         \u0026\u0026 text[endTag.getLineNo()]\n-                         .charAt(endTag.getColumnNo() - 1) \u003d\u003d \u0027/\u0027;\n-                // add new tag\n-                add(new HtmlTag(tagId,\n-                                position.getLineNo() + lineNo,\n-                                position.getColumnNo(),\n-                                closedTag,\n-                                incompleteTag,\n-                                text[position.getLineNo()]));\n-                position \u003d endTag;\n+                position \u003d getNextCharPos(text, position);\n             }\n             position \u003d findChar(text, \u0027\u003c\u0027, position);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: AvoidInlineConditional violations fixed\n",
+      "commitDate": 1439784080000,
+      "commitName": "23c8774d2e2fd245de1e5df02758fd23702c565e",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439295539000,
+      "commitNameOld": "1935bed5772c0a939b9168b81acd2ab5aa800538",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 5.65,
+      "commitsBetweenForRepo": 82,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,37 +1,43 @@\n     private void parseTags(String[] text, int lineNo) {\n         final int nLines \u003d text.length;\n         Point position \u003d new Point(0, 0);\n \n         position \u003d findChar(text, \u0027\u003c\u0027, position);\n         while (position.getLineNo() \u003c nLines) {\n             // if this is html comment then skip it\n             if (isCommentTag(text, position)) {\n                 position \u003d skipHtmlComment(text, position);\n             }\n             else if (!isTag(text, position)) {\n                 position \u003d getNextCharPos(text, position);\n             }\n             else {\n                 // find end of tag\n                 final Point endTag \u003d findChar(text, \u0027\u003e\u0027, position);\n                 final boolean incompleteTag \u003d endTag.getLineNo() \u003e\u003d nLines;\n                 // get tag id (one word)\n-                final String tagId \u003d\n-                        incompleteTag ? \"\" : getTagId(text, position);\n+                final String tagId;\n+\n+                if (incompleteTag) {\n+                    tagId \u003d \"\";\n+                }\n+                else {\n+                    tagId \u003d getTagId(text, position);\n+                }\n                 // is this closed tag\n                 final boolean closedTag \u003d\n                         endTag.getLineNo() \u003c nLines\n                          \u0026\u0026 text[endTag.getLineNo()]\n                          .charAt(endTag.getColumnNo() - 1) \u003d\u003d \u0027/\u0027;\n                 // add new tag\n                 add(new HtmlTag(tagId,\n                                 position.getLineNo() + lineNo,\n                                 position.getColumnNo(),\n                                 closedTag,\n                                 incompleteTag,\n                                 text[position.getLineNo()]));\n                 position \u003d endTag;\n             }\n             position \u003d findChar(text, \u0027\u003c\u0027, position);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bc8a685f64ec17d87b465cb765127cc5f0db1ca": {
+      "type": "Ybodychange",
+      "commitMessage": "Add tests and refactor TagParser for JavadocStyle check. #1308\n",
+      "commitDate": 1437782507000,
+      "commitName": "1bc8a685f64ec17d87b465cb765127cc5f0db1ca",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 1.75,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,37 +1,37 @@\n     private void parseTags(String[] text, int lineNo) {\n         final int nLines \u003d text.length;\n         Point position \u003d new Point(0, 0);\n \n         position \u003d findChar(text, \u0027\u003c\u0027, position);\n         while (position.getLineNo() \u003c nLines) {\n             // if this is html comment then skip it\n             if (isCommentTag(text, position)) {\n                 position \u003d skipHtmlComment(text, position);\n             }\n             else if (!isTag(text, position)) {\n                 position \u003d getNextCharPos(text, position);\n             }\n             else {\n                 // find end of tag\n                 final Point endTag \u003d findChar(text, \u0027\u003e\u0027, position);\n                 final boolean incompleteTag \u003d endTag.getLineNo() \u003e\u003d nLines;\n                 // get tag id (one word)\n                 final String tagId \u003d\n                         incompleteTag ? \"\" : getTagId(text, position);\n                 // is this closed tag\n                 final boolean closedTag \u003d\n-                        endTag.getLineNo() \u003c nLines \u0026\u0026 endTag.getColumnNo() \u003e 0\n+                        endTag.getLineNo() \u003c nLines\n                          \u0026\u0026 text[endTag.getLineNo()]\n                          .charAt(endTag.getColumnNo() - 1) \u003d\u003d \u0027/\u0027;\n                 // add new tag\n                 add(new HtmlTag(tagId,\n                                 position.getLineNo() + lineNo,\n                                 position.getColumnNo(),\n                                 closedTag,\n                                 incompleteTag,\n                                 text[position.getLineNo()]));\n                 position \u003d endTag;\n             }\n             position \u003d findChar(text, \u0027\u003c\u0027, position);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 20.02,
+      "commitsBetweenForRepo": 107,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,38 +1,38 @@\n     private void parseTags(String[] text, int lineNo)\n     {\n         final int nLines \u003d text.length;\n         Point position \u003d new Point(0, 0);\n \n         position \u003d findChar(text, \u0027\u003c\u0027, position);\n         while (position.getLineNo() \u003c nLines) {\n             // if this is html comment then skip it\n             if (isCommentTag(text, position)) {\n                 position \u003d skipHtmlComment(text, position);\n             }\n             else if (!isTag(text, position)) {\n                 position \u003d getNextCharPos(text, position);\n             }\n             else {\n                 // find end of tag\n                 final Point endTag \u003d findChar(text, \u0027\u003e\u0027, position);\n-                final boolean incompleteTag \u003d (endTag.getLineNo() \u003e\u003d nLines);\n+                final boolean incompleteTag \u003d endTag.getLineNo() \u003e\u003d nLines;\n                 // get tag id (one word)\n                 final String tagId \u003d\n-                    (incompleteTag ? \"\" : getTagId(text, position));\n+                        incompleteTag ? \"\" : getTagId(text, position);\n                 // is this closed tag\n                 final boolean closedTag \u003d\n-                    ((endTag.getLineNo() \u003c nLines) \u0026\u0026 (endTag.getColumnNo() \u003e 0)\n-                     \u0026\u0026 (text[endTag.getLineNo()]\n-                     .charAt(endTag.getColumnNo() - 1) \u003d\u003d \u0027/\u0027));\n+                        endTag.getLineNo() \u003c nLines \u0026\u0026 endTag.getColumnNo() \u003e 0\n+                         \u0026\u0026 text[endTag.getLineNo()]\n+                         .charAt(endTag.getColumnNo() - 1) \u003d\u003d \u0027/\u0027;\n                 // add new tag\n                 add(new HtmlTag(tagId,\n                                 position.getLineNo() + lineNo,\n                                 position.getColumnNo(),\n                                 closedTag,\n                                 incompleteTag,\n                                 text[position.getLineNo()]));\n                 position \u003d endTag;\n             }\n             position \u003d findChar(text, \u0027\u003c\u0027, position);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1123546736000,
+      "commitNameOld": "d6175fd6c95f64e854c1604e0331d8d1ab9dcaf3",
+      "commitAuthorOld": "Michael Studman",
+      "daysBetweenCommits": 332.13,
+      "commitsBetweenForRepo": 82,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,38 +1,38 @@\n     private void parseTags(String[] aText, int aLineNo)\n     {\n         final int nLines \u003d aText.length;\n         Point position \u003d new Point(0, 0);\n \n         position \u003d findChar(aText, \u0027\u003c\u0027, position);\n         while (position.getLineNo() \u003c nLines) {\n             // if this is html comment then skip it\n             if (isCommentTag(aText, position)) {\n                 position \u003d skipHtmlComment(aText, position);\n             }\n             else if (!isTag(aText, position)) {\n                 position \u003d getNextCharPos(aText, position);\n             }\n             else {\n                 // find end of tag\n                 final Point endTag \u003d findChar(aText, \u0027\u003e\u0027, position);\n                 final boolean incompleteTag \u003d (endTag.getLineNo() \u003e\u003d nLines);\n                 // get tag id (one word)\n                 final String tagId \u003d\n                     (incompleteTag ? \"\" : getTagId(aText, position));\n                 // is this closed tag\n                 final boolean closedTag \u003d\n-                    (endTag.getLineNo() \u003c nLines \u0026\u0026 endTag.getColumnNo() \u003e 0\n-                     \u0026\u0026 aText[endTag.getLineNo()]\n-                     .charAt(endTag.getColumnNo() - 1) \u003d\u003d \u0027/\u0027);\n+                    ((endTag.getLineNo() \u003c nLines) \u0026\u0026 (endTag.getColumnNo() \u003e 0)\n+                     \u0026\u0026 (aText[endTag.getLineNo()]\n+                     .charAt(endTag.getColumnNo() - 1) \u003d\u003d \u0027/\u0027));\n                 // add new tag\n                 add(new HtmlTag(tagId,\n                                 position.getLineNo() + aLineNo,\n                                 position.getColumnNo(),\n                                 closedTag,\n                                 incompleteTag,\n                                 aText[position.getLineNo()]));\n                 position \u003d endTag;\n             }\n             position \u003d findChar(aText, \u0027\u003c\u0027, position);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "fd6a743fd4b3c9283d62174327dd978bda694892": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Draft fix for 843887 (XHTML not handled correctly in JavadocStyle).  Feel free to improve it.\n",
+      "commitDate": 1069327160000,
+      "commitName": "fd6a743fd4b3c9283d62174327dd978bda694892",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3": {
+      "type": "Yintroduced",
+      "commitMessage": "New Javadoc style check from Chris Stillwell.\n",
+      "commitDate": 1058185912000,
+      "commitName": "51dae59b8dcfb5a34f2a8a5b3e788eb6599a1df3",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

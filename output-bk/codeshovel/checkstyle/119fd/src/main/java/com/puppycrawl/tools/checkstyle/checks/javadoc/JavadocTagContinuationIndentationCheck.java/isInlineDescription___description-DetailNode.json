@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "JavadocTagContinuationIndentationCheck.java",
+  "functionName": "isInlineDescription",
+  "functionId": "isInlineDescription___description-DetailNode",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTagContinuationIndentationCheck.java",
+  "functionStartLine": 121,
+  "functionEndLine": 132,
+  "changeHistory": [
+    "ed5d4d98da5963b658eafaaa3aaee98ba989db65",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "443b98cf24c6b6b7090b83603f40ec9c88ab189f",
+    "ca34984cc3dcf86773cf7958f26f3816ae0dc764"
+  ],
+  "changeHistoryShort": {
+    "ed5d4d98da5963b658eafaaa3aaee98ba989db65": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "443b98cf24c6b6b7090b83603f40ec9c88ab189f": "Yfilerename",
+    "ca34984cc3dcf86773cf7958f26f3816ae0dc764": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "ed5d4d98da5963b658eafaaa3aaee98ba989db65": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.checks.javadoc\n",
+      "commitDate": 1493089749000,
+      "commitName": "ed5d4d98da5963b658eafaaa3aaee98ba989db65",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 87.53,
+      "commitsBetweenForRepo": 320,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,12 @@\n     private static boolean isInlineDescription(DetailNode description) {\n+        boolean isInline \u003d false;\n         DetailNode inlineTag \u003d description.getParent();\n         while (inlineTag !\u003d null) {\n             if (inlineTag.getType() \u003d\u003d JavadocTokenTypes.JAVADOC_INLINE_TAG) {\n-                return true;\n+                isInline \u003d true;\n+                break;\n             }\n             inlineTag \u003d inlineTag.getParent();\n         }\n-        return false;\n+        return isInline;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436899548000,
+      "commitNameOld": "03637bdf8708da7f6dae0f934ee789e3f6ece5e8",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 3.42,
+      "commitsBetweenForRepo": 30,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n-    private boolean isInlineDescription(DetailNode description) {\n+    private static boolean isInlineDescription(DetailNode description) {\n         DetailNode inlineTag \u003d description.getParent();\n         while (inlineTag !\u003d null) {\n             if (inlineTag.getType() \u003d\u003d JavadocTokenTypes.JAVADOC_INLINE_TAG) {\n                 return true;\n             }\n             inlineTag \u003d inlineTag.getParent();\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "443b98cf24c6b6b7090b83603f40ec9c88ab189f": {
+      "type": "Yfilerename",
+      "commitMessage": "Update google_checks.xml and minor refactoring. #320\n",
+      "commitDate": 1414002319000,
+      "commitName": "443b98cf24c6b6b7090b83603f40ec9c88ab189f",
+      "commitAuthor": "maxvetrenko",
+      "commitDateOld": 1414001762000,
+      "commitNameOld": "371c73fe60f63ef58abf814db76e8b2d7289800b",
+      "commitAuthorOld": "maxvetrenko",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "ca34984cc3dcf86773cf7958f26f3816ae0dc764": {
+      "type": "Yintroduced",
+      "commitMessage": "Fix false positives in JavaDocTagContinuationIndentationCheck #323\n",
+      "commitDate": 1413986856000,
+      "commitName": "ca34984cc3dcf86773cf7958f26f3816ae0dc764",
+      "commitAuthor": "maxvetrenko"
+    }
+  }
+}

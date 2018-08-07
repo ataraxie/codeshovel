@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "HideUtilityClassConstructorCheck.java",
+  "functionName": "isAbstract",
+  "functionId": "isAbstract___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/HideUtilityClassConstructorCheck.java",
+  "functionStartLine": 98,
+  "functionEndLine": 101,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "b142c593512c9ef1179f4254ec406c23d180ed2f"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "b142c593512c9ef1179f4254ec406c23d180ed2f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1497287515000,
+      "commitNameOld": "4a087c020c2b97130e94f9292b94cb4bc1f6ed93",
+      "commitAuthorOld": "sagar-shah94",
+      "daysBetweenCommits": 135.4,
+      "commitsBetweenForRepo": 556,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n     private static boolean isAbstract(DetailAST ast) {\n         return ast.findFirstToken(TokenTypes.MODIFIERS)\n-            .branchContains(TokenTypes.ABSTRACT);\n+            .findFirstToken(TokenTypes.ABSTRACT) !\u003d null;\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1434432354000,
+      "commitNameOld": "d88c251ae40a2636890f55d8257b23d075cf513a",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 31.98,
+      "commitsBetweenForRepo": 218,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n-    private boolean isAbstract(DetailAST ast) {\n+    private static boolean isAbstract(DetailAST ast) {\n         return ast.findFirstToken(TokenTypes.MODIFIERS)\n             .branchContains(TokenTypes.ABSTRACT);\n     }\n\\ No newline at end of file\n"
+    },
+    "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, design, #512\n",
+      "commitDate": 1421677275000,
+      "commitName": "50c9bb69bcd93e6fbf272670e8b9d95f2f451c5f",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "b142c593512c9ef1179f4254ec406c23d180ed2f": {
+      "type": "Yintroduced",
+      "commitMessage": "Fix HideUtilityClassConstructor to handle empty and inner classes. Thanks to Roman Ivanov for patch #3045720.\n",
+      "commitDate": 1286414375000,
+      "commitName": "b142c593512c9ef1179f4254ec406c23d180ed2f",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

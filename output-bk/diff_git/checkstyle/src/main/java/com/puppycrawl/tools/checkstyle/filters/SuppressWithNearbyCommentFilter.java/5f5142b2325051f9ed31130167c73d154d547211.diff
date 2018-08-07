@@ -1,0 +1,117 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+index 78ad716a3..21788909d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+@@ -331,108 +331,108 @@ public class SuppressWithNearbyCommentFilter
+                     tagMessageRegexp = null;
+                 }
+                 format = expandFromComment(
+                         text, filter.influenceFormat, filter.commentRegexp);
+                 int influence;
+                 try {
+                     if (CommonUtils.startsWithChar(format, '+')) {
+                         format = format.substring(1);
+                     }
+                     influence = Integer.parseInt(format);
+                 }
+                 catch (final NumberFormatException e) {
+                     throw new ConversionException(
+                         "unable to parse influence from '" + text
+                             + "' using " + filter.influenceFormat, e);
+                 }
+                 if (influence >= 0) {
+                     firstLine = line;
+                     lastLine = line + influence;
+                 }
+                 else {
+                     firstLine = line + influence;
+                     lastLine = line;
+                 }
+             }
+             catch (final PatternSyntaxException e) {
+                 throw new ConversionException(
+                     "unable to parse expanded comment " + format,
+                     e);
+             }
+         }
+ 
+         /**
+          * Compares the position of this tag in the file
+          * with the position of another tag.
+          * @param other the tag to compare with this one.
+          * @return a negative number if this tag is before the other tag,
+          *     0 if they are at the same position, and a positive number if this
+          *     tag is after the other tag.
+          */
+         @Override
+         public int compareTo(Tag other) {
+             if (firstLine == other.firstLine) {
+                 return Integer.compare(lastLine, other.lastLine);
+             }
+ 
+             return Integer.compare(firstLine, other.firstLine);
+         }
+ 
+         @Override
+-        public boolean equals(Object o) {
+-            if (this == o) {
++        public boolean equals(Object other) {
++            if (this == other) {
+                 return true;
+             }
+-            if (o == null || getClass() != o.getClass()) {
++            if (other == null || getClass() != other.getClass()) {
+                 return false;
+             }
+-            final Tag tag = (Tag) o;
++            final Tag tag = (Tag) other;
+             return Objects.equals(firstLine, tag.firstLine)
+                     && Objects.equals(lastLine, tag.lastLine)
+                     && Objects.equals(text, tag.text)
+                     && Objects.equals(tagCheckRegexp, tag.tagCheckRegexp)
+                     && Objects.equals(tagMessageRegexp, tag.tagMessageRegexp);
+         }
+ 
+         @Override
+         public int hashCode() {
+             return Objects.hash(text, firstLine, lastLine, tagCheckRegexp, tagMessageRegexp);
+         }
+ 
+         /**
+          * Determines whether the source of an audit event
+          * matches the text of this tag.
+          * @param event the {@code AuditEvent} to check.
+          * @return true if the source of event matches the text of this tag.
+          */
+         public boolean isMatch(AuditEvent event) {
+             final int line = event.getLine();
+             boolean match = false;
+ 
+             if (line >= firstLine && line <= lastLine) {
+                 final Matcher tagMatcher = tagCheckRegexp.matcher(event.getSourceName());
+ 
+                 if (tagMatcher.find()) {
+                     match = true;
+                 }
+                 else if (tagMessageRegexp != null) {
+                     final Matcher messageMatcher = tagMessageRegexp.matcher(event.getMessage());
+                     match = messageMatcher.find();
+                 }
+             }
+             return match;
+         }
+ 
+         /**
+          * Expand based on a matching comment.
+          * @param comment the comment.
+          * @param stringToExpand the string to expand.
+          * @param regexp the parsed expander.
+          * @return the expanded string
+          */
+         private static String expandFromComment(
+             String comment,
+             String stringToExpand,
+             Pattern regexp) {
+             final Matcher matcher = regexp.matcher(comment);
+             // Match primarily for effect.
+             if (!matcher.find()) {

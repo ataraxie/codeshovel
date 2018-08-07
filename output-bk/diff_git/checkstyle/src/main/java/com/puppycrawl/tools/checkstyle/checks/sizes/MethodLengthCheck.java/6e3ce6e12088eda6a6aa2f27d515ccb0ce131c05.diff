@@ -1,0 +1,85 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodLengthCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodLengthCheck.java
+index 168f08098..d99cb9406 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodLengthCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/sizes/MethodLengthCheck.java
+@@ -66,76 +66,79 @@ public class MethodLengthCheck extends AbstractCheck {
+     /** Default maximum number of lines. */
+     private static final int DEFAULT_MAX_LINES = 150;
+ 
+     /** Whether to ignore empty lines and single line comments. */
+     private boolean countEmpty = true;
+ 
+     /** The maximum number of lines. */
+     private int max = DEFAULT_MAX_LINES;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.METHOD_DEF, TokenTypes.CTOR_DEF};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final DetailAST openingBrace = ast.findFirstToken(TokenTypes.SLIST);
+         if (openingBrace != null) {
+             final DetailAST closingBrace =
+                 openingBrace.findFirstToken(TokenTypes.RCURLY);
+             final int length = getLengthOfBlock(openingBrace, closingBrace);
+             if (length > max) {
+                 log(ast.getLineNo(), ast.getColumnNo(), MSG_KEY,
+                         length, max);
+             }
+         }
+     }
+ 
+     /**
+      * Returns length of code only without comments and blank lines.
+      * @param openingBrace block opening brace
+      * @param closingBrace block closing brace
+      * @return number of lines with code for current block
+      */
+     private int getLengthOfBlock(DetailAST openingBrace, DetailAST closingBrace) {
+         int length = closingBrace.getLineNo() - openingBrace.getLineNo() + 1;
+ 
+         if (!countEmpty) {
+             final FileContents contents = getFileContents();
+             final int lastLine = closingBrace.getLineNo();
+-            for (int i = openingBrace.getLineNo() - 1; i < lastLine; i++) {
++            // lastLine - 1 is actual last line index. Last line is line with curly brace,
++            // which is always not empty. So, we make it lastLine - 2 to cover last line that
++            // actually may be empty.
++            for (int i = openingBrace.getLineNo() - 1; i <= lastLine - 2; i++) {
+                 if (contents.lineIsBlank(i) || contents.lineIsComment(i)) {
+                     length--;
+                 }
+             }
+         }
+         return length;
+     }
+ 
+     /**
+      * Sets maximum length of a method.
+      * @param length the maximum length of a method.
+      */
+     public void setMax(int length) {
+         max = length;
+     }
+ 
+     /**
+      * Sets countEmpty.
+      * @param countEmpty whether to count empty and single line comments
+      *     of the form //.
+      */
+     public void setCountEmpty(boolean countEmpty) {
+         this.countEmpty = countEmpty;
+     }
+ }

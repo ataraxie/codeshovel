@@ -1,0 +1,87 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
+index 8e76c3cc7..31b8a72d9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
+@@ -129,80 +129,80 @@ public class MethodCallHandler extends AbstractExpressionHandler {
+     private static DetailAST getFirstAst(DetailAST ast) {
+         // walk down the first child part of the dots that make up a method
+         // call name
+ 
+         DetailAST astNode = ast.getFirstChild();
+         while (astNode.getType() == TokenTypes.DOT) {
+             astNode = astNode.getFirstChild();
+         }
+         return astNode;
+     }
+ 
+     @Override
+     public IndentLevel getSuggestedChildIndent(AbstractExpressionHandler child) {
+         // for whatever reason a method that crosses lines, like asList
+         // here:
+         //            System.out.println("methods are: " + Arrays.asList(
+         //                new String[] {"method"}).toString());
+         // will not have the right line num, so just get the child name
+ 
+         final DetailAST first = getMainAst().getFirstChild();
+         IndentLevel suggestedLevel = new IndentLevel(getLineStart(first));
+         if (!areOnSameLine(child.getMainAst().getFirstChild(),
+                            getMainAst().getFirstChild())) {
+             suggestedLevel = new IndentLevel(suggestedLevel,
+                     getBasicOffset(),
+                     getIndentCheck().getLineWrappingIndentation());
+         }
+ 
+         // If the right parenthesis is at the start of a line;
+         // include line wrapping in suggested indent level.
+         final DetailAST rparen = getMainAst().findFirstToken(TokenTypes.RPAREN);
+         if (getLineStart(rparen) == rparen.getColumnNo()) {
+             suggestedLevel.addAcceptedIndent(new IndentLevel(
+                     getParent().getSuggestedChildIndent(this),
+                     getIndentCheck().getLineWrappingIndentation()
+             ));
+         }
+ 
+         return suggestedLevel;
+     }
+ 
+     @Override
+     public void checkIndentation() {
+         final DetailAST exprNode = getMainAst().getParent();
+         if (exprNode.getParent().getType() == TokenTypes.SLIST) {
+             final DetailAST methodName = getMainAst().getFirstChild();
+             checkExpressionSubtree(methodName, getIndent(), false, false);
+ 
+             final DetailAST lparen = getMainAst();
+             final DetailAST rparen = getMainAst().findFirstToken(TokenTypes.RPAREN);
+-            checkLParen(lparen);
++            checkLeftParen(lparen);
+ 
+             if (rparen.getLineNo() != lparen.getLineNo()) {
+                 checkExpressionSubtree(
+                     getMainAst().findFirstToken(TokenTypes.ELIST),
+                     new IndentLevel(getIndent(), getBasicOffset()),
+                     false, true);
+ 
+-                checkRParen(lparen, rparen);
++                checkRightParen(lparen, rparen);
+                 checkWrappingIndentation(getMainAst(), getMethodCallLastNode(getMainAst()));
+             }
+         }
+     }
+ 
+     @Override
+     protected boolean shouldIncreaseIndent() {
+         return false;
+     }
+ 
+     /**
+      * Returns method call right paren.
+      * @param firstNode
+      *          method call ast(TokenTypes.METHOD_CALL)
+      * @return ast node containing right paren for specified method call. If
+      *     method calls are chained returns right paren for last call.
+      */
+     private static DetailAST getMethodCallLastNode(DetailAST firstNode) {
+         return firstNode.getLastChild();
+     }
+ }

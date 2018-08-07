@@ -1,0 +1,139 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+index a68310c6f..9294f3bb5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+@@ -160,120 +160,115 @@ public class MagicNumberCheck extends AbstractCheck {
+         TokenTypes.LITERAL_NEW,
+         TokenTypes.METHOD_CALL,
+         TokenTypes.STAR,
+         TokenTypes.DIV,
+         TokenTypes.PLUS,
+         TokenTypes.MINUS,
+     };
+ 
+     /** The numbers to ignore in the check, sorted. */
+     private double[] ignoreNumbers = {-1, 0, 1, 2};
+ 
+     /** Whether to ignore magic numbers in a hash code method. */
+     private boolean ignoreHashCodeMethod;
+ 
+     /** Whether to ignore magic numbers in annotation. */
+     private boolean ignoreAnnotation;
+ 
+     /** Whether to ignore magic numbers in field declaration. */
+     private boolean ignoreFieldDeclaration;
+ 
+     /**
+      * Constructor for MagicNumber Check.
+      * Sort the allowedTokensBetweenMagicNumberAndConstDef array for binary search.
+      */
+     public MagicNumberCheck() {
+         Arrays.sort(constantWaiverParentToken);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.NUM_DOUBLE,
+             TokenTypes.NUM_FLOAT,
+             TokenTypes.NUM_INT,
+             TokenTypes.NUM_LONG,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+-        if (ignoreAnnotation && isChildOf(ast, TokenTypes.ANNOTATION)) {
+-            return;
+-        }
+-
+-        if (isInIgnoreList(ast)
+-            || ignoreHashCodeMethod && isInHashCodeMethod(ast)) {
+-            return;
+-        }
+-
+-        final DetailAST constantDefAST = findContainingConstantDef(ast);
+-
+-        if (constantDefAST == null) {
+-            if (!ignoreFieldDeclaration || !isFieldDeclaration(ast)) {
+-                reportMagicNumber(ast);
++        if ((!ignoreAnnotation || !isChildOf(ast, TokenTypes.ANNOTATION))
++                && !isInIgnoreList(ast)
++                && (!ignoreHashCodeMethod || !isInHashCodeMethod(ast))) {
++            final DetailAST constantDefAST = findContainingConstantDef(ast);
++
++            if (constantDefAST == null) {
++                if (!ignoreFieldDeclaration || !isFieldDeclaration(ast)) {
++                    reportMagicNumber(ast);
++                }
+             }
+-        }
+-        else {
+-            final boolean found = isMagicNumberExists(ast, constantDefAST);
+-            if (found) {
+-                reportMagicNumber(ast);
++            else {
++                final boolean found = isMagicNumberExists(ast, constantDefAST);
++                if (found) {
++                    reportMagicNumber(ast);
++                }
+             }
+         }
+     }
+ 
+     /**
+      * Is magic number some where at ast tree.
+      * @param ast ast token
+      * @param constantDefAST constant ast
+      * @return true if magic number is present
+      */
+     private boolean isMagicNumberExists(DetailAST ast, DetailAST constantDefAST) {
+         boolean found = false;
+         DetailAST astNode = ast.getParent();
+         while (astNode != constantDefAST) {
+             final int type = astNode.getType();
+             if (Arrays.binarySearch(constantWaiverParentToken, type) < 0) {
+                 found = true;
+                 break;
+             }
+             astNode = astNode.getParent();
+         }
+         return found;
+     }
+ 
+     /**
+      * Finds the constant definition that contains aAST.
+      * @param ast the AST
+      * @return the constant def or null if ast is not contained in a constant definition.
+      */
+     private static DetailAST findContainingConstantDef(DetailAST ast) {
+         DetailAST varDefAST = ast;
+         while (varDefAST != null
+                 && varDefAST.getType() != TokenTypes.VARIABLE_DEF
+                 && varDefAST.getType() != TokenTypes.ENUM_CONSTANT_DEF) {
+             varDefAST = varDefAST.getParent();
+         }
+         DetailAST constantDef = null;
+ 
+         // no containing variable definition?
+         if (varDefAST != null) {
+             // implicit constant?
+             if (ScopeUtils.isInInterfaceOrAnnotationBlock(varDefAST)
+                     || varDefAST.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+                 constantDef = varDefAST;
+             }
+             else {
+                 // explicit constant
+                 final DetailAST modifiersAST = varDefAST.findFirstToken(TokenTypes.MODIFIERS);
+ 
+                 if (modifiersAST.branchContains(TokenTypes.FINAL)) {

@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "BenchmarkMain.java",
+  "functionName": "main",
+  "functionId": "main___args-String[]",
+  "sourceFilePath": "client/benchmark/src/main/java/org/elasticsearch/client/benchmark/BenchmarkMain.java",
+  "functionStartLine": 29,
+  "functionEndLine": 44,
+  "changeHistory": [
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+    "b99a482992ff753b10c4556b65a43301e32a8de0"
+  ],
+  "changeHistoryShort": {
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": "Ybodychange",
+    "b99a482992ff753b10c4556b65a43301e32a8de0": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": {
+      "type": "Ybodychange",
+      "commitMessage": "Add client-benchmark-noop-api-plugin to stress clients even more in benchmarks (#20103)\n\n",
+      "commitDate": 1472195147000,
+      "commitName": "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+      "commitAuthor": "Daniel Mitterdorfer",
+      "commitDateOld": 1470140271000,
+      "commitNameOld": "b99a482992ff753b10c4556b65a43301e32a8de0",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 23.78,
+      "commitsBetweenForRepo": 323,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     public static void main(String[] args) throws Exception {\n         String type \u003d args[0];\n         AbstractBenchmark\u003c?\u003e benchmark \u003d null;\n         switch (type) {\n             case \"transport\":\n                 benchmark \u003d new TransportClientBenchmark();\n                 break;\n             case \"rest\":\n                 benchmark \u003d new RestClientBenchmark();\n                 break;\n             default:\n-                System.err.println(\"Unknown benchmark type [\" + type + \"]\");\n+                System.err.println(\"Unknown client type [\" + type + \"]\");\n                 System.exit(1);\n         }\n         benchmark.run(Arrays.copyOfRange(args, 1, args.length));\n     }\n\\ No newline at end of file\n"
+    },
+    "b99a482992ff753b10c4556b65a43301e32a8de0": {
+      "type": "Yintroduced",
+      "commitMessage": "Improve client benchmark (#19736)\n\n* Allow to run client benchmark as an uberjar\r\n* Busy wait to avoid accidental skew on low target throughput rates\r\n* Trigger and wait for full GC to happen between trials\r\n* Add missing SuppressForbidden to allow System.gc in client benchmark",
+      "commitDate": 1470140271000,
+      "commitName": "b99a482992ff753b10c4556b65a43301e32a8de0",
+      "commitAuthor": "Daniel Mitterdorfer"
+    }
+  }
+}

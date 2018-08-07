@@ -1,0 +1,260 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index dee798ded..07af9819c 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -1,87 +1,86 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2003  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.javadoc;
+ 
+-import com.puppycrawl.tools.checkstyle.api.Comment;
++import java.util.ArrayList;
++import java.util.HashSet;
++import java.util.Iterator;
++import java.util.List;
++import java.util.ListIterator;
++import java.util.Set;
++
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.Scope;
+ import com.puppycrawl.tools.checkstyle.api.ScopeUtils;
++import com.puppycrawl.tools.checkstyle.api.TextBlock;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.Utils;
+ import com.puppycrawl.tools.checkstyle.checks.AbstractTypeAwareCheck;
+-
+-import java.util.ArrayList;
+-import java.util.HashSet;
+-import java.util.Iterator;
+-import java.util.List;
+-import java.util.ListIterator;
+-import java.util.Set;
+-
+ import org.apache.regexp.RE;
+ 
+ /**
+  * <p>
+  * Checks the Javadoc of a method or constructor.
+  * By default, does not check for unused throws.
+  * To allow documented <code>java.lang.RuntimeException</code>s
+  * that are not declared, set property allowUndeclaredRTE to true.
+  * The scope to verify is specified using the {@link Scope} class and
+  * defaults to {@link Scope#PRIVATE}. To verify another scope,
+  * set property scope to one of the {@link Scope} constants.
+  * </p>
+  * <p>
+  * Error messages about parameters for which no param tags are
+  * present can be suppressed by defining property
+  * <code>allowMissingParamTags</code>.
+  * Error messages about exceptions which are declared to be thrown,
+  * but for which no throws tag is present can be suppressed by
+  * defining property <code>allowMissingThrowsTags</code>.
+  * Error messages about methods which return non-void but for
+  * which no return tag is present can be suppressed by defining
+  * property <code>allowMissingReturnTag</code>.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="JavadocMethod"/&gt;
+  * </pre>
+  * <p> An example of how to configure the check to check to allow
+  * documentation of undeclared RuntimeExceptions
+  * and for the {@link Scope#PUBLIC} scope, while ignoring any missing
+  * param tags is:
+  *</p>
+  * <pre>
+  * &lt;module name="JavadocMethod"&gt;
+  *    &lt;property name="scope" value="public"/&gt;
+  *    &lt;property name="allowUndeclaredRTE" value="true"/&gt;
+  *    &lt;property name="allowMissingParamTags" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author Oliver Burn
+  * @author Rick Giles
+  * @author o_sukhodoslky
+  * @version 1.1
+  */
+ public class JavadocMethodCheck
+     extends AbstractTypeAwareCheck
+ {
+@@ -238,155 +237,155 @@ public class JavadocMethodCheck
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.IMPORT,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.IMPORT,
+         };
+     }
+ 
+     /**
+      * Checks Javadoc comments for a method or constructor.
+      * @param aAST the tree node for the method or constructor.
+      */
+     protected final void processAST(DetailAST aAST)
+     {
+         final DetailAST mods = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
+         final Scope targetScope =
+             ScopeUtils.inInterfaceBlock(aAST)
+                 ? Scope.PUBLIC
+                 : declaredScope;
+ 
+         if (targetScope.isIn(mScope)) {
+             final Scope surroundingScope =
+                 ScopeUtils.getSurroundingScope(aAST);
+ 
+             if (surroundingScope.isIn(mScope)) {
+                 final FileContents contents = getFileContents();
+-                final Comment cmt =
++                final TextBlock cmt =
+                     contents.getJavadocBefore(aAST.getLineNo());
+ 
+                 if (cmt == null) {
+                     log(aAST.getLineNo(),
+                         aAST.getColumnNo(),
+                         "javadoc.missing");
+                 }
+                 else {
+                     checkComment(aAST, cmt);
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Checks the Javadoc for a method.
+      * @param aAST the token for the method
+      * @param aComment the Javadoc comment
+      */
+-    private void checkComment(DetailAST aAST, Comment aComment)
++    private void checkComment(DetailAST aAST, TextBlock aComment)
+     {
+         final List tags = getMethodTags(aComment);
+         // Check for only one @see tag
+         if ((tags.size() != 1)
+             || !((JavadocTag) tags.get(0)).isSeeOrInheritDocTag())
+         {
+             checkParamTags(tags, getParameters(aAST));
+             checkThrowsTags(tags, getThrows(aAST));
+             if (isFunction(aAST)) {
+                 checkReturnTag(tags, aAST.getLineNo());
+             }
+ 
+             // Dump out all unused tags
+             final Iterator it = tags.iterator();
+             while (it.hasNext()) {
+                 final JavadocTag jt = (JavadocTag) it.next();
+                 if (!jt.isSeeOrInheritDocTag()) {
+                     log(jt.getLineNo(), "javadoc.unusedTagGeneral");
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Returns the tags in a javadoc comment. Only finds throws, exception,
+      * param, return and see tags.
+      * @return the tags found
+      * @param aComment the Javadoc comment
+      */
+-    private List getMethodTags(Comment aComment)
++    private List getMethodTags(TextBlock aComment)
+     {
+         final String[] lines = aComment.getText();
+         final List tags = new ArrayList();
+-        int currentLine = aComment.getFirstLineNo() - 1;
++        int currentLine = aComment.getStartLineNo() - 1;
+ 
+         for (int i = 0; i < lines.length; i++) {
+             currentLine++;
+             if (MATCH_JAVADOC_ARG.match(lines[i])) {
+                 tags.add(new JavadocTag(currentLine,
+                                         MATCH_JAVADOC_ARG.getParen(1),
+                                         MATCH_JAVADOC_ARG.getParen(2)));
+             }
+             else if (MATCH_JAVADOC_NOARG.match(lines[i])) {
+                 tags.add(new JavadocTag(currentLine,
+                                         MATCH_JAVADOC_NOARG.getParen(1)));
+             }
+             else if (MATCH_JAVADOC_NOARG_CURLY.match(lines[i])) {
+                 tags.add(new JavadocTag(currentLine,
+                                         MATCH_JAVADOC_NOARG_CURLY.getParen(1)));
+             }
+             else if (MATCH_JAVADOC_ARG_MULTILINE_START.match(lines[i])) {
+                 final String p1 = MATCH_JAVADOC_ARG_MULTILINE_START.getParen(1);
+                 final String p2 = MATCH_JAVADOC_ARG_MULTILINE_START.getParen(2);
+ 
+                 // Look for the rest of the comment if all we saw was
+                 // the tag and the name. Stop when we see '*/' (end of
+                 // Javadoc, '@' (start of next tag), or anything that's
+                 // not whitespace or '*' characters.
+                 int remIndex = i + 1;
+                 while (remIndex < lines.length) {
+                     if (MATCH_JAVADOC_MULTILINE_CONT.match(lines[remIndex])) {
+                         remIndex = lines.length;
+                         String lFin = MATCH_JAVADOC_MULTILINE_CONT.getParen(1);
+                         if (!lFin.equals(NEXT_TAG)
+                             && !lFin.equals(END_JAVADOC))
+                         {
+                             tags.add(new JavadocTag(currentLine, p1, p2));
+                         }
+                     }
+                     remIndex++;
+                 }
+             }
+             else if (MATCH_JAVADOC_NOARG_MULTILINE_START.match(lines[i])) {
+                 final String p1 =
+                     MATCH_JAVADOC_NOARG_MULTILINE_START.getParen(1);
+ 
+                 // Look for the rest of the comment if all we saw was
+                 // the tag and the name. Stop when we see '*/' (end of
+                 // Javadoc, '@' (start of next tag), or anything that's
+                 // not whitespace or '*' characters.
+                 int remIndex = i + 1;
+                 while (remIndex < lines.length) {
+                     if (MATCH_JAVADOC_MULTILINE_CONT.match(lines[remIndex])) {
+                         remIndex = lines.length;

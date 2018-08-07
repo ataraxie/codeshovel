@@ -1,0 +1,91 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
+index 7047fbd1a..b65b576dd 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/OneStatementPerLineCheck.java
+@@ -113,83 +113,72 @@ public final class OneStatementPerLineCheck extends Check {
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.SEMI:
+                 DetailAST currentStatement = ast;
+                 if (isMultilineStatement(currentStatement)) {
+                     currentStatement = ast.getPreviousSibling();
+                 }
+                 if (isOnTheSameLine(currentStatement, lastStatementEnd,
+                         forStatementEnd) && !inForHeader) {
+                     log(ast, MSG_KEY);
+                 }
+                 break;
+             case TokenTypes.FOR_ITERATOR:
+                 forStatementEnd = ast.getLineNo();
+                 break;
+             default:
+                 inForHeader = true;
+                 break;
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.SEMI:
+                 lastStatementEnd = ast.getLineNo();
+                 forStatementEnd = -1;
+                 break;
+             case TokenTypes.FOR_ITERATOR:
+                 inForHeader = false;
+                 break;
+             default:
+                 break;
+         }
+     }
+ 
+     /**
+      * Checks whether two statements are on the same line.
+      * @param ast token for the current statement.
+      * @param lastStatementEnd the line-number where the last statement ended.
+      * @param forStatementEnd the line-number where the last 'for-loop'
+      *                        statement ended.
+      * @return true if two statements are on the same line.
+      */
+     private static boolean isOnTheSameLine(DetailAST ast, int lastStatementEnd,
+                                            int forStatementEnd) {
+         final boolean onTheSameLine;
+-        if (lastStatementEnd == ast.getLineNo()
+-                && forStatementEnd != ast.getLineNo()) {
+-            onTheSameLine = true;
+-        }
+-        else {
+-            onTheSameLine = false;
+-        }
++        onTheSameLine = lastStatementEnd == ast.getLineNo() && forStatementEnd != ast.getLineNo();
+         return onTheSameLine;
+     }
+ 
+     /**
+      * Checks whether statement is multiline.
+      * @param ast token for the current statement.
+      * @return true if one statement is distributed over two or more lines.
+      */
+     private static boolean isMultilineStatement(DetailAST ast) {
+         final boolean multiline;
+         if (ast.getPreviousSibling() != null) {
+             final DetailAST prevSibling = ast.getPreviousSibling();
+-            if (prevSibling.getLineNo() != ast.getLineNo()
+-                    && ast.getParent() != null) {
+-                multiline = true;
+-            }
+-            else {
+-                multiline = false;
+-            }
++            multiline = prevSibling.getLineNo() != ast.getLineNo()
++                && ast.getParent() != null;
+         }
+         else {
+             multiline = false;
+         }
+         return multiline;
+     }
+ }

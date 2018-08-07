@@ -1,0 +1,91 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java b/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
+index db8b8ad34..06759b5ca 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Utils.java
+@@ -137,85 +137,85 @@ public final class Utils
+      * @param tabWidth the distance between tab stop position.
+      * @return the length of string.substring(0, toIdx) with tabs expanded.
+      */
+     public static int lengthExpandedTabs(String string,
+                                          int toIdx,
+                                          int tabWidth)
+     {
+         int len = 0;
+         for (int idx = 0; idx < toIdx; idx++) {
+             if (string.charAt(idx) == '\t') {
+                 len = (len / tabWidth + 1) * tabWidth;
+             }
+             else {
+                 len++;
+             }
+         }
+         return len;
+     }
+ 
+     /**
+      * Validates whether passed string is a valid pattern or not.
+      * @param pattern
+      *        string to validate
+      * @return true if the pattern is valid false otherwise
+      */
+     public static boolean isPatternValid(String pattern)
+     {
+         try {
+             Pattern.compile(pattern);
+         }
+         catch (final PatternSyntaxException e) {
+             return false;
+         }
+         return true;
+     }
+ 
+     /**
+      * Helper method to create a regular expression.
+      * @param pattern the pattern to match
+      * @return a created regexp object
+      * @throws ConversionException if unable to create Pattern object.
+      **/
+     public static Pattern createPattern(String pattern)
+         throws ConversionException
+     {
+         try {
+             return Pattern.compile(pattern);
+         }
+         catch (final PatternSyntaxException e) {
+             throw new ConversionException(
+-                "Failed to initialise regexp expression " + pattern, e);
++                "Failed to initialise regular expression " + pattern, e);
+         }
+     }
+ 
+     /**
+      * @return the base class name from a fully qualified name
+      * @param type the fully qualified name. Cannot be null
+      */
+     public static String baseClassname(String type)
+     {
+         final int i = type.lastIndexOf(".");
+         return i == -1 ? type : type.substring(i + 1);
+     }
+ 
+     /**
+      * Create a stripped down version of a filename.
+      * @param basedir the prefix to strip off the original filename
+      * @param fileName the original filename
+      * @return the filename where an initial prefix of basedir is stripped
+      */
+     public static String getStrippedFileName(
+             final String basedir, final String fileName)
+     {
+         final String stripped;
+         if (basedir == null || !fileName.startsWith(basedir)) {
+             stripped = fileName;
+         }
+         else {
+             // making the assumption that there is text after basedir
+             final int skipSep = basedir.endsWith(File.separator) ? 0 : 1;
+             stripped = fileName.substring(basedir.length() + skipSep);
+         }
+         return stripped;
+     }
+ }

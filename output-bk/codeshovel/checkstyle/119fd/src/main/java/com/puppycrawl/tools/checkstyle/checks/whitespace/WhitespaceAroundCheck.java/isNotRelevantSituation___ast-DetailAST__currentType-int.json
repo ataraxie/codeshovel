@@ -1,0 +1,91 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "WhitespaceAroundCheck.java",
+  "functionName": "isNotRelevantSituation",
+  "functionId": "isNotRelevantSituation___ast-DetailAST__currentType-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java",
+  "functionStartLine": 412,
+  "functionEndLine": 431,
+  "changeHistory": [
+    "a66d414ae6254d11f5c6021cc804a56d250a3595",
+    "904de34fcd984edce3d6042a5a17e2a969254588",
+    "55c92042eb6986e905529de841d3d1c9a7b2b6dd",
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+    "779aa37ffc447d1d85ea1b082759e4040657191d"
+  ],
+  "changeHistoryShort": {
+    "a66d414ae6254d11f5c6021cc804a56d250a3595": "Ybodychange",
+    "904de34fcd984edce3d6042a5a17e2a969254588": "Ybodychange",
+    "55c92042eb6986e905529de841d3d1c9a7b2b6dd": "Ybodychange",
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a": "Ybodychange",
+    "779aa37ffc447d1d85ea1b082759e4040657191d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "a66d414ae6254d11f5c6021cc804a56d250a3595": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2480: Fix skipping validation for non empty classes when allowEmptyTypes is true\n",
+      "commitDate": 1446645632000,
+      "commitName": "a66d414ae6254d11f5c6021cc804a56d250a3595",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1442844325000,
+      "commitNameOld": "03f2be49f7ad3fc9d0143782b020a169f28e50a9",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 44.0,
+      "commitsBetweenForRepo": 287,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     private boolean isNotRelevantSituation(DetailAST ast, int currentType) {\n         final int parentType \u003d ast.getParent().getType();\n         final boolean starImport \u003d currentType \u003d\u003d TokenTypes.STAR\n                 \u0026\u0026 parentType \u003d\u003d TokenTypes.DOT;\n         final boolean slistInsideCaseGroup \u003d currentType \u003d\u003d TokenTypes.SLIST\n                 \u0026\u0026 parentType \u003d\u003d TokenTypes.CASE_GROUP;\n \n         final boolean starImportOrSlistInsideCaseGroup \u003d starImport || slistInsideCaseGroup;\n         final boolean colonOfCaseOrDefaultOrForEach \u003d\n                 isColonOfCaseOrDefault(currentType, parentType)\n                 || isColonOfForEach(currentType, parentType);\n         final boolean emptyBlockOrType \u003d isEmptyBlock(ast, parentType)\n-                || allowEmptyTypes \u0026\u0026 isEmptyType(ast, parentType);\n+                || allowEmptyTypes \u0026\u0026 isEmptyType(ast);\n \n         return starImportOrSlistInsideCaseGroup\n                 || colonOfCaseOrDefaultOrForEach\n                 || emptyBlockOrType\n                 || isArrayInitialization(currentType, parentType);\n     }\n\\ No newline at end of file\n"
+    },
+    "904de34fcd984edce3d6042a5a17e2a969254588": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: ReturnCount violation fixed for WhitespaceAroundCheck\n",
+      "commitDate": 1440827395000,
+      "commitName": "904de34fcd984edce3d6042a5a17e2a969254588",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440679848000,
+      "commitNameOld": "55c92042eb6986e905529de841d3d1c9a7b2b6dd",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.71,
+      "commitsBetweenForRepo": 71,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,32 +1,19 @@\n     private boolean isNotRelevantSituation(DetailAST ast, int currentType) {\n         final int parentType \u003d ast.getParent().getType();\n+        final boolean starImport \u003d currentType \u003d\u003d TokenTypes.STAR\n+                \u0026\u0026 parentType \u003d\u003d TokenTypes.DOT;\n+        final boolean slistInsideCaseGroup \u003d currentType \u003d\u003d TokenTypes.SLIST\n+                \u0026\u0026 parentType \u003d\u003d TokenTypes.CASE_GROUP;\n \n-        // Check for CURLY in array initializer\n-        if (isArrayInitialization(currentType, parentType)) {\n-            return true;\n-        }\n+        final boolean starImportOrSlistInsideCaseGroup \u003d starImport || slistInsideCaseGroup;\n+        final boolean colonOfCaseOrDefaultOrForEach \u003d\n+                isColonOfCaseOrDefault(currentType, parentType)\n+                || isColonOfForEach(currentType, parentType);\n+        final boolean emptyBlockOrType \u003d isEmptyBlock(ast, parentType)\n+                || allowEmptyTypes \u0026\u0026 isEmptyType(ast, parentType);\n \n-        // Check for import pkg.name.*;\n-        if (currentType \u003d\u003d TokenTypes.STAR\n-            \u0026\u0026 parentType \u003d\u003d TokenTypes.DOT) {\n-            return true;\n-        }\n-\n-        // Check for an SLIST that has a parent CASE_GROUP. It is not a \u0027{\u0027.\n-        if (currentType \u003d\u003d TokenTypes.SLIST\n-            \u0026\u0026 parentType \u003d\u003d TokenTypes.CASE_GROUP) {\n-            return true;\n-        }\n-\n-        if (isColonOfCaseOrDefault(currentType, parentType)) {\n-            return true;\n-        }\n-\n-        // Checks if empty methods, constructors or loops are allowed.\n-        if (isEmptyBlock(ast, parentType)) {\n-            return true;\n-        }\n-\n-        // Checks if empty classes, interfaces or enums are allowed\n-        return allowEmptyTypes \u0026\u0026 isEmptyType(ast, parentType);\n+        return starImportOrSlistInsideCaseGroup\n+                || colonOfCaseOrDefaultOrForEach\n+                || emptyBlockOrType\n+                || isArrayInitialization(currentType, parentType);\n     }\n\\ No newline at end of file\n"
+    },
+    "55c92042eb6986e905529de841d3d1c9a7b2b6dd": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix various typos in Java code. #1555\n\nFixes some `SpellCheckingInspection` inspection violations.\n\nDescription:\n\u003eSpellchecker inspection helps locate typos and misspelling in your code, comments and literals, and fix them in one click.\n",
+      "commitDate": 1440679848000,
+      "commitName": "55c92042eb6986e905529de841d3d1c9a7b2b6dd",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440498848000,
+      "commitNameOld": "0aec69c702a43a0219a7cc1e3d0c2a21d8d871f0",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 2.09,
+      "commitsBetweenForRepo": 63,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,32 +1,32 @@\n     private boolean isNotRelevantSituation(DetailAST ast, int currentType) {\n         final int parentType \u003d ast.getParent().getType();\n \n         // Check for CURLY in array initializer\n         if (isArrayInitialization(currentType, parentType)) {\n             return true;\n         }\n \n         // Check for import pkg.name.*;\n         if (currentType \u003d\u003d TokenTypes.STAR\n             \u0026\u0026 parentType \u003d\u003d TokenTypes.DOT) {\n             return true;\n         }\n \n         // Check for an SLIST that has a parent CASE_GROUP. It is not a \u0027{\u0027.\n         if (currentType \u003d\u003d TokenTypes.SLIST\n             \u0026\u0026 parentType \u003d\u003d TokenTypes.CASE_GROUP) {\n             return true;\n         }\n \n         if (isColonOfCaseOrDefault(currentType, parentType)) {\n             return true;\n         }\n \n-        // Checks if empty methods, ctors or loops are allowed.\n+        // Checks if empty methods, constructors or loops are allowed.\n         if (isEmptyBlock(ast, parentType)) {\n             return true;\n         }\n \n         // Checks if empty classes, interfaces or enums are allowed\n         return allowEmptyTypes \u0026\u0026 isEmptyType(ast, parentType);\n     }\n\\ No newline at end of file\n"
+    },
+    "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a": {
+      "type": "Ybodychange",
+      "commitMessage": "Update Maven PMD Plugin to 3.5. #1300\n",
+      "commitDate": 1436323201000,
+      "commitName": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1434344165000,
+      "commitNameOld": "779aa37ffc447d1d85ea1b082759e4040657191d",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 22.91,
+      "commitsBetweenForRepo": 133,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,36 +1,32 @@\n     private boolean isNotRelevantSituation(DetailAST ast, int currentType) {\n         final int parentType \u003d ast.getParent().getType();\n \n         // Check for CURLY in array initializer\n         if (isArrayInitialization(currentType, parentType)) {\n             return true;\n         }\n \n         // Check for import pkg.name.*;\n         if (currentType \u003d\u003d TokenTypes.STAR\n             \u0026\u0026 parentType \u003d\u003d TokenTypes.DOT) {\n             return true;\n         }\n \n         // Check for an SLIST that has a parent CASE_GROUP. It is not a \u0027{\u0027.\n         if (currentType \u003d\u003d TokenTypes.SLIST\n             \u0026\u0026 parentType \u003d\u003d TokenTypes.CASE_GROUP) {\n             return true;\n         }\n \n         if (isColonOfCaseOrDefault(currentType, parentType)) {\n             return true;\n         }\n \n         // Checks if empty methods, ctors or loops are allowed.\n         if (isEmptyBlock(ast, parentType)) {\n             return true;\n         }\n \n         // Checks if empty classes, interfaces or enums are allowed\n-        if (allowEmptyTypes \u0026\u0026 isEmptyType(ast, parentType)) {\n-            return true;\n-        }\n-\n-        return false;\n+        return allowEmptyTypes \u0026\u0026 isEmptyType(ast, parentType);\n     }\n\\ No newline at end of file\n"
+    },
+    "779aa37ffc447d1d85ea1b082759e4040657191d": {
+      "type": "Yintroduced",
+      "commitMessage": "WhitespaceAroundCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344165000,
+      "commitName": "779aa37ffc447d1d85ea1b082759e4040657191d",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

@@ -1,0 +1,106 @@
+diff --git a/android/guava/src/com/google/common/collect/ImmutableSortedMap.java b/android/guava/src/com/google/common/collect/ImmutableSortedMap.java
+index 13fa8bf03..a03a31c30 100644
+--- a/android/guava/src/com/google/common/collect/ImmutableSortedMap.java
++++ b/android/guava/src/com/google/common/collect/ImmutableSortedMap.java
+@@ -302,100 +302,101 @@ public final class ImmutableSortedMap<K, V> extends ImmutableSortedMapFauxveride
+       boolean sameComparator,
+       Iterable<? extends Entry<? extends K, ? extends V>> entries) {
+     // "adding" type params to an array of a raw type should be safe as
+     // long as no one can ever cast that same array instance back to a
+     // raw type.
+     @SuppressWarnings("unchecked")
+     Entry<K, V>[] entryArray = (Entry[]) Iterables.toArray(entries, EMPTY_ENTRY_ARRAY);
+     return fromEntries(comparator, sameComparator, entryArray, entryArray.length);
+   }
+ 
+   private static <K, V> ImmutableSortedMap<K, V> fromEntries(
+       final Comparator<? super K> comparator,
+       boolean sameComparator,
+       Entry<K, V>[] entryArray,
+       int size) {
+     switch (size) {
+       case 0:
+         return emptyMap(comparator);
+       case 1:
+         return ImmutableSortedMap.<K, V>of(
+             comparator, entryArray[0].getKey(), entryArray[0].getValue());
+       default:
+         Object[] keys = new Object[size];
+         Object[] values = new Object[size];
+         if (sameComparator) {
+           // Need to check for nulls, but don't need to sort or validate.
+           for (int i = 0; i < size; i++) {
+             Object key = entryArray[i].getKey();
+             Object value = entryArray[i].getValue();
+             checkEntryNotNull(key, value);
+             keys[i] = key;
+             values[i] = value;
+           }
+         } else {
+           // Need to sort and check for nulls and dupes.
+           // Inline the Comparator implementation rather than transforming with a Function
+           // to save code size.
+           Arrays.sort(
+               entryArray,
+               0,
+               size,
+               new Comparator<Entry<K, V>>() {
+                 @Override
+                 public int compare(Entry<K, V> e1, Entry<K, V> e2) {
+                   return comparator.compare(e1.getKey(), e2.getKey());
+                 }
+               });
+           K prevKey = entryArray[0].getKey();
+           keys[0] = prevKey;
+           values[0] = entryArray[0].getValue();
++          checkEntryNotNull(keys[0], values[0]);
+           for (int i = 1; i < size; i++) {
+             K key = entryArray[i].getKey();
+             V value = entryArray[i].getValue();
+             checkEntryNotNull(key, value);
+             keys[i] = key;
+             values[i] = value;
+             checkNoConflict(
+                 comparator.compare(prevKey, key) != 0, "key", entryArray[i - 1], entryArray[i]);
+             prevKey = key;
+           }
+         }
+         return new ImmutableSortedMap<>(
+             new RegularImmutableSortedSet<K>(ImmutableList.<K>asImmutableList(keys), comparator),
+             ImmutableList.<V>asImmutableList(values));
+     }
+   }
+ 
+   /**
+    * Returns a builder that creates immutable sorted maps whose keys are
+    * ordered by their natural ordering. The sorted maps use {@link
+    * Ordering#natural()} as the comparator.
+    */
+   public static <K extends Comparable<?>, V> Builder<K, V> naturalOrder() {
+     return new Builder<>(Ordering.natural());
+   }
+ 
+   /**
+    * Returns a builder that creates immutable sorted maps with an explicit
+    * comparator. If the comparator has a more general type than the map's keys,
+    * such as creating a {@code SortedMap<Integer, String>} with a {@code
+    * Comparator<Number>}, use the {@link Builder} constructor instead.
+    *
+    * @throws NullPointerException if {@code comparator} is null
+    */
+   public static <K, V> Builder<K, V> orderedBy(Comparator<K> comparator) {
+     return new Builder<>(comparator);
+   }
+ 
+   /**
+    * Returns a builder that creates immutable sorted maps whose keys are
+    * ordered by the reverse of their natural ordering.
+    */
+   public static <K extends Comparable<?>, V> Builder<K, V> reverseOrder() {
+     return new Builder<>(Ordering.natural().reverse());
+   }
+ 
+   /**
+    * A builder for creating immutable sorted map instances, especially {@code
+    * public static final} maps ("constant maps"). Example: <pre>   {@code
+    *

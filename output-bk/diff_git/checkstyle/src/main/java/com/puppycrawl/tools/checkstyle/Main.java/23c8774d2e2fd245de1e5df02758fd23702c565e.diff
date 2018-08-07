@@ -1,0 +1,117 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+index 485f9116a..ea861cd52 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+@@ -168,104 +168,108 @@ public final class Main {
+                 final File file = new File(outputLocation);
+                 if (file.exists() && !file.canWrite()) {
+                     result.add(String.format("Permission denied : '%s'.", outputLocation));
+                 }
+             }
+             final List<File> files = getFilesToProcess(cmdLine.getArgs());
+             if (files.isEmpty()) {
+                 result.add("Must specify files to process, found 0.");
+             }
+         }
+         else {
+             result.add("Must specify a config XML file.");
+         }
+ 
+         return result;
+     }
+ 
+     /**
+      * Util method to convert ComandLine type to POJO object
+      * @param cmdLine command line object
+      * @return command line option as POJO object
+      */
+     private static CliOptions convertCliToPojo(CommandLine cmdLine) {
+         final CliOptions conf = new CliOptions();
+         conf.format = cmdLine.getOptionValue("f");
+         if (conf.format == null) {
+             conf.format = "plain";
+         }
+         conf.outputLocation = cmdLine.getOptionValue("o");
+         conf.configLocation = cmdLine.getOptionValue("c");
+         conf.propertiesLocation = cmdLine.getOptionValue("p");
+         conf.files = getFilesToProcess(cmdLine.getArgs());
+         return conf;
+     }
+ 
+     /**
+      * Executes required Checkstyle actions based on passed parameters.
+      * @param cliOptions
+      *        pojo object that contains all options
+      * @return number of violations of ERROR level
+      * @throws FileNotFoundException
+      *         when output file could not be found
+      * @throws CheckstyleException
+      *         when properties file could not be loaded
+      * @throws UnsupportedEncodingException
+      *         if there is problem to use UTf-8
+      */
+     private static int runCheckstyle(CliOptions cliOptions)
+             throws CheckstyleException, UnsupportedEncodingException, FileNotFoundException {
+         // setup the properties
+-        final Properties props =
+-                cliOptions.propertiesLocation != null
+-                        ? loadProperties(new File(cliOptions.propertiesLocation))
+-                        : System.getProperties();
++        final Properties props;
++
++        if (cliOptions.propertiesLocation == null) {
++            props = System.getProperties();
++        }
++        else {
++            props = loadProperties(new File(cliOptions.propertiesLocation));
++        }
+ 
+         // create a configuration
+         final Configuration config = ConfigurationLoader.loadConfiguration(
+                 cliOptions.configLocation, new PropertiesExpander(props));
+ 
+         // create a listener for output
+         final AuditListener listener = createListener(cliOptions.format, cliOptions.outputLocation);
+ 
+         // create Checker object and run it
+         int errorCounter = 0;
+         final Checker checker = new Checker();
+ 
+         try {
+ 
+             final ClassLoader moduleClassLoader = Checker.class.getClassLoader();
+             checker.setModuleClassLoader(moduleClassLoader);
+             checker.configure(config);
+             checker.addListener(listener);
+ 
+             // run Checker
+             errorCounter = checker.process(cliOptions.files);
+ 
+         }
+         finally {
+             checker.destroy();
+         }
+ 
+         return errorCounter;
+     }
+ 
+     /**
+      * Loads properties from a File.
+      * @param file
+      *        the properties file
+      * @return the properties in file
+      * @throws CheckstyleException
+      *         when could not load properties file
+      */
+     private static Properties loadProperties(File file)
+             throws CheckstyleException {
+         final Properties properties = new Properties();
+ 
+         FileInputStream fis = null;
+         try {
+             fis = new FileInputStream(file);
+             properties.load(fis);
+         }
+         catch (final IOException e) {
+             throw new CheckstyleException(String.format(
+                     "Unable to load properties from file '%s'.", file.getAbsolutePath()), e);

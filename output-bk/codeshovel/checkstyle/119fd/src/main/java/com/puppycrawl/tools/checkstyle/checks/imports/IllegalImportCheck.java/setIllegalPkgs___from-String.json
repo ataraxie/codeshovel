@@ -1,0 +1,165 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IllegalImportCheck.java",
+  "functionName": "setIllegalPkgs",
+  "functionId": "setIllegalPkgs___from-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/IllegalImportCheck.java",
+  "functionStartLine": 106,
+  "functionEndLine": 112,
+  "changeHistory": [
+    "34bd19015f57dd9b89c4f2ecff64a4f32fe82ec8",
+    "e70960913c07d921dea470857f9bcdb67f38959f",
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "911065320fb39299f442ea08f775cfe08ba2a2ed",
+    "ddb334d9e4443c96fed60ff0a0b9210615846315",
+    "9118f376bee8c9281c4458b96fbda8f3ff49bbdc",
+    "1ed1a11612a7710f2642fa1b5c719edc1db69c0c",
+    "18d65a1993ddb57b7de36092614413d2eb6bc69b"
+  ],
+  "changeHistoryShort": {
+    "34bd19015f57dd9b89c4f2ecff64a4f32fe82ec8": "Ybodychange",
+    "e70960913c07d921dea470857f9bcdb67f38959f": "Ymodifierchange",
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f": "Yparameterchange",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "911065320fb39299f442ea08f775cfe08ba2a2ed": "Ybodychange",
+    "ddb334d9e4443c96fed60ff0a0b9210615846315": "Yfilerename",
+    "9118f376bee8c9281c4458b96fbda8f3ff49bbdc": "Ybodychange",
+    "1ed1a11612a7710f2642fa1b5c719edc1db69c0c": "Ymultichange(Yparameterchange,Ybodychange)",
+    "18d65a1993ddb57b7de36092614413d2eb6bc69b": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "34bd19015f57dd9b89c4f2ecff64a4f32fe82ec8": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3449: IllegalImport: new property illegalClasses to let blacklist certain classes import\n",
+      "commitDate": 1493672706000,
+      "commitName": "34bd19015f57dd9b89c4f2ecff64a4f32fe82ec8",
+      "commitAuthor": "Tima",
+      "commitDateOld": 1493045733000,
+      "commitNameOld": "d6f3a17328226debcddb53ed25c39501f2781764",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 7.26,
+      "commitsBetweenForRepo": 37,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,7 @@\n     public final void setIllegalPkgs(String... from) {\n         illegalPkgs \u003d from.clone();\n+        illegalPkgsRegexps.clear();\n+        for (String illegalPkg : illegalPkgs) {\n+            illegalPkgsRegexps.add(CommonUtils.createPattern(\"^\" + illegalPkg + \"\\\\..*\"));\n+        }\n     }\n\\ No newline at end of file\n"
+    },
+    "e70960913c07d921dea470857f9bcdb67f38959f": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Mark methods final if they are used in constructors. #1555\n\nFixes `OverridableMethodCallDuringObjectConstruction` inspection violations.\n\nDescription:\n\u003eReports any calls to overridable methods of the current class during object construction. A call is during object construction if it is made inside a constructor, in an non-static instance initializer, in a non-static field initializer or inside a clone(), readObject() or readObjectNoData() method. Methods are overridable if they are not declared final, static or private. Such calls may result in subtle bugs, as the object is not guaranteed to be initialized before the method call occurs.\n",
+      "commitDate": 1439086400000,
+      "commitName": "e70960913c07d921dea470857f9bcdb67f38959f",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 83.6,
+      "commitsBetweenForRepo": 645,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n-    public void setIllegalPkgs(String... from) {\n+    public final void setIllegalPkgs(String... from) {\n         illegalPkgs \u003d from.clone();\n     }\n\\ No newline at end of file\n"
+    },
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f": {
+      "type": "Yparameterchange",
+      "commitMessage": "Fix PMD violations from UseVarargs rule, issue #999\n\nThe changes are fully backward-compatible. Method with vararg can be invoked both using array and list of parameters.\n",
+      "commitDate": 1430353274000,
+      "commitName": "c0446a825514ea0279b8c22f633f2c4e3c73dc1f",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1426705638000,
+      "commitNameOld": "a8a721f278e9ccf120cc7bce6f337ca5a98aaf88",
+      "commitAuthorOld": "Damian Szczepanik",
+      "daysBetweenCommits": 42.22,
+      "commitsBetweenForRepo": 187,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n-    public void setIllegalPkgs(String[] from)\n+    public void setIllegalPkgs(String... from)\n     {\n         illegalPkgs \u003d from.clone();\n     }\n\\ No newline at end of file\n"
+    },
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, imports, #512\n",
+      "commitDate": 1421678111000,
+      "commitName": "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "911065320fb39299f442ea08f775cfe08ba2a2ed": {
+      "type": "Ybodychange",
+      "commitMessage": "fixing things reported by FindBugs\n",
+      "commitDate": 1209181531000,
+      "commitName": "911065320fb39299f442ea08f775cfe08ba2a2ed",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200296548000,
+      "commitNameOld": "fd90bd5aa5cd623b08a2e44ef05e8fac8045d333",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 102.84,
+      "commitsBetweenForRepo": 38,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n     public void setIllegalPkgs(String[] aFrom)\n     {\n-        mIllegalPkgs \u003d aFrom;\n+        mIllegalPkgs \u003d aFrom.clone();\n     }\n\\ No newline at end of file\n"
+    },
+    "ddb334d9e4443c96fed60ff0a0b9210615846315": {
+      "type": "Yfilerename",
+      "commitMessage": "Moved the Import checks to a sub-package. That is all\nthe refactoring I have time for over the next few days.\n",
+      "commitDate": 1054649602000,
+      "commitName": "ddb334d9e4443c96fed60ff0a0b9210615846315",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1054648289000,
+      "commitNameOld": "04ac5dd87c11a2bf7b908b45bbca7933382df515",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.02,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "9118f376bee8c9281c4458b96fbda8f3ff49bbdc": {
+      "type": "Ybodychange",
+      "commitMessage": "simplified implementation\n",
+      "commitDate": 1038984080000,
+      "commitName": "9118f376bee8c9281c4458b96fbda8f3ff49bbdc",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1038937654000,
+      "commitNameOld": "1ed1a11612a7710f2642fa1b5c719edc1db69c0c",
+      "commitAuthorOld": "Rick Giles",
+      "daysBetweenCommits": 0.54,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,4 @@\n     public void setIllegalPkgs(String[] aFrom)\n     {\n-        mIllegalPkgs.clear();\n-        for (int i \u003d 0; i \u003c aFrom.length; i++) {\n-            final String s \u003d aFrom[i];\n-            mIllegalPkgs.add(s);\n-        }\n+        mIllegalPkgs \u003d aFrom;\n     }\n\\ No newline at end of file\n"
+    },
+    "1ed1a11612a7710f2642fa1b5c719edc1db69c0c": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Beef up Javadoc. Change setIllegalPkgs to let beanutils do the work.\n",
+      "commitDate": 1038937654000,
+      "commitName": "1ed1a11612a7710f2642fa1b5c719edc1db69c0c",
+      "commitAuthor": "Rick Giles",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "18d65a1993ddb57b7de36092614413d2eb6bc69b": {
+      "type": "Yintroduced",
+      "commitMessage": "Moved across all the import checks\n",
+      "commitDate": 1033278902000,
+      "commitName": "18d65a1993ddb57b7de36092614413d2eb6bc69b",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

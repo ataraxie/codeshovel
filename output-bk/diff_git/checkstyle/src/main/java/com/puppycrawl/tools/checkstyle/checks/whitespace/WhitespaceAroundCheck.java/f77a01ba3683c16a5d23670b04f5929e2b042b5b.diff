@@ -1,0 +1,208 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
+index 8bf4d05f9..cc49cb3e6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
+@@ -204,100 +204,101 @@ public class WhitespaceAroundCheck extends AbstractCheck {
+             TokenTypes.BXOR_ASSIGN,
+             TokenTypes.COLON,
+             TokenTypes.DIV,
+             TokenTypes.DIV_ASSIGN,
+             TokenTypes.DO_WHILE,
+             TokenTypes.EQUAL,
+             TokenTypes.GE,
+             TokenTypes.GT,
+             TokenTypes.LAMBDA,
+             TokenTypes.LAND,
+             TokenTypes.LCURLY,
+             TokenTypes.LE,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_RETURN,
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.LITERAL_SYNCHRONIZED,
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LOR,
+             TokenTypes.LT,
+             TokenTypes.MINUS,
+             TokenTypes.MINUS_ASSIGN,
+             TokenTypes.MOD,
+             TokenTypes.MOD_ASSIGN,
+             TokenTypes.NOT_EQUAL,
+             TokenTypes.PLUS,
+             TokenTypes.PLUS_ASSIGN,
+             TokenTypes.QUESTION,
+             TokenTypes.RCURLY,
+             TokenTypes.SL,
+             TokenTypes.SLIST,
+             TokenTypes.SL_ASSIGN,
+             TokenTypes.SR,
+             TokenTypes.SR_ASSIGN,
+             TokenTypes.STAR,
+             TokenTypes.STAR_ASSIGN,
+             TokenTypes.LITERAL_ASSERT,
+             TokenTypes.TYPE_EXTENSION_AND,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.ASSIGN,
++            TokenTypes.ARRAY_INIT,
+             TokenTypes.BAND,
+             TokenTypes.BAND_ASSIGN,
+             TokenTypes.BOR,
+             TokenTypes.BOR_ASSIGN,
+             TokenTypes.BSR,
+             TokenTypes.BSR_ASSIGN,
+             TokenTypes.BXOR,
+             TokenTypes.BXOR_ASSIGN,
+             TokenTypes.COLON,
+             TokenTypes.DIV,
+             TokenTypes.DIV_ASSIGN,
+             TokenTypes.DO_WHILE,
+             TokenTypes.EQUAL,
+             TokenTypes.GE,
+             TokenTypes.GT,
+             TokenTypes.LAMBDA,
+             TokenTypes.LAND,
+             TokenTypes.LCURLY,
+             TokenTypes.LE,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_RETURN,
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.LITERAL_SYNCHRONIZED,
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LOR,
+             TokenTypes.LT,
+             TokenTypes.MINUS,
+             TokenTypes.MINUS_ASSIGN,
+             TokenTypes.MOD,
+             TokenTypes.MOD_ASSIGN,
+             TokenTypes.NOT_EQUAL,
+             TokenTypes.PLUS,
+             TokenTypes.PLUS_ASSIGN,
+             TokenTypes.QUESTION,
+             TokenTypes.RCURLY,
+             TokenTypes.SL,
+             TokenTypes.SLIST,
+             TokenTypes.SL_ASSIGN,
+             TokenTypes.SR,
+             TokenTypes.SR_ASSIGN,
+             TokenTypes.STAR,
+             TokenTypes.STAR_ASSIGN,
+             TokenTypes.LITERAL_ASSERT,
+             TokenTypes.TYPE_EXTENSION_AND,
+@@ -401,100 +402,101 @@ public class WhitespaceAroundCheck extends AbstractCheck {
+                 && parentType == TokenTypes.DOT;
+         final boolean slistInsideCaseGroup = currentType == TokenTypes.SLIST
+                 && parentType == TokenTypes.CASE_GROUP;
+ 
+         final boolean starImportOrSlistInsideCaseGroup = starImport || slistInsideCaseGroup;
+         final boolean colonOfCaseOrDefaultOrForEach =
+                 isColonOfCaseOrDefault(currentType, parentType)
+                         || isColonOfForEach(currentType, parentType);
+         final boolean emptyBlockOrType =
+                 isEmptyBlock(ast, parentType)
+                     || allowEmptyTypes && isEmptyType(ast);
+ 
+         return starImportOrSlistInsideCaseGroup
+                 || colonOfCaseOrDefaultOrForEach
+                 || emptyBlockOrType
+                 || isArrayInitialization(currentType, parentType);
+     }
+ 
+     /**
+      * Check if it should be checked if previous token is separated from current by
+      * whitespace.
+      * This function is needed to recognise double brace initialization as valid,
+      * unfortunately its not possible to implement this functionality
+      * in isNotRelevantSituation method, because in this method when we return
+      * true(is not relevant) ast is later doesnt check at all. For example:
+      * new Properties() {{setProperty("double curly braces", "are not a style error");
+      * }};
+      * For second left curly brace in first line when we would return true from
+      * isNotRelevantSituation it wouldn't later check that the next token(setProperty)
+      * is not separated from previous token.
+      * @param ast current AST.
+      * @return true if it should be checked if previous token is separated by whitespace,
+      *      false otherwise.
+      */
+     private static boolean shouldCheckSeparationFromPreviousToken(DetailAST ast) {
+         return !isPartOfDoubleBraceInitializerForPreviousToken(ast);
+     }
+ 
+     /**
+      * Check if it should be checked if next token is separated from current by
+      * whitespace. Explanation why this method is needed is identical to one
+      * included in shouldCheckSeparationFromPreviousToken method.
+      * @param ast current AST.
+      * @param nextChar next character.
+      * @return true if it should be checked if next token is separated by whitespace,
+      *      false otherwise.
+      */
+     private static boolean shouldCheckSeparationFromNextToken(DetailAST ast, char nextChar) {
+         return !(ast.getType() == TokenTypes.LITERAL_RETURN
+                     && ast.getFirstChild().getType() == TokenTypes.SEMI)
++                && ast.getType() != TokenTypes.ARRAY_INIT
+                 && !isAnonymousInnerClassEnd(ast.getType(), nextChar)
+                 && !isPartOfDoubleBraceInitializerForNextToken(ast);
+     }
+ 
+     /**
+      * Check for "})" or "};" or "},". Happens with anon-inners
+      * @param currentType token
+      * @param nextChar next symbol
+      * @return true is that is end of anon inner class
+      */
+     private static boolean isAnonymousInnerClassEnd(int currentType, char nextChar) {
+         return currentType == TokenTypes.RCURLY
+                 && (nextChar == ')'
+                         || nextChar == ';'
+                         || nextChar == ','
+                         || nextChar == '.');
+     }
+ 
+     /**
+      * Is empty block.
+      * @param ast ast
+      * @param parentType parent
+      * @return true is block is empty
+      */
+     private boolean isEmptyBlock(DetailAST ast, int parentType) {
+         return isEmptyMethodBlock(ast, parentType)
+                 || isEmptyCtorBlock(ast, parentType)
+                 || isEmptyLoop(ast, parentType)
+                 || isEmptyLambda(ast, parentType);
+     }
+ 
+     /**
+      * Tests if a given {@code DetailAST} is part of an empty block.
+      * An example empty block might look like the following
+      * <p>
+      * <pre>   public void myMethod(int val) {}</pre>
+      * </p>
+      * In the above, the method body is an empty block ("{}").
+      *
+      * @param ast the {@code DetailAST} to test.
+      * @param parentType the token type of {@code ast}'s parent.
+      * @param match the parent token type we're looking to match.
+      * @return {@code true} if {@code ast} makes up part of an
+      *         empty block contained under a {@code match} token type
+      *         node.
+      */
+     private static boolean isEmptyBlock(DetailAST ast, int parentType, int match) {
+         final int type = ast.getType();
+         if (type == TokenTypes.RCURLY) {
+             final DetailAST parent = ast.getParent();

@@ -1,0 +1,121 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/FileText.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/FileText.java
+index 87a15d8dd..a338b12e6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/FileText.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/FileText.java
+@@ -248,114 +248,114 @@ public final class FileText extends AbstractList<String>
+         }
+         byte[] bytes = new byte[(int) file.length() + 1];
+         final FileInputStream stream = new FileInputStream(file);
+         try {
+             int fill = 0;
+             while (true) {
+                 if (fill >= bytes.length) {
+                     // shouldn't happen, but it might nevertheless
+                     final byte[] newBytes = new byte[bytes.length * 2 + 1];
+                     System.arraycopy(bytes, 0, newBytes, 0, fill);
+                     bytes = newBytes;
+                 }
+                 final int len = stream.read(bytes, fill,
+                                             bytes.length - fill);
+                 if (len == -1) {
+                     break;
+                 }
+                 fill += len;
+             }
+             return ByteBuffer.wrap(bytes, 0, fill).asReadOnlyBuffer();
+         }
+         finally {
+             Closeables.closeQuietly(stream);
+         }
+     }
+ 
+     /**
+      * Retrieve the full text of the file.
+      * @return the full text of the file
+      */
+     public CharSequence getFullText()
+     {
+         return fullText;
+     }
+ 
+     /**
+      * Returns an array of all lines.
+      * {@code text.toLinesArray()} is equivalent to
+      * {@code text.toArray(new String[text.size()])}.
+      * @return an array of all lines of the text
+      */
+     public String[] toLinesArray()
+     {
+         return lines.clone();
+     }
+ 
+     /**
+      * Find positions of line breaks in the full text.
+      * @return an array giving the first positions of each line.
+      */
+-    private int[] lineBreaks()
++    private int[] findLineBreaks()
+     {
+         if (lineBreaks == null) {
+             final int[] lineBreaks = new int[size() + 1];
+             lineBreaks[0] = 0;
+             int lineNo = 1;
+             final Matcher matcher = LINE_TERMINATOR.matcher(fullText);
+             while (matcher.find()) {
+                 lineBreaks[lineNo++] = matcher.end();
+             }
+             if (lineNo < lineBreaks.length) {
+                 lineBreaks[lineNo++] = fullText.length();
+             }
+             if (lineNo != lineBreaks.length) {
+                 throw new ConcurrentModificationException("Text changed.");
+             }
+             this.lineBreaks = lineBreaks;
+         }
+         return lineBreaks;
+     }
+ 
+     /**
+      * Determine line and column numbers in full text.
+      * @param pos the character position in the full text
+      * @return the line and column numbers of this character
+      */
+     public LineColumn lineColumn(int pos)
+     {
+-        final int[] lineBreaks = lineBreaks();
++        final int[] lineBreaks = findLineBreaks();
+         int lineNo = Arrays.binarySearch(lineBreaks, pos);
+         if (lineNo < 0) {
+             // we have: lineNo = -(insertion point) - 1
+             // we want: lineNo =  (insertion point) - 1
+             lineNo = -lineNo - 2;
+         }
+         final int startOfLine = lineBreaks[lineNo];
+         final int columnNo = pos - startOfLine;
+         // now we have lineNo and columnNo, both starting at zero.
+         return new LineColumn(lineNo + 1, columnNo);
+     }
+ 
+     /**
+      * Retrieves a line of the text by its number.
+      * The returned line will not contain a trailing terminator.
+      * @param lineNo the number of the line to get, starting at zero
+      * @return the line with the given number
+      */
+     @Override
+     public String get(final int lineNo)
+     {
+         return lines[lineNo];
+     }
+ 
+     /**
+      * Counts the lines of the text.
+      * @return the number of lines in the text
+      */
+     @Override
+     public int size()
+     {
+         return lines.length;
+     }
+ 
+ }

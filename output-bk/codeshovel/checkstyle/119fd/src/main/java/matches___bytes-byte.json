@@ -1,0 +1,103 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "matches___bytes-byte",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 81,
+  "changeHistory": [
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c",
+    "384ecfc7d5a8ec7f0711c8baae661118297272a2",
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "59aa156470fbdf19a54382fb2caaca2a95f4dbd5"
+  ],
+  "changeHistoryShort": {
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c": "Ybodychange",
+    "384ecfc7d5a8ec7f0711c8baae661118297272a2": "Ybodychange",
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f": "Yparameterchange",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "59aa156470fbdf19a54382fb2caaca2a95f4dbd5": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.checks and com.puppycrawl.tools.checkstyle\n",
+      "commitDate": 1492827278000,
+      "commitName": "de50d3465849b83d25910590e1f5f39a25fe6e2c",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 84.49,
+      "commitsBetweenForRepo": 293,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,14 @@\n     public boolean matches(byte... bytes) {\n+        final boolean result;\n         if (this \u003d\u003d LF_CR_CRLF) {\n             // this silently assumes CRLF and ANY have the same length\n             // and LF and CR are of length 1\n-            return CRLF.matches(bytes)\n+            result \u003d CRLF.matches(bytes)\n                 || LF.matches(Arrays.copyOfRange(bytes, 1, 2))\n                 || CR.matches(Arrays.copyOfRange(bytes, 1, 2));\n         }\n         else {\n-            return Arrays.equals(bytes, lineSeparator);\n+            result \u003d Arrays.equals(bytes, lineSeparator);\n         }\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "384ecfc7d5a8ec7f0711c8baae661118297272a2": {
+      "type": "Ybodychange",
+      "commitMessage": "Add LineSeparatorOption.LF_CR_CRLF. Issue #1045\n",
+      "commitDate": 1432234095000,
+      "commitName": "384ecfc7d5a8ec7f0711c8baae661118297272a2",
+      "commitAuthor": "Martin Steiger",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 4.29,
+      "commitsBetweenForRepo": 15,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,12 @@\n     public boolean matches(byte... bytes) {\n-        final String s \u003d new String(bytes);\n-        return s.equals(lineSeparator);\n+        if (this \u003d\u003d LF_CR_CRLF) {\n+            // this silently assumes CRLF and ANY have the same length\n+            // and LF and CR are of length 1\n+            return CRLF.matches(bytes)\n+                || LF.matches(Arrays.copyOfRange(bytes, 1, 2))\n+                || CR.matches(Arrays.copyOfRange(bytes, 1, 2));\n+        }\n+        else {\n+            return Arrays.equals(bytes, lineSeparator);\n+        }\n     }\n\\ No newline at end of file\n"
+    },
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f": {
+      "type": "Yparameterchange",
+      "commitMessage": "Fix PMD violations from UseVarargs rule, issue #999\n\nThe changes are fully backward-compatible. Method with vararg can be invoked both using array and list of parameters.\n",
+      "commitDate": 1430353274000,
+      "commitName": "c0446a825514ea0279b8c22f633f2c4e3c73dc1f",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 70.13,
+      "commitsBetweenForRepo": 353,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    public boolean matches(byte[] bytes)\n+    public boolean matches(byte... bytes)\n     {\n         final String s \u003d new String(bytes);\n         return s.equals(lineSeparator);\n     }\n\\ No newline at end of file\n"
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "59aa156470fbdf19a54382fb2caaca2a95f4dbd5": {
+      "type": "Yintroduced",
+      "commitMessage": "added NewlineAtEndOfFile check, contributed by Christopher Lenz\n",
+      "commitDate": 1049631363000,
+      "commitName": "59aa156470fbdf19a54382fb2caaca2a95f4dbd5",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

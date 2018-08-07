@@ -1,0 +1,147 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
+index c2e7a58f5..07b956596 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/TokenTypes.java
+@@ -1,72 +1,73 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2004  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.api;
+ 
+ import java.util.Map;
+ import java.util.HashMap;
++import java.util.ResourceBundle;
+ import java.lang.reflect.Field;
+ 
+ import com.puppycrawl.tools.checkstyle.grammars.GeneratedJava14TokenTypes;
+ 
+ /**
+  * Contains the constants for all the tokens contained in the Abstract
+  * Syntax Tree.
+  *
+  * <p>Implementation detail: This class has been introduced to break
+  * the circular dependency between packages.<p>
+  *
+  * @author Oliver Burn
+  * @author <a href="mailto:dobratzp@ele.uri.edu">Peter Dobratz</a>
+  * @version 1.0
+  */
+ public final class TokenTypes
+ {
+     ///CLOVER:OFF
+     /** prevent instantiation */
+     private TokenTypes()
+     {
+     }
+     ///CLOVER:ON
+ 
+     // The following three types are never part of an AST,
+     // left here as a reminder so nobody will readd them accidentally
+ 
+     /* * token representing a NULL_TREE_LOOKAHEAD */
+     // public static final int NULL_TREE_LOOKAHEAD = 3;
+     /* * token representing a BLOCK */
+     // public static final int BLOCK = 4;
+     /* * token representing a VOCAB */
+     // public static final int VOCAB = 149;
+ 
+     // These are the types that can actually occur in an AST
+     // it makes sense to register Checks for these types
+ 
+     /**
+      * The end of file token.  This is the root node for the source
+      * file.  It's children are an optional package definition, zero
+      * or more import statements, and one or more class or interface
+      * definitions.
+      *
+      * @see #PACKAGE_DEF
+      * @see #IMPORT
+      * @see #CLASS_DEF
+      * @see #INTERFACE_DEF
+      **/
+     public static final int EOF = GeneratedJava14TokenTypes.EOF;
+     /**
+@@ -2689,51 +2690,68 @@ public final class TokenTypes
+                 if (tokenValue > tempTokenValueToName.length - 1) {
+                     final String[] temp = new String[tokenValue + 1];
+                     System.arraycopy(tempTokenValueToName, 0,
+                                      temp, 0, tempTokenValueToName.length);
+                     tempTokenValueToName = temp;
+                 }
+                 tempTokenValueToName[tokenValue] = name;
+             }
+             catch (IllegalArgumentException e) {
+                 e.printStackTrace();
+                 System.exit(1);
+             }
+             catch (IllegalAccessException e) {
+                 e.printStackTrace();
+                 System.exit(1);
+             }
+         }
+         TOKEN_VALUE_TO_NAME = tempTokenValueToName;
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param aID the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int aID)
+     {
+         if (aID > TOKEN_VALUE_TO_NAME.length - 1) {
+             throw new IllegalArgumentException("given id " + aID);
+         }
+         final String name = TOKEN_VALUE_TO_NAME[aID];
+         if (name == null) {
+             throw new IllegalArgumentException("given id " + aID);
+         }
+         return name;
+     }
+ 
+     /**
+      * Returns the ID of a token for a given name.
+      * @param aName the name of the token ID to get
+      * @return a token ID
+      */
+     public static int getTokenId(String aName)
+     {
+         final Integer id = (Integer) TOKEN_NAME_TO_VALUE.get(aName);
+         if (id == null) {
+             throw new IllegalArgumentException("given name " + aName);
+         }
+         return id.intValue();
+     }
++
++    /**
++     * Returns the short description of a token for a given name.
++     * @param aName the name of the token ID to get
++     * @return a short description
++     */
++    public static String getShortDescription(String aName)
++    {
++        if (!TOKEN_NAME_TO_VALUE.containsKey(aName)) {
++            throw new IllegalArgumentException("given name " + aName);
++        }
++
++        final String tokentypes =
++            "com.puppycrawl.tools.checkstyle.api.tokentypes";
++        ResourceBundle bundle = ResourceBundle.getBundle(tokentypes);
++        return bundle.getString(aName);
++    }
+ }

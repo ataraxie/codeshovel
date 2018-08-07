@@ -1,0 +1,187 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 34287f92f..71b83ca16 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -154,175 +154,175 @@ public final class TreeWalker
+ 
+     @Override
+     public void setupChild(Configuration aChildConf)
+         throws CheckstyleException
+     {
+         // TODO: improve the error handing
+         final String name = aChildConf.getName();
+         final Object module = mModuleFactory.createModule(name);
+         if (!(module instanceof Check)) {
+             throw new CheckstyleException(
+                 "TreeWalker is not allowed as a parent of " + name);
+         }
+         final Check c = (Check) module;
+         c.contextualize(mChildContext);
+         c.configure(aChildConf);
+         c.init();
+ 
+         registerCheck(c);
+     }
+ 
+     /**
+      * Processes a specified file and reports all errors found.
+      * @param aFile the file to process
+      **/
+     private void process(File aFile)
+     {
+         // check if already checked and passed the file
+         final String fileName = aFile.getPath();
+         final long timestamp = aFile.lastModified();
+         if (mCache.alreadyChecked(fileName, timestamp)) {
+             return;
+         }
+ 
+         try {
+             getMessageDispatcher().fireFileStarted(fileName);
+             final String[] lines = Utils.getLines(fileName, getCharset());
+             final FileContents contents = new FileContents(fileName, lines);
+             final DetailAST rootAST = TreeWalker.parse(contents);
+             walk(rootAST, contents);
+         }
+         catch (final FileNotFoundException fnfe) {
+             Utils.getExceptionLogger()
+                 .debug("FileNotFoundException occured.", fnfe);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     0,
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.fileNotFound",
+                     null,
+                     getId(),
+-                    this.getClass()));
++                    this.getClass(), null));
+         }
+         catch (final IOException ioe) {
+             Utils.getExceptionLogger().debug("IOException occured.", ioe);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     0,
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {ioe.getMessage()},
+                     getId(),
+-                    this.getClass()));
++                    this.getClass(), null));
+         }
+         catch (final RecognitionException re) {
+             Utils.getExceptionLogger()
+                 .debug("RecognitionException occured.", re);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     re.getLine(),
+                     re.getColumn(),
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {re.getMessage()},
+                     getId(),
+-                    this.getClass()));
++                    this.getClass(), null));
+         }
+         catch (final TokenStreamRecognitionException tre) {
+             Utils.getExceptionLogger()
+                 .debug("TokenStreamRecognitionException occured.", tre);
+             final RecognitionException re = tre.recog;
+             if (re != null) {
+                 getMessageCollector().add(
+                     new LocalizedMessage(
+                         re.getLine(),
+                         re.getColumn(),
+                         Defn.CHECKSTYLE_BUNDLE,
+                         "general.exception",
+                         new String[] {re.getMessage()},
+                         getId(),
+-                        this.getClass()));
++                        this.getClass(), null));
+             }
+             else {
+                 getMessageCollector().add(
+                     new LocalizedMessage(
+                         0,
+                         Defn.CHECKSTYLE_BUNDLE,
+                         "general.exception",
+                         new String[]
+                         {"TokenStreamRecognitionException occured."},
+                         getId(),
+-                        this.getClass()));
++                        this.getClass(), null));
+             }
+         }
+         catch (final TokenStreamException te) {
+             Utils.getExceptionLogger()
+                 .debug("TokenStreamException occured.", te);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     0,
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {te.getMessage()},
+                     getId(),
+-                    this.getClass()));
++                    this.getClass(), null));
+         }
+         catch (final Throwable err) {
+             Utils.getExceptionLogger().debug("Throwable occured.", err);
+             getMessageCollector().add(
+                 new LocalizedMessage(
+                     0,
+                     Defn.CHECKSTYLE_BUNDLE,
+                     "general.exception",
+                     new String[] {"" + err},
+                     getId(),
+-                    this.getClass()));
++                    this.getClass(), null));
+         }
+ 
+         if (getMessageCollector().size() == 0) {
+             mCache.checkedOk(fileName, timestamp);
+         }
+         else {
+             fireErrors(fileName);
+         }
+ 
+         getMessageDispatcher().fireFileFinished(fileName);
+     }
+ 
+     /**
+      * Register a check for a given configuration.
+      * @param aCheck the check to register
+      * @throws CheckstyleException if an error occurs
+      */
+     private void registerCheck(Check aCheck)
+         throws CheckstyleException
+     {
+         final int[] tokens;
+         final Set<String> checkTokens = aCheck.getTokenNames();
+         if (!checkTokens.isEmpty()) {
+             tokens = aCheck.getRequiredTokens();
+ 
+             //register configured tokens
+             final int acceptableTokens[] = aCheck.getAcceptableTokens();
+             Arrays.sort(acceptableTokens);
+             for (String token : checkTokens) {
+                 try {
+                     final int tokenId = TokenTypes.getTokenId(token);
+                     if (Arrays.binarySearch(acceptableTokens, tokenId) >= 0) {
+                         registerCheck(token, aCheck);
+                     }
+                     // TODO: else log warning
+                 }
+                 catch (final IllegalArgumentException ex) {
+                     throw new CheckstyleException("illegal token \""
+                         + token + "\" in check " + aCheck, ex);
+                 }
+             }
+         }
+         else {
+             tokens = aCheck.getDefaultTokens();
+         }
+         for (int element : tokens) {
+             registerCheck(element, aCheck);
+         }
+         mAllChecks.add(aCheck);
+     }

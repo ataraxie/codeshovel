@@ -1,0 +1,184 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java
+index 1ff57006b..bc1e5cdb8 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/NeedBracesCheck.java
+@@ -1,71 +1,73 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.blocks;
+ 
++import org.apache.commons.lang3.ArrayUtils;
++
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * <p>
+  * Checks for braces around code blocks.
+  * </p>
+  * <p> By default the check will check the following blocks:
+  *  {@link TokenTypes#LITERAL_DO LITERAL_DO},
+  *  {@link TokenTypes#LITERAL_ELSE LITERAL_ELSE},
+  *  {@link TokenTypes#LITERAL_FOR LITERAL_FOR},
+  *  {@link TokenTypes#LITERAL_IF LITERAL_IF},
+  *  {@link TokenTypes#LITERAL_WHILE LITERAL_WHILE}.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="NeedBraces"/&gt;
+  * </pre>
+  * <p> An example of how to configure the check for {@code if} and
+  * {@code else} blocks is:
+  * </p>
+  * <pre>
+  * &lt;module name="NeedBraces"&gt;
+  *     &lt;property name="tokens" value="LITERAL_IF, LITERAL_ELSE"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * Check has an option <b>allowSingleLineStatement</b> which allows single-line
+  * statements without braces, e.g.:
+  * <p>
+  * {@code
+  * if (obj.isValid()) return true;
+  * }
+  * </p>
+  * <p>
+  * {@code
+  * while (obj.isValid()) return true;
+  * }
+  * </p>
+  * <p>
+  * {@code
+  * do this.notify(); while (o != null);
+  * }
+  * </p>
+  * <p>
+  * {@code
+  * for (int i = 0; ; ) this.notify();
+  * }
+@@ -98,100 +100,105 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  *
+  *
+  * @author Rick Giles
+  * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+  */
+ public class NeedBracesCheck extends Check {
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_NEED_BRACES = "needBraces";
+ 
+     /**
+      * Check's option for skipping single-line statements.
+      */
+     private boolean allowSingleLineStatement;
+ 
+     /**
+      * Setter.
+      * @param allowSingleLineStatement Check's option for skipping single-line statements
+      */
+     public void setAllowSingleLineStatement(boolean allowSingleLineStatement) {
+         this.allowSingleLineStatement = allowSingleLineStatement;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_WHILE,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_CASE,
+             TokenTypes.LITERAL_DEFAULT,
+             TokenTypes.LAMBDA,
+         };
+     }
+ 
++    @Override
++    public int[] getRequiredTokens() {
++        return ArrayUtils.EMPTY_INT_ARRAY;
++    }
++
+     @Override
+     public void visitToken(DetailAST ast) {
+         final DetailAST slistAST = ast.findFirstToken(TokenTypes.SLIST);
+         boolean isElseIf = false;
+         if (ast.getType() == TokenTypes.LITERAL_ELSE
+             && ast.findFirstToken(TokenTypes.LITERAL_IF) != null) {
+             isElseIf = true;
+         }
+ 
+         final boolean skipStatement = isSkipStatement(ast);
+ 
+         if (slistAST == null && !isElseIf && !skipStatement) {
+             log(ast.getLineNo(), MSG_KEY_NEED_BRACES, ast.getText());
+         }
+     }
+ 
+     /**
+      * Checks if current statement can be skipped by "need braces" warning.
+      * @param statement if, for, while, do-while, lambda, else, case, default statements.
+      * @return true if current statement can be skipped by Check.
+      */
+     private boolean isSkipStatement(DetailAST statement) {
+         return allowSingleLineStatement && isSingleLineStatement(statement);
+     }
+ 
+     /**
+      * Checks if current statement is single-line statement, e.g.:
+      * <p>
+      * <code>
+      * if (obj.isValid()) return true;
+      * </code>
+      * </p>
+      * <p>
+      * <code>
+      * while (obj.isValid()) return true;
+      * </code>
+      * </p>
+      * @param statement if, for, while, do-while, lambda, else, case, default statements.
+      * @return true if current statement is single-line statement.
+      */
+     private static boolean isSingleLineStatement(DetailAST statement) {
+         boolean result;
+         final int type = statement.getType();
+ 
+         if (type == TokenTypes.LITERAL_IF) {
+             result = isSingleLineIf(statement);
+         }
+         else if (type == TokenTypes.LITERAL_FOR) {
+             result = isSingleLineFor(statement);
+         }

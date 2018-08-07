@@ -1,0 +1,130 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "setLocale___locale-Locale",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 457,
+  "changeHistory": [
+    "7c2f448ad61f66224168d197dfc6195e7b8d9409",
+    "7caba87cc7113bf4484ca6046483a7a9bad58ec8",
+    "d6966ec1f74912d6bfe3bb1c68bf67436da23f7e",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "672b27dd5551de63a1fb08d8ea80376d70f2aa60",
+    "25a13442f2d67729eba3b1e8eff32ed926396ee3",
+    "20483ae032296610315fafb9a8774cfdd0e13857"
+  ],
+  "changeHistoryShort": {
+    "7c2f448ad61f66224168d197dfc6195e7b8d9409": "Ybodychange",
+    "7caba87cc7113bf4484ca6046483a7a9bad58ec8": "Ybodychange",
+    "d6966ec1f74912d6bfe3bb1c68bf67436da23f7e": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "672b27dd5551de63a1fb08d8ea80376d70f2aa60": "Ymultichange(Yfilerename,Ymodifierchange)",
+    "25a13442f2d67729eba3b1e8eff32ed926396ee3": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+    "20483ae032296610315fafb9a8774cfdd0e13857": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7c2f448ad61f66224168d197dfc6195e7b8d9409": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3989: UTs should not use ROOT locale when they test violation/error message\n",
+      "commitDate": 1489515662000,
+      "commitName": "7c2f448ad61f66224168d197dfc6195e7b8d9409",
+      "commitAuthor": "Luolc",
+      "commitDateOld": 1489375026000,
+      "commitNameOld": "7caba87cc7113bf4484ca6046483a7a9bad58ec8",
+      "commitAuthorOld": "Luolc",
+      "daysBetweenCommits": 1.63,
+      "commitsBetweenForRepo": 5,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public static void setLocale(Locale locale) {\n-        BUNDLE_CACHE.clear();\n+        clearCache();\n         if (Locale.ENGLISH.getLanguage().equals(locale.getLanguage())) {\n             sLocale \u003d Locale.ROOT;\n         }\n         else {\n             sLocale \u003d locale;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "7caba87cc7113bf4484ca6046483a7a9bad58ec8": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3896: Test failed due to locale message settings. (with non-English locale settings)\n",
+      "commitDate": 1489375026000,
+      "commitName": "7caba87cc7113bf4484ca6046483a7a9bad58ec8",
+      "commitAuthor": "Luolc",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 44.53,
+      "commitsBetweenForRepo": 137,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,9 @@\n     public static void setLocale(Locale locale) {\n+        BUNDLE_CACHE.clear();\n         if (Locale.ENGLISH.getLanguage().equals(locale.getLanguage())) {\n             sLocale \u003d Locale.ROOT;\n         }\n         else {\n             sLocale \u003d locale;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d6966ec1f74912d6bfe3bb1c68bf67436da23f7e": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix no possibility to set English language explicitly in config. #152\n",
+      "commitDate": 1432741074000,
+      "commitName": "d6966ec1f74912d6bfe3bb1c68bf67436da23f7e",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1432251246000,
+      "commitNameOld": "291cde4801ed627f52b4fc97851d5177f6a1385d",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 5.67,
+      "commitsBetweenForRepo": 32,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,8 @@\n     public static void setLocale(Locale locale) {\n-        sLocale \u003d locale;\n+        if (Locale.ENGLISH.getLanguage().equals(locale.getLanguage())) {\n+            sLocale \u003d Locale.ROOT;\n+        }\n+        else {\n+            sLocale \u003d locale;\n+        }\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "672b27dd5551de63a1fb08d8ea80376d70f2aa60": {
+      "type": "Ymultichange(Yfilerename,Ymodifierchange)",
+      "commitMessage": "Moved all the Localization stuff into the api directory. The plan is reused\nthe localisation support in the checks.\n",
+      "commitDate": 1032266010000,
+      "commitName": "672b27dd5551de63a1fb08d8ea80376d70f2aa60",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yfilerename",
+        "Ymodifierchange"
+      ]
+    },
+    "25a13442f2d67729eba3b1e8eff32ed926396ee3": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+      "commitMessage": "Fixed bug (594469) where unit tests would fail under different locales. Also\nfixed a potential bug on how messages are located.\n",
+      "commitDate": 1029290324000,
+      "commitName": "25a13442f2d67729eba3b1e8eff32ed926396ee3",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "20483ae032296610315fafb9a8774cfdd0e13857": {
+      "type": "Yintroduced",
+      "commitMessage": "Major rework to support localized error messages. Inspired by patch 580410. At\nthe moment it is not possible to override the system locale, this probably\nshould be added.\n\nNow possible to specify the locale to use.\n",
+      "commitDate": 1029060061000,
+      "commitName": "20483ae032296610315fafb9a8774cfdd0e13857",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

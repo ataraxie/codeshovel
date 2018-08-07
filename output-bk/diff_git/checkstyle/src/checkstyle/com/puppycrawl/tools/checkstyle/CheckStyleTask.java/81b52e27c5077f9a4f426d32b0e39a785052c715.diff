@@ -1,0 +1,172 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index 995880e5c..e74457caf 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -209,155 +209,167 @@ public class CheckStyleTask extends Task
+     /** @param aURL the URL of the configuration to use */
+     public void setConfigURL(URL aURL)
+     {
+         setConfigLocation(aURL.toExternalForm());
+     }
+ 
+     /**
+      * Sets the location of the configuration.
+      * @param aLocation the location, which is either a
+      */
+     private void setConfigLocation(String aLocation)
+     {
+         if (mConfigLocation != null) {
+             throw new BuildException("Attributes 'config' and 'configURL' "
+                     + "must not be set at the same time");
+         }
+         mConfigLocation = aLocation;
+     }
+ 
+     /** @param aFile the package names file to use */
+     public void setPackageNamesFile(File aFile)
+     {
+         mPackageNamesFile = aFile;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Setters for Checker configuration attributes
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /**
+      * Sets a properties file for use instead
+      * of individually setting them.
+      * @param aProps the properties File to use
+      */
+     public void setProperties(File aProps)
+     {
+         mPropertiesFile = aProps;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // The doers
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /**
+      * Actually checks the files specified. All errors are reported to
+      * System.out. Will fail if any errors occurred.
+      * @throws BuildException an error occurred
+      */
+     public void execute() throws BuildException
+     {
++        final long startTime = System.currentTimeMillis();
+         final ClassLoader loader = Thread.currentThread()
+                 .getContextClassLoader();
+         try {
+             Thread.currentThread().setContextClassLoader(
+                     getClass().getClassLoader());
+             realExecute();
+         }
+         finally {
+             Thread.currentThread().setContextClassLoader(loader);
++            final long endTime = System.currentTimeMillis();
++            log("Total execution took " + (endTime - startTime) + " ms.",
++                Project.MSG_VERBOSE);
+         }
+     }
+ 
+     /**
+      * Helper implementation to perform execution.
+      */
+     private void realExecute()
+     {
+         // output version info in debug mode
+         final ResourceBundle compilationProperties = ResourceBundle
+                 .getBundle("checkstylecompilation");
+         final String version = compilationProperties
+                 .getString("checkstyle.compile.version");
+         final String compileTimestamp = compilationProperties
+                 .getString("checkstyle.compile.timestamp");
+         log("checkstyle version " + version, Project.MSG_VERBOSE);
+         log("compiled on " + compileTimestamp, Project.MSG_VERBOSE);
+ 
+         // Check for no arguments
+         if ((mFileName == null) && (mFileSets.size() == 0)) {
+             throw new BuildException(
+                     "Must specify atleast one of 'file' or nested 'fileset'.",
+                     getLocation());
+         }
+ 
+         if (mConfigLocation == null) {
+             throw new BuildException("Must specify 'config'.", getLocation());
+         }
+ 
+         // Create the checker
+         Checker c = null;
+         try {
+             c = createChecker();
+ 
+             final SeverityLevelCounter warningCounter =
+                 new SeverityLevelCounter(SeverityLevel.WARNING);
+             c.addListener(warningCounter);
+ 
+             // Process the files
++            long startTime = System.currentTimeMillis();
+             final File[] files = scanFileSets();
++            long endTime = System.currentTimeMillis();
++            log("To locate the files took " + (endTime - startTime) + " ms.",
++                Project.MSG_VERBOSE);
+ 
+             log("Running Checkstyle " + version + " on " + files.length
+                     + " files", Project.MSG_INFO);
+             log("Using configuration " + mConfigLocation, Project.MSG_VERBOSE);
+ 
++            startTime = System.currentTimeMillis();
+             final int numErrs = c.process(files);
++            endTime = System.currentTimeMillis();
++            log("To process the files took " + (endTime - startTime) + " ms.",
++                Project.MSG_VERBOSE);
+             final int numWarnings = warningCounter.getCount();
+             final boolean ok = numErrs <= mMaxErrors
+                     && numWarnings <= mMaxWarnings;
+ 
+             // Handle the return status
+             if (!ok && mFailureProperty != null) {
+                 getProject().setProperty(mFailureProperty, "true");
+             }
+ 
+             if (!ok && mFailOnViolation) {
+                 throw new BuildException("Got " + numErrs + " errors and "
+                         + numWarnings + " warnings.", getLocation());
+             }
+         }
+         finally {
+             if (c != null) {
+                 c.destroy();
+             }
+         }
+     }
+ 
+     /**
+      * Creates new instance of <code>Checker</code>.
+      * @return new instance of <code>Checker</code>
+      */
+     private Checker createChecker()
+     {
+         Checker c = null;
+         try {
+             final Properties props = createOverridingProperties();
+             final Configuration config = ConfigurationLoader.loadConfiguration(
+                     mConfigLocation, new PropertiesExpander(props), true);
+ 
+             final DefaultContext context = new DefaultContext();
+             final ClassLoader loader = new AntClassLoader(getProject(),
+                     mClasspath);
+             context.add("classloader", loader);
+ 
+             c = new Checker();
+ 
+             //load the set of package names
+             if (mPackageNamesFile != null) {
+                 final ModuleFactory moduleFactory = PackageNamesLoader
+                         .loadModuleFactory(mPackageNamesFile.getAbsolutePath());
+                 c.setModuleFactory(moduleFactory);
+             }
+             c.contextualize(context);
+             c.configure(config);
+ 
+             // setup the listeners

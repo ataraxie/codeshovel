@@ -1,0 +1,91 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "Checker.java",
+  "functionName": "setFileExtensions",
+  "functionId": "setFileExtensions___extensions-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/Checker.java",
+  "functionStartLine": 526,
+  "functionEndLine": 542,
+  "changeHistory": [
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+    "a2b8be14bb1230f1b184701bae8bcc7af102bb25",
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f",
+    "204c073294cdca6756bcd546d6af85a797ad7d79"
+  ],
+  "changeHistoryShort": {
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": "Ybodychange",
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": "Ybodychange",
+    "a2b8be14bb1230f1b184701bae8bcc7af102bb25": "Ybodychange",
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f": "Yparameterchange",
+    "204c073294cdca6756bcd546d6af85a797ad7d79": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3143: forbid empty return statements and fixed violations",
+      "commitDate": 1464356569000,
+      "commitName": "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1463431992000,
+      "commitNameOld": "ecbeaa6e1df7cb021745e111b04395b9fbd509c7",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 10.7,
+      "commitsBetweenForRepo": 27,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     public final void setFileExtensions(String... extensions) {\n         if (extensions \u003d\u003d null) {\n             fileExtensions \u003d null;\n-            return;\n         }\n-\n-        fileExtensions \u003d new String[extensions.length];\n-        for (int i \u003d 0; i \u003c extensions.length; i++) {\n-            final String extension \u003d extensions[i];\n-            if (CommonUtils.startsWithChar(extension, \u0027.\u0027)) {\n-                fileExtensions[i] \u003d extension;\n-            }\n-            else {\n-                fileExtensions[i] \u003d \".\" + extension;\n+        else {\n+            fileExtensions \u003d new String[extensions.length];\n+            for (int i \u003d 0; i \u003c extensions.length; i++) {\n+                final String extension \u003d extensions[i];\n+                if (CommonUtils.startsWithChar(extension, \u0027.\u0027)) {\n+                    fileExtensions[i] \u003d extension;\n+                }\n+                else {\n+                    fileExtensions[i] \u003d \".\" + extension;\n+                }\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": {
+      "type": "Ybodychange",
+      "commitMessage": "Utils class has been splitted to CommonUtils and TokenUtils. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     public final void setFileExtensions(String... extensions) {\n         if (extensions \u003d\u003d null) {\n             fileExtensions \u003d null;\n             return;\n         }\n \n         fileExtensions \u003d new String[extensions.length];\n         for (int i \u003d 0; i \u003c extensions.length; i++) {\n             final String extension \u003d extensions[i];\n-            if (Utils.startsWithChar(extension, \u0027.\u0027)) {\n+            if (CommonUtils.startsWithChar(extension, \u0027.\u0027)) {\n                 fileExtensions[i] \u003d extension;\n             }\n             else {\n                 fileExtensions[i] \u003d \".\" + extension;\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "a2b8be14bb1230f1b184701bae8bcc7af102bb25": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix PMD violations from SimplifyStartsWith rule, issue #949\n",
+      "commitDate": 1430665225000,
+      "commitName": "a2b8be14bb1230f1b184701bae8bcc7af102bb25",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1430523168000,
+      "commitNameOld": "31421dcdda3b3534f2fcc5c6e88a8fdbc5d15311",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.64,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,18 @@\n     public final void setFileExtensions(String... extensions)\n     {\n         if (extensions \u003d\u003d null) {\n             fileExtensions \u003d null;\n             return;\n         }\n \n         fileExtensions \u003d new String[extensions.length];\n         for (int i \u003d 0; i \u003c extensions.length; i++) {\n             final String extension \u003d extensions[i];\n-            if (extension.startsWith(\".\")) {\n+            if (Utils.startsWithChar(extension, \u0027.\u0027)) {\n                 fileExtensions[i] \u003d extension;\n             }\n             else {\n                 fileExtensions[i] \u003d \".\" + extension;\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f": {
+      "type": "Yparameterchange",
+      "commitMessage": "Fix PMD violations from UseVarargs rule, issue #999\n\nThe changes are fully backward-compatible. Method with vararg can be invoked both using array and list of parameters.\n",
+      "commitDate": 1430353274000,
+      "commitName": "c0446a825514ea0279b8c22f633f2c4e3c73dc1f",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1430064836000,
+      "commitNameOld": "f374e2e7a0b0fe2df21ed85aef77a91630b1dd66",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 3.34,
+      "commitsBetweenForRepo": 17,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,18 @@\n-    public final void setFileExtensions(String[] extensions)\n+    public final void setFileExtensions(String... extensions)\n     {\n         if (extensions \u003d\u003d null) {\n             fileExtensions \u003d null;\n             return;\n         }\n \n         fileExtensions \u003d new String[extensions.length];\n         for (int i \u003d 0; i \u003c extensions.length; i++) {\n             final String extension \u003d extensions[i];\n             if (extension.startsWith(\".\")) {\n                 fileExtensions[i] \u003d extension;\n             }\n             else {\n                 fileExtensions[i] \u003d \".\" + extension;\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "204c073294cdca6756bcd546d6af85a797ad7d79": {
+      "type": "Yintroduced",
+      "commitMessage": "Added file extensions property to Checker \u0026 TreeWalker, issue #25\n",
+      "commitDate": 1422178221000,
+      "commitName": "204c073294cdca6756bcd546d6af85a797ad7d79",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

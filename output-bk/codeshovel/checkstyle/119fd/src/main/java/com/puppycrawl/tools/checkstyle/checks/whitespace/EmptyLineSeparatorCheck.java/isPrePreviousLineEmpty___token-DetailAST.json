@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "EmptyLineSeparatorCheck.java",
+  "functionName": "isPrePreviousLineEmpty",
+  "functionId": "isPrePreviousLineEmpty___token-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java",
+  "functionStartLine": 488,
+  "functionEndLine": 498,
+  "changeHistory": [
+    "7609e96cc998cca40b396eb3f2d7ae82f60fcce1",
+    "7c262e61e676982d7d33a42971b885d97b95f456",
+    "2db0dab62fc4986c3bebb38a1b8cac857f37664a"
+  ],
+  "changeHistoryShort": {
+    "7609e96cc998cca40b396eb3f2d7ae82f60fcce1": "Ybodychange",
+    "7c262e61e676982d7d33a42971b885d97b95f456": "Ybodychange",
+    "2db0dab62fc4986c3bebb38a1b8cac857f37664a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7609e96cc998cca40b396eb3f2d7ae82f60fcce1": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4342: Applied requested changes\n",
+      "commitDate": 1495136630000,
+      "commitName": "7609e96cc998cca40b396eb3f2d7ae82f60fcce1",
+      "commitAuthor": "Dmytro Kytsmen",
+      "commitDateOld": 1493045733000,
+      "commitNameOld": "e803943ff515fbec5a2bbdae948af3dd018669a1",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 24.2,
+      "commitsBetweenForRepo": 85,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     private boolean isPrePreviousLineEmpty(DetailAST token) {\n         boolean result \u003d false;\n         final int lineNo \u003d token.getLineNo();\n         // 3 is the number of the pre-previous line because the numbering starts from zero.\n         final int number \u003d 3;\n         if (lineNo \u003e\u003d number) {\n             final String prePreviousLine \u003d getLines()[lineNo - number];\n-            result \u003d prePreviousLine.trim().isEmpty();\n+            result \u003d CommonUtils.isBlank(prePreviousLine);\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "7c262e61e676982d7d33a42971b885d97b95f456": {
+      "type": "Ybodychange",
+      "commitMessage": "Empty Line Separator Check, fixed Exception if file doesn\u0027t have header, issue #621\n",
+      "commitDate": 1423580595000,
+      "commitName": "7c262e61e676982d7d33a42971b885d97b95f456",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1423431987000,
+      "commitNameOld": "abe2b200312ee72aa552026b1a34e8bd72bfdc4e",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 1.72,
+      "commitsBetweenForRepo": 9,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,12 @@\n     private boolean isPrePreviousLineEmpty(DetailAST token)\n     {\n+        boolean result \u003d false;\n         final int lineNo \u003d token.getLineNo();\n         // 3 is the number of the pre-previous line because the numbering starts from zero.\n         final int number \u003d 3;\n-        final String prePreviousLine \u003d getLines()[lineNo - number];\n-        return prePreviousLine.trim().isEmpty();\n+        if (lineNo \u003e\u003d number) {\n+            final String prePreviousLine \u003d getLines()[lineNo - number];\n+            result \u003d prePreviousLine.trim().isEmpty();\n+        }\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "2db0dab62fc4986c3bebb38a1b8cac857f37664a": {
+      "type": "Yintroduced",
+      "commitMessage": "Empty Line Separator Check, added option for managing empty lines between class members, issue #530\n",
+      "commitDate": 1422784835000,
+      "commitName": "2db0dab62fc4986c3bebb38a1b8cac857f37664a",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

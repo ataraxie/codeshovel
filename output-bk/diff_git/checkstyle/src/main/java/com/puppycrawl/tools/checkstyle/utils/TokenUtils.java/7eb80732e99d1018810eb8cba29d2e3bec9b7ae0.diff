@@ -1,0 +1,89 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/TokenUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/TokenUtils.java
+index c098aa063..bfd1d035d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/TokenUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/TokenUtils.java
+@@ -105,82 +105,82 @@ public final class TokenUtils {
+ 
+     /**
+      * Get all token IDs that are available in TokenTypes.
+      * @return array of token IDs
+      */
+     public static int[] getAllTokenIds() {
+         final int[] safeCopy = new int[TOKEN_IDS.length];
+         System.arraycopy(TOKEN_IDS, 0, safeCopy, 0, TOKEN_IDS.length);
+         return safeCopy;
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param iD the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int iD) {
+         if (iD > TOKEN_VALUE_TO_NAME.length - 1) {
+             throw new IllegalArgumentException(TOKEN_ID_EXCEPTION_PREFIX + iD);
+         }
+         final String name = TOKEN_VALUE_TO_NAME[iD];
+         if (name == null) {
+             throw new IllegalArgumentException(TOKEN_ID_EXCEPTION_PREFIX + iD);
+         }
+         return name;
+     }
+ 
+     /**
+      * Returns the ID of a token for a given name.
+      * @param name the name of the token ID to get
+      * @return a token ID
+      */
+     public static int getTokenId(String name) {
+         final Integer id = TOKEN_NAME_TO_VALUE.get(name);
+         if (id == null) {
+             throw new IllegalArgumentException(TOKEN_NAME_EXCEPTION_PREFIX + name);
+         }
+         return id;
+     }
+ 
+     /**
+      * Returns the short description of a token for a given name.
+      * @param name the name of the token ID to get
+      * @return a short description
+      */
+     public static String getShortDescription(String name) {
+         if (!TOKEN_NAME_TO_VALUE.containsKey(name)) {
+             throw new IllegalArgumentException(TOKEN_NAME_EXCEPTION_PREFIX + name);
+         }
+ 
+-        final String tokentypes =
++        final String tokenTypes =
+             "com.puppycrawl.tools.checkstyle.api.tokentypes";
+-        final ResourceBundle bundle = ResourceBundle.getBundle(tokentypes);
++        final ResourceBundle bundle = ResourceBundle.getBundle(tokenTypes);
+         return bundle.getString(name);
+     }
+ 
+     /**
+      * Is argument comment-related type (SINGLE_LINE_COMMENT,
+      * BLOCK_COMMENT_BEGIN, BLOCK_COMMENT_END, COMMENT_CONTENT).
+      * @param type
+      *        token type.
+      * @return true if type is comment-related type.
+      */
+     public static boolean isCommentType(int type) {
+         return type == TokenTypes.SINGLE_LINE_COMMENT
+                 || type == TokenTypes.BLOCK_COMMENT_BEGIN
+                 || type == TokenTypes.BLOCK_COMMENT_END
+                 || type == TokenTypes.COMMENT_CONTENT;
+     }
+ 
+     /**
+      * Is argument comment-related type name (SINGLE_LINE_COMMENT,
+      * BLOCK_COMMENT_BEGIN, BLOCK_COMMENT_END, COMMENT_CONTENT).
+      * @param type
+      *        token type name.
+      * @return true if type is comment-related type name.
+      */
+     public static boolean isCommentType(String type) {
+         return isCommentType(getTokenId(type));
+     }
+ 
+ }

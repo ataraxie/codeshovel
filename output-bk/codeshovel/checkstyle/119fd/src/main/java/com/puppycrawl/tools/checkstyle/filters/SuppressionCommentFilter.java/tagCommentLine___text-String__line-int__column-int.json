@@ -1,0 +1,137 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SuppressionCommentFilter.java",
+  "functionName": "tagCommentLine",
+  "functionId": "tagCommentLine___text-String__line-int__column-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java",
+  "functionStartLine": 269,
+  "functionEndLine": 280,
+  "changeHistory": [
+    "dd91dc1cf4dfbffd1bd608a9b0f8a487eb25122d",
+    "8888fa5919dc31c6abe07ddc2f5fe0e29f66ef37",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "e27489c7721909245ea5055eac3b9c7c659081f6",
+    "d622cf7e4255dd35e2592a71653c51e7c2b698f0"
+  ],
+  "changeHistoryShort": {
+    "dd91dc1cf4dfbffd1bd608a9b0f8a487eb25122d": "Ybodychange",
+    "8888fa5919dc31c6abe07ddc2f5fe0e29f66ef37": "Ybodychange",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": "Yrename",
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "e27489c7721909245ea5055eac3b9c7c659081f6": "Ybodychange",
+    "d622cf7e4255dd35e2592a71653c51e7c2b698f0": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "dd91dc1cf4dfbffd1bd608a9b0f8a487eb25122d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4707: fix all violations of BooleanParameter idea check except those addressed in separate task\n",
+      "commitDate": 1501378825000,
+      "commitName": "dd91dc1cf4dfbffd1bd608a9b0f8a487eb25122d",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1500928695000,
+      "commitNameOld": "6d9e8ece85007117e048fef55469623b830f9446",
+      "commitAuthorOld": "Timur",
+      "daysBetweenCommits": 5.21,
+      "commitsBetweenForRepo": 35,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private void tagCommentLine(String text, int line, int column) {\n         final Matcher offMatcher \u003d offCommentFormat.matcher(text);\n         if (offMatcher.find()) {\n-            addTag(offMatcher.group(0), line, column, false);\n+            addTag(offMatcher.group(0), line, column, TagType.OFF);\n         }\n         else {\n             final Matcher onMatcher \u003d onCommentFormat.matcher(text);\n             if (onMatcher.find()) {\n-                addTag(onMatcher.group(0), line, column, true);\n+                addTag(onMatcher.group(0), line, column, TagType.ON);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "8888fa5919dc31c6abe07ddc2f5fe0e29f66ef37": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3255: changed module setters for pattern",
+      "commitDate": 1478694863000,
+      "commitName": "8888fa5919dc31c6abe07ddc2f5fe0e29f66ef37",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1474426326000,
+      "commitNameOld": "fbf3f95c2273be23b966cba6e6ef89390a6fb020",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 49.4,
+      "commitsBetweenForRepo": 65,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private void tagCommentLine(String text, int line, int column) {\n-        final Matcher offMatcher \u003d offRegexp.matcher(text);\n+        final Matcher offMatcher \u003d offCommentFormat.matcher(text);\n         if (offMatcher.find()) {\n             addTag(offMatcher.group(0), line, column, false);\n         }\n         else {\n-            final Matcher onMatcher \u003d onRegexp.matcher(text);\n+            final Matcher onMatcher \u003d onCommentFormat.matcher(text);\n             if (onMatcher.find()) {\n                 addTag(onMatcher.group(0), line, column, true);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": {
+      "type": "Yrename",
+      "commitMessage": "Prefixes, checkstyle, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java\n",
+      "commitDate": 1421678312000,
+      "commitName": "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1421677232000,
+      "commitNameOld": "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 18,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n-    private void tagCoontLine(String text, int line, int column)\n+    private void tagCommentLine(String text, int line, int column)\n     {\n         final Matcher offMatcher \u003d offRegexp.matcher(text);\n         if (offMatcher.find()) {\n             addTag(offMatcher.group(0), line, column, false);\n         }\n         else {\n             final Matcher onMatcher \u003d onRegexp.matcher(text);\n             if (onMatcher.find()) {\n                 addTag(onMatcher.group(0), line, column, true);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, filters, #512\n",
+      "commitDate": 1421677232000,
+      "commitName": "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1152243235000,
+      "commitNameOld": "f4a92dad02a3a36b5e2e988bba04debb1e2c9db9",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private void tagCommentLine(String aText, int aLine, int aColumn)\n     {\n-        Matcher offMatcher \u003d mOffRegexp.matcher(aText);\n+        final Matcher offMatcher \u003d mOffRegexp.matcher(aText);\n         if (offMatcher.find()) {\n             addTag(offMatcher.group(0), aLine, aColumn, false);\n         }\n         else {\n-            Matcher onMatcher \u003d mOnRegexp.matcher(aText);\n+            final Matcher onMatcher \u003d mOnRegexp.matcher(aText);\n             if (onMatcher.find()) {\n                 addTag(onMatcher.group(0), aLine, aColumn, true);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "e27489c7721909245ea5055eac3b9c7c659081f6": {
+      "type": "Ybodychange",
+      "commitMessage": "initial replacing RE by Pattern (need to update docs)\n",
+      "commitDate": 1115830091000,
+      "commitName": "e27489c7721909245ea5055eac3b9c7c659081f6",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1106584947000,
+      "commitNameOld": "af34614b018a5a56117ab8689e662c66f74d1fb6",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 107.0,
+      "commitsBetweenForRepo": 78,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,13 @@\n     private void tagCommentLine(String aText, int aLine, int aColumn)\n     {\n-        if (mOffRegexp.match(aText)) {\n-            addTag(mOffRegexp.getParen(0), aLine, aColumn, false);\n+        Matcher offMatcher \u003d mOffRegexp.matcher(aText);\n+        if (offMatcher.find()) {\n+            addTag(offMatcher.group(0), aLine, aColumn, false);\n         }\n-        else if (mOnRegexp.match(aText)) {\n-            addTag(mOnRegexp.getParen(0), aLine, aColumn, true);\n+        else {\n+            Matcher onMatcher \u003d mOnRegexp.matcher(aText);\n+            if (onMatcher.find()) {\n+                addTag(onMatcher.group(0), aLine, aColumn, true);\n+            }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d622cf7e4255dd35e2592a71653c51e7c2b698f0": {
+      "type": "Yintroduced",
+      "commitMessage": "add filter that suppresses audit events according to source file comments\n",
+      "commitDate": 1087056253000,
+      "commitName": "d622cf7e4255dd35e2592a71653c51e7c2b698f0",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

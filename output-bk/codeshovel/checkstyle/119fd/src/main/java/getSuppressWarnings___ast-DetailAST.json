@@ -1,0 +1,135 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "getSuppressWarnings___ast-DetailAST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 229,
+  "changeHistory": [
+    "e7c746899d1369f942388375b43b93fbef883f57",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e",
+    "82d8e91024a57a96fbb6410dacb29d6a3f582903",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "fdc81723bdfd6af2ffc2c901cd8dd5b2fe948267"
+  ],
+  "changeHistoryShort": {
+    "e7c746899d1369f942388375b43b93fbef883f57": "Ybodychange",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": "Ybodychange",
+    "82d8e91024a57a96fbb6410dacb29d6a3f582903": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "fdc81723bdfd6af2ffc2c901cd8dd5b2fe948267": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e7c746899d1369f942388375b43b93fbef883f57": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.checks.annotation, com.puppycrawl.tools.checkstyle.ant\n",
+      "commitDate": 1493349546000,
+      "commitName": "e7c746899d1369f942388375b43b93fbef883f57",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 90.53,
+      "commitsBetweenForRepo": 334,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,8 @@\n     private static DetailAST getSuppressWarnings(DetailAST ast) {\n-        final DetailAST annotation \u003d AnnotationUtility.getAnnotation(\n-            ast, SUPPRESS_WARNINGS);\n+        DetailAST annotation \u003d AnnotationUtility.getAnnotation(ast, SUPPRESS_WARNINGS);\n \n         if (annotation \u003d\u003d null) {\n-            return AnnotationUtility.getAnnotation(ast, FQ_SUPPRESS_WARNINGS);\n+            annotation \u003d AnnotationUtility.getAnnotation(ast, FQ_SUPPRESS_WARNINGS);\n         }\n-        else {\n-            return annotation;\n-        }\n+        return annotation;\n     }\n\\ No newline at end of file\n"
+    },
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: AvoidInlineConditional violations fixed\n",
+      "commitDate": 1439784080000,
+      "commitName": "23c8774d2e2fd245de1e5df02758fd23702c565e",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439782863000,
+      "commitNameOld": "d56a2a366c6f9e3e8639d492d548ae562b75dc81",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,11 @@\n     private static DetailAST getSuppressWarnings(DetailAST ast) {\n         final DetailAST annotation \u003d AnnotationUtility.getAnnotation(\n             ast, SUPPRESS_WARNINGS);\n \n-        return annotation !\u003d null ? annotation\n-            : AnnotationUtility.getAnnotation(\n-                ast, FQ_SUPPRESS_WARNINGS);\n+        if (annotation \u003d\u003d null) {\n+            return AnnotationUtility.getAnnotation(ast, FQ_SUPPRESS_WARNINGS);\n+        }\n+        else {\n+            return annotation;\n+        }\n     }\n\\ No newline at end of file\n"
+    },
+    "82d8e91024a57a96fbb6410dacb29d6a3f582903": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary qualifiers. #1555\n\nFixes `UnnecessarilyQualifiedStaticUsage` inspection violations.\n\nDescription:\n\u003eReports calls to static methods or accesses of static fields on the current class which are qualified with the class name. Such qualification is unnecessary, and may be safely removed.\n",
+      "commitDate": 1439324041000,
+      "commitName": "82d8e91024a57a96fbb6410dacb29d6a3f582903",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439295751000,
+      "commitNameOld": "f5f1d754e28ee1e3c5472fd4d5292f24a335e64e",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.33,
+      "commitsBetweenForRepo": 5,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private static DetailAST getSuppressWarnings(DetailAST ast) {\n         final DetailAST annotation \u003d AnnotationUtility.getAnnotation(\n-            ast, SuppressWarningsCheck.SUPPRESS_WARNINGS);\n+            ast, SUPPRESS_WARNINGS);\n \n         return annotation !\u003d null ? annotation\n             : AnnotationUtility.getAnnotation(\n-                ast, SuppressWarningsCheck.FQ_SUPPRESS_WARNINGS);\n+                ast, FQ_SUPPRESS_WARNINGS);\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436191377000,
+      "commitNameOld": "eb70f7062f2517a2f7a511090b31789a92c15a2e",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 11.62,
+      "commitsBetweenForRepo": 118,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n-    private DetailAST getSuppressWarnings(DetailAST ast) {\n+    private static DetailAST getSuppressWarnings(DetailAST ast) {\n         final DetailAST annotation \u003d AnnotationUtility.getAnnotation(\n             ast, SuppressWarningsCheck.SUPPRESS_WARNINGS);\n \n         return annotation !\u003d null ? annotation\n             : AnnotationUtility.getAnnotation(\n                 ast, SuppressWarningsCheck.FQ_SUPPRESS_WARNINGS);\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 20.02,
+      "commitsBetweenForRepo": 107,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     private DetailAST getSuppressWarnings(DetailAST ast)\n     {\n         final DetailAST annotation \u003d AnnotationUtility.getAnnotation(\n             ast, SuppressWarningsCheck.SUPPRESS_WARNINGS);\n \n-        return (annotation !\u003d null) ? annotation\n+        return annotation !\u003d null ? annotation\n             : AnnotationUtility.getAnnotation(\n                 ast, SuppressWarningsCheck.FQ_SUPPRESS_WARNINGS);\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, annotation, #512\n",
+      "commitDate": 1421678156000,
+      "commitName": "1bd7f9bdf3dc678b70e79481971aebc50db69dc7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "fdc81723bdfd6af2ffc2c901cd8dd5b2fe948267": {
+      "type": "Yintroduced",
+      "commitMessage": "Supporting fully-qualified annotation names.\n",
+      "commitDate": 1238465210000,
+      "commitName": "fdc81723bdfd6af2ffc2c901cd8dd5b2fe948267",
+      "commitAuthor": "Travis Schneeberger"
+    }
+  }
+}

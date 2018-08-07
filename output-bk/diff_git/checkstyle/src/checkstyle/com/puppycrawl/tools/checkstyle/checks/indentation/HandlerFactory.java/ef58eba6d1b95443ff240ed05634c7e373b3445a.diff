@@ -1,0 +1,112 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java
+index baa2f557f..6dd4eff6b 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/HandlerFactory.java
+@@ -130,106 +130,101 @@ public class HandlerFactory
+         return typeSet.contains(new Integer(aType));
+     }
+ 
+     /**
+      * Gets list of registered handler types.
+      *
+      * @return int[] of TokenType types
+      */
+     public int[] getHandledTypes()
+     {
+         final Set<Integer> typeSet = mTypeHandlers.keySet();
+         final int[] types = new int[typeSet.size()];
+         int index = 0;
+         for (Integer val : typeSet) {
+             types[index++] = val;
+         }
+ 
+         return types;
+     }
+ 
+     /**
+      * Get the handler for an AST.
+      *
+      * @param aIndentCheck   the indentation check
+      * @param aAst           ast to handle
+      * @param aParent        the handler parent of this AST
+      *
+      * @return the ExpressionHandler for aAst
+      */
+     public ExpressionHandler getHandler(IndentationCheck aIndentCheck,
+         DetailAST aAst, ExpressionHandler aParent)
+     {
+         final ExpressionHandler handler =
+             mCreatedHandlers.get(aAst);
+         if (handler != null) {
+             return handler;
+         }
+ 
+         if (aAst.getType() == TokenTypes.METHOD_CALL) {
+             return createMethodCallHandler(aIndentCheck, aAst, aParent);
+         }
+ 
+         final Integer type = new Integer(aAst.getType());
+ 
+         ExpressionHandler expHandler = null;
+         try {
+             final Constructor<?> handlerCtor =
+                 mTypeHandlers.get(type);
+             if (handlerCtor != null) {
+                 expHandler = (ExpressionHandler) handlerCtor.newInstance(
+-                    new Object[] {
+-                        aIndentCheck,
+-                        aAst,
+-                        aParent,
+-                    }
+-                );
++                        aIndentCheck, aAst, aParent);
+             }
+         }
+         ///CLOVER:OFF
+         catch (final InstantiationException e) {
+             LOG.debug("couldn't instantiate constructor for " + aAst, e);
+             throw new RuntimeException("couldn't instantiate constructor for "
+                                        + aAst);
+         }
+         catch (final IllegalAccessException e) {
+             LOG.debug("couldn't access constructor for " + aAst, e);
+             throw new RuntimeException("couldn't access constructor for "
+                                        + aAst);
+         }
+         catch (final InvocationTargetException e) {
+             LOG.debug("couldn't instantiate constructor for " + aAst, e);
+             throw new RuntimeException("couldn't instantiate constructor for "
+                                        + aAst);
+         }
+         if (expHandler == null) {
+             throw new RuntimeException("no handler for type " + type);
+         }
+         ///CLOVER:ON
+         return expHandler;
+     }
+ 
+     /**
+      * Create new instance of handler for METHOD_CALL.
+      *
+      * @param aIndentCheck   the indentation check
+      * @param aAst           ast to handle
+      * @param aParent        the handler parent of this AST
+      *
+      * @return new instance.
+      */
+     ExpressionHandler createMethodCallHandler(IndentationCheck aIndentCheck,
+         DetailAST aAst, ExpressionHandler aParent)
+     {
+         DetailAST ast = (DetailAST) aAst.getFirstChild();
+         while ((ast != null) && (ast.getType() == TokenTypes.DOT)) {
+             ast = (DetailAST) ast.getFirstChild();
+         }
+         if ((ast != null) && isHandledType(ast.getType())) {
+             aParent = getHandler(aIndentCheck, ast, aParent);
+             mCreatedHandlers.put(ast, aParent);
+         }
+         return new MethodCallHandler(aIndentCheck, aAst, aParent);
+     }
+ 
+     /** Clears cache of created handlers. */
+     void clearCreatedHandlers()

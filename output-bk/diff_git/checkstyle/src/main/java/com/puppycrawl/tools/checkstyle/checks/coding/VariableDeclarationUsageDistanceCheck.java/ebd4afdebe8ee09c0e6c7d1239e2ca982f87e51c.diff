@@ -1,0 +1,198 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+index 46adf2d9b..ba8480cc0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+@@ -1,79 +1,80 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.coding;
+ 
+ import java.util.AbstractMap.SimpleEntry;
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.Map.Entry;
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ 
+ import antlr.collections.ASTEnumeration;
+ 
++import com.puppycrawl.tools.checkstyle.Utils;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * <p>
+  * Checks the distance between declaration of variable and its first usage.
+  * </p>
+  * Example #1:
+  * <pre>
+  *      <code>int count;
+  *      a = a + b;
+  *      b = a + a;
+  *      count = b; // DECLARATION OF VARIABLE 'count'
+  *                 // SHOULD BE HERE (distance = 3)</code>
+  * </pre>
+  * Example #2:
+  * <pre>
+  *     <code>int count;
+  *     {
+  *         a = a + b;
+  *         count = b; // DECLARATION OF VARIABLE 'count'
+  *                    // SHOULD BE HERE (distance = 2)
+  *     }</code>
+  * </pre>
+  *
+  * <p>
+  * Check can detect a block of initialization methods. If a variable is used in
+  * such a block and there is no other statements after this variable then distance=1.
+  * </p>
+  * <p>
+  * <b>Case #1:</b>
+  * <pre>
+  * int <b>minutes</b> = 5;
+  * Calendar cal = Calendar.getInstance();
+  * cal.setTimeInMillis(timeNow);
+  * cal.set(Calendar.SECOND, 0);
+  * cal.set(Calendar.MILLISECOND, 0);
+  * cal.set(Calendar.HOUR_OF_DAY, hh);
+  * cal.set(Calendar.MINUTE, <b>minutes</b>);
+  *
+  * The distance for the variable <b>minutes</b> is 1 even
+  * though this variable is used in the fifth method's call.
+  * </pre>
+  *
+  * <p>
+  * <b>Case #2:</b>
+  * <pre>
+  * int <b>minutes</b> = 5;
+@@ -167,108 +168,109 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  */
+ public class VariableDeclarationUsageDistanceCheck extends Check
+ {
+     /**
+      * Warning message key.
+      */
+     public static final String MSG_KEY = "variable.declaration.usage.distance";
+ 
+     /**
+      * Warning message key.
+      */
+     public static final String MSG_KEY_EXT = "variable.declaration.usage.distance.extend";
+ 
+     /**
+      * Default value of distance between declaration of variable and its first
+      * usage.
+      */
+     private static final int DEFAULT_DISTANCE = 3;
+ 
+     /** Allowed distance between declaration of variable and its first usage. */
+     private int allowedDistance = DEFAULT_DISTANCE;
+ 
+     /**
+      * RegExp pattern to ignore distance calculation for variables listed in
+      * this pattern.
+      */
+     private Pattern ignoreVariablePattern = Pattern.compile("");
+ 
+     /**
+      * Allows to calculate distance between declaration of variable and its
+      * first usage in different scopes.
+      */
+     private boolean validateBetweenScopes;
+ 
+     /** Allows to ignore variables with 'final' modifier. */
+     private boolean ignoreFinal = true;
+ 
+     /**
+      * Sets an allowed distance between declaration of variable and its first
+      * usage.
+      * @param allowedDistance
+      *        Allowed distance between declaration of variable and its first
+      *        usage.
+      */
+     public void setAllowedDistance(int allowedDistance)
+     {
+         this.allowedDistance = allowedDistance;
+     }
+ 
+     /**
+-     * Sets RegExp pattern to ignore distance calculation for variables listed
+-     * in this pattern.
++     * Sets RegExp pattern to ignore distance calculation for variables listed in this pattern.
+      * @param ignorePattern
+      *        Pattern contains ignored variables.
++     * @throws org.apache.commons.beanutils.ConversionException
++     *         if unable to create Pattern object.
+      */
+     public void setIgnoreVariablePattern(String ignorePattern)
+     {
+-        this.ignoreVariablePattern = Pattern.compile(ignorePattern);
++        this.ignoreVariablePattern = Utils.createPattern(ignorePattern);
+     }
+ 
+     /**
+      * Sets option which allows to calculate distance between declaration of
+      * variable and its first usage in different scopes.
+      * @param validateBetweenScopes
+      *        Defines if allow to calculate distance between declaration of
+      *        variable and its first usage in different scopes or not.
+      */
+     public void setValidateBetweenScopes(boolean validateBetweenScopes)
+     {
+         this.validateBetweenScopes = validateBetweenScopes;
+     }
+ 
+     /**
+      * Sets ignore option for variables with 'final' modifier.
+      * @param ignoreFinal
+      *        Defines if ignore variables with 'final' modifier or not.
+      */
+     public void setIgnoreFinal(boolean ignoreFinal)
+     {
+         this.ignoreFinal = ignoreFinal;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         final int parentType = ast.getParent().getType();
+         final DetailAST modifiers = ast.getFirstChild();
+ 
+         if (!(ignoreFinal && modifiers.branchContains(TokenTypes.FINAL)
+                 || parentType == TokenTypes.OBJBLOCK))
+         {
+             final DetailAST variable = ast.findFirstToken(TokenTypes.IDENT);
+ 
+             if (!isVariableMatchesIgnorePattern(variable.getText())) {
+                 final DetailAST semicolonAst = ast.getNextSibling();
+                 Entry<DetailAST, Integer> entry = null;

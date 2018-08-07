@@ -1,0 +1,152 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "HiddenFieldCheck.java",
+  "functionName": "isInStatic",
+  "functionId": "isInStatic___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java",
+  "functionStartLine": 358,
+  "functionEndLine": 379,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "dba6c944cdbf9acfbb40b9a2d8e6315fb14d87f0",
+    "8607274a9205c5f15c33820b0efa6dc4c5ea9a23",
+    "4d2e6647f9e8385749c382bcab5e64965a943178",
+    "0da1e4d980420f6abb465af441e5ced254698273",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "66cc059f7129ce961b3dc833c3150b2dbd89590b",
+    "84d33e55d9735a79f1e0e9f692dd92592aa2f055"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "dba6c944cdbf9acfbb40b9a2d8e6315fb14d87f0": "Ybodychange",
+    "8607274a9205c5f15c33820b0efa6dc4c5ea9a23": "Ybodychange",
+    "4d2e6647f9e8385749c382bcab5e64965a943178": "Yrename",
+    "0da1e4d980420f6abb465af441e5ced254698273": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "66cc059f7129ce961b3dc833c3150b2dbd89590b": "Ymodifierchange",
+    "84d33e55d9735a79f1e0e9f692dd92592aa2f055": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1506259735000,
+      "commitNameOld": "b0493771961c1fd89c96271b397da62699877551",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 31.56,
+      "commitsBetweenForRepo": 54,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,22 +1,22 @@\n     private static boolean isInStatic(DetailAST ast) {\n         DetailAST parent \u003d ast.getParent();\n         boolean inStatic \u003d false;\n \n         while (parent !\u003d null \u0026\u0026 !inStatic) {\n             if (parent.getType() \u003d\u003d TokenTypes.STATIC_INIT) {\n                 inStatic \u003d true;\n             }\n             else if (parent.getType() \u003d\u003d TokenTypes.METHOD_DEF\n                         \u0026\u0026 !ScopeUtils.isInScope(parent, Scope.ANONINNER)\n                         || parent.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n                 final DetailAST mods \u003d\n                     parent.findFirstToken(TokenTypes.MODIFIERS);\n-                inStatic \u003d mods.branchContains(TokenTypes.LITERAL_STATIC);\n+                inStatic \u003d mods.findFirstToken(TokenTypes.LITERAL_STATIC) !\u003d null;\n                 break;\n             }\n             else {\n                 parent \u003d parent.getParent();\n             }\n         }\n         return inStatic;\n     }\n\\ No newline at end of file\n"
+    },
+    "dba6c944cdbf9acfbb40b9a2d8e6315fb14d87f0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #382: Fix HiddenField false positive violations for anonymous classes\n",
+      "commitDate": 1441991673000,
+      "commitName": "dba6c944cdbf9acfbb40b9a2d8e6315fb14d87f0",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1441169272000,
+      "commitNameOld": "8607274a9205c5f15c33820b0efa6dc4c5ea9a23",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 9.52,
+      "commitsBetweenForRepo": 82,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,22 @@\n     private static boolean isInStatic(DetailAST ast) {\n         DetailAST parent \u003d ast.getParent();\n         boolean inStatic \u003d false;\n \n         while (parent !\u003d null \u0026\u0026 !inStatic) {\n             if (parent.getType() \u003d\u003d TokenTypes.STATIC_INIT) {\n                 inStatic \u003d true;\n             }\n-            else if (parent.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n+            else if (parent.getType() \u003d\u003d TokenTypes.METHOD_DEF\n+                        \u0026\u0026 !ScopeUtils.isInScope(parent, Scope.ANONINNER)\n+                        || parent.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n                 final DetailAST mods \u003d\n                     parent.findFirstToken(TokenTypes.MODIFIERS);\n                 inStatic \u003d mods.branchContains(TokenTypes.LITERAL_STATIC);\n                 break;\n             }\n             else {\n                 parent \u003d parent.getParent();\n             }\n         }\n         return inStatic;\n     }\n\\ No newline at end of file\n"
+    },
+    "8607274a9205c5f15c33820b0efa6dc4c5ea9a23": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #46: Loops should not contain more than a single \u0027break\u0027 or \u0027continue\u0027 statement\n",
+      "commitDate": 1441169272000,
+      "commitName": "8607274a9205c5f15c33820b0efa6dc4c5ea9a23",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1441047087000,
+      "commitNameOld": "c899af31c112c07ea1244f6bbe2c5c6c56818ae5",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 1.41,
+      "commitsBetweenForRepo": 32,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,20 @@\n     private static boolean isInStatic(DetailAST ast) {\n         DetailAST parent \u003d ast.getParent();\n         boolean inStatic \u003d false;\n \n-        while (parent !\u003d null) {\n+        while (parent !\u003d null \u0026\u0026 !inStatic) {\n             if (parent.getType() \u003d\u003d TokenTypes.STATIC_INIT) {\n                 inStatic \u003d true;\n-                break;\n             }\n             else if (parent.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n                 final DetailAST mods \u003d\n                     parent.findFirstToken(TokenTypes.MODIFIERS);\n                 inStatic \u003d mods.branchContains(TokenTypes.LITERAL_STATIC);\n                 break;\n             }\n             else {\n                 parent \u003d parent.getParent();\n             }\n         }\n         return inStatic;\n     }\n\\ No newline at end of file\n"
+    },
+    "4d2e6647f9e8385749c382bcab5e64965a943178": {
+      "type": "Yrename",
+      "commitMessage": "Rename boolean methods to start with question word. #1555\n\nFixes `BooleanMethodNameMustStartWithQuestion` inspection violations.\n\nDescription:\n\u003eReports boolean methods whose names do not start with a question word. Boolean methods that override library methods are ignored by this inspection.\n",
+      "commitDate": 1440705239000,
+      "commitName": "4d2e6647f9e8385749c382bcab5e64965a943178",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.32,
+      "commitsBetweenForRepo": 30,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,21 @@\n-    private static boolean inStatic(DetailAST ast) {\n+    private static boolean isInStatic(DetailAST ast) {\n         DetailAST parent \u003d ast.getParent();\n         boolean inStatic \u003d false;\n \n         while (parent !\u003d null) {\n             if (parent.getType() \u003d\u003d TokenTypes.STATIC_INIT) {\n                 inStatic \u003d true;\n                 break;\n             }\n             else if (parent.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n                 final DetailAST mods \u003d\n                     parent.findFirstToken(TokenTypes.MODIFIERS);\n                 inStatic \u003d mods.branchContains(TokenTypes.LITERAL_STATIC);\n                 break;\n             }\n             else {\n                 parent \u003d parent.getParent();\n             }\n         }\n         return inStatic;\n     }\n\\ No newline at end of file\n"
+    },
+    "0da1e4d980420f6abb465af441e5ced254698273": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: ReturnCount violations (partial fix)\n",
+      "commitDate": 1440047165000,
+      "commitName": "0da1e4d980420f6abb465af441e5ced254698273",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440040911000,
+      "commitNameOld": "efa16e17bf710b7b24af828296c2337612912ba9",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 0.07,
+      "commitsBetweenForRepo": 19,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,21 @@\n     private static boolean inStatic(DetailAST ast) {\n         DetailAST parent \u003d ast.getParent();\n+        boolean inStatic \u003d false;\n+\n         while (parent !\u003d null) {\n-            switch (parent.getType()) {\n-                case TokenTypes.STATIC_INIT:\n-                    return true;\n-                case TokenTypes.METHOD_DEF:\n-                    final DetailAST mods \u003d\n-                        parent.findFirstToken(TokenTypes.MODIFIERS);\n-                    return mods.branchContains(TokenTypes.LITERAL_STATIC);\n-                default:\n-                    parent \u003d parent.getParent();\n+            if (parent.getType() \u003d\u003d TokenTypes.STATIC_INIT) {\n+                inStatic \u003d true;\n+                break;\n+            }\n+            else if (parent.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n+                final DetailAST mods \u003d\n+                    parent.findFirstToken(TokenTypes.MODIFIERS);\n+                inStatic \u003d mods.branchContains(TokenTypes.LITERAL_STATIC);\n+                break;\n+            }\n+            else {\n+                parent \u003d parent.getParent();\n             }\n         }\n-        return false;\n+        return inStatic;\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "66cc059f7129ce961b3dc833c3150b2dbd89590b": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Just minor code cleanup\n",
+      "commitDate": 1102416644000,
+      "commitName": "66cc059f7129ce961b3dc833c3150b2dbd89590b",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1096996314000,
+      "commitNameOld": "1ac7fc3f8fc856547085bcc88e17fd1f4bbe0ddd",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 62.74,
+      "commitsBetweenForRepo": 29,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n-    private boolean inStatic(DetailAST aAST)\n+    private static boolean inStatic(DetailAST aAST)\n     {\n         DetailAST parent \u003d aAST.getParent();\n         while (parent !\u003d null) {\n             switch (parent.getType()) {\n             case TokenTypes.STATIC_INIT:\n                 return true;\n             case TokenTypes.METHOD_DEF:\n                 final DetailAST mods \u003d\n                     parent.findFirstToken(TokenTypes.MODIFIERS);\n                 return mods.branchContains(TokenTypes.LITERAL_STATIC);\n             default:\n                 parent \u003d parent.getParent();\n             }\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "84d33e55d9735a79f1e0e9f692dd92592aa2f055": {
+      "type": "Yintroduced",
+      "commitMessage": "Fixed HiddenFieldCheck error for a local variable of a static\nmethod with same name as an instance field(bug 827713)\n",
+      "commitDate": 1067214720000,
+      "commitName": "84d33e55d9735a79f1e0e9f692dd92592aa2f055",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

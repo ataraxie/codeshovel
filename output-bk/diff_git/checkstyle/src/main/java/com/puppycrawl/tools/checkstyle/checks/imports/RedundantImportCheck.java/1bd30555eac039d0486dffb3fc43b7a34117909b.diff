@@ -1,0 +1,68 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java
+index b6d432dd6..1767202f7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java
+@@ -113,62 +113,62 @@ public class RedundantImportCheck
+                     ast.getLastChild().getPreviousSibling()).getText();
+         }
+         else if (ast.getType() == TokenTypes.IMPORT) {
+             final FullIdent imp = FullIdent.createFullIdentBelow(ast);
+             if (fromPackage(imp.getText(), "java.lang")) {
+                 log(ast.getLineNo(), ast.getColumnNo(), MSG_LANG,
+                     imp.getText());
+             }
+             else if (fromPackage(imp.getText(), pkgName)) {
+                 log(ast.getLineNo(), ast.getColumnNo(), MSG_SAME,
+                     imp.getText());
+             }
+             // Check for a duplicate import
+             for (FullIdent full : imports) {
+                 if (imp.getText().equals(full.getText())) {
+                     log(ast.getLineNo(), ast.getColumnNo(),
+                             MSG_DUPLICATE, full.getLineNo(),
+                             imp.getText());
+                 }
+             }
+ 
+             imports.add(imp);
+         }
+         else {
+             // Check for a duplicate static import
+             final FullIdent imp =
+                 FullIdent.createFullIdent(
+                     ast.getLastChild().getPreviousSibling());
+             for (FullIdent full : staticImports) {
+                 if (imp.getText().equals(full.getText())) {
+                     log(ast.getLineNo(), ast.getColumnNo(),
+                         MSG_DUPLICATE, full.getLineNo(), imp.getText());
+                 }
+             }
+ 
+             staticImports.add(imp);
+         }
+     }
+ 
+     /**
+      * Determines if an import statement is for types from a specified package.
+      * @param importName the import name
+      * @param pkg the package name
+      * @return whether from the package
+      */
+     private static boolean fromPackage(String importName, String pkg)
+     {
+         boolean retVal = false;
+         if (pkg == null) {
+             // If not package, then check for no package in the import.
+-            retVal = (importName.indexOf('.') == -1);
++            retVal = importName.indexOf('.') == -1;
+         }
+         else {
+             final int index = importName.lastIndexOf('.');
+             if (index != -1) {
+                 final String front = importName.substring(0, index);
+                 retVal = front.equals(pkg);
+             }
+         }
+         return retVal;
+     }
+ }

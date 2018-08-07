@@ -1,0 +1,196 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
+index f0629477c..d06875ae5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
+@@ -12,114 +12,120 @@
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.indentation;
+ 
+ import java.util.Collection;
+ import java.util.Iterator;
+ import java.util.NavigableMap;
+ import java.util.TreeMap;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * This class checks line-wrapping into definitions and expressions. The
+  * line-wrapping indentation should be not less then value of the
+  * lineWrappingIndentation parameter.
+  *
+  * @author maxvetrenko
+  *
+  */
+ public class LineWrappingHandler
+ {
+ 
+     /**
+      * The current instance of <code>IndentationCheck</code> class using this
+      * handler. This field used to get access to private fields of
+      * IndentationCheck instance.
+      */
+     private final IndentationCheck mIndentCheck;
+ 
+     /**
+      * Root node for current expression.
+      */
+     private DetailAST mFirstNode;
+ 
+     /**
+      * Last node for current expression.
+      */
+     private DetailAST mLastNode;
+ 
+     /**
+      * User's value of line wrapping indentation.
+      */
+     private int mIndentLevel;
+ 
++    /**
++     * Force strict condition in line wrapping case.
++     */
++    private boolean mForceStrictCondition;
++
+     /**
+      * Sets values of class field, finds last node and calculates indentation level.
+      *
+      * @param aInstance
+      *            instance of IndentationCheck.
+      * @param aFirstNode
+      *            root node for current expression..
+      */
+     public LineWrappingHandler(IndentationCheck aInstance, DetailAST aFirstNode)
+     {
+         mIndentCheck = aInstance;
+         mFirstNode = aFirstNode;
+         mLastNode = findLastNode(mFirstNode);
+         mIndentLevel = mIndentCheck.getLineWrappingIndentation();
++        mForceStrictCondition = mIndentCheck.getForceStrictCondition();
+     }
+ 
+     /**
+      * Finds last node of AST subtree.
+      *
+      * @param aFirstNode the first node of expression or definition.
+      * @return last node.
+      */
+     public DetailAST findLastNode(DetailAST aFirstNode)
+     {
+         return aFirstNode.getLastChild().getPreviousSibling();
+     }
+ 
+     /**
+      * @return correct indentation for current expression.
+      */
+     public int getCurrentIndentation()
+     {
+         return mFirstNode.getColumnNo() + mIndentLevel;
+     }
+ 
+     // Getters for private fields.
+ 
+     public final DetailAST getFirstNode()
+     {
+         return mFirstNode;
+     }
+ 
+     public final DetailAST getLastNode()
+     {
+         return mLastNode;
+     }
+ 
+     public final int getIndentLevel()
+     {
+         return mIndentLevel;
+     }
+ 
+     /**
+      * Checks line wrapping into expressions and definitions.
+      */
+     public void checkIndentation()
+     {
+         final NavigableMap<Integer, DetailAST> firstNodesOnLines = collectFirstNodes();
+ 
+         final DetailAST firstNode = firstNodesOnLines.get(firstNodesOnLines.firstKey());
+         if (firstNode.getType() == TokenTypes.AT) {
+             checkAnnotationIndentation(firstNode, firstNodesOnLines);
+         }
+ 
+@@ -254,57 +260,66 @@ public class LineWrappingHandler
+         while (itr.hasNext() && aFirstNodesOnLines.size() > 1) {
+             final DetailAST node = itr.next();
+ 
+             if (node.getLineNo() < lastAnnotationLine
+                     || node.getLineNo() == lastAnnotationLine
+                     && node.getColumnNo() <= lastAnnotattionColumn)
+             {
+                 final DetailAST parentNode = node.getParent();
+                 if (node.getType() == TokenTypes.AT
+                         && parentNode.getParent().getType() == TokenTypes.MODIFIERS)
+                 {
+                     logWarningMessage(node, firstNodeIndent);
+                 }
+                 else {
+                     logWarningMessage(node, currentIndent);
+                 }
+                 itr.remove();
+             }
+             else {
+                 break;
+             }
+         }
+     }
+ 
+     /**
+      * Finds and returns last annotation node.
+      * @param aAtNode first at-clause node.
+      * @return last annotation node.
+      */
+     private DetailAST getLastAnnotationNode(DetailAST aAtNode)
+     {
+         DetailAST lastAnnotation = aAtNode.getParent();
+         while (lastAnnotation.getNextSibling() != null
+                 && lastAnnotation.getNextSibling().getType() == TokenTypes.ANNOTATION)
+         {
+             lastAnnotation = lastAnnotation.getNextSibling();
+         }
+         return lastAnnotation.getLastChild();
+     }
+ 
+     /**
+      * Logs warning message if indentation is incorrect.
+      *
+      * @param aCurrentNode
+      *            current node which probably invoked an error.
+      * @param aCurrentIndent
+      *            correct indentation.
+      */
+     private void logWarningMessage(DetailAST aCurrentNode, int aCurrentIndent)
+     {
+-        if (aCurrentNode.getColumnNo() < aCurrentIndent) {
+-            mIndentCheck.indentationLog(aCurrentNode.getLineNo(),
+-                    "indentation.error", aCurrentNode.getText(),
+-                    aCurrentNode.getColumnNo(), aCurrentIndent);
++        if (mForceStrictCondition) {
++            if (aCurrentNode.getColumnNo() != aCurrentIndent) {
++                mIndentCheck.indentationLog(aCurrentNode.getLineNo(),
++                        "indentation.error", aCurrentNode.getText(),
++                        aCurrentNode.getColumnNo(), aCurrentIndent);
++            }
++        }
++        else {
++            if (aCurrentNode.getColumnNo() < aCurrentIndent) {
++                mIndentCheck.indentationLog(aCurrentNode.getLineNo(),
++                        "indentation.error", aCurrentNode.getText(),
++                        aCurrentNode.getColumnNo(), aCurrentIndent);
++            }
+         }
+     }
+ }

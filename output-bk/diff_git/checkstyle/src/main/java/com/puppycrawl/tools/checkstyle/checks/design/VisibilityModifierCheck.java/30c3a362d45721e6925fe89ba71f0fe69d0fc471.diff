@@ -1,0 +1,71 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+index f2dc13cb2..1862c3958 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+@@ -731,64 +731,64 @@ public class VisibilityModifierCheck
+             final String shortClassName = canonicalClassName
+                     .substring(canonicalClassName.lastIndexOf('.') + 1,
+                     canonicalClassName.length());
+             shortNames.add(shortClassName);
+         }
+         return shortNames;
+     }
+ 
+     /**
+      * Gets the short class name from given canonical name.
+      * @param canonicalClassName canonical class name.
+      * @return short name of class.
+      */
+     private static String getClassShortName(String canonicalClassName) {
+         return canonicalClassName
+                 .substring(canonicalClassName.lastIndexOf('.') + 1,
+                 canonicalClassName.length());
+     }
+ 
+     /**
+      * Checks whether the AST is annotated with
+      * an annotation containing the passed in regular
+      * expression and return the AST representing that
+      * annotation.
+      *
+      * <p>
+      * This method will not look for imports or package
+      * statements to detect the passed in annotation.
+      * </p>
+      *
+      * <p>
+      * To check if an AST contains a passed in annotation
+      * taking into account fully-qualified names
+      * (ex: java.lang.Override, Override)
+      * this method will need to be called twice. Once for each
+      * name given.
+      * </p>
+      *
+      * @param variableDef {@link TokenTypes#VARIABLE_DEF variable def node}.
+      * @return the AST representing the first such annotation or null if
+      *         no such annotation was found
+      */
+     private DetailAST findMatchingAnnotation(DetailAST variableDef) {
+         DetailAST matchingAnnotation = null;
+ 
+         final DetailAST holder = AnnotationUtility.getAnnotationHolder(variableDef);
+ 
+         for (DetailAST child = holder.getFirstChild();
+             child != null; child = child.getNextSibling()) {
+             if (child.getType() == TokenTypes.ANNOTATION) {
+-                final DetailAST at = child.getFirstChild();
++                final DetailAST ast = child.getFirstChild();
+                 final String name =
+-                    FullIdent.createFullIdent(at.getNextSibling()).getText();
++                    FullIdent.createFullIdent(ast.getNextSibling()).getText();
+                 if (ignoreAnnotationCanonicalNames.contains(name)
+                          || ignoreAnnotationShortNames.contains(name)) {
+                     matchingAnnotation = child;
+                     break;
+                 }
+             }
+         }
+ 
+         return matchingAnnotation;
+     }
+ }

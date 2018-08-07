@@ -1,0 +1,76 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/AvoidNestedBlocksCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/AvoidNestedBlocksCheck.java
+index b167920e8..afaaec603 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/AvoidNestedBlocksCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/AvoidNestedBlocksCheck.java
+@@ -57,69 +57,69 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+  * </p>
+  *
+  * <pre>
+  * switch (a)
+  * {
+  *     case 0:
+  *         // Never OK, break outside block
+  *         {
+  *             x = 1;
+  *         }
+  *         break;
+  *     case 1:
+  *         // Never OK, statement outside block
+  *         System.out.println("Hello");
+  *         {
+  *             x = 2;
+  *             break;
+  *         }
+  *     case 1:
+  *         // OK if allowInSwitchCase is true
+  *         {
+  *             System.out.println("Hello");
+  *             x = 2;
+  *             break;
+  *         }
+  * }
+  * </pre>
+  *
+  * @author lkuehne
+  */
+ public class AvoidNestedBlocksCheck extends Check
+ {
+     /**
+      * Whether nested blocks are allowed if they are the
+      * only child of a switch case.
+      */
+     private boolean mAllowInSwitchCase;
+ 
+     /** {@inheritDoc} */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.SLIST};
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         final DetailAST parent = aAST.getParent();
+         if (parent.getType() == TokenTypes.SLIST) {
+             if (mAllowInSwitchCase
+-                    && parent.getParent().getType() == TokenTypes.CASE_GROUP
+-                    && parent.getNumberOfChildren() == 1)
++                    && (parent.getParent().getType() == TokenTypes.CASE_GROUP)
++                    && (parent.getNumberOfChildren() == 1))
+             {
+                 return;
+             }
+             log(aAST.getLineNo(), aAST.getColumnNo(), "block.nested");
+         }
+     }
+ 
+     /**
+      * Setter for allowInSwitchCase property.
+      * @param aAllowInSwitchCase whether nested blocks are allowed
+      *                 if they are the only child of a switch case.
+      */
+     public void setAllowInSwitchCase(boolean aAllowInSwitchCase)
+     {
+         mAllowInSwitchCase = aAllowInSwitchCase;
+     }
+ }

@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java
+index 8a11856c6..ca59301e8 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java
+@@ -21,105 +21,105 @@ package com.puppycrawl.tools.checkstyle.gui;
+ 
+ import java.awt.BorderLayout;
+ import java.awt.Component;
+ import java.awt.GridLayout;
+ import java.awt.event.ActionEvent;
+ import java.awt.event.KeyEvent;
+ import java.io.File;
+ import java.io.IOException;
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.TooManyListenersException;
+ 
+ import javax.swing.AbstractAction;
+ import javax.swing.Action;
+ import javax.swing.JButton;
+ import javax.swing.JFileChooser;
+ import javax.swing.JOptionPane;
+ import javax.swing.JPanel;
+ import javax.swing.JScrollPane;
+ import javax.swing.JTextArea;
+ import javax.swing.SwingUtilities;
+ import javax.swing.filechooser.FileFilter;
+ 
+ import antlr.ANTLRException;
+ 
+ import com.puppycrawl.tools.checkstyle.TreeWalker;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.FileText;
+ 
+ /**
+  * Displays information about a parse tree.
+  * The user can change the file that is parsed and displayed
+  * through a JFileChooser.
+  *
+  * @author Lars Kühne
+  */
+ public class ParseTreeInfoPanel extends JPanel {
+     /** For Serialisation that will never happen. */
+     private static final long serialVersionUID = -4243405131202059043L;
+ 
+     private final transient ParseTreeModel parseTreeModel;
+     private final JTextArea jTextArea;
+     private File lastDirectory;
+     private File currentFile;
+     private final Action reloadAction;
+     private final List<Integer>   lines2position  = new ArrayList<>();
+ 
+     private static class JavaFileFilter extends FileFilter {
+         @Override
+-        public boolean accept(File f) {
+-            if (f == null) {
++        public boolean accept(File file) {
++            if (file == null) {
+                 return false;
+             }
+-            return f.isDirectory() || f.getName().endsWith(".java");
++            return file.isDirectory() || file.getName().endsWith(".java");
+         }
+ 
+         @Override
+         public String getDescription() {
+             return "Java Source Code";
+         }
+     }
+ 
+     public void openAst(DetailAST parseTree, final Component parent) {
+         parseTreeModel.setParseTree(parseTree);
+         reloadAction.setEnabled(true);
+ 
+         // clear for each new file
+         getLines2position().clear();
+         // starts line counting at 1
+         getLines2position().add(0);
+         // insert the contents of the file to the text area
+ 
+         // clean the text area before inserting the lines of the new file
+         if (!jTextArea.getText().isEmpty()) {
+             jTextArea.replaceRange("", 0, jTextArea.getText().length());
+         }
+ 
+         // move back to the top of the file
+         jTextArea.moveCaretPosition(0);
+     }
+ 
+     private class FileSelectionAction extends AbstractAction {
+         /**
+          *
+          */
+         private static final long serialVersionUID = -1926935338069418119L;
+ 
+         public FileSelectionAction() {
+             super("Select Java File");
+             putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
+         }
+ 
+         @Override
+         public void actionPerformed(ActionEvent e) {
+             final JFileChooser fc = new JFileChooser(lastDirectory);
+             final FileFilter filter = new JavaFileFilter();
+             fc.setFileFilter(filter);
+             final Component parent =
+                 SwingUtilities.getRoot(ParseTreeInfoPanel.this);
+             fc.showDialog(parent, "Open");
+             final File file = fc.getSelectedFile();
+             openFile(file, parent);
+ 
+         }

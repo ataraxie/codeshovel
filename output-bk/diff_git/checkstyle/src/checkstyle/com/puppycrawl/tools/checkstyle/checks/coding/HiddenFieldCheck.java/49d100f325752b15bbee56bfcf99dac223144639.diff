@@ -1,0 +1,321 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+index ffbb613bb..07a4f1d58 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+@@ -81,264 +81,259 @@ public class HiddenFieldCheck
+ 
+     /** the regexp to match against */
+     private Pattern mRegexp;
+ 
+     /** controls whether to check the parameter of a property setter method */
+     private boolean mIgnoreSetter;
+ 
+     /** controls whether to check the parameter of a constructor */
+     private boolean mIgnoreConstructorParameter;
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void beginTree(DetailAST aRootAST)
+     {
+         mCurrentFrame = new FieldFrame(null, true);
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void visitToken(DetailAST aAST)
+     {
++        if (aAST.getType() == TokenTypes.VARIABLE_DEF
++            || aAST.getType() == TokenTypes.PARAMETER_DEF)
++        {
++            processVariable(aAST);
++            return;
++        }
++
+         //A more thorough check of enum constant class bodies is
+         //possible (checking for hidden fields against the enum
+         //class body in addition to enum constant class bodies)
+         //but not attempted as it seems out of the scope of this
+         //check.
+-        if ((aAST.getType() == TokenTypes.CLASS_DEF)
+-            || (aAST.getType() == TokenTypes.ENUM_DEF)
+-            || (aAST.getType() == TokenTypes.ENUM_CONSTANT_DEF))
+-        {
+-            final DetailAST typeMods =
+-                aAST.findFirstToken(TokenTypes.MODIFIERS);
+-            final boolean isStaticInnerType =
+-                (typeMods == null)
+-                    ? false
+-                    : typeMods.branchContains(TokenTypes.LITERAL_STATIC);
+-            final FieldFrame frame =
+-                new FieldFrame(mCurrentFrame, isStaticInnerType);
+-
+-            //add fields to container
+-            final DetailAST objBlock =
+-                aAST.findFirstToken(TokenTypes.OBJBLOCK);
+-            // enum constants may not have bodies
+-            if (objBlock != null) {
+-                DetailAST child = (DetailAST) objBlock.getFirstChild();
+-                while (child != null) {
+-                    if (child.getType() == TokenTypes.VARIABLE_DEF) {
+-                        final String name =
+-                            child.findFirstToken(TokenTypes.IDENT).getText();
+-                        final DetailAST mods =
+-                            child.findFirstToken(TokenTypes.MODIFIERS);
+-                        if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {
+-                            frame.addStaticField(name);
+-                        }
+-                        else {
+-                            frame.addInstanceField(name);
+-                        }
++        final DetailAST typeMods = aAST.findFirstToken(TokenTypes.MODIFIERS);
++        final boolean isStaticInnerType =
++            (typeMods == null)
++            ? false
++            : typeMods.branchContains(TokenTypes.LITERAL_STATIC);
++        final FieldFrame frame =
++            new FieldFrame(mCurrentFrame, isStaticInnerType);
++
++        //add fields to container
++        final DetailAST objBlock = aAST.findFirstToken(TokenTypes.OBJBLOCK);
++        // enum constants may not have bodies
++        if (objBlock != null) {
++            DetailAST child = (DetailAST) objBlock.getFirstChild();
++            while (child != null) {
++                if (child.getType() == TokenTypes.VARIABLE_DEF) {
++                    final String name =
++                        child.findFirstToken(TokenTypes.IDENT).getText();
++                    final DetailAST mods =
++                        child.findFirstToken(TokenTypes.MODIFIERS);
++                    if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {
++                        frame.addStaticField(name);
++                    }
++                    else {
++                        frame.addInstanceField(name);
+                     }
+-                    child = (DetailAST) child.getNextSibling();
+                 }
++                child = (DetailAST) child.getNextSibling();
+             }
+-            // push container
+-            mCurrentFrame = frame;
+-        }
+-        else {
+-            //must be VARIABLE_DEF or PARAMETER_DEF
+-            processVariable(aAST);
+         }
++        // push container
++        mCurrentFrame = frame;
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void leaveToken(DetailAST aAST)
+     {
+         if ((aAST.getType() == TokenTypes.CLASS_DEF)
+             || (aAST.getType() == TokenTypes.ENUM_DEF)
+             || (aAST.getType() == TokenTypes.ENUM_CONSTANT_DEF))
+         {
+             //pop
+             mCurrentFrame = mCurrentFrame.getParent();
+         }
+     }
+ 
+     /**
+      * Process a variable token.
+      * Check whether a local variable or parameter shadows a field.
+      * Store a field for later comparison with local variables and parameters.
+      * @param aAST the variable token.
+      */
+     private void processVariable(DetailAST aAST)
+     {
+-        if (!ScopeUtils.inInterfaceOrAnnotationBlock(aAST)) {
+-            if (ScopeUtils.isLocalVariableDef(aAST)
+-                || (aAST.getType() == TokenTypes.PARAMETER_DEF))
+-            {
+-                //local variable or parameter. Does it shadow a field?
+-                final DetailAST nameAST = aAST.findFirstToken(TokenTypes.IDENT);
+-                final String name = nameAST.getText();
+-                if ((mCurrentFrame.containsStaticField(name)
+-                     || (!inStatic(aAST)
+-                         && mCurrentFrame.containsInstanceField(name)))
+-                    && ((mRegexp == null)
+-                        || (!getRegexp().matcher(name).find()))
+-                    && !isIgnoredSetterParam(aAST, name)
+-                    && !isIgnoredConstructorParam(aAST))
+-                {
+-                    log(nameAST, "hidden.field", name);
+-                }
+-            }
++        if (ScopeUtils.inInterfaceOrAnnotationBlock(aAST)
++            || !ScopeUtils.isLocalVariableDef(aAST)
++            && (aAST.getType() != TokenTypes.PARAMETER_DEF))
++        {
++            // do nothing
++            return;
++        }
++        //local variable or parameter. Does it shadow a field?
++        final DetailAST nameAST = aAST.findFirstToken(TokenTypes.IDENT);
++        final String name = nameAST.getText();
++        if ((mCurrentFrame.containsStaticField(name)
++             || (!inStatic(aAST) && mCurrentFrame.containsInstanceField(name)))
++            && ((mRegexp == null) || (!getRegexp().matcher(name).find()))
++            && !isIgnoredSetterParam(aAST, name)
++            && !isIgnoredConstructorParam(aAST))
++        {
++            log(nameAST, "hidden.field", name);
+         }
+     }
+ 
+     /**
+      * Determines whether an AST node is in a static method or static
+      * initializer.
+      * @param aAST the node to check.
+      * @return true if aAST is in a static method or a static block;
+      */
+     private static boolean inStatic(DetailAST aAST)
+     {
+         DetailAST parent = aAST.getParent();
+         while (parent != null) {
+             switch (parent.getType()) {
+             case TokenTypes.STATIC_INIT:
+                 return true;
+             case TokenTypes.METHOD_DEF:
+                 final DetailAST mods =
+                     parent.findFirstToken(TokenTypes.MODIFIERS);
+                 return mods.branchContains(TokenTypes.LITERAL_STATIC);
+             default:
+                 parent = parent.getParent();
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of a
+      * setter method, where the property setter method for field 'xyz' has
+      * name 'setXyz', one parameter named 'xyz', and return type void.
+      * @param aAST the AST to check.
+      * @param aName the name of aAST.
+      * @return true if aAST should be ignored because check property
+      * ignoreSetter is true and aAST is the parameter of a setter method.
+      */
+     private boolean isIgnoredSetterParam(DetailAST aAST, String aName)
+     {
+         if (!(aAST.getType() == TokenTypes.PARAMETER_DEF)
+             || !mIgnoreSetter)
+         {
+             return false;
+         }
+         //single parameter?
+         final DetailAST parametersAST = aAST.getParent();
+         if (parametersAST.getChildCount() != 1) {
+             return false;
+         }
+         //method parameter, not constructor parameter?
+         final DetailAST methodAST = parametersAST.getParent();
+         if (methodAST.getType() != TokenTypes.METHOD_DEF) {
+             return false;
+         }
+         //property setter name?
+         final String expectedName =
+             "set" + aName.substring(0, 1).toUpperCase() + aName.substring(1);
+         final DetailAST methodNameAST =
+             methodAST.findFirstToken(TokenTypes.IDENT);
+         final String methodName = methodNameAST.getText();
+         if (!methodName.equals(expectedName)) {
+             return false;
+         }
+         //void?
+         final DetailAST typeAST = methodAST.findFirstToken(TokenTypes.TYPE);
+         return typeAST.branchContains(TokenTypes.LITERAL_VOID);
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of a
+      * constructor.
+      * @param aAST the AST to check.
+      * @return true if aAST should be ignored because check property
+      * ignoreConstructorParameter is true and aAST is a constructor parameter.
+      */
+     private boolean isIgnoredConstructorParam(DetailAST aAST)
+     {
+-        if (!(aAST.getType() == TokenTypes.PARAMETER_DEF)
++        if ((aAST.getType() != TokenTypes.PARAMETER_DEF)
+             || !mIgnoreConstructorParameter)
+         {
+             return false;
+         }
+         final DetailAST parametersAST = aAST.getParent();
+         final DetailAST constructorAST = parametersAST.getParent();
+         return (constructorAST.getType() == TokenTypes.CTOR_DEF);
+     }
+ 
+     /**
+      * Set the ignore format to the specified regular expression.
+      * @param aFormat a <code>String</code> value
+      * @throws ConversionException unable to parse aFormat
+      */
+     public void setIgnoreFormat(String aFormat)
+         throws ConversionException
+     {
+         try {
+             mRegexp = Utils.getPattern(aFormat);
+         }
+         catch (PatternSyntaxException e) {
+             throw new ConversionException("unable to parse " + aFormat, e);
+         }
+     }
+ 
+     /**
+      * Set whether to ignore the parameter of a property setter method.
+      * @param aIgnoreSetter decide whether to ignore the parameter of
+      * a property setter method.
+      */
+     public void setIgnoreSetter(boolean aIgnoreSetter)
+     {
+         mIgnoreSetter = aIgnoreSetter;
+     }
+ 
+     /**
+      * Set whether to ignore constructor parameters.
+      * @param aIgnoreConstructorParameter decide whether to ignore
+      * constructor parameters.
+      */
+     public void setIgnoreConstructorParameter(
+         boolean aIgnoreConstructorParameter)
+     {
+         mIgnoreConstructorParameter = aIgnoreConstructorParameter;
+     }
+ 
+     /** @return the regexp to match against */
+     public Pattern getRegexp()
+     {
+         return mRegexp;

@@ -1,0 +1,67 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntRangeFilter.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntRangeFilter.java
+index 407398d34..92a8cc6ae 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntRangeFilter.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntRangeFilter.java
+@@ -19,61 +19,59 @@
+ package com.puppycrawl.tools.checkstyle.filters;
+ 
+ /**
+  * This filter accepts an Integer in a range.
+  * @author Rick Giles
+  */
+ class IntRangeFilter implements IntFilter
+ {
+     /** hash function multiplicand */
+     private static final int HASH_MULT = 29;
+ 
+     /** lower bound of the range */
+     private Integer mLowerBound;
+ 
+     /** upper bound of the range */
+     private Integer mUpperBound;
+ 
+     /**
+      * Constructs a <code>IntRangeFilter</code> with a
+      * lower bound and an upper bound for the range.
+      * @param aLowerBound the lower bound of the range.
+      * @param aUpperBound the upper bound of the range.
+      */
+     public IntRangeFilter(int aLowerBound, int aUpperBound)
+     {
+         mLowerBound = new Integer(aLowerBound);
+         mUpperBound = new Integer(aUpperBound);
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.filters.IntFilter */
+     public boolean accept(Integer aInt)
+     {
+         return ((mLowerBound.compareTo(aInt) <= 0)
+             && (mUpperBound.compareTo(aInt) >= 0));
+     }
+ 
+     /** @see java.lang.Object#hashCode() */
+     public int hashCode()
+     {
+         return HASH_MULT * mLowerBound.intValue() + mUpperBound.intValue();
+     }
+ 
+     /** @see java.lang.Object#equals(java.lang.Object) */
+     public boolean equals(Object aObject)
+     {
+         if (aObject instanceof IntRangeFilter) {
+             final IntRangeFilter other = (IntRangeFilter) aObject;
+             return (this.mLowerBound.equals(other.mLowerBound)
+                 && this.mUpperBound.equals(other.mUpperBound));
+         }
+-        else {
+-            return false;
+-        }
++        return false;
+     }
+     /** @see java.lang.Object#toString() */
+     public String toString()
+     {
+         return "IntRangeFilter[" + mLowerBound + "," + mUpperBound + "]";
+     }
+ 
+ }

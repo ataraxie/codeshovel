@@ -1,0 +1,163 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+index 2d872b1f3..870038c45 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+@@ -62,137 +62,157 @@ public class FinalLocalVariableCheck extends Check
+             TokenTypes.OBJBLOCK,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+             case TokenTypes.SLIST:
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.STATIC_INIT:
+             case TokenTypes.INSTANCE_INIT:
+                 scopeStack.push(new HashMap<String, DetailAST>());
+                 break;
+ 
+             case TokenTypes.PARAMETER_DEF:
+                 if (ScopeUtils.inInterfaceBlock(ast)
+                     || inAbstractOrNativeMethod(ast))
+                 {
+                     break;
+                 }
+             case TokenTypes.VARIABLE_DEF:
+                 if ((ast.getParent().getType() != TokenTypes.OBJBLOCK)
+-                    && (ast.getParent().getType() != TokenTypes.FOR_EACH_CLAUSE))
++                    && (ast.getParent().getType() != TokenTypes.FOR_EACH_CLAUSE)
++                    && isFirstVariableInForInit(ast))
+                 {
+                     insertVariable(ast);
+                 }
+                 break;
+ 
+             case TokenTypes.IDENT:
+                 final int parentType = ast.getParent().getType();
+                 if ((TokenTypes.POST_DEC        == parentType)
+                     || (TokenTypes.DEC          == parentType)
+                     || (TokenTypes.POST_INC     == parentType)
+                     || (TokenTypes.INC          == parentType)
+                     || (TokenTypes.ASSIGN       == parentType)
+                     || (TokenTypes.PLUS_ASSIGN  == parentType)
+                     || (TokenTypes.MINUS_ASSIGN == parentType)
+                     || (TokenTypes.DIV_ASSIGN   == parentType)
+                     || (TokenTypes.STAR_ASSIGN  == parentType)
+                     || (TokenTypes.MOD_ASSIGN   == parentType)
+                     || (TokenTypes.SR_ASSIGN    == parentType)
+                     || (TokenTypes.BSR_ASSIGN   == parentType)
+                     || (TokenTypes.SL_ASSIGN    == parentType)
+                     || (TokenTypes.BXOR_ASSIGN  == parentType)
+                     || (TokenTypes.BOR_ASSIGN   == parentType)
+                     || (TokenTypes.BAND_ASSIGN  == parentType))
+                 {
+                     // TODO: is there better way to check is ast
+                     // in left part of assignment?
+                     if (ast.getParent().getFirstChild() == ast) {
+                         removeVariable(ast);
+                     }
+                 }
+                 break;
+ 
+             default:
+         }
+     }
+ 
++    /**
++     * Checks if current variable is defined first in
++     *  {@link TokenTypes#FOR_INIT for-loop init}, e.g.:
++     * <p>
++     * <code>
++     * for (int i = 0, j = 0; i < j; i++) { . . . }
++     * </code>
++     * </p>
++     * <code>i</code> is first variable in {@link TokenTypes#FOR_INIT for-loop init}
++     * @param variableDef variable definition node.
++     * @return true if variableDef is first variable in {@link TokenTypes#FOR_INIT for-loop init}
++     */
++    private static boolean isFirstVariableInForInit(DetailAST variableDef)
++    {
++        return variableDef.getParent().getType() != TokenTypes.FOR_INIT
++                 || variableDef.getPreviousSibling() == null
++                 || variableDef.getPreviousSibling().getType() != TokenTypes.COMMA;
++    }
++
+     /**
+      * Determines whether an AST is a descendant of an abstract or native method.
+      * @param ast the AST to check.
+      * @return true if ast is a descendant of an abstract or native method.
+      */
+     private static boolean inAbstractOrNativeMethod(DetailAST ast)
+     {
+         DetailAST parent = ast.getParent();
+         while (parent != null) {
+             if (parent.getType() == TokenTypes.METHOD_DEF) {
+                 final DetailAST modifiers =
+                     parent.findFirstToken(TokenTypes.MODIFIERS);
+                 return modifiers.branchContains(TokenTypes.ABSTRACT)
+                         || modifiers.branchContains(TokenTypes.LITERAL_NATIVE);
+             }
+             parent = parent.getParent();
+         }
+         return false;
+     }
+ 
+     /**
+      * Inserts a variable at the topmost scope stack
+      * @param ast the variable to insert
+      */
+     private void insertVariable(DetailAST ast)
+     {
+         if (!ast.branchContains(TokenTypes.FINAL)) {
+             final Map<String, DetailAST> state = scopeStack.peek();
+             final DetailAST astNode = ast.findFirstToken(TokenTypes.IDENT);
+             state.put(astNode.getText(), astNode);
+         }
+     }
+ 
+     /**
+      * Removes the variable from the Stacks
+      * @param ast Variable to remove
+      */
+     private void removeVariable(DetailAST ast)
+     {
+         for (int i = scopeStack.size() - 1; i >= 0; i--) {
+             final Map<String, DetailAST> state = scopeStack.peek(i);
+             final Object obj = state.remove(ast.getText());
+             if (obj != null) {
+                 break;
+             }
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast)

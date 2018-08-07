@@ -1,0 +1,112 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java
+index c2363954b..741602993 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java
+@@ -212,101 +212,106 @@ public final class JavadocUtils {
+     /**
+      * Gets content of block comment.
+      * @param blockCommentBegin
+      *        block comment AST.
+      * @return content of block comment.
+      */
+     public static String getBlockCommentContent(DetailAST blockCommentBegin) {
+         final DetailAST commentContent = blockCommentBegin.getFirstChild();
+         return commentContent.getText();
+     }
+ 
+     /**
+      * Get content of Javadoc comment.
+      * @param javdocCommentBegin
+      *        Javadoc comment AST
+      * @return content of Javadoc comment.
+      */
+     public static String getJavadocCommentContent(DetailAST javdocCommentBegin) {
+         final DetailAST commentContent = javdocCommentBegin.getFirstChild();
+         return commentContent.getText().substring(1);
+     }
+ 
+     /**
+      * Returns the first child token that has a specified type.
+      * @param detailNode
+      *        Javadoc AST node
+      * @param type
+      *        the token type to match
+      * @return the matching token, or null if no match
+      */
+     public static DetailNode findFirstToken(DetailNode detailNode, int type) {
+         DetailNode retVal = null;
+         DetailNode node = getFirstChild(detailNode);
+         while (node != null) {
+             if (node.getType() == type) {
+                 retVal = node;
+                 break;
+             }
+             node = getNextSibling(node);
+         }
+         return retVal;
+     }
+ 
+     /**
+      * Gets first child node of specified node.
+      *
+      * @param node DetailNode
+      * @return first child
+      */
+     public static DetailNode getFirstChild(DetailNode node) {
+-        return node.getChildren().length > 0 ? node.getChildren()[0] : null;
++        DetailNode resultNode = null;
++
++        if (node.getChildren().length > 0) {
++            resultNode = node.getChildren()[0];
++        }
++        return resultNode;
+     }
+ 
+     /**
+      * Checks whether node contains any node of specified type among children on any deep level.
+      *
+      * @param node DetailNode
+      * @param type token type
+      * @return true if node contains any node of type type among children on any deep level.
+      */
+     public static boolean branchContains(DetailNode node, int type) {
+         DetailNode curNode = node;
+         while (true) {
+ 
+             if (type == curNode.getType()) {
+                 return true;
+             }
+ 
+             DetailNode toVisit = getFirstChild(curNode);
+             while (curNode != null && toVisit == null) {
+                 toVisit = getNextSibling(curNode);
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+ 
+             if (curNode == toVisit) {
+                 break;
+             }
+ 
+             curNode = toVisit;
+         }
+ 
+         return false;
+     }
+ 
+     /**
+      * Gets next sibling of specified node.
+      *
+      * @param node DetailNode
+      * @return next sibling.
+      */
+     public static DetailNode getNextSibling(DetailNode node) {
+         final DetailNode parent = node.getParent();
+         if (parent != null) {
+             final int nextSiblingIndex = node.getIndex() + 1;
+             final DetailNode[] children = parent.getChildren();
+             if (nextSiblingIndex <= children.length - 1) {
+                 return children[nextSiblingIndex];
+             }
+         }

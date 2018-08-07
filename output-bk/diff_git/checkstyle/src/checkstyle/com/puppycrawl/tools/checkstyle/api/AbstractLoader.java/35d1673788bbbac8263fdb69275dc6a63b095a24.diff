@@ -1,0 +1,79 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractLoader.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractLoader.java
+index 248ad74a4..985ee6d68 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractLoader.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AbstractLoader.java
+@@ -76,73 +76,73 @@ public abstract class AbstractLoader
+     {
+         mPublicIdToResourceNameMap = new HashMap(aPublicIdToResourceNameMap);
+         final SAXParserFactory factory = SAXParserFactory.newInstance();
+         factory.setValidating(true);
+         factory.setNamespaceAware(true);
+         mParser = factory.newSAXParser().getXMLReader();
+         mParser.setContentHandler(this);
+         mParser.setEntityResolver(this);
+         mParser.setErrorHandler(this);
+     }
+ 
+     /**
+      * Parses the specified input source.
+      * @param aInputSource the input source to parse.
+      * @throws IOException if an error occurs
+      * @throws SAXException in an error occurs
+      */
+     public void parseInputSource(InputSource aInputSource)
+         throws IOException, SAXException
+     {
+         mParser.parse(aInputSource);
+     }
+ 
+     /** {@inheritDoc} */
+     public InputSource resolveEntity(String aPublicId, String aSystemId)
+         throws SAXException
+     {
+         if (mPublicIdToResourceNameMap.keySet().contains(aPublicId)) {
+             final String dtdResourceName =
+                     (String) mPublicIdToResourceNameMap.get(aPublicId);
+             final ClassLoader loader =
+                 Thread.currentThread().getContextClassLoader();
+             final InputStream dtdIS =
+                 loader.getResourceAsStream(dtdResourceName);
+             if (dtdIS == null) {
+                 throw new SAXException(
+                     "Unable to load internal dtd " + dtdResourceName);
+             }
+             return new InputSource(dtdIS);
+         }
+         // This is a hack to workaround problem with SAX
+         // DefaultHeader.resolveEntity():
+         // sometimes it throws SAX- and IO- exceptions
+         // sometime SAX only :(
+         try {
+             if (false) {
+                 throw new IOException("");
+             }
+             return super.resolveEntity(aPublicId, aSystemId);
+         }
+-        catch (IOException e) {
++        catch (final IOException e) {
+             throw new SAXException("" + e, e);
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     public void warning(SAXParseException aEx) throws SAXException
+     {
+         throw aEx;
+     }
+ 
+     /** {@inheritDoc} */
+     public void error(SAXParseException aEx) throws SAXException
+     {
+         throw aEx;
+     }
+ 
+     /** {@inheritDoc} */
+     public void fatalError(SAXParseException aEx) throws SAXException
+     {
+         throw aEx;
+     }
+ }

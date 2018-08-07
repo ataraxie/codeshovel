@@ -1,0 +1,104 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ParameterAssignmentCheck.java",
+  "functionName": "visitMethodParameters",
+  "functionId": "visitMethodParameters___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ParameterAssignmentCheck.java",
+  "functionStartLine": 218,
+  "functionEndLine": 231,
+  "changeHistory": [
+    "40a0b5dcf7f9b45ae98ddcb1dec6e9e7c4eec676",
+    "7b0388ee96bf14872ae095da85738af97ef857d5",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+    "15ccd9380664ab612e38446c47f8ee00e7ee880f"
+  ],
+  "changeHistoryShort": {
+    "40a0b5dcf7f9b45ae98ddcb1dec6e9e7c4eec676": "Ybodychange",
+    "7b0388ee96bf14872ae095da85738af97ef857d5": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": "Ybodychange",
+    "15ccd9380664ab612e38446c47f8ee00e7ee880f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "40a0b5dcf7f9b45ae98ddcb1dec6e9e7c4eec676": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3239: fixed checks that fail on new receiver parameter (#3272)\n\n",
+      "commitDate": 1466112819000,
+      "commitName": "40a0b5dcf7f9b45ae98ddcb1dec6e9e7c4eec676",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1454680863000,
+      "commitNameOld": "cf96dd9adcf0c3c8f8f05a9ffdcb765cafe17479",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 132.31,
+      "commitsBetweenForRepo": 339,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,14 @@\n     private void visitMethodParameters(DetailAST ast) {\n         DetailAST parameterDefAST \u003d\n             ast.findFirstToken(TokenTypes.PARAMETER_DEF);\n \n         while (parameterDefAST !\u003d null) {\n-            if (parameterDefAST.getType() \u003d\u003d TokenTypes.PARAMETER_DEF) {\n+            if (parameterDefAST.getType() \u003d\u003d TokenTypes.PARAMETER_DEF\n+                    \u0026\u0026 !CheckUtils.isReceiverParameter(parameterDefAST)) {\n                 final DetailAST param \u003d\n                     parameterDefAST.findFirstToken(TokenTypes.IDENT);\n                 parameterNames.add(param.getText());\n             }\n             parameterDefAST \u003d parameterDefAST.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "7b0388ee96bf14872ae095da85738af97ef857d5": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1555: Replace for loop that misses component with while loop\n\nFixes `ForLoopWithMissingComponent` inspection violation.\n\nDescription:\n\u003eReports for loops that lack initialization, condition, or update clauses. Some coding styles prohibit such loops.\n",
+      "commitDate": 1440888228000,
+      "commitName": "7b0388ee96bf14872ae095da85738af97ef857d5",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1438437506000,
+      "commitNameOld": "5fa34fa1b2f206efb0003b9b65dedba8d214052a",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 28.36,
+      "commitsBetweenForRepo": 508,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private void visitMethodParameters(DetailAST ast) {\n         DetailAST parameterDefAST \u003d\n             ast.findFirstToken(TokenTypes.PARAMETER_DEF);\n \n-        for (; parameterDefAST !\u003d null;\n-             parameterDefAST \u003d parameterDefAST.getNextSibling()) {\n+        while (parameterDefAST !\u003d null) {\n             if (parameterDefAST.getType() \u003d\u003d TokenTypes.PARAMETER_DEF) {\n                 final DetailAST param \u003d\n                     parameterDefAST.findFirstToken(TokenTypes.IDENT);\n                 parameterNames.add(param.getText());\n             }\n+            parameterDefAST \u003d parameterDefAST.getNextSibling();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": {
+      "type": "Ybodychange",
+      "commitMessage": "Inspired by patch# 2111354 - changes to remove casting. Neat trick\n",
+      "commitDate": 1221737656000,
+      "commitName": "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1209024589000,
+      "commitNameOld": "06e8a4eaa00e548f52b2483864a31ba9defd0989",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 147.14,
+      "commitsBetweenForRepo": 36,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     private void visitMethodParameters(DetailAST aAST)\n     {\n         DetailAST parameterDefAST \u003d\n             aAST.findFirstToken(TokenTypes.PARAMETER_DEF);\n \n         for (; parameterDefAST !\u003d null;\n-             parameterDefAST \u003d (DetailAST) parameterDefAST.getNextSibling())\n+             parameterDefAST \u003d parameterDefAST.getNextSibling())\n         {\n             if (parameterDefAST.getType() \u003d\u003d TokenTypes.PARAMETER_DEF) {\n                 final DetailAST param \u003d\n                     parameterDefAST.findFirstToken(TokenTypes.IDENT);\n                 mParameterNames.add(param.getText());\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "15ccd9380664ab612e38446c47f8ee00e7ee880f": {
+      "type": "Yintroduced",
+      "commitMessage": "Added ParameterAssignment check contributed by Simon Harris (request 750748).\nFixed internatialization support in DeclarationOrder check.\n",
+      "commitDate": 1062933358000,
+      "commitName": "15ccd9380664ab612e38446c47f8ee00e7ee880f",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

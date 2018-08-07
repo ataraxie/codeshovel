@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java
+index 13b813ce2..ef8d18c3e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java
+@@ -81,101 +81,101 @@ public final class CheckUtils
+ //        return detailAST.getParent().getType() == TokenTypes.OBJBLOCK;
+ //    }
+ //
+ //    public static String getIdentText(DetailAST detailAST) {
+ //        return detailAST.findFirstToken(TokenTypes.IDENT).getText();
+ //    }
+ 
+     /**
+      * Returns whether a token represents an ELSE as part of an ELSE / IF set.
+      * @param aAST the token to check
+      * @return whether it is
+      */
+     public static boolean isElseIf(DetailAST aAST)
+     {
+         final DetailAST parentAST = aAST.getParent();
+ 
+         return (aAST.getType() == TokenTypes.LITERAL_IF)
+             && (isElse(parentAST) || isElseWithCurlyBraces(parentAST));
+     }
+ 
+     /**
+      * Returns whether a token represents an ELSE.
+      * @param aAST the token to check
+      * @return whether the token represents an ELSE
+      */
+     private static boolean isElse(DetailAST aAST)
+     {
+         return aAST.getType() == TokenTypes.LITERAL_ELSE;
+     }
+ 
+     /**
+      * Returns whether a token represents an SLIST as part of an ELSE
+      * statement.
+      * @param aAST the token to check
+      * @return whether the toke does represent an SLIST as part of an ELSE
+      */
+     private static boolean isElseWithCurlyBraces(DetailAST aAST)
+     {
+         return (aAST.getType() == TokenTypes.SLIST)
+             && (aAST.getChildCount() == 2)
+             && isElse(aAST.getParent());
+     }
+ 
+     /**
+      * Creates <code>FullIdent</code> for given type node.
+      * @param aTypeAST a type node.
+      * @return <code>FullIdent</code> for given type.
+      */
+     public static FullIdent createFullType(DetailAST aTypeAST)
+     {
+-        DetailAST arrayDeclAST =
++        final DetailAST arrayDeclAST =
+             aTypeAST.findFirstToken(TokenTypes.ARRAY_DECLARATOR);
+ 
+         return createFullTypeNoArrays(arrayDeclAST == null ? aTypeAST
+                                                            : arrayDeclAST);
+     }
+ 
+     /**
+      * @param aTypeAST a type node (no array)
+      * @return <code>FullIdent</code> for given type.
+      */
+     private static FullIdent createFullTypeNoArrays(DetailAST aTypeAST)
+     {
+         return FullIdent.createFullIdent((DetailAST) aTypeAST.getFirstChild());
+     }
+ 
+     // constants for parseDouble()
+     /** octal radix */
+     private static final int BASE_8 = 8;
+ 
+     /** decimal radix */
+     private static final int BASE_10 = 10;
+ 
+     /** hex radix */
+     private static final int BASE_16 = 16;
+ 
+     /**
+      * Returns the value represented by the specified string of the specified
+      * type. Returns 0 for types other than float, double, int, and long.
+      * @param aText the string to be parsed.
+      * @param aType the token type of the text. Should be a constant of
+      * {@link com.puppycrawl.tools.checkstyle.api.TokenTypes}.
+      * @return the double value represented by the string argument.
+      */
+     public static double parseDouble(String aText, int aType)
+     {
+         double result = 0;
+         switch (aType) {
+         case TokenTypes.NUM_FLOAT:
+         case TokenTypes.NUM_DOUBLE:
+             result = Double.parseDouble(aText);
+             break;
+         case TokenTypes.NUM_INT:
+         case TokenTypes.NUM_LONG:
+             int radix = BASE_10;
+             if (aText.startsWith("0x") || aText.startsWith("0X")) {
+                 radix = BASE_16;
+                 aText = aText.substring(2);
+             }
+             else if (aText.charAt(0) == '0') {
+                 radix = BASE_8;

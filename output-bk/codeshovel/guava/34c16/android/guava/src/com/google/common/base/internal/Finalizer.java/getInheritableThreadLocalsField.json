@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "Finalizer.java",
+  "functionName": "getInheritableThreadLocalsField",
+  "functionId": "getInheritableThreadLocalsField",
+  "sourceFilePath": "android/guava/src/com/google/common/base/internal/Finalizer.java",
+  "functionStartLine": 215,
+  "functionEndLine": 227,
+  "changeHistory": [
+    "2927518ac86e8ed1d09038fb2b03c86c894ea5ca",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "2927518ac86e8ed1d09038fb2b03c86c894ea5ca": "Ymodifierchange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "2927518ac86e8ed1d09038fb2b03c86c894ea5ca": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Handle InheritableThreadLocals correctly on Java 9.\n\nThe internal Finalizer class is used by FinalizableReferenceQueue. In order to avoid holding a reference to the ClassLoader that loaded the class, it is necessary to avoid inheriting any ThreadLocals in the thread running the Finalizer code. Previously, we did this with a nasty hack accessing a private field in Thread. Although that field still exists in Java 9, private accesses like these are not allowed by default. This particularly access is also not needed on Java 9, since there is now a Thread constructor with a boolean parameter that says whether to inherit ThreadLocals. So we use that constructor if it is present, in preference to the field access.\n\nFixes https://github.com/google/guava/issues/2723.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d171212577\n",
+      "commitDate": 1507306390000,
+      "commitName": "2927518ac86e8ed1d09038fb2b03c86c894ea5ca",
+      "commitAuthor": "emcmanus",
+      "commitDateOld": 1492741671000,
+      "commitNameOld": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthorOld": "zhenghua",
+      "daysBetweenCommits": 168.57,
+      "commitsBetweenForRepo": 290,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n-  public static Field getInheritableThreadLocalsField() {\n+  private static Field getInheritableThreadLocalsField() {\n     try {\n       Field inheritableThreadLocals \u003d Thread.class.getDeclaredField(\"inheritableThreadLocals\");\n       inheritableThreadLocals.setAccessible(true);\n       return inheritableThreadLocals;\n     } catch (Throwable t) {\n       logger.log(\n           Level.INFO,\n           \"Couldn\u0027t access Thread.inheritableThreadLocals. Reference finalizer threads will \"\n               + \"inherit thread local values.\");\n       return null;\n     }\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

@@ -1,0 +1,121 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
+index ee7f6efde..7d852a2da 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportControlCheck.java
+@@ -29,110 +29,114 @@ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Check that controls what packages can be imported in each package. Useful
+  * for ensuring that application layering is not violated. Ideas on how the
+  * check can be improved include support for:
+  * <ul>
+  * <li>
+  * Change the default policy that if a package being checked does not
+  * match any guards, then it is allowed. Currently defaults to disallowed.
+  * </li>
+  * </ul>
+  *
+  * @author Oliver Burn
+  */
+ public class ImportControlCheck extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_MISSING_FILE = "import.control.missing.file";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_UNKNOWN_PKG = "import.control.unknown.pkg";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_DISALLOWED = "import.control.disallowed";
+ 
+     /** The root package controller. */
+     private PkgControl root;
+     /** The package doing the import. */
+     private String inPkg;
+ 
+     /**
+      * The package controller for the current file. Used for performance
+      * optimisation.
+      */
+     private PkgControl currentLeaf;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[] {TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT,
+-                          TokenTypes.STATIC_IMPORT, };
++        return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT,
+                           TokenTypes.STATIC_IMPORT, };
+     }
+ 
++    @Override
++    public int[] getRequiredTokens() {
++        return getAcceptableTokens();
++    }
++
+     @Override
+     public void beginTree(final DetailAST rootAST) {
+         currentLeaf = null;
+     }
+ 
+     @Override
+     public void visitToken(final DetailAST ast) {
+         if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+             final DetailAST nameAST = ast.getLastChild().getPreviousSibling();
+             final FullIdent full = FullIdent.createFullIdent(nameAST);
+             if (root == null) {
+                 log(nameAST, MSG_MISSING_FILE);
+             }
+             else {
+                 inPkg = full.getText();
+                 currentLeaf = root.locateFinest(inPkg);
+                 if (currentLeaf == null) {
+                     log(nameAST, MSG_UNKNOWN_PKG);
+                 }
+             }
+         }
+         else if (currentLeaf != null) {
+             final FullIdent imp;
+             if (ast.getType() == TokenTypes.IMPORT) {
+                 imp = FullIdent.createFullIdentBelow(ast);
+             }
+             else {
+                 // know it is a static import
+                 imp = FullIdent.createFullIdent(ast
+                         .getFirstChild().getNextSibling());
+             }
+             final AccessResult access = currentLeaf.checkAccess(imp.getText(),
+                     inPkg);
+             if (access != AccessResult.ALLOWED) {
+                 log(ast, MSG_DISALLOWED, imp.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Set the pnameter for the file containing the import control
+      * configuration. It will cause the file to be loaded.
+      * @param name the name of the file to load.
+      * @throws ConversionException on error loading the file.
+      */
+     public void setFile(final String name) {
+         // Handle empty param
+         if (StringUtils.isBlank(name)) {
+             return;
+         }

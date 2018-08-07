@@ -1,0 +1,119 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+index bcb890604..1eb2aac3c 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+@@ -425,110 +425,110 @@ public abstract class ExpressionHandler
+         IndentLevel aLevel,
+         boolean aFirstLineMatches,
+         boolean aAllowNesting
+     )
+     {
+         LineSet subtreeLines = new LineSet();
+         int firstLine = getFirstLine(Integer.MAX_VALUE, aTree);
+         if (aFirstLineMatches && !aAllowNesting) {
+             subtreeLines.addLineAndCol(new Integer(firstLine),
+                 getLineStart(mIndentCheck.getLines()[firstLine - 1]));
+         }
+         findSubtreeLines(subtreeLines, aTree, aAllowNesting);
+ 
+         checkLinesIndent(subtreeLines, aLevel, aFirstLineMatches, firstLine);
+     }
+ 
+     /**
+      * Get the first line for a given expression.
+      *
+      * @param aStartLine   the line we are starting from
+      * @param aTree        the expression to find the first line for
+      *
+      * @return the first line of the expression
+      */
+     protected final int getFirstLine(int aStartLine, DetailAST aTree)
+     {
+         // find line for this node
+         // TODO: getLineNo should probably not return < 0, but it is for
+         // the interface methods... I should ask about this
+ 
+         int currLine = aTree.getLineNo();
+         if (currLine < aStartLine) {
+             aStartLine = currLine;
+         }
+ 
+         // check children
+         for (DetailAST node = (DetailAST) aTree.getFirstChild();
+             node != null;
+             node = (DetailAST) node.getNextSibling())
+         {
+             aStartLine = getFirstLine(aStartLine, node);
+         }
+ 
+         return aStartLine;
+     }
+ 
+     /**
+      * Get the column number for the start of a given expression, expanding
+      * tabs out into spaces in the process.
+      *
+-     * @param aAst   the expression to find the start of
++     * @param aAST   the expression to find the start of
+      *
+      * @return the column number for the start of the expression
+      */
+-    protected final int expandedTabsColumnNo(DetailAST aAst)
++    protected final int expandedTabsColumnNo(DetailAST aAST)
+     {
+         String line =
+-            mIndentCheck.getLines()[aAst.getLineNo() - 1];
++            mIndentCheck.getLines()[aAST.getLineNo() - 1];
+ 
+-        return Utils.lengthExpandedTabs(line, aAst.getColumnNo(),
++        return Utils.lengthExpandedTabs(line, aAST.getColumnNo(),
+             mIndentCheck.getIndentationTabWidth());
+     }
+ 
+     /**
+      * Find the set of lines for a given subtree.
+      *
+      * @param aLines          the set of lines to add to
+      * @param aTree           the subtree to examine
+      * @param aAllowNesting   whether or not to allow nested subtrees
+      */
+     protected final void findSubtreeLines(LineSet aLines, DetailAST aTree,
+         boolean aAllowNesting)
+     {
+         // find line for this node
+         // TODO: getLineNo should probably not return < 0, but it is for
+         // the interface methods... I should ask about this
+ 
+         if (getIndentCheck().getHandlerFactory().isHandledType(aTree.getType())
+             || aTree.getLineNo() < 0)
+         {
+             return;
+         }
+ 
+         // TODO: the problem with this is that not all tree tokens actually
+         // have the right column number -- I should get a list of these
+         // and verify that checking nesting this way won't cause problems
+ //          if (aAllowNesting && aTree.getColumnNo() != getLineStart(aTree)) {
+ //              return;
+ //          }
+ 
+         Integer lineNum = new Integer(aTree.getLineNo());
+         Integer colNum = aLines.getStartColumn(lineNum);
+ 
+         int thisLineColumn = expandedTabsColumnNo(aTree);
+         if (colNum == null || (thisLineColumn < colNum.intValue())) {
+             aLines.addLineAndCol(lineNum, thisLineColumn);
+         }
+ 
+         // check children
+         for (DetailAST node = (DetailAST) aTree.getFirstChild();
+             node != null;
+             node = (DetailAST) node.getNextSibling())
+         {
+             findSubtreeLines(aLines, node, aAllowNesting);
+         }
+     }
+ 
+     /**
+      * Check the indentation level of modifiers.
+      */

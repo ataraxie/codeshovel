@@ -1,0 +1,127 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+index 35f8b37ef..8af625b5c 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -135,112 +135,117 @@ public class Checker extends AutomaticBean
+      * Note: Since the Checker is merely a container for modules
+      * it does not make sense to implement logging functionality
+      * here. Consequently Checker does not extend AbstractViolationReporter,
+      * leading to a bit of duplicated code for severity level setting.
+      */
+     private SeverityLevel mSeverityLevel = SeverityLevel.ERROR;
+ 
+     /**
+      * Creates a new <code>Checker</code> instance.
+      * The instance needs to be contextualized and configured.
+      *
+      * @throws CheckstyleException if an error occurs
+      */
+     public Checker()
+         throws CheckstyleException
+     {
+         addListener(mCounter);
+     }
+ 
+     /** @see AutomaticBean */
+     public void finishLocalSetup()
+         throws CheckstyleException
+     {
+         final Locale locale = new Locale(mLocaleLanguage, mLocaleCountry);
+         LocalizedMessage.setLocale(locale);
+ 
+         if (mModuleFactory == null) {
+             mModuleFactory = PackageNamesLoader.loadModuleFactory(
+                     this.getClass().getClassLoader());
+         }
+ 
+         final DefaultContext context = new DefaultContext();
+         context.add("classLoader", mLoader);
+         context.add("moduleFactory", mModuleFactory);
+         context.add("severity", mSeverityLevel.getName());
+         mChildContext = context;
+     }
+ 
+     /**
+      * Instantiates, configures and registers a child AbstractFilter
+      * or FileSetCheck
+      * that is specified in the provided configuration.
+      * @see com.puppycrawl.tools.checkstyle.api.AutomaticBean
+      */
+     protected void setupChild(Configuration aChildConf)
+         throws CheckstyleException
+     {
+         final String name = aChildConf.getName();
+         try {
+             final Object child = mModuleFactory.createModule(name);
++            if (child instanceof AutomaticBean) {
++                final AutomaticBean bean = (AutomaticBean) child;
++                bean.contextualize(mChildContext);
++                bean.configure(aChildConf);
++            }
+             if (child instanceof FileSetCheck) {
+                 final FileSetCheck fsc = (FileSetCheck) child;
+-                fsc.contextualize(mChildContext);
+-                fsc.configure(aChildConf);
+-                addFileSetCheck(fsc);
++                 addFileSetCheck(fsc);
+             }
+             else if (child instanceof Filter) {
+                 final Filter filter = (Filter) child;
+-                filter.contextualize(mChildContext);
+-                filter.configure(aChildConf);
+                 addFilter(filter);
+             }
++            else if (child instanceof AuditListener) {
++                final AuditListener listener = (AuditListener) child;
++                addListener(listener);
++            }
+             else {
+                 throw new CheckstyleException(name
+                     + " is not allowed as a child in Checker");
+             }
+         }
+         catch (Exception ex) {
+             // TODO i18n
+             throw new CheckstyleException(
+                     "cannot initialize module "
+                     + name + " - " + ex.getMessage(), ex);
+         }
+     }
+ 
+     /**
+      * Adds a FileSetCheck to the list of FileSetChecks
+      * that is executed in process().
+      * @param aFileSetCheck the additional FileSetCheck
+      */
+     public void addFileSetCheck(FileSetCheck aFileSetCheck)
+     {
+         aFileSetCheck.setMessageDispatcher(this);
+         mFileSetChecks.add(aFileSetCheck);
+     }
+ 
+     /**
+      * Adds a filter to the end of the audit event filter chain.
+      * @param aFilter the additional filter
+      */
+     public void addFilter(Filter aFilter)
+     {
+         mFilters.add(aFilter);
+     }
+ 
+     /**
+      * Determines whether to accept an audit event according to
+      * the installed filter chain.
+      * @param aEvent the event to filter.
+      * @return true if the event is accepted by the filter chain.
+      */
+     public boolean accept(AuditEvent aEvent)
+     {
+         final Iterator it = mFilters.iterator();
+         while (it.hasNext()) {
+             final Filter filter = (Filter) it.next();
+             if (filter.decide(aEvent) == Filter.DENY) {
+                 return false;
+             }
+             else if (filter.decide(aEvent) == Filter.ACCEPT) {
+                 return true;
+             }

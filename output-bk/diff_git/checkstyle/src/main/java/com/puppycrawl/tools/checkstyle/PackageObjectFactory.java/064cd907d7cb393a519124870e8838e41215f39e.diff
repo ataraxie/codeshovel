@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/PackageObjectFactory.java b/src/main/java/com/puppycrawl/tools/checkstyle/PackageObjectFactory.java
+index 364617804..304a5dc13 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/PackageObjectFactory.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/PackageObjectFactory.java
+@@ -153,101 +153,102 @@ public class PackageObjectFactory implements ModuleFactory {
+             instance = createObject(name);
+         }
+         final String nameCheck = name + CHECK_SUFFIX;
+         if (instance == null) {
+             instance = createObject(nameCheck);
+         }
+         if (instance == null) {
+             final String attemptedNames = joinPackageNamesWithClassName(name, packages)
+                     + STRING_SEPARATOR + nameCheck + STRING_SEPARATOR
+                     + joinPackageNamesWithClassName(nameCheck, packages);
+             final LocalizedMessage exceptionMessage = new LocalizedMessage(0,
+                 Definitions.CHECKSTYLE_BUNDLE, UNABLE_TO_INSTANTIATE_EXCEPTION_MESSAGE,
+                 new String[] {name, attemptedNames}, null, getClass(), null);
+             throw new CheckstyleException(exceptionMessage.getMessage());
+         }
+         return instance;
+     }
+ 
+     /**
+      * Create object with the help of the supplied map.
+      * @param name name of module.
+      * @param map the supplied map.
+      * @return instance of module if it is found in modules map.
+      * @throws CheckstyleException if the class fails to instantiate.
+      */
+     private Object createObjectFromMap(String name, Map<String, String> map)
+             throws CheckstyleException {
+         final String fullModuleName = map.get(name);
+         Object instance = null;
+         if (fullModuleName == null) {
+             final String fullCheckModuleName = map.get(name + CHECK_SUFFIX);
+             if (fullCheckModuleName != null) {
+                 instance = createObject(fullCheckModuleName);
+             }
+         }
+         else {
+             instance = createObject(fullModuleName);
+         }
+         return instance;
+     }
+ 
+     /**
+      * Generate the map of third party Checkstyle module names to their fully qualified names.
+      * @param loader the class loader used to load Checkstyle package names
+      * @return the map of third party Checkstyle module names to their fully qualified names
+      */
+     private Map<String, String> generateThirdPartyNameToFullModuleName(ClassLoader loader) {
+         Map<String, String> returnValue;
+         try {
+             returnValue = ModuleReflectionUtils.getCheckstyleModules(packages, loader).stream()
+-                    .collect(Collectors.toMap(Class::getSimpleName, Class::getCanonicalName));
++                .filter(clazz -> !NAME_TO_FULL_MODULE_NAME.keySet().contains(clazz.getSimpleName()))
++                .collect(Collectors.toMap(Class::getSimpleName, Class::getCanonicalName));
+         }
+         catch (IOException ignore) {
+             returnValue = new HashMap<>();
+         }
+         return returnValue;
+     }
+ 
+     /**
+      * Creates a string by joining package names with a class name.
+      * @param className name of the class for joining.
+      * @param packages packages names.
+      * @return a string which is obtained by joining package names with a class name.
+      */
+     private static String joinPackageNamesWithClassName(String className, Set<String> packages) {
+         return packages.stream()
+             .collect(Collectors.joining(
+                     className + STRING_SEPARATOR, "", PACKAGE_SEPARATOR + className));
+     }
+ 
+     /**
+      * Creates a new instance of a named class.
+      * @param className the name of the class to instantiate.
+      * @return the {@code Object} created by loader or null.
+      * @throws CheckstyleException if the class fails to instantiate.
+      */
+     private Object createObject(String className) throws CheckstyleException {
+         Class<?> clazz = null;
+ 
+         try {
+             clazz = Class.forName(className, true, moduleClassLoader);
+         }
+         catch (final ReflectiveOperationException | NoClassDefFoundError ignored) {
+             // keep looking, ignoring exception
+         }
+ 
+         Object instance = null;
+ 
+         if (clazz != null) {
+             try {
+                 final Constructor<?> declaredConstructor = clazz.getDeclaredConstructor();
+                 declaredConstructor.setAccessible(true);
+                 instance = declaredConstructor.newInstance();
+             }
+             catch (final ReflectiveOperationException ex) {
+                 throw new CheckstyleException("Unable to instantiate " + className, ex);
+             }
+         }
+ 
+         return instance;
+     }

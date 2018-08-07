@@ -1,0 +1,145 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithPlainTextCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithPlainTextCommentFilter.java
+index 3345fd462..ad380845e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithPlainTextCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithPlainTextCommentFilter.java
+@@ -70,123 +70,133 @@ public class SuppressWithPlainTextCommentFilter extends AutomaticBean implements
+ 
+     /** Regexp which turns checkstyle reporting off. */
+     private Pattern offCommentFormat = CommonUtils.createPattern(DEFAULT_OFF_FORMAT);
+ 
+     /** Regexp which turns checkstyle reporting on. */
+     private Pattern onCommentFormat = CommonUtils.createPattern(DEFAULT_ON_FORMAT);
+ 
+     /** The check format to suppress. */
+     private String checkFormat = DEFAULT_CHECK_FORMAT;
+ 
+     /** The message format to suppress.*/
+     private String messageFormat;
+ 
+     /**
+      * Sets an off comment format pattern.
+      * @param pattern off comment format pattern.
+      */
+     public final void setOffCommentFormat(Pattern pattern) {
+         offCommentFormat = pattern;
+     }
+ 
+     /**
+      * Sets an on comment format pattern.
+      * @param pattern  on comment format pattern.
+      */
+     public final void setOnCommentFormat(Pattern pattern) {
+         onCommentFormat = pattern;
+     }
+ 
+     /**
+      * Sets a pattern for check format.
+      * @param format pattern for check format.
+      */
+     public final void setCheckFormat(String format) {
+         checkFormat = format;
+     }
+ 
+     /**
+      * Sets a pattern for message format.
+      * @param format pattern for message format.
+      */
+     public final void setMessageFormat(String format) {
+         messageFormat = format;
+     }
+ 
+     @Override
+     public boolean accept(AuditEvent event) {
+         boolean accepted = true;
+         if (event.getLocalizedMessage() != null) {
+             final FileText fileText = getFileText(event.getFileName());
+-            final List<Suppression> suppressions = getSuppressions(fileText);
+-            accepted = getNearestSuppression(suppressions, event) == null;
++            if (fileText != null) {
++                final List<Suppression> suppressions = getSuppressions(fileText);
++                accepted = getNearestSuppression(suppressions, event) == null;
++            }
+         }
+         return accepted;
+     }
+ 
+     @Override
+     protected void finishLocalSetup() throws CheckstyleException {
+         // No code by default
+     }
+ 
+     /**
+      * Returns {@link FileText} instance created based on the given file name.
+      * @param fileName the name of the file.
+      * @return {@link FileText} instance.
+      */
+     private static FileText getFileText(String fileName) {
+-        try {
+-            return new FileText(new File(fileName), StandardCharsets.UTF_8.name());
+-        }
+-        catch (IOException ex) {
+-            throw new IllegalStateException("Cannot read source file: " + fileName, ex);
++        final File file = new File(fileName);
++        FileText result = null;
++
++        // some violations can be on a directory, instead of a file
++        if (!file.isDirectory()) {
++            try {
++                result = new FileText(file, StandardCharsets.UTF_8.name());
++            }
++            catch (IOException ex) {
++                throw new IllegalStateException("Cannot read source file: " + fileName, ex);
++            }
+         }
++
++        return result;
+     }
+ 
+     /**
+      * Returns the list of {@link Suppression} instances retrieved from the given {@link FileText}.
+      * @param fileText {@link FileText} instance.
+      * @return list of {@link Suppression} instances.
+      */
+     private List<Suppression> getSuppressions(FileText fileText) {
+         final List<Suppression> suppressions = new ArrayList<>();
+         for (int lineNo = 0; lineNo < fileText.size(); lineNo++) {
+             final Optional<Suppression> suppression = getSuppression(fileText, lineNo);
+             suppression.ifPresent(suppressions::add);
+         }
+         return suppressions;
+     }
+ 
+     /**
+      * Tries to extract the suppression from the given line.
+      * @param fileText {@link FileText} instance.
+      * @param lineNo line number.
+      * @return {@link Optional} of {@link Suppression}.
+      */
+     private Optional<Suppression> getSuppression(FileText fileText, int lineNo) {
+         final String line = fileText.get(lineNo);
+         final Matcher onCommentMatcher = onCommentFormat.matcher(line);
+         final Matcher offCommentMatcher = offCommentFormat.matcher(line);
+ 
+         Suppression suppression = null;
+         if (onCommentMatcher.find()) {
+             suppression = new Suppression(onCommentMatcher.group(0),
+                 lineNo + 1, onCommentMatcher.start(), SuppressionType.ON, this);
+         }
+         if (offCommentMatcher.find()) {
+             suppression = new Suppression(offCommentMatcher.group(0),
+                 lineNo + 1, offCommentMatcher.start(), SuppressionType.OFF, this);
+         }
+ 
+         return Optional.ofNullable(suppression);
+     }
+ 
+     /**
+      * Finds the nearest {@link Suppression} instance which can suppress
+      * the given {@link AuditEvent}. The nearest suppression is the suppression which scope
+      * is before the line and column of the event.
+      * @param suppressions {@link Suppression} instance.
+      * @param event {@link AuditEvent} instance.
+      * @return {@link Suppression} instance.
+      */
+     private static Suppression getNearestSuppression(List<Suppression> suppressions,
+                                                      AuditEvent event) {

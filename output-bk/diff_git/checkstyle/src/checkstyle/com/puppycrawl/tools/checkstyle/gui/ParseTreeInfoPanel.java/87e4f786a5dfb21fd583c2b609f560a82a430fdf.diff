@@ -1,0 +1,113 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java
+index 8df0393cb..62d605592 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java
+@@ -69,106 +69,106 @@ public class ParseTreeInfoPanel extends JPanel
+     }
+ 
+     private class FileSelectionAction extends AbstractAction
+     {
+         public FileSelectionAction()
+         {
+             super("Select Java File");
+         }
+ 
+         public void actionPerformed(ActionEvent e)
+         {
+             JFileChooser fc = new JFileChooser();
+             FileFilter filter = new JavaFileFilter();
+             fc.setFileFilter(filter);
+             final Component parent =
+                 SwingUtilities.getRoot(ParseTreeInfoPanel.this);
+             fc.showDialog(parent, "Open");
+             File file = fc.getSelectedFile();
+             openFile(file, parent);
+         }
+     }
+ 
+ 
+     private class FileDropListener implements FileDrop.Listener
+     {
+         private final JScrollPane mSp;
+ 
+         public void filesDropped(File[] files)
+         {
+             if (files != null && files.length > 0)
+             {
+                 File file = files[0];
+                 openFile(file, mSp);
+             }
+         }
+ 
+         public FileDropListener(JScrollPane aSp)
+         {
+             mSp = aSp;
+         }
+     }
+ 
+     private void openFile(File aFile, final Component aParent)
+     {
+         if (aFile != null) {
+             try {
+                 DetailAST parseTree = parseFile(aFile.getAbsolutePath());
+                 mParseTreeModel.setParseTree(parseTree);
+             }
+             catch (IOException ex) {
+-                JOptionPane.showMessageDialog(
++                showErrorDialog(
+                         aParent,
+                         "Could not open " + aFile + ": " + ex.getMessage());
+             }
+             catch (ANTLRException ex) {
+-                JOptionPane.showMessageDialog(
++                showErrorDialog(
+                         aParent,
+                         "Could not parse " + aFile + ": " + ex.getMessage());
+             }
+         }
+     }
+ 
+     /**
+      * Parses a file and returns the parse tree.
+      * @param aFileName the file to parse
+      * @return the root node of the parse tree
+      * @throws IOException if the file cannot be opened
+      * @throws ANTLRException if the file is not a Java source
+      */
+     public static DetailAST parseFile(String aFileName)
+         throws IOException, ANTLRException
+     {
+         final String[] lines = Utils.getLines(aFileName);
+         final FileContents contents = new FileContents(aFileName, lines);
+         return Checker.parse(contents);
+     }
+ 
+     /**
+      * Create a new ParseTreeInfoPanel instance.
+      */
+     public ParseTreeInfoPanel()
+     {
+         setLayout(new BorderLayout());
+ 
+         DetailAST treeRoot = null;
+         mParseTreeModel = new ParseTreeModel(treeRoot);
+         mTreeTable = new JTreeTable(mParseTreeModel);
+         final JScrollPane sp = new JScrollPane(mTreeTable);
+         this.add(sp, BorderLayout.CENTER);
+         final JButton fileSelectionButton =
+             new JButton(new FileSelectionAction());
+ 
+         this.add(fileSelectionButton, BorderLayout.SOUTH);
+ 
+         try {
+             // TODO: creating an object for the side effect of the constructor
+             // and then ignoring the object looks strange.
+             new FileDrop(sp, new FileDropListener(sp));
+         }
+         catch (TooManyListenersException ex)
+         {
+            showErrorDialog(null, "Cannot initialize Drag and Drop support");
+         }
+ 
+     }
+ 

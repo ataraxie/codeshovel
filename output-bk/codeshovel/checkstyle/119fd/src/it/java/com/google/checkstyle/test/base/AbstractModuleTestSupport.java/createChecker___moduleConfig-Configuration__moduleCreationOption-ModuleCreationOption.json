@@ -1,0 +1,162 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbstractModuleTestSupport.java",
+  "functionName": "createChecker",
+  "functionId": "createChecker___moduleConfig-Configuration__moduleCreationOption-ModuleCreationOption",
+  "sourceFilePath": "src/it/java/com/google/checkstyle/test/base/AbstractModuleTestSupport.java",
+  "functionStartLine": 154,
+  "functionEndLine": 176,
+  "changeHistory": [
+    "5c6cdde35d65d19661f8f7fb59f130e646fa567d",
+    "8f3ebd171db0edce046a9d76c94d8c73e3b9da50",
+    "cf436f1d9806016cb1886b5d7ec397f56aedc824",
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba",
+    "b1a0f2b5f61a997e0b7e3fdff8f19a0ae0180ac6",
+    "70a6e2e6d34fa5a404e88e45cd62a20a06e19556",
+    "7a4ec11d123dc0bbf7db943af715d19814d2e332",
+    "d4ef19e679f276411a0de3b07e579c217d15f098",
+    "52ac2776d7f128ff812b73b54dcc12210661f98b",
+    "437986510709d7abc64b59c72779343ac5e77599"
+  ],
+  "changeHistoryShort": {
+    "5c6cdde35d65d19661f8f7fb59f130e646fa567d": "Ymodifierchange",
+    "8f3ebd171db0edce046a9d76c94d8c73e3b9da50": "Ymultichange(Yparameterchange,Ybodychange)",
+    "cf436f1d9806016cb1886b5d7ec397f56aedc824": "Ymultichange(Yparameterchange,Ybodychange)",
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba": "Yfilerename",
+    "b1a0f2b5f61a997e0b7e3fdff8f19a0ae0180ac6": "Ybodychange",
+    "70a6e2e6d34fa5a404e88e45cd62a20a06e19556": "Ybodychange",
+    "7a4ec11d123dc0bbf7db943af715d19814d2e332": "Ymultichange(Yparameterchange,Ybodychange)",
+    "d4ef19e679f276411a0de3b07e579c217d15f098": "Ybodychange",
+    "52ac2776d7f128ff812b73b54dcc12210661f98b": "Ybodychange",
+    "437986510709d7abc64b59c72779343ac5e77599": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "5c6cdde35d65d19661f8f7fb59f130e646fa567d": {
+      "type": "Ymodifierchange",
+      "commitMessage": "minor: locked down abstract test classes from overriding",
+      "commitDate": 1512742872000,
+      "commitName": "5c6cdde35d65d19661f8f7fb59f130e646fa567d",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1506343478000,
+      "commitNameOld": "3c1ddf428d9ddecaff63986007b4f5ff0593c098",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 74.07,
+      "commitsBetweenForRepo": 140,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,23 @@\n-    protected Checker createChecker(Configuration moduleConfig,\n+    protected final Checker createChecker(Configuration moduleConfig,\n                                     ModuleCreationOption moduleCreationOption)\n             throws Exception {\n         final DefaultConfiguration dc;\n \n         if (moduleCreationOption \u003d\u003d ModuleCreationOption.IN_TREEWALKER) {\n             dc \u003d createTreeWalkerConfig(moduleConfig);\n         }\n         else {\n             dc \u003d createRootConfig(moduleConfig);\n         }\n \n         final Checker checker \u003d new Checker();\n         // make sure the tests always run with English error messages\n         // so the tests don\u0027t fail in supported locales like German\n         final Locale locale \u003d Locale.ENGLISH;\n         checker.setLocaleCountry(locale.getCountry());\n         checker.setLocaleLanguage(locale.getLanguage());\n         checker.setModuleClassLoader(Thread.currentThread().getContextClassLoader());\n         checker.configure(dc);\n         checker.addListener(getBriefUtLogger());\n         return checker;\n     }\n\\ No newline at end of file\n"
+    },
+    "8f3ebd171db0edce046a9d76c94d8c73e3b9da50": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #4857: fix BooleanParameter idea violation for it package\n",
+      "commitDate": 1503164040000,
+      "commitName": "8f3ebd171db0edce046a9d76c94d8c73e3b9da50",
+      "commitAuthor": "vasilyeva",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "cf436f1d9806016cb1886b5d7ec397f56aedc824": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #4592: merged module test support and fileset test support",
+      "commitDate": 1501657005000,
+      "commitName": "cf436f1d9806016cb1886b5d7ec397f56aedc824",
+      "commitAuthor": "rnveach",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba": {
+      "type": "Yfilerename",
+      "commitMessage": "Issue #4592: Added AbstractPathTestSupport, AbstractModuleTestSupport, AbstractIndentationTestSupport and all tests in ITs extend them\n",
+      "commitDate": 1501610201000,
+      "commitName": "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba",
+      "commitAuthor": "Subbu Dantu",
+      "commitDateOld": 1501592797000,
+      "commitNameOld": "29e131f949950d26e7880da5891d1754776fdeee",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.2,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "b1a0f2b5f61a997e0b7e3fdff8f19a0ae0180ac6": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4713: fix all violations from the third part of idea violations\n",
+      "commitDate": 1500613458000,
+      "commitName": "b1a0f2b5f61a997e0b7e3fdff8f19a0ae0180ac6",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1492827278000,
+      "commitNameOld": "7a466ec46461fb4c57d965040d9523b1fb2f8443",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 90.12,
+      "commitsBetweenForRepo": 394,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     protected Checker createChecker(Configuration checkConfig)\n             throws Exception {\n         final DefaultConfiguration dc \u003d createCheckerConfig(checkConfig);\n         final Checker checker \u003d new Checker();\n         // make sure the tests always run with English error messages\n         // so the tests don\u0027t fail in supported locales like German\n         final Locale locale \u003d Locale.ENGLISH;\n         checker.setLocaleCountry(locale.getCountry());\n         checker.setLocaleLanguage(locale.getLanguage());\n         checker.setModuleClassLoader(Thread.currentThread().getContextClassLoader());\n         checker.configure(dc);\n-        checker.addListener(new BriefUtLogger(stream));\n+        checker.addListener(getBriefUtLogger());\n         return checker;\n     }\n\\ No newline at end of file\n"
+    },
+    "70a6e2e6d34fa5a404e88e45cd62a20a06e19556": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2666: Print name of the Check after printing violation message\n",
+      "commitDate": 1451074818000,
+      "commitName": "70a6e2e6d34fa5a404e88e45cd62a20a06e19556",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1449440069000,
+      "commitNameOld": "5e0f360e7b7745a362bd7a655e98654a2ad36443",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 18.92,
+      "commitsBetweenForRepo": 106,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     protected Checker createChecker(Configuration checkConfig)\n             throws Exception {\n         final DefaultConfiguration dc \u003d createCheckerConfig(checkConfig);\n         final Checker checker \u003d new Checker();\n         // make sure the tests always run with English error messages\n         // so the tests don\u0027t fail in supported locales like German\n         final Locale locale \u003d Locale.ENGLISH;\n         checker.setLocaleCountry(locale.getCountry());\n         checker.setLocaleLanguage(locale.getLanguage());\n         checker.setModuleClassLoader(Thread.currentThread().getContextClassLoader());\n         checker.configure(dc);\n-        checker.addListener(new BriefLogger(stream));\n+        checker.addListener(new BriefUtLogger(stream));\n         return checker;\n     }\n\\ No newline at end of file\n"
+    },
+    "7a4ec11d123dc0bbf7db943af715d19814d2e332": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #2589: Unify IT test code.",
+      "commitDate": 1447384120000,
+      "commitName": "7a4ec11d123dc0bbf7db943af715d19814d2e332",
+      "commitAuthor": "rnveach",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "d4ef19e679f276411a0de3b07e579c217d15f098": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix confusing variable names. #1555\n\nFixes `StandardVariableNames` inspection violations in test code.\n\nDescription:\n\u003eReports on any variables with \u0027standard\u0027 names which are of unexpected types. Such names may be confusing. Standard names and types are as follows:\n- i, j, k, m, n - int\n- f - float\n- d - double\n- b - byte\n- c, ch - char\n- l - long\n- s, str - String\n",
+      "commitDate": 1440161631000,
+      "commitName": "d4ef19e679f276411a0de3b07e579c217d15f098",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440159274000,
+      "commitNameOld": "6d2f3ce5faf61311893619a164d66cebff6c0a49",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     protected Checker createChecker(Configuration aCheckConfig)\n         throws Exception\n     {\n         final DefaultConfiguration dc \u003d createCheckerConfig(aCheckConfig);\n-        final Checker c \u003d new Checker();\n+        final Checker checker \u003d new Checker();\n         // make sure the tests always run with english error messages\n         // so the tests don\u0027t fail in supported locales like german\n         final Locale locale \u003d Locale.ENGLISH;\n-        c.setLocaleCountry(locale.getCountry());\n-        c.setLocaleLanguage(locale.getLanguage());\n-        c.setModuleClassLoader(Thread.currentThread().getContextClassLoader());\n-        c.configure(dc);\n-        c.addListener(new BriefLogger(stream));\n-        return c;\n+        checker.setLocaleCountry(locale.getCountry());\n+        checker.setLocaleLanguage(locale.getLanguage());\n+        checker.setModuleClassLoader(Thread.currentThread().getContextClassLoader());\n+        checker.configure(dc);\n+        checker.addListener(new BriefLogger(stream));\n+        return checker;\n     }\n\\ No newline at end of file\n"
+    },
+    "52ac2776d7f128ff812b73b54dcc12210661f98b": {
+      "type": "Ybodychange",
+      "commitMessage": "rename fields in ConfigurationBuilder and BaseCheckTestSupport",
+      "commitDate": 1436621629000,
+      "commitName": "52ac2776d7f128ff812b73b54dcc12210661f98b",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1433731038000,
+      "commitNameOld": "437986510709d7abc64b59c72779343ac5e77599",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 33.46,
+      "commitsBetweenForRepo": 212,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     protected Checker createChecker(Configuration aCheckConfig)\n         throws Exception\n     {\n         final DefaultConfiguration dc \u003d createCheckerConfig(aCheckConfig);\n         final Checker c \u003d new Checker();\n         // make sure the tests always run with english error messages\n         // so the tests don\u0027t fail in supported locales like german\n         final Locale locale \u003d Locale.ENGLISH;\n         c.setLocaleCountry(locale.getCountry());\n         c.setLocaleLanguage(locale.getLanguage());\n         c.setModuleClassLoader(Thread.currentThread().getContextClassLoader());\n         c.configure(dc);\n-        c.addListener(new BriefLogger(mStream));\n+        c.addListener(new BriefLogger(stream));\n         return c;\n     }\n\\ No newline at end of file\n"
+    },
+    "437986510709d7abc64b59c72779343ac5e77599": {
+      "type": "Yintroduced",
+      "commitMessage": "Integrate google-style-config-test as Integration Test. #863\n",
+      "commitDate": 1433731038000,
+      "commitName": "437986510709d7abc64b59c72779343ac5e77599",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

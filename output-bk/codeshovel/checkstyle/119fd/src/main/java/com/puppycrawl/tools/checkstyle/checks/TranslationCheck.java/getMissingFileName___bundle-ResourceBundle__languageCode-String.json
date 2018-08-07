@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "TranslationCheck.java",
+  "functionName": "getMissingFileName",
+  "functionId": "getMissingFileName___bundle-ResourceBundle__languageCode-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java",
+  "functionStartLine": 294,
+  "functionEndLine": 321,
+  "changeHistory": [
+    "eb5b977a475c2240db5efc83aec8973d734895eb",
+    "d843dd8439cc5163bcd743443f970c392f4ae30e"
+  ],
+  "changeHistoryShort": {
+    "eb5b977a475c2240db5efc83aec8973d734895eb": "Ybodychange",
+    "d843dd8439cc5163bcd743443f970c392f4ae30e": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "eb5b977a475c2240db5efc83aec8973d734895eb": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #3293: Replace Guava\u0027s Optional with Java\u0027s native (#3293)\n\n",
+      "commitDate": 1466685482000,
+      "commitName": "eb5b977a475c2240db5efc83aec8973d734895eb",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1464355679000,
+      "commitNameOld": "48d32f40d2253fc94792a8841ce604ba1b91255c",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 26.97,
+      "commitsBetweenForRepo": 88,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,28 @@\n     private static Optional\u003cString\u003e getMissingFileName(ResourceBundle bundle, String languageCode) {\n         final String fileNameRegexp;\n         final boolean searchForDefaultTranslation;\n         final String extension \u003d bundle.getExtension();\n         final String baseName \u003d bundle.getBaseName();\n         if (languageCode \u003d\u003d null) {\n             searchForDefaultTranslation \u003d true;\n             fileNameRegexp \u003d String.format(Locale.ROOT, REGEXP_FORMAT_TO_CHECK_DEFAULT_TRANSLATIONS,\n                     baseName, extension);\n         }\n         else {\n             searchForDefaultTranslation \u003d false;\n             fileNameRegexp \u003d String.format(Locale.ROOT,\n                 REGEXP_FORMAT_TO_CHECK_REQUIRED_TRANSLATIONS, baseName, languageCode, extension);\n         }\n-        Optional\u003cString\u003e missingFileName \u003d Optional.absent();\n+        Optional\u003cString\u003e missingFileName \u003d Optional.empty();\n         if (!bundle.containsFile(fileNameRegexp)) {\n             if (searchForDefaultTranslation) {\n                 missingFileName \u003d Optional.of(String.format(Locale.ROOT,\n                         DEFAULT_TRANSLATION_FILE_NAME_FORMATTER, baseName, extension));\n             }\n             else {\n                 missingFileName \u003d Optional.of(String.format(Locale.ROOT,\n                         FILE_NAME_WITH_LANGUAGE_CODE_FORMATTER, baseName, languageCode, extension));\n             }\n         }\n         return missingFileName;\n     }\n\\ No newline at end of file\n"
+    },
+    "d843dd8439cc5163bcd743443f970c392f4ae30e": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2204: Add \u0027baseName\u0027 option for TranslationCheck\n",
+      "commitDate": 1457803906000,
+      "commitName": "d843dd8439cc5163bcd743443f970c392f4ae30e",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

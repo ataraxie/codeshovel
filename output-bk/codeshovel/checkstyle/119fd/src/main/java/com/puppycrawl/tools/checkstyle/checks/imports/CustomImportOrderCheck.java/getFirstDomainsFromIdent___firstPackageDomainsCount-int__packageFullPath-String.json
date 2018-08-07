@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CustomImportOrderCheck.java",
+  "functionName": "getFirstDomainsFromIdent",
+  "functionId": "getFirstDomainsFromIdent___firstPackageDomainsCount-int__packageFullPath-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java",
+  "functionStartLine": 790,
+  "functionEndLine": 801,
+  "changeHistory": [
+    "46fa8090954480eecdeb6e7367f0e30655853f42",
+    "6e8d1e06728b7defbd734253b3818a33676b62bc",
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab",
+    "70c83141b4983d3c6073fb645158fc2755d5a6f0"
+  ],
+  "changeHistoryShort": {
+    "46fa8090954480eecdeb6e7367f0e30655853f42": "Ybodychange",
+    "6e8d1e06728b7defbd734253b3818a33676b62bc": "Yrename",
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab": "Ybodychange",
+    "70c83141b4983d3c6073fb645158fc2755d5a6f0": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "46fa8090954480eecdeb6e7367f0e30655853f42": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4812: add report on StringBufferMustHaveInitialCapacity\n",
+      "commitDate": 1501186710000,
+      "commitName": "46fa8090954480eecdeb6e7367f0e30655853f42",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1497287515000,
+      "commitNameOld": "4a087c020c2b97130e94f9292b94cb4bc1f6ed93",
+      "commitAuthorOld": "sagar-shah94",
+      "daysBetweenCommits": 45.13,
+      "commitsBetweenForRepo": 280,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private static String getFirstDomainsFromIdent(\n             final int firstPackageDomainsCount, final String packageFullPath) {\n-        final StringBuilder builder \u003d new StringBuilder();\n+        final StringBuilder builder \u003d new StringBuilder(256);\n         final StringTokenizer tokens \u003d new StringTokenizer(packageFullPath, \".\");\n         int count \u003d firstPackageDomainsCount;\n \n         while (count \u003e 0 \u0026\u0026 tokens.hasMoreTokens()) {\n             builder.append(tokens.nextToken()).append(\u0027.\u0027);\n             count--;\n         }\n         return builder.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "6e8d1e06728b7defbd734253b3818a33676b62bc": {
+      "type": "Yrename",
+      "commitMessage": "Issue #3721: enforced no abbreviations in checkstyle",
+      "commitDate": 1487369078000,
+      "commitName": "6e8d1e06728b7defbd734253b3818a33676b62bc",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 21.31,
+      "commitsBetweenForRepo": 74,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n-    private static String getFirstNDomainsFromIdent(\n+    private static String getFirstDomainsFromIdent(\n             final int firstPackageDomainsCount, final String packageFullPath) {\n         final StringBuilder builder \u003d new StringBuilder();\n         final StringTokenizer tokens \u003d new StringTokenizer(packageFullPath, \".\");\n         int count \u003d firstPackageDomainsCount;\n \n         while (count \u003e 0 \u0026\u0026 tokens.hasMoreTokens()) {\n             builder.append(tokens.nextToken()).append(\u0027.\u0027);\n             count--;\n         }\n         return builder.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2661: Enforce LogicConditionNeedOptimizationCheck of sevntu-checkstyle over Checkstyle source code\n",
+      "commitDate": 1450994367000,
+      "commitName": "6ee4a0f805d528cdee03cfc175502d15b5722dab",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1450903898000,
+      "commitNameOld": "2864c10cd45d23b91717299954aaaf41d36a6cb0",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 1.05,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private static String getFirstNDomainsFromIdent(\n             final int firstPackageDomainsCount, final String packageFullPath) {\n         final StringBuilder builder \u003d new StringBuilder();\n         final StringTokenizer tokens \u003d new StringTokenizer(packageFullPath, \".\");\n         int count \u003d firstPackageDomainsCount;\n \n-        while (tokens.hasMoreTokens() \u0026\u0026 count \u003e 0) {\n+        while (count \u003e 0 \u0026\u0026 tokens.hasMoreTokens()) {\n             builder.append(tokens.nextToken()).append(\u0027.\u0027);\n             count--;\n         }\n         return builder.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "70c83141b4983d3c6073fb645158fc2755d5a6f0": {
+      "type": "Yintroduced",
+      "commitMessage": "Changed SAME_PACKAGE rule for CustomImportOrderCheck #1262\n",
+      "commitDate": 1439028110000,
+      "commitName": "70c83141b4983d3c6073fb645158fc2755d5a6f0",
+      "commitAuthor": "Aleksandr Ivanov"
+    }
+  }
+}

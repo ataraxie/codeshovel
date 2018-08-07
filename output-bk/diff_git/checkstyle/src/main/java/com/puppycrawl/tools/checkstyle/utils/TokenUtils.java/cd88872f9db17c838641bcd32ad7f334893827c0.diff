@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/TokenUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/TokenUtils.java
+index 85d3ae043..aad1d5659 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/TokenUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/TokenUtils.java
+@@ -55,100 +55,108 @@ public final class TokenUtils {
+         final ImmutableMap.Builder<String, Integer> builder =
+                 ImmutableMap.builder();
+         final Field[] fields = TokenTypes.class.getDeclaredFields();
+         String[] tempTokenValueToName = CommonUtils.EMPTY_STRING_ARRAY;
+         for (final Field field : fields) {
+             // Only process the int declarations.
+             if (field.getType() != Integer.TYPE) {
+                 continue;
+             }
+ 
+             final String name = field.getName();
+             final int tokenValue = getIntFromField(field, name);
+             builder.put(name, tokenValue);
+             if (tokenValue > tempTokenValueToName.length - 1) {
+                 final String[] temp = new String[tokenValue + 1];
+                 System.arraycopy(tempTokenValueToName, 0,
+                         temp, 0, tempTokenValueToName.length);
+                 tempTokenValueToName = temp;
+             }
+             tempTokenValueToName[tokenValue] = name;
+         }
+ 
+         TOKEN_NAME_TO_VALUE = builder.build();
+         TOKEN_VALUE_TO_NAME = tempTokenValueToName;
+         TOKEN_IDS = TOKEN_NAME_TO_VALUE.values().stream().mapToInt(Integer::intValue).toArray();
+     }
+ 
+     /** Stop instances being created. **/
+     private TokenUtils() {
+     }
+ 
+     /**
+      * Gets the value of a static or instance field of type int or of another primitive type
+      * convertible to type int via a widening conversion. Does not throw any checked exceptions.
+      * @param field from which the int should be extracted
+      * @param object to extract the int value from
+      * @return the value of the field converted to type int
+      * @throws IllegalStateException if this Field object is enforcing Java language access control
+      *         and the underlying field is inaccessible
+      * @see Field#getInt(Object)
+      */
+     public static int getIntFromField(Field field, Object object) {
+         try {
+             return field.getInt(object);
+         }
+         catch (final IllegalAccessException exception) {
+             throw new IllegalStateException(exception);
+         }
+     }
+ 
++    /**
++     * Get total number of TokenTypes.
++     * @return total number of TokenTypes.
++     */
++    public static int getTokenTypesTotalNumber() {
++        return TOKEN_IDS.length;
++    }
++
+     /**
+      * Get all token IDs that are available in TokenTypes.
+      * @return array of token IDs
+      */
+     public static int[] getAllTokenIds() {
+         final int[] safeCopy = new int[TOKEN_IDS.length];
+         System.arraycopy(TOKEN_IDS, 0, safeCopy, 0, TOKEN_IDS.length);
+         return safeCopy;
+     }
+ 
+     /**
+      * Returns the name of a token for a given ID.
+      * @param id the ID of the token name to get
+      * @return a token name
+      */
+     public static String getTokenName(int id) {
+         if (id > TOKEN_VALUE_TO_NAME.length - 1) {
+             throw new IllegalArgumentException(TOKEN_ID_EXCEPTION_PREFIX + id);
+         }
+         final String name = TOKEN_VALUE_TO_NAME[id];
+         if (name == null) {
+             throw new IllegalArgumentException(TOKEN_ID_EXCEPTION_PREFIX + id);
+         }
+         return name;
+     }
+ 
+     /**
+      * Returns the ID of a token for a given name.
+      * @param name the name of the token ID to get
+      * @return a token ID
+      */
+     public static int getTokenId(String name) {
+         final Integer id = TOKEN_NAME_TO_VALUE.get(name);
+         if (id == null) {
+             throw new IllegalArgumentException(TOKEN_NAME_EXCEPTION_PREFIX + name);
+         }
+         return id;
+     }
+ 
+     /**
+      * Returns the short description of a token for a given name.
+      * @param name the name of the token ID to get
+      * @return a short description
+      */
+     public static String getShortDescription(String name) {
+         if (!TOKEN_NAME_TO_VALUE.containsKey(name)) {
+             throw new IllegalArgumentException(TOKEN_NAME_EXCEPTION_PREFIX + name);
+         }
+ 
+         final String tokenTypes =

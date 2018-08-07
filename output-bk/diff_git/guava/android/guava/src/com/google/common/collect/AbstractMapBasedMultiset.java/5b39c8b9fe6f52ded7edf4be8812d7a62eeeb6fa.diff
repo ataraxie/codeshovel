@@ -1,0 +1,170 @@
+diff --git a/android/guava/src/com/google/common/collect/AbstractMapBasedMultiset.java b/android/guava/src/com/google/common/collect/AbstractMapBasedMultiset.java
+index 9949cfabb..3ff472a9f 100644
+--- a/android/guava/src/com/google/common/collect/AbstractMapBasedMultiset.java
++++ b/android/guava/src/com/google/common/collect/AbstractMapBasedMultiset.java
+@@ -1,69 +1,70 @@
+ /*
+  * Copyright (C) 2007 The Guava Authors
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+  *
+  * http://www.apache.org/licenses/LICENSE-2.0
+  *
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+ 
+ package com.google.common.collect;
+ 
+ import static com.google.common.base.Preconditions.checkArgument;
++import static com.google.common.base.Preconditions.checkNotNull;
+ import static com.google.common.collect.CollectPreconditions.checkNonnegative;
+ 
+ import com.google.common.annotations.GwtCompatible;
+ import com.google.common.annotations.GwtIncompatible;
+ import com.google.common.primitives.Ints;
+ import com.google.errorprone.annotations.CanIgnoreReturnValue;
+ import java.io.IOException;
+ import java.io.ObjectInputStream;
+ import java.io.ObjectOutputStream;
+ import java.io.Serializable;
+ import java.util.ConcurrentModificationException;
+ import java.util.Iterator;
+ import java.util.NoSuchElementException;
+ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+ 
+ /**
+  * Basic implementation of {@code Multiset<E>} backed by an instance of {@code
+  * AbstractObjectCountMap<E>}.
+  *
+  * <p>For serialization to work, the subclass must specify explicit {@code readObject} and {@code
+  * writeObject} methods.
+  *
+  * @author Kevin Bourrillion
+  */
+ @GwtCompatible(emulated = true)
+ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implements Serializable {
+ 
+   transient ObjectCountHashMap<E> backingMap;
+   transient long size;
+ 
+   AbstractMapBasedMultiset(int distinctElements) {
+     init(distinctElements);
+   }
+ 
+   abstract void init(int distinctElements);
+ 
+   @Override
+   public final int count(@NullableDecl Object element) {
+     return backingMap.get(element);
+   }
+ 
+   // Optional Operations - Modification Operations
+ 
+   /**
+    * {@inheritDoc}
+    *
+    * @throws IllegalArgumentException if the call would result in more than {@link
+    *     Integer#MAX_VALUE} occurrences of {@code element} in this multiset.
+    */
+   @CanIgnoreReturnValue
+@@ -173,86 +174,94 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implement
+     }
+ 
+     @Override
+     public boolean hasNext() {
+       checkForConcurrentModification();
+       return entryIndex >= 0;
+     }
+ 
+     @Override
+     public T next() {
+       if (!hasNext()) {
+         throw new NoSuchElementException();
+       }
+       T result = result(entryIndex);
+       toRemove = entryIndex;
+       entryIndex = backingMap.nextIndex(entryIndex);
+       return result;
+     }
+ 
+     @Override
+     public void remove() {
+       checkForConcurrentModification();
+       CollectPreconditions.checkRemove(toRemove != -1);
+       size -= backingMap.removeEntry(toRemove);
+       entryIndex = backingMap.nextIndexAfterRemove(entryIndex, toRemove);
+       toRemove = -1;
+       expectedModCount = backingMap.modCount;
+     }
+   }
+ 
+   @Override
+   final Iterator<E> elementIterator() {
+     return new Itr<E>() {
+       @Override
+       E result(int entryIndex) {
+         return backingMap.getKey(entryIndex);
+       }
+     };
+   }
+ 
+   @Override
+   final Iterator<Entry<E>> entryIterator() {
+     return new Itr<Entry<E>>() {
+       @Override
+       Entry<E> result(int entryIndex) {
+         return backingMap.getEntry(entryIndex);
+       }
+     };
+   }
+ 
++  /** Allocation-free implementation of {@code target.addAll(this)}. */
++  void addTo(Multiset<? super E> target) {
++    checkNotNull(target);
++    for (int i = backingMap.firstIndex(); i >= 0; i = backingMap.nextIndex(i)) {
++      target.add(backingMap.getKey(i), backingMap.getValue(i));
++    }
++  }
++
+   @Override
+   final int distinctElements() {
+     return backingMap.size();
+   }
+ 
+   @Override
+   public final Iterator<E> iterator() {
+     return Multisets.iteratorImpl(this);
+   }
+ 
+   @Override
+   public final int size() {
+     return Ints.saturatedCast(size);
+   }
+ 
+   /**
+    * @serialData the number of distinct elements, the first element, its count, the second element,
+    *     its count, and so on
+    */
+   @GwtIncompatible // java.io.ObjectOutputStream
+   private void writeObject(ObjectOutputStream stream) throws IOException {
+     stream.defaultWriteObject();
+     Serialization.writeMultiset(this, stream);
+   }
+ 
+   @GwtIncompatible // java.io.ObjectInputStream
+   private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+     stream.defaultReadObject();
+     int distinctElements = Serialization.readCount(stream);
+     init(ObjectCountHashMap.DEFAULT_SIZE);
+     Serialization.populateMultiset(this, stream, distinctElements);
+   }
+ 
+   @GwtIncompatible // Not needed in emulated source.
+   private static final long serialVersionUID = 0;
+ }

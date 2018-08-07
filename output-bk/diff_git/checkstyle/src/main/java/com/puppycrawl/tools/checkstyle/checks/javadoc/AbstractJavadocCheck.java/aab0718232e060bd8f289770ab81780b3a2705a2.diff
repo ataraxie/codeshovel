@@ -1,0 +1,127 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+index c0db620c6..c475a6eef 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+@@ -128,115 +128,115 @@ public abstract class AbstractJavadocCheck extends Check {
+      *        the token to process
+      */
+     public abstract void visitJavadocToken(DetailNode ast);
+ 
+     /**
+      * Called after all the child nodes have been process.
+      * @param ast
+      *        the token leaving
+      */
+     public void leaveJavadocToken(DetailNode ast) {
+         // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Defined final to not allow JavadocChecks to change default tokens.
+      * @return default tokens
+      */
+     @Override
+     public final int[] getDefaultTokens() {
+         return new int[] {TokenTypes.BLOCK_COMMENT_BEGIN };
+     }
+ 
+     /**
+      * Defined final because all JavadocChecks require comment nodes.
+      * @return true
+      */
+     @Override
+     public final boolean isCommentNodesRequired() {
+         return true;
+     }
+ 
+     @Override
+     public final void beginTree(DetailAST rootAST) {
+         TREE_CACHE.get().clear();
+     }
+ 
+     @Override
+     public final void finishTree(DetailAST rootAST) {
+         TREE_CACHE.get().clear();
+     }
+ 
+     @Override
+     public final void visitToken(DetailAST blockCommentNode) {
+         if (JavadocUtils.isJavadocComment(blockCommentNode)) {
+             // store as field, to share with child Checks
+             blockCommentAst = blockCommentNode;
+ 
+             final String treeCacheKey = blockCommentNode.getLineNo() + ":"
+                     + blockCommentNode.getColumnNo();
+ 
+-            ParseStatus ps;
++            ParseStatus result;
+ 
+             if (TREE_CACHE.get().containsKey(treeCacheKey)) {
+-                ps = TREE_CACHE.get().get(treeCacheKey);
++                result = TREE_CACHE.get().get(treeCacheKey);
+             }
+             else {
+-                ps = parseJavadocAsDetailNode(blockCommentNode);
+-                TREE_CACHE.get().put(treeCacheKey, ps);
++                result = parseJavadocAsDetailNode(blockCommentNode);
++                TREE_CACHE.get().put(treeCacheKey, result);
+             }
+ 
+-            if (ps.getParseErrorMessage() == null) {
+-                processTree(ps.getTree());
++            if (result.getParseErrorMessage() == null) {
++                processTree(result.getTree());
+             }
+             else {
+-                final ParseErrorMessage parseErrorMessage = ps.getParseErrorMessage();
++                final ParseErrorMessage parseErrorMessage = result.getParseErrorMessage();
+                 log(parseErrorMessage.getLineNumber(),
+                         parseErrorMessage.getMessageKey(),
+                         parseErrorMessage.getMessageArguments());
+             }
+         }
+ 
+     }
+ 
+     /**
+      * Getter for block comment in Java language syntax tree.
+      * @return A block comment in the syntax tree.
+      */
+     protected DetailAST getBlockCommentAst() {
+         return blockCommentAst;
+     }
+ 
+     /**
+      * Parses Javadoc comment as DetailNode tree.
+      * @param javadocCommentAst
+      *        DetailAST of Javadoc comment
+      * @return DetailNode tree of Javadoc comment
+      */
+     private ParseStatus parseJavadocAsDetailNode(DetailAST javadocCommentAst) {
+         final String javadocComment = JavadocUtils.getJavadocCommentContent(javadocCommentAst);
+ 
+         // Use a new error listener each time to be able to use
+         // one check instance for multiple files to be checked
+         // without getting side effects.
+         errorListener = new DescriptiveErrorListener();
+ 
+         // Log messages should have line number in scope of file,
+         // not in scope of Javadoc comment.
+         // Offset is line number of beginning of Javadoc comment.
+         errorListener.setOffset(javadocCommentAst.getLineNo() - 1);
+ 
+         final ParseStatus result = new ParseStatus();
+ 
+         try {
+             final ParseTree parseTree = parseJavadocAsParseTree(javadocComment);
+ 
+             final DetailNode tree = convertParseTreeToDetailNode(parseTree);
+             result.setTree(tree);
+         }
+         catch (ParseCancellationException ex) {
+             // If syntax error occurs then message is printed by error listener
+             // and parser throws this runtime exception to stop parsing.
+             // Just stop processing current Javadoc comment.
+             ParseErrorMessage parseErrorMessage = errorListener.getErrorMessage();
+ 
+             // There are cases when antlr error listener does not handle syntax error

@@ -1,0 +1,152 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DefaultComesLastCheck.java",
+  "functionName": "visitToken",
+  "functionId": "visitToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/DefaultComesLastCheck.java",
+  "functionStartLine": 92,
+  "functionEndLine": 113,
+  "changeHistory": [
+    "73e8b213fff84af542329e99d76606b47bb14c5d",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "27149f3504a2f350b74f456a9bffbae76a460060",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "343e946b076a5344e380c76e5b3ea23438b6fc93",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "fab025f0d1561155fc05e1b1d4156e5b219517fc",
+    "d559cf9414bb9c7830c48ff6ab5fac887036d63c"
+  ],
+  "changeHistoryShort": {
+    "73e8b213fff84af542329e99d76606b47bb14c5d": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "27149f3504a2f350b74f456a9bffbae76a460060": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "343e946b076a5344e380c76e5b3ea23438b6fc93": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "fab025f0d1561155fc05e1b1d4156e5b219517fc": "Ybodychange",
+    "d559cf9414bb9c7830c48ff6ab5fac887036d63c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "73e8b213fff84af542329e99d76606b47bb14c5d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4078: DefaultComesLast only if doesnt share case\n",
+      "commitDate": 1492025730000,
+      "commitName": "73e8b213fff84af542329e99d76606b47bb14c5d",
+      "commitAuthor": "Sagar",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 75.21,
+      "commitsBetweenForRepo": 250,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,23 @@\n     public void visitToken(DetailAST ast) {\n         final DetailAST defaultGroupAST \u003d ast.getParent();\n         //default keywords used in annotations too - not what we\u0027re\n         //interested in\n         if (defaultGroupAST.getType() !\u003d TokenTypes.ANNOTATION_FIELD_DEF\n                 \u0026\u0026 defaultGroupAST.getType() !\u003d TokenTypes.MODIFIERS) {\n-            final DetailAST switchAST \u003d defaultGroupAST.getParent();\n-            final DetailAST lastGroupAST \u003d\n-                switchAST.getLastChild().getPreviousSibling();\n \n-            if (defaultGroupAST.getLineNo() !\u003d lastGroupAST.getLineNo()\n-                || defaultGroupAST.getColumnNo()\n-                    !\u003d lastGroupAST.getColumnNo()) {\n+            if (skipIfLastAndSharedWithCase) {\n+                if (Objects.nonNull(findNextSibling(ast, TokenTypes.LITERAL_CASE))) {\n+                    log(ast, MSG_KEY_SKIP_IF_LAST_AND_SHARED_WITH_CASE);\n+                }\n+                else if (ast.getPreviousSibling() \u003d\u003d null\n+                    \u0026\u0026 Objects.nonNull(findNextSibling(defaultGroupAST,\n+                                                       TokenTypes.CASE_GROUP))) {\n+                    log(ast, MSG_KEY);\n+                }\n+            }\n+            else if (Objects.nonNull(findNextSibling(defaultGroupAST,\n+                                                     TokenTypes.CASE_GROUP))) {\n                 log(ast, MSG_KEY);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437367000,
+      "commitNameOld": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 18.36,
+      "commitsBetweenForRepo": 91,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     public void visitToken(DetailAST ast)\n     {\n         final DetailAST defaultGroupAST \u003d ast.getParent();\n         //default keywords used in annotations too - not what we\u0027re\n         //interested in\n         if (defaultGroupAST.getType() !\u003d TokenTypes.ANNOTATION_FIELD_DEF\n                 \u0026\u0026 defaultGroupAST.getType() !\u003d TokenTypes.MODIFIERS)\n         {\n             final DetailAST switchAST \u003d defaultGroupAST.getParent();\n             final DetailAST lastGroupAST \u003d\n                 switchAST.getLastChild().getPreviousSibling();\n \n-            if ((defaultGroupAST.getLineNo() !\u003d lastGroupAST.getLineNo())\n-                || (defaultGroupAST.getColumnNo()\n-                    !\u003d lastGroupAST.getColumnNo()))\n+            if (defaultGroupAST.getLineNo() !\u003d lastGroupAST.getLineNo()\n+                || defaultGroupAST.getColumnNo()\n+                    !\u003d lastGroupAST.getColumnNo())\n             {\n                 log(ast, MSG_KEY);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "27149f3504a2f350b74f456a9bffbae76a460060": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactored UTs, coding package, issue #537\n",
+      "commitDate": 1424437367000,
+      "commitName": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.66,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     public void visitToken(DetailAST ast)\n     {\n         final DetailAST defaultGroupAST \u003d ast.getParent();\n         //default keywords used in annotations too - not what we\u0027re\n         //interested in\n         if (defaultGroupAST.getType() !\u003d TokenTypes.ANNOTATION_FIELD_DEF\n                 \u0026\u0026 defaultGroupAST.getType() !\u003d TokenTypes.MODIFIERS)\n         {\n             final DetailAST switchAST \u003d defaultGroupAST.getParent();\n             final DetailAST lastGroupAST \u003d\n                 switchAST.getLastChild().getPreviousSibling();\n \n             if ((defaultGroupAST.getLineNo() !\u003d lastGroupAST.getLineNo())\n                 || (defaultGroupAST.getColumnNo()\n                     !\u003d lastGroupAST.getColumnNo()))\n             {\n-                log(ast, \"default.comes.last\");\n+                log(ast, MSG_KEY);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "343e946b076a5344e380c76e5b3ea23438b6fc93": {
+      "type": "Ybodychange",
+      "commitMessage": "#297 Fixed bug in DefaultComesLast check. Now it supports java 8 default methods.\n",
+      "commitDate": 1413227038000,
+      "commitName": "343e946b076a5344e380c76e5b3ea23438b6fc93",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1393953491000,
+      "commitNameOld": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthorOld": "Ivan Sopov",
+      "daysBetweenCommits": 223.07,
+      "commitsBetweenForRepo": 166,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,20 @@\n     public void visitToken(DetailAST aAST)\n     {\n         final DetailAST defaultGroupAST \u003d aAST.getParent();\n         //default keywords used in annotations too - not what we\u0027re\n         //interested in\n-        if (defaultGroupAST.getType() !\u003d TokenTypes.ANNOTATION_FIELD_DEF) {\n+        if (defaultGroupAST.getType() !\u003d TokenTypes.ANNOTATION_FIELD_DEF\n+                \u0026\u0026 defaultGroupAST.getType() !\u003d TokenTypes.MODIFIERS)\n+        {\n             final DetailAST switchAST \u003d defaultGroupAST.getParent();\n             final DetailAST lastGroupAST \u003d\n                 switchAST.getLastChild().getPreviousSibling();\n \n             if ((defaultGroupAST.getLineNo() !\u003d lastGroupAST.getLineNo())\n                 || (defaultGroupAST.getColumnNo()\n                     !\u003d lastGroupAST.getColumnNo()))\n             {\n                 log(aAST, \"default.comes.last\");\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1113560983000,
+      "commitNameOld": "7b2966e2a5dbccbd5826aea25137478509ca982b",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 447.71,
+      "commitsBetweenForRepo": 173,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,18 @@\n     public void visitToken(DetailAST aAST)\n     {\n         final DetailAST defaultGroupAST \u003d aAST.getParent();\n         //default keywords used in annotations too - not what we\u0027re\n         //interested in\n         if (defaultGroupAST.getType() !\u003d TokenTypes.ANNOTATION_FIELD_DEF) {\n             final DetailAST switchAST \u003d defaultGroupAST.getParent();\n             final DetailAST lastGroupAST \u003d\n                 switchAST.getLastChild().getPreviousSibling();\n \n-            if (defaultGroupAST.getLineNo() !\u003d lastGroupAST.getLineNo()\n-                || defaultGroupAST.getColumnNo() !\u003d lastGroupAST.getColumnNo())\n+            if ((defaultGroupAST.getLineNo() !\u003d lastGroupAST.getLineNo())\n+                || (defaultGroupAST.getColumnNo()\n+                    !\u003d lastGroupAST.getColumnNo()))\n             {\n                 log(aAST, \"default.comes.last\");\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "fab025f0d1561155fc05e1b1d4156e5b219517fc": {
+      "type": "Ybodychange",
+      "commitMessage": "Stopped default annotation members being checked for DefaultComeslastCheck. Minor and unrelated change to AST structure for annotation defaults.\n",
+      "commitDate": 1113523156000,
+      "commitName": "fab025f0d1561155fc05e1b1d4156e5b219517fc",
+      "commitAuthor": "Michael Studman",
+      "commitDateOld": 1105267857000,
+      "commitNameOld": "0d887cde58e54d920644ee543dab346b93e8aae9",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 95.55,
+      "commitsBetweenForRepo": 98,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,18 @@\n     public void visitToken(DetailAST aAST)\n     {\n         final DetailAST defaultGroupAST \u003d aAST.getParent();\n-        final DetailAST switchAST \u003d defaultGroupAST.getParent();\n-        final DetailAST lastGroupAST \u003d\n-            switchAST.getLastChild().getPreviousSibling();\n-\n-        if (defaultGroupAST.getLineNo() !\u003d lastGroupAST.getLineNo()\n-            || defaultGroupAST.getColumnNo() !\u003d lastGroupAST.getColumnNo())\n+        //default keywords used in annotations too - not what we\u0027re\n+        //interested in\n+        if (defaultGroupAST.getType() !\u003d TokenTypes.ANNOTATION_FIELD_DEF)\n         {\n-            log(aAST, \"default.comes.last\");\n+            final DetailAST switchAST \u003d defaultGroupAST.getParent();\n+            final DetailAST lastGroupAST \u003d\n+                switchAST.getLastChild().getPreviousSibling();\n+\n+            if (defaultGroupAST.getLineNo() !\u003d lastGroupAST.getLineNo()\n+                || defaultGroupAST.getColumnNo() !\u003d lastGroupAST.getColumnNo())\n+            {\n+                log(aAST, \"default.comes.last\");\n+            }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d559cf9414bb9c7830c48ff6ab5fac887036d63c": {
+      "type": "Yintroduced",
+      "commitMessage": "DefaultComesLast check (request 754486)\n",
+      "commitDate": 1073368249000,
+      "commitName": "d559cf9414bb9c7830c48ff6ab5fac887036d63c",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

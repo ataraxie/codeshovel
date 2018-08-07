@@ -1,0 +1,289 @@
+diff --git a/android/guava/src/com/google/common/collect/Maps.java b/android/guava/src/com/google/common/collect/Maps.java
+index 20414d3df..851739953 100644
+--- a/android/guava/src/com/google/common/collect/Maps.java
++++ b/android/guava/src/com/google/common/collect/Maps.java
+@@ -90,105 +90,105 @@ public final class Maps {
+         return entry.getKey();
+       }
+     },
+     VALUE {
+       @Override
+       @Nullable
+       public Object apply(Entry<?, ?> entry) {
+         return entry.getValue();
+       }
+     };
+   }
+ 
+   @SuppressWarnings("unchecked")
+   static <K> Function<Entry<K, ?>, K> keyFunction() {
+     return (Function) EntryFunction.KEY;
+   }
+ 
+   @SuppressWarnings("unchecked")
+   static <V> Function<Entry<?, V>, V> valueFunction() {
+     return (Function) EntryFunction.VALUE;
+   }
+ 
+   static <K, V> Iterator<K> keyIterator(Iterator<Entry<K, V>> entryIterator) {
+     return Iterators.transform(entryIterator, Maps.<K>keyFunction());
+   }
+ 
+   static <K, V> Iterator<V> valueIterator(Iterator<Entry<K, V>> entryIterator) {
+     return Iterators.transform(entryIterator, Maps.<V>valueFunction());
+   }
+ 
+   /**
+    * Returns an immutable map instance containing the given entries.
+    * Internally, the returned map will be backed by an {@link EnumMap}.
+    *
+    * <p>The iteration order of the returned map follows the enum's iteration
+    * order, not the order in which the elements appear in the given map.
+    *
+    * @param map the map to make an immutable copy of
+    * @return an immutable map containing those entries
+    * @since 14.0
+    */
+   @GwtCompatible(serializable = true)
+   @Beta
+   public static <K extends Enum<K>, V> ImmutableMap<K, V> immutableEnumMap(
+       Map<K, ? extends V> map) {
+     if (map instanceof ImmutableEnumMap) {
+       @SuppressWarnings("unchecked") // safe covariant cast
+       ImmutableEnumMap<K, V> result = (ImmutableEnumMap<K, V>) map;
+       return result;
+     }
+-    Iterator<? extends Map.Entry<K, ? extends V>> entryItr = map.entrySet().iterator();
++    Iterator<? extends Entry<K, ? extends V>> entryItr = map.entrySet().iterator();
+     if (!entryItr.hasNext()) {
+       return ImmutableMap.of();
+     }
+-    Map.Entry<K, ? extends V> entry1 = entryItr.next();
++    Entry<K, ? extends V> entry1 = entryItr.next();
+     K key1 = entry1.getKey();
+     V value1 = entry1.getValue();
+     checkEntryNotNull(key1, value1);
+     Class<K> clazz = key1.getDeclaringClass();
+     EnumMap<K, V> enumMap = new EnumMap<>(clazz);
+     enumMap.put(key1, value1);
+     while (entryItr.hasNext()) {
+       Entry<K, ? extends V> entry = entryItr.next();
+       K key = entry.getKey();
+       V value = entry.getValue();
+       checkEntryNotNull(key, value);
+       enumMap.put(key, value);
+     }
+     return ImmutableEnumMap.asImmutable(enumMap);
+   }
+ 
+   /**
+    * Creates a <i>mutable</i>, empty {@code HashMap} instance.
+    *
+    * <p><b>Note:</b> if mutability is not required, use {@link
+    * ImmutableMap#of()} instead.
+    *
+    * <p><b>Note:</b> if {@code K} is an {@code enum} type, use {@link
+    * #newEnumMap} instead.
+    *
+    * <p><b>Note for Java 7 and later:</b> this method is now unnecessary and
+    * should be treated as deprecated. Instead, use the {@code HashMap}
+    * constructor directly, taking advantage of the new
+    * <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
+    *
+    * @return a new, empty {@code HashMap}
+    */
+   public static <K, V> HashMap<K, V> newHashMap() {
+     return new HashMap<>();
+   }
+ 
+   /**
+    * Creates a {@code HashMap} instance, with a high enough "initial capacity"
+    * that it <i>should</i> hold {@code expectedSize} elements without growth.
+    * This behavior cannot be broadly guaranteed, but it is observed to be true
+    * for OpenJDK 1.7. It also can't be guaranteed that the method isn't
+    * inadvertently <i>oversizing</i> the returned map.
+    *
+    * @param expectedSize the number of entries you expect to add to the
+    *        returned map
+    * @return a new, empty {@code HashMap} with enough capacity to hold {@code
+    *         expectedSize} entries without resizing
+    * @throws IllegalArgumentException if {@code expectedSize} is negative
+    */
+   public static <K, V> HashMap<K, V> newHashMapWithExpectedSize(int expectedSize) {
+@@ -3520,172 +3520,172 @@ public final class Maps {
+     checkNotNull(map);
+     try {
+       return map.get(key);
+     } catch (ClassCastException | NullPointerException e) {
+       return null;
+     }
+   }
+ 
+   /**
+    * Delegates to {@link Map#containsKey}. Returns {@code false} on {@code
+    * ClassCastException} and {@code NullPointerException}.
+    */
+   static boolean safeContainsKey(Map<?, ?> map, Object key) {
+     checkNotNull(map);
+     try {
+       return map.containsKey(key);
+     } catch (ClassCastException | NullPointerException e) {
+       return false;
+     }
+   }
+ 
+   /**
+    * Delegates to {@link Map#remove}. Returns {@code null} on {@code
+    * ClassCastException} and {@code NullPointerException}.
+    */
+   static <V> V safeRemove(Map<?, V> map, Object key) {
+     checkNotNull(map);
+     try {
+       return map.remove(key);
+     } catch (ClassCastException | NullPointerException e) {
+       return null;
+     }
+   }
+ 
+   /**
+    * An admittedly inefficient implementation of {@link Map#containsKey}.
+    */
+   static boolean containsKeyImpl(Map<?, ?> map, @Nullable Object key) {
+     return Iterators.contains(keyIterator(map.entrySet().iterator()), key);
+   }
+ 
+   /**
+    * An implementation of {@link Map#containsValue}.
+    */
+   static boolean containsValueImpl(Map<?, ?> map, @Nullable Object value) {
+     return Iterators.contains(valueIterator(map.entrySet().iterator()), value);
+   }
+ 
+   /**
+    * Implements {@code Collection.contains} safely for forwarding collections of
+-   * map entries. If {@code o} is an instance of {@code Map.Entry}, it is
++   * map entries. If {@code o} is an instance of {@code Entry}, it is
+    * wrapped using {@link #unmodifiableEntry} to protect against a possible
+    * nefarious equals method.
+    *
+    * <p>Note that {@code c} is the backing (delegate) collection, rather than
+    * the forwarding collection.
+    *
+    * @param c the delegate (unwrapped) collection of map entries
+    * @param o the object that might be contained in {@code c}
+    * @return {@code true} if {@code c} contains {@code o}
+    */
+   static <K, V> boolean containsEntryImpl(Collection<Entry<K, V>> c, Object o) {
+     if (!(o instanceof Entry)) {
+       return false;
+     }
+     return c.contains(unmodifiableEntry((Entry<?, ?>) o));
+   }
+ 
+   /**
+    * Implements {@code Collection.remove} safely for forwarding collections of
+-   * map entries. If {@code o} is an instance of {@code Map.Entry}, it is
++   * map entries. If {@code o} is an instance of {@code Entry}, it is
+    * wrapped using {@link #unmodifiableEntry} to protect against a possible
+    * nefarious equals method.
+    *
+    * <p>Note that {@code c} is backing (delegate) collection, rather than the
+    * forwarding collection.
+    *
+    * @param c the delegate (unwrapped) collection of map entries
+    * @param o the object to remove from {@code c}
+    * @return {@code true} if {@code c} was changed
+    */
+   static <K, V> boolean removeEntryImpl(Collection<Entry<K, V>> c, Object o) {
+     if (!(o instanceof Entry)) {
+       return false;
+     }
+     return c.remove(unmodifiableEntry((Entry<?, ?>) o));
+   }
+ 
+   /**
+    * An implementation of {@link Map#equals}.
+    */
+   static boolean equalsImpl(Map<?, ?> map, Object object) {
+     if (map == object) {
+       return true;
+     } else if (object instanceof Map) {
+       Map<?, ?> o = (Map<?, ?>) object;
+       return map.entrySet().equals(o.entrySet());
+     }
+     return false;
+   }
+ 
+   /**
+    * An implementation of {@link Map#toString}.
+    */
+   static String toStringImpl(Map<?, ?> map) {
+     StringBuilder sb = Collections2.newStringBuilderForCollection(map.size()).append('{');
+     boolean first = true;
+-    for (Map.Entry<?, ?> entry : map.entrySet()) {
++    for (Entry<?, ?> entry : map.entrySet()) {
+       if (!first) {
+         sb.append(", ");
+       }
+       first = false;
+       sb.append(entry.getKey()).append('=').append(entry.getValue());
+     }
+     return sb.append('}').toString();
+   }
+ 
+   /**
+    * An implementation of {@link Map#putAll}.
+    */
+   static <K, V> void putAllImpl(Map<K, V> self, Map<? extends K, ? extends V> map) {
+-    for (Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
++    for (Entry<? extends K, ? extends V> entry : map.entrySet()) {
+       self.put(entry.getKey(), entry.getValue());
+     }
+   }
+ 
+   static class KeySet<K, V> extends Sets.ImprovedAbstractSet<K> {
+     @Weak final Map<K, V> map;
+ 
+     KeySet(Map<K, V> map) {
+       this.map = checkNotNull(map);
+     }
+ 
+     Map<K, V> map() {
+       return map;
+     }
+ 
+     @Override
+     public Iterator<K> iterator() {
+       return keyIterator(map().entrySet().iterator());
+     }
+ 
+     @Override
+     public int size() {
+       return map().size();
+     }
+ 
+     @Override
+     public boolean isEmpty() {
+       return map().isEmpty();
+     }
+ 
+     @Override
+     public boolean contains(Object o) {
+       return map().containsKey(o);
+     }
+ 
+     @Override
+     public boolean remove(Object o) {
+       if (contains(o)) {
+         map().remove(o);
+         return true;
+       }
+       return false;
+     }
+ 
+     @Override
+     public void clear() {
+       map().clear();
+     }
+   }
+ 

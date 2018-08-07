@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DetailNodeTreeStringPrinter.java",
+  "functionName": "getIndentation",
+  "functionId": "getIndentation___node-DetailNode",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/DetailNodeTreeStringPrinter.java",
+  "functionStartLine": 134,
+  "functionEndLine": 160,
+  "changeHistory": [
+    "46fa8090954480eecdeb6e7367f0e30655853f42",
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a"
+  ],
+  "changeHistoryShort": {
+    "46fa8090954480eecdeb6e7367f0e30655853f42": "Ybodychange",
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "46fa8090954480eecdeb6e7367f0e30655853f42": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4812: add report on StringBufferMustHaveInitialCapacity\n",
+      "commitDate": 1501186710000,
+      "commitName": "46fa8090954480eecdeb6e7367f0e30655853f42",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1499372568000,
+      "commitNameOld": "82979737c4201b4913ea30b9c9431e71783d1c02",
+      "commitAuthorOld": "Timur",
+      "daysBetweenCommits": 21.0,
+      "commitsBetweenForRepo": 146,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,27 +1,27 @@\n     private static String getIndentation(DetailNode node) {\n         final boolean isLastChild \u003d JavadocUtils.getNextSibling(node) \u003d\u003d null;\n         DetailNode currentNode \u003d node;\n-        final StringBuilder indentation \u003d new StringBuilder();\n+        final StringBuilder indentation \u003d new StringBuilder(1024);\n         while (currentNode.getParent() !\u003d null) {\n             currentNode \u003d currentNode.getParent();\n             if (currentNode.getParent() \u003d\u003d null) {\n                 if (isLastChild) {\n                     // only ASCII symbols must be used due to\n                     // problems with running tests on Windows\n                     indentation.append(\"`--\");\n                 }\n                 else {\n                     indentation.append(\"|--\");\n                 }\n             }\n             else {\n                 if (JavadocUtils.getNextSibling(currentNode) \u003d\u003d null) {\n                     indentation.insert(0, \"    \");\n                 }\n                 else {\n                     indentation.insert(0, \"|   \");\n                 }\n             }\n         }\n         return indentation.toString();\n     }\n\\ No newline at end of file\n"
+    },
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #652: New CLI option to print Javadoc comment parse tree\n",
+      "commitDate": 1458220789000,
+      "commitName": "68b49fd2843f23f55dc711a89213d59f2acf3a0a",
+      "commitAuthor": "Baratali Izmailov"
+    }
+  }
+}

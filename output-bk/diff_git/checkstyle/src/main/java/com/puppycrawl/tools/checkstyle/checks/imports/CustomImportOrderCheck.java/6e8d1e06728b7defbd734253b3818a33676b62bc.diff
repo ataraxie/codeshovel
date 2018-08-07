@@ -1,0 +1,223 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+index 2d5700467..42787160d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+@@ -570,101 +570,101 @@ public class CustomImportOrderCheck extends AbstractCheck {
+      * Get next import group.
+      * @param currentGroupNumber
+      *        current group number.
+      * @return
+      *        next import group.
+      */
+     private String getNextImportGroup(int currentGroupNumber) {
+         int nextGroupNumber = currentGroupNumber;
+ 
+         while (customImportOrderRules.size() > nextGroupNumber + 1) {
+             if (hasAnyImportInCurrentGroup(customImportOrderRules.get(nextGroupNumber))) {
+                 break;
+             }
+             nextGroupNumber++;
+         }
+         return customImportOrderRules.get(nextGroupNumber);
+     }
+ 
+     /**
+      * Checks if current group contains any import.
+      * @param currentGroup
+      *        current group.
+      * @return
+      *        true, if current group contains at least one import.
+      */
+     private boolean hasAnyImportInCurrentGroup(String currentGroup) {
+         for (ImportDetails currentImport : importToGroupList) {
+             if (currentGroup.equals(currentImport.getImportGroup())) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Get import valid group.
+      * @param isStatic
+      *        is static import.
+      * @param importPath
+      *        full import path.
+      * @return import valid group.
+      */
+     private String getImportGroup(boolean isStatic, String importPath) {
+         RuleMatchForImport bestMatch = new RuleMatchForImport(NON_GROUP_RULE_GROUP, 0, 0);
+         if (isStatic && customImportOrderRules.contains(STATIC_RULE_GROUP)) {
+             bestMatch.group = STATIC_RULE_GROUP;
+             bestMatch.matchLength = importPath.length();
+         }
+         else if (customImportOrderRules.contains(SAME_PACKAGE_RULE_GROUP)) {
+             final String importPathTrimmedToSamePackageDepth =
+-                    getFirstNDomainsFromIdent(samePackageMatchingDepth, importPath);
++                    getFirstDomainsFromIdent(samePackageMatchingDepth, importPath);
+             if (samePackageDomainsRegExp.equals(importPathTrimmedToSamePackageDepth)) {
+                 bestMatch.group = SAME_PACKAGE_RULE_GROUP;
+                 bestMatch.matchLength = importPath.length();
+             }
+         }
+         if (bestMatch.group.equals(NON_GROUP_RULE_GROUP)) {
+             for (String group : customImportOrderRules) {
+                 if (STANDARD_JAVA_PACKAGE_RULE_GROUP.equals(group)) {
+                     bestMatch = findBetterPatternMatch(importPath,
+                             STANDARD_JAVA_PACKAGE_RULE_GROUP, standardPackageRegExp, bestMatch);
+                 }
+                 if (SPECIAL_IMPORTS_RULE_GROUP.equals(group)) {
+                     bestMatch = findBetterPatternMatch(importPath,
+                             SPECIAL_IMPORTS_RULE_GROUP, specialImportsRegExp, bestMatch);
+                 }
+             }
+         }
+         if (bestMatch.group.equals(NON_GROUP_RULE_GROUP)
+                 && customImportOrderRules.contains(THIRD_PARTY_PACKAGE_RULE_GROUP)
+                 && thirdPartyPackageRegExp.matcher(importPath).find()) {
+             bestMatch.group = THIRD_PARTY_PACKAGE_RULE_GROUP;
+         }
+         return bestMatch.group;
+     }
+ 
+     /** Tries to find better matching regular expression:
+      * longer matching substring wins; in case of the same length,
+      * lower position of matching substring wins.
+      * @param importPath
+      *      Full import identifier
+      * @param group
+      *      Import group we are trying to assign the import
+      * @param regExp
+      *      Regular expression for import group
+      * @param currentBestMatch
+      *      object with currently best match
+      * @return better match (if found) or the same (currentBestMatch)
+      */
+     private static RuleMatchForImport findBetterPatternMatch(String importPath, String group,
+             Pattern regExp, RuleMatchForImport currentBestMatch) {
+         RuleMatchForImport betterMatchCandidate = currentBestMatch;
+         final Matcher matcher = regExp.matcher(importPath);
+         while (matcher.find()) {
+             final int length = matcher.end() - matcher.start();
+             if (length > betterMatchCandidate.matchLength
+                     || length == betterMatchCandidate.matchLength
+                         && matcher.start() < betterMatchCandidate.matchPosition) {
+                 betterMatchCandidate = new RuleMatchForImport(group, length, matcher.start());
+             }
+         }
+@@ -725,113 +725,113 @@ public class CustomImportOrderCheck extends AbstractCheck {
+     private static String getFullImportIdent(DetailAST token) {
+         if (token == null) {
+             return "";
+         }
+         else {
+             return FullIdent.createFullIdent(token.findFirstToken(TokenTypes.DOT)).getText();
+         }
+     }
+ 
+     /**
+      * Parses ordering rule and adds it to the list with rules.
+      * @param ruleStr
+      *        String with rule.
+      */
+     private void addRulesToList(String ruleStr) {
+         if (STATIC_RULE_GROUP.equals(ruleStr)
+                 || THIRD_PARTY_PACKAGE_RULE_GROUP.equals(ruleStr)
+                 || STANDARD_JAVA_PACKAGE_RULE_GROUP.equals(ruleStr)
+                 || SPECIAL_IMPORTS_RULE_GROUP.equals(ruleStr)) {
+             customImportOrderRules.add(ruleStr);
+ 
+         }
+         else if (ruleStr.startsWith(SAME_PACKAGE_RULE_GROUP)) {
+ 
+             final String rule = ruleStr.substring(ruleStr.indexOf('(') + 1,
+                     ruleStr.indexOf(')'));
+             samePackageMatchingDepth = Integer.parseInt(rule);
+             if (samePackageMatchingDepth <= 0) {
+                 throw new IllegalArgumentException(
+                         "SAME_PACKAGE rule parameter should be positive integer: " + ruleStr);
+             }
+             customImportOrderRules.add(SAME_PACKAGE_RULE_GROUP);
+ 
+         }
+         else {
+             throw new IllegalStateException("Unexpected rule: " + ruleStr);
+         }
+     }
+ 
+     /**
+      * Creates samePackageDomainsRegExp of the first package domains.
+      * @param firstPackageDomainsCount
+      *        number of first package domains.
+      * @param packageNode
+      *        package node.
+      * @return same package regexp.
+      */
+     private static String createSamePackageRegexp(int firstPackageDomainsCount,
+              DetailAST packageNode) {
+         final String packageFullPath = getFullImportIdent(packageNode);
+-        return getFirstNDomainsFromIdent(firstPackageDomainsCount, packageFullPath);
++        return getFirstDomainsFromIdent(firstPackageDomainsCount, packageFullPath);
+     }
+ 
+     /**
+      * Extracts defined amount of domains from the left side of package/import identifier
+      * @param firstPackageDomainsCount
+      *        number of first package domains.
+      * @param packageFullPath
+      *        full identifier containing path to package or imported object.
+      * @return String with defined amount of domains or full identifier
+      *        (if full identifier had less domain then specified)
+      */
+-    private static String getFirstNDomainsFromIdent(
++    private static String getFirstDomainsFromIdent(
+             final int firstPackageDomainsCount, final String packageFullPath) {
+         final StringBuilder builder = new StringBuilder();
+         final StringTokenizer tokens = new StringTokenizer(packageFullPath, ".");
+         int count = firstPackageDomainsCount;
+ 
+         while (count > 0 && tokens.hasMoreTokens()) {
+             builder.append(tokens.nextToken()).append('.');
+             count--;
+         }
+         return builder.toString();
+     }
+ 
+     /**
+      * Contains import attributes as line number, import full path, import
+      * group.
+      * @author max
+      */
+     private static class ImportDetails {
+         /** Import full path. */
+         private final String importFullPath;
+ 
+         /** Import line number. */
+         private final int lineNumber;
+ 
+         /** Import group. */
+         private final String importGroup;
+ 
+         /** Is static import. */
+         private final boolean staticImport;
+ 
+         /**
+          * @param importFullPath
+          *        import full path.
+          * @param lineNumber
+          *        import line number.
+          * @param importGroup
+          *        import group.
+          * @param staticImport
+          *        if import is static.
+          */
+         ImportDetails(String importFullPath,
+                 int lineNumber, String importGroup, boolean staticImport) {
+             this.importFullPath = importFullPath;
+             this.lineNumber = lineNumber;
+             this.importGroup = importGroup;
+             this.staticImport = staticImport;
+         }
+ 
+         /**
+          * Get import full path variable.

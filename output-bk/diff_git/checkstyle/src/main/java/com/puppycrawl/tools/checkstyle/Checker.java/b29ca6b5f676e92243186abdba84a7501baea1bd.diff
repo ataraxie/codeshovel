@@ -1,0 +1,114 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+index 9038baf9d..f100a1fb4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -228,107 +228,107 @@ public class Checker extends AutomaticBean implements MessageDispatcher
+      * @param listener the nosy thing
+      */
+     public final void addListener(AuditListener listener)
+     {
+         listeners.add(listener);
+     }
+ 
+     /**
+      * Removes a given listener.
+      * @param listener a listener to remove
+      */
+     public void removeListener(AuditListener listener)
+     {
+         listeners.remove(listener);
+     }
+ 
+     /**
+      * Processes a set of files with all FileSetChecks.
+      * Once this is done, it is highly recommended to call for
+      * the destroy method to close and remove the listeners.
+      * @param files the list of files to be audited.
+      * @return the total number of errors found
+      * @see #destroy()
+      */
+     public int process(List<File> files)
+     {
+         // Prepare to start
+         fireAuditStarted();
+         for (final FileSetCheck fsc : fileSetChecks) {
+             fsc.beginProcessing(charset);
+         }
+ 
+         // Process each file
+         for (final File f : files) {
+             if (!fileExtensionMatches(f, fileExtensions)) {
+                 continue;
+             }
+             final String fileName = f.getAbsolutePath();
+             fireFileStarted(fileName);
+             final SortedSet<LocalizedMessage> fileMessages = Sets.newTreeSet();
+             try {
+                 final FileText theText = new FileText(f.getAbsoluteFile(),
+                         charset);
+                 for (final FileSetCheck fsc : fileSetChecks) {
+                     fileMessages.addAll(fsc.process(f, theText));
+                 }
+             }
+             catch (final FileNotFoundException fnfe) {
+                 LOG.debug("FileNotFoundException occured.", fnfe);
+                 fileMessages.add(new LocalizedMessage(0,
+-                        Defn.CHECKSTYLE_BUNDLE, "general.fileNotFound", null,
++                        Definitions.CHECKSTYLE_BUNDLE, "general.fileNotFound", null,
+                         null, this.getClass(), null));
+             }
+             catch (final IOException ioe) {
+                 LOG.debug("IOException occured.", ioe);
+                 fileMessages.add(new LocalizedMessage(0,
+-                        Defn.CHECKSTYLE_BUNDLE, "general.exception",
++                        Definitions.CHECKSTYLE_BUNDLE, "general.exception",
+                         new String[] {ioe.getMessage()}, null, this.getClass(),
+                         null));
+             }
+             fireErrors(fileName, fileMessages);
+             fireFileFinished(fileName);
+         }
+ 
+         // Finish up
+         for (final FileSetCheck fsc : fileSetChecks) {
+             // It may also log!!!
+             fsc.finishProcessing();
+         }
+ 
+         for (final FileSetCheck fsc : fileSetChecks) {
+             // It may also log!!!
+             fsc.destroy();
+         }
+ 
+         final int errorCount = counter.getCount();
+         fireAuditFinished();
+         return errorCount;
+     }
+ 
+     /** @param basedir the base directory to strip off in filenames */
+     public void setBasedir(String basedir)
+     {
+         this.basedir = basedir;
+     }
+ 
+     /** notify all listeners about the audit start */
+     protected void fireAuditStarted()
+     {
+         final AuditEvent evt = new AuditEvent(this);
+         for (final AuditListener listener : listeners) {
+             listener.auditStarted(evt);
+         }
+     }
+ 
+     /** notify all listeners about the audit end */
+     protected void fireAuditFinished()
+     {
+         final AuditEvent evt = new AuditEvent(this);
+         for (final AuditListener listener : listeners) {
+             listener.auditFinished(evt);
+         }
+     }
+ 
+     /**
+      * Notify all listeners about the beginning of a file audit.
+      *

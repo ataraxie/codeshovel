@@ -1,0 +1,116 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+index db2d16634..50f620be6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/LocalizedMessage.java
+@@ -232,106 +232,106 @@ public final class LocalizedMessage
+     }
+ 
+     @Override
+     public int hashCode() {
+         return Objects.hash(lineNo, columnNo, severityLevel, moduleId, key, bundle, sourceClass,
+                 customMessage, Arrays.hashCode(args));
+     }
+ 
+     /** Clears the cache. */
+     public static void clearCache() {
+         synchronized (BUNDLE_CACHE) {
+             BUNDLE_CACHE.clear();
+         }
+     }
+ 
+     /**
+      * Gets the translated message.
+      * @return the translated message
+      */
+     public String getMessage() {
+         String message = getCustomMessage();
+ 
+         if (message == null) {
+             try {
+                 // Important to use the default class loader, and not the one in
+                 // the GlobalProperties object. This is because the class loader in
+                 // the GlobalProperties is specified by the user for resolving
+                 // custom classes.
+                 final ResourceBundle resourceBundle = getBundle(bundle);
+                 final String pattern = resourceBundle.getString(key);
+                 final MessageFormat formatter = new MessageFormat(pattern, Locale.ROOT);
+                 message = formatter.format(args);
+             }
+             catch (final MissingResourceException ignored) {
+                 // If the Check author didn't provide i18n resource bundles
+                 // and logs error messages directly, this will return
+                 // the author's original message
+                 final MessageFormat formatter = new MessageFormat(key, Locale.ROOT);
+                 message = formatter.format(args);
+             }
+         }
+         return message;
+     }
+ 
+     /**
+      * Returns the formatted custom message if one is configured.
+      * @return the formatted custom message or {@code null}
+      *          if there is no custom message
+      */
+     private String getCustomMessage() {
+-
+-        if (customMessage == null) {
+-            return null;
++        String message = null;
++        if (customMessage != null) {
++            final MessageFormat formatter = new MessageFormat(customMessage, Locale.ROOT);
++            message = formatter.format(args);
+         }
+-        final MessageFormat formatter = new MessageFormat(customMessage, Locale.ROOT);
+-        return formatter.format(args);
++        return message;
+     }
+ 
+     /**
+      * Find a ResourceBundle for a given bundle name. Uses the classloader
+      * of the class emitting this message, to be sure to get the correct
+      * bundle.
+      * @param bundleName the bundle name
+      * @return a ResourceBundle
+      */
+     private ResourceBundle getBundle(String bundleName) {
+         synchronized (BUNDLE_CACHE) {
+             ResourceBundle resourceBundle = BUNDLE_CACHE
+                     .get(bundleName);
+             if (resourceBundle == null) {
+                 resourceBundle = ResourceBundle.getBundle(bundleName, sLocale,
+                         sourceClass.getClassLoader(), new Utf8Control());
+                 BUNDLE_CACHE.put(bundleName, resourceBundle);
+             }
+             return resourceBundle;
+         }
+     }
+ 
+     /**
+      * Gets the line number.
+      * @return the line number
+      */
+     public int getLineNo() {
+         return lineNo;
+     }
+ 
+     /**
+      * Gets the column number.
+      * @return the column number
+      */
+     public int getColumnNo() {
+         return columnNo;
+     }
+ 
+     /**
+      * Gets the severity level.
+      * @return the severity level
+      */
+     public SeverityLevel getSeverityLevel() {
+         return severityLevel;
+     }
+ 
+     /**
+      * @return the module identifier.
+      */
+     public String getModuleId() {

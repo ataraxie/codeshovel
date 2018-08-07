@@ -1,0 +1,111 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java
+index 39f0cdd3d..b5623c96a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java
+@@ -18,96 +18,106 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.whitespace;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ 
+ /**
+  * <p>
+  * Checks that a token is followed by whitespace, with the exception that it
+  * does not check for whitespace after the semicolon of an empty for iterator.
+  * Use Check {@link EmptyForIteratorPadCheck EmptyForIteratorPad} to validate
+  * empty for iterators.
+  * </p>
+  * <p> By default the check will check the following tokens:
+  *  {@link TokenTypes#COMMA COMMA},
+  *  {@link TokenTypes#SEMI SEMI},
+  *  {@link TokenTypes#TYPECAST TYPECAST}.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="WhitespaceAfter"/&gt;
+  * </pre>
+  * <p> An example of how to configure the check for whitespace only after
+  * {@link TokenTypes#COMMA COMMA} and {@link TokenTypes#SEMI SEMI} tokens is:
+  * </p>
+  * <pre>
+  * &lt;module name="WhitespaceAfter"&gt;
+  *     &lt;property name="tokens" value="COMMA, SEMI"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Oliver Burn
+  * @author Rick Giles
+  * @version 1.0
+  */
+ public class WhitespaceAfterCheck
+     extends Check
+ {
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.COMMA,
+             TokenTypes.SEMI,
+             TokenTypes.TYPECAST,
+         };
+     }
+ 
++    @Override
++    public int[] getAcceptableTokens()
++    {
++        return new int[] {
++            TokenTypes.COMMA,
++            TokenTypes.SEMI,
++            TokenTypes.TYPECAST,
++        };
++    }
++
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         final Object[] message;
+         final DetailAST targetAST;
+         if (ast.getType() == TokenTypes.TYPECAST) {
+             targetAST = ast.findFirstToken(TokenTypes.RPAREN);
+             // TODO: i18n
+             message = new Object[]{"cast"};
+         }
+         else {
+             targetAST = ast;
+             message = new Object[]{ast.getText()};
+         }
+         final String line = getLine(targetAST.getLineNo() - 1);
+         final int after =
+             targetAST.getColumnNo() + targetAST.getText().length();
+ 
+         if (after < line.length()) {
+ 
+             final char charAfter = line.charAt(after);
+             if ((targetAST.getType() == TokenTypes.SEMI)
+                 && ((charAfter == ';') || (charAfter == ')')))
+             {
+                 return;
+             }
+             if (!Character.isWhitespace(charAfter)) {
+                 //empty FOR_ITERATOR?
+                 if (targetAST.getType() == TokenTypes.SEMI) {
+                     final DetailAST sibling =
+                         targetAST.getNextSibling();
+                     if ((sibling != null)
+                         && (sibling.getType() == TokenTypes.FOR_ITERATOR)
+                         && (sibling.getChildCount() == 0))
+                     {
+                         return;
+                     }
+                 }
+                 log(targetAST.getLineNo(),
+                     targetAST.getColumnNo() + targetAST.getText().length(),
+                     "ws.notFollowed",
+                     message);
+             }
+         }
+     }
+ }

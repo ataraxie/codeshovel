@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "ImmutableSet.java",
+  "functionName": "construct",
+  "functionId": "construct___n-int__elements-Object",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/ImmutableSet.java",
+  "functionStartLine": 142,
+  "functionEndLine": 189,
+  "changeHistory": [
+    "d7501abccbd666a8db4dff77fa110c801a094c75",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "d7501abccbd666a8db4dff77fa110c801a094c75": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "d7501abccbd666a8db4dff77fa110c801a094c75": {
+      "type": "Ybodychange",
+      "commitMessage": "Add ImmutableSet.builderForExpectedSize.  Currently, the implementation is that if and only if a size is specified up front, the builder starts generating the hash table online and deduping elements.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d165233245\n",
+      "commitDate": 1502806127000,
+      "commitName": "d7501abccbd666a8db4dff77fa110c801a094c75",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1499696868000,
+      "commitNameOld": "bae9a59c562acacd1be81c4421fb2c96b6efcc18",
+      "commitAuthorOld": "lowasser",
+      "daysBetweenCommits": 35.99,
+      "commitsBetweenForRepo": 58,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,48 +1,48 @@\n   private static \u003cE\u003e ImmutableSet\u003cE\u003e construct(int n, Object... elements) {\n     switch (n) {\n       case 0:\n         return of();\n       case 1:\n         @SuppressWarnings(\"unchecked\") // safe; elements contains only E\u0027s\n         E elem \u003d (E) elements[0];\n         return of(elem);\n       default:\n         // continue below to handle the general case\n     }\n     int tableSize \u003d chooseTableSize(n);\n     Object[] table \u003d new Object[tableSize];\n     int mask \u003d tableSize - 1;\n     int hashCode \u003d 0;\n     int uniques \u003d 0;\n     for (int i \u003d 0; i \u003c n; i++) {\n       Object element \u003d checkElementNotNull(elements[i], i);\n       int hash \u003d element.hashCode();\n       for (int j \u003d Hashing.smear(hash); ; j++) {\n         int index \u003d j \u0026 mask;\n         Object value \u003d table[index];\n         if (value \u003d\u003d null) {\n           // Came to an empty slot. Put the element here.\n           elements[uniques++] \u003d element;\n           table[index] \u003d element;\n           hashCode +\u003d hash;\n           break;\n         } else if (value.equals(element)) {\n           break;\n         }\n       }\n     }\n     Arrays.fill(elements, uniques, n, null);\n     if (uniques \u003d\u003d 1) {\n       // There is only one element or elements are all duplicates\n       @SuppressWarnings(\"unchecked\") // we are careful to only pass in E\n       E element \u003d (E) elements[0];\n       return new SingletonImmutableSet\u003cE\u003e(element, hashCode);\n     } else if (chooseTableSize(uniques) \u003c tableSize / 2) {\n       // Resize the table when the array includes too many duplicates.\n       return construct(uniques, elements);\n     } else {\n       Object[] uniqueElements \u003d\n-          (uniques \u003c elements.length / 2) ? Arrays.copyOf(elements, uniques) : elements;\n+          shouldTrim(uniques, elements.length) ? Arrays.copyOf(elements, uniques) : elements;\n       return new RegularImmutableSet\u003cE\u003e(uniqueElements, hashCode, table, mask, uniques);\n     }\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

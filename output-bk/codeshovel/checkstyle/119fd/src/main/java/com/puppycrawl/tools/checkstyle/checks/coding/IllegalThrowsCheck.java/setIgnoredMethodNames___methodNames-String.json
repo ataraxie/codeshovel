@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IllegalThrowsCheck.java",
+  "functionName": "setIgnoredMethodNames",
+  "functionId": "setIgnoredMethodNames___methodNames-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalThrowsCheck.java",
+  "functionStartLine": 148,
+  "functionEndLine": 151,
+  "changeHistory": [
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f",
+    "dfc803a1cc442bafeb5aa375f0d9f0a31d655ff2",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "3c63c31901ca2e6714fe922f695135718198dd06"
+  ],
+  "changeHistoryShort": {
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f": "Yparameterchange",
+    "dfc803a1cc442bafeb5aa375f0d9f0a31d655ff2": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "3c63c31901ca2e6714fe922f695135718198dd06": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "c0446a825514ea0279b8c22f633f2c4e3c73dc1f": {
+      "type": "Yparameterchange",
+      "commitMessage": "Fix PMD violations from UseVarargs rule, issue #999\n\nThe changes are fully backward-compatible. Method with vararg can be invoked both using array and list of parameters.\n",
+      "commitDate": 1430353274000,
+      "commitName": "c0446a825514ea0279b8c22f633f2c4e3c73dc1f",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437367000,
+      "commitNameOld": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 68.47,
+      "commitsBetweenForRepo": 337,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    public void setIgnoredMethodNames(String[] methodNames)\n+    public void setIgnoredMethodNames(String... methodNames)\n     {\n         ignoredMethodNames.clear();\n         Collections.addAll(ignoredMethodNames, methodNames);\n     }\n\\ No newline at end of file\n"
+    },
+    "dfc803a1cc442bafeb5aa375f0d9f0a31d655ff2": {
+      "type": "Ybodychange",
+      "commitMessage": "Use Collections.addAll() instead of adding elements individually\n\nAs per javadoc, `Collections.addAll()` may be significantly faster than adding elements individually using a for loop.\n",
+      "commitDate": 1423439291000,
+      "commitName": "dfc803a1cc442bafeb5aa375f0d9f0a31d655ff2",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1423431987000,
+      "commitNameOld": "abe2b200312ee72aa552026b1a34e8bd72bfdc4e",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 0.08,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,5 @@\n     public void setIgnoredMethodNames(String[] methodNames)\n     {\n         ignoredMethodNames.clear();\n-        for (String element : methodNames) {\n-            ignoredMethodNames.add(element);\n-        }\n+        Collections.addAll(ignoredMethodNames, methodNames);\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "3c63c31901ca2e6714fe922f695135718198dd06": {
+      "type": "Yintroduced",
+      "commitMessage": "Changes for patch #3115439 - Added ignoredMethodNames to IllegalThrowsCheck\n",
+      "commitDate": 1294219361000,
+      "commitName": "3c63c31901ca2e6714fe922f695135718198dd06",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

@@ -1,0 +1,94 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+index 7d0edd97d..bb243bc95 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+@@ -170,86 +170,86 @@ public class UncommentedMainCheck
+             && checkModifiers(aMethod)
+             && checkType(aMethod)
+             && checkParams(aMethod))
+         {
+             log(aMethod.getLineNo(), "uncommented.main");
+         }
+     }
+ 
+     /**
+      * Checks that current class is not excluded
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkClassName()
+     {
+         return !mExcludedClassesPattern.matcher(mCurrentClass).find();
+     }
+ 
+     /**
+      * Checks that method name is @quot;main@quot;.
+      * @param aMethod the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkName(DetailAST aMethod)
+     {
+         final DetailAST ident = aMethod.findFirstToken(TokenTypes.IDENT);
+         return "main".equals(ident.getText());
+     }
+ 
+     /**
+      * Checks that method has final and static modifiers.
+      * @param aMethod the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkModifiers(DetailAST aMethod)
+     {
+         final DetailAST modifiers =
+             aMethod.findFirstToken(TokenTypes.MODIFIERS);
+ 
+         return modifiers.branchContains(TokenTypes.LITERAL_PUBLIC)
+             && modifiers.branchContains(TokenTypes.LITERAL_STATIC);
+     }
+ 
+     /**
+      * Checks that return type is <code>void</code>.
+      * @param aMethod the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkType(DetailAST aMethod)
+     {
+         final DetailAST type =
+-            (DetailAST) aMethod.findFirstToken(TokenTypes.TYPE).getFirstChild();
++            aMethod.findFirstToken(TokenTypes.TYPE).getFirstChild();
+         return type.getType() == TokenTypes.LITERAL_VOID;
+     }
+ 
+     /**
+      * Checks that method has only <code>String[]</code> param
+      * @param aMethod the METHOD_DEF node
+      * @return true if check passed, false otherwise
+      */
+     private boolean checkParams(DetailAST aMethod)
+     {
+         final DetailAST params = aMethod.findFirstToken(TokenTypes.PARAMETERS);
+         if (params.getChildCount() != 1) {
+             return false;
+         }
+-        final DetailAST paramType = ((DetailAST) params.getFirstChild())
++        final DetailAST paramType = (params.getFirstChild())
+             .findFirstToken(TokenTypes.TYPE);
+         final DetailAST arrayDecl =
+             paramType.findFirstToken(TokenTypes.ARRAY_DECLARATOR);
+         if (arrayDecl == null) {
+             return false;
+         }
+ 
+-        final DetailAST arrayType = (DetailAST) arrayDecl.getFirstChild();
++        final DetailAST arrayType = arrayDecl.getFirstChild();
+ 
+         if ((arrayType.getType() == TokenTypes.IDENT)
+             || (arrayType.getType() == TokenTypes.DOT))
+         {
+             final FullIdent type = FullIdent.createFullIdent(arrayType);
+             return ("String".equals(type.getText())
+                     || "java.lang.String".equals(type.getText()));
+         }
+ 
+         return false;
+     }
+ }

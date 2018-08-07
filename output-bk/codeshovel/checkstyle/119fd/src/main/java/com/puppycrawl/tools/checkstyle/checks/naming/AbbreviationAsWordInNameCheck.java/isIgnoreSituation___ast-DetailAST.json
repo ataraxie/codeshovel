@@ -1,0 +1,104 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbbreviationAsWordInNameCheck.java",
+  "functionName": "isIgnoreSituation",
+  "functionId": "isIgnoreSituation___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInNameCheck.java",
+  "functionStartLine": 235,
+  "functionEndLine": 259,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "40a0b5dcf7f9b45ae98ddcb1dec6e9e7c4eec676",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976",
+    "7c5f94aafd422312a6c19a36f53796d547788827",
+    "0ceec1502926f96f81534cf84cf3d50536f17db1"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "40a0b5dcf7f9b45ae98ddcb1dec6e9e7c4eec676": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976": "Ymultichange(Yparameterchange,Ybodychange)",
+    "7c5f94aafd422312a6c19a36f53796d547788827": "Yfilerename",
+    "0ceec1502926f96f81534cf84cf3d50536f17db1": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1500511756000,
+      "commitNameOld": "412882d6c28fab5a7077a81bdd2ac01c275673c9",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 98.09,
+      "commitsBetweenForRepo": 335,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,25 @@\n     private boolean isIgnoreSituation(DetailAST ast) {\n         final DetailAST modifiers \u003d ast.getFirstChild();\n \n         final boolean result;\n         if (ast.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n             if ((ignoreFinal || ignoreStatic)\n                     \u0026\u0026 isInterfaceDeclaration(ast)) {\n                 // field declarations in interface are static/final\n                 result \u003d true;\n             }\n             else {\n                 result \u003d ignoreFinal\n-                          \u0026\u0026 modifiers.branchContains(TokenTypes.FINAL)\n+                          \u0026\u0026 modifiers.findFirstToken(TokenTypes.FINAL) !\u003d null\n                     || ignoreStatic\n-                        \u0026\u0026 modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n+                        \u0026\u0026 modifiers.findFirstToken(TokenTypes.LITERAL_STATIC) !\u003d null;\n             }\n         }\n         else if (ast.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n             result \u003d ignoreOverriddenMethods \u0026\u0026 hasOverrideAnnotation(modifiers);\n         }\n         else {\n             result \u003d CheckUtils.isReceiverParameter(ast);\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "40a0b5dcf7f9b45ae98ddcb1dec6e9e7c4eec676": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3239: fixed checks that fail on new receiver parameter (#3272)\n\n",
+      "commitDate": 1466112819000,
+      "commitName": "40a0b5dcf7f9b45ae98ddcb1dec6e9e7c4eec676",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1464355679000,
+      "commitNameOld": "48d32f40d2253fc94792a8841ce604ba1b91255c",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 20.34,
+      "commitsBetweenForRepo": 66,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,26 @@\n     private boolean isIgnoreSituation(DetailAST ast) {\n         final DetailAST modifiers \u003d ast.getFirstChild();\n \n-        boolean result \u003d false;\n+        final boolean result;\n         if (ast.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n             if ((ignoreFinal || ignoreStatic)\n                     \u0026\u0026 isInterfaceDeclaration(ast)) {\n                 // field declarations in interface are static/final\n                 result \u003d true;\n             }\n             else {\n                 result \u003d ignoreFinal\n                           \u0026\u0026 modifiers.branchContains(TokenTypes.FINAL)\n                     || ignoreStatic\n                         \u0026\u0026 modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n             }\n         }\n         else if (ast.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n             result \u003d ignoreOverriddenMethods\n                     \u0026\u0026 hasOverrideAnnotation(modifiers);\n         }\n+        else {\n+            result \u003d CheckUtils.isReceiverParameter(ast);\n+        }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 20.02,
+      "commitsBetweenForRepo": 107,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,25 @@\n     private boolean isIgnoreSituation(DetailAST ast)\n     {\n         final DetailAST modifiers \u003d ast.getFirstChild();\n \n         boolean result \u003d false;\n         if (ast.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n             if ((ignoreFinal || ignoreStatic)\n                     \u0026\u0026 isInterfaceDeclaration(ast))\n             {\n                 // field declarations in interface are static/final\n                 result \u003d true;\n             }\n             else {\n-                result \u003d (ignoreFinal\n-                          \u0026\u0026 modifiers.branchContains(TokenTypes.FINAL))\n-                    || (ignoreStatic\n-                        \u0026\u0026 modifiers.branchContains(TokenTypes.LITERAL_STATIC));\n+                result \u003d ignoreFinal\n+                          \u0026\u0026 modifiers.branchContains(TokenTypes.FINAL)\n+                    || ignoreStatic\n+                        \u0026\u0026 modifiers.branchContains(TokenTypes.LITERAL_STATIC);\n             }\n         }\n         else if (ast.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n             result \u003d ignoreOverriddenMethods\n                     \u0026\u0026 hasOverrideAnnotation(modifiers);\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "750b733bd124eaea34d4692a1bb8d0fd0fe90976": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, naming, #512\n",
+      "commitDate": 1421677299000,
+      "commitName": "750b733bd124eaea34d4692a1bb8d0fd0fe90976",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "7c5f94aafd422312a6c19a36f53796d547788827": {
+      "type": "Yfilerename",
+      "commitMessage": "AbbreviationAsAWordInName moved to naming package , documentation was rewritten, mTarget was removed from Check (fix after non problematic rebase)\n",
+      "commitDate": 1407008532000,
+      "commitName": "7c5f94aafd422312a6c19a36f53796d547788827",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1407002089000,
+      "commitNameOld": "9c9ba5466dd13f5da92e350772994f896a6e5cdf",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.07,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "0ceec1502926f96f81534cf84cf3d50536f17db1": {
+      "type": "Yintroduced",
+      "commitMessage": "AbbreviationAsWordInName. #212\n",
+      "commitDate": 1407002089000,
+      "commitName": "0ceec1502926f96f81534cf84cf3d50536f17db1",
+      "commitAuthor": "Max"
+    }
+  }
+}

@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/JTreeTable.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/JTreeTable.java
+index b09fd8d11..8d74dc06d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/JTreeTable.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/JTreeTable.java
+@@ -100,101 +100,107 @@ public class JTreeTable extends JTable {
+         final Action expand = new AbstractAction() {
+             private static final long serialVersionUID = -5859674518660156121L;
+ 
+                 @Override
+                 public void actionPerformed(ActionEvent e) {
+                     final TreePath selected = tree.getSelectionPath();
+                     final DetailAST ast = (DetailAST) selected.getLastPathComponent();
+                     new CodeSelector(ast, editor, linePositionMap).select();
+ 
+                     if (tree.isExpanded(selected)) {
+                         tree.collapsePath(selected);
+                     }
+                     else {
+                         tree.expandPath(selected);
+                     }
+                     tree.setSelectionPath(selected);
+                 }
+             };
+         final KeyStroke stroke = KeyStroke.getKeyStroke("ENTER");
+         final String command = "expand/collapse";
+         getInputMap().put(stroke, command);
+         getActionMap().put(command, expand);
+     }
+ 
+     /**
+      * Overridden to message super and forward the method to the tree.
+      * Since the tree is not actually in the component hierarchy it will
+      * never receive this unless we forward it in this manner.
+      */
+     @Override
+     public void updateUI() {
+         super.updateUI();
+         if (tree != null) {
+             tree.updateUI();
+         }
+         // Use the tree's default foreground and background colors in the
+         // table.
+         LookAndFeel.installColorsAndFont(this, "Tree.background",
+                 "Tree.foreground", "Tree.font");
+     }
+ 
+     /* Workaround for BasicTableUI anomaly. Make sure the UI never tries to
+      * paint the editor. The UI currently uses different techniques to
+      * paint the renderers and editors and overriding setBounds() below
+      * is not the right thing to do for an editor. Returning -1 for the
+      * editing row in this case, ensures the editor is never painted.
+      */
+     @Override
+     public int getEditingRow() {
+         final Class<?> editingClass = getColumnClass(editingColumn);
+-        return editingClass == TreeTableModel.class ? -1 : editingRow;
++
++        if (editingClass == TreeTableModel.class) {
++            return -1;
++        }
++        else {
++            return editingRow;
++        }
+     }
+ 
+     /**
+      * Overridden to pass the new rowHeight to the tree.
+      */
+     @Override
+     public final void setRowHeight(int newRowHeight) {
+         super.setRowHeight(newRowHeight);
+         if (tree != null && tree.getRowHeight() != newRowHeight) {
+             tree.setRowHeight(getRowHeight());
+         }
+     }
+ 
+     /**
+      * @return the tree that is being shared between the model.
+      */
+     public JTree getTree() {
+         return tree;
+     }
+ 
+     public void setEditor(JTextArea mJTextArea) {
+         editor = mJTextArea;
+     }
+ 
+     public void setLinePositionMap(List<Integer> linePositionMap) {
+         this.linePositionMap = ImmutableList.copyOf(linePositionMap);
+     }
+ 
+     /**
+      * A TreeCellRenderer that displays a JTree.
+      */
+     class TreeTableCellRenderer extends JTree implements
+             TableCellRenderer {
+         /**
+          *
+          */
+         private static final long serialVersionUID = 4324031590789321581L;
+         /** Last table/tree row asked to renderer. */
+         private int visibleRow;
+ 
+         /** creates a new instance */
+         public TreeTableCellRenderer(TreeModel model) {
+             super(model);
+         }
+ 
+         /**
+          * updateUI is overridden to set the colors of the Tree's renderer
+          * to match that of the table.
+          */
+         @Override

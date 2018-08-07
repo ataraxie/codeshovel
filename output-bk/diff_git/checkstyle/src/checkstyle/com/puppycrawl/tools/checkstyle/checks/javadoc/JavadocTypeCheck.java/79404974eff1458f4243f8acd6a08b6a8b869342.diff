@@ -1,0 +1,109 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+index 3596b160d..4c1ff9e82 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+@@ -220,102 +220,102 @@ public class JavadocTypeCheck
+                                         tagName, content.trim()));
+             }
+             tagPattern = Utils.getPattern("^\\s*\\**\\s*@(\\p{Alpha}+)\\s");
+         }
+         return tags;
+     }
+ 
+     /**
+      * Verifies that a type definition has a required tag.
+      * @param aLineNo the line number for the type definition.
+      * @param aTags tags from the Javadoc comment for the type definition.
+      * @param aTag the required tag name.
+      * @param aFormatPattern regexp for the tag value.
+      * @param aFormat pattern for the tag value.
+      */
+     private void checkTag(int aLineNo, List<JavadocTag> aTags, String aTag,
+                           Pattern aFormatPattern, String aFormat)
+     {
+         if (aFormatPattern == null) {
+             return;
+         }
+ 
+         int tagCount = 0;
+         for (int i = aTags.size() - 1; i >= 0; i--) {
+             final JavadocTag tag = aTags.get(i);
+             if (tag.getTag().equals(aTag)) {
+                 tagCount++;
+                 if (!aFormatPattern.matcher(tag.getArg1()).find()) {
+                     log(aLineNo, "type.tagFormat", "@" + aTag, aFormat);
+                 }
+             }
+         }
+         if (tagCount == 0) {
+             log(aLineNo, "type.missingTag", "@" + aTag);
+         }
+     }
+ 
+     /**
+      * Verifies that a type definition has the specified param tag for
+      * the specified type parameter name.
+      * @param aLineNo the line number for the type definition.
+      * @param aTags tags from the Javadoc comment for the type definition.
+      * @param aTypeParamName the name of the type parameter
+      */
+     private void checkTypeParamTag(final int aLineNo,
+             final List<JavadocTag> aTags, final String aTypeParamName)
+     {
+         boolean found = false;
+         for (int i = aTags.size() - 1; i >= 0; i--) {
+             final JavadocTag tag = aTags.get(i);
+-            if (tag.getTag().equals("param")
++            if ("param".equals(tag.getTag())
+                 && (tag.getArg1() != null)
+                 && (tag.getArg1().indexOf("<" + aTypeParamName + ">") == 0))
+             {
+                 found = true;
+             }
+         }
+         if (!found) {
+             log(aLineNo, "type.missingTag", "@param <" + aTypeParamName + ">");
+         }
+     }
+ 
+     /**
+      * Checks for unused param tags for type parameters.
+      * @param aTags tags from the Javadoc comment for the type definition.
+      * @param aTypeParamNames names of type parameters
+      */
+     private void checkUnusedTypeParamTags(
+         final List<JavadocTag> aTags,
+         final List<String> aTypeParamNames)
+     {
+         final Pattern pattern = Utils.getPattern("\\s*<([^>]+)>.*");
+         for (int i = aTags.size() - 1; i >= 0; i--) {
+             final JavadocTag tag = aTags.get(i);
+-            if (tag.getTag().equals("param")) {
++            if ("param".equals(tag.getTag())) {
+ 
+                 if (tag.getArg1() != null) {
+ 
+                     final Matcher matcher = pattern.matcher(tag.getArg1());
+                     String typeParamName = null;
+ 
+                     if (matcher.matches()) {
+                         typeParamName = matcher.group(1).trim();
+                         if (!aTypeParamNames.contains(typeParamName)) {
+                             log(tag.getLineNo(), tag.getColumnNo(),
+                                 "javadoc.unusedTag",
+                                 "@param", "<" + typeParamName + ">");
+                         }
+                     }
+                     else {
+                         log(tag.getLineNo(), tag.getColumnNo(),
+                             "javadoc.unusedTagGeneral");
+                     }
+                 }
+                 else {
+                     log(tag.getLineNo(), tag.getColumnNo(),
+                         "javadoc.unusedTagGeneral");
+                 }
+             }
+         }
+     }
+ }

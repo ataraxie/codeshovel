@@ -1,0 +1,114 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
+index 928d74c74..828498378 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
+@@ -41,108 +41,104 @@ import java.util.StringTokenizer;
+  * <p>
+  * A simple example is the java.lang.Boolean class, to save memory and CPU
+  * cycles it is preferable to use the predeifined constants TRUE and FALSE.
+  * Constructor invocations should be replaced by calls to Boolean.valueOf().
+  * </p>
+  * <p>
+  * Some extremely performance sensitive projects may require the use of factory
+  * methods for other classes as well, to enforce the usage of number caches or
+  * object pools.
+  * </p>
+  * <p>
+  * Limitations: It is currently not possible to specify array classes.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="IllegalInstantiation"/&gt;
+  * </pre>
+  * @author lkuehne
+  */
+ public class IllegalInstantiationCheck
+     extends Check
+ {
+     /** Set of fully qualified classnames. E.g. "java.lang.Boolean" */
+     private final Set<String> mIllegalClasses = new HashSet<String>();
+ 
+     /** name of the package */
+     private String mPkgName;
+ 
+     /** the imports for the file */
+     private final Set<FullIdent> mImports = new HashSet<FullIdent>();
+ 
+     /** the class names defined in the file */
+     private final Set<String> mClassNames = new HashSet<String>();
+ 
+     /** the instantiations in the file */
+     private final Set<DetailAST> mInstantiations = new HashSet<DetailAST>();
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.IMPORT,
+             TokenTypes.LITERAL_NEW,
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.CLASS_DEF,
+         };
+     }
+ 
+-    /**
+-     * Prevent user from changing tokens in the configuration.
+-     * @see com.puppycrawl.tools.checkstyle.api.Check
+-     * @return empty array to not allow user to change configuration.
+-     */
+     @Override
+     public int[] getAcceptableTokens()
+     {
++        // Return an empty array to not allow user to change configuration.
+         return new int[] {};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+             TokenTypes.IMPORT,
+             TokenTypes.LITERAL_NEW,
+             TokenTypes.PACKAGE_DEF,
+         };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST aRootAST)
+     {
+         super.beginTree(aRootAST);
+         mPkgName = null;
+         mImports.clear();
+         mInstantiations.clear();
+         mClassNames.clear();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.LITERAL_NEW:
+             processLiteralNew(aAST);
+             break;
+         case TokenTypes.PACKAGE_DEF:
+             processPackageDef(aAST);
+             break;
+         case TokenTypes.IMPORT:
+             processImport(aAST);
+             break;
+         case TokenTypes.CLASS_DEF:
+             processClassDef(aAST);
+             break;
+         default:
+             throw new IllegalArgumentException("Unknown type " + aAST);
+         }
+     }
+ 
+     @Override
+     public void finishTree(DetailAST aRootAST)
+     {
+         for (DetailAST literalNewAST : mInstantiations) {
+             postprocessLiteralNew(literalNewAST);
+         }

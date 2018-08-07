@@ -1,0 +1,69 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "PackageObjectFactory.java",
+  "functionName": "createObjectFromMap",
+  "functionId": "createObjectFromMap___name-String__map-Map__String,Set__String____",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/PackageObjectFactory.java",
+  "functionStartLine": 244,
+  "functionEndLine": 258,
+  "changeHistory": [
+    "b024af7dbc3f53863e17147692100381f4165073",
+    "ddeb553834f10570089a033fa1ac1501b74ac358",
+    "fcfacfc6ecc20303998e0522ab655775913a7be1",
+    "d24405c088612098d48e0ee1f5c9e9f264611ad9"
+  ],
+  "changeHistoryShort": {
+    "b024af7dbc3f53863e17147692100381f4165073": "Ymultichange(Yparameterchange,Ybodychange)",
+    "ddeb553834f10570089a033fa1ac1501b74ac358": "Ymultichange(Yparameterchange,Ybodychange)",
+    "fcfacfc6ecc20303998e0522ab655775913a7be1": "Yexceptionschange",
+    "d24405c088612098d48e0ee1f5c9e9f264611ad9": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b024af7dbc3f53863e17147692100381f4165073": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #4414: Simple name conflict of Checks from thirdparty checks will cause exception in run time\n",
+      "commitDate": 1497476063000,
+      "commitName": "b024af7dbc3f53863e17147692100381f4165073",
+      "commitAuthor": "Luolc",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "ddeb553834f10570089a033fa1ac1501b74ac358": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #3607: (using Guava) Use reflection to load Checks base on checkstyle_packages.xml\n",
+      "commitDate": 1495140203000,
+      "commitName": "ddeb553834f10570089a033fa1ac1501b74ac358",
+      "commitAuthor": "Luolc",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "fcfacfc6ecc20303998e0522ab655775913a7be1": {
+      "type": "Yexceptionschange",
+      "commitMessage": "Issue #3778: show exception when failed to instantiate class",
+      "commitDate": 1485983896000,
+      "commitName": "fcfacfc6ecc20303998e0522ab655775913a7be1",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 5.28,
+      "commitsBetweenForRepo": 18,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n-    private Object createObjectFromMap(String name) {\n+    private Object createObjectFromMap(String name) throws CheckstyleException {\n         final String fullModuleName \u003d NAME_TO_FULL_MODULE_NAME.get(name);\n         Object instance \u003d null;\n         if (fullModuleName \u003d\u003d null) {\n             final String fullCheckModuleName \u003d NAME_TO_FULL_MODULE_NAME.get(name + CHECK_SUFFIX);\n             if (fullCheckModuleName !\u003d null) {\n                 instance \u003d createObject(fullCheckModuleName);\n             }\n         }\n         else {\n             instance \u003d createObject(fullModuleName);\n         }\n         return instance;\n     }\n\\ No newline at end of file\n"
+    },
+    "d24405c088612098d48e0ee1f5c9e9f264611ad9": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #3184: Make hardcoded map with all module names that in checkstyle\n",
+      "commitDate": 1482270285000,
+      "commitName": "d24405c088612098d48e0ee1f5c9e9f264611ad9",
+      "commitAuthor": "Vladislav Lisetskii"
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AnnotationUtility.java",
+  "functionName": "containsAnnotation",
+  "functionId": "containsAnnotation___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/utils/AnnotationUtility.java",
+  "functionStartLine": 82,
+  "functionEndLine": 88,
+  "changeHistory": [
+    "f0ed29b5cfef6adcec791cfdc236a5b850b685ee",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+    "82d8e91024a57a96fbb6410dacb29d6a3f582903",
+    "dab75cd8a08345b16e334c803a3208f8494db097",
+    "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d"
+  ],
+  "changeHistoryShort": {
+    "f0ed29b5cfef6adcec791cfdc236a5b850b685ee": "Ybodychange",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": "Yfilerename",
+    "82d8e91024a57a96fbb6410dacb29d6a3f582903": "Ybodychange",
+    "dab75cd8a08345b16e334c803a3208f8494db097": "Ybodychange",
+    "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "f0ed29b5cfef6adcec791cfdc236a5b850b685ee": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for simple cases",
+      "commitDate": 1510238731000,
+      "commitName": "f0ed29b5cfef6adcec791cfdc236a5b850b685ee",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1495136630000,
+      "commitNameOld": "7609e96cc998cca40b396eb3f2d7ae82f60fcce1",
+      "commitAuthorOld": "Dmytro Kytsmen",
+      "daysBetweenCommits": 174.79,
+      "commitsBetweenForRepo": 633,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     public static boolean containsAnnotation(final DetailAST ast) {\n         if (ast \u003d\u003d null) {\n             throw new IllegalArgumentException(THE_AST_IS_NULL);\n         }\n         final DetailAST holder \u003d getAnnotationHolder(ast);\n-        return holder !\u003d null \u0026\u0026 holder.branchContains(TokenTypes.ANNOTATION);\n+        return holder !\u003d null \u0026\u0026 holder.findFirstToken(TokenTypes.ANNOTATION) !\u003d null;\n     }\n\\ No newline at end of file\n"
+    },
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": {
+      "type": "Yfilerename",
+      "commitMessage": "Utils classes have been moved to utils package. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440637702000,
+      "commitNameOld": "f6113bb56d695719a8803274effb3596cb82120f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.46,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "82d8e91024a57a96fbb6410dacb29d6a3f582903": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary qualifiers. #1555\n\nFixes `UnnecessarilyQualifiedStaticUsage` inspection violations.\n\nDescription:\n\u003eReports calls to static methods or accesses of static fields on the current class which are qualified with the class name. Such qualification is unnecessary, and may be safely removed.\n",
+      "commitDate": 1439324041000,
+      "commitName": "82d8e91024a57a96fbb6410dacb29d6a3f582903",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439295539000,
+      "commitNameOld": "1935bed5772c0a939b9168b81acd2ab5aa800538",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 0.33,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     public static boolean containsAnnotation(final DetailAST ast) {\n         if (ast \u003d\u003d null) {\n             throw new IllegalArgumentException(THE_AST_IS_NULL);\n         }\n-        final DetailAST holder \u003d AnnotationUtility.getAnnotationHolder(ast);\n+        final DetailAST holder \u003d getAnnotationHolder(ast);\n         return holder !\u003d null \u0026\u0026 holder.branchContains(TokenTypes.ANNOTATION);\n     }\n\\ No newline at end of file\n"
+    },
+    "dab75cd8a08345b16e334c803a3208f8494db097": {
+      "type": "Ybodychange",
+      "commitMessage": "Make coverage 100% for all classes at package com.puppycrawl.tools.checkstyle . #1294\n",
+      "commitDate": 1436161529000,
+      "commitName": "dab75cd8a08345b16e334c803a3208f8494db097",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 49.75,
+      "commitsBetweenForRepo": 267,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,7 @@\n     public static boolean containsAnnotation(final DetailAST ast) {\n+        if (ast \u003d\u003d null) {\n+            throw new IllegalArgumentException(THE_AST_IS_NULL);\n+        }\n         final DetailAST holder \u003d AnnotationUtility.getAnnotationHolder(ast);\n         return holder !\u003d null \u0026\u0026 holder.branchContains(TokenTypes.ANNOTATION);\n     }\n\\ No newline at end of file\n"
+    },
+    "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d": {
+      "type": "Yintroduced",
+      "commitMessage": "Util classes should be moved out of api package. Issue #1057\n",
+      "commitDate": 1430869230000,
+      "commitName": "e3b3bfb9997b28fc95d0f950e9673a595e2f4c7d",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

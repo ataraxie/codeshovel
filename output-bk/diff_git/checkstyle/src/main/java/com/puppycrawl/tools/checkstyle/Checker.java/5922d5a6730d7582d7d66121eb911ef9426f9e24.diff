@@ -1,0 +1,110 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+index fe74d30bf..60c43a31d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -193,103 +193,104 @@ public class Checker extends AutomaticBean implements MessageDispatcher {
+      */
+     public void addFileSetCheck(FileSetCheck fileSetCheck) {
+         fileSetCheck.setMessageDispatcher(this);
+         fileSetChecks.add(fileSetCheck);
+     }
+ 
+     /**
+      * Adds a filter to the end of the audit event filter chain.
+      * @param filter the additional filter
+      */
+     public void addFilter(Filter filter) {
+         filters.addFilter(filter);
+     }
+ 
+     /**
+      * Removes filter.
+      * @param filter filter to remove.
+      */
+     public void removeFilter(Filter filter) {
+         filters.removeFilter(filter);
+     }
+ 
+     /** Cleans up the object. **/
+     public void destroy() {
+         listeners.clear();
+         filters.clear();
+     }
+ 
+     /**
+      * Add the listener that will be used to receive events from the audit.
+      * @param listener the nosy thing
+      */
+     public final void addListener(AuditListener listener) {
+         listeners.add(listener);
+     }
+ 
+     /**
+      * Removes a given listener.
+      * @param listener a listener to remove
+      */
+     public void removeListener(AuditListener listener) {
+         listeners.remove(listener);
+     }
+ 
+     /**
+      * Processes a set of files with all FileSetChecks.
+      * Once this is done, it is highly recommended to call for
+      * the destroy method to close and remove the listeners.
+      * @param files the list of files to be audited.
+      * @return the total number of errors found
++     * @throws CheckstyleException if error condition within Checkstyle occurs
+      * @see #destroy()
+      */
+-    public int process(List<File> files) {
++    public int process(List<File> files) throws CheckstyleException {
+         // Prepare to start
+         fireAuditStarted();
+         for (final FileSetCheck fsc : fileSetChecks) {
+             fsc.beginProcessing(charset);
+         }
+ 
+         // Process each file
+         for (final File file : files) {
+             if (!CommonUtils.matchesFileExtension(file, fileExtensions)) {
+                 continue;
+             }
+             final String fileName = file.getAbsolutePath();
+             fireFileStarted(fileName);
+             final SortedSet<LocalizedMessage> fileMessages = Sets.newTreeSet();
+             try {
+                 final FileText theText = new FileText(file.getAbsoluteFile(),
+                         charset);
+                 for (final FileSetCheck fsc : fileSetChecks) {
+                     fileMessages.addAll(fsc.process(file, theText));
+                 }
+             }
+             catch (final IOException ioe) {
+                 LOG.debug("IOException occured.", ioe);
+                 fileMessages.add(new LocalizedMessage(0,
+                         Definitions.CHECKSTYLE_BUNDLE, "general.exception",
+                         new String[] {ioe.getMessage()}, null, getClass(),
+                         null));
+             }
+             fireErrors(fileName, fileMessages);
+             fireFileFinished(fileName);
+         }
+ 
+         // Finish up
+         for (final FileSetCheck fsc : fileSetChecks) {
+             // It may also log!!!
+             fsc.finishProcessing();
+         }
+ 
+         for (final FileSetCheck fsc : fileSetChecks) {
+             // It may also log!!!
+             fsc.destroy();
+         }
+ 
+         final int errorCount = counter.getCount();
+         fireAuditFinished();
+         return errorCount;
+     }
+ 
+     /** @param basedir the base directory to strip off in filenames */
+     public void setBasedir(String basedir) {

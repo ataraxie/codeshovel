@@ -1,0 +1,63 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ExplicitInitializationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ExplicitInitializationCheck.java
+index 78315b596..5bff52ce2 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ExplicitInitializationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ExplicitInitializationCheck.java
+@@ -126,56 +126,57 @@ public class ExplicitInitializationCheck extends Check {
+         }
+ 
+         final DetailAST assign = ast.findFirstToken(TokenTypes.ASSIGN);
+         if (assign == null) {
+             // no assign - no check
+             return true;
+         }
+ 
+         final DetailAST modifiers = ast.findFirstToken(TokenTypes.MODIFIERS);
+         return modifiers.branchContains(TokenTypes.FINAL);
+     }
+ 
+     /**
+      * Determines if a giiven type is an object type.
+      * @param type type to check.
+      * @return true if it is an object type.
+      */
+     private static boolean isObjectType(DetailAST type) {
+         final int objectType = type.getFirstChild().getType();
+         return objectType == TokenTypes.IDENT || objectType == TokenTypes.DOT
+                 || objectType == TokenTypes.ARRAY_DECLARATOR;
+     }
+ 
+     /**
+      * Determine if a given type is a numeric type.
+      * @param type code of the type for check.
+      * @return true if it's a numeric type.
+      * @see TokenTypes
+      */
+     private static boolean isNumericType(int type) {
+         return type == TokenTypes.LITERAL_BYTE
+                 || type == TokenTypes.LITERAL_SHORT
+                 || type == TokenTypes.LITERAL_INT
+                 || type == TokenTypes.LITERAL_FLOAT
+                 || type == TokenTypes.LITERAL_LONG
+                 || type == TokenTypes.LITERAL_DOUBLE;
+     }
+ 
+     /**
+      * @param expr node to check.
+      * @return true if given node contains numeric constant for zero.
+      */
+     private static boolean isZero(DetailAST expr) {
+         final int type = expr.getType();
+         switch (type) {
+             case TokenTypes.NUM_FLOAT:
+             case TokenTypes.NUM_DOUBLE:
+             case TokenTypes.NUM_INT:
+             case TokenTypes.NUM_LONG:
+                 final String text = expr.getText();
+-                return CheckUtils.parseDouble(text, type) == 0.0;
++                return Double.compare(
++                    CheckUtils.parseDouble(text, type), 0.0) == 0;
+             default:
+                 return false;
+         }
+     }
+ }

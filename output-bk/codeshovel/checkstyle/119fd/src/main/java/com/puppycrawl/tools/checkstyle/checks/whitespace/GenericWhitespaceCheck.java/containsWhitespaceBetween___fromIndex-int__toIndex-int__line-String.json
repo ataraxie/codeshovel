@@ -1,0 +1,114 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "GenericWhitespaceCheck.java",
+  "functionName": "containsWhitespaceBetween",
+  "functionId": "containsWhitespaceBetween___fromIndex-int__toIndex-int__line-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/GenericWhitespaceCheck.java",
+  "functionStartLine": 295,
+  "functionEndLine": 304,
+  "changeHistory": [
+    "e803943ff515fbec5a2bbdae948af3dd018669a1",
+    "8985e645a8a591b19c729cff16b8440b70a8022e",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+    "d97a2df674716efb7deda50180ae933bdc46d68a",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d86329ca8fe253b7b830b77595944d99a7ed4cfd",
+    "e76ae6ed8d34160d87b490f5f3ee92f7ba74f5aa"
+  ],
+  "changeHistoryShort": {
+    "e803943ff515fbec5a2bbdae948af3dd018669a1": "Ybodychange",
+    "8985e645a8a591b19c729cff16b8440b70a8022e": "Yrename",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": "Ymultichange(Yparameterchange,Ybodychange)",
+    "d97a2df674716efb7deda50180ae933bdc46d68a": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d86329ca8fe253b7b830b77595944d99a7ed4cfd": "Ymultichange(Yparameterchange,Ybodychange)",
+    "e76ae6ed8d34160d87b490f5f3ee92f7ba74f5aa": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e803943ff515fbec5a2bbdae948af3dd018669a1": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.gui, com.puppycrawl.tools.checkstyle.whitespace, com.puppycrawl.tools.checkstyle.doclets\n",
+      "commitDate": 1493045733000,
+      "commitName": "e803943ff515fbec5a2bbdae948af3dd018669a1",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 87.02,
+      "commitsBetweenForRepo": 316,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,10 @@\n-    private static boolean containsWhitespaceBetween(\n-            int fromIndex, int toIndex, String line) {\n+    private static boolean containsWhitespaceBetween(int fromIndex, int toIndex, String line) {\n+        boolean result \u003d true;\n         for (int i \u003d fromIndex; i \u003c toIndex; i++) {\n             if (!Character.isWhitespace(line.charAt(i))) {\n-                return false;\n+                result \u003d false;\n+                break;\n             }\n         }\n-        return true;\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "8985e645a8a591b19c729cff16b8440b70a8022e": {
+      "type": "Yrename",
+      "commitMessage": "Issue #1555: Rename boolean methods to start with question word\n\nFixes `BooleanMethodNameMustStartWithQuestion` inspection violations.\n\nDescription:\n\u003eReports boolean methods whose names do not start with a question word. Boolean methods that override library methods are ignored by this inspection.\n",
+      "commitDate": 1440826984000,
+      "commitName": "8985e645a8a591b19c729cff16b8440b70a8022e",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440679848000,
+      "commitNameOld": "55c92042eb6986e905529de841d3d1c9a7b2b6dd",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.7,
+      "commitsBetweenForRepo": 62,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n-    private static boolean whitespaceBetween(\n-        int fromIndex, int toIndex, String line) {\n+    private static boolean containsWhitespaceBetween(\n+            int fromIndex, int toIndex, String line) {\n         for (int i \u003d fromIndex; i \u003c toIndex; i++) {\n             if (!Character.isWhitespace(line.charAt(i))) {\n                 return false;\n             }\n         }\n         return true;\n     }\n\\ No newline at end of file\n"
+    },
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checkstyle, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java\n",
+      "commitDate": 1421678312000,
+      "commitName": "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "d97a2df674716efb7deda50180ae933bdc46d68a": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, whitespace, #512\n",
+      "commitDate": 1421677248000,
+      "commitName": "d97a2df674716efb7deda50180ae933bdc46d68a",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d86329ca8fe253b7b830b77595944d99a7ed4cfd": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Make the tests pass\n\nFix Checkstyle errors\n",
+      "commitDate": 1377844351000,
+      "commitName": "d86329ca8fe253b7b830b77595944d99a7ed4cfd",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "e76ae6ed8d34160d87b490f5f3ee92f7ba74f5aa": {
+      "type": "Yintroduced",
+      "commitMessage": "Support for \u0027\u0026\u0027 in nested generics\n",
+      "commitDate": 1376762988000,
+      "commitName": "e76ae6ed8d34160d87b490f5f3ee92f7ba74f5aa",
+      "commitAuthor": "Dmitriy Komanov"
+    }
+  }
+}

@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java
+index a9eaa636a..42bc18057 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/BlockParentHandler.java
+@@ -115,101 +115,101 @@ public class BlockParentHandler extends AbstractExpressionHandler {
+     /**
+      * Determines if the top level token must start the line.
+      *
+      * @return true
+      */
+     protected boolean shouldTopLevelStartLine() {
+         return true;
+     }
+ 
+     /**
+      * Determines if this block expression has curly braces.
+      *
+      * @return true if curly braces are present, false otherwise
+      */
+     protected boolean hasCurlies() {
+         return getLCurly() != null && getRCurly() != null;
+     }
+ 
+     /**
+      * Get the left curly brace portion of the expression we are handling.
+      *
+      * @return the left curly brace expression
+      */
+     protected DetailAST getLCurly() {
+         return getMainAst().findFirstToken(TokenTypes.SLIST);
+     }
+ 
+     /**
+      * Get the right curly brace portion of the expression we are handling.
+      *
+      * @return the right curly brace expression
+      */
+     protected DetailAST getRCurly() {
+         final DetailAST slist = getMainAst().findFirstToken(TokenTypes.SLIST);
+         return slist.findFirstToken(TokenTypes.RCURLY);
+     }
+ 
+     /**
+      * Check the indentation of the left curly brace.
+      */
+     protected void checkLCurly() {
+         // the lcurly can either be at the correct indentation, or nested
+         // with a previous expression
+         final DetailAST lcurly = getLCurly();
+         final int lcurlyPos = expandedTabsColumnNo(lcurly);
+ 
+         if (curlyIndent().isAcceptable(lcurlyPos) || !isOnStartOfLine(lcurly)) {
+             return;
+         }
+ 
+-        logError(lcurly, "lcurly", lcurlyPos);
++        logError(lcurly, "lcurly", lcurlyPos, curlyIndent());
+     }
+ 
+     /**
+      * Get the expected indentation level for the curly braces.
+      *
+      * @return the curly brace indentation level
+      */
+     protected IndentLevel curlyIndent() {
+         return new IndentLevel(getIndent(), getBraceAdjustment());
+     }
+ 
+     /**
+      * Determines if the right curly brace must be at the start of the line.
+      *
+      * @return true
+      */
+     protected boolean shouldStartWithRCurly() {
+         return true;
+     }
+ 
+     /**
+      * Determines if child elements within the expression may be nested.
+      *
+      * @return false
+      */
+     protected boolean canChildrenBeNested() {
+         return false;
+     }
+ 
+     /**
+      * Check the indentation of the right curly brace.
+      */
+     protected void checkRCurly() {
+         // the rcurly can either be at the correct indentation, or
+         // on the same line as the lcurly
+         final DetailAST lcurly = getLCurly();
+         final DetailAST rcurly = getRCurly();
+         final int rcurlyPos = expandedTabsColumnNo(rcurly);
+ 
+         if (curlyIndent().isAcceptable(rcurlyPos)
+             || !shouldStartWithRCurly() && !isOnStartOfLine(rcurly)
+             || areOnSameLine(rcurly, lcurly)) {
+             return;
+         }
+         logError(rcurly, "rcurly", rcurlyPos, curlyIndent());
+     }
+ 
+     /**
+      * Get the child element that is not a list of statements.
+      *

@@ -1,0 +1,127 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+index a40b932bb..aaac2e92e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+@@ -87,114 +87,114 @@ public class JavadocTypeCheck
+ 
+     /** Close angle bracket literal. */
+     private static final String CLOSE_ANGLE_BRACKET = ">";
+ 
+     /** Pattern to match type name within angle brackets in javadoc param tag. */
+     private static final Pattern TYPE_NAME_IN_JAVADOC_TAG =
+             Pattern.compile("\\s*<([^>]+)>.*");
+ 
+     /** Pattern to split type name field in javadoc param tag. */
+     private static final Pattern TYPE_NAME_IN_JAVADOC_TAG_SPLITTER =
+             Pattern.compile("\\s+");
+ 
+     /** The scope to check for. */
+     private Scope scope = Scope.PRIVATE;
+     /** The visibility scope where Javadoc comments shouldn't be checked. **/
+     private Scope excludeScope;
+     /** Compiled regexp to match author tag content. **/
+     private Pattern authorFormatPattern;
+     /** Compiled regexp to match version tag content. **/
+     private Pattern versionFormatPattern;
+     /** Regexp to match author tag content. */
+     private String authorFormat;
+     /** Regexp to match version tag content. */
+     private String versionFormat;
+     /**
+      * Controls whether to ignore errors when a method has type parameters but
+      * does not have matching param tags in the javadoc. Defaults to false.
+      */
+     private boolean allowMissingParamTags;
+     /** Controls whether to flag errors for unknown tags. Defaults to false. */
+     private boolean allowUnknownTags;
+ 
+     /**
+      * Sets the scope to check.
+      * @param from string to set scope from
+      */
+     public void setScope(String from) {
+         scope = Scope.getInstance(from);
+     }
+ 
+     /**
+      * Set the excludeScope.
+      * @param excludeScope a {@code String} value
+      */
+     public void setExcludeScope(String excludeScope) {
+         this.excludeScope = Scope.getInstance(excludeScope);
+     }
+ 
+     /**
+      * Set the author tag pattern.
+-     * @param format a {@code String} value
++     * @param pattern a pattern.
+      */
+-    public void setAuthorFormat(String format) {
+-        authorFormat = format;
+-        authorFormatPattern = CommonUtils.createPattern(format);
++    public void setAuthorFormat(Pattern pattern) {
++        authorFormat = pattern.pattern();
++        authorFormatPattern = pattern;
+     }
+ 
+     /**
+      * Set the version format pattern.
+-     * @param format a {@code String} value
++     * @param pattern a pattern.
+      */
+-    public void setVersionFormat(String format) {
+-        versionFormat = format;
+-        versionFormatPattern = CommonUtils.createPattern(format);
++    public void setVersionFormat(Pattern pattern) {
++        versionFormat = pattern.pattern();
++        versionFormatPattern = pattern;
+     }
+ 
+     /**
+      * Controls whether to allow a type which has type parameters to
+      * omit matching param tags in the javadoc. Defaults to false.
+      *
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowMissingParamTags(boolean flag) {
+         allowMissingParamTags = flag;
+     }
+ 
+     /**
+      * Controls whether to flag errors for unknown tags. Defaults to false.
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowUnknownTags(boolean flag) {
+         allowUnknownTags = flag;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ANNOTATION_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (shouldCheck(ast)) {
+             final FileContents contents = getFileContents();
+             final int lineNo = ast.getLineNo();
+             final TextBlock textBlock = contents.getJavadocBefore(lineNo);
+             if (textBlock == null) {
+                 log(lineNo, MSG_JAVADOC_MISSING);
+             }
+             else {

@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+index 5fc12c9c8..9a3376460 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UncommentedMainCheck.java
+@@ -47,103 +47,100 @@ public class UncommentedMainCheck
+      * file.
+      */
+     public static final String MSG_KEY = "uncommented.main";
+ 
+     /** Compiled regexp to exclude classes from check. */
+     private Pattern excludedClasses = Pattern.compile("^$");
+     /** Current class name. */
+     private String currentClass;
+     /** Current package. */
+     private FullIdent packageName;
+     /** Class definition depth. */
+     private int classDepth;
+ 
+     /**
+      * Set the excluded classes pattern.
+      * @param excludedClasses a pattern
+      */
+     public void setExcludedClasses(Pattern excludedClasses) {
+         this.excludedClasses = excludedClasses;
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.PACKAGE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         packageName = FullIdent.createFullIdent(null);
+         currentClass = null;
+         classDepth = 0;
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.CLASS_DEF) {
+-            if (classDepth == 1) {
+-                currentClass = null;
+-            }
+             classDepth--;
+         }
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+ 
+         switch (ast.getType()) {
+             case TokenTypes.PACKAGE_DEF:
+                 visitPackageDef(ast);
+                 break;
+             case TokenTypes.CLASS_DEF:
+                 visitClassDef(ast);
+                 break;
+             case TokenTypes.METHOD_DEF:
+                 visitMethodDef(ast);
+                 break;
+             default:
+                 throw new IllegalStateException(ast.toString());
+         }
+     }
+ 
+     /**
+      * Sets current package.
+      * @param packageDef node for package definition
+      */
+     private void visitPackageDef(DetailAST packageDef) {
+         packageName = FullIdent.createFullIdent(packageDef.getLastChild()
+                 .getPreviousSibling());
+     }
+ 
+     /**
+      * If not inner class then change current class name.
+      * @param classDef node for class definition
+      */
+     private void visitClassDef(DetailAST classDef) {
+         // we are not use inner classes because they can not
+         // have static methods
+         if (classDepth == 0) {
+             final DetailAST ident = classDef.findFirstToken(TokenTypes.IDENT);
+             currentClass = packageName.getText() + "." + ident.getText();
+             classDepth++;
+         }
+     }
+ 
+     /**
+      * Checks method definition if this is
+      * {@code public static void main(String[])}.
+      * @param method method definition node
+      */

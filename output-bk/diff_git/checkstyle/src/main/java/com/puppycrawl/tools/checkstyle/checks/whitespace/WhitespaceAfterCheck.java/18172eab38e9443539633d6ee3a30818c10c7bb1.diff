@@ -1,0 +1,179 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java
+index 586a771f6..6d16e754e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAfterCheck.java
+@@ -1,133 +1,150 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.whitespace;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+-import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
++import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * <p>
+  * Checks that a token is followed by whitespace, with the exception that it
+  * does not check for whitespace after the semicolon of an empty for iterator.
+  * Use Check {@link EmptyForIteratorPadCheck EmptyForIteratorPad} to validate
+  * empty for iterators.
+  * </p>
+  * <p> By default the check will check the following tokens:
+  *  {@link TokenTypes#COMMA COMMA},
+  *  {@link TokenTypes#SEMI SEMI},
+  *  {@link TokenTypes#TYPECAST TYPECAST}.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="WhitespaceAfter"/&gt;
+  * </pre>
+  * <p> An example of how to configure the check for whitespace only after
+  * {@link TokenTypes#COMMA COMMA} and {@link TokenTypes#SEMI SEMI} tokens is:
+  * </p>
+  * <pre>
+  * &lt;module name="WhitespaceAfter"&gt;
+  *     &lt;property name="tokens" value="COMMA, SEMI"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Oliver Burn
+  * @author Rick Giles
+  */
+ public class WhitespaceAfterCheck
+     extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String WS_NOT_FOLLOWED = "ws.notFollowed";
+ 
++    /**
++     * A key is pointing to the warning message text in "messages.properties"
++     * file.
++     */
++    public static final String WS_TYPECAST = "ws.typeCast";
++
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[] {
+-            TokenTypes.COMMA,
+-            TokenTypes.SEMI,
+-            TokenTypes.TYPECAST,
+-        };
++        return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.COMMA,
+             TokenTypes.SEMI,
+             TokenTypes.TYPECAST,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+-        final Object[] message;
+-        final DetailAST targetAST;
++        final String line = getLine(ast.getLineNo() - 1);
+         if (ast.getType() == TokenTypes.TYPECAST) {
+-            targetAST = ast.findFirstToken(TokenTypes.RPAREN);
+-            message = new Object[]{"cast"};
++            final DetailAST targetAST = ast.findFirstToken(TokenTypes.RPAREN);
++            if (!isFollowedByWhitespace(targetAST, line)) {
++                log(targetAST.getLineNo(),
++                    targetAST.getColumnNo() + targetAST.getText().length(),
++                    WS_TYPECAST);
++            }
+         }
+         else {
+-            targetAST = ast;
+-            message = new Object[]{ast.getText()};
++            if (!isFollowedByWhitespace(ast, line)) {
++                final Object[] message = new Object[]{ast.getText()};
++                log(ast.getLineNo(),
++                    ast.getColumnNo() + ast.getText().length(),
++                    WS_NOT_FOLLOWED,
++                    message);
++            }
+         }
+-        final String line = getLine(targetAST.getLineNo() - 1);
++    }
++
++    /**
++     * checks whether token is followed by a whitespace.
++     * @param targetAST Ast token.
++     * @param line The line associated with the ast token.
++     * @return true if ast token is followed by a whitespace.
++     */
++    private static boolean isFollowedByWhitespace(DetailAST targetAST, String line) {
+         final int after =
+             targetAST.getColumnNo() + targetAST.getText().length();
++        boolean followedByWhitespace = true;
+ 
+         if (after < line.length()) {
+ 
+             final char charAfter = line.charAt(after);
+             if (targetAST.getType() == TokenTypes.SEMI
+                 && (charAfter == ';' || charAfter == ')')) {
+-                return;
++                followedByWhitespace = true;
+             }
+-            if (!Character.isWhitespace(charAfter) && !isEmptyForIterator(targetAST)) {
+-
+-                log(targetAST.getLineNo(),
+-                        targetAST.getColumnNo() + targetAST.getText().length(),
+-                        WS_NOT_FOLLOWED,
+-                        message);
++            else if (!Character.isWhitespace(charAfter) && !isEmptyForIterator(targetAST)) {
++                followedByWhitespace = false;
+             }
+         }
++
++        return followedByWhitespace;
+     }
+ 
+     /**
+-     * check for empty FOR_ITERATOR
+-     * @param targetAST Ast token
+-     * @return true if iterator is empty
++     * check for empty FOR_ITERATOR.
++     * @param targetAST Ast token.
++     * @return true if iterator is empty.
+      */
+-    private boolean isEmptyForIterator(DetailAST targetAST) {
++    private static boolean isEmptyForIterator(DetailAST targetAST) {
+ 
+         if (targetAST.getType() == TokenTypes.SEMI) {
+             final DetailAST sibling =
+                 targetAST.getNextSibling();
+             if (sibling != null
+                 && sibling.getType() == TokenTypes.FOR_ITERATOR
+                 && sibling.getChildCount() == 0) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ }

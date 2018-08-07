@@ -1,0 +1,105 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/DefaultLogger.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/DefaultLogger.java
+index c52548c64..f434820ca 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/DefaultLogger.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/DefaultLogger.java
+@@ -24,87 +24,97 @@ import java.io.PrintWriter;
+ /**
+  * Simple plain logger for text output.
+  * This is maybe not very suitable for a text output into a file since it
+  * does not need all 'audit finished' and so on stuff, but it looks good on
+  * stdout anyway. If there is really a problem this is what XMLLogger is for.
+  * It gives structure.
+  *
+  * @author <a href="mailto:stephane.bailliez@wanadoo.fr">Stephane Bailliez</a>
+  * @see XMLLogger
+  */
+ public class DefaultLogger
+     implements AuditListener
+ {
+     /** where to log **/
+     private OutputStream mStream;
+     /** where to write **/
+     private PrintWriter mWriter;
+ 
+     /**
+      * Creates a new <code>DefaultLogger</code> instance.
+      */
+     public DefaultLogger()
+     {
+     }
+ 
+     /**
+      * Creates a new <code>DefaultLogger</code> instance.
+      * @param aOS where to log
+      */
+     public DefaultLogger(OutputStream aOS)
+     {
+         setOutputStream(aOS);
+     }
+ 
+     /** @see AuditListener **/
+     public void setOutputStream(OutputStream aOS)
+     {
+         mWriter = new PrintWriter(aOS);
+         mStream = aOS;
+     }
+ 
+     /** @see AuditListener **/
+     public OutputStream getOutputStream()
+     {
+         return mStream;
+     }
+ 
+     /** @see AuditListener **/
+     public void addError(AuditEvent aEvt)
+     {
+-        // Print an Emacs compliant line.
+-        mWriter.println(aEvt.getFileName() + ":" + aEvt.getLine()
+-                        + ": " + aEvt.getMessage());
++        // Print an Emacs compliant line. If the column number is non zero,
++        // then also display it.
++        if (aEvt.getColumn() > 0) {
++            mWriter.println(aEvt.getFileName()
++                            + ":" + aEvt.getLine()
++                            + ":" + aEvt.getColumn()
++                            + ": " + aEvt.getMessage());
++        }
++        else {
++            mWriter.println(aEvt.getFileName()
++                            + ":" + aEvt.getLine()
++                            + ": " + aEvt.getMessage());
++        }
+     }
+ 
+     /** @see AuditListener **/
+     public void addException(AuditEvent aEvt, Throwable aThrowable)
+     {
+         synchronized (mWriter) {
+             mWriter.println("Error auditing " + aEvt.getFileName());
+             aThrowable.printStackTrace(mWriter);
+         }
+     }
+ 
+     /** @see AuditListener **/
+     public void auditStarted(AuditEvent aEvt)
+     {
+         mWriter.println("Starting audit...");
+     }
+ 
+     /** @see AuditListener **/
+     public void fileFinished(AuditEvent aEvt)
+     {
+     }
+ 
+     /** @see AuditListener **/
+     public void fileStarted(AuditEvent aEvt)
+     {
+     }
+ 
+     /** @see AuditListener **/
+     public void auditFinished(AuditEvent aEvt)
+     {
+         mWriter.println("Audit done.");
+         mWriter.flush();
+     }
+ }

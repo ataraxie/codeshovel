@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "WhitespaceAroundCheck.java",
+  "functionName": "isColonOfCaseOrDefault",
+  "functionId": "isColonOfCaseOrDefault___currentType-int__parentType-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java",
+  "functionStartLine": 537,
+  "functionEndLine": 541,
+  "changeHistory": [
+    "1f54d3d6892c2c5561abe9e7ef5ef91650cc7288",
+    "904de34fcd984edce3d6042a5a17e2a969254588",
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+    "779aa37ffc447d1d85ea1b082759e4040657191d"
+  ],
+  "changeHistoryShort": {
+    "1f54d3d6892c2c5561abe9e7ef5ef91650cc7288": "Ymodifierchange",
+    "904de34fcd984edce3d6042a5a17e2a969254588": "Ybodychange",
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86": "Ybodychange",
+    "779aa37ffc447d1d85ea1b082759e4040657191d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "1f54d3d6892c2c5561abe9e7ef5ef91650cc7288": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Issue #1555: Mark methods as static\n\nFixes `MethodMayBeStatic` inspection violations.\n\nDescription:\n\u003eReports any methods which may safely be made static. A method may be static if it is not synchronized, it does not reference any of its class\u0027 non static methods and non static fields and is not overridden in a sub class.\n",
+      "commitDate": 1440912538000,
+      "commitName": "1f54d3d6892c2c5561abe9e7ef5ef91650cc7288",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440827395000,
+      "commitNameOld": "904de34fcd984edce3d6042a5a17e2a969254588",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 0.99,
+      "commitsBetweenForRepo": 33,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-    private boolean isColonOfCaseOrDefault(int currentType, int parentType) {\n+    private static boolean isColonOfCaseOrDefault(int currentType, int parentType) {\n         return currentType \u003d\u003d TokenTypes.COLON\n                 \u0026\u0026 (parentType \u003d\u003d TokenTypes.LITERAL_DEFAULT\n                     || parentType \u003d\u003d TokenTypes.LITERAL_CASE);\n     }\n\\ No newline at end of file\n"
+    },
+    "904de34fcd984edce3d6042a5a17e2a969254588": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: ReturnCount violation fixed for WhitespaceAroundCheck\n",
+      "commitDate": 1440827395000,
+      "commitName": "904de34fcd984edce3d6042a5a17e2a969254588",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440679848000,
+      "commitNameOld": "55c92042eb6986e905529de841d3d1c9a7b2b6dd",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.71,
+      "commitsBetweenForRepo": 71,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,5 @@\n     private boolean isColonOfCaseOrDefault(int currentType, int parentType) {\n-        if (currentType \u003d\u003d TokenTypes.COLON) {\n-            //we do not want to check colon for cases and defaults\n-            if (parentType \u003d\u003d TokenTypes.LITERAL_DEFAULT\n-                || parentType \u003d\u003d TokenTypes.LITERAL_CASE) {\n-                return true;\n-            }\n-            else if (parentType \u003d\u003d TokenTypes.FOR_EACH_CLAUSE\n-                \u0026\u0026 ignoreEnhancedForColon) {\n-                return true;\n-            }\n-        }\n-        return false;\n+        return currentType \u003d\u003d TokenTypes.COLON\n+                \u0026\u0026 (parentType \u003d\u003d TokenTypes.LITERAL_DEFAULT\n+                    || parentType \u003d\u003d TokenTypes.LITERAL_CASE);\n     }\n\\ No newline at end of file\n"
+    },
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary this keyword. #1555\n\nFixes `UnnecessaryThis` inspection violations.\n\nDescription:\n\u003eReports on any unnecessary uses of this in the code. Using this to disambiguate a code reference may easily become unnecessary via automatic refactorings, and is discouraged by many coding styles.\n For example:\n ```\n this.a \u003d 3;\n ```\n",
+      "commitDate": 1439131302000,
+      "commitName": "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439011412000,
+      "commitNameOld": "186625600d7678f597f56aa6a83d4b0a89e1fe35",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 1.39,
+      "commitsBetweenForRepo": 49,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     private boolean isColonOfCaseOrDefault(int currentType, int parentType) {\n         if (currentType \u003d\u003d TokenTypes.COLON) {\n             //we do not want to check colon for cases and defaults\n             if (parentType \u003d\u003d TokenTypes.LITERAL_DEFAULT\n                 || parentType \u003d\u003d TokenTypes.LITERAL_CASE) {\n                 return true;\n             }\n             else if (parentType \u003d\u003d TokenTypes.FOR_EACH_CLAUSE\n-                \u0026\u0026 this.ignoreEnhancedForColon) {\n+                \u0026\u0026 ignoreEnhancedForColon) {\n                 return true;\n             }\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "779aa37ffc447d1d85ea1b082759e4040657191d": {
+      "type": "Yintroduced",
+      "commitMessage": "WhitespaceAroundCheck updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344165000,
+      "commitName": "779aa37ffc447d1d85ea1b082759e4040657191d",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

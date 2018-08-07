@@ -1,0 +1,104 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbstractModuleTestSupport.java",
+  "functionName": "removeDeviceFromPathOnWindows",
+  "functionId": "removeDeviceFromPathOnWindows___path-String",
+  "sourceFilePath": "src/it/java/com/google/checkstyle/test/base/AbstractModuleTestSupport.java",
+  "functionStartLine": 381,
+  "functionEndLine": 388,
+  "changeHistory": [
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba",
+    "7a466ec46461fb4c57d965040d9523b1fb2f8443",
+    "344ea5c012d1814441b5758013a2b035c6e1613a",
+    "4f6d7e415dc3253c5bde537f2a8d262de9b6aba2",
+    "067896807847df81ba6e65195e4f39069dc3aea7",
+    "943ace0dd67911db776be674e66a873df1442db0"
+  ],
+  "changeHistoryShort": {
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba": "Yfilerename",
+    "7a466ec46461fb4c57d965040d9523b1fb2f8443": "Ybodychange",
+    "344ea5c012d1814441b5758013a2b035c6e1613a": "Ybodychange",
+    "4f6d7e415dc3253c5bde537f2a8d262de9b6aba2": "Ybodychange",
+    "067896807847df81ba6e65195e4f39069dc3aea7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "943ace0dd67911db776be674e66a873df1442db0": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba": {
+      "type": "Yfilerename",
+      "commitMessage": "Issue #4592: Added AbstractPathTestSupport, AbstractModuleTestSupport, AbstractIndentationTestSupport and all tests in ITs extend them\n",
+      "commitDate": 1501610201000,
+      "commitName": "6d290adcd7efb8e9f07d2730e9960c6dc3e713ba",
+      "commitAuthor": "Subbu Dantu",
+      "commitDateOld": 1501592797000,
+      "commitNameOld": "29e131f949950d26e7880da5891d1754776fdeee",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.2,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "7a466ec46461fb4c57d965040d9523b1fb2f8443": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.google.checkstyle.test.base package\n",
+      "commitDate": 1492827278000,
+      "commitName": "7a466ec46461fb4c57d965040d9523b1fb2f8443",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1489947020000,
+      "commitNameOld": "4e089513a7496b8d9e2584445508cfaf7025125c",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 33.34,
+      "commitsBetweenForRepo": 123,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,8 @@\n     private static String removeDeviceFromPathOnWindows(String path) {\n+        String fixedPath \u003d path;\n         final String os \u003d System.getProperty(\"os.name\", \"Unix\");\n         if (os.startsWith(\"Windows\")) {\n-            return path.substring(path.indexOf(\u0027:\u0027) + 1);\n+            fixedPath \u003d path.substring(path.indexOf(\u0027:\u0027) + 1);\n         }\n-        return path;\n+        return fixedPath;\n     }\n\\ No newline at end of file\n"
+    },
+    "344ea5c012d1814441b5758013a2b035c6e1613a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2421: enabling checking on it folder",
+      "commitDate": 1445797820000,
+      "commitName": "344ea5c012d1814441b5758013a2b035c6e1613a",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1445782886000,
+      "commitNameOld": "a2ae6fa3a82abc0562772af74de80bee2f927cd8",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 0.17,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     private static String removeDeviceFromPathOnWindows(String path) {\n-        String os \u003d System.getProperty(\"os.name\", \"Unix\");\n+        final String os \u003d System.getProperty(\"os.name\", \"Unix\");\n         if (os.startsWith(\"Windows\")) {\n             return path.substring(path.indexOf(\u0027:\u0027) + 1);\n         }\n         return path;\n     }\n\\ No newline at end of file\n"
+    },
+    "4f6d7e415dc3253c5bde537f2a8d262de9b6aba2": {
+      "type": "Ybodychange",
+      "commitMessage": "Use character literals in String.indexOf(). #1555\n\nFixes `LengthOneStringInIndexOf` inspection violations in test code.\n\nDescription:\n\u003eReports String literals of length one being used as a parameter in String.indexOf() or String.lastIndexOf() calls. These String literals may be replaced by equivalent character literals, gaining some performance enhancement.\n",
+      "commitDate": 1440041062000,
+      "commitName": "4f6d7e415dc3253c5bde537f2a8d262de9b6aba2",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439955091000,
+      "commitNameOld": "bc0bf95daedb6f0e658187d6e44410a60f46dbe2",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 1.0,
+      "commitsBetweenForRepo": 17,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n    private static String removeDeviceFromPathOnWindows(String path) {\n        String os \u003d System.getProperty(\"os.name\", \"Unix\");\n        if (os.startsWith(\"Windows\")) {\n-           return path.substring(path.indexOf(\":\") + 1);\n+           return path.substring(path.indexOf(\u0027:\u0027) + 1);\n        }\n        return path;\n    }\n\\ No newline at end of file\n"
+    },
+    "067896807847df81ba6e65195e4f39069dc3aea7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Fix questionable names in test code. #1555\n\nFixes `QuestionableName` inspection violations in test code.\n\nDescription:\n\u003eReports on any variables, methods, or classes with questionable names. This inspection is best used to report common metasyntactic variables which may be used as names by lazy or confused developers.\n",
+      "commitDate": 1439955004000,
+      "commitName": "067896807847df81ba6e65195e4f39069dc3aea7",
+      "commitAuthor": "Michal Kordas",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "943ace0dd67911db776be674e66a873df1442db0": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1388: BaseCheckTestSupport.verify fails on Windows\n",
+      "commitDate": 1437114824000,
+      "commitName": "943ace0dd67911db776be674e66a873df1442db0",
+      "commitAuthor": "WonderCsabo"
+    }
+  }
+}

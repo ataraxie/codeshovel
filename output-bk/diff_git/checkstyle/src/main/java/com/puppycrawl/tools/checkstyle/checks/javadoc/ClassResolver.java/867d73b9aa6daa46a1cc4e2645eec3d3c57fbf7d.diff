@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/ClassResolver.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/ClassResolver.java
+index 2f0e1b4fa..04877a59a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/ClassResolver.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/ClassResolver.java
+@@ -43,103 +43,101 @@ public class ClassResolver {
+     /** Use to load classes. **/
+     private final ClassLoader loader;
+ 
+     /**
+      * Creates a new {@code ClassResolver} instance.
+      *
+      * @param loader the ClassLoader to load classes with.
+      * @param pkg the name of the package the class may belong to
+      * @param imports set of imports to check if the class belongs to
+      */
+     public ClassResolver(ClassLoader loader, String pkg, Set<String> imports) {
+         this.loader = loader;
+         this.pkg = pkg;
+         this.imports = new HashSet<>(imports);
+         this.imports.add("java.lang.*");
+     }
+ 
+     /**
+      * Attempts to resolve the Class for a specified name. The algorithm is
+      * to check:
+      * - fully qualified name
+      * - explicit imports
+      * - enclosing package
+      * - star imports
+      * @param name name of the class to resolve
+      * @param currentClass name of current class (for inner classes).
+      * @return the resolved class
+      * @throws ClassNotFoundException if unable to resolve the class
+      */
+     // -@cs[ForbidWildcardAsReturnType] This method can return any type, so no way to avoid wildcard
+     public Class<?> resolve(String name, String currentClass)
+             throws ClassNotFoundException {
+         // See if the class is full qualified
+         Class<?> clazz = resolveQualifiedName(name);
+         if (clazz == null) {
+             // try matching explicit imports
+             clazz = resolveMatchingExplicitImport(name);
+ 
+             if (clazz == null) {
+                 // See if in the package
+                 clazz = resolveInPackage(name);
+ 
+                 if (clazz == null) {
+                     // see if inner class of this class
+                     clazz = resolveInnerClass(name, currentClass);
+ 
+                     if (clazz == null) {
+                         clazz = resolveByStarImports(name);
+                         // -@cs[NestedIfDepth] it is better to have single return point from method
+                         if (clazz == null) {
+-                            // Giving up, the type is unknown, so load the class to generate an
+-                            // exception
+-                            clazz = safeLoad(name);
++                            throw new ClassNotFoundException(name);
+                         }
+                     }
+                 }
+             }
+         }
+         return clazz;
+     }
+ 
+     /**
+      * Try to find class by search in package.
+      * @param name class name
+      * @return class object
+      */
+     private Class<?> resolveInPackage(String name) {
+         Class<?> clazz = null;
+         if (pkg != null && !pkg.isEmpty()) {
+             final Class<?> classFromQualifiedName = resolveQualifiedName(pkg + PERIOD + name);
+             if (classFromQualifiedName != null) {
+                 clazz = classFromQualifiedName;
+             }
+         }
+         return clazz;
+     }
+ 
+     /**
+      * Try to find class by matching explicit Import.
+      * @param name class name
+      * @return class object
+      */
+     private Class<?> resolveMatchingExplicitImport(String name) {
+         Class<?> clazz = null;
+         for (String imp : imports) {
+             // Very important to add the "." in the check below. Otherwise you
+             // when checking for "DataException", it will match on
+             // "SecurityDataException". This has been the cause of a very
+             // difficult bug to resolve!
+             if (imp.endsWith(PERIOD + name)) {
+                 clazz = resolveQualifiedName(imp);
+                 if (clazz != null) {
+                     break;
+                 }
+             }
+         }
+         return clazz;
+     }
+ 
+     /**
+      * See if inner class of this class.
+      * @param name name of the search Class to search
+      * @param currentClass class where search in

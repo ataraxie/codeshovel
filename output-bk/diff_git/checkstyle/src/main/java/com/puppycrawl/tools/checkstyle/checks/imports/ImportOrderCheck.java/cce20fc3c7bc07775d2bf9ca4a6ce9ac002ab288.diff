@@ -1,0 +1,127 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+index abbc020a6..7f8ad3ef8 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+@@ -244,118 +244,120 @@ public class ImportOrderCheck
+      */
+     public void setSortStaticImportsAlphabetically(boolean sortAlphabetically)
+     {
+         this.sortStaticImportsAlphabetically = sortAlphabetically;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST)
+     {
+         lastGroup = Integer.MIN_VALUE;
+         lastImportLine = Integer.MIN_VALUE;
+         lastImport = "";
+         lastImportStatic = false;
+         beforeFirstImport = true;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         final FullIdent ident;
+         final boolean isStatic;
+ 
+         if (ast.getType() == TokenTypes.IMPORT) {
+             ident = FullIdent.createFullIdentBelow(ast);
+             isStatic = false;
+         }
+         else {
+             ident = FullIdent.createFullIdent(ast.getFirstChild()
+                     .getNextSibling());
+             isStatic = true;
+         }
+ 
+         switch (getAbstractOption()) {
+             case TOP:
+                 if (!isStatic && lastImportStatic) {
+                     lastGroup = Integer.MIN_VALUE;
+                     lastImport = "";
+                 }
+-                // no break;
++                doVisitToken(ident, isStatic, !lastImportStatic && isStatic);
++                break;
+ 
+             case ABOVE:
+                 // previous non-static but current is static
+                 doVisitToken(ident, isStatic, !lastImportStatic && isStatic);
+                 break;
+ 
+             case INFLOW:
+                 // previous argument is useless here
+                 doVisitToken(ident, isStatic, true);
+                 break;
+ 
+             case BOTTOM:
+                 if (isStatic && !lastImportStatic) {
+                     lastGroup = Integer.MIN_VALUE;
+                     lastImport = "";
+                 }
+-                // no break;
++                doVisitToken(ident, isStatic, lastImportStatic && !isStatic);
++                break;
+ 
+             case UNDER:
+                 // previous static but current is non-static
+                 doVisitToken(ident, isStatic, lastImportStatic && !isStatic);
+                 break;
+ 
+             default:
+                 break;
+         }
+ 
+         lastImportLine = ast.findFirstToken(TokenTypes.SEMI).getLineNo();
+         lastImportStatic = isStatic;
+         beforeFirstImport = false;
+     }
+ 
+     /**
+      * Shares processing...
+      *
+      * @param ident the import to process.
+      * @param isStatic whether the token is static or not.
+      * @param previous previous non-static but current is static (above), or
+      *                  previous static but current is non-static (under).
+      */
+     private void doVisitToken(FullIdent ident, boolean isStatic,
+             boolean previous)
+     {
+         if (ident != null) {
+             final String name = ident.getText();
+             final int groupIdx = getGroupNumber(name);
+             final int line = ident.getLineNo();
+ 
+             if (groupIdx > lastGroup) {
+                 // This check should be made more robust to handle
+                 // comments and imports that span more than one line.
+                 if (!beforeFirstImport && separated && line - lastImportLine < 2) {
+                     log(line, MSG_SEPARATION, name);
+                 }
+             }
+             else if (groupIdx == lastGroup || sortStaticImportsAlphabetically
+                      && isAlphabeticallySortableStaticImport(isStatic))
+             {
+                 doVisitTokenInSameGroup(isStatic, previous, name, line);
+             }
+             else {
+                 log(line, MSG_ORDERING, name);
+             }
+ 
+             lastGroup = groupIdx;
+             lastImport = name;
+         }

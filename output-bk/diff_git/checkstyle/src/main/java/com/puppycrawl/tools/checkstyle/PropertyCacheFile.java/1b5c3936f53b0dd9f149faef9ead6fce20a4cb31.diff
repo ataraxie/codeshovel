@@ -1,0 +1,83 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/PropertyCacheFile.java b/src/main/java/com/puppycrawl/tools/checkstyle/PropertyCacheFile.java
+index 47caca444..81d320359 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/PropertyCacheFile.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/PropertyCacheFile.java
+@@ -150,77 +150,77 @@ final class PropertyCacheFile {
+         }
+         catch (final IOException ex) {
+             LOG.debug("Unable to flush and close output stream.", ex);
+         }
+     }
+ 
+     /**
+      * @param fileName the file to check
+      * @param timestamp the timestamp of the file to check
+      * @return whether the specified file has already been checked ok
+      */
+     boolean alreadyChecked(String fileName, long timestamp) {
+         final String lastChecked = details.getProperty(fileName);
+         return lastChecked != null
+             && lastChecked.equals(Long.toString(timestamp));
+     }
+ 
+     /**
+      * Records that a file checked ok.
+      * @param fileName name of the file that checked ok
+      * @param timestamp the timestamp of the file
+      */
+     void checkedOk(String fileName, long timestamp) {
+         details.put(fileName, Long.toString(timestamp));
+     }
+ 
+     /**
+      * Calculates the hashcode for a GlobalProperties.
+      *
+      * @param configuration the GlobalProperties
+      * @return the hashcode for <code>configuration</code>
+      */
+     private String getConfigHashCode(Serializable configuration) {
+         try {
+             // im-memory serialization of Configuration
+ 
+             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             ObjectOutputStream oos = null;
+             try {
+                 oos = new ObjectOutputStream(baos);
+                 oos.writeObject(configuration);
+             }
+             finally {
+                 this.flushAndCloseOutStream(oos);
+             }
+ 
+             // Instead of hexEncoding baos.toByteArray() directly we
+             // use a message digest here to keep the length of the
+             // hashcode reasonable
+ 
+-            final MessageDigest md = MessageDigest.getInstance("SHA");
++            final MessageDigest md = MessageDigest.getInstance("SHA-1");
+             md.update(baos.toByteArray());
+ 
+             return hexEncode(md.digest());
+         }
+         catch (final Exception ex) { // IO, NoSuchAlgorithm
+             LOG.debug("Unable to calculate hashcode.", ex);
+             return "ALWAYS FRESH: " + System.currentTimeMillis();
+         }
+     }
+ 
+     /**
+      * Hex-encodes a byte array.
+      * @param byteArray the byte array
+      * @return hex encoding of <code>byteArray</code>
+      */
+     private static String hexEncode(byte... byteArray) {
+         final StringBuilder buf = new StringBuilder(2 * byteArray.length);
+         for (final byte b : byteArray) {
+             final int low = b & MASK_0X0F;
+             final int high = b >> SHIFT_4 & MASK_0X0F;
+             buf.append(HEX_CHARS[high]);
+             buf.append(HEX_CHARS[low]);
+         }
+         return buf.toString();
+     }
+ }

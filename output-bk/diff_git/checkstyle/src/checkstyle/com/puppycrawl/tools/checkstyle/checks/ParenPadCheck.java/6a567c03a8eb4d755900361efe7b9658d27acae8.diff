@@ -1,0 +1,83 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/ParenPadCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/ParenPadCheck.java
+index d89fa909a..7cade53b0 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/ParenPadCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/ParenPadCheck.java
+@@ -94,78 +94,67 @@ public class ParenPadCheck
+         }
+         else {
+             processLeft(aAST);
+         }
+     }
+ 
+     /**
+      * Process a token representing a left parentheses.
+      * @param aAST the token representing a left parentheses
+      */
+     private void processLeft(DetailAST aAST)
+     {
+         final String line = getLines()[aAST.getLineNo() - 1];
+         final int after = aAST.getColumnNo() + 1;
+         if (after < line.length()) {
+             if ((PadOption.NOSPACE == getAbstractOption())
+                 && (Character.isWhitespace(line.charAt(after))))
+             {
+                 log(aAST.getLineNo(), after, "ws.followed", "(");
+             }
+             else if ((PadOption.SPACE == getAbstractOption())
+                      && !Character.isWhitespace(line.charAt(after))
+                      && (line.charAt(after) != ')'))
+             {
+                 log(aAST.getLineNo(), after, "ws.notFollowed", "(");
+             }
+         }
+     }
+ 
+     /**
+      * Process a token representing a right parentheses.
+      * @param aAST the token representing a right parentheses
+      */
+     private void processRight(DetailAST aAST)
+     {
+         final String line = getLines()[aAST.getLineNo() - 1];
+         final int before = aAST.getColumnNo() - 1;
+         if (before >= 0) {
+             boolean followsEmptyForIterator = false;
+             final DetailAST parent = aAST.getParent();
+             if ((parent != null) 
+                 && (parent.getType() == TokenTypes.LITERAL_FOR))
+             {
+                 final DetailAST forIterator =
+                     parent.findFirstToken(TokenTypes.FOR_ITERATOR);
+                 followsEmptyForIterator = (forIterator.getChildCount() == 0)
+                     && (aAST == forIterator.getNextSibling());
+             }
+             if (followsEmptyForIterator) {
+                 return;
+-//                if (mPadEmptyForIterator
+-//                    && !Character.isWhitespace(line.charAt(before)))
+-//                {
+-//                    log(aAST.getLineNo(), aAST.getColumnNo(),
+-//                        "ws.notPreceeded", ")");
+-//                }
+-//                else if (!mPadEmptyForIterator
+-//                    && Character.isWhitespace(line.charAt(before)))
+-//                {
+-//                    log(aAST.getLineNo(), before, "ws.preceeded", ")");
+-//                }  
+             }
+             else if ((PadOption.NOSPACE == getAbstractOption())
+                 && Character.isWhitespace(line.charAt(before))
+                 && !Utils.whitespaceBefore(before, line))
+             {
+                 log(aAST.getLineNo(), before, "ws.preceeded", ")");
+             }
+             else if ((PadOption.SPACE == getAbstractOption())
+                 && !Character.isWhitespace(line.charAt(before))
+                 && (line.charAt(before) != '('))
+             {
+                 log(aAST.getLineNo(), aAST.getColumnNo(),
+                     "ws.notPreceeded", ")");
+             }
+         }
+     }
+ }

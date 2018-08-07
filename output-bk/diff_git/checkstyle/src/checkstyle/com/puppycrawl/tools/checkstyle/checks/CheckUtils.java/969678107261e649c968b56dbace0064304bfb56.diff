@@ -1,0 +1,106 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java
+index 48caa26a9..13b813ce2 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/CheckUtils.java
+@@ -1,99 +1,100 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2004  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Contains utility methods for the checks.
+  *
+  * @author Oliver Burn
+  * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+  * @author o_sukhodolsky
+  */
+ public final class CheckUtils
+ {
+     /** prevent instances */
+     private CheckUtils()
+     {
+         throw new UnsupportedOperationException();
+     }
+ 
+     /**
+      * Tests whether a method definition AST defines an equals covariant.
+      * @param aAST the method definition AST to test.
+      * Precondition: aAST is a TokenTypes.METHOD_DEF node.
+      * @return true if aAST defines an equals covariant.
+      */
+     public static boolean isEqualsMethod(DetailAST aAST)
+     {
+         if (aAST.getType() != TokenTypes.METHOD_DEF) {
+-            throw new IllegalArgumentException("A node must be method def");
++            // A node must be method def
++            return false;
+         }
+ 
+         // non-static, non-abstract?
+         final DetailAST modifiers = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         if (modifiers.branchContains(TokenTypes.LITERAL_STATIC)
+             || modifiers.branchContains(TokenTypes.ABSTRACT))
+         {
+             return false;
+         }
+ 
+         // named "equals"?
+         final DetailAST nameNode = aAST.findFirstToken(TokenTypes.IDENT);
+         final String name = nameNode.getText();
+         if (!"equals".equals(name)) {
+             return false;
+         }
+ 
+         // one parameter?
+         final DetailAST paramsNode = aAST.findFirstToken(TokenTypes.PARAMETERS);
+         return (paramsNode.getChildCount() == 1);
+     }
+ 
+ //    public static boolean isFinal(DetailAST detailAST) {
+ //        DetailAST modifiersAST =
+     //detailAST.findFirstToken(TokenTypes.MODIFIERS);
+ //
+ //        return modifiersAST.findFirstToken(TokenTypes.FINAL) != null;
+ //    }
+ //
+ //    public static boolean isInObjBlock(DetailAST detailAST) {
+ //        return detailAST.getParent().getType() == TokenTypes.OBJBLOCK;
+ //    }
+ //
+ //    public static String getIdentText(DetailAST detailAST) {
+ //        return detailAST.findFirstToken(TokenTypes.IDENT).getText();
+ //    }
+ 
+     /**
+      * Returns whether a token represents an ELSE as part of an ELSE / IF set.
+      * @param aAST the token to check
+      * @return whether it is
+      */
+     public static boolean isElseIf(DetailAST aAST)
+     {
+         final DetailAST parentAST = aAST.getParent();
+ 
+         return (aAST.getType() == TokenTypes.LITERAL_IF)
+             && (isElse(parentAST) || isElseWithCurlyBraces(parentAST));
+     }
+ 

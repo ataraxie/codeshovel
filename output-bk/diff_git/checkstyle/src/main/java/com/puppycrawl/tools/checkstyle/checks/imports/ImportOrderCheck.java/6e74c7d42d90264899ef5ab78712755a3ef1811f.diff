@@ -1,0 +1,175 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+index a6f08bf1d..f769c754c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+@@ -345,156 +345,165 @@ public class ImportOrderCheck
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {TokenTypes.IMPORT};
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         lastGroup = Integer.MIN_VALUE;
+         lastImportLine = Integer.MIN_VALUE;
+         lastImport = "";
+         lastImportStatic = false;
+         beforeFirstImport = true;
+     }
+ 
+     // -@cs[CyclomaticComplexity] SWITCH was transformed into IF-ELSE.
+     @Override
+     public void visitToken(DetailAST ast) {
+         final FullIdent ident;
+         final boolean isStatic;
+ 
+         if (ast.getType() == TokenTypes.IMPORT) {
+             ident = FullIdent.createFullIdentBelow(ast);
+             isStatic = false;
+         }
+         else {
+             ident = FullIdent.createFullIdent(ast.getFirstChild()
+                     .getNextSibling());
+             isStatic = true;
+         }
+ 
+         final boolean isStaticAndNotLastImport = isStatic && !lastImportStatic;
+         final boolean isLastImportAndNonStatic = lastImportStatic && !isStatic;
+ 
+         // using set of IF instead of SWITCH to analyze Enum options to satisfy coverage.
+         // https://github.com/checkstyle/checkstyle/issues/1387
+         if (option == ImportOrderOption.TOP) {
+ 
+             if (isLastImportAndNonStatic) {
+                 lastGroup = Integer.MIN_VALUE;
+                 lastImport = "";
+             }
+             doVisitToken(ident, isStatic, isStaticAndNotLastImport);
+ 
++            if (isStaticAndNotLastImport && !beforeFirstImport) {
++                log(ident.getLineNo(), MSG_ORDERING, ident.getText());
++            }
++
+         }
+         else if (option == ImportOrderOption.BOTTOM) {
+ 
+             if (isStaticAndNotLastImport) {
+                 lastGroup = Integer.MIN_VALUE;
+                 lastImport = "";
+             }
+             doVisitToken(ident, isStatic, isLastImportAndNonStatic);
+ 
++            if (isLastImportAndNonStatic) {
++                log(ident.getLineNo(), MSG_ORDERING, ident.getText());
++            }
++
+         }
+         else if (option == ImportOrderOption.ABOVE) {
+             // previous non-static but current is static
+             doVisitToken(ident, isStatic, isStaticAndNotLastImport);
+ 
+         }
+         else if (option == ImportOrderOption.UNDER) {
+             doVisitToken(ident, isStatic, isLastImportAndNonStatic);
+ 
+         }
+         else if (option == ImportOrderOption.INFLOW) {
+             // "previous" argument is useless here
+             doVisitToken(ident, isStatic, true);
+ 
+         }
+         else {
+             throw new IllegalStateException(
+                     "Unexpected option for static imports: " + option);
+         }
+ 
+         lastImportLine = ast.findFirstToken(TokenTypes.SEMI).getLineNo();
+         lastImportStatic = isStatic;
+         beforeFirstImport = false;
+     }
+ 
+     /**
+      * Shares processing...
+      *
+      * @param ident the import to process.
+      * @param isStatic whether the token is static or not.
+      * @param previous previous non-static but current is static (above), or
+      *                  previous static but current is non-static (under).
+      */
+     private void doVisitToken(FullIdent ident, boolean isStatic,
+             boolean previous) {
+         final String name = ident.getText();
+         final int groupIdx = getGroupNumber(name);
+         final int line = ident.getLineNo();
+ 
+-        if (isInSameGroup(groupIdx, isStatic)) {
+-            doVisitTokenInSameGroup(isStatic, previous, name, line);
+-        }
+-        else if (groupIdx > lastGroup) {
+-            if (!beforeFirstImport && separated && line - lastImportLine < 2) {
++        if (groupIdx > lastGroup) {
++            if (!beforeFirstImport && separated && line - lastImportLine < 2
++                && !isInSameGroup(groupIdx, isStatic)) {
+                 log(line, MSG_SEPARATION, name);
+             }
+         }
++        else if (isInSameGroup(groupIdx, isStatic)) {
++            doVisitTokenInSameGroup(isStatic, previous, name, line);
++        }
+         else {
+             log(line, MSG_ORDERING, name);
+         }
+         if (isSeparatorInGroup(groupIdx, isStatic, line)) {
+             log(line, MSG_SEPARATED_IN_GROUP, name);
+         }
+ 
+         lastGroup = groupIdx;
+         lastImport = name;
+     }
+ 
+     /**
+      * Checks whether imports group separated internally.
+      * @param groupIdx group number.
+      * @param isStatic whether the token is static or not.
+      * @param line the line of the current import.
+      * @return true if imports group are separated internally.
+      */
+     private boolean isSeparatorInGroup(int groupIdx, boolean isStatic, int line) {
+         final boolean inSameGroup = isInSameGroup(groupIdx, isStatic);
+         return (!separated || inSameGroup) && isSeparatorBeforeImport(line);
+     }
+ 
+     /**
+      * Checks whether there is any separator before current import.
+      * @param line the line of the current import.
+      * @return true if there is separator before current import which isn't the first import.
+      */
+     private boolean isSeparatorBeforeImport(int line) {
+         return !beforeFirstImport && line - lastImportLine > 1;
+     }
+ 
+     /**
+      * Checks whether imports are in same group.
+      * @param groupIdx group number.
+      * @param isStatic whether the token is static or not.
+      * @return true if imports are in same group.
+      */
+     private boolean isInSameGroup(int groupIdx, boolean isStatic) {
+         final boolean isStaticImportGroupIndependent =
+             option == ImportOrderOption.TOP || option == ImportOrderOption.BOTTOM;
+         final boolean result;
+         if (isStaticImportGroupIndependent) {
+             result = isStatic && lastImportStatic
+                 || groupIdx == lastGroup && isStatic == lastImportStatic;
+         }
+         else {
+             result = groupIdx == lastGroup;
+         }
+         return result;

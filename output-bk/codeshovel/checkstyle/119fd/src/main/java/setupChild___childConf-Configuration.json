@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "setupChild___childConf-Configuration",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 291,
+  "changeHistory": [
+    "4f90a1367d63bb7109a0e0975e43e96fcff18760",
+    "4cef3f91f575f45ea18fa3568ec44c0beef6a1fe",
+    "4b2c1aaebe869c8903547bfeddb2cf183011b462",
+    "49928eafc9b2cff02565ad5bb38b4e0ee020739d",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "08d6efe49d2960d9bd61bfb9cca65910f0c19b58"
+  ],
+  "changeHistoryShort": {
+    "4f90a1367d63bb7109a0e0975e43e96fcff18760": "Ybodychange",
+    "4cef3f91f575f45ea18fa3568ec44c0beef6a1fe": "Ybodychange",
+    "4b2c1aaebe869c8903547bfeddb2cf183011b462": "Ybodychange",
+    "49928eafc9b2cff02565ad5bb38b4e0ee020739d": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Yparameterchange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Ymultichange(Yfilerename,Yrename,Yparameterchange)",
+    "08d6efe49d2960d9bd61bfb9cca65910f0c19b58": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4f90a1367d63bb7109a0e0975e43e96fcff18760": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4726: fix CallToSimpleGetterInClass, MismatchedCollectionQueryUpdate, NullableProblems idea violations\n",
+      "commitDate": 1500613711000,
+      "commitName": "4f90a1367d63bb7109a0e0975e43e96fcff18760",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1491885633000,
+      "commitNameOld": "4cef3f91f575f45ea18fa3568ec44c0beef6a1fe",
+      "commitAuthorOld": "Subbu Dantu",
+      "daysBetweenCommits": 101.02,
+      "commitsBetweenForRepo": 455,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     protected void setupChild(Configuration childConf)\n             throws CheckstyleException {\n         if (childConf !\u003d null) {\n             throw new CheckstyleException(childConf.getName() + \" is not allowed as a child in \"\n-                    + getConfiguration().getName() + \". Please review \u0027Parent Module\u0027 section \"\n+                    + configuration.getName() + \". Please review \u0027Parent Module\u0027 section \"\n                     + \"for this Check in web documentation if Check is standard.\");\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "4cef3f91f575f45ea18fa3568ec44c0beef6a1fe": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2186: Exception message extended to provide more information on incorrect parent\n",
+      "commitDate": 1491885633000,
+      "commitName": "4cef3f91f575f45ea18fa3568ec44c0beef6a1fe",
+      "commitAuthor": "Subbu Dantu",
+      "commitDateOld": 1491395871000,
+      "commitNameOld": "3bd3a52280388520c64ec813dd1e4ffb3a0063a2",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 5.67,
+      "commitsBetweenForRepo": 26,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,8 @@\n     protected void setupChild(Configuration childConf)\n             throws CheckstyleException {\n         if (childConf !\u003d null) {\n             throw new CheckstyleException(childConf.getName() + \" is not allowed as a child in \"\n-                    + getConfiguration().getName());\n+                    + getConfiguration().getName() + \". Please review \u0027Parent Module\u0027 section \"\n+                    + \"for this Check in web documentation if Check is standard.\");\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "4b2c1aaebe869c8903547bfeddb2cf183011b462": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2773: added exception for invalid AutomaticBean children",
+      "commitDate": 1455806456000,
+      "commitName": "4b2c1aaebe869c8903547bfeddb2cf183011b462",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1453987479000,
+      "commitNameOld": "78c1fa440c2fd908c689da5f5e9d397b1fe833a5",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 21.05,
+      "commitsBetweenForRepo": 73,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,7 @@\n     protected void setupChild(Configuration childConf)\n         throws CheckstyleException {\n-        // No code by default, should be overridden only by demand at subclasses\n+        if (childConf !\u003d null) {\n+            throw new CheckstyleException(childConf.getName() + \" is not allowed as a child in \"\n+                    + getConfiguration().getName());\n+        }\n     }\n\\ No newline at end of file\n"
+    },
+    "49928eafc9b2cff02565ad5bb38b4e0ee020739d": {
+      "type": "Ybodychange",
+      "commitMessage": "PMD violations: UncommentedEmptyMethod Fixed #995\n",
+      "commitDate": 1435123125000,
+      "commitName": "49928eafc9b2cff02565ad5bb38b4e0ee020739d",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 37.73,
+      "commitsBetweenForRepo": 192,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,4 @@\n     protected void setupChild(Configuration childConf)\n         throws CheckstyleException {\n+        // No code by default, should be overridden only by demand at subclasses\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Yparameterchange",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1418625204000,
+      "commitNameOld": "7aa061665c2b005f97b0c05bf03604636175dc9a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 35.32,
+      "commitsBetweenForRepo": 74,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n-    protected void setupChild(Configuration aChildConf)\n+    protected void setupChild(Configuration childConf)\n         throws CheckstyleException\n     {\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Ymultichange(Yfilerename,Yrename,Yparameterchange)",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "subchanges": [
+        "Yfilerename",
+        "Yrename",
+        "Yparameterchange"
+      ]
+    },
+    "08d6efe49d2960d9bd61bfb9cca65910f0c19b58": {
+      "type": "Yintroduced",
+      "commitMessage": "make AutomaticBean.configure() final and provide defined extension points\nto prevent programming errors in user classes.\n",
+      "commitDate": 1039547615000,
+      "commitName": "08d6efe49d2960d9bd61bfb9cca65910f0c19b58",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

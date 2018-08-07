@@ -1,0 +1,123 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+index 022860d05..1a5d3fd79 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+@@ -115,114 +115,111 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+  *     {
+  *         this.test.addAll(test);
+  *     }
+  *
+  *     private void foo()
+  *     {
+  *         final List&lt;String&gt; test = new ArrayList&lt;&gt;(); // no violation
+  *         ...
+  *     }
+  * }
+  * }
+  * </pre>
+  *
+  * @author Dmitri Priimak
+  */
+ public class HiddenFieldCheck
+     extends Check {
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "hidden.field";
+ 
+     /** Stack of sets of field names,
+      * one for each class of a set of nested classes.
+      */
+     private FieldFrame frame;
+ 
+     /** Pattern for names of variables and parameters to ignore. */
+     private Pattern regexp;
+ 
+     /** Controls whether to check the parameter of a property setter method */
+     private boolean ignoreSetter;
+ 
+     /**
+      * If ignoreSetter is set to true then this variable controls what
+      * the setter method can return By default setter must return void.
+      * However, is this variable is set to true then setter can also
+      * return class in which is declared.
+      */
+     private boolean setterCanReturnItsClass;
+ 
+     /** Controls whether to check the parameter of a constructor */
+     private boolean ignoreConstructorParameter;
+ 
+     /** Controls whether to check the parameter of abstract methods. */
+     private boolean ignoreAbstractMethods;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[] {
+-            TokenTypes.VARIABLE_DEF,
+-            TokenTypes.PARAMETER_DEF,
+-            TokenTypes.CLASS_DEF,
+-            TokenTypes.ENUM_DEF,
+-            TokenTypes.ENUM_CONSTANT_DEF,
+-        };
++        return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
++            TokenTypes.CLASS_DEF,
++            TokenTypes.ENUM_DEF,
++            TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         frame = new FieldFrame(null, true, null);
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final int type = ast.getType();
+         switch (type) {
+             case TokenTypes.VARIABLE_DEF:
+             case TokenTypes.PARAMETER_DEF:
+                 processVariable(ast);
+                 break;
+ 
+             default:
+                 visitOtherTokens(ast, type);
+         }
+     }
+ 
+     /**
+      * Called to process tokens other than {@link TokenTypes#VARIABLE_DEF}
+      * and {@link TokenTypes#PARAMETER_DEF}
+      *
+      * @param ast token to process
+      * @param type type of the token
+      */
+     private void visitOtherTokens(DetailAST ast, int type) {
+         //A more thorough check of enum constant class bodies is
+         //possible (checking for hidden fields against the enum
+         //class body in addition to enum constant class bodies)
+         //but not attempted as it seems out of the scope of this
+         //check.
+         final DetailAST typeMods = ast.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isStaticInnerType =
+                 typeMods != null
+                         && typeMods.branchContains(TokenTypes.LITERAL_STATIC);
+         final String frameName;
+ 

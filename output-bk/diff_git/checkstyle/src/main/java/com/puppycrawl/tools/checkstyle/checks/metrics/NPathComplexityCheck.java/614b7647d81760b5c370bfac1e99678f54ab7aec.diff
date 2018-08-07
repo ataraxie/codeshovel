@@ -1,0 +1,153 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/NPathComplexityCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/NPathComplexityCheck.java
+index 803968f47..f7eb59905 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/NPathComplexityCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/NPathComplexityCheck.java
+@@ -24,146 +24,126 @@ import java.util.ArrayDeque;
+ import java.util.Deque;
+ 
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Checks the npath complexity against a specified limit (default = 200).
+  * The npath metric computes the number of possible execution paths
+  * through a function. Similar to the cyclomatic complexity but also
+  * takes into account the nesting of conditional statements and
+  * multi-part boolean expressions.
+  *
+  * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+  * @author o_sukhodolsky
+  */
+ public final class NPathComplexityCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "npathComplexity";
+ 
+     /** Default allowed complexity. */
+     private static final int DEFAULT_MAX = 200;
+ 
+     /** The initial current value. */
+     private static final BigInteger INITIAL_VALUE = BigInteger.ONE;
+ 
+     /** Stack of values - all but the current value. */
+     private final Deque<BigInteger> valueStack = new ArrayDeque<>();
+ 
+     /** The current value. */
+     private BigInteger currentValue = INITIAL_VALUE;
+ 
+     /** Threshold to report error for. */
+     private int max = DEFAULT_MAX;
+ 
+     /**
+      * Set the maximum threshold allowed.
+      *
+      * @param max the maximum threshold
+      */
+     public void setMax(int max) {
+         this.max = max;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[] {
+-            TokenTypes.CTOR_DEF,
+-            TokenTypes.METHOD_DEF,
+-            TokenTypes.STATIC_INIT,
+-            TokenTypes.INSTANCE_INIT,
+-            TokenTypes.LITERAL_WHILE,
+-            TokenTypes.LITERAL_DO,
+-            TokenTypes.LITERAL_FOR,
+-            TokenTypes.LITERAL_IF,
+-            TokenTypes.LITERAL_ELSE,
+-            TokenTypes.LITERAL_SWITCH,
+-            TokenTypes.LITERAL_CASE,
+-            TokenTypes.LITERAL_TRY,
+-            TokenTypes.LITERAL_CATCH,
+-            TokenTypes.QUESTION,
+-        };
++        return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.LITERAL_CASE,
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.QUESTION,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return new int[] {
+-            TokenTypes.CTOR_DEF,
+-            TokenTypes.METHOD_DEF,
+-            TokenTypes.INSTANCE_INIT,
+-            TokenTypes.STATIC_INIT,
+-        };
++        return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.LITERAL_WHILE:
+             case TokenTypes.LITERAL_DO:
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.LITERAL_IF:
+             case TokenTypes.QUESTION:
+             case TokenTypes.LITERAL_TRY:
+             case TokenTypes.LITERAL_SWITCH:
+                 visitMultiplyingConditional();
+                 break;
+             case TokenTypes.LITERAL_ELSE:
+             case TokenTypes.LITERAL_CATCH:
+             case TokenTypes.LITERAL_CASE:
+                 visitAddingConditional();
+                 break;
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.INSTANCE_INIT:
+             case TokenTypes.STATIC_INIT:
+                 visitMethodDef();
+                 break;
+             default:
+                 break;
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.LITERAL_WHILE:
+             case TokenTypes.LITERAL_DO:
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.LITERAL_IF:
+             case TokenTypes.QUESTION:
+             case TokenTypes.LITERAL_TRY:
+             case TokenTypes.LITERAL_SWITCH:
+                 leaveMultiplyingConditional();
+                 break;
+             case TokenTypes.LITERAL_ELSE:
+             case TokenTypes.LITERAL_CATCH:
+             case TokenTypes.LITERAL_CASE:
+                 leaveAddingConditional();
+                 break;
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.INSTANCE_INIT:

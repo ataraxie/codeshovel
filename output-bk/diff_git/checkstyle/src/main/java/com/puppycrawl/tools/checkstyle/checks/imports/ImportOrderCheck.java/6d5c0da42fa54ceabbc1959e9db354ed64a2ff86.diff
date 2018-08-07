@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+index a7b7945ee..23b662633 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+@@ -251,101 +251,101 @@ public class ImportOrderCheck
+             else {
+                 if (!Utils.endsWithChar(pkg, '.')) {
+                     pkgBuilder.append('.');
+                 }
+                 grp = Pattern.compile("^" + Pattern.quote(pkgBuilder.toString()));
+             }
+ 
+             groups[i] = grp;
+         }
+     }
+ 
+     /**
+      * Sets whether or not imports should be ordered within any one group of
+      * imports.
+      *
+      * @param ordered
+      *            whether lexicographic ordering of imports within a group
+      *            required or not.
+      */
+     public void setOrdered(boolean ordered) {
+         this.ordered = ordered;
+     }
+ 
+     /**
+      * Sets whether or not groups of imports must be separated from one another
+      * by at least one blank line.
+      *
+      * @param separated
+      *            whether groups should be separated by oen blank line.
+      */
+     public void setSeparated(boolean separated) {
+         this.separated = separated;
+     }
+ 
+     /**
+      * Sets whether string comparison should be case sensitive or not.
+      *
+      * @param caseSensitive
+      *            whether string comparison should be case sensitive.
+      */
+     public void setCaseSensitive(boolean caseSensitive) {
+         this.caseSensitive = caseSensitive;
+     }
+ 
+     /**
+      * Sets whether static imports (when grouped using 'top' and 'bottom' option)
+      * are sorted alphabetically or according to the package groupings.
+      * @param sortAlphabetically true or false.
+      */
+     public void setSortStaticImportsAlphabetically(boolean sortAlphabetically) {
+-        this.sortStaticImportsAlphabetically = sortAlphabetically;
++        sortStaticImportsAlphabetically = sortAlphabetically;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         lastGroup = Integer.MIN_VALUE;
+         lastImportLine = Integer.MIN_VALUE;
+         lastImport = "";
+         lastImportStatic = false;
+         beforeFirstImport = true;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final FullIdent ident;
+         final boolean isStatic;
+ 
+         if (ast.getType() == TokenTypes.IMPORT) {
+             ident = FullIdent.createFullIdentBelow(ast);
+             isStatic = false;
+         }
+         else {
+             ident = FullIdent.createFullIdent(ast.getFirstChild()
+                     .getNextSibling());
+             isStatic = true;
+         }
+ 
+         final boolean isStaticAndNotLastImport = isStatic && !lastImportStatic;
+         final boolean isNotStaticAndLastImport = !isStatic && lastImportStatic;
+         final ImportOrderOption abstractOption = getAbstractOption();
+ 
+         // using set of IF instead of SWITCH to analyze Enum options to satisfy coverage.
+         // https://github.com/checkstyle/checkstyle/issues/1387
+         if (abstractOption == ImportOrderOption.TOP) {
+ 
+             if (isNotStaticAndLastImport) {
+                 lastGroup = Integer.MIN_VALUE;
+                 lastImport = "";
+             }
+             doVisitToken(ident, isStatic, isStaticAndNotLastImport);
+ 

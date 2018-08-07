@@ -1,0 +1,61 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/OperatorWrapCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/OperatorWrapCheck.java
+index 0ea2263a1..44ff7b0bd 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/OperatorWrapCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/OperatorWrapCheck.java
+@@ -166,55 +166,55 @@ public class OperatorWrapCheck
+             TokenTypes.LAND,              // "&&"
+             TokenTypes.LITERAL_INSTANCEOF,
+             TokenTypes.TYPE_EXTENSION_AND,
+             TokenTypes.ASSIGN,            // '='
+             TokenTypes.DIV_ASSIGN,        // "/="
+             TokenTypes.PLUS_ASSIGN,       // "+="
+             TokenTypes.MINUS_ASSIGN,      //"-="
+             TokenTypes.STAR_ASSIGN,       // "*="
+             TokenTypes.MOD_ASSIGN,        // "%="
+             TokenTypes.SR_ASSIGN,         // ">>="
+             TokenTypes.BSR_ASSIGN,        // ">>>="
+             TokenTypes.SL_ASSIGN,         // "<<="
+             TokenTypes.BXOR_ASSIGN,       // "^="
+             TokenTypes.BOR_ASSIGN,        // "|="
+             TokenTypes.BAND_ASSIGN,       // "&="
+ 
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return ArrayUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.COLON) {
+             final DetailAST parent = ast.getParent();
+             if (parent.getType() == TokenTypes.LITERAL_DEFAULT
+                 || parent.getType() == TokenTypes.LITERAL_CASE) {
+                 //we do not want to check colon for cases and defaults
+                 return;
+             }
+         }
+         final WrapOption wOp = getAbstractOption();
+ 
+         final String text = ast.getText();
+         final int colNo = ast.getColumnNo();
+         final int lineNo = ast.getLineNo();
+         final String currentLine = getLine(lineNo - 1);
+ 
+         // Check if rest of line is whitespace, and not just the operator
+         // by itself. This last bit is to handle the operator on a line by
+         // itself.
+         if (wOp == WrapOption.NL
+                 && !text.equals(currentLine.trim())
+                 && StringUtils.isBlank(currentLine.substring(colNo + text.length()))) {
+             log(lineNo, colNo, LINE_NEW, text);
+         }
+         else if (wOp == WrapOption.EOL
+-                && CommonUtils.whitespaceBefore(colNo - 1, currentLine)) {
++                && CommonUtils.hasWhitespaceBefore(colNo - 1, currentLine)) {
+             log(lineNo, colNo, LINE_PREVIOUS, text);
+         }
+     }
+ }

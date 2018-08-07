@@ -1,0 +1,193 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
+index 19c255d18..9a61e2150 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
+@@ -1,84 +1,84 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.coding;
+ 
+ import java.util.Set;
+ import java.util.StringTokenizer;
+ 
+ import org.apache.commons.lang3.ArrayUtils;
+ 
+ import antlr.collections.AST;
+ 
+ import com.google.common.collect.Sets;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+-import com.puppycrawl.tools.checkstyle.utils.Utils;
++import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * <p>
+  * Checks for illegal instantiations where a factory method is preferred.
+  * </p>
+  * <p>
+  * Rationale: Depending on the project, for some classes it might be
+  * preferable to create instances through factory methods rather than
+  * calling the constructor.
+  * </p>
+  * <p>
+  * A simple example is the java.lang.Boolean class, to save memory and CPU
+  * cycles it is preferable to use the predefined constants TRUE and FALSE.
+  * Constructor invocations should be replaced by calls to Boolean.valueOf().
+  * </p>
+  * <p>
+  * Some extremely performance sensitive projects may require the use of factory
+  * methods for other classes as well, to enforce the usage of number caches or
+  * object pools.
+  * </p>
+  * <p>
+  * Limitations: It is currently not possible to specify array classes.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="IllegalInstantiation"/&gt;
+  * </pre>
+  * @author lkuehne
+  */
+ public class IllegalInstantiationCheck
+     extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "instantiation.avoid";
+ 
+     /** {@link java.lang} package as string */
+     private static final String JAVA_LANG = "java.lang.";
+ 
+     /** Set of fully qualified classnames. E.g. "java.lang.Boolean" */
+     private final Set<String> illegalClasses = Sets.newHashSet();
+ 
+     /** Name of the package */
+     private String pkgName;
+ 
+     /** The imports for the file */
+@@ -227,101 +227,101 @@ public class IllegalInstantiationCheck
+      */
+     private String getIllegalInstantiation(String className) {
+         if (illegalClasses.contains(className)) {
+             return className;
+         }
+         final int pkgNameLen;
+ 
+         if (pkgName == null) {
+             pkgNameLen = 0;
+         }
+         else {
+             pkgNameLen = pkgName.length();
+         }
+ 
+         for (String illegal : illegalClasses) {
+ 
+             if (isStandardClass(className, illegal)) {
+                 return illegal;
+             }
+             if (isSamePackage(className, pkgNameLen, illegal)) {
+                 return illegal;
+             }
+             final String importArg = checkImportStatements(className);
+             if (importArg != null) {
+                 return importArg;
+             }
+         }
+         return null;
+     }
+ 
+     /**
+      * Check import statements
+      * @param className name of the class
+      * @return value of illegal instatiated type
+      */
+     private String checkImportStatements(String className) {
+         // import statements
+         for (FullIdent importLineText : imports) {
+             final String importArg = importLineText.getText();
+             if (importArg.endsWith(".*")) {
+                 final String fqClass =
+                     importArg.substring(0, importArg.length() - 1)
+                     + className;
+                 // assume that illegalInsts only contain existing classes
+                 // or else we might create a false alarm here
+                 if (illegalClasses.contains(fqClass)) {
+                     return fqClass;
+                 }
+             }
+             else {
+-                if (Utils.baseClassname(importArg).equals(className)
++                if (CommonUtils.baseClassname(importArg).equals(className)
+                     && illegalClasses.contains(importArg)) {
+                     return importArg;
+                 }
+             }
+         }
+         return null;
+     }
+ 
+     /**
+      * Check that type is of the same package
+      * @param className class name
+      * @param pkgNameLen package name
+      * @param illegal illegal value
+      * @return true if type of the same package
+      */
+     private boolean isSamePackage(String className, int pkgNameLen, String illegal) {
+         // class from same package
+ 
+         // the toplevel package (pkgName == null) is covered by the
+         // "illegalInsts.contains(className)" check above
+ 
+         // the test is the "no garbage" version of
+         // illegal.equals(pkgName + "." + className)
+         return pkgName != null
+                 && className.length() == illegal.length() - pkgNameLen - 1
+                 && illegal.charAt(pkgNameLen) == '.'
+                 && illegal.endsWith(className)
+                 && illegal.startsWith(pkgName);
+     }
+ 
+     /**
+      * Is Standard Class
+      * @param className class name
+      * @param illegal illegal value
+      * @return true if type is standard
+      */
+     private boolean isStandardClass(String className, String illegal) {
+         // class from java.lang
+         if (illegal.length() - JAVA_LANG.length() == className.length()
+             && illegal.endsWith(className)
+             && illegal.startsWith(JAVA_LANG)) {
+             // java.lang needs no import, but a class without import might
+             // also come from the same file or be in the same package.
+             // E.g. if a class defines an inner class "Boolean",
+             // the expression "new Boolean()" refers to that class,
+             // not to java.lang.Boolean
+ 
+             final boolean isSameFile = classNames.contains(className);
+             final boolean isSamePackage = isSamePackage(className);
+ 

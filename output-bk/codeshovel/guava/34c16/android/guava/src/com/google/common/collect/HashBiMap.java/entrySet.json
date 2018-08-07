@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "HashBiMap.java",
+  "functionName": "entrySet",
+  "functionId": "entrySet",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/HashBiMap.java",
+  "functionStartLine": 972,
+  "functionEndLine": 975,
+  "changeHistory": [
+    "bf1931b9d9a68e3ef7c3c1ba1c5377aaac06bb9d",
+    "8b4789c403e9f4e6554852228c5a701a098040ef",
+    "0c81386a239370c073572212079efc727c911d0b",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "bf1931b9d9a68e3ef7c3c1ba1c5377aaac06bb9d": "Ybodychange",
+    "8b4789c403e9f4e6554852228c5a701a098040ef": "Ybodychange",
+    "0c81386a239370c073572212079efc727c911d0b": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "bf1931b9d9a68e3ef7c3c1ba1c5377aaac06bb9d": {
+      "type": "Ybodychange",
+      "commitMessage": "Stop using `forward.new InverseEntrySet()` because javac9 generates Objects.requireNonNull() calls for it.\n\nThat method isn\u0027t available under old versions of Android.\nThankfully, the calls are caught by Animal Sniffer.\nInternally, [] eliminates these when targeting Java 6 (b/32446315). Another reason to build with Bazel someday?\n\nNo effect on Proguard numbers.\n\nRELNOTES\u003dn/a\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d183091037\n",
+      "commitDate": 1516817587000,
+      "commitName": "bf1931b9d9a68e3ef7c3c1ba1c5377aaac06bb9d",
+      "commitAuthor": "cpovirk",
+      "commitDateOld": 1514991679000,
+      "commitNameOld": "342e38bc8402d81d536ae1e5461aa6b70f55a107",
+      "commitAuthorOld": "cnsun",
+      "daysBetweenCommits": 21.13,
+      "commitsBetweenForRepo": 53,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n     public Set\u003cEntry\u003cV, K\u003e\u003e entrySet() {\n       Set\u003cEntry\u003cV, K\u003e\u003e result \u003d inverseEntrySet;\n-      return (result \u003d\u003d null) ? inverseEntrySet \u003d forward.new InverseEntrySet() : result;\n+      return (result \u003d\u003d null) ? inverseEntrySet \u003d new InverseEntrySet\u003cK, V\u003e(forward) : result;\n     }\n\\ No newline at end of file\n"
+    },
+    "8b4789c403e9f4e6554852228c5a701a098040ef": {
+      "type": "Ybodychange",
+      "commitMessage": "I tripped and rewrote HashBiMap in the fully compact form, with no redundant code or storage, like I had assumed was too much work.\n\nMemory consumption effects:\nUnsized: 52 bytes/entry vs. 64 for server-side implementation vs. 74 for CompactHash* implementation\nSized: 40 bytes/entry vs. 64 for server-side implementation vs. 56 for CompactHash* implementation\n\n(NB: I did not include storage of hash codes, as included in the other implementations.  If we wanted that it\u0027d add another 8 bytes/entry sized, and probably 12 bytes/entry unsized.)\n\nEffects on HashBiMapProGuard:\n17833 bytes vs. 30172 bytes for server-side implementation vs. 31159 bytes for CompactHash* implementation\n13 classes vs. 29 classes for server-side implementation vs. 27 classes for CompactHash* implementation\n99 methods vs. 132 methods for server-side implementation vs. 173 methods for CompactHash* implementation\n\nRELNOTES\u003dRewrites Java 7 HashBiMap, and fixes some bugs in both versions.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d177814345\n",
+      "commitDate": 1512404471000,
+      "commitName": "8b4789c403e9f4e6554852228c5a701a098040ef",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1507658406000,
+      "commitNameOld": "130bead827402e841282eaf8f197c6c4ce64ec4c",
+      "commitAuthorOld": "lowasser",
+      "daysBetweenCommits": 54.93,
+      "commitsBetweenForRepo": 103,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,56 +1,4 @@\n     public Set\u003cEntry\u003cV, K\u003e\u003e entrySet() {\n-      return new Maps.EntrySet\u003cV, K\u003e() {\n-\n-        @Override\n-        Map\u003cV, K\u003e map() {\n-          return Inverse.this;\n-        }\n-\n-        @Override\n-        public Iterator\u003cEntry\u003cV, K\u003e\u003e iterator() {\n-          return new Itr\u003cEntry\u003cV, K\u003e\u003e() {\n-            @Override\n-            Entry\u003cV, K\u003e output(BiEntry\u003cK, V\u003e entry) {\n-              return new InverseEntry(entry);\n-            }\n-\n-            class InverseEntry extends AbstractMapEntry\u003cV, K\u003e {\n-              BiEntry\u003cK, V\u003e delegate;\n-\n-              InverseEntry(BiEntry\u003cK, V\u003e entry) {\n-                this.delegate \u003d entry;\n-              }\n-\n-              @Override\n-              public V getKey() {\n-                return delegate.value;\n-              }\n-\n-              @Override\n-              public K getValue() {\n-                return delegate.key;\n-              }\n-\n-              @Override\n-              public K setValue(K key) {\n-                K oldKey \u003d delegate.key;\n-                int keyHash \u003d smearedHash(key);\n-                if (keyHash \u003d\u003d delegate.keyHash \u0026\u0026 Objects.equal(key, oldKey)) {\n-                  return key;\n-                }\n-                checkArgument(seekByKey(key, keyHash) \u003d\u003d null, \"value already present: %s\", key);\n-                delete(delegate);\n-                BiEntry\u003cK, V\u003e newEntry \u003d\n-                    new BiEntry\u003c\u003e(key, keyHash, delegate.value, delegate.valueHash);\n-                delegate \u003d newEntry;\n-                insert(newEntry, null);\n-                expectedModCount \u003d modCount;\n-                // This is safe because entries can only get bumped up to earlier in the iteration,\n-                // so they can\u0027t get revisited.\n-                return oldKey;\n-              }\n-            }\n-          };\n-        }\n-      };\n+      Set\u003cEntry\u003cV, K\u003e\u003e result \u003d inverseEntrySet;\n+      return (result \u003d\u003d null) ? inverseEntrySet \u003d forward.new InverseEntrySet() : result;\n     }\n\\ No newline at end of file\n"
+    },
+    "0c81386a239370c073572212079efc727c911d0b": {
+      "type": "Ybodychange",
+      "commitMessage": "Use diamond operator in collect\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d165450412\n",
+      "commitDate": 1502905310000,
+      "commitName": "0c81386a239370c073572212079efc727c911d0b",
+      "commitAuthor": "jijiang",
+      "commitDateOld": 1492741671000,
+      "commitNameOld": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthorOld": "zhenghua",
+      "daysBetweenCommits": 117.63,
+      "commitsBetweenForRepo": 211,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,56 +1,56 @@\n     public Set\u003cEntry\u003cV, K\u003e\u003e entrySet() {\n       return new Maps.EntrySet\u003cV, K\u003e() {\n \n         @Override\n         Map\u003cV, K\u003e map() {\n           return Inverse.this;\n         }\n \n         @Override\n         public Iterator\u003cEntry\u003cV, K\u003e\u003e iterator() {\n           return new Itr\u003cEntry\u003cV, K\u003e\u003e() {\n             @Override\n             Entry\u003cV, K\u003e output(BiEntry\u003cK, V\u003e entry) {\n               return new InverseEntry(entry);\n             }\n \n             class InverseEntry extends AbstractMapEntry\u003cV, K\u003e {\n               BiEntry\u003cK, V\u003e delegate;\n \n               InverseEntry(BiEntry\u003cK, V\u003e entry) {\n                 this.delegate \u003d entry;\n               }\n \n               @Override\n               public V getKey() {\n                 return delegate.value;\n               }\n \n               @Override\n               public K getValue() {\n                 return delegate.key;\n               }\n \n               @Override\n               public K setValue(K key) {\n                 K oldKey \u003d delegate.key;\n                 int keyHash \u003d smearedHash(key);\n                 if (keyHash \u003d\u003d delegate.keyHash \u0026\u0026 Objects.equal(key, oldKey)) {\n                   return key;\n                 }\n                 checkArgument(seekByKey(key, keyHash) \u003d\u003d null, \"value already present: %s\", key);\n                 delete(delegate);\n                 BiEntry\u003cK, V\u003e newEntry \u003d\n-                    new BiEntry\u003cK, V\u003e(key, keyHash, delegate.value, delegate.valueHash);\n+                    new BiEntry\u003c\u003e(key, keyHash, delegate.value, delegate.valueHash);\n                 delegate \u003d newEntry;\n                 insert(newEntry, null);\n                 expectedModCount \u003d modCount;\n                 // This is safe because entries can only get bumped up to earlier in the iteration,\n                 // so they can\u0027t get revisited.\n                 return oldKey;\n               }\n             }\n           };\n         }\n       };\n     }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

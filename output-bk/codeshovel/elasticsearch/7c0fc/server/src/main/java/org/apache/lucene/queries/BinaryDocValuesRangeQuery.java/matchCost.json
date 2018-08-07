@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "BinaryDocValuesRangeQuery.java",
+  "functionName": "matchCost",
+  "functionId": "matchCost",
+  "sourceFilePath": "server/src/main/java/org/apache/lucene/queries/BinaryDocValuesRangeQuery.java",
+  "functionStartLine": 106,
+  "functionEndLine": 108,
+  "changeHistory": [
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+    "75c0cd06720bddb1afd76c3b37296d5233d2ce20",
+    "93da7720ff14ebb3a0edafa2fb920413e7c3c43e",
+    "0a25558f98a2d32eda61d51fef093e2394d02890"
+  ],
+  "changeHistoryShort": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": "Yfilerename",
+    "75c0cd06720bddb1afd76c3b37296d5233d2ce20": "Yfilerename",
+    "93da7720ff14ebb3a0edafa2fb920413e7c3c43e": "Yfilerename",
+    "0a25558f98a2d32eda61d51fef093e2394d02890": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": {
+      "type": "Yfilerename",
+      "commitMessage": "Rename core module to server (#28180)\n\nThis is related to #27933. It renames the core module to server. This is\r\nthe first step towards introducing an elasticsearch-core jar.",
+      "commitDate": 1515695443000,
+      "commitName": "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+      "commitAuthor": "Tim Brooks",
+      "commitDateOld": 1515688270000,
+      "commitNameOld": "7d0eb3292b8f8ba27ef50dbbf38783dc68c70728",
+      "commitAuthorOld": "Martijn van Groningen",
+      "daysBetweenCommits": 0.08,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "75c0cd06720bddb1afd76c3b37296d5233d2ce20": {
+      "type": "Yfilerename",
+      "commitMessage": "Move range field mapper back to core\n\nThis commit moves the range field mapper back to core so that we can\r\nremove the compile-time dependency of percolator on mapper-extras which\r\ncompilcates dependency management for the percolator client JAR, and\r\nmodules should not be intertwined like this anyway.\r\n\r\nRelates #27854\r\n",
+      "commitDate": 1513538830000,
+      "commitName": "75c0cd06720bddb1afd76c3b37296d5233d2ce20",
+      "commitAuthor": "Jason Tedor",
+      "commitDateOld": 1513529478000,
+      "commitNameOld": "fade828c5054fd90e59b159fe7e189e318404e11",
+      "commitAuthorOld": "Jason Tedor",
+      "daysBetweenCommits": 0.11,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "93da7720ff14ebb3a0edafa2fb920413e7c3c43e": {
+      "type": "Yfilerename",
+      "commitMessage": "Move non-core mappers to a module. (#26549)\n\nToday we have all non-plugin mappers in core. I\u0027d like to start moving those\r\nthat neither map to json datatypes nor are very frequently used like `date` or\r\n`ip` to a module.\r\n\r\nThis commit creates a new module called `mappers-extra` and moves the\r\n`scaled_float` and `token_count` mappers to it. I\u0027d like to eventually move\r\n`range` fields there but it\u0027s more complicated due to their intimate\r\nrelationship with range queries.\r\n\r\nRelates #10368",
+      "commitDate": 1505318333000,
+      "commitName": "93da7720ff14ebb3a0edafa2fb920413e7c3c43e",
+      "commitAuthor": "Adrien Grand",
+      "commitDateOld": 1505316511000,
+      "commitNameOld": "7404221b55363197b4613b4ffb2d805136632272",
+      "commitAuthorOld": "Tanguy Leroux",
+      "daysBetweenCommits": 0.02,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "0a25558f98a2d32eda61d51fef093e2394d02890": {
+      "type": "Yintroduced",
+      "commitMessage": "Query range fields by doc values when they are expected to be more efficient than points.\n\n* Enable doc values for range fields by default.\n* Store ranges in a binary format that support multi field fields.\n* Added BinaryDocValuesRangeQuery that can query ranges that have been encoded into a binary doc values field.\n* Wrap range queries on a range field in IndexOrDocValuesQuery query.\n\nCloses #24314\n",
+      "commitDate": 1499857454000,
+      "commitName": "0a25558f98a2d32eda61d51fef093e2394d02890",
+      "commitAuthor": "Martijn van Groningen"
+    }
+  }
+}

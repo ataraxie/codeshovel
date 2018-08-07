@@ -1,0 +1,135 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "isCorrectLocation___annotation-DetailAST__hasParams-boolean",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 369,
+  "changeHistory": [
+    "21cad8b0c393d80654a3a7a357066da5036ef106",
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e",
+    "422ab30197875d7bce68b357cda977bd1cb45fab",
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7",
+    "93f02998d44eacb037b6bf206c4e9a14d1dd5da6",
+    "f9e79c3905e3bf5c18d63853b96aac371bc05f80",
+    "02655f16a014fcf483ed29eaa134a3ef109c1bbf"
+  ],
+  "changeHistoryShort": {
+    "21cad8b0c393d80654a3a7a357066da5036ef106": "Ybodychange",
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab": "Ybodychange",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": "Ybodychange",
+    "422ab30197875d7bce68b357cda977bd1cb45fab": "Ybodychange",
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "93f02998d44eacb037b6bf206c4e9a14d1dd5da6": "Yfilerename",
+    "f9e79c3905e3bf5c18d63853b96aac371bc05f80": "Ybodychange",
+    "02655f16a014fcf483ed29eaa134a3ef109c1bbf": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "21cad8b0c393d80654a3a7a357066da5036ef106": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3117: Add ability to differentiate annotation placement in foreach, for loops, parameter definition (#3269)\n\n",
+      "commitDate": 1466341971000,
+      "commitName": "21cad8b0c393d80654a3a7a357066da5036ef106",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1463578314000,
+      "commitNameOld": "f1d4f61c274d879c9757c91aa3d166419d455de1",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 31.99,
+      "commitsBetweenForRepo": 97,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,14 @@\n     private boolean isCorrectLocation(DetailAST annotation, boolean hasParams) {\n         final boolean allowingCondition;\n \n         if (hasParams) {\n             allowingCondition \u003d allowSamelineParameterizedAnnotation;\n         }\n         else {\n             allowingCondition \u003d allowSamelineSingleParameterlessAnnotation;\n         }\n         return allowSamelineMultipleAnnotations\n             || allowingCondition \u0026\u0026 !hasNodeBefore(annotation)\n-            || !allowingCondition \u0026\u0026 !hasNodeBeside(annotation);\n+            || !allowingCondition \u0026\u0026 (!hasNodeBeside(annotation)\n+            || isAllowedPosition(annotation, SINGLELINE_ANNOTATION_PARENTS));\n     }\n\\ No newline at end of file\n"
+    },
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2661: Enforce LogicConditionNeedOptimizationCheck of sevntu-checkstyle over Checkstyle source code\n",
+      "commitDate": 1450994367000,
+      "commitName": "6ee4a0f805d528cdee03cfc175502d15b5722dab",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1440827623000,
+      "commitNameOld": "07b24dd81c7648f093f2a789a7fa288d8e7eeef4",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 117.67,
+      "commitsBetweenForRepo": 759,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private boolean isCorrectLocation(DetailAST annotation, boolean hasParams) {\n         final boolean allowingCondition;\n \n         if (hasParams) {\n             allowingCondition \u003d allowSamelineParameterizedAnnotation;\n         }\n         else {\n             allowingCondition \u003d allowSamelineSingleParameterlessAnnotation;\n         }\n-        return allowingCondition \u0026\u0026 !hasNodeBefore(annotation)\n-            || !allowingCondition \u0026\u0026 !hasNodeBeside(annotation)\n-            || allowSamelineMultipleAnnotations;\n+        return allowSamelineMultipleAnnotations\n+            || allowingCondition \u0026\u0026 !hasNodeBefore(annotation)\n+            || !allowingCondition \u0026\u0026 !hasNodeBeside(annotation);\n     }\n\\ No newline at end of file\n"
+    },
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: AvoidInlineConditional violations fixed\n",
+      "commitDate": 1439784080000,
+      "commitName": "23c8774d2e2fd245de1e5df02758fd23702c565e",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439782863000,
+      "commitNameOld": "d56a2a366c6f9e3e8639d492d548ae562b75dc81",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,13 @@\n     private boolean isCorrectLocation(DetailAST annotation, boolean hasParams) {\n-        final boolean allowingCondition \u003d hasParams ? allowSamelineParameterizedAnnotation\n-            : allowSamelineSingleParameterlessAnnotation;\n+        final boolean allowingCondition;\n+\n+        if (hasParams) {\n+            allowingCondition \u003d allowSamelineParameterizedAnnotation;\n+        }\n+        else {\n+            allowingCondition \u003d allowSamelineSingleParameterlessAnnotation;\n+        }\n         return allowingCondition \u0026\u0026 !hasNodeBefore(annotation)\n             || !allowingCondition \u0026\u0026 !hasNodeBeside(annotation)\n             || allowSamelineMultipleAnnotations;\n     }\n\\ No newline at end of file\n"
+    },
+    "422ab30197875d7bce68b357cda977bd1cb45fab": {
+      "type": "Ybodychange",
+      "commitMessage": "Annotation Location Check, fixed typo in property name, issue #585\n",
+      "commitDate": 1421839768000,
+      "commitName": "422ab30197875d7bce68b357cda977bd1cb45fab",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1421678156000,
+      "commitNameOld": "1bd7f9bdf3dc678b70e79481971aebc50db69dc7",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 1.87,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private boolean isCorrectLocation(DetailAST annotation, boolean hasParams)\n     {\n-        final boolean allowingCondition \u003d hasParams ? allowSamelineParametrizedAnnotation\n+        final boolean allowingCondition \u003d hasParams ? allowSamelineParameterizedAnnotation\n             : allowSamelineSingleParameterlessAnnotation;\n         return allowingCondition \u0026\u0026 !hasNodeBefore(annotation)\n             || !allowingCondition \u0026\u0026 !hasNodeBeside(annotation)\n             || allowSamelineMultipleAnnotations;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, annotation, #512\n",
+      "commitDate": 1421678156000,
+      "commitName": "1bd7f9bdf3dc678b70e79481971aebc50db69dc7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "93f02998d44eacb037b6bf206c4e9a14d1dd5da6": {
+      "type": "Yfilerename",
+      "commitMessage": "AnnotationLocationCheck was moved from javadoc to annotation package, changes in xdoc for default value, #356\n",
+      "commitDate": 1415753301000,
+      "commitName": "93f02998d44eacb037b6bf206c4e9a14d1dd5da6",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1415718326000,
+      "commitNameOld": "7b6785343e306845f432154a1a5026ad25306226",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 0.4,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "f9e79c3905e3bf5c18d63853b96aac371bc05f80": {
+      "type": "Ybodychange",
+      "commitMessage": "Various documentation/spelling issues with AnnotationLocationCheck, #356\n",
+      "commitDate": 1415681041000,
+      "commitName": "f9e79c3905e3bf5c18d63853b96aac371bc05f80",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1413733995000,
+      "commitNameOld": "02655f16a014fcf483ed29eaa134a3ef109c1bbf",
+      "commitAuthorOld": "maxvetrenko",
+      "daysBetweenCommits": 22.54,
+      "commitsBetweenForRepo": 47,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private boolean isCorrectLocation(DetailAST aAnnotation, boolean aHasParams)\n     {\n         final boolean allowingCondition \u003d aHasParams ? mAllowSamelineParametrizedAnnotation\n-            : mAllowSameLineSingleParametterlessAnnotation;\n+            : mAllowSamelineSingleParameterlessAnnotation;\n         return allowingCondition \u0026\u0026 !hasNodeBefore(aAnnotation)\n             || !allowingCondition \u0026\u0026 !hasNodeBeside(aAnnotation)\n             || mAllowSamelineMultipleAnnotations;\n     }\n\\ No newline at end of file\n"
+    },
+    "02655f16a014fcf483ed29eaa134a3ef109c1bbf": {
+      "type": "Yintroduced",
+      "commitMessage": "AnnotationLocationCheck fixed. #302\n",
+      "commitDate": 1413733995000,
+      "commitName": "02655f16a014fcf483ed29eaa134a3ef109c1bbf",
+      "commitAuthor": "maxvetrenko"
+    }
+  }
+}

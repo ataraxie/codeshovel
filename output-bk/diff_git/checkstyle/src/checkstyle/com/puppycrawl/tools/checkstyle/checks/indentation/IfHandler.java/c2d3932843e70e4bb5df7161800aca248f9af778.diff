@@ -1,0 +1,94 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/IfHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/IfHandler.java
+index f7eca1434..eb03890a3 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/IfHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/IfHandler.java
+@@ -35,87 +35,87 @@ public class IfHandler extends BlockParentHandler
+      * @param aIndentCheck   the indentation check
+      * @param aAst           the abstract syntax tree
+      * @param aParent        the parent handler
+      */
+     public IfHandler(IndentationCheck aIndentCheck,
+         DetailAST aAst, ExpressionHandler aParent)
+     {
+         super(aIndentCheck, "if", aAst, aParent);
+     }
+ 
+     /**
+      * Indentation level suggested for a child element. Children don't have
+      * to respect this, but most do.
+      *
+      * @param aChild  child AST (so suggestion level can differ based on child
+      *                  type)
+      *
+      * @return suggested indentation for child
+      */
+     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)
+     {
+         if (aChild instanceof ElseHandler) {
+             return getLevel();
+         }
+         return super.suggestedChildLevel(aChild);
+     }
+ 
+     /**
+      * Compute the indentation amount for this handler.
+      *
+      * @return the expected indentation amount
+      */
+     protected IndentLevel getLevelImpl()
+     {
+         if (isIfAfterElse()) {
+             return getParent().getLevel();
+         }
+         return super.getLevelImpl();
+     }
+ 
+     /**
+      * Determines if this 'if' statement is part of an 'else' clause
+      * and on the same line.
+      *
+      * @return true if this 'if' is part of an 'else', false otherwise
+      */
+     private boolean isIfAfterElse()
+     {
+         // check if there is an 'else' and an 'if' on the same line
+         DetailAST parent = getMainAst().getParent();
+-        return parent.getType() == TokenTypes.LITERAL_ELSE
+-            && parent.getLineNo() == getMainAst().getLineNo();
++        return (parent.getType() == TokenTypes.LITERAL_ELSE)
++            && (parent.getLineNo() == getMainAst().getLineNo());
+     }
+ 
+     /**
+      * Check the indentation of the top level token.
+      */
+     protected void checkToplevelToken()
+     {
+         if (isIfAfterElse()) {
+             return;
+         }
+ 
+         super.checkToplevelToken();
+     }
+ 
+     /**
+      * Check the indentation of the conditional expression.
+      */
+     private void checkCondExpr()
+     {
+         DetailAST condAst = (DetailAST)
+             getMainAst().findFirstToken(TokenTypes.LPAREN).getNextSibling();
+         IndentLevel expected = new IndentLevel(getLevel(), getBasicOffset());
+ 
+         checkExpressionSubtree(condAst, expected, false, false);
+     }
+ 
+     /**
+      * Check the indentation of the expression we are handling.
+      */
+     public void checkIndentation()
+     {
+         super.checkIndentation();
+         checkCondExpr();
+     }
+ }

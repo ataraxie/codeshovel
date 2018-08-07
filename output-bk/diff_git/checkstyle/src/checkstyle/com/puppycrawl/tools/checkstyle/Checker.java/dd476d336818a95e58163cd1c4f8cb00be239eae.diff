@@ -1,0 +1,108 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+index 0c029209c..d26cb3469 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -124,102 +124,102 @@ public class Checker
+          * Parser warning-reporting function, does nothing.
+          * @param aMsg the error message
+          */
+         public void reportWarning(String aMsg)
+         {
+         }
+     }
+ 
+     /** configuration */
+     private final Configuration mConfig;
+ 
+     /** cache file **/
+     private final PropertyCacheFile mCache;
+ 
+     /** vector of listeners */
+     private final ArrayList mListeners = new ArrayList();
+ 
+     /**
+      * Constructs the object.
+      * @param aConfig contains the configuration to check with
+      * @throws RESyntaxException unable to create a regexp object
+      **/
+     public Checker(Configuration aConfig)
+         throws RESyntaxException
+     {
+         mConfig = aConfig;
+         mCache = new PropertyCacheFile(aConfig);
+         final Verifier v = new Verifier(aConfig);
+         VerifierSingleton.setInstance(v);
+     }
+ 
+     /** Cleans up the object **/
+     public void destroy()
+     {
+         mCache.destroy();
+ 
+         // close all listeners
+         final Iterator it = mListeners.iterator();
+         while (it.hasNext()) {
+             final AuditListener listener = (AuditListener) it.next();
+             final OutputStream os = listener.getOutputStream();
+             // close only those that can be closed...
+             if ((os != System.out) && (os != System.err) && (os != null)) {
+                 try  {
+                     os.flush();
+                     os.close();
+                 }
+                 catch (IOException ignored) {
+                 }
+             }
++            it.remove();
+         }
+-        it.remove();
+     }
+ 
+     /**
+      * Add the listener that will be used to receive events from the audit
+      * @param aListener the nosy thing
+      */
+     public void addListener(AuditListener aListener)
+     {
+         mListeners.add(aListener);
+     }
+ 
+     /**
+      * Processes a set of files.
+      * Once this is done, it is highly recommended to call for
+      * the destroy method to close and remove the listeners.
+      * @param aFiles the list of files to be audited.
+      * @return the total number of errors found
+      * @see #destroy()
+      */
+     public int process(String[] aFiles)
+     {
+         int total = 0;
+         fireAuditStarted();
+ 
+         // If you move checkPackageHtml() around beware of the caching
+         // functionality of checkstyle. Make sure that package.html
+         // checks are not skipped because of caching. Otherwise you
+         // might e.g. have a package.html file, check all java files
+         // without errors, delete package.html and then recheck without
+         // errors because the html file is not covered by the cache.
+         total += checkPackageHtml(aFiles);
+ 
+         for (int i = 0; i < aFiles.length; i++) {
+             total += process(aFiles[i]);
+         }
+         fireAuditFinished();
+         return total;
+     }
+ 
+     /**
+      * Processes a specified file and prints out all errors found.
+      * @return the number of errors found
+      * @param aFileName the name of the file to process
+      **/
+     private int process(String aFileName)
+     {
+         final File f = new File(aFileName);
+         final long timestamp = f.lastModified();
+         if (mCache.alreadyChecked(aFileName, timestamp)) {
+             return 0;

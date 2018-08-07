@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SuppressWithNearbyCommentFilter.java",
+  "functionName": "matchesTag",
+  "functionId": "matchesTag___event-TreeWalkerAuditEvent",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java",
+  "functionStartLine": 215,
+  "functionEndLine": 224,
+  "changeHistory": [
+    "6d9e8ece85007117e048fef55469623b830f9446",
+    "83b7bbec522c6235ab8858c2d2a3fcf124f49e57",
+    "f418179fceee506395546e5e08ed168fa120a34c",
+    "c3c1b9ae062635d0be858088ed2c1fcf366ec33f"
+  ],
+  "changeHistoryShort": {
+    "6d9e8ece85007117e048fef55469623b830f9446": "Yparameterchange",
+    "83b7bbec522c6235ab8858c2d2a3fcf124f49e57": "Ybodychange",
+    "f418179fceee506395546e5e08ed168fa120a34c": "Yrename",
+    "c3c1b9ae062635d0be858088ed2c1fcf366ec33f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6d9e8ece85007117e048fef55469623b830f9446": {
+      "type": "Yparameterchange",
+      "commitMessage": "Issue #4714: Make SuppressionCommentFilter and SuppressWithNearbyCommentFilter children of TreeWalker\n",
+      "commitDate": 1500928695000,
+      "commitName": "6d9e8ece85007117e048fef55469623b830f9446",
+      "commitAuthor": "Timur",
+      "commitDateOld": 1500824788000,
+      "commitNameOld": "2c71b5433175f9689c308c47207f03d029671d11",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 1.2,
+      "commitsBetweenForRepo": 5,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n-    private boolean matchesTag(AuditEvent event) {\n+    private boolean matchesTag(TreeWalkerAuditEvent event) {\n         boolean result \u003d false;\n         for (final Tag tag : tags) {\n             if (tag.isMatch(event)) {\n                 result \u003d true;\n                 break;\n             }\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "83b7bbec522c6235ab8858c2d2a3fcf124f49e57": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.filters\n",
+      "commitDate": 1493349546000,
+      "commitName": "83b7bbec522c6235ab8858c2d2a3fcf124f49e57",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1488165925000,
+      "commitNameOld": "ce21086e087661553f3a774c38362327ee88996a",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 60.0,
+      "commitsBetweenForRepo": 231,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,10 @@\n     private boolean matchesTag(AuditEvent event) {\n+        boolean result \u003d false;\n         for (final Tag tag : tags) {\n             if (tag.isMatch(event)) {\n-                return true;\n+                result \u003d true;\n+                break;\n             }\n         }\n-        return false;\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "f418179fceee506395546e5e08ed168fa120a34c": {
+      "type": "Yrename",
+      "commitMessage": "Issue #1555: Rename method returning boolean to use question word\n\nFixes `BooleanMethodNameMustStartWithQuestion` inspection violations.\n\nDescription:\n\u003eReports boolean methods whose names do not start with a question word. Boolean methods that override library methods are ignored by this inspection.\n",
+      "commitDate": 1440912583000,
+      "commitName": "f418179fceee506395546e5e08ed168fa120a34c",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440827981000,
+      "commitNameOld": "c3c1b9ae062635d0be858088ed2c1fcf366ec33f",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 0.98,
+      "commitsBetweenForRepo": 30,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n-    private boolean matchTag(AuditEvent event) {\n+    private boolean matchesTag(AuditEvent event) {\n         for (final Tag tag : tags) {\n             if (tag.isMatch(event)) {\n                 return true;\n             }\n         }\n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "c3c1b9ae062635d0be858088ed2c1fcf366ec33f": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1566: ReturnCount violation fixed for SuppressWithNearbyCommentFilter\n",
+      "commitDate": 1440827981000,
+      "commitName": "c3c1b9ae062635d0be858088ed2c1fcf366ec33f",
+      "commitAuthor": "Ruslan Diachenko"
+    }
+  }
+}

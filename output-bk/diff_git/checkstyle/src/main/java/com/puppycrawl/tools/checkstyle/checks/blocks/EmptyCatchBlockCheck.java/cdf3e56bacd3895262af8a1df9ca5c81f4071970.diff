@@ -1,0 +1,199 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyCatchBlockCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyCatchBlockCheck.java
+index 04c18b4ca..310a99aef 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyCatchBlockCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyCatchBlockCheck.java
+@@ -1,77 +1,77 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.blocks;
+ 
+ import java.util.regex.Pattern;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+-import com.puppycrawl.tools.checkstyle.utils.Utils;
++import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * <p>
+  * Checks for empty catch blocks. There are two options to make validation more precise:
+  * </p>
+  * <p>
+  * <b>exceptionVariableName</b> - the name of variable associated with exception,
+  * if Check meets variable name matching specified value - empty block is suppressed.<br>
+  *  default value: &quot;^$&quot;
+  * </p>
+  * <p>
+  * <b>commentFormat</b> - the format of the first comment inside empty catch
+  * block, if Check meets comment inside empty catch block matching specified format
+  *  - empty block is suppressed. If it is multi-line comment - only its first line is analyzed.<br>
+  * default value: &quot;.*&quot;<br>
+  * So, by default Check allows empty catch block with any comment inside.
+  * </p>
+  * <p>
+  * If both options are specified - they are applied by <b>any of them is matching</b>.
+  * </p>
+  * Examples:
+  * <p>
+  * To configure the Check to suppress empty catch block if exception's variable name is
+  *  <b>expected</b> or <b>ignore</b>:
+  * </p>
+  * <pre>
+  * &lt;module name=&quot;EmptyCatchBlock&quot;&gt;
+  *    &lt;property name=&quot;exceptionVariableName&quot; value=&quot;ignore|expected;/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * <p>
+  * Such empty blocks would be both suppressed:<br>
+  * </p>
+  * <pre>
+  * {@code
+  * try {
+  *     throw new RuntimeException();
+  * } catch (RuntimeException expected) {
+  * }
+  * }
+  * {@code
+  * try {
+  *     throw new RuntimeException();
+  * } catch (RuntimeException ignore) {
+  * }
+  * }
+  * </pre>
+  * <p>
+  * To configure the Check to suppress empty catch block if single-line comment inside
+  *  is &quot;//This is expected&quot;:
+@@ -110,113 +110,113 @@ import com.puppycrawl.tools.checkstyle.utils.Utils;
+  * {@code
+  * try {
+  *     throw new RuntimeException();
+  * } catch (RuntimeException e) {
+  *     //This is expected
+  * }
+  * }
+  * {@code
+  * try {
+  *     throw new RuntimeException();
+  * } catch (RuntimeException myException) {
+  *
+  * }
+  * }
+  * </pre>
+  * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+  */
+ public class EmptyCatchBlockCheck extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_CATCH_BLOCK_EMPTY = "catch.block.empty";
+ 
+     /** Format of skipping exception's variable name. */
+     private String exceptionVariableName = "^$";
+ 
+     /** Format of comment. */
+     private String commentFormat = ".*";
+ 
+     /**
+      * Regular expression pattern compiled from exception's variable name.
+      */
+     private Pattern variableNameRegexp = Pattern.compile(exceptionVariableName);
+ 
+     /**
+      * Regular expression pattern compiled from comment's format.
+      */
+     private Pattern commentRegexp = Pattern.compile(commentFormat);
+ 
+     /**
+      * Setter for exception's variable name format.
+      * @param exceptionVariableName
+      *        format of exception's variable name.
+      * @throws org.apache.commons.beanutils.ConversionException
+      *         if unable to create Pattern object.
+      */
+     public void setExceptionVariableName(String exceptionVariableName) {
+         this.exceptionVariableName = exceptionVariableName;
+-        variableNameRegexp = Utils.createPattern(exceptionVariableName);
++        variableNameRegexp = CommonUtils.createPattern(exceptionVariableName);
+     }
+ 
+     /**
+      * Setter for comment format.
+      * @param commentFormat
+      *        format of comment.
+      * @throws org.apache.commons.beanutils.ConversionException
+      *         if unable to create Pattern object.
+      */
+     public void setCommentFormat(String commentFormat) {
+         this.commentFormat = commentFormat;
+-        commentRegexp = Utils.createPattern(commentFormat);
++        commentRegexp = CommonUtils.createPattern(commentFormat);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.LITERAL_CATCH,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public boolean isCommentNodesRequired() {
+         return true;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         visitCatchBlock(ast);
+     }
+ 
+     /**
+      * Visits catch ast node, if it is empty catch block - checks it according to
+      *  Check's options. If exception's variable name or comment inside block are matching
+      *   specified regexp - skips from consideration, else - puts violation.
+      * @param catchAst {@link TokenTypes#LITERAL_CATCH LITERAL_CATCH}
+      */
+     private void visitCatchBlock(DetailAST catchAst) {
+         if (isEmptyCatchBlock(catchAst)) {
+             final String commentContent = getCommentFirstLine(catchAst);
+             if (isVerifiable(catchAst, commentContent)) {
+                 log(catchAst.getLineNo(), MSG_KEY_CATCH_BLOCK_EMPTY);
+             }
+         }
+     }
+ 
+     /**
+      * Gets the first line of comment in catch block. If comment is single-line -
+      *  returns it fully, else if comment is multi-line - returns the first line.
+      * @param catchAst {@link TokenTypes#LITERAL_CATCH LITERAL_CATCH}
+      * @return the first line of comment in catch block, "" if no comment was found.
+      */

@@ -1,0 +1,133 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "UniquePropertiesCheck.java",
+  "functionName": "put",
+  "functionId": "put___key-Object__value-Object",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/UniquePropertiesCheck.java",
+  "functionStartLine": 158,
+  "functionEndLine": 165,
+  "changeHistory": [
+    "4c10bc55b4aea0f7e3b95b06d820eedb7c6a6fb2",
+    "ea963bb721aafd9584242cedf2781f0294f2b18d",
+    "e936c4c6fae73ec4c53aa8f2f9db302d064e1b8e",
+    "68959eeefff4d4a5b295cefbec242c643d523c6b",
+    "18ed7958cffb4c1b76f385121d488f135b110cf8",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "3ba599059682310f72e0fb7e5354be29e9ead169"
+  ],
+  "changeHistoryShort": {
+    "4c10bc55b4aea0f7e3b95b06d820eedb7c6a6fb2": "Ymodifierchange",
+    "ea963bb721aafd9584242cedf2781f0294f2b18d": "Ybodychange",
+    "e936c4c6fae73ec4c53aa8f2f9db302d064e1b8e": "Ybodychange",
+    "68959eeefff4d4a5b295cefbec242c643d523c6b": "Ybodychange",
+    "18ed7958cffb4c1b76f385121d488f135b110cf8": "Ymultichange(Ymodifierchange,Ybodychange)",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "3ba599059682310f72e0fb7e5354be29e9ead169": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4c10bc55b4aea0f7e3b95b06d820eedb7c6a6fb2": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Issue #4724: fix all violations from the sixth part of idea violations\n",
+      "commitDate": 1500859159000,
+      "commitName": "4c10bc55b4aea0f7e3b95b06d820eedb7c6a6fb2",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1500613458000,
+      "commitNameOld": "b1a0f2b5f61a997e0b7e3fdff8f19a0ae0180ac6",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 2.84,
+      "commitsBetweenForRepo": 18,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n-        public Object put(Object key, Object value) {\n+        public synchronized Object put(Object key, Object value) {\n             final Object oldValue \u003d super.put(key, value);\n             if (oldValue !\u003d null \u0026\u0026 key instanceof String) {\n                 final String keyString \u003d (String) key;\n                 duplicatedKeys.add(keyString);\n             }\n             return oldValue;\n         }\n\\ No newline at end of file\n"
+    },
+    "ea963bb721aafd9584242cedf2781f0294f2b18d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: \u0027missing javadoc comment\u0027 violations partial fix\n",
+      "commitDate": 1440015295000,
+      "commitName": "ea963bb721aafd9584242cedf2781f0294f2b18d",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439697304000,
+      "commitNameOld": "e936c4c6fae73ec4c53aa8f2f9db302d064e1b8e",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 3.68,
+      "commitsBetweenForRepo": 64,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n         public Object put(Object key, Object value) {\n             final Object oldValue \u003d super.put(key, value);\n             if (oldValue !\u003d null \u0026\u0026 key instanceof String) {\n                 final String keyString \u003d (String) key;\n-                duplicatedStrings.add(keyString);\n+                duplicatedKeys.add(keyString);\n             }\n             return oldValue;\n         }\n\\ No newline at end of file\n"
+    },
+    "e936c4c6fae73ec4c53aa8f2f9db302d064e1b8e": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary synchronization. #1555\n\nFixes `NonSerializableFieldInSerializableClass` inspection violation.\n\nDescription:\n\u003eReports non-synchronized methods overriding synchronized methods.\n\nFixes `NonSynchronizedMethodOverridesSynchronizedMethod` inspection violation.\n\nDescription:\n\u003eReports non-Serializable fields in Serializable classes. Such fields will result in runtime exceptions if the object is serialized. Fields declared transient or static are not reported, nor are fields of classes which have defined a writeObject method. For purposes of this inspection, fields with java.util.Collection or java.util.Map types are assumed to be Serializable, unless the types they are declared to contain are non-Serializable.\n",
+      "commitDate": 1439697304000,
+      "commitName": "e936c4c6fae73ec4c53aa8f2f9db302d064e1b8e",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439189278000,
+      "commitNameOld": "13900919907b38384a0405d349cfc659b2b3d985",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 5.88,
+      "commitsBetweenForRepo": 67,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,8 @@\n         public Object put(Object key, Object value) {\n-            synchronized (lock) {\n-                final Object oldValue \u003d super.put(key, value);\n-                if (oldValue !\u003d null \u0026\u0026 key instanceof String) {\n-                    final String keyString \u003d (String) key;\n-                    duplicatedStrings.add(keyString);\n-                }\n-                return oldValue;\n+            final Object oldValue \u003d super.put(key, value);\n+            if (oldValue !\u003d null \u0026\u0026 key instanceof String) {\n+                final String keyString \u003d (String) key;\n+                duplicatedStrings.add(keyString);\n             }\n+            return oldValue;\n         }\n\\ No newline at end of file\n"
+    },
+    "68959eeefff4d4a5b295cefbec242c643d523c6b": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: AvoidNestedBlocks, FinalLocalVariable, RegexpSingleline (THIS as a lock) violations fixed\n",
+      "commitDate": 1439006908000,
+      "commitName": "68959eeefff4d4a5b295cefbec242c643d523c6b",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1438566537000,
+      "commitNameOld": "940eb6509fb1cee0d6789b69578c07a6b7af9fff",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 5.1,
+      "commitsBetweenForRepo": 37,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n         public Object put(Object key, Object value) {\n-            synchronized (this) {\n+            synchronized (lock) {\n                 final Object oldValue \u003d super.put(key, value);\n                 if (oldValue !\u003d null \u0026\u0026 key instanceof String) {\n                     final String keyString \u003d (String) key;\n                     duplicatedStrings.add(keyString);\n                 }\n                 return oldValue;\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "18ed7958cffb4c1b76f385121d488f135b110cf8": {
+      "type": "Ymultichange(Ymodifierchange,Ybodychange)",
+      "commitMessage": "PMD rule AvoidSynchronizedAtMethodLevel is activated. Issue #744\n",
+      "commitDate": 1429832099000,
+      "commitName": "18ed7958cffb4c1b76f385121d488f135b110cf8",
+      "commitAuthor": "Roman Ivanov",
+      "subchanges": [
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "3ba599059682310f72e0fb7e5354be29e9ead169": {
+      "type": "Yintroduced",
+      "commitMessage": "Implemented UniqueProperties check\n",
+      "commitDate": 1382688688000,
+      "commitName": "3ba599059682310f72e0fb7e5354be29e9ead169",
+      "commitAuthor": "Pavel Baranchikov"
+    }
+  }
+}

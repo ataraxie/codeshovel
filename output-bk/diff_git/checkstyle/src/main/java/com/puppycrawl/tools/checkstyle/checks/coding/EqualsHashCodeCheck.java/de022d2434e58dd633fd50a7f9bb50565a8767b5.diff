@@ -1,0 +1,77 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsHashCodeCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsHashCodeCheck.java
+index 2243fdc50..9198e2300 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsHashCodeCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsHashCodeCheck.java
+@@ -91,67 +91,67 @@ public class EqualsHashCodeCheck
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final DetailAST modifiers = ast.getFirstChild();
+         final AST type = ast.findFirstToken(TokenTypes.TYPE);
+         final AST methodName = ast.findFirstToken(TokenTypes.IDENT);
+         final DetailAST parameters = ast.findFirstToken(TokenTypes.PARAMETERS);
+ 
+         if (type.getFirstChild().getType() == TokenTypes.LITERAL_BOOLEAN
+                 && "equals".equals(methodName.getText())
+                 && modifiers.branchContains(TokenTypes.LITERAL_PUBLIC)
+                 && parameters.getChildCount() == 1
+                 && isObjectParam(parameters.getFirstChild())
+             ) {
+             objBlockWithEquals.put(ast.getParent(), ast);
+         }
+         else if (type.getFirstChild().getType() == TokenTypes.LITERAL_INT
+                 && "hashCode".equals(methodName.getText())
+                 && modifiers.branchContains(TokenTypes.LITERAL_PUBLIC)
+                 && parameters.getFirstChild() == null) {
+             objBlockWithHashCode.put(ast.getParent(), ast);
+         }
+     }
+ 
+     /**
+      * Determines if an AST is a formal param of type Object (or subclass).
+      * @param firstChild the AST to check
+      * @return true iff firstChild is a parameter of an Object type.
+      */
+     private static boolean isObjectParam(AST firstChild) {
+         final AST modifiers = firstChild.getFirstChild();
+         final AST type = modifiers.getNextSibling();
+         switch (type.getFirstChild().getType()) {
+             case TokenTypes.LITERAL_BOOLEAN:
+             case TokenTypes.LITERAL_BYTE:
+             case TokenTypes.LITERAL_CHAR:
+             case TokenTypes.LITERAL_DOUBLE:
+             case TokenTypes.LITERAL_FLOAT:
+             case TokenTypes.LITERAL_INT:
+             case TokenTypes.LITERAL_LONG:
+             case TokenTypes.LITERAL_SHORT:
+                 return false;
+             default:
+                 return true;
+         }
+     }
+ 
+     @Override
+     public void finishTree(DetailAST rootAST) {
+-        for (Map.Entry<DetailAST, DetailAST> detailASTDetailASTEntry : objBlockWithEquals
+-                .entrySet()) {
+-            if (objBlockWithHashCode.remove(detailASTDetailASTEntry.getKey()) == null) {
++        objBlockWithEquals
++            .entrySet().stream().filter(detailASTDetailASTEntry ->
++                objBlockWithHashCode.remove(detailASTDetailASTEntry.getKey()) == null)
++            .forEach(detailASTDetailASTEntry -> {
+                 final DetailAST equalsAST = detailASTDetailASTEntry.getValue();
+                 log(equalsAST.getLineNo(), equalsAST.getColumnNo(), MSG_KEY_HASHCODE);
+-            }
+-        }
++            });
+         for (Map.Entry<DetailAST, DetailAST> detailASTDetailASTEntry : objBlockWithHashCode
+                 .entrySet()) {
+             final DetailAST equalsAST = detailASTDetailASTEntry.getValue();
+             log(equalsAST.getLineNo(), equalsAST.getColumnNo(), MSG_KEY_EQUALS);
+         }
+ 
+         objBlockWithEquals.clear();
+         objBlockWithHashCode.clear();
+     }
+ }

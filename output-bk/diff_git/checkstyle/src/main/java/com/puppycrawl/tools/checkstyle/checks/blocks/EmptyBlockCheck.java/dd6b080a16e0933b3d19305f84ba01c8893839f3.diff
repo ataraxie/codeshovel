@@ -1,0 +1,129 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java
+index 053d6162a..62a4c17ca 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java
+@@ -49,124 +49,122 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
+  * <p> An example of how to configure the check for the {@link
+  * BlockOption#TEXT} policy and only try blocks is:
+  * </p>
+  *
+  * <pre>
+  * &lt;module name="EmptyBlock"&gt;
+  *    &lt;property name="tokens" value="LITERAL_TRY"/&gt;
+  *    &lt;property name="option" value="text"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author Lars Kühne
+  */
+ public class EmptyBlockCheck
+     extends AbstractOptionCheck<BlockOption>
+ {
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_BLOCK_NO_STMT = "block.noStmt";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY_BLOCK_EMPTY = "block.empty";
+ 
+     /**
+      * Creates a new <code>EmptyBlockCheck</code> instance.
+      */
+     public EmptyBlockCheck()
+     {
+         super(BlockOption.STMT, BlockOption.class);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.LITERAL_SWITCH,
+-            //TODO: does this handle TokenTypes.LITERAL_SYNCHRONIZED?
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.LITERAL_CASE,
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.LITERAL_DEFAULT,
+             TokenTypes.ARRAY_INIT,
+-            //TODO: does this handle TokenTypes.LITERAL_SYNCHRONIZED?
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         final DetailAST slistToken = ast.findFirstToken(TokenTypes.SLIST);
+         final DetailAST leftCurly = slistToken != null
+                 ? slistToken : ast.findFirstToken(TokenTypes.LCURLY);
+         if (leftCurly != null) {
+             if (getAbstractOption() == BlockOption.STMT) {
+                 boolean emptyBlock;
+                 if (leftCurly.getType() == TokenTypes.LCURLY) {
+                     emptyBlock = leftCurly.getNextSibling().getType() != TokenTypes.CASE_GROUP;
+                 }
+                 else {
+                     emptyBlock = leftCurly.getChildCount() <= 1;
+                 }
+                 if (emptyBlock) {
+                     log(leftCurly.getLineNo(),
+                         leftCurly.getColumnNo(),
+                         MSG_KEY_BLOCK_NO_STMT,
+                         ast.getText());
+                 }
+             }
+             else if (getAbstractOption() == BlockOption.TEXT
+                     && !hasText(leftCurly))
+             {
+                 log(leftCurly.getLineNo(),
+                     leftCurly.getColumnNo(),
+                     MSG_KEY_BLOCK_EMPTY,
+                     ast.getText());
+             }
+         }
+     }
+ 
+     /**
+      * @param slistAST a <code>DetailAST</code> value
+      * @return whether the SLIST token contains any text.
+      */
+     protected boolean hasText(final DetailAST slistAST)
+     {
+         boolean retVal = false;
+ 
+         final DetailAST rightCurly = slistAST.findFirstToken(TokenTypes.RCURLY);
+         final DetailAST rcurlyAST = rightCurly != null
+                 ? rightCurly : slistAST.getParent().findFirstToken(TokenTypes.RCURLY);
+         if (rcurlyAST != null) {
+             final int slistLineNo = slistAST.getLineNo();
+             final int slistColNo = slistAST.getColumnNo();

@@ -1,0 +1,104 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/AvoidStaticImportCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/AvoidStaticImportCheck.java
+index e7dcce370..7100acc33 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/AvoidStaticImportCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/imports/AvoidStaticImportCheck.java
+@@ -34,98 +34,98 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * at the import statement).
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="AvoidStaticImport"&gt;
+  *   &lt;property name="excludes"
+  *       value="java.lang.System.out,java.lang.Math.*"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * The optional "excludes" property allows for certain classes via a star
+  * notation to be excluded such as java.lang.Math.* or specific
+  * static members to be excluded like java.lang.System.out for a variable
+  * or java.lang.Math.random for a method.
+  *
+  * <p>
+  * If you exclude a starred import on a class this automatically
+  * excludes each member individually.
+  * </p>
+  *
+  * <p>
+  * For example:
+  * Excluding java.lang.Math.* will allow the import of
+  * each static member in the Math class individually like
+  * java.lang.Math.PI
+  * </p>
+  * @author Travis Schneeberger
+  * @version 1.0
+  */
+ public class AvoidStaticImportCheck
+     extends Check
+ {
+     /** the classes/static members to exempt from this check. */
+     private String[] mExcludes = new String[0];
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.STATIC_IMPORT};
+     }
+ 
+     /**
+      * Sets the list of classes or static members to be exempt from the check.
+      * @param aExcludes a list of fully-qualified class names/specific
+      * static members where static imports are ok
+      */
+     public void setExcludes(String[] aExcludes)
+     {
+-        mExcludes = aExcludes;
++        mExcludes = aExcludes.clone();
+     }
+ 
+     @Override
+     public void visitToken(final DetailAST aAST)
+     {
+         final DetailAST startingDot =
+             (DetailAST) aAST.getFirstChild().getNextSibling();
+         final FullIdent name = FullIdent.createFullIdent(startingDot);
+ 
+         if ((null != name) && !isExempt(name.getText())) {
+             log(startingDot.getLineNo(), "import.avoidStatic", name.getText());
+         }
+     }
+ 
+     /**
+      * Checks if a class or static member is exempt from known excludes.
+      *
+      * @param aClassOrStaticMember
+      *                the class or static member
+      * @return true if except false if not
+      */
+     private boolean isExempt(String aClassOrStaticMember)
+     {
+         for (String exclude : mExcludes) {
+             if (aClassOrStaticMember.equals(exclude)) {
+                 return true;
+             }
+             else if (exclude.endsWith(".*")) {
+                 //this section allows explicit imports
+                 //to be exempt when configured using
+                 //a starred import
+                 final String excludeMinusDotStar =
+                     exclude.substring(0, exclude.length() - 2);
+                 if (aClassOrStaticMember.startsWith(excludeMinusDotStar)) {
+                     final String member =
+                         aClassOrStaticMember.substring(
+                             excludeMinusDotStar.length() + 1);
+                     //if it contains a dot then it is not a member but a package
+                     if (member.indexOf('.') == -1) {
+                         return true;
+                     }
+                 }
+             }
+         }
+         return false;
+     }
+ }

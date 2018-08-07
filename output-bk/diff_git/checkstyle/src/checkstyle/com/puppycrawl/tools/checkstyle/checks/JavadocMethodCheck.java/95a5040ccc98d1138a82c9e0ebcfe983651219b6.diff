@@ -1,0 +1,113 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/JavadocMethodCheck.java
+index db0330c83..469e3f1b0 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/JavadocMethodCheck.java
+@@ -112,100 +112,108 @@ public class JavadocMethodCheck
+     private static final RE MATCH_JAVADOC_NOARG_CURLY =
+         Utils.createRE(MATCH_JAVADOC_NOARG_CURLY_PAT);
+ 
+     /** full identifier for package of the method **/
+     private FullIdent mPackageFullIdent = null;
+ 
+     /** imports details **/
+     private Set mImports = new HashSet();
+ 
+     /** the visibility scope where Javadoc comments are checked **/
+     private Scope mScope = Scope.PRIVATE;
+ 
+     /** check for unused throws **/
+     private boolean mCheckUnusedThrows = false;
+ 
+     /**
+      * Set the scope.
+      * @param aFrom a <code>String</code> value
+      */
+     public void setScope(String aFrom)
+     {
+         mScope = Scope.getInstance(aFrom);
+     }
+ 
+     /**
+      * Set whether to check for unused throws.
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setCheckUnusedThrows(boolean aFlag)
+     {
+         mCheckUnusedThrows = aFlag;
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.IMPORT,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF};
+     }
+     
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF};
+     }
++    
++    /** @see com.puppycrawl.tools.checkstyle.api.Check */
++    public int[] getRequiredTokens()
++    {
++        return new int[] {
++            TokenTypes.PACKAGE_DEF,
++            TokenTypes.IMPORT};
++    }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void beginTree()
+     {
+         mPackageFullIdent = FullIdent.createFullIdent(null);
+         mImports.clear();
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void visitToken(DetailAST aAST)
+     {
+         if (aAST.getType() == TokenTypes.PACKAGE_DEF) {
+             if (mCheckUnusedThrows) {
+                 processPackage(aAST);
+             }
+         }
+         else if (aAST.getType() == TokenTypes.IMPORT) {
+             if (mCheckUnusedThrows) {
+                 processImport(aAST);
+             }
+         }
+         else {
+             //TokenTypes.METHOD_DEF or TokenTypes.CTOR_DEF
+             processMethod(aAST);
+         }
+     }
+ 
+ 
+ 
+     /**
+      * Collects the details of a package.
+      * @param aAST node containing the package details
+      */
+     private void processPackage(DetailAST aAST)
+     {
+         final DetailAST nameAST = (DetailAST) aAST.getFirstChild();
+         mPackageFullIdent = FullIdent.createFullIdent(nameAST);
+     }
+ 
+     /**
+      * Collects the details of imports.
+      * @param aAST node containing the import details
+      */
+     private void processImport(DetailAST aAST)
+     {
+         final FullIdent name = getImportText(aAST);
+         if (name != null) {
+             mImports.add(name.getText());
+         }
+     }

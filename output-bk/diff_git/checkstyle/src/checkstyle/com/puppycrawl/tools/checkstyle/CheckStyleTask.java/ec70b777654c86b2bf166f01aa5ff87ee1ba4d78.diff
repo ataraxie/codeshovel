@@ -1,0 +1,215 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+index 0d7ae3667..78fcc3124 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/CheckStyleTask.java
+@@ -1,194 +1,209 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2003  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle;
+ 
+ import java.io.File;
+ import java.io.FileInputStream;
+ import java.io.FileNotFoundException;
+ import java.io.FileOutputStream;
+ import java.io.IOException;
+ import java.io.OutputStream;
+ import java.util.ArrayList;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Properties;
+ import java.util.Hashtable;
+ import java.util.ResourceBundle;
+ import java.net.URL;
+ 
+ import com.puppycrawl.tools.checkstyle.api.AuditListener;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import org.apache.tools.ant.AntClassLoader;
+ import org.apache.tools.ant.BuildException;
+ import org.apache.tools.ant.DirectoryScanner;
+ import org.apache.tools.ant.Project;
+ import org.apache.tools.ant.Task;
+ import org.apache.tools.ant.taskdefs.LogOutputStream;
+ import org.apache.tools.ant.types.EnumeratedAttribute;
+ import org.apache.tools.ant.types.FileSet;
+ import org.apache.tools.ant.types.Path;
++import org.apache.tools.ant.types.Reference;
+ 
+ /**
+  * An implementation of a ANT task for calling checkstyle. See the documentation
+  * of the task for usage.
+  * @author Oliver Burn
+  */
+ public class CheckStyleTask
+     extends Task
+ {
+     /** poor man's enum for an xml formatter */
+     private static final String E_XML = "xml";
+     /** poor man's enum for an plain formatter */
+     private static final String E_PLAIN = "plain";
+ 
+     /** class path to locate class files */
+     private Path mClasspath;
+ 
+     /** name of file to check */
+     private String mFileName;
+ 
+     /** config file containing configuration */
+     private String mConfigLocation;
+ 
+     /** contains package names */
+     private File mPackageNamesFile;
+ 
+     /** whether to fail build on violations */
+     private boolean mFailOnViolation = true;
+ 
+     /** property to set on violations */
+     private String mFailureProperty;
+ 
+     /** contains the filesets to process */
+     private final List mFileSets = new ArrayList();
+ 
+     /** contains the formatters to log to */
+     private final List mFormatters = new ArrayList();
+ 
+     /** contains the Properties to override */
+     private final List mOverrideProps = new ArrayList();
+ 
+     /** the name of the properties file */
+     private File mPropertiesFile;
+ 
+     ////////////////////////////////////////////////////////////////////////////
+     // Setters for ANT specific attributes
+     ////////////////////////////////////////////////////////////////////////////
+ 
+     /**
+      * Tells this task to set the named property to "true" when there
+      * is a violation.
+      * @param aPropertyName the name of the property to set
+      *                      in the event of an failure.
+      */
+     public void setFailureProperty(String aPropertyName)
+     {
+         mFailureProperty = aPropertyName;
+     }
+ 
+     /** @param aFail whether to fail if a violation is found */
+     public void setFailOnViolation(boolean aFail)
+     {
+         mFailOnViolation = aFail;
+     }
+ 
+     /**
+      * Adds a set of files (nested fileset attribute).
+      * @param aFS the file set to add
+      */
+     public void addFileset(FileSet aFS)
+     {
+         mFileSets.add(aFS);
+     }
+ 
+     /**
+      * Add a formatter.
+      * @param aFormatter the formatter to add for logging.
+      */
+     public void addFormatter(Formatter aFormatter)
+     {
+         mFormatters.add(aFormatter);
+     }
+ 
+     /**
+      * Add an override property.
+      * @param aProperty the property to add
+      */
+     public void addProperty(Property aProperty)
+     {
+         mOverrideProps.add(aProperty);
+     }
+ 
+     /**
+      * Set the class path.
+      * @param aClasspath the path to locate classes
+      */
+     public void setClasspath(Path aClasspath)
+     {
+-        mClasspath = aClasspath;
++        if (mClasspath == null) {
++            mClasspath = aClasspath;
++        }
++        else {
++            mClasspath.append(aClasspath);
++        }
++    }
++
++    /**
++     * Set the class path from a reference defined elsewhere.
++     * @param aClasspathRef the reference to an instance defining the classpath
++     */
++    public void setClasspathRef(Reference aClasspathRef)
++    {
++        createClasspath().setRefid(aClasspathRef);
+     }
+ 
+     /** @return a created path for locating classes */
+     public Path createClasspath()
+     {
+         if (mClasspath == null) {
+             mClasspath = new Path(getProject());
+         }
+         return mClasspath.createPath();
+     }
+ 
+     /** @param aFile the file to be checked */
+     public void setFile(File aFile)
+     {
+         mFileName = aFile.getAbsolutePath();
+     }
+ 
+     /** @param aFile the configuration file to use */
+     public void setConfig(File aFile)
+     {
+         setConfigLocation(aFile.getAbsolutePath());
+     }
+ 
+     /** @param aURL the URL of the configuration to use */
+     public void setConfigURL(URL aURL)
+     {
+         setConfigLocation(aURL.toExternalForm());
+     }
+ 
+     /**
+      * Sets the location of the configuration.
+      * @param aLocation the location, which is either a
+      */
+     private void setConfigLocation(String aLocation)
+     {
+         if (mConfigLocation != null) {
+             throw new BuildException(
+                 "Attributes 'config' and 'configURL' "
+                 + "must not be set at the same time");
+         }
+         mConfigLocation = aLocation;
+     }
+ 
+     /** @param aFile the package names file to use */
+     public void setPackageNamesFile(File aFile)
+     {
+         mPackageNamesFile = aFile;
+     }
+ 
+     ////////////////////////////////////////////////////////////////////////////

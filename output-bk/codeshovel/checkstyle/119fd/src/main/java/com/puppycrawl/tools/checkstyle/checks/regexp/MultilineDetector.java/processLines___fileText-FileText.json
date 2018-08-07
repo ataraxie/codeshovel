@@ -1,0 +1,179 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MultilineDetector.java",
+  "functionName": "processLines",
+  "functionId": "processLines___fileText-FileText",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/MultilineDetector.java",
+  "functionStartLine": 77,
+  "functionEndLine": 90,
+  "changeHistory": [
+    "5a4ebe6a7c99b9f83eadb8354f108e3c63632c4f",
+    "77733a452387aa2ee99fdc9a737633566cc7af3d",
+    "02dfe8c7c51e9df3ad1d3a391c5293c861c1982f",
+    "3bd699bd593414d63c7139aa410f13ec8341a027",
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+    "7d513f08c27c741105f712dc882fd4c3553f71e7",
+    "edc63f0d669bc7e02eb3d9cbf83b6c7dcb92501c",
+    "075b3084de3934dbf73f108110b36e01dcf10d1e",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "3cd6646941eca3da7d3b9a221c88e4c1d214876e",
+    "1c1eadb21184c3e8361cacb25a33d927f3a4e8d4"
+  ],
+  "changeHistoryShort": {
+    "5a4ebe6a7c99b9f83eadb8354f108e3c63632c4f": "Ybodychange",
+    "77733a452387aa2ee99fdc9a737633566cc7af3d": "Ybodychange",
+    "02dfe8c7c51e9df3ad1d3a391c5293c861c1982f": "Ybodychange",
+    "3bd699bd593414d63c7139aa410f13ec8341a027": "Ymultichange(Yparameterchange,Ybodychange)",
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1": "Ybodychange",
+    "7d513f08c27c741105f712dc882fd4c3553f71e7": "Ybodychange",
+    "edc63f0d669bc7e02eb3d9cbf83b6c7dcb92501c": "Ybodychange",
+    "075b3084de3934dbf73f108110b36e01dcf10d1e": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "3cd6646941eca3da7d3b9a221c88e4c1d214876e": "Ymultichange(Ymovefromfile,Ybodychange,Yparameterchange)",
+    "1c1eadb21184c3e8361cacb25a33d927f3a4e8d4": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "5a4ebe6a7c99b9f83eadb8354f108e3c63632c4f": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3433: Cut down on Checkstyle\u0027s dependencies on Guava (part 1) (#3446)\n\n",
+      "commitDate": 1474234990000,
+      "commitName": "5a4ebe6a7c99b9f83eadb8354f108e3c63632c4f",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1453387259000,
+      "commitNameOld": "77733a452387aa2ee99fdc9a737633566cc7af3d",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 241.29,
+      "commitsBetweenForRepo": 522,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,14 @@\n     public void processLines(FileText fileText) {\n         text \u003d new FileText(fileText);\n         resetState();\n \n-        if (Strings.isNullOrEmpty(options.getFormat())) {\n+        final String format \u003d options.getFormat();\n+        if (format \u003d\u003d null || format.isEmpty()) {\n             options.getReporter().log(0, MSG_EMPTY);\n         }\n         else {\n             matcher \u003d options.getPattern().matcher(fileText.getFullText());\n             findMatch();\n             finish();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "77733a452387aa2ee99fdc9a737633566cc7af3d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2836: renamed error message fields to match standard naming",
+      "commitDate": 1453387259000,
+      "commitName": "77733a452387aa2ee99fdc9a737633566cc7af3d",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 16.59,
+      "commitsBetweenForRepo": 19,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     public void processLines(FileText fileText) {\n         text \u003d new FileText(fileText);\n         resetState();\n \n         if (Strings.isNullOrEmpty(options.getFormat())) {\n-            options.getReporter().log(0, EMPTY);\n+            options.getReporter().log(0, MSG_EMPTY);\n         }\n         else {\n             matcher \u003d options.getPattern().matcher(fileText.getFullText());\n             findMatch();\n             finish();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "02dfe8c7c51e9df3ad1d3a391c5293c861c1982f": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary this. #1555\n\nFixes `UnnecessaryThis` inspection violations after recent commits.\n\nDescription:\n\u003eReports on any unnecessary uses of this in the code. Using this to disambiguate a code reference may easily become unnecessary via automatic refactorings, and is discouraged by many coding styles.\n",
+      "commitDate": 1439610129000,
+      "commitName": "02dfe8c7c51e9df3ad1d3a391c5293c861c1982f",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439356761000,
+      "commitNameOld": "3bd699bd593414d63c7139aa410f13ec8341a027",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 2.93,
+      "commitsBetweenForRepo": 28,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     public void processLines(FileText fileText) {\n-        this.text \u003d new FileText(fileText);\n+        text \u003d new FileText(fileText);\n         resetState();\n \n         if (Strings.isNullOrEmpty(options.getFormat())) {\n             options.getReporter().log(0, EMPTY);\n         }\n         else {\n             matcher \u003d options.getPattern().matcher(fileText.getFullText());\n             findMatch();\n             finish();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "3bd699bd593414d63c7139aa410f13ec8341a027": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #1566: HiddenField violations fixed\n",
+      "commitDate": 1439356761000,
+      "commitName": "3bd699bd593414d63c7139aa410f13ec8341a027",
+      "commitAuthor": "Ruslan Diachenko",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1": {
+      "type": "Ybodychange",
+      "commitMessage": "Invert if statements with negated conditions. #1555\n\nFixes `NegatedIfElse` inspection violations.\n\nDescription:\n\u003eReports if statements which contain else branches and whose conditions are negated. Flipping the order of the if and else branches will usually increase the clarity of such statements.\n",
+      "commitDate": 1439189206000,
+      "commitName": "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439011061000,
+      "commitNameOld": "4fd298b00126d60147dce7631c6e0d3e0921f82f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 2.06,
+      "commitsBetweenForRepo": 55,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     public void processLines(FileText text) {\n         this.text \u003d new FileText(text);\n         resetState();\n \n-        if (!Strings.isNullOrEmpty(options.getFormat())) {\n+        if (Strings.isNullOrEmpty(options.getFormat())) {\n+            options.getReporter().log(0, EMPTY);\n+        }\n+        else {\n             matcher \u003d options.getPattern().matcher(text.getFullText());\n             findMatch();\n             finish();\n         }\n-        else {\n-            options.getReporter().log(0, EMPTY);\n-        }\n     }\n\\ No newline at end of file\n"
+    },
+    "7d513f08c27c741105f712dc882fd4c3553f71e7": {
+      "type": "Ybodychange",
+      "commitMessage": "Copy collections and arrays before assigning to fields. #1555\n\nFixes AssignmentToCollectionFieldFromParameter violations.\n\n Description:\n\u003eReports any attempt to assign an array or Collection field from a method parameter. Since the array or Collection may have its contents modified by the calling method, this construct may result in an object having its state modified unexpectedly. While occasionally useful for performance reasons, this construct is inherently bug-prone.\n",
+      "commitDate": 1439007067000,
+      "commitName": "7d513f08c27c741105f712dc882fd4c3553f71e7",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1438566538000,
+      "commitNameOld": "0dc308ff69bce4d52ef76002bc4fe3988955ceb6",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 5.1,
+      "commitsBetweenForRepo": 33,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     public void processLines(FileText text) {\n-        this.text \u003d text;\n+        this.text \u003d new FileText(text);\n         resetState();\n \n         if (!Strings.isNullOrEmpty(options.getFormat())) {\n             matcher \u003d options.getPattern().matcher(text.getFullText());\n             findMatch();\n             finish();\n         }\n         else {\n             options.getReporter().log(0, EMPTY);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "edc63f0d669bc7e02eb3d9cbf83b6c7dcb92501c": {
+      "type": "Ybodychange",
+      "commitMessage": "NullPointerException at java.util.regex.Pattern, fixes #1224; from\ncom.puppycrawl.tools.checkstyle.checks.regexp.DetectorOptions.getPattern",
+      "commitDate": 1435722021000,
+      "commitName": "edc63f0d669bc7e02eb3d9cbf83b6c7dcb92501c",
+      "commitAuthor": "Michael Vorburger",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 44.66,
+      "commitsBetweenForRepo": 251,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,13 @@\n     public void processLines(FileText text) {\n         this.text \u003d text;\n         resetState();\n-        matcher \u003d options.getPattern().matcher(text.getFullText());\n-        findMatch();\n-        finish();\n+\n+        if (!Strings.isNullOrEmpty(options.getFormat())) {\n+            matcher \u003d options.getPattern().matcher(text.getFullText());\n+            findMatch();\n+            finish();\n+        }\n+        else {\n+            options.getReporter().log(0, EMPTY);\n+        }\n     }\n\\ No newline at end of file\n"
+    },
+    "075b3084de3934dbf73f108110b36e01dcf10d1e": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, regexp, #512\n",
+      "commitDate": 1421677287000,
+      "commitName": "075b3084de3934dbf73f108110b36e01dcf10d1e",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "3cd6646941eca3da7d3b9a221c88e4c1d214876e": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange,Yparameterchange)",
+      "commitMessage": "Apply patch #2783226 that uses FileText as an implementation for\nList\u003cString\u003e to pass lines around\n",
+      "commitDate": 1277730133000,
+      "commitName": "3cd6646941eca3da7d3b9a221c88e4c1d214876e",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange",
+        "Yparameterchange"
+      ]
+    },
+    "1c1eadb21184c3e8361cacb25a33d927f3a4e8d4": {
+      "type": "Yintroduced",
+      "commitMessage": "snapshot of a work in progress\n",
+      "commitDate": 1231644582000,
+      "commitName": "1c1eadb21184c3e8361cacb25a33d927f3a4e8d4",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

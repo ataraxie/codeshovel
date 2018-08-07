@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "JavadocUtils.java",
+  "functionName": "containsInBranch",
+  "functionId": "containsInBranch___node-DetailNode__type-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/utils/JavadocUtils.java",
+  "functionStartLine": 231,
+  "functionEndLine": 251,
+  "changeHistory": [
+    "6098d52bc125347961fc37971fd0d9a428f2781a",
+    "46a52f84c014e4d25379f429f11ed3de11fe8ae7",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+    "9dbc71956635b56a20780d484454e177897b5788",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "ff12c1b012a1b18da8a1cd2101efd0173c612534"
+  ],
+  "changeHistoryShort": {
+    "6098d52bc125347961fc37971fd0d9a428f2781a": "Ybodychange",
+    "46a52f84c014e4d25379f429f11ed3de11fe8ae7": "Yrename",
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": "Yfilerename",
+    "9dbc71956635b56a20780d484454e177897b5788": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "ff12c1b012a1b18da8a1cd2101efd0173c612534": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6098d52bc125347961fc37971fd0d9a428f2781a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.internal, com.puppycrawl.tools.checkstyle.utils\n",
+      "commitDate": 1493045733000,
+      "commitName": "6098d52bc125347961fc37971fd0d9a428f2781a",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1492975667000,
+      "commitNameOld": "a18300c56e6359ef376d788b264fd47fe6e73fc6",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.81,
+      "commitsBetweenForRepo": 14,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,21 @@\n     public static boolean containsInBranch(DetailNode node, int type) {\n+        boolean result \u003d true;\n         DetailNode curNode \u003d node;\n-        while (true) {\n-\n-            if (type \u003d\u003d curNode.getType()) {\n-                return true;\n-            }\n-\n+        while (type !\u003d curNode.getType()) {\n             DetailNode toVisit \u003d getFirstChild(curNode);\n             while (curNode !\u003d null \u0026\u0026 toVisit \u003d\u003d null) {\n                 toVisit \u003d getNextSibling(curNode);\n                 if (toVisit \u003d\u003d null) {\n                     curNode \u003d curNode.getParent();\n                 }\n             }\n \n             if (curNode \u003d\u003d toVisit) {\n+                result \u003d false;\n                 break;\n             }\n \n             curNode \u003d toVisit;\n         }\n-\n-        return false;\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "46a52f84c014e4d25379f429f11ed3de11fe8ae7": {
+      "type": "Yrename",
+      "commitMessage": "Issue #1555: Rename methods returning boolean to use question word\n\nFixes some `BooleanMethodNameMustStartWithQuestion` inspection violations.\n\nDescription:\n\u003eReports boolean methods whose names do not start with a question word. Boolean methods that override library methods are ignored by this inspection.\n",
+      "commitDate": 1440827451000,
+      "commitName": "46a52f84c014e4d25379f429f11ed3de11fe8ae7",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440827038000,
+      "commitNameOld": "f58f92adf6804395c66c41d408dc8e2155cb0c5d",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 9,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,25 @@\n-    public static boolean branchContains(DetailNode node, int type) {\n+    public static boolean containsInBranch(DetailNode node, int type) {\n         DetailNode curNode \u003d node;\n         while (true) {\n \n             if (type \u003d\u003d curNode.getType()) {\n                 return true;\n             }\n \n             DetailNode toVisit \u003d getFirstChild(curNode);\n             while (curNode !\u003d null \u0026\u0026 toVisit \u003d\u003d null) {\n                 toVisit \u003d getNextSibling(curNode);\n                 if (toVisit \u003d\u003d null) {\n                     curNode \u003d curNode.getParent();\n                 }\n             }\n \n             if (curNode \u003d\u003d toVisit) {\n                 break;\n             }\n \n             curNode \u003d toVisit;\n         }\n \n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "ed595de84fba2db507adaf01d04cb089a5e0bac5": {
+      "type": "Yfilerename",
+      "commitMessage": "Utils classes have been moved to utils package. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440637702000,
+      "commitNameOld": "f6113bb56d695719a8803274effb3596cb82120f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.46,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "9dbc71956635b56a20780d484454e177897b5788": {
+      "type": "Ybodychange",
+      "commitMessage": "Add test case and refactor JavadocUtils. #1308\n",
+      "commitDate": 1438024878000,
+      "commitName": "9dbc71956635b56a20780d484454e177897b5788",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436820360000,
+      "commitNameOld": "e68f47ce99313c7dafade4ac4a55fccf12c09d5e",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 13.94,
+      "commitsBetweenForRepo": 150,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,25 @@\n     public static boolean branchContains(DetailNode node, int type) {\n         DetailNode curNode \u003d node;\n-        while (curNode !\u003d null) {\n+        while (true) {\n \n             if (type \u003d\u003d curNode.getType()) {\n                 return true;\n             }\n \n             DetailNode toVisit \u003d getFirstChild(curNode);\n             while (curNode !\u003d null \u0026\u0026 toVisit \u003d\u003d null) {\n                 toVisit \u003d getNextSibling(curNode);\n                 if (toVisit \u003d\u003d null) {\n                     curNode \u003d curNode.getParent();\n                 }\n             }\n \n             if (curNode \u003d\u003d toVisit) {\n                 break;\n             }\n \n             curNode \u003d toVisit;\n         }\n \n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425998782000,
+      "commitNameOld": "89005ddf6d5d8b494e4451d16df9fd8996c735a9",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.28,
+      "commitsBetweenForRepo": 5,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,26 @@\n     public static boolean branchContains(DetailNode node, int type)\n     {\n         DetailNode curNode \u003d node;\n         while (curNode !\u003d null) {\n \n             if (type \u003d\u003d curNode.getType()) {\n                 return true;\n             }\n \n             DetailNode toVisit \u003d getFirstChild(curNode);\n-            while ((curNode !\u003d null) \u0026\u0026 (toVisit \u003d\u003d null)) {\n+            while (curNode !\u003d null \u0026\u0026 toVisit \u003d\u003d null) {\n                 toVisit \u003d getNextSibling(curNode);\n                 if (toVisit \u003d\u003d null) {\n                     curNode \u003d curNode.getParent();\n                 }\n             }\n \n             if (curNode \u003d\u003d toVisit) {\n                 break;\n             }\n \n             curNode \u003d toVisit;\n         }\n \n         return false;\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "ff12c1b012a1b18da8a1cd2101efd0173c612534": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #49. Added support of Javadoc comments. Extended API to create Javadoc Checks.\n",
+      "commitDate": 1413750761000,
+      "commitName": "ff12c1b012a1b18da8a1cd2101efd0173c612534",
+      "commitAuthor": "Baratali Izmailov"
+    }
+  }
+}

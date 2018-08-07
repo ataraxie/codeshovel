@@ -1,0 +1,67 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+index 9dfc6c940..14a09ff91 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+@@ -146,61 +146,61 @@ public class RequireThisCheck extends AbstractDeclarationCollector {
+                 break;
+             }
+             default: {
+                 if (checkFields) {
+                     processField(ast, parentType);
+                 }
+                 break;
+             }
+         }
+     }
+ 
+     /**
+      * process validation of Field
+      * @param ast field definition ast token
+      * @param parentType type of the parrent
+      */
+     private void processField(DetailAST ast, int parentType) {
+         if (ScopeUtils.getSurroundingScope(ast) == null) {
+             // it is not a class or interface it's
+             // either import or package
+             // we shouldn't checks this
+             return;
+         }
+ 
+         if (parentType == TokenTypes.DOT
+                 && ast.getPreviousSibling() != null) {
+             // it's the method name in a method call; no problem
+             return;
+         }
+         if (parentType == TokenTypes.TYPE
+                 || parentType == TokenTypes.LITERAL_NEW) {
+             // it's a type name; no problem
+             return;
+         }
+         if (isDeclarationToken(parentType)) {
+             // it's being declared; no problem
+             return;
+         }
+ 
+         final String name = ast.getText();
+         if (isClassField(name)) {
+             log(ast, "require.this.variable", name);
+         }
+     }
+ 
+     /**
+      * check that token is related to Definition tokens
+      * @param parentType token Type
+      * @return true if token is related to Definition Tokens
+      */
+-    private boolean isDeclarationToken(int parentType) {
++    private static boolean isDeclarationToken(int parentType) {
+         return parentType == TokenTypes.VARIABLE_DEF
+             || parentType == TokenTypes.CTOR_DEF
+             || parentType == TokenTypes.METHOD_DEF
+             || parentType == TokenTypes.CLASS_DEF
+             || parentType == TokenTypes.ENUM_DEF
+             || parentType == TokenTypes.INTERFACE_DEF
+             || parentType == TokenTypes.PARAMETER_DEF
+             || parentType == TokenTypes.TYPE_ARGUMENT;
+     }
+ }

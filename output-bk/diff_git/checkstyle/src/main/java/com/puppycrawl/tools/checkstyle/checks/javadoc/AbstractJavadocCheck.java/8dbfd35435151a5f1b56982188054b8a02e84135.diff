@@ -1,0 +1,62 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+index 77e7f90f8..0ad0cacb3 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AbstractJavadocCheck.java
+@@ -705,56 +705,56 @@ public abstract class AbstractJavadocCheck extends Check
+         }
+ 
+     }
+ 
+     /**
+      * Contains information about parse error message.
+      */
+     private static class ParseErrorMessage
+     {
+         /**
+          * Line number where parse error occurred.
+          */
+         private int lineNumber;
+ 
+         /**
+          * Key for error message.
+          */
+         private String messageKey;
+ 
+         /**
+          * Error message arguments.
+          */
+         private Object[] messageArguments;
+ 
+         /**
+          * Initializes parse error message.
+          *
+          * @param lineNumber line number
+          * @param messageKey message key
+          * @param messageArguments message arguments
+          */
+         public ParseErrorMessage(int lineNumber, String messageKey, Object ... messageArguments)
+         {
+             this.lineNumber = lineNumber;
+             this.messageKey = messageKey;
+             this.messageArguments = messageArguments;
+         }
+ 
+         public int getLineNumber()
+         {
+             return lineNumber;
+         }
+ 
+         public String getMessageKey()
+         {
+             return messageKey;
+         }
+ 
+         public Object[] getMessageArguments()
+         {
+-            return messageArguments;
++            return messageArguments.clone();
+         }
+ 
+     }
+ 
+ }

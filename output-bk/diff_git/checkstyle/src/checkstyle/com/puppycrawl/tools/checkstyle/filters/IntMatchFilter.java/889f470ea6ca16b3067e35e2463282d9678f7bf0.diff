@@ -1,0 +1,61 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntMatchFilter.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntMatchFilter.java
+index cc7930420..2ebe83ae2 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntMatchFilter.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/IntMatchFilter.java
+@@ -14,55 +14,53 @@
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.filters;
+ 
+ /**
+  * This filter accepts a matching Integer.
+  * @author Rick Giles
+  */
+ class IntMatchFilter implements IntFilter
+ {
+     /** the matching Integer */
+     private Integer mMatchValue;
+ 
+     /**
+      * Constructs a MatchFilter for an int.
+      * @param aMatchValue the matching int.
+      */
+     public IntMatchFilter(int aMatchValue)
+     {
+         mMatchValue = new Integer(aMatchValue);
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.filters.IntFilter */
+     public boolean accept(Integer aInt)
+     {
+         return mMatchValue.equals(aInt);
+     }
+ 
+     /** @see java.lang.Object#toString() */
+     public String toString()
+     {
+         return "IntMatchFilter[" + mMatchValue + "]";
+     }
+ 
+     /** @see java.lang.Object#hashCode() */
+     public int hashCode()
+     {
+         return mMatchValue.hashCode();
+     }
+ 
+     /** @see java.lang.Object#equals(java.lang.Object) */
+     public boolean equals(Object aObject)
+     {
+         if (aObject instanceof IntMatchFilter) {
+             final IntMatchFilter other = (IntMatchFilter) aObject;
+             return (this.mMatchValue).equals(other.mMatchValue);
+         }
+-        else {
+-            return false;
+-        }
++        return false;
+     }
+ }

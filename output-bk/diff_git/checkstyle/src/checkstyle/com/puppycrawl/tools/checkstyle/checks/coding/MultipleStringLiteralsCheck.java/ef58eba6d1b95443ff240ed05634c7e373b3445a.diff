@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java
+index f8a29de3e..e60219140 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java
+@@ -129,101 +129,99 @@ public class MultipleStringLiteralsCheck extends Check
+                 hitList = new ArrayList<StringInfo>();
+                 mStringMap.put(currentString, hitList);
+             }
+             final int line = aAST.getLineNo();
+             final int col = aAST.getColumnNo();
+             hitList.add(new StringInfo(line, col));
+         }
+     }
+ 
+     /**
+      * Analyses the path from the AST root to a given AST for occurrences
+      * of the token types in {@link #mIgnoreOccurrenceContext}.
+      *
+      * @param aAST the node from where to start searching towards the root node
+      * @return whether the path from the root node to aAST contains one of the
+      * token type in {@link #mIgnoreOccurrenceContext}.
+      */
+     private boolean isInIgnoreOccurrenceContext(DetailAST aAST)
+     {
+         for (DetailAST token = aAST;
+              token.getParent() != null;
+              token = token.getParent())
+         {
+             final int type = token.getType();
+             if (mIgnoreOccurrenceContext.get(type)) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void beginTree(DetailAST aRootAST)
+     {
+         super.beginTree(aRootAST);
+         mStringMap.clear();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void finishTree(DetailAST aRootAST)
+     {
+         final Set<String> keys = mStringMap.keySet();
+         for (String key : keys) {
+             final List<StringInfo> hits = mStringMap.get(key);
+             if (hits.size() > mAllowedDuplicates) {
+                 final StringInfo firstFinding = hits.get(0);
+                 final int line = firstFinding.getLine();
+                 final int col = firstFinding.getCol();
+-                final Object[] args =
+-                    new Object[]{key, new Integer(hits.size())};
+-                log(line, col, "multiple.string.literal", args);
++                log(line, col, "multiple.string.literal", key, hits.size());
+             }
+         }
+     }
+ 
+     /**
+      * This class contains information about where a string was found.
+      */
+     private static final class StringInfo
+     {
+         /**
+          * Line of finding
+          */
+         private final int mLine;
+         /**
+          * Column of finding
+          */
+         private final int mCol;
+         /**
+          * Creates information about a string position.
+          * @param aLine int
+          * @param aCol int
+          */
+         private StringInfo(int aLine, int aCol)
+         {
+             mLine = aLine;
+             mCol = aCol;
+         }
+ 
+         /**
+          * The line where a string was found.
+          * @return int Line of the string.
+          */
+         private int getLine()
+         {
+             return mLine;
+         }
+ 
+         /**
+          * The column where a string was found.
+          * @return int Column of the string.
+          */
+         private int getCol()
+         {
+             return mCol;
+         }
+     }
+ 
+ }

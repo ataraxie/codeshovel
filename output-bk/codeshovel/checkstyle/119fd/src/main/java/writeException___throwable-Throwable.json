@@ -1,0 +1,149 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "writeException___throwable-Throwable",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 253,
+  "changeHistory": [
+    "48c7d6e32b973c62e571dd3b7934767ec0464036",
+    "938e955fb3dfc07b75739075391bf904c2920a1f",
+    "96641268d6ecdae405692c7e4471856a342cc062",
+    "ce196814d857a4244a80c51d5151cc35e90b6749",
+    "6e1b3fadeddf5219a74285b898fde47e34a81e4d",
+    "30c3a362d45721e6925fe89ba71f0fe69d0fc471",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "1d21af32b9949396bb3f010cd3f3addec4075b5d"
+  ],
+  "changeHistoryShort": {
+    "48c7d6e32b973c62e571dd3b7934767ec0464036": "Ybodychange",
+    "938e955fb3dfc07b75739075391bf904c2920a1f": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange)",
+    "96641268d6ecdae405692c7e4471856a342cc062": "Ybodychange",
+    "ce196814d857a4244a80c51d5151cc35e90b6749": "Yparameterchange",
+    "6e1b3fadeddf5219a74285b898fde47e34a81e4d": "Ybodychange",
+    "30c3a362d45721e6925fe89ba71f0fe69d0fc471": "Ybodychange",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "1d21af32b9949396bb3f010cd3f3addec4075b5d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "48c7d6e32b973c62e571dd3b7934767ec0464036": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5419: prevented XMLLogger from sanitizing exception tags",
+      "commitDate": 1515199695000,
+      "commitName": "48c7d6e32b973c62e571dd3b7934767ec0464036",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1515079236000,
+      "commitNameOld": "0847a10b9430d9fb0a3f44df03e891da906bea47",
+      "commitAuthorOld": "Pavel Bludov",
+      "daysBetweenCommits": 1.39,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,12 @@\n     private void writeException(Throwable throwable) {\n+        writer.println(\"\u003cexception\u003e\");\n+        writer.println(\"\u003c![CDATA[\");\n+\n         final StringWriter stringWriter \u003d new StringWriter();\n         final PrintWriter printer \u003d new PrintWriter(stringWriter);\n-        printer.println(\"\u003cexception\u003e\");\n-        printer.println(\"\u003c![CDATA[\");\n         throwable.printStackTrace(printer);\n-        printer.println(\"]]\u003e\");\n-        printer.println(\"\u003c/exception\u003e\");\n         writer.println(encode(stringWriter.toString()));\n+\n+        writer.println(\"]]\u003e\");\n+        writer.println(\"\u003c/exception\u003e\");\n     }\n\\ No newline at end of file\n"
+    },
+    "938e955fb3dfc07b75739075391bf904c2920a1f": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange)",
+      "commitMessage": "Issue #4932: XMLLogger should be thread-safe\n",
+      "commitDate": 1503959042000,
+      "commitName": "938e955fb3dfc07b75739075391bf904c2920a1f",
+      "commitAuthor": "Andrew Kuchev",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ymodifierchange"
+      ]
+    },
+    "96641268d6ecdae405692c7e4471856a342cc062": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4400: increase coverage of pitest-checkstyle-common profile to 100%\n",
+      "commitDate": 1499431513000,
+      "commitName": "96641268d6ecdae405692c7e4471856a342cc062",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1497287515000,
+      "commitNameOld": "4a087c020c2b97130e94f9292b94cb4bc1f6ed93",
+      "commitAuthorOld": "sagar-shah94",
+      "daysBetweenCommits": 24.81,
+      "commitsBetweenForRepo": 142,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,10 @@\n     public void addException(AuditEvent event, Throwable throwable) {\n         final StringWriter stringWriter \u003d new StringWriter();\n         final PrintWriter printer \u003d new PrintWriter(stringWriter);\n         printer.println(\"\u003cexception\u003e\");\n         printer.println(\"\u003c![CDATA[\");\n         throwable.printStackTrace(printer);\n         printer.println(\"]]\u003e\");\n         printer.println(\"\u003c/exception\u003e\");\n-        printer.flush();\n         writer.println(encode(stringWriter.toString()));\n     }\n\\ No newline at end of file\n"
+    },
+    "ce196814d857a4244a80c51d5151cc35e90b6749": {
+      "type": "Yparameterchange",
+      "commitMessage": "Issue #2080: Fix typos in code\n",
+      "commitDate": 1445038509000,
+      "commitName": "ce196814d857a4244a80c51d5151cc35e90b6749",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1444870368000,
+      "commitNameOld": "99f8726600ebd9f73b86eacf5e44d0335266d8fc",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 1.95,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n-    public void addException(AuditEvent evt, Throwable throwable) {\n+    public void addException(AuditEvent event, Throwable throwable) {\n         final StringWriter stringWriter \u003d new StringWriter();\n         final PrintWriter printer \u003d new PrintWriter(stringWriter);\n         printer.println(\"\u003cexception\u003e\");\n         printer.println(\"\u003c![CDATA[\");\n         throwable.printStackTrace(printer);\n         printer.println(\"]]\u003e\");\n         printer.println(\"\u003c/exception\u003e\");\n         printer.flush();\n         writer.println(encode(stringWriter.toString()));\n     }\n\\ No newline at end of file\n"
+    },
+    "6e1b3fadeddf5219a74285b898fde47e34a81e4d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #985: Fix PMD violations for ShortVariable rule (resolving Teamcity violation)\n",
+      "commitDate": 1444185744000,
+      "commitName": "6e1b3fadeddf5219a74285b898fde47e34a81e4d",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1444185186000,
+      "commitNameOld": "5f5142b2325051f9ed31130167c73d154d547211",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     public void addException(AuditEvent evt, Throwable throwable) {\n         final StringWriter stringWriter \u003d new StringWriter();\n         final PrintWriter printer \u003d new PrintWriter(stringWriter);\n         printer.println(\"\u003cexception\u003e\");\n         printer.println(\"\u003c![CDATA[\");\n         throwable.printStackTrace(printer);\n         printer.println(\"]]\u003e\");\n         printer.println(\"\u003c/exception\u003e\");\n         printer.flush();\n-        this.writer.println(encode(stringWriter.toString()));\n+        writer.println(encode(stringWriter.toString()));\n     }\n\\ No newline at end of file\n"
+    },
+    "30c3a362d45721e6925fe89ba71f0fe69d0fc471": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #985: Fix PMD violations for ShortVariable rule\n",
+      "commitDate": 1444178762000,
+      "commitName": "30c3a362d45721e6925fe89ba71f0fe69d0fc471",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1442527299000,
+      "commitNameOld": "b6d9344d1c152f225a22ce9ce09341b3cc9488af",
+      "commitAuthorOld": "Michael Osipov",
+      "daysBetweenCommits": 19.11,
+      "commitsBetweenForRepo": 92,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     public void addException(AuditEvent evt, Throwable throwable) {\n-        final StringWriter sw \u003d new StringWriter();\n-        final PrintWriter pw \u003d new PrintWriter(sw);\n-        pw.println(\"\u003cexception\u003e\");\n-        pw.println(\"\u003c![CDATA[\");\n-        throwable.printStackTrace(pw);\n-        pw.println(\"]]\u003e\");\n-        pw.println(\"\u003c/exception\u003e\");\n-        pw.flush();\n-        writer.println(encode(sw.toString()));\n+        final StringWriter stringWriter \u003d new StringWriter();\n+        final PrintWriter printer \u003d new PrintWriter(stringWriter);\n+        printer.println(\"\u003cexception\u003e\");\n+        printer.println(\"\u003c![CDATA[\");\n+        throwable.printStackTrace(printer);\n+        printer.println(\"]]\u003e\");\n+        printer.println(\"\u003c/exception\u003e\");\n+        printer.flush();\n+        this.writer.println(encode(stringWriter.toString()));\n     }\n\\ No newline at end of file\n"
+    },
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checkstyle, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java\n",
+      "commitDate": 1421678312000,
+      "commitName": "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "1d21af32b9949396bb3f010cd3f3addec4075b5d": {
+      "type": "Yintroduced",
+      "commitMessage": "first cut\n",
+      "commitDate": 999188480000,
+      "commitName": "1d21af32b9949396bb3f010cd3f3addec4075b5d",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

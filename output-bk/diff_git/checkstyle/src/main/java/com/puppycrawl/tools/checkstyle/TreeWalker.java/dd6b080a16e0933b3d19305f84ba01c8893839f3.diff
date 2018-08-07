@@ -1,0 +1,118 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index fabc82963..470f28b27 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -112,113 +112,109 @@ public final class TreeWalker
+ 
+     /** a factory for creating submodules (i.e. the Checks) */
+     private ModuleFactory moduleFactory;
+ 
+     /** logger for debug purpose */
+     private static final Log LOG = LogFactory.getLog(TreeWalker.class);
+ 
+     /**
+      * Creates a new <code>TreeWalker</code> instance.
+      */
+     public TreeWalker()
+     {
+         setFileExtensions(new String[]{"java"});
+     }
+ 
+     /** @param tabWidth the distance between tab stops */
+     public void setTabWidth(int tabWidth)
+     {
+         this.tabWidth = tabWidth;
+     }
+ 
+     /** @param fileName the cache file */
+     public void setCacheFile(String fileName)
+     {
+         final Configuration configuration = getConfiguration();
+         cache = new PropertyCacheFile(configuration, fileName);
+     }
+ 
+     /** @param classLoader class loader to resolve classes with. */
+     public void setClassLoader(ClassLoader classLoader)
+     {
+         this.classLoader = classLoader;
+     }
+ 
+     /**
+      * Sets the module factory for creating child modules (Checks).
+      * @param moduleFactory the factory
+      */
+     public void setModuleFactory(ModuleFactory moduleFactory)
+     {
+         this.moduleFactory = moduleFactory;
+     }
+ 
+     @Override
+     public void finishLocalSetup()
+     {
+         final DefaultContext checkContext = new DefaultContext();
+         checkContext.add("classLoader", classLoader);
+         checkContext.add("messages", getMessageCollector());
+         checkContext.add("severity", getSeverity());
+-        // TODO: hmmm.. this looks less than elegant
+-        // we have just parsed the string,
+-        // now we're recreating it only to parse it again a few moments later
+         checkContext.add("tabWidth", String.valueOf(tabWidth));
+ 
+         childContext = checkContext;
+     }
+ 
+     @Override
+     public void setupChild(Configuration childConf)
+         throws CheckstyleException
+     {
+-        // TODO: improve the error handing
+         final String name = childConf.getName();
+         final Object module = moduleFactory.createModule(name);
+         if (!(module instanceof Check)) {
+             throw new CheckstyleException(
+                 "TreeWalker is not allowed as a parent of " + name);
+         }
+         final Check c = (Check) module;
+         c.contextualize(childContext);
+         c.configure(childConf);
+         c.init();
+ 
+         registerCheck(c);
+     }
+ 
+     @Override
+     protected void processFiltered(File file, List<String> lines)
+     {
+         // check if already checked and passed the file
+         final String fileName = file.getPath();
+         final long timestamp = file.lastModified();
+         if (cache.alreadyChecked(fileName, timestamp)
+                  || !fileExtensionMatches(file, getFileExtensions()))
+         {
+             return;
+         }
+ 
+         final String msg = "%s occurred during the analysis of file %s .";
+ 
+         try {
+             final FileText text = FileText.fromLines(file, lines);
+             final FileContents contents = new FileContents(text);
+             final DetailAST rootAST = TreeWalker.parse(contents);
+ 
+             getMessageCollector().reset();
+ 
+             walk(rootAST, contents, AstState.ORDINARY);
+ 
+             final DetailAST astWithComments = appendHiddenCommentNodes(rootAST);
+ 
+             walk(astWithComments, contents, AstState.WITH_COMMENTS);
+         }
+         catch (final TokenStreamRecognitionException tre) {
+             final String exceptionMsg = String.format(msg, "TokenStreamRecognitionException",
+                      fileName);
+             LOG.error(exceptionMsg);
+             final RecognitionException re = tre.recog;
+             String message = "TokenStreamRecognitionException occured";
+             if (re != null) {
+                 message = re.getMessage();
+             }

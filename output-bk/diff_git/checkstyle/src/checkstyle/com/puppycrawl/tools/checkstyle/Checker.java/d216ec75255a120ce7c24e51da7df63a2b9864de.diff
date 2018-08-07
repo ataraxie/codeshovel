@@ -1,0 +1,210 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+index 883caa9b4..34a515b83 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -73,127 +73,140 @@ public class Checker extends AutomaticBean
+         public void fileStarted(AuditEvent aEvt)
+         {
+         }
+ 
+         /** @see AuditListener */
+         public void auditFinished(AuditEvent aEvt)
+         {
+         }
+ 
+         /** @see AuditListener */
+         public void fileFinished(AuditEvent aEvt)
+         {
+         }
+ 
+         /**
+          * @return the number of errors since audit started.
+          */
+         private int getCount()
+         {
+             return mCount;
+         }
+     }
+ 
+     /** maintains error count */
+     private final ErrorCounter mCounter = new ErrorCounter();
+ 
+     /** vector of listeners */
+     private final ArrayList mListeners = new ArrayList();
+ 
+     /** vector of fileset checks */
+     private final ArrayList mFileSetChecks = new ArrayList();
+ 
+     /** class loader to resolve classes with. **/
+     private ClassLoader mLoader =
+             Thread.currentThread().getContextClassLoader();
+ 
+     /** the basedir to strip off in filenames */
+     private String mBasedir;
+ 
+     /** locale country to report messages  **/
+     private String mLocaleCountry = Locale.getDefault().getCountry();
+     /** locale language to report messages  **/
+     private String mLocaleLanguage = Locale.getDefault().getLanguage();
+ 
+     /** The factory for instantiating submodules */
+     private ModuleFactory mModuleFactory;
+ 
+     /** the context of all child components */
+     private Context mChildContext;
+ 
++    /**
++     * The severity level of any violations found by submodules.
++     * The value of this property is passed to submodules via
++     * contextualize().
++     *
++     * Note: Since the Checker is merely a container for modules
++     * it does not make sense to implement logging functionality
++     * here. Consequently Checker does not extend AbstractViolationReporter,
++     * leading to a bit of duplicated code for severity level setting.
++     */
++    private SeverityLevel mSeverityLevel = SeverityLevel.ERROR;
++
+     /**
+      * Creates a new <code>Checker</code> instance.
+      * The instance needs to be contextualized and configured.
+      *
+      * @throws CheckstyleException if an error occurs
+      */
+     public Checker()
+         throws CheckstyleException
+     {
+         addListener(mCounter);
+     }
+ 
+     /** @see AutomaticBean */
+     public void finishLocalSetup()
+             throws CheckstyleException
+     {
+         final Locale locale = new Locale(mLocaleLanguage, mLocaleCountry);
+         LocalizedMessage.setLocale(locale);
+ 
+         if (mModuleFactory == null) {
+             mModuleFactory = PackageNamesLoader.loadModuleFactory(
+                     this.getClass().getClassLoader());
+         }
+ 
+         final DefaultContext context = new DefaultContext();
+         context.add("classLoader", mLoader);
+         context.add("moduleFactory", mModuleFactory);
++        context.add("severity", mSeverityLevel.getName());
+         mChildContext = context;
+     }
+ 
+     /**
+      * Instantiates, configures and registers a FileSetCheck
+      * that is specified in the provided configuration.
+      * @see com.puppycrawl.tools.checkstyle.api.AutomaticBean
+      */
+     protected void setupChild(Configuration aChildConf)
+             throws CheckstyleException
+     {
+         final String name = aChildConf.getName();
+         try {
+             final Object module = mModuleFactory.createModule(name);
+             if (!(module instanceof FileSetCheck)) {
+                 throw new CheckstyleException(name
+                     + " is not allowed as a module in Checker");
+             }
+             final FileSetCheck fsc = (FileSetCheck) module;
+             fsc.contextualize(mChildContext);
+             fsc.configure(aChildConf);
+             addFileSetCheck(fsc);
+         }
+         catch (Exception ex) {
+             // TODO i18n
+             throw new CheckstyleException(
+                     "cannot initialize module "
+                     + name + " - " + ex.getMessage(), ex);
+         }
+     }
+ 
+     /**
+      * Adds a FileSetCheck to the list of FileSetChecks
+      * that is executed in process().
+      * @param aFileSetCheck the additional FileSetCheck
+      */
+     public void addFileSetCheck(FileSetCheck aFileSetCheck)
+     {
+         aFileSetCheck.setMessageDispatcher(this);
+         mFileSetChecks.add(aFileSetCheck);
+     }
+ 
+     /** Cleans up the object **/
+     public void destroy()
+     {
+         mListeners.clear();
+     }
+ 
+     /**
+      * Add the listener that will be used to receive events from the audit
+@@ -295,51 +308,64 @@ public class Checker extends AutomaticBean
+     public void fireFileFinished(String aFileName)
+     {
+         final String stripped = getStrippedFileName(aFileName);
+         final AuditEvent evt = new AuditEvent(this, stripped);
+         final Iterator it = mListeners.iterator();
+         while (it.hasNext()) {
+             final AuditListener listener = (AuditListener) it.next();
+             listener.fileFinished(evt);
+         }
+     }
+ 
+     /**
+      * notify all listeners about the errors in a file.
+      * @param aFileName the audited file
+      * @param aErrors the audit errors from the file
+      */
+     public void fireErrors(String aFileName, LocalizedMessage[] aErrors)
+     {
+         final String stripped = getStrippedFileName(aFileName);
+         for (int i = 0; i < aErrors.length; i++) {
+             final AuditEvent evt = new AuditEvent(this, stripped, aErrors[i]);
+             final Iterator it = mListeners.iterator();
+             while (it.hasNext()) {
+                 final AuditListener listener = (AuditListener) it.next();
+                 listener.addError(evt);
+             }
+         }
+     }
+ 
+     /**
+      * Sets the factory for creating submodules.
+      *
+      * @param aModuleFactory the factory for creating FileSetChecks
+      */
+     public void setModuleFactory(ModuleFactory aModuleFactory)
+     {
+         mModuleFactory = aModuleFactory;
+     }
+ 
+     /** @param aLocaleCountry the country to report messages  **/
+     public void setLocaleCountry(String aLocaleCountry)
+     {
+         mLocaleCountry = aLocaleCountry;
+     }
+ 
+     /** @param aLocaleLanguage the language to report messages  **/
+     public void setLocaleLanguage(String aLocaleLanguage)
+     {
+         mLocaleLanguage = aLocaleLanguage;
+     }
++
++    /**
++     * Sets the severity level.  The string should be one of the names
++     * defined in the <code>SeverityLevel</code> class.
++     *
++     * @param aSeverity  The new severity level
++     * @see SeverityLevel
++     */
++    public final void setSeverity(String aSeverity)
++    {
++        mSeverityLevel = SeverityLevel.getInstance(aSeverity);
++    }
++
+ }

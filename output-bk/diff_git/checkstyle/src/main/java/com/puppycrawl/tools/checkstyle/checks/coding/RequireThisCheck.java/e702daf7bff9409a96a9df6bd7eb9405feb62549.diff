@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+index cc2bed11a..fe671bb88 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+@@ -320,100 +320,104 @@ public class RequireThisCheck extends AbstractCheck {
+                 frame = getClassFrameWhereViolationIsFound(ast);
+             }
+         }
+         return frame;
+     }
+ 
+     /**
+      * Parses the next AST for declarations.
+      * @param frameStack stack containing the FrameTree being built.
+      * @param ast AST to parse.
+      */
+     private static void collectDeclarations(Deque<AbstractFrame> frameStack, DetailAST ast) {
+         final AbstractFrame frame = frameStack.peek();
+         switch (ast.getType()) {
+             case TokenTypes.VARIABLE_DEF :
+                 collectVariableDeclarations(ast, frame);
+                 break;
+             case TokenTypes.PARAMETER_DEF :
+                 if (!CheckUtils.isReceiverParameter(ast)
+                         && !isLambdaParameter(ast)
+                         && ast.getParent().getType() != TokenTypes.LITERAL_CATCH) {
+                     final DetailAST parameterIdent = ast.findFirstToken(TokenTypes.IDENT);
+                     frame.addIdent(parameterIdent);
+                 }
+                 break;
+             case TokenTypes.CLASS_DEF :
+             case TokenTypes.INTERFACE_DEF :
+             case TokenTypes.ENUM_DEF :
+             case TokenTypes.ANNOTATION_DEF :
+                 final DetailAST classFrameNameIdent = ast.findFirstToken(TokenTypes.IDENT);
+                 frameStack.addFirst(new ClassFrame(frame, classFrameNameIdent));
+                 break;
+             case TokenTypes.SLIST :
+                 frameStack.addFirst(new BlockFrame(frame, ast));
+                 break;
+             case TokenTypes.METHOD_DEF :
+                 final DetailAST methodFrameNameIdent = ast.findFirstToken(TokenTypes.IDENT);
+                 final DetailAST mods = ast.findFirstToken(TokenTypes.MODIFIERS);
+                 if (mods.findFirstToken(TokenTypes.LITERAL_STATIC) == null) {
+                     ((ClassFrame) frame).addInstanceMethod(methodFrameNameIdent);
+                 }
+                 else {
+                     ((ClassFrame) frame).addStaticMethod(methodFrameNameIdent);
+                 }
+                 frameStack.addFirst(new MethodFrame(frame, methodFrameNameIdent));
+                 break;
+             case TokenTypes.CTOR_DEF :
+                 final DetailAST ctorFrameNameIdent = ast.findFirstToken(TokenTypes.IDENT);
+                 frameStack.addFirst(new ConstructorFrame(frame, ctorFrameNameIdent));
+                 break;
++            case TokenTypes.ENUM_CONSTANT_DEF :
++                final DetailAST ident = ast.findFirstToken(TokenTypes.IDENT);
++                ((ClassFrame) frame).addStaticMember(ident);
++                break;
+             case TokenTypes.LITERAL_CATCH:
+                 final AbstractFrame catchFrame = new CatchFrame(frame, ast);
+                 catchFrame.addIdent(ast.findFirstToken(TokenTypes.PARAMETER_DEF).findFirstToken(
+                         TokenTypes.IDENT));
+                 frameStack.addFirst(catchFrame);
+                 break;
+             case TokenTypes.LITERAL_NEW:
+                 if (isAnonymousClassDef(ast)) {
+                     frameStack.addFirst(new AnonymousClassFrame(frame,
+                             ast.getFirstChild().toString()));
+                 }
+                 break;
+             default:
+                 // do nothing
+         }
+     }
+ 
+     /**
+      * Collects variable declarations.
+      * @param ast variable token.
+      * @param frame current frame.
+      */
+     private static void collectVariableDeclarations(DetailAST ast, AbstractFrame frame) {
+         final DetailAST ident = ast.findFirstToken(TokenTypes.IDENT);
+         if (frame.getType() == FrameType.CLASS_FRAME) {
+             final DetailAST mods =
+                     ast.findFirstToken(TokenTypes.MODIFIERS);
+             if (ScopeUtils.isInInterfaceBlock(ast)
+                     || mods.findFirstToken(TokenTypes.LITERAL_STATIC) != null) {
+                 ((ClassFrame) frame).addStaticMember(ident);
+             }
+             else {
+                 ((ClassFrame) frame).addInstanceMember(ident);
+             }
+         }
+         else {
+             frame.addIdent(ident);
+         }
+     }
+ 
+     /**
+      * Ends parsing of the AST for declarations.
+      * @param frameStack Stack containing the FrameTree being built.
+      * @param ast AST that was parsed.
+      */
+     private void endCollectingDeclarations(Queue<AbstractFrame> frameStack, DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CLASS_DEF :
+             case TokenTypes.INTERFACE_DEF :
+             case TokenTypes.ENUM_DEF :

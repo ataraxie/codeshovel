@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "Maps.java",
+  "functionName": "keyIterator",
+  "functionId": "keyIterator___entryIterator-Iterator__Entry__K,V____",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/Maps.java",
+  "functionStartLine": 112,
+  "functionEndLine": 119,
+  "changeHistory": [
+    "9acfe48a7801dff159080aef8503350efd69e448",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "9acfe48a7801dff159080aef8503350efd69e448": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "9acfe48a7801dff159080aef8503350efd69e448": {
+      "type": "Ybodychange",
+      "commitMessage": "Don\u0027t use Iterables.transform in Maps.{key,value}Iterator.\n\nEffects on ArrayListMultimapProGuard:\n88459 bytes \u003d\u003e 86365 bytes\n80 classes \u003d\u003e 77 classes\n647 methods \u003d\u003e 642 methods\n\nEffects on HashMultimapProGuard:\n99137 bytes \u003d\u003e 97037 bytes\n87 classes \u003d\u003e 84 classes\n718 methods \u003d\u003e 713 methods\n\nEffects on LinkedHashMultimapProGuard:\n109126 bytes \u003d\u003e 106972 bytes\n94 classes \u003d\u003e 91 classes\n792 methods \u003d\u003e 787 methods\n\nRELNOTES\u003dn/a\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d179727140\n",
+      "commitDate": 1513806614000,
+      "commitName": "9acfe48a7801dff159080aef8503350efd69e448",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1512679066000,
+      "commitNameOld": "6f22af40e1526b8c194e9e36d457bcd37680c6a3",
+      "commitAuthorOld": "cpovirk",
+      "daysBetweenCommits": 13.05,
+      "commitsBetweenForRepo": 28,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,8 @@\n   static \u003cK, V\u003e Iterator\u003cK\u003e keyIterator(Iterator\u003cEntry\u003cK, V\u003e\u003e entryIterator) {\n-    return Iterators.transform(entryIterator, Maps.\u003cK\u003ekeyFunction());\n+    return new TransformedIterator\u003cEntry\u003cK, V\u003e, K\u003e(entryIterator) {\n+      @Override\n+      K transform(Entry\u003cK, V\u003e entry) {\n+        return entry.getKey();\n+      }\n+    };\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

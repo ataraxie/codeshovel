@@ -1,0 +1,113 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+index a55c5f23b..cafab7503 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+@@ -98,105 +98,104 @@ public class HiddenFieldCheck
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     public void beginTree(DetailAST aRootAST)
+     {
+         mCurrentFrame = new FieldFrame(null, true);
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         if (aAST.getType() == TokenTypes.VARIABLE_DEF
+             || aAST.getType() == TokenTypes.PARAMETER_DEF)
+         {
+             processVariable(aAST);
+             return;
+         }
+ 
+         //A more thorough check of enum constant class bodies is
+         //possible (checking for hidden fields against the enum
+         //class body in addition to enum constant class bodies)
+         //but not attempted as it seems out of the scope of this
+         //check.
+         final DetailAST typeMods = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isStaticInnerType =
+-            (typeMods == null)
+-            ? false
+-            : typeMods.branchContains(TokenTypes.LITERAL_STATIC);
++                (typeMods != null)
++                        && typeMods.branchContains(TokenTypes.LITERAL_STATIC);
+         final FieldFrame frame =
+-            new FieldFrame(mCurrentFrame, isStaticInnerType);
++                new FieldFrame(mCurrentFrame, isStaticInnerType);
+ 
+         //add fields to container
+         final DetailAST objBlock = aAST.findFirstToken(TokenTypes.OBJBLOCK);
+         // enum constants may not have bodies
+         if (objBlock != null) {
+             DetailAST child = (DetailAST) objBlock.getFirstChild();
+             while (child != null) {
+                 if (child.getType() == TokenTypes.VARIABLE_DEF) {
+                     final String name =
+                         child.findFirstToken(TokenTypes.IDENT).getText();
+                     final DetailAST mods =
+                         child.findFirstToken(TokenTypes.MODIFIERS);
+                     if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {
+                         frame.addStaticField(name);
+                     }
+                     else {
+                         frame.addInstanceField(name);
+                     }
+                 }
+                 child = (DetailAST) child.getNextSibling();
+             }
+         }
+         // push container
+         mCurrentFrame = frame;
+     }
+ 
+     /** {@inheritDoc} */
+     public void leaveToken(DetailAST aAST)
+     {
+         if ((aAST.getType() == TokenTypes.CLASS_DEF)
+             || (aAST.getType() == TokenTypes.ENUM_DEF)
+             || (aAST.getType() == TokenTypes.ENUM_CONSTANT_DEF))
+         {
+             //pop
+             mCurrentFrame = mCurrentFrame.getParent();
+         }
+     }
+ 
+     /**
+      * Process a variable token.
+      * Check whether a local variable or parameter shadows a field.
+      * Store a field for later comparison with local variables and parameters.
+      * @param aAST the variable token.
+      */
+     private void processVariable(DetailAST aAST)
+     {
+         if (ScopeUtils.inInterfaceOrAnnotationBlock(aAST)
+             || !ScopeUtils.isLocalVariableDef(aAST)
+             && (aAST.getType() != TokenTypes.PARAMETER_DEF))
+         {

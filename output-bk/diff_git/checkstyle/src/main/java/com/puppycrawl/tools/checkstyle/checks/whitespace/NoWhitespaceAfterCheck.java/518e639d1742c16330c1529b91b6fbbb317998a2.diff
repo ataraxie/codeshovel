@@ -1,0 +1,116 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java
+index fda2732f5..bd32a1db0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/NoWhitespaceAfterCheck.java
+@@ -247,102 +247,110 @@ public class NoWhitespaceAfterCheck extends AbstractCheck {
+                     }
+                     break;
+                 // 'new' is a special case with its own subtree structure
+                 case TokenTypes.LITERAL_NEW:
+                     previousElement = getTypeLastNode(parent);
+                     break;
+                 // mundane array declaration, can be either java style or C style
+                 case TokenTypes.TYPE:
+                     previousElement = getPreviousNodeWithParentOfTypeAst(ast, parent);
+                     break;
+                 // i.e. boolean[].class
+                 case TokenTypes.DOT:
+                     previousElement = getTypeLastNode(ast);
+                     break;
+                 // java 8 method reference
+                 case TokenTypes.METHOD_REF:
+                     final DetailAST ident = getIdentLastToken(ast);
+                     if (ident == null) {
+                         //i.e. int[]::new
+                         previousElement = ast.getFirstChild();
+                     }
+                     else {
+                         previousElement = ident;
+                     }
+                     break;
+                 default:
+                     throw new IllegalStateException("unexpected ast syntax " + parent);
+             }
+         }
+         return previousElement;
+     }
+ 
+     /**
+      * Gets previous node for {@link TokenTypes#INDEX_OP INDEX_OP} token
+      * for usage in getPositionAfter method, it is a simplified copy of
+      * getArrayDeclaratorPreviousElement method.
+      * @param ast
+      *        , {@link TokenTypes#INDEX_OP INDEX_OP} node.
+      * @return previous node by text order.
+      */
+     private static DetailAST getIndexOpPreviousElement(DetailAST ast) {
+         final DetailAST result;
+         final DetailAST firstChild = ast.getFirstChild();
+         if (firstChild.getType() == TokenTypes.INDEX_OP) {
+             // second or higher array index
+             result = firstChild.findFirstToken(TokenTypes.RBRACK);
+         }
+         else {
+             final DetailAST ident = getIdentLastToken(ast);
+             if (ident == null) {
++                final DetailAST rparen = ast.findFirstToken(TokenTypes.RPAREN);
++                // construction like new int[]{1}[0]
++                if (rparen == null) {
++                    final DetailAST lastChild = firstChild.getLastChild();
++                    result = lastChild.findFirstToken(TokenTypes.RCURLY);
++                }
+                 // construction like ((byte[]) pixels)[0]
+-                result = ast.findFirstToken(TokenTypes.RPAREN);
++                else {
++                    result = rparen;
++                }
+             }
+             else {
+                 result = ident;
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Get node that owns {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR} sequence.
+      * @param ast
+      *        , {@link TokenTypes#ARRAY_DECLARATOR ARRAY_DECLARATOR} node.
+      * @return owner node.
+      */
+     private static DetailAST getFirstNonArrayDeclaratorParent(DetailAST ast) {
+         DetailAST parent = ast.getParent();
+         while (parent.getType() == TokenTypes.ARRAY_DECLARATOR) {
+             parent = parent.getParent();
+         }
+         return parent;
+     }
+ 
+     /**
+      * Searches parameter node for a type node.
+      * Returns it or its last node if it has an extended structure.
+      * @param ast
+      *        , subject node.
+      * @return type node.
+      */
+     private static DetailAST getTypeLastNode(DetailAST ast) {
+         DetailAST result = ast.findFirstToken(TokenTypes.TYPE_ARGUMENTS);
+         if (result == null) {
+             result = getIdentLastToken(ast);
+             if (result == null) {
+                 //primitive literal expected
+                 result = ast.getFirstChild();
+             }
+         }
+         else {
+             result = result.findFirstToken(TokenTypes.GENERIC_END);
+         }
+         return result;
+     }
+ 
+     /**
+      * Finds previous node by text order for an array declarator,
+      * which parent type is {@link TokenTypes#TYPE TYPE}.
+      * @param ast
+      *        , array declarator node.
+      * @param parent

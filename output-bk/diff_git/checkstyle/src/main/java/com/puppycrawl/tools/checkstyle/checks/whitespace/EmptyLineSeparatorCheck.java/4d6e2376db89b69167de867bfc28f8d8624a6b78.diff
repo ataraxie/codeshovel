@@ -1,0 +1,87 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java
+index 915f7285d..31a8ec123 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java
+@@ -284,81 +284,81 @@ public class EmptyLineSeparatorCheck extends Check {
+                 && nextToken.getType() != TokenTypes.VARIABLE_DEF
+                 && nextToken.getType() != TokenTypes.RCURLY) {
+                 log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED,
+                      nextToken.getText());
+             }
+             else if (!allowNoEmptyLineBetweenFields
+                      && nextToken.getType() != TokenTypes.RCURLY) {
+                 log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED,
+                      nextToken.getText());
+             }
+         }
+         if (isTypeField(ast) && hasNotAllowedTwoEmptyLinesBefore(ast)) {
+             log(ast.getLineNo(), MSG_MULTIPLE_LINES, ast.getText());
+         }
+     }
+ 
+     /**
+      * Checks if a token has empty two previous lines and multiple empty lines is not allowed
+      * @param token DetailAST token
+      * @return true, if token has empty two lines before and allowMultipleEmptyLines is false
+      */
+     private boolean hasNotAllowedTwoEmptyLinesBefore(DetailAST token) {
+         return !allowMultipleEmptyLines && hasEmptyLineBefore(token)
+                 && isPrePreviousLineEmpty(token);
+     }
+ 
+     /**
+      * Checks if a token has empty pre-previous line.
+      * @param token DetailAST token.
+      * @return true, if token has empty lines before.
+      */
+     private boolean isPrePreviousLineEmpty(DetailAST token) {
+         boolean result = false;
+         final int lineNo = token.getLineNo();
+         // 3 is the number of the pre-previous line because the numbering starts from zero.
+         final int number = 3;
+         if (lineNo >= number) {
+             final String prePreviousLine = getLines()[lineNo - number];
+             result = prePreviousLine.trim().isEmpty();
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if token have empty line after.
+      * @param token token.
+      * @return true if token have empty line after.
+      */
+     private static boolean hasEmptyLineAfter(DetailAST token) {
+         DetailAST lastToken = token.getLastChild().getLastChild();
+-        if (null == lastToken) {
++        if (lastToken == null) {
+             lastToken = token.getLastChild();
+         }
+         return token.getNextSibling().getLineNo() - lastToken.getLineNo() > 1;
+     }
+ 
+     /**
+      * Checks if a token has a empty line before.
+      * @param token token.
+      * @return true, if token have empty line before.
+      */
+     private boolean hasEmptyLineBefore(DetailAST token) {
+         final int lineNo = token.getLineNo();
+         if (lineNo == 1) {
+             return false;
+         }
+         //  [lineNo - 2] is the number of the previous line because the numbering starts from zero.
+         final String lineBefore = getLines()[lineNo - 2];
+         return lineBefore.trim().isEmpty();
+     }
+ 
+     /**
+      * If variable definition is a type field.
+      * @param variableDef variable definition.
+      * @return true variable definition is a type field.
+      */
+     private static boolean isTypeField(DetailAST variableDef) {
+         final int parentType = variableDef.getParent().getParent().getType();
+         return parentType == TokenTypes.CLASS_DEF;
+     }
+ }

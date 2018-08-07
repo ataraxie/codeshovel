@@ -1,0 +1,120 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/MultilineDetector.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/MultilineDetector.java
+index 3786a6b72..483f0ed50 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/MultilineDetector.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/MultilineDetector.java
+@@ -37,96 +37,95 @@ class MultilineDetector {
+      */
+     public static final String REGEXP_EXCEEDED = "regexp.exceeded";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String REGEXP_MINIMUM = "regexp.minimum";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String EMPTY = "regexp.empty";
+ 
+     /** The detection options to use. */
+     private final DetectorOptions options;
+     /** Tracks the number of matches. */
+     private int currentMatches;
+     /** The matcher */
+     private Matcher matcher;
+     /** The file text content */
+     private FileText text;
+ 
+     /**
+      * Creates an instance.
+      * @param options the options to use.
+      */
+     public MultilineDetector(DetectorOptions options) {
+         this.options = options;
+     }
+ 
+     /**
+      * Processes an entire text file looking for matches.
+      * @param text the text to process
+      */
+     public void processLines(FileText text) {
+         this.text = text;
+         resetState();
+ 
+         if (!Strings.isNullOrEmpty(options.getFormat())) {
+             matcher = options.getPattern().matcher(text.getFullText());
+             findMatch();
+             finish();
+         }
+         else {
+             options.getReporter().log(0, EMPTY);
+         }
+     }
+ 
+-    /** recursive method that finds the matches. */
++    /** Method that finds the matches. */
+     private void findMatch() {
+-        final boolean foundMatch = matcher.find();
+-        if (!foundMatch) {
+-            return;
+-        }
+-
+-        final LineColumn start = text.lineColumn(matcher.start());
+-        final LineColumn end = text.lineColumn(matcher.end());
++        boolean foundMatch = matcher.find();
++        while (foundMatch) {
++            final LineColumn start = text.lineColumn(matcher.start());
++            final LineColumn end = text.lineColumn(matcher.end());
+ 
+-        if (!options.getSuppressor().shouldSuppress(start.getLine(),
+-                start.getColumn(), end.getLine(), end.getColumn())) {
+-            currentMatches++;
+-            if (currentMatches > options.getMaximum()) {
+-                if ("".equals(options.getMessage())) {
+-                    options.getReporter().log(start.getLine(),
+-                            REGEXP_EXCEEDED, matcher.pattern().toString());
+-                }
+-                else {
+-                    options.getReporter()
+-                            .log(start.getLine(), options.getMessage());
++            if (!options.getSuppressor().shouldSuppress(start.getLine(),
++                    start.getColumn(), end.getLine(), end.getColumn())) {
++                currentMatches++;
++                if (currentMatches > options.getMaximum()) {
++                    if ("".equals(options.getMessage())) {
++                        options.getReporter().log(start.getLine(),
++                                REGEXP_EXCEEDED, matcher.pattern().toString());
++                    }
++                    else {
++                        options.getReporter()
++                                .log(start.getLine(), options.getMessage());
++                    }
+                 }
+             }
++            foundMatch = matcher.find();
+         }
+-        findMatch();
+     }
++
+     /** Perform processing at the end of a set of lines. */
+     private void finish() {
+         if (currentMatches < options.getMinimum()) {
+             if ("".equals(options.getMessage())) {
+                 options.getReporter().log(0, REGEXP_MINIMUM,
+                         options.getMinimum(), options.getFormat());
+             }
+             else {
+                 options.getReporter().log(0, options.getMessage());
+             }
+         }
+     }
+ 
+     /**
+      * Reset the state of the detector.
+      */
+     private void resetState() {
+         currentMatches = 0;
+     }
+ }

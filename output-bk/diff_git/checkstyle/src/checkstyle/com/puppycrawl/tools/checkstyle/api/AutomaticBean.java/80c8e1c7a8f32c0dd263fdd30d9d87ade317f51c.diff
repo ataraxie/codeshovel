@@ -1,0 +1,150 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AutomaticBean.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AutomaticBean.java
+index 7efd700cf..f55107297 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AutomaticBean.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/AutomaticBean.java
+@@ -298,124 +298,123 @@ public class AutomaticBean
+ 
+ 
+ final class StrArrayConverter extends AbstractArrayConverter
+ {
+     /**
+      * <p>Model object for type comparisons.</p>
+      */
+     private static String[] sModel = new String[0];
+ 
+     /**
+      * Creates a new StrArrayConverter object.
+      */
+     public StrArrayConverter()
+     {
+         this.defaultValue = null;
+         this.useDefault = false;
+     }
+ 
+     /**
+      * Create a onverter that will return the specified default value
+      * if a conversion error occurs.
+      *
+      * @param aDefaultValue The default value to be returned
+      */
+     public StrArrayConverter(Object aDefaultValue)
+     {
+         this.defaultValue = aDefaultValue;
+         this.useDefault = true;
+     }
+ 
+     /**
+      * Convert the specified input object into an output object of the
+      * specified type.
+      *
+      * @param aType Data type to which this value should be converted
+      * @param aValue The input value to be converted
+      *
+      * @return the converted object
+      *
+      * @throws ConversionException if conversion cannot be performed
+      *  successfully
+      */
+     public Object convert(Class aType, Object aValue)
+         throws ConversionException
+     {
+         // Deal with a null value
+         if (aValue == null) {
+             if (useDefault) {
+                 return (defaultValue);
+             }
+-            else {
+-                throw new ConversionException("No value specified");
+-            }
++            throw new ConversionException("No value specified");
+         }
+ 
+         // Deal with the no-conversion-needed case
+         if (sModel.getClass() == aValue.getClass()) {
+             return (aValue);
+         }
+ 
+         // Parse the input value as a String into elements
+         // and convert to the appropriate type
+         try {
+             final List list = parseElements(aValue.toString());
+             final String[] results = new String[list.size()];
+ 
+             for (int i = 0; i < results.length; i++) {
+                 results[i] = (String) list.get(i);
+             }
+             return (results);
+         }
+         catch (Exception e) {
+             if (useDefault) {
+                 return (defaultValue);
+             }
+-            else {
+-                throw new ConversionException(aValue.toString(), e);
+-            }
++            throw new ConversionException(aValue.toString(), e);
+         }
+     }
+ 
+     /**
+-    * <p>Parse an incoming String of the form similar to an array initializer
+-    * in the Java language into a <code>List</code> individual Strings
+-    * for each element, according to the following rules.</p>
+-    * <ul>
+-    * <li>The string must have matching '{' and '}' delimiters around
+-    *     a comma-delimited list of values.</li>
+-    * <li>Whitespace before and after each element is stripped.
+-    * <li>If an element is itself delimited by matching single or double
+-    *     quotes, the usual rules for interpreting a quoted String apply.</li>
+-    * </ul>
+-    *
+-    * @param aValue String value to be parsed
+-    * @return the list of Strings parsed from the array
+-    * @throws NullPointerException if <code>svalue</code>
+-    *  is <code>null</code>
+-    */
++     * <p>
++     * Parse an incoming String of the form similar to an array initializer in
++     * the Java language into a <code>List</code> individual Strings for each
++     * element, according to the following rules.
++     * </p>
++     * <ul>
++     * <li>The string must have matching '{' and '}' delimiters around a
++     * comma-delimited list of values.</li>
++     * <li>Whitespace before and after each element is stripped.
++     * <li>If an element is itself delimited by matching single or double
++     * quotes, the usual rules for interpreting a quoted String apply.</li>
++     * </ul>
++     * 
++     * @param aValue
++     *            String value to be parsed
++     * @return the list of Strings parsed from the array
++     * @throws NullPointerException
++     *             if <code>svalue</code> is <code>null</code>
++     */
+     protected List parseElements(String aValue)
+         throws NullPointerException
+     {
+         // Validate the passed argument
+         if (aValue == null) {
+             throw new NullPointerException();
+         }
+ 
+         // Trim any matching '{' and '}' delimiters
+         aValue = aValue.trim();
+ 
+         if (aValue.startsWith("{") && aValue.endsWith("}")) {
+             aValue = aValue.substring(1, aValue.length() - 1);
+         }
+ 
+         final StringTokenizer st = new StringTokenizer(aValue, ",");
+         final List retVal = new ArrayList();
+ 
+         while (st.hasMoreTokens()) {
+             final String token = st.nextToken();
+             retVal.add(token.trim());
+         }
+ 
+         return retVal;
+     }
+ }

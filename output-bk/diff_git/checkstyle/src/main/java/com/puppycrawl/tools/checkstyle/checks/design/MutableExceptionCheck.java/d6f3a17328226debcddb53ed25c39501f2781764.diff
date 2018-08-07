@@ -1,0 +1,70 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/MutableExceptionCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/MutableExceptionCheck.java
+index cd39fad7e..70d558c61 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/MutableExceptionCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/MutableExceptionCheck.java
+@@ -110,62 +110,63 @@ public final class MutableExceptionCheck extends AbstractCheck {
+             leaveClassDef();
+         }
+     }
+ 
+     /**
+      * Called when we start processing class definition.
+      * @param ast class definition node
+      */
+     private void visitClassDef(DetailAST ast) {
+         checkingStack.push(checking);
+         checking = isNamedAsException(ast) && isExtendedClassNamedAsException(ast);
+     }
+ 
+     /** Called when we leave class definition. */
+     private void leaveClassDef() {
+         checking = checkingStack.pop();
+     }
+ 
+     /**
+      * Checks variable definition.
+      * @param ast variable def node for check
+      */
+     private void visitVariableDef(DetailAST ast) {
+         if (checking && ast.getParent().getType() == TokenTypes.OBJBLOCK) {
+             final DetailAST modifiersAST =
+                 ast.findFirstToken(TokenTypes.MODIFIERS);
+ 
+             if (modifiersAST.findFirstToken(TokenTypes.FINAL) == null) {
+                 log(ast.getLineNo(), ast.getColumnNo(), MSG_KEY,
+                         ast.findFirstToken(TokenTypes.IDENT).getText());
+             }
+         }
+     }
+ 
+     /**
+      * Checks that a class name conforms to specified format.
+      * @param ast class definition node
+      * @return true if a class name conforms to specified format
+      */
+     private boolean isNamedAsException(DetailAST ast) {
+         final String className = ast.findFirstToken(TokenTypes.IDENT).getText();
+         return format.matcher(className).find();
+     }
+ 
+     /**
+      * Checks that if extended class name conforms to specified format.
+      * @param ast class definition node
+      * @return true if extended class name conforms to specified format
+      */
+     private boolean isExtendedClassNamedAsException(DetailAST ast) {
++        boolean result = false;
+         final DetailAST extendsClause = ast.findFirstToken(TokenTypes.EXTENDS_CLAUSE);
+         if (extendsClause != null) {
+             DetailAST currentNode = extendsClause;
+             while (currentNode.getLastChild() != null) {
+                 currentNode = currentNode.getLastChild();
+             }
+             final String extendedClassName = currentNode.getText();
+-            return extendedClassNameFormat.matcher(extendedClassName).matches();
++            result = extendedClassNameFormat.matcher(extendedClassName).matches();
+         }
+-        return false;
++        return result;
+     }
+ }

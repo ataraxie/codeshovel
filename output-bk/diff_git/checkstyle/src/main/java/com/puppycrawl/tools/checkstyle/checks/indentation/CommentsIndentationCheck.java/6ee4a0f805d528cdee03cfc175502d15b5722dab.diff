@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
+index a9ef8a488..be7c96bc5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java
+@@ -268,102 +268,102 @@ public class CommentsIndentationCheck extends Check {
+         if (currentToken.getType() == TokenTypes.LITERAL_RETURN
+                 || currentToken.getType() == TokenTypes.LITERAL_THROW) {
+             previousStatement = currentToken;
+         }
+         else {
+             currentToken = currentToken.getPreviousSibling();
+             while (currentToken.getFirstChild() != null) {
+                 currentToken = currentToken.getFirstChild();
+             }
+             previousStatement = currentToken;
+         }
+         return previousStatement;
+     }
+ 
+     /**
+      * Checks whether case block is empty.
+      * @param nextStmt previous statement.
+      * @param prevStmt next statement.
+      * @return true if case block is empty.
+      */
+     private static boolean isInEmptyCaseBlock(DetailAST prevStmt, DetailAST nextStmt) {
+         return prevStmt != null
+             && nextStmt != null
+             && (prevStmt.getType() == TokenTypes.LITERAL_CASE
+                 || prevStmt.getType() == TokenTypes.CASE_GROUP)
+             && (nextStmt.getType() == TokenTypes.LITERAL_CASE
+                 || nextStmt.getType() == TokenTypes.LITERAL_DEFAULT);
+     }
+ 
+     /**
+      * Checks whether single line comment is a 'fall through' comment.
+      * For example:
+      * <p>
+      * {@code
+      *    ...
+      *    case OPTION_ONE:
+      *        int someVariable = 1;
+      *        // fall through
+      *    case OPTION_TWO:
+      *        int a = 5;
+      *        break;
+      *    ...
+      * }
+      * </p>
+      * @param prevStmt previous statement.
+      * @param nextStmt next statement.
+      * @return true if a single line comment is a 'fall through' comment.
+      */
+     private static boolean isFallThroughSingleLineComment(DetailAST prevStmt, DetailAST nextStmt) {
+         return prevStmt != null
+-            && prevStmt.getType() != TokenTypes.LITERAL_CASE
+             && nextStmt != null
++            && prevStmt.getType() != TokenTypes.LITERAL_CASE
+             && (nextStmt.getType() == TokenTypes.LITERAL_CASE
+                 || nextStmt.getType() == TokenTypes.LITERAL_DEFAULT);
+     }
+ 
+     /**
+      * Checks whether a single line comment is placed at the end of the code block.
+      * @param nextStmt next statement.
+      * @return true if a single line comment is placed at the end of the block.
+      */
+     private static boolean isSingleLineCommentAtTheEndOfTheCodeBlock(DetailAST nextStmt) {
+         return nextStmt != null
+             && nextStmt.getType() == TokenTypes.RCURLY;
+     }
+ 
+     /**
+      * Checks whether comment is placed in the empty code block.
+      * For example:
+      * <p>
+      * ...
+      * {@code
+      *  // empty code block
+      * }
+      * ...
+      * </p>
+      * Note, the method does not treat empty case blocks.
+      * @param prevStmt previous statement.
+      * @param nextStmt next statement.
+      * @return true if comment is placed in the empty code block.
+      */
+     private static boolean isInEmptyCodeBlock(DetailAST prevStmt, DetailAST nextStmt) {
+         return prevStmt != null
+             && nextStmt != null
+             && (prevStmt.getType() == TokenTypes.SLIST
+                 || prevStmt.getType() == TokenTypes.OBJBLOCK)
+             && nextStmt.getType() == TokenTypes.RCURLY;
+     }
+ 
+     /**
+      * Handles a single line comment which is plased within empty case block.
+      * Note, if comment is placed at the end of the empty case block, we have Checkstyle's
+      * limitations to clearly detect user intention of explanation target - above or below. The
+      * only case we can assume as a violation is when a single line comment within the empty case
+      * block has indentation level that is lower than the indentation level of the next case
+      * token. For example:
+      * <p>
+      * {@code
+      *    ...
+      *    case OPTION_ONE:
+      * // violation
+      *    case OPTION_TWO:

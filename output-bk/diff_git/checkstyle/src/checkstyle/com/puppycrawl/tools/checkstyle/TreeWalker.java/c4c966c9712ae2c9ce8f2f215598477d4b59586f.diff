@@ -1,0 +1,210 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 75b0905f9..d209ba889 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -1,94 +1,98 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2003  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle;
+ 
+ import java.io.File;
+ import java.io.FileNotFoundException;
+ import java.io.IOException;
+ import java.io.Reader;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.Map;
+ import java.util.Set;
+ 
+ import antlr.RecognitionException;
+ import antlr.TokenStreamException;
+ import com.puppycrawl.tools.checkstyle.api.AbstractFileSetCheck;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import com.puppycrawl.tools.checkstyle.api.Context;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.Utils;
++import com.puppycrawl.tools.checkstyle.grammars.GeneratedJavaRecognizer;
++import com.puppycrawl.tools.checkstyle.grammars.GeneratedJava14Recognizer;
++import com.puppycrawl.tools.checkstyle.grammars.GeneratedJavaLexer;
++import com.puppycrawl.tools.checkstyle.grammars.GeneratedJava14Lexer;
+ 
+ /**
+  * Responsible for walking an abstract syntax tree and notifying interested
+  * checks at each each node.
+  *
+  * @author Oliver Burn
+  * @version 1.0
+  */
+ public final class TreeWalker
+     extends AbstractFileSetCheck
+ {
+     /**
+      * Overrides ANTLR error reporting so we completely control
+      * checkstyle's output during parsing. This is important because
+      * we try parsing with several grammers (with/without support for
+      * <code>assert</code>). We must not write any error messages when
+      * parsing fails because with the next grammar it might succeed
+      * and the user will be confused.
+      */
+     private static final class SilentJava14Recognizer
+         extends GeneratedJava14Recognizer
+     {
+         /**
+          * Creates a new <code>SilentJava14Recognizer</code> instance.
+          *
+          * @param aLexer the tokenstream the recognizer operates on.
+          */
+         private SilentJava14Recognizer(GeneratedJava14Lexer aLexer)
+         {
+             super(aLexer);
+         }
+ 
+         /**
+          * Parser error-reporting function, does nothing.
+          * @param aRex the exception to be reported
+          */
+         public void reportError(RecognitionException aRex)
+         {
+         }
+ 
+         /**
+          * Parser error-reporting function, does nothing.
+          * @param aMsg the error message
+          */
+         public void reportError(String aMsg)
+         {
+         }
+ 
+         /**
+          * Parser warning-reporting function, does nothing.
+@@ -423,104 +427,104 @@ public final class TreeWalker
+      * @param aAST the node to notify for
+      */
+     private void notifyVisit(DetailAST aAST)
+     {
+         final ArrayList visitors =
+             (ArrayList) mTokenToChecks.get(
+                 TokenTypes.getTokenName(aAST.getType()));
+         if (visitors != null) {
+             for (int i = 0; i < visitors.size(); i++) {
+                 final Check check = (Check) visitors.get(i);
+                 check.visitToken(aAST);
+             }
+         }
+     }
+ 
+     /**
+      * Notify interested checks that leaving a node.
+      * @param aAST the node to notify for
+      */
+     private void notifyLeave(DetailAST aAST)
+     {
+         final ArrayList visitors =
+             (ArrayList) mTokenToChecks.get(
+                 TokenTypes.getTokenName(aAST.getType()));
+         if (visitors != null) {
+             for (int i = 0; i < visitors.size(); i++) {
+                 final Check check = (Check) visitors.get(i);
+                 check.leaveToken(aAST);
+             }
+         }
+     }
+ 
+     /**
+      * Static helper method to parses a Java source file.
+      * @param aContents contains the contents of the file
+      * @return the root of the AST
+      * @throws TokenStreamException if lexing failed
+      * @throws RecognitionException if parsing failed
+      */
+     public static DetailAST parse(FileContents aContents)
+         throws TokenStreamException, RecognitionException
+     {
+         DetailAST rootAST;
+         try {
+             // try the 1.4 grammar first, this will succeed for
+             // all code that compiles without any warnings in JDK 1.4,
+             // that should cover most cases
+             final Reader sar = new StringArrayReader(aContents.getLines());
+             final GeneratedJava14Lexer jl = new GeneratedJava14Lexer(sar);
+             jl.setFilename(aContents.getFilename());
+-            jl.setFileContents(aContents);
++            jl.setCommentListener(aContents);
+ 
+             final GeneratedJava14Recognizer jr =
+                 new SilentJava14Recognizer(jl);
+             jr.setFilename(aContents.getFilename());
+             jr.setASTNodeClass(DetailAST.class.getName());
+             jr.compilationUnit();
+             rootAST = (DetailAST) jr.getAST();
+         }
+         catch (RecognitionException re) {
+             // Parsing might have failed because the checked
+             // file contains "assert" as an identifier. Retry with a
+             // grammar that treats "assert" as an identifier
+             // and not as a keyword
+ 
+             // Arghh - the pain - duplicate code!
+             final Reader sar = new StringArrayReader(aContents.getLines());
+             final GeneratedJavaLexer jl = new GeneratedJavaLexer(sar);
+             jl.setFilename(aContents.getFilename());
+-            jl.setFileContents(aContents);
++            jl.setCommentListener(aContents);
+ 
+             final GeneratedJavaRecognizer jr = new GeneratedJavaRecognizer(jl);
+             jr.setFilename(aContents.getFilename());
+             jr.setASTNodeClass(DetailAST.class.getName());
+             jr.compilationUnit();
+             rootAST = (DetailAST) jr.getAST();
+         }
+         return rootAST;
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.FileSetCheck */
+     public void process(File[] aFiles)
+     {
+         File[] javaFiles = filter(aFiles);
+ 
+         for (int i = 0; i < javaFiles.length; i++) {
+             process(javaFiles[i]);
+         }
+     }
+ 
+     /**
+      * @see com.puppycrawl.tools.checkstyle.api.FileSetCheck
+      */
+     public void destroy()
+     {
+         for (Iterator it = mAllChecks.iterator(); it.hasNext();) {
+             final Check c = (Check) it.next();
+             c.destroy();
+         }
+         mCache.destroy();
+         super.destroy();
+     }
+ 
+ }

@@ -1,0 +1,148 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java
+index f64ef262d..de3ca70f7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocVariableCheck.java
+@@ -16,135 +16,135 @@
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.javadoc;
+ 
+ import java.util.regex.Pattern;
+ 
+ import com.puppycrawl.tools.checkstyle.ScopeUtils;
+ import com.puppycrawl.tools.checkstyle.Utils;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.Scope;
+ import com.puppycrawl.tools.checkstyle.api.TextBlock;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Checks that a variable has Javadoc comment.
+  *
+  * @author Oliver Burn
+  */
+ public class JavadocVariableCheck
+     extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String JAVADOC_MISSING = "javadoc.missing";
+ 
+     /** the scope to check */
+     private Scope scope = Scope.PRIVATE;
+ 
+     /** the visibility scope where Javadoc comments shouldn't be checked **/
+     private Scope excludeScope;
+ 
+     /** the pattern to ignore variable name */
+     private Pattern ignoreNamePattern;
+ 
+     /**
+      * Sets the scope to check.
+      * @param from string to get the scope from
+      */
+     public void setScope(String from) {
+         scope = Scope.getInstance(from);
+     }
+ 
+     /**
+      * Set the excludeScope.
+-     * @param scope a {@code String} value
++     * @param excludeScope a {@code String} value
+      */
+-    public void setExcludeScope(String scope) {
+-        excludeScope = Scope.getInstance(scope);
++    public void setExcludeScope(String excludeScope) {
++        this.excludeScope = Scope.getInstance(excludeScope);
+     }
+ 
+     /**
+      * Sets the variable names to ignore in the check.
+      * @param regexp regular expression to define variable names to ignore.
+      * @throws org.apache.commons.beanutils.ConversionException if unable to create Pattern object.
+      */
+     public void setIgnoreNamePattern(String regexp) {
+         ignoreNamePattern = Utils.createPattern(regexp);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (shouldCheck(ast)) {
+             final FileContents contents = getFileContents();
+             final TextBlock cmt =
+                 contents.getJavadocBefore(ast.getLineNo());
+ 
+             if (cmt == null) {
+                 log(ast, JAVADOC_MISSING);
+             }
+         }
+     }
+ 
+     /**
+      * Decides whether the variable name of an AST is in the ignore list.
+      * @param ast the AST to check
+      * @return true if the variable name of ast is in the ignore list.
+      */
+     private boolean isIgnored(DetailAST ast) {
+         final String name = ast.findFirstToken(TokenTypes.IDENT).getText();
+         return ignoreNamePattern != null
+                 && ignoreNamePattern.matcher(name).matches();
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param ast a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST ast) {
+         if (ScopeUtils.inCodeBlock(ast) || isIgnored(ast)) {
+             return false;
+         }
+ 
+-        final Scope scope;
++        final Scope customScope;
+         if (ast.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+-            scope = Scope.PUBLIC;
++            customScope = Scope.PUBLIC;
+         }
+         else {
+             final DetailAST mods = ast.findFirstToken(TokenTypes.MODIFIERS);
+             final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
+-            scope =
++            customScope =
+                 ScopeUtils.inInterfaceOrAnnotationBlock(ast)
+                     ? Scope.PUBLIC : declaredScope;
+         }
+ 
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(ast);
+ 
+-        return scope.isIn(this.scope) && surroundingScope.isIn(this.scope)
++        return customScope.isIn(this.scope) && surroundingScope.isIn(this.scope)
+             && (excludeScope == null
+-                || !scope.isIn(excludeScope)
++                || !customScope.isIn(excludeScope)
+                 || !surroundingScope.isIn(excludeScope));
+     }
+ }

@@ -1,0 +1,133 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "JavadocDetailNodeParser.java",
+  "functionName": "convertParseTreeToDetailNode",
+  "functionId": "convertParseTreeToDetailNode___parseTreeNode-ParseTree",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/JavadocDetailNodeParser.java",
+  "functionStartLine": 200,
+  "functionEndLine": 250,
+  "changeHistory": [
+    "19ffe1bb1bf4e19b71a49bf0fb61e04ca1bc812a",
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a",
+    "561df9fc0c36be06c558049afad7467dbb0130ad",
+    "66d73fe6189267fee3423e2e8d7fc2d68599a43f",
+    "a8f5fa3225e1c1ac96b28fbf16db1d51aa361a71",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "2e1382c5bb1aa61cc01d7958a589e2a3831f56b5",
+    "ff12c1b012a1b18da8a1cd2101efd0173c612534"
+  ],
+  "changeHistoryShort": {
+    "19ffe1bb1bf4e19b71a49bf0fb61e04ca1bc812a": "Ybodychange",
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a": "Ymovefromfile",
+    "561df9fc0c36be06c558049afad7467dbb0130ad": "Ybodychange",
+    "66d73fe6189267fee3423e2e8d7fc2d68599a43f": "Yrename",
+    "a8f5fa3225e1c1ac96b28fbf16db1d51aa361a71": "Ymultichange(Yparameterchange,Ybodychange)",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "2e1382c5bb1aa61cc01d7958a589e2a3831f56b5": "Ymodifierchange",
+    "ff12c1b012a1b18da8a1cd2101efd0173c612534": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "19ffe1bb1bf4e19b71a49bf0fb61e04ca1bc812a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3170: delete children from javadoc TEXT",
+      "commitDate": 1479514545000,
+      "commitName": "19ffe1bb1bf4e19b71a49bf0fb61e04ca1bc812a",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1466685176000,
+      "commitNameOld": "1395a92adb0d8fd0767bee81dc407c5e58b37252",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 148.49,
+      "commitsBetweenForRepo": 202,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,46 +1,52 @@\n     private DetailNode convertParseTreeToDetailNode(ParseTree parseTreeNode) {\n         final JavadocNodeImpl rootJavadocNode \u003d createRootJavadocNode(parseTreeNode);\n \n         JavadocNodeImpl currentJavadocParent \u003d rootJavadocNode;\n         ParseTree parseTreeParent \u003d parseTreeNode;\n \n         while (currentJavadocParent !\u003d null) {\n+            // remove unnecessary children tokens\n+            if (currentJavadocParent.getType() \u003d\u003d JavadocTokenTypes.TEXT) {\n+                currentJavadocParent\n+                        .setChildren((DetailNode[]) JavadocNodeImpl.EMPTY_DETAIL_NODE_ARRAY);\n+            }\n+\n             final JavadocNodeImpl[] children \u003d\n                     (JavadocNodeImpl[]) currentJavadocParent.getChildren();\n \n             insertChildrenNodes(children, parseTreeParent);\n \n             if (children.length \u003e 0) {\n                 currentJavadocParent \u003d children[0];\n                 parseTreeParent \u003d parseTreeParent.getChild(0);\n             }\n             else {\n                 JavadocNodeImpl nextJavadocSibling \u003d (JavadocNodeImpl) JavadocUtils\n                         .getNextSibling(currentJavadocParent);\n \n                 ParseTree nextParseTreeSibling \u003d getNextSibling(parseTreeParent);\n \n                 if (nextJavadocSibling \u003d\u003d null) {\n                     JavadocNodeImpl tempJavadocParent \u003d\n                             (JavadocNodeImpl) currentJavadocParent.getParent();\n \n                     ParseTree tempParseTreeParent \u003d parseTreeParent.getParent();\n \n                     while (nextJavadocSibling \u003d\u003d null \u0026\u0026 tempJavadocParent !\u003d null) {\n \n                         nextJavadocSibling \u003d (JavadocNodeImpl) JavadocUtils\n                                 .getNextSibling(tempJavadocParent);\n \n                         nextParseTreeSibling \u003d getNextSibling(tempParseTreeParent);\n \n                         tempJavadocParent \u003d (JavadocNodeImpl) tempJavadocParent.getParent();\n                         tempParseTreeParent \u003d tempParseTreeParent.getParent();\n                     }\n                 }\n                 currentJavadocParent \u003d nextJavadocSibling;\n                 parseTreeParent \u003d nextParseTreeSibling;\n             }\n         }\n \n         return rootJavadocNode;\n     }\n\\ No newline at end of file\n"
+    },
+    "68b49fd2843f23f55dc711a89213d59f2acf3a0a": {
+      "type": "Ymovefromfile",
+      "commitMessage": "Issue #652: New CLI option to print Javadoc comment parse tree\n",
+      "commitDate": 1458220789000,
+      "commitName": "68b49fd2843f23f55dc711a89213d59f2acf3a0a",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1458153137000,
+      "commitNameOld": "888594049a74a7d8e9bbdfb5672c07db1f7ba220",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 0.78,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "561df9fc0c36be06c558049afad7467dbb0130ad": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: Refactoring of AbstractJavadocCheck to reduce method length\n",
+      "commitDate": 1440618651000,
+      "commitName": "561df9fc0c36be06c558049afad7467dbb0130ad",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1440243226000,
+      "commitNameOld": "8abfa48f2eb5edaf3f5a2cc2350e4e3c232f4152",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 4.35,
+      "commitsBetweenForRepo": 63,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,71 +1,46 @@\n     private DetailNode convertParseTreeToDetailNode(ParseTree parseTreeNode) {\n-        final JavadocNodeImpl rootJavadocNode \u003d createJavadocNode(parseTreeNode, null, -1);\n-\n-        int childCount \u003d parseTreeNode.getChildCount();\n-        JavadocNodeImpl[] children \u003d new JavadocNodeImpl[childCount];\n-\n-        for (int i \u003d 0; i \u003c childCount; i++) {\n-            final JavadocNodeImpl child \u003d createJavadocNode(parseTreeNode.getChild(i),\n-                    rootJavadocNode, i);\n-            children[i] \u003d child;\n-        }\n-        rootJavadocNode.setChildren(children);\n+        final JavadocNodeImpl rootJavadocNode \u003d createRootJavadocNode(parseTreeNode);\n \n         JavadocNodeImpl currentJavadocParent \u003d rootJavadocNode;\n         ParseTree parseTreeParent \u003d parseTreeNode;\n \n         while (currentJavadocParent !\u003d null) {\n-            children \u003d (JavadocNodeImpl[]) currentJavadocParent.getChildren();\n-            childCount \u003d children.length;\n+            final JavadocNodeImpl[] children \u003d\n+                    (JavadocNodeImpl[]) currentJavadocParent.getChildren();\n \n-            for (int i \u003d 0; i \u003c childCount; i++) {\n-                final JavadocNodeImpl currentJavadocNode \u003d children[i];\n-                final ParseTree currentParseTreeNodeChild \u003d parseTreeParent.getChild(i);\n+            insertChildrenNodes(children, parseTreeParent);\n \n-                final JavadocNodeImpl[] subChildren \u003d\n-                        new JavadocNodeImpl[currentJavadocNode.getChildren().length];\n-\n-                for (int j \u003d 0; j \u003c subChildren.length; j++) {\n-                    final JavadocNodeImpl child \u003d\n-                            createJavadocNode(currentParseTreeNodeChild.getChild(j),\n-                                    currentJavadocNode, j);\n-\n-                    subChildren[j] \u003d child;\n-                }\n-                currentJavadocNode.setChildren(subChildren);\n-            }\n-\n-            if (childCount \u003e 0) {\n+            if (children.length \u003e 0) {\n                 currentJavadocParent \u003d children[0];\n                 parseTreeParent \u003d parseTreeParent.getChild(0);\n             }\n             else {\n                 JavadocNodeImpl nextJavadocSibling \u003d (JavadocNodeImpl) JavadocUtils\n                         .getNextSibling(currentJavadocParent);\n \n                 ParseTree nextParseTreeSibling \u003d getNextSibling(parseTreeParent);\n \n                 if (nextJavadocSibling \u003d\u003d null) {\n                     JavadocNodeImpl tempJavadocParent \u003d\n                             (JavadocNodeImpl) currentJavadocParent.getParent();\n \n                     ParseTree tempParseTreeParent \u003d parseTreeParent.getParent();\n \n                     while (nextJavadocSibling \u003d\u003d null \u0026\u0026 tempJavadocParent !\u003d null) {\n \n                         nextJavadocSibling \u003d (JavadocNodeImpl) JavadocUtils\n                                 .getNextSibling(tempJavadocParent);\n \n                         nextParseTreeSibling \u003d getNextSibling(tempParseTreeParent);\n \n                         tempJavadocParent \u003d (JavadocNodeImpl) tempJavadocParent.getParent();\n                         tempParseTreeParent \u003d tempParseTreeParent.getParent();\n                     }\n                 }\n                 currentJavadocParent \u003d nextJavadocSibling;\n                 parseTreeParent \u003d nextParseTreeSibling;\n             }\n         }\n \n         return rootJavadocNode;\n     }\n\\ No newline at end of file\n"
+    },
+    "66d73fe6189267fee3423e2e8d7fc2d68599a43f": {
+      "type": "Yrename",
+      "commitMessage": "Issue #1566: MemberName and MethodName violations fixed\n",
+      "commitDate": 1439560811000,
+      "commitName": "66d73fe6189267fee3423e2e8d7fc2d68599a43f",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439356761000,
+      "commitNameOld": "3bd699bd593414d63c7139aa410f13ec8341a027",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 2.36,
+      "commitsBetweenForRepo": 18,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,71 +1,71 @@\n-    private DetailNode convertParseTree2DetailNode(ParseTree parseTreeNode) {\n+    private DetailNode convertParseTreeToDetailNode(ParseTree parseTreeNode) {\n         final JavadocNodeImpl rootJavadocNode \u003d createJavadocNode(parseTreeNode, null, -1);\n \n         int childCount \u003d parseTreeNode.getChildCount();\n         JavadocNodeImpl[] children \u003d new JavadocNodeImpl[childCount];\n \n         for (int i \u003d 0; i \u003c childCount; i++) {\n             final JavadocNodeImpl child \u003d createJavadocNode(parseTreeNode.getChild(i),\n                     rootJavadocNode, i);\n             children[i] \u003d child;\n         }\n         rootJavadocNode.setChildren(children);\n \n         JavadocNodeImpl currentJavadocParent \u003d rootJavadocNode;\n         ParseTree parseTreeParent \u003d parseTreeNode;\n \n         while (currentJavadocParent !\u003d null) {\n             children \u003d (JavadocNodeImpl[]) currentJavadocParent.getChildren();\n             childCount \u003d children.length;\n \n             for (int i \u003d 0; i \u003c childCount; i++) {\n                 final JavadocNodeImpl currentJavadocNode \u003d children[i];\n                 final ParseTree currentParseTreeNodeChild \u003d parseTreeParent.getChild(i);\n \n                 final JavadocNodeImpl[] subChildren \u003d\n                         new JavadocNodeImpl[currentJavadocNode.getChildren().length];\n \n                 for (int j \u003d 0; j \u003c subChildren.length; j++) {\n                     final JavadocNodeImpl child \u003d\n                             createJavadocNode(currentParseTreeNodeChild.getChild(j),\n                                     currentJavadocNode, j);\n \n                     subChildren[j] \u003d child;\n                 }\n                 currentJavadocNode.setChildren(subChildren);\n             }\n \n             if (childCount \u003e 0) {\n                 currentJavadocParent \u003d children[0];\n                 parseTreeParent \u003d parseTreeParent.getChild(0);\n             }\n             else {\n                 JavadocNodeImpl nextJavadocSibling \u003d (JavadocNodeImpl) JavadocUtils\n                         .getNextSibling(currentJavadocParent);\n \n                 ParseTree nextParseTreeSibling \u003d getNextSibling(parseTreeParent);\n \n                 if (nextJavadocSibling \u003d\u003d null) {\n                     JavadocNodeImpl tempJavadocParent \u003d\n                             (JavadocNodeImpl) currentJavadocParent.getParent();\n \n                     ParseTree tempParseTreeParent \u003d parseTreeParent.getParent();\n \n                     while (nextJavadocSibling \u003d\u003d null \u0026\u0026 tempJavadocParent !\u003d null) {\n \n                         nextJavadocSibling \u003d (JavadocNodeImpl) JavadocUtils\n                                 .getNextSibling(tempJavadocParent);\n \n                         nextParseTreeSibling \u003d getNextSibling(tempParseTreeParent);\n \n                         tempJavadocParent \u003d (JavadocNodeImpl) tempJavadocParent.getParent();\n                         tempParseTreeParent \u003d tempParseTreeParent.getParent();\n                     }\n                 }\n                 currentJavadocParent \u003d nextJavadocSibling;\n                 parseTreeParent \u003d nextParseTreeSibling;\n             }\n         }\n \n         return rootJavadocNode;\n     }\n\\ No newline at end of file\n"
+    },
+    "a8f5fa3225e1c1ac96b28fbf16db1d51aa361a71": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "fix for EI_EXPOSE_REP. Issue #778\n",
+      "commitDate": 1428507184000,
+      "commitName": "a8f5fa3225e1c1ac96b28fbf16db1d51aa361a71",
+      "commitAuthor": "Roman Ivanov",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "2e1382c5bb1aa61cc01d7958a589e2a3831f56b5": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Issue #49. Caching DetailNode trees in AbstractJavadocCheck\n",
+      "commitDate": 1415399075000,
+      "commitName": "2e1382c5bb1aa61cc01d7958a589e2a3831f56b5",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1413750761000,
+      "commitNameOld": "ff12c1b012a1b18da8a1cd2101efd0173c612534",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 19.08,
+      "commitsBetweenForRepo": 41,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,71 +1,71 @@\n-    public DetailNode convertParseTree2DetailNode(ParseTree aRootParseTree)\n+    private DetailNode convertParseTree2DetailNode(ParseTree aRootParseTree)\n     {\n         final ParseTree currentParseTreeNode \u003d aRootParseTree;\n         final JavadocNodeImpl rootJavadocNode \u003d createJavadocNode(currentParseTreeNode, null, -1);\n \n         int childCount \u003d currentParseTreeNode.getChildCount();\n         JavadocNodeImpl[] children \u003d (JavadocNodeImpl[]) rootJavadocNode.getChildren();\n \n         for (int i \u003d 0; i \u003c childCount; i++) {\n             final JavadocNodeImpl child \u003d createJavadocNode(currentParseTreeNode.getChild(i)\n                     , rootJavadocNode, i);\n             children[i] \u003d child;\n         }\n \n         JavadocNodeImpl currentJavadocParent \u003d rootJavadocNode;\n         ParseTree currentParseTreeParent \u003d currentParseTreeNode;\n \n         while (currentJavadocParent !\u003d null) {\n             children \u003d (JavadocNodeImpl[]) currentJavadocParent.getChildren();\n             childCount \u003d children.length;\n \n             for (int i \u003d 0; i \u003c childCount; i++) {\n                 final JavadocNodeImpl currentJavadocNode \u003d children[i];\n                 final ParseTree currentParseTreeNodeChild \u003d currentParseTreeParent.getChild(i);\n \n                 final JavadocNodeImpl[] subChildren \u003d (JavadocNodeImpl[]) currentJavadocNode\n                         .getChildren();\n \n                 for (int j \u003d 0; j \u003c subChildren.length; j++) {\n                     final JavadocNodeImpl child \u003d\n                             createJavadocNode(currentParseTreeNodeChild.getChild(j)\n                                     , currentJavadocNode, j);\n \n                     subChildren[j] \u003d child;\n                 }\n             }\n \n             if (childCount \u003e 0) {\n                 currentJavadocParent \u003d children[0];\n                 currentParseTreeParent \u003d currentParseTreeParent.getChild(0);\n             }\n             else {\n                 JavadocNodeImpl nextJavadocSibling \u003d (JavadocNodeImpl) JavadocUtils\n                         .getNextSibling(currentJavadocParent);\n \n                 ParseTree nextParseTreeSibling \u003d getNextSibling(currentParseTreeParent);\n \n                 if (nextJavadocSibling \u003d\u003d null) {\n                     JavadocNodeImpl tempJavadocParent \u003d\n                             (JavadocNodeImpl) currentJavadocParent.getParent();\n \n                     ParseTree tempParseTreeParent \u003d currentParseTreeParent.getParent();\n \n                     while (nextJavadocSibling \u003d\u003d null \u0026\u0026 tempJavadocParent !\u003d null) {\n \n                         nextJavadocSibling \u003d (JavadocNodeImpl) JavadocUtils\n                                 .getNextSibling(tempJavadocParent);\n \n                         nextParseTreeSibling \u003d getNextSibling(tempParseTreeParent);\n \n                         tempJavadocParent \u003d (JavadocNodeImpl) tempJavadocParent.getParent();\n                         tempParseTreeParent \u003d tempParseTreeParent.getParent();\n                     }\n                 }\n                 currentJavadocParent \u003d nextJavadocSibling;\n                 currentParseTreeParent \u003d nextParseTreeSibling;\n             }\n         }\n \n         return rootJavadocNode;\n     }\n\\ No newline at end of file\n"
+    },
+    "ff12c1b012a1b18da8a1cd2101efd0173c612534": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #49. Added support of Javadoc comments. Extended API to create Javadoc Checks.\n",
+      "commitDate": 1413750761000,
+      "commitName": "ff12c1b012a1b18da8a1cd2101efd0173c612534",
+      "commitAuthor": "Baratali Izmailov"
+    }
+  }
+}

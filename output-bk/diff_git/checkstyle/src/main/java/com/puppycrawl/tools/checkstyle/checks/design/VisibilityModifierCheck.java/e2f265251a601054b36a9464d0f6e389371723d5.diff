@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+index f5b9c1266..024f7f7b5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+@@ -673,102 +673,101 @@ public class VisibilityModifierCheck
+      * @return true if current type is primitive type.
+      */
+     private static boolean isPrimitive(DetailAST type) {
+         return type.getFirstChild().getType() != TokenTypes.IDENT;
+     }
+ 
+     /**
+      * Gets canonical type's name from given {@link TokenTypes#TYPE TYPE} node.
+      * @param type DetailAST {@link TokenTypes#TYPE TYPE} node.
+      * @return canonical type's name
+      */
+     private static String getCanonicalName(DetailAST type) {
+         final StringBuilder canonicalNameBuilder = new StringBuilder();
+         DetailAST toVisit = type.getFirstChild();
+         while (toVisit != null) {
+             toVisit = getNextSubTreeNode(toVisit, type);
+             if (toVisit != null && toVisit.getType() == TokenTypes.IDENT) {
+                 canonicalNameBuilder.append(toVisit.getText());
+                 final DetailAST nextSubTreeNode = getNextSubTreeNode(toVisit,
+                          type);
+                 if (nextSubTreeNode != null) {
+                     canonicalNameBuilder.append('.');
+                 }
+             }
+         }
+         return canonicalNameBuilder.toString();
+     }
+ 
+     /**
+      * Gets the next node of a syntactical tree (child of a current node or
+      * sibling of a current node, or sibling of a parent of a current node)
+      * @param currentNodeAst Current node in considering
+      * @param subTreeRootAst SubTree root
+      * @return Current node after bypassing, if current node reached the root of a subtree
+      *        method returns null
+      */
+     private static DetailAST
+         getNextSubTreeNode(DetailAST currentNodeAst, DetailAST subTreeRootAst) {
+         DetailAST currentNode = currentNodeAst;
+         DetailAST toVisitAst = currentNode.getFirstChild();
+         while (toVisitAst == null) {
+             toVisitAst = currentNode.getNextSibling();
+             if (toVisitAst == null) {
+                 if (currentNode.getParent().equals(subTreeRootAst)
+                          && currentNode.getParent().getColumnNo() == subTreeRootAst.getColumnNo()) {
+                     break;
+                 }
+                 currentNode = currentNode.getParent();
+             }
+         }
+-        currentNode = toVisitAst;
+-        return currentNode;
++        return toVisitAst;
+     }
+ 
+     /**
+      * Gets the list with short names classes.
+      * These names are taken from array of classes canonical names.
+      * @param canonicalClassNames canonical class names.
+      * @return the list of short names of classes.
+      */
+     private static List<String> getClassShortNames(List<String> canonicalClassNames) {
+         final List<String> shortNames = new ArrayList<>();
+         for (String canonicalClassName : canonicalClassNames) {
+             final String shortClassName = canonicalClassName
+                     .substring(canonicalClassName.lastIndexOf('.') + 1,
+                     canonicalClassName.length());
+             shortNames.add(shortClassName);
+         }
+         return shortNames;
+     }
+ 
+     /**
+      * Gets the short class name from given canonical name.
+      * @param canonicalClassName canonical class name.
+      * @return short name of class.
+      */
+     private static String getClassShortName(String canonicalClassName) {
+         return canonicalClassName
+                 .substring(canonicalClassName.lastIndexOf('.') + 1,
+                 canonicalClassName.length());
+     }
+ 
+     /**
+      * Checks whether the AST is annotated with
+      * an annotation containing the passed in regular
+      * expression and return the AST representing that
+      * annotation.
+      *
+      * <p>
+      * This method will not look for imports or package
+      * statements to detect the passed in annotation.
+      * </p>
+      *
+      * <p>
+      * To check if an AST contains a passed in annotation
+      * taking into account fully-qualified names
+      * (ex: java.lang.Override, Override)
+      * this method will need to be called twice. Once for each
+      * name given.
+      * </p>
+      *
+      * @param variableDef {@link TokenTypes#VARIABLE_DEF variable def node}.

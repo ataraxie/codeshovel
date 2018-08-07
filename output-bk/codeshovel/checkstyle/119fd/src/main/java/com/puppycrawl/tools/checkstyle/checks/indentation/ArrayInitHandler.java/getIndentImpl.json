@@ -1,0 +1,194 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ArrayInitHandler.java",
+  "functionName": "getIndentImpl",
+  "functionId": "getIndentImpl",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/ArrayInitHandler.java",
+  "functionStartLine": 46,
+  "functionEndLine": 59,
+  "changeHistory": [
+    "6054b46c9b717a03cf000c7884d0256335fc01e9",
+    "8c891372187779376158becd95fcaf4e28b8bb8d",
+    "782da01103fc7ec8e69a3da7a5ef800dac866a8b",
+    "e59080b695ecd2f12aa8dce07f40d9a77a98d52b",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "50559c68761e235f57e48cd2dc28928b417d7745",
+    "2f70947ed74ab968324fdcf83f808ff1d88df1fb",
+    "7f7db38a097a95c264307123924779380fb40077",
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b",
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955"
+  ],
+  "changeHistoryShort": {
+    "6054b46c9b717a03cf000c7884d0256335fc01e9": "Ybodychange",
+    "8c891372187779376158becd95fcaf4e28b8bb8d": "Ymultichange(Yrename,Ybodychange)",
+    "782da01103fc7ec8e69a3da7a5ef800dac866a8b": "Ybodychange",
+    "e59080b695ecd2f12aa8dce07f40d9a77a98d52b": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "50559c68761e235f57e48cd2dc28928b417d7745": "Ymodifierchange",
+    "2f70947ed74ab968324fdcf83f808ff1d88df1fb": "Ybodychange",
+    "7f7db38a097a95c264307123924779380fb40077": "Ymultichange(Yreturntypechange,Ybodychange)",
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6054b46c9b717a03cf000c7884d0256335fc01e9": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4940: fix MultipleReturnPointsPerMethod idea violation\n",
+      "commitDate": 1503206988000,
+      "commitName": "6054b46c9b717a03cf000c7884d0256335fc01e9",
+      "commitAuthor": "vasilyeva",
+      "commitDateOld": 1497287515000,
+      "commitNameOld": "4a087c020c2b97130e94f9292b94cb4bc1f6ed93",
+      "commitAuthorOld": "sagar-shah94",
+      "daysBetweenCommits": 68.51,
+      "commitsBetweenForRepo": 348,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,14 @@\n     protected IndentLevel getIndentImpl() {\n         final DetailAST parentAST \u003d getMainAst().getParent();\n         final int type \u003d parentAST.getType();\n+        final IndentLevel indentLevel;\n         if (type \u003d\u003d TokenTypes.LITERAL_NEW || type \u003d\u003d TokenTypes.ASSIGN) {\n             // note: assumes new or assignment is line to align with\n-            return new IndentLevel(getLineStart(parentAST));\n+            indentLevel \u003d new IndentLevel(getLineStart(parentAST));\n         }\n         else {\n             // at this point getParent() is instance of BlockParentHandler\n-            return ((BlockParentHandler) getParent()).getChildrenExpectedIndent();\n+            indentLevel \u003d ((BlockParentHandler) getParent()).getChildrenExpectedIndent();\n         }\n+        return indentLevel;\n     }\n\\ No newline at end of file\n"
+    },
+    "8c891372187779376158becd95fcaf4e28b8bb8d": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "minor: renaming indentation methods to more natural name",
+      "commitDate": 1450282560000,
+      "commitName": "8c891372187779376158becd95fcaf4e28b8bb8d",
+      "commitAuthor": "rnveach",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "782da01103fc7ec8e69a3da7a5ef800dac866a8b": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed overly strong type cast, issue #1555.\n",
+      "commitDate": 1439006367000,
+      "commitName": "782da01103fc7ec8e69a3da7a5ef800dac866a8b",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1437451079000,
+      "commitNameOld": "66571b2e6e7d4fa1b0cb6c185b390662299de72d",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 18.0,
+      "commitsBetweenForRepo": 184,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     protected IndentLevel getLevelImpl() {\n         final DetailAST parentAST \u003d getMainAst().getParent();\n         final int type \u003d parentAST.getType();\n         if (type \u003d\u003d TokenTypes.LITERAL_NEW || type \u003d\u003d TokenTypes.ASSIGN) {\n             // note: assumes new or assignment is line to align with\n             return new IndentLevel(getLineStart(parentAST));\n         }\n         else {\n-            // at this point getParent() is instance of ArrayInitHandler\n-            return ((ArrayInitHandler) getParent()).getChildrenExpectedLevel();\n+            // at this point getParent() is instance of BlockParentHandler\n+            return ((BlockParentHandler) getParent()).getChildrenExpectedLevel();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "e59080b695ecd2f12aa8dce07f40d9a77a98d52b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove dead code from ArrayInitHandler in Indentation check. #1270\n",
+      "commitDate": 1437195161000,
+      "commitName": "e59080b695ecd2f12aa8dce07f40d9a77a98d52b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1434649920000,
+      "commitNameOld": "eb5896a4a1d66552f5100046413f15d62b485b62",
+      "commitAuthorOld": "Bhavik Patel",
+      "daysBetweenCommits": 29.46,
+      "commitsBetweenForRepo": 207,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,12 @@\n     protected IndentLevel getLevelImpl() {\n         final DetailAST parentAST \u003d getMainAst().getParent();\n         final int type \u003d parentAST.getType();\n         if (type \u003d\u003d TokenTypes.LITERAL_NEW || type \u003d\u003d TokenTypes.ASSIGN) {\n             // note: assumes new or assignment is line to align with\n             return new IndentLevel(getLineStart(parentAST));\n         }\n-        else if (getParent() instanceof ArrayInitHandler) {\n-            return ((ArrayInitHandler) getParent()).getChildrenExpectedLevel();\n-        }\n         else {\n-            return getParent().getLevel();\n+            // at this point getParent() is instance of ArrayInitHandler\n+            return ((ArrayInitHandler) getParent()).getChildrenExpectedLevel();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 20.02,
+      "commitsBetweenForRepo": 107,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     protected IndentLevel getLevelImpl()\n     {\n         final DetailAST parentAST \u003d getMainAst().getParent();\n         final int type \u003d parentAST.getType();\n-        if ((type \u003d\u003d TokenTypes.LITERAL_NEW) || (type \u003d\u003d TokenTypes.ASSIGN)) {\n+        if (type \u003d\u003d TokenTypes.LITERAL_NEW || type \u003d\u003d TokenTypes.ASSIGN) {\n             // note: assumes new or assignment is line to align with\n             return new IndentLevel(getLineStart(parentAST));\n         }\n         else if (getParent() instanceof ArrayInitHandler) {\n             return ((ArrayInitHandler) getParent()).getChildrenExpectedLevel();\n         }\n         else {\n             return getParent().getLevel();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1130786628000,
+      "commitNameOld": "1aee9d55cc5bd8cca011e17369f6e370efcc85bb",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 248.34,
+      "commitsBetweenForRepo": 40,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     protected IndentLevel getLevelImpl()\n     {\n         final DetailAST parentAST \u003d getMainAst().getParent();\n         final int type \u003d parentAST.getType();\n-        if (type \u003d\u003d TokenTypes.LITERAL_NEW || type \u003d\u003d TokenTypes.ASSIGN) {\n+        if ((type \u003d\u003d TokenTypes.LITERAL_NEW) || (type \u003d\u003d TokenTypes.ASSIGN)) {\n             // note: assumes new or assignment is line to align with\n             return new IndentLevel(getLineStart(parentAST));\n         }\n         else if (getParent() instanceof ArrayInitHandler) {\n             return ((ArrayInitHandler) getParent()).getChildrenExpectedLevel();\n         }\n         else {\n             return getParent().getLevel();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "50559c68761e235f57e48cd2dc28928b417d7745": {
+      "type": "Ymodifierchange",
+      "commitMessage": "fix for 1232822 and some refactoring in indentation check\n",
+      "commitDate": 1122108240000,
+      "commitName": "50559c68761e235f57e48cd2dc28928b417d7745",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1105267857000,
+      "commitNameOld": "0d887cde58e54d920644ee543dab346b93e8aae9",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 194.91,
+      "commitsBetweenForRepo": 175,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n-    public IndentLevel getLevelImpl()\n+    protected IndentLevel getLevelImpl()\n     {\n         final DetailAST parentAST \u003d getMainAst().getParent();\n         final int type \u003d parentAST.getType();\n         if (type \u003d\u003d TokenTypes.LITERAL_NEW || type \u003d\u003d TokenTypes.ASSIGN) {\n             // note: assumes new or assignment is line to align with\n             return new IndentLevel(getLineStart(parentAST));\n         }\n         else if (getParent() instanceof ArrayInitHandler) {\n             return ((ArrayInitHandler) getParent()).getChildrenExpectedLevel();\n         }\n         else {\n             return getParent().getLevel();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "2f70947ed74ab968324fdcf83f808ff1d88df1fb": {
+      "type": "Ybodychange",
+      "commitMessage": "Tighten up code\n",
+      "commitDate": 1093528034000,
+      "commitName": "2f70947ed74ab968324fdcf83f808ff1d88df1fb",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1074114639000,
+      "commitNameOld": "5670252b46f4915b276e647fa000361915eb4ff4",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 224.69,
+      "commitsBetweenForRepo": 139,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     public IndentLevel getLevelImpl()\n     {\n-        DetailAST parentAST \u003d getMainAst().getParent();\n-        int type \u003d parentAST.getType();\n+        final DetailAST parentAST \u003d getMainAst().getParent();\n+        final int type \u003d parentAST.getType();\n         if (type \u003d\u003d TokenTypes.LITERAL_NEW || type \u003d\u003d TokenTypes.ASSIGN) {\n             // note: assumes new or assignment is line to align with\n             return new IndentLevel(getLineStart(parentAST));\n         }\n         else if (getParent() instanceof ArrayInitHandler) {\n             return ((ArrayInitHandler) getParent()).getChildrenExpectedLevel();\n         }\n         else {\n             return getParent().getLevel();\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "7f7db38a097a95c264307123924779380fb40077": {
+      "type": "Ymultichange(Yreturntypechange,Ybodychange)",
+      "commitMessage": "IndentationCheck: Some refactoring and fixes for some TODOs and bugs.\n",
+      "commitDate": 1060715940000,
+      "commitName": "7f7db38a097a95c264307123924779380fb40077",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "subchanges": [
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Refactoring of original IndentationCheck made by Jeff Weston (Sir Toby) applied.\nFixed two know problems:\n - with static init block (catched by testValidBlockWithChecker())\n - with throws in method definition.\n   unit-test (testInvalidMethodWithChecker()) fixed too.\n",
+      "commitDate": 1052639583000,
+      "commitName": "eaad55fdba73e17e103dc6600867f26fd6a3896b",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955": {
+      "type": "Yintroduced",
+      "commitMessage": "added IndentationCheck, contributed by John Richardson\nThis check currently fails to pass checkstyle.checkstyle\nbecause most methods are missing javadoc, I hope somebody\ncan help me adding it\n",
+      "commitDate": 1051248087000,
+      "commitName": "9aab61241e7970ccfb4a9ee66c8eb7f062d31955",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

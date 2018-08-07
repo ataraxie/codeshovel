@@ -1,0 +1,106 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+index 5d2964775..9e821ab2e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -161,100 +161,101 @@ public class Checker extends AutomaticBean
+                         + className + " - " + ex.getMessage());
+             }
+         }
+     }
+ 
+     private ClassLoader getClassLoader()
+     {
+         return mLoader;
+     }
+ 
+     /**
+      * Adds a FileSetCheck to the list of FileSetChecks
+      * that is executed in process().
+      * @param aFileSetCheck the additional FileSetCheck
+      */
+     public void addFileSetCheck(FileSetCheck aFileSetCheck)
+     {
+         aFileSetCheck.setMessageDispatcher(this);
+         mFileSetChecks.add(aFileSetCheck);
+     }
+ 
+     /** Cleans up the object **/
+     public void destroy()
+     {
+         mListeners.clear();
+     }
+ 
+     /**
+      * Add the listener that will be used to receive events from the audit
+      * @param aListener the nosy thing
+      */
+     public void addListener(AuditListener aListener)
+     {
+         mListeners.add(aListener);
+     }
+ 
+     /**
+      * Processes a set of files with all FileSetChecks.
+      * Once this is done, it is highly recommended to call for
+      * the destroy method to close and remove the listeners.
+      * @param aFiles the list of files to be audited.
+      * @return the total number of errors found
+      * @see #destroy()
+      */
+     public int process(File[] aFiles)
+     {
+         fireAuditStarted();
+         for (int i = 0; i < mFileSetChecks.size(); i++) {
+             FileSetCheck fileSetCheck = (FileSetCheck) mFileSetChecks.get(i);
+             fileSetCheck.process(aFiles);
++            fileSetCheck.destroy();
+         }
+         int errorCount = mCounter.getCount();
+         fireAuditFinished();
+         return errorCount;
+     }
+ 
+ 
+     /**
+      * Create a stripped down version of a filename.
+      * @param aFileName the original filename
+      * @return the filename where an initial prefix of basedir is stripped
+      */
+     private String getStrippedFileName(final String aFileName)
+     {
+         final String stripped;
+         if ((mBasedir == null) || !aFileName.startsWith(mBasedir)) {
+             stripped = aFileName;
+         }
+         else {
+             // making the assumption that there is text after basedir
+             final int skipSep = mBasedir.endsWith(File.separator) ? 0 : 1;
+             stripped = aFileName.substring(mBasedir.length() + skipSep);
+         }
+         return stripped;
+     }
+ 
+     public void setBasedir(String aBasedir)
+     {
+         mBasedir = aBasedir;
+     }
+ 
+     /** notify all listeners about the audit start */
+     protected void fireAuditStarted()
+     {
+         final AuditEvent evt = new AuditEvent(this);
+         final Iterator it = mListeners.iterator();
+         while (it.hasNext()) {
+             final AuditListener listener = (AuditListener) it.next();
+             listener.auditStarted(evt);
+         }
+     }
+ 
+     /** notify all listeners about the audit end */
+     protected void fireAuditFinished()
+     {
+         final AuditEvent evt = new AuditEvent(this);
+         final Iterator it = mListeners.iterator();
+         while (it.hasNext()) {
+             final AuditListener listener = (AuditListener) it.next();
+             listener.auditFinished(evt);

@@ -1,0 +1,108 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+index c91ff2fb3..ebd75df9e 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+@@ -118,101 +118,102 @@ public abstract class AbstractClassCouplingCheck extends Check
+     }
+ 
+     /** @return message key we use for log violations. */
+     protected abstract String getLogMessageId();
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.PACKAGE_DEF:
+             visitPackageDef(aAST);
+             break;
+         case TokenTypes.CLASS_DEF:
+         case TokenTypes.INTERFACE_DEF:
+             visitClassDef(aAST);
+             break;
+         case TokenTypes.TYPE:
+             mContext.visitType(aAST);
+             break;
+         case TokenTypes.LITERAL_NEW:
+             mContext.visitLiteralNew(aAST);
+             break;
+         case TokenTypes.LITERAL_THROWS:
+             mContext.visitLiteralThrows(aAST);
+             break;
+         default:
+             throw new IllegalStateException(aAST.toString());
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     public void leaveToken(DetailAST aAST)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.CLASS_DEF:
+         case TokenTypes.INTERFACE_DEF:
+             leaveClassDef();
+             break;
+         default:
+             // Do nothing
+         }
+     }
+ 
+     /**
+      * Stores package of current class we check.
+      * @param aPkg package definition.
+      */
+     private void visitPackageDef(DetailAST aPkg)
+     {
+         final FullIdent ident =
+-            FullIdent.createFullIdent((DetailAST) aPkg.getFirstChild());
++            FullIdent.createFullIdent(
++                (DetailAST) aPkg.getLastChild().getPreviousSibling());
+         mPackageName = ident.getText();
+     }
+ 
+     /**
+      * Creates new context for a given class.
+      * @param aClassDef class definition node.
+      */
+     private void visitClassDef(DetailAST aClassDef)
+     {
+         mContextStack.push(mContext);
+         final String className =
+             aClassDef.findFirstToken(TokenTypes.IDENT).getText();
+         mContext = new Context(className,
+                                aClassDef.getLineNo(),
+                                aClassDef.getColumnNo());
+     }
+ 
+     /** Restores previous context. */
+     private void leaveClassDef()
+     {
+         mContext.checkCoupling();
+         mContext = (Context) mContextStack.pop();
+     }
+ 
+     /**
+      * Incapsulates information about class coupling.
+      *
+      * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+      * @author o_sukhodolsky
+      */
+     private class Context
+     {
+         /** Set of referenced classes. */
+         private final Set mReferencedClassNames = new HashSet();
+         /** Own class name. */
+         private final String mClassName;
+         /* Location of own class. (Used to log violations) */
+         /** Line number of class definition. */
+         private final int mLineNo;
+         /** Column number of class definition. */
+         private final int mColumnNo;
+ 
+         /**
+          * Create new context associated with given class.
+          * @param aClassName name of the given class.
+          * @param aLineNo line of class definition.
+          * @param aColumnNo column of class definition.
+          */
+         public Context(String aClassName, int aLineNo, int aColumnNo)
+         {

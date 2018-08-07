@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RequireThisCheck.java",
+  "functionName": "isSimilarSignature",
+  "functionId": "isSimilarSignature___ident-DetailAST__ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java",
+  "functionStartLine": 1353,
+  "functionEndLine": 1363,
+  "changeHistory": [
+    "7790f3104d2770ac909c61e96ae66daba8d372ec",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+    "425fd5a27cd567d5784bd246729c55cf8cda3dbd"
+  ],
+  "changeHistoryShort": {
+    "7790f3104d2770ac909c61e96ae66daba8d372ec": "Ymodifierchange",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": "Ybodychange",
+    "425fd5a27cd567d5784bd246729c55cf8cda3dbd": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7790f3104d2770ac909c61e96ae66daba8d372ec": {
+      "type": "Ymodifierchange",
+      "commitMessage": "minor: eclipse violations - methods can be static",
+      "commitDate": 1469977049000,
+      "commitName": "7790f3104d2770ac909c61e96ae66daba8d372ec",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1469508708000,
+      "commitNameOld": "81c030e322201085e463b9cc97e3e8dbce0e38d4",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 5.42,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n-        private boolean isSimilarSignature(DetailAST ident, DetailAST ast) {\n+        private static boolean isSimilarSignature(DetailAST ident, DetailAST ast) {\n             boolean result \u003d false;\n             final DetailAST elistToken \u003d ident.getParent().findFirstToken(TokenTypes.ELIST);\n             if (elistToken !\u003d null \u0026\u0026 ident.getText().equals(ast.getText())) {\n                 final int paramsNumber \u003d\n                     ast.getParent().findFirstToken(TokenTypes.PARAMETERS).getChildCount();\n                 final int argsNumber \u003d elistToken.getChildCount();\n                 result \u003d paramsNumber \u003d\u003d argsNumber;\n             }\n             return result;\n         }\n\\ No newline at end of file\n"
+    },
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2362: Add \u0027validateOnlyOverlapping\u0027 option for RequireThisCheck\n",
+      "commitDate": 1457102074000,
+      "commitName": "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1455889109000,
+      "commitNameOld": "f6bec165c9c6b6d8cc430cb0694dd42ccb0b7f69",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 14.04,
+      "commitsBetweenForRepo": 54,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n         private boolean isSimilarSignature(DetailAST ident, DetailAST ast) {\n             boolean result \u003d false;\n-            if (ident.getText().equals(ast.getText())) {\n-                final int paramsNumber \u003d ast.getParent().findFirstToken(TokenTypes.PARAMETERS)\n-                    .getChildCount();\n-                final int argsNumber \u003d ident.getParent().findFirstToken(TokenTypes.ELIST)\n-                    .getChildCount();\n+            final DetailAST elistToken \u003d ident.getParent().findFirstToken(TokenTypes.ELIST);\n+            if (elistToken !\u003d null \u0026\u0026 ident.getText().equals(ast.getText())) {\n+                final int paramsNumber \u003d\n+                    ast.getParent().findFirstToken(TokenTypes.PARAMETERS).getChildCount();\n+                final int argsNumber \u003d elistToken.getChildCount();\n                 result \u003d paramsNumber \u003d\u003d argsNumber;\n             }\n             return result;\n         }\n\\ No newline at end of file\n"
+    },
+    "425fd5a27cd567d5784bd246729c55cf8cda3dbd": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2539: Fix RequireThis check false-positive on methods\n",
+      "commitDate": 1451598097000,
+      "commitName": "425fd5a27cd567d5784bd246729c55cf8cda3dbd",
+      "commitAuthor": "Vladislav Lisetskiy"
+    }
+  }
+}

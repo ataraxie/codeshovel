@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+index 7809f66ef..c50818009 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+@@ -264,107 +264,103 @@ public class MagicNumberCheck extends Check {
+             text = "-" + text;
+         }
+         else if (parent.getType() == TokenTypes.UNARY_PLUS) {
+             reportAST = parent;
+             text = "+" + text;
+         }
+         log(reportAST.getLineNo(),
+                 reportAST.getColumnNo(),
+                 MSG_KEY,
+                 text);
+     }
+ 
+     /**
+      * Determines whether or not the given AST is in a valid hash code method.
+      * A valid hash code method is considered to be a method of the signature
+      * {@code public int hashCode()}.
+      *
+      * @param ast the AST from which to search for an enclosing hash code
+      * method definition
+      *
+      * @return {@code true} if {@code ast} is in the scope of a valid hash
+      * code method
+      */
+     private boolean isInHashCodeMethod(DetailAST ast) {
+         // if not in a code block, can't be in hashCode()
+         if (!ScopeUtils.inCodeBlock(ast)) {
+             return false;
+         }
+ 
+         // find the method definition AST
+         DetailAST methodDefAST = ast.getParent();
+         while (null != methodDefAST
+                 && TokenTypes.METHOD_DEF != methodDefAST.getType()) {
+             methodDefAST = methodDefAST.getParent();
+         }
+ 
+         if (null == methodDefAST) {
+             return false;
+         }
+ 
+         // Check for 'hashCode' name.
+         final DetailAST identAST =
+             methodDefAST.findFirstToken(TokenTypes.IDENT);
+         if (!"hashCode".equals(identAST.getText())) {
+             return false;
+         }
+ 
+         // Check for no arguments.
+         final DetailAST paramAST =
+             methodDefAST.findFirstToken(TokenTypes.PARAMETERS);
+-        if (0 != paramAST.getChildCount()) {
+-            return false;
+-        }
+-
+         // we are in a 'public int hashCode()' method! The compiler will ensure
+         // the method returns an 'int' and is public.
+-        return true;
++        return 0 == paramAST.getChildCount();
+     }
+ 
+     /**
+      * Decides whether the number of an AST is in the ignore list of this
+      * check.
+      * @param ast the AST to check
+      * @return true if the number of ast is in the ignore list of this
+      * check.
+      */
+     private boolean inIgnoreList(DetailAST ast) {
+         double value = CheckUtils.parseDouble(ast.getText(), ast.getType());
+         final DetailAST parent = ast.getParent();
+         if (parent.getType() == TokenTypes.UNARY_MINUS) {
+             value = -1 * value;
+         }
+         return Arrays.binarySearch(ignoreNumbers, value) >= 0;
+     }
+ 
+     /**
+      * Determines whether or not the given AST is field declaration
+      *
+      * @param ast AST from which to search for an enclosing field declaration
+      *
+      * @return {@code true} if {@code ast} is in the scope of field declaration
+      */
+     private boolean isFieldDeclaration(DetailAST ast) {
+         DetailAST varDefAST = ast;
+         while (varDefAST != null
+                 && varDefAST.getType() != TokenTypes.VARIABLE_DEF) {
+             varDefAST = varDefAST.getParent();
+         }
+ 
+         // contains variable declaration
+         // and it is directly inside class declaration
+         return varDefAST != null
+                 && varDefAST.getParent().getParent().getType()
+                     == TokenTypes.CLASS_DEF;
+     }
+ 
+ 
+     /**
+      * Sets the numbers to ignore in the check.
+      * BeanUtils converts numeric token list to double array automatically.
+      * @param list list of numbers to ignore.
+      */
+     public void setIgnoreNumbers(double... list) {
+         if (list.length == 0) {
+             ignoreNumbers = new double[0];
+         }
+         else {

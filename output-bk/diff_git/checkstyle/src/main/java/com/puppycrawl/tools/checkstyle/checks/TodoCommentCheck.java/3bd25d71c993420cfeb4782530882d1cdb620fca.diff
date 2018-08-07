@@ -1,0 +1,154 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TodoCommentCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TodoCommentCheck.java
+index 2f33abe44..a2f3fe1e6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TodoCommentCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TodoCommentCheck.java
+@@ -1,113 +1,99 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2014  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks;
+ 
++import java.util.regex.Pattern;
++
++import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+-import com.puppycrawl.tools.checkstyle.api.FileContents;
+-import com.puppycrawl.tools.checkstyle.api.TextBlock;
+-import java.util.List;
+-import java.util.Map;
++import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * <p>
+- * A check for TODO comments.
+- * Actually it is a generic {@link java.util.regex.Pattern regular expression}
+- * matcher on Java comments.
+- * To check for other patterns in Java comments, set property format.
++ * A check for TODO comments. To check for other patterns in Java comments, set
++ * property format.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
++ *
+  * <pre>
+  * &lt;module name="TodoComment"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check for comments that contain
+  * <code>WARNING</code> is:
+  * </p>
++ *
+  * <pre>
+  * &lt;module name="TodoComment"&gt;
+  *    &lt;property name="format" value="WARNING"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Oliver Burn
++ * @author Baratali Izmailov
+  * @version 1.0
+  */
+ public class TodoCommentCheck
+-    extends AbstractFormatCheck
++        extends Check
+ {
+     /**
+-     * Creates a new <code>TodoCommentCheck</code> instance.
++     * Format of todo comment.
+      */
+-    public TodoCommentCheck()
+-    {
+-        super("TODO:"); // the empty language
+-    }
++    private String mFormat = "TODO:";
+ 
+-    @Override
+-    public int[] getDefaultTokens()
+-    {
+-        return new int[0];
+-    }
++    /**
++     * Regular expression pattern compiled from mFormat.
++     */
++    private Pattern mRegexp = Pattern.compile(mFormat);
+ 
+     @Override
+-    public void beginTree(DetailAST aRootAST)
++    public boolean isCommentNodesRequired()
+     {
+-        final FileContents contents = getFileContents();
+-        checkCppComments(contents);
+-        checkBadComments(contents);
++        return true;
+     }
+ 
+     /**
+-     * Checks the C++ comments for todo expressions.
+-     * @param aContents the <code>FileContents</code>
++     * Setter for todo comment format.
++     * @param aFormat format of todo comment.
+      */
+-    private void checkCppComments(FileContents aContents)
++    public void setFormat(String aFormat)
+     {
+-        final Map<Integer, TextBlock> comments = aContents.getCppComments();
+-        for (Map.Entry<Integer, TextBlock> entry : comments.entrySet()) {
+-            final String cmt = entry.getValue().getText()[0];
+-            if (getRegexp().matcher(cmt).find()) {
+-                log(entry.getKey().intValue(), "todo.match", getFormat());
+-            }
+-        }
++        mFormat = aFormat;
++        mRegexp = Pattern.compile(aFormat);
+     }
+ 
+-    /**
+-     * Checks the C-style comments for todo expressions.
+-     * @param aContents the <code>FileContents</code>
+-     */
+-    private void checkBadComments(FileContents aContents)
++    @Override
++    public int[] getDefaultTokens()
+     {
+-        final Map<Integer, List<TextBlock>> allComments = aContents
+-                .getCComments();
+-        for (Map.Entry<Integer, List<TextBlock>> entry : allComments.entrySet())
+-        {
+-            for (TextBlock line : entry.getValue()) {
+-                final String[] cmt = line.getText();
+-                for (int i = 0; i < cmt.length; i++) {
+-                    if (getRegexp().matcher(cmt[i]).find()) {
+-                        log(entry.getKey().intValue() + i, "todo.match",
+-                                getFormat());
+-                    }
+-                }
++        return new int[] {TokenTypes.COMMENT_CONTENT };
++    }
++
++    @Override
++    public void visitToken(DetailAST aAST)
++    {
++        final String[] lines = aAST.getText().split("\n");
++
++        for (int i = 0; i < lines.length; i++) {
++            if (mRegexp.matcher(lines[i]).find()) {
++                log(aAST.getLineNo() + i, "todo.match", mFormat);
+             }
+         }
+     }
+ }

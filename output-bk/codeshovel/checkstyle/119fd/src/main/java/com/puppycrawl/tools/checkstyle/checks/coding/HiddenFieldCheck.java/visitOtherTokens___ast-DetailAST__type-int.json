@@ -1,0 +1,107 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "HiddenFieldCheck.java",
+  "functionName": "visitOtherTokens",
+  "functionId": "visitOtherTokens___ast-DetailAST__type-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java",
+  "functionStartLine": 243,
+  "functionEndLine": 286,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "bf3e77cc87f01b9ea0d205933749770398fa623b",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e",
+    "89b6af6a05d3c7820afac94137ae105cf800c457",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "6784e5bcd5baa6b5086bf8b63709856d685a74c8"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "bf3e77cc87f01b9ea0d205933749770398fa623b": "Ybodychange",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": "Ybodychange",
+    "89b6af6a05d3c7820afac94137ae105cf800c457": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "6784e5bcd5baa6b5086bf8b63709856d685a74c8": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1506259735000,
+      "commitNameOld": "b0493771961c1fd89c96271b397da62699877551",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 31.56,
+      "commitsBetweenForRepo": 54,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,44 +1,44 @@\n     private void visitOtherTokens(DetailAST ast, int type) {\n         //A more thorough check of enum constant class bodies is\n         //possible (checking for hidden fields against the enum\n         //class body in addition to enum constant class bodies)\n         //but not attempted as it seems out of the scope of this\n         //check.\n         final DetailAST typeMods \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n         final boolean isStaticInnerType \u003d\n                 typeMods !\u003d null\n-                        \u0026\u0026 typeMods.branchContains(TokenTypes.LITERAL_STATIC);\n+                        \u0026\u0026 typeMods.findFirstToken(TokenTypes.LITERAL_STATIC) !\u003d null;\n         final String frameName;\n \n         if (type \u003d\u003d TokenTypes.CLASS_DEF || type \u003d\u003d TokenTypes.ENUM_DEF) {\n             frameName \u003d ast.findFirstToken(TokenTypes.IDENT).getText();\n         }\n         else {\n             frameName \u003d null;\n         }\n         final FieldFrame newFrame \u003d new FieldFrame(frame, isStaticInnerType, frameName);\n \n         //add fields to container\n         final DetailAST objBlock \u003d ast.findFirstToken(TokenTypes.OBJBLOCK);\n         // enum constants may not have bodies\n         if (objBlock !\u003d null) {\n             DetailAST child \u003d objBlock.getFirstChild();\n             while (child !\u003d null) {\n                 if (child.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n                     final String name \u003d\n                         child.findFirstToken(TokenTypes.IDENT).getText();\n                     final DetailAST mods \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n-                    if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {\n-                        newFrame.addStaticField(name);\n+                    if (mods.findFirstToken(TokenTypes.LITERAL_STATIC) \u003d\u003d null) {\n+                        newFrame.addInstanceField(name);\n                     }\n                     else {\n-                        newFrame.addInstanceField(name);\n+                        newFrame.addStaticField(name);\n                     }\n                 }\n                 child \u003d child.getNextSibling();\n             }\n         }\n         // push container\n         frame \u003d newFrame;\n     }\n\\ No newline at end of file\n"
+    },
+    "bf3e77cc87f01b9ea0d205933749770398fa623b": {
+      "type": "Ybodychange",
+      "commitMessage": "Local variables should not shadow class fields. Issue #46\n",
+      "commitDate": 1439955956000,
+      "commitName": "bf3e77cc87f01b9ea0d205933749770398fa623b",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1439954616000,
+      "commitNameOld": "1d7ef7f008af715f16e2bd8e7f2c4c85f87643d7",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.02,
+      "commitsBetweenForRepo": 15,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,44 +1,44 @@\n     private void visitOtherTokens(DetailAST ast, int type) {\n         //A more thorough check of enum constant class bodies is\n         //possible (checking for hidden fields against the enum\n         //class body in addition to enum constant class bodies)\n         //but not attempted as it seems out of the scope of this\n         //check.\n         final DetailAST typeMods \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n         final boolean isStaticInnerType \u003d\n                 typeMods !\u003d null\n                         \u0026\u0026 typeMods.branchContains(TokenTypes.LITERAL_STATIC);\n         final String frameName;\n \n         if (type \u003d\u003d TokenTypes.CLASS_DEF || type \u003d\u003d TokenTypes.ENUM_DEF) {\n             frameName \u003d ast.findFirstToken(TokenTypes.IDENT).getText();\n         }\n         else {\n             frameName \u003d null;\n         }\n-        final FieldFrame frame \u003d new FieldFrame(currentFrame, isStaticInnerType, frameName);\n+        final FieldFrame newFrame \u003d new FieldFrame(frame, isStaticInnerType, frameName);\n \n         //add fields to container\n         final DetailAST objBlock \u003d ast.findFirstToken(TokenTypes.OBJBLOCK);\n         // enum constants may not have bodies\n         if (objBlock !\u003d null) {\n             DetailAST child \u003d objBlock.getFirstChild();\n             while (child !\u003d null) {\n                 if (child.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n                     final String name \u003d\n                         child.findFirstToken(TokenTypes.IDENT).getText();\n                     final DetailAST mods \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n                     if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {\n-                        frame.addStaticField(name);\n+                        newFrame.addStaticField(name);\n                     }\n                     else {\n-                        frame.addInstanceField(name);\n+                        newFrame.addInstanceField(name);\n                     }\n                 }\n                 child \u003d child.getNextSibling();\n             }\n         }\n         // push container\n-        currentFrame \u003d frame;\n+        frame \u003d newFrame;\n     }\n\\ No newline at end of file\n"
+    },
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: AvoidInlineConditional violations fixed\n",
+      "commitDate": 1439784080000,
+      "commitName": "23c8774d2e2fd245de1e5df02758fd23702c565e",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439295539000,
+      "commitNameOld": "1935bed5772c0a939b9168b81acd2ab5aa800538",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 5.65,
+      "commitsBetweenForRepo": 82,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,42 +1,44 @@\n     private void visitOtherTokens(DetailAST ast, int type) {\n         //A more thorough check of enum constant class bodies is\n         //possible (checking for hidden fields against the enum\n         //class body in addition to enum constant class bodies)\n         //but not attempted as it seems out of the scope of this\n         //check.\n         final DetailAST typeMods \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n         final boolean isStaticInnerType \u003d\n                 typeMods !\u003d null\n                         \u0026\u0026 typeMods.branchContains(TokenTypes.LITERAL_STATIC);\n+        final String frameName;\n \n-        final FieldFrame frame \u003d\n-            new FieldFrame(currentFrame, isStaticInnerType,\n-                    type \u003d\u003d TokenTypes.CLASS_DEF || type \u003d\u003d TokenTypes.ENUM_DEF\n-                    ? ast.findFirstToken(TokenTypes.IDENT).getText()\n-                    : null\n-            );\n+        if (type \u003d\u003d TokenTypes.CLASS_DEF || type \u003d\u003d TokenTypes.ENUM_DEF) {\n+            frameName \u003d ast.findFirstToken(TokenTypes.IDENT).getText();\n+        }\n+        else {\n+            frameName \u003d null;\n+        }\n+        final FieldFrame frame \u003d new FieldFrame(currentFrame, isStaticInnerType, frameName);\n \n         //add fields to container\n         final DetailAST objBlock \u003d ast.findFirstToken(TokenTypes.OBJBLOCK);\n         // enum constants may not have bodies\n         if (objBlock !\u003d null) {\n             DetailAST child \u003d objBlock.getFirstChild();\n             while (child !\u003d null) {\n                 if (child.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n                     final String name \u003d\n                         child.findFirstToken(TokenTypes.IDENT).getText();\n                     final DetailAST mods \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n                     if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {\n                         frame.addStaticField(name);\n                     }\n                     else {\n                         frame.addInstanceField(name);\n                     }\n                 }\n                 child \u003d child.getNextSibling();\n             }\n         }\n         // push container\n         currentFrame \u003d frame;\n     }\n\\ No newline at end of file\n"
+    },
+    "89b6af6a05d3c7820afac94137ae105cf800c457": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unused constructor parameter to fix PMD violation, issue #744\n\nFix for [UnusedFormalParameter](http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/unusedcode.html#UnusedFormalParameter) rule.\n",
+      "commitDate": 1426999568000,
+      "commitName": "89b6af6a05d3c7820afac94137ae105cf800c457",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1426457222000,
+      "commitNameOld": "bf235506eb046bcc12cf20892d821d2a00fdd74c",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 6.28,
+      "commitsBetweenForRepo": 39,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,43 +1,43 @@\n     private void visitOtherTokens(DetailAST ast, int type)\n     {\n         //A more thorough check of enum constant class bodies is\n         //possible (checking for hidden fields against the enum\n         //class body in addition to enum constant class bodies)\n         //but not attempted as it seems out of the scope of this\n         //check.\n         final DetailAST typeMods \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n         final boolean isStaticInnerType \u003d\n                 typeMods !\u003d null\n                         \u0026\u0026 typeMods.branchContains(TokenTypes.LITERAL_STATIC);\n \n         final FieldFrame frame \u003d\n-            new FieldFrame(currentFrame, isStaticInnerType, type,\n-                type \u003d\u003d TokenTypes.CLASS_DEF || type \u003d\u003d TokenTypes.ENUM_DEF\n+            new FieldFrame(currentFrame, isStaticInnerType,\n+                    type \u003d\u003d TokenTypes.CLASS_DEF || type \u003d\u003d TokenTypes.ENUM_DEF\n                     ? ast.findFirstToken(TokenTypes.IDENT).getText()\n                     : null\n             );\n \n         //add fields to container\n         final DetailAST objBlock \u003d ast.findFirstToken(TokenTypes.OBJBLOCK);\n         // enum constants may not have bodies\n         if (objBlock !\u003d null) {\n             DetailAST child \u003d objBlock.getFirstChild();\n             while (child !\u003d null) {\n                 if (child.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n                     final String name \u003d\n                         child.findFirstToken(TokenTypes.IDENT).getText();\n                     final DetailAST mods \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n                     if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {\n                         frame.addStaticField(name);\n                     }\n                     else {\n                         frame.addInstanceField(name);\n                     }\n                 }\n                 child \u003d child.getNextSibling();\n             }\n         }\n         // push container\n         currentFrame \u003d frame;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425968536000,
+      "commitNameOld": "aef1f36b5a01b0a8da6557fd82c11a07baf350b2",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.63,
+      "commitsBetweenForRepo": 11,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,43 +1,43 @@\n     private void visitOtherTokens(DetailAST ast, int type)\n     {\n         //A more thorough check of enum constant class bodies is\n         //possible (checking for hidden fields against the enum\n         //class body in addition to enum constant class bodies)\n         //but not attempted as it seems out of the scope of this\n         //check.\n         final DetailAST typeMods \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n         final boolean isStaticInnerType \u003d\n-                (typeMods !\u003d null)\n+                typeMods !\u003d null\n                         \u0026\u0026 typeMods.branchContains(TokenTypes.LITERAL_STATIC);\n \n         final FieldFrame frame \u003d\n             new FieldFrame(currentFrame, isStaticInnerType, type,\n-                (type \u003d\u003d TokenTypes.CLASS_DEF || type \u003d\u003d TokenTypes.ENUM_DEF)\n+                type \u003d\u003d TokenTypes.CLASS_DEF || type \u003d\u003d TokenTypes.ENUM_DEF\n                     ? ast.findFirstToken(TokenTypes.IDENT).getText()\n                     : null\n             );\n \n         //add fields to container\n         final DetailAST objBlock \u003d ast.findFirstToken(TokenTypes.OBJBLOCK);\n         // enum constants may not have bodies\n         if (objBlock !\u003d null) {\n             DetailAST child \u003d objBlock.getFirstChild();\n             while (child !\u003d null) {\n                 if (child.getType() \u003d\u003d TokenTypes.VARIABLE_DEF) {\n                     final String name \u003d\n                         child.findFirstToken(TokenTypes.IDENT).getText();\n                     final DetailAST mods \u003d\n                         child.findFirstToken(TokenTypes.MODIFIERS);\n                     if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {\n                         frame.addStaticField(name);\n                     }\n                     else {\n                         frame.addInstanceField(name);\n                     }\n                 }\n                 child \u003d child.getNextSibling();\n             }\n         }\n         // push container\n         currentFrame \u003d frame;\n     }\n\\ No newline at end of file\n"
+    },
+    "6784e5bcd5baa6b5086bf8b63709856d685a74c8": {
+      "type": "Yintroduced",
+      "commitMessage": "HiddenField module can now accept setterCanReturnItsClass attribute. #598\n",
+      "commitDate": 1422320667000,
+      "commitName": "6784e5bcd5baa6b5086bf8b63709856d685a74c8",
+      "commitAuthor": "Dmitri Priimak"
+    }
+  }
+}

@@ -1,0 +1,94 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/VisibilityModifierCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/VisibilityModifierCheck.java
+index fa4269f7a..c0d784d33 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/VisibilityModifierCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/VisibilityModifierCheck.java
+@@ -148,86 +148,86 @@ public class VisibilityModifierCheck
+                 || "protected".equals(variableScope) && isProtectedAllowed()
+                 || "public".equals(variableScope)
+                    && getPublicMemberRegexp().match(varName)))
+         {
+             log(varNameAST.getLineNo(), varNameAST.getColumnNo(),
+                     "variable.notPrivate", varName);
+         }
+     }
+ 
+     /**
+      * Returns the variable name in a VARIABLE_DEF AST.
+      * @param aVariableDefAST an AST where type == VARIABLE_DEF AST.
+      * @return the variable name in aVariableDefAST
+      */
+     private DetailAST getVarNameAST(DetailAST aVariableDefAST)
+     {
+         AST ast = aVariableDefAST.getFirstChild();
+         while (ast != null) {
+             AST nextSibling = ast.getNextSibling();
+             if (ast.getType() == TokenTypes.TYPE) {
+                 return (DetailAST) nextSibling;
+             }
+             ast = nextSibling;
+         }
+         return null;
+     }
+ 
+     /**
+      * Returns whether an AST is in an interface block.
+      * @param aAST the AST to check for
+      * @return true iff aAST is in an interface def with no class def in between
+      */
+     private boolean inInterfaceBlock(DetailAST aAST)
+     {
+         DetailAST ast = aAST.getParent();
+         while (ast != null) {
+             switch (ast.getType()) {
+                 case TokenTypes.INTERFACE_DEF:
+                     return true;
+                 case TokenTypes.CLASS_DEF:
+                     return false;
+                 default:
+                     ast = ast.getParent();
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Returns the set of modifier Strings for a VARIABLE_DEF AST.
+-     * @param variableDefAST AST for a vraiable definition
++     * @param aVariableDefAST AST for a vraiable definition
+      * @return the set of modifier Strings for variableDefAST
+      */
+-    private Set getModifiers(DetailAST variableDefAST)
++    private Set getModifiers(DetailAST aVariableDefAST)
+     {
+-        final AST modifiersAST = variableDefAST.getFirstChild();
++        final AST modifiersAST = aVariableDefAST.getFirstChild();
+         if (modifiersAST.getType() != TokenTypes.MODIFIERS) {
+             throw new IllegalStateException("Strange parse tree");
+         }
+         final Set retVal = new HashSet();
+         AST modifier = modifiersAST.getFirstChild();
+         while (modifier != null) {
+             retVal.add(modifier.getText());
+             modifier = modifier.getNextSibling();
+         }
+         return retVal;
+ 
+     }
+ 
+     /**
+      * Returns the visibility scope specified with a set of modifiers.
+      * @param aModifiers the set of modifier Strings
+      * @return one of "public", "private", "protected", "package"
+      */
+     private String getVisibilityScope(Set aModifiers)
+     {
+         final String[] explicitModifiers = {"public", "private", "protected"};
+         for (int i = 0; i < explicitModifiers.length; i++) {
+             String candidate = explicitModifiers[i];
+             if (aModifiers.contains(candidate)) {
+                 return candidate;
+             }
+         }
+         return "package";
+     }
+ }

@@ -1,0 +1,110 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java
+index 50510fc95..58d2bf5ce 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/CyclomaticComplexityCheck.java
+@@ -127,101 +127,101 @@ public class CyclomaticComplexityCheck
+             TokenTypes.QUESTION,
+             TokenTypes.LAND,
+             TokenTypes.LOR,
+         };
+     }
+ 
+     @Override
+     public final int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.INSTANCE_INIT:
+             case TokenTypes.STATIC_INIT:
+                 visitMethodDef();
+                 break;
+             default:
+                 visitTokenHook(ast);
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.INSTANCE_INIT:
+             case TokenTypes.STATIC_INIT:
+                 leaveMethodDef(ast);
+                 break;
+             default:
+                 break;
+         }
+     }
+ 
+     /**
+      * Hook called when visiting a token. Will not be called the method
+      * definition tokens.
+      *
+      * @param ast the token being visited
+      */
+-    protected final void visitTokenHook(DetailAST ast) {
++    private void visitTokenHook(DetailAST ast) {
+         if (switchBlockAsSingleDecisionPoint) {
+             if (ast.getType() != TokenTypes.LITERAL_CASE) {
+                 incrementCurrentValue(BigInteger.ONE);
+             }
+         }
+         else if (ast.getType() != TokenTypes.LITERAL_SWITCH) {
+             incrementCurrentValue(BigInteger.ONE);
+         }
+     }
+ 
+     /**
+      * Process the end of a method definition.
+      *
+      * @param ast the token representing the method definition
+      */
+     private void leaveMethodDef(DetailAST ast) {
+         final BigInteger bigIntegerMax = BigInteger.valueOf(max);
+         if (currentValue.compareTo(bigIntegerMax) > 0) {
+             log(ast, MSG_KEY, currentValue, bigIntegerMax);
+         }
+         popValue();
+     }
+ 
+     /**
+      * Increments the current value by a specified amount.
+      *
+      * @param amount the amount to increment by
+      */
+-    protected final void incrementCurrentValue(BigInteger amount) {
++    private void incrementCurrentValue(BigInteger amount) {
+         currentValue = currentValue.add(amount);
+     }
+ 
+     /** Push the current value on the stack. */
+-    protected final void pushValue() {
++    private void pushValue() {
+         valueStack.push(currentValue);
+         currentValue = INITIAL_VALUE;
+     }
+ 
+     /**
+      * Pops a value off the stack and makes it the current value.
+      */
+-    protected final void popValue() {
++    private void popValue() {
+         currentValue = valueStack.pop();
+     }
+ 
+     /** Process the start of the method definition. */
+     private void visitMethodDef() {
+         pushValue();
+     }
+ }

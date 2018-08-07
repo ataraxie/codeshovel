@@ -1,0 +1,79 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UniquePropertiesCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UniquePropertiesCheck.java
+index ce40a1f9f..417d8b02a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/UniquePropertiesCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/UniquePropertiesCheck.java
+@@ -91,66 +91,68 @@ public class UniquePropertiesCheck extends AbstractFileSetCheck
+     /**
+      * Method returns line number the key is detected in the checked properties
+      * files first.
+      *
+      * @param lines
+      *            properties file lines list
+      * @param keyName
+      *            key name to look for
+      * @return line number of first occurrence. If no key found in properties
+      *         file, 0 is returned
+      */
+     protected int getLineNumber(List<String> lines, String keyName)
+     {
+         final String keyPatternString =
+                 "^" + keyName.replace(" ", "\\\\ ") + "[\\s:=].*$";
+         final Pattern keyPattern = Pattern.compile(keyPatternString);
+         int lineNumber = 1;
+         final Matcher matcher = keyPattern.matcher("");
+         for (String line : lines) {
+             matcher.reset(line);
+             if (matcher.matches()) {
+                 break;
+             }
+             ++lineNumber;
+         }
+         if (lineNumber > lines.size()) {
+             lineNumber = 0;
+         }
+         return lineNumber;
+     }
+ 
+     /**
+      * Properties subclass to store duplicated property keys in a separate map.
+      *
+      * @author Pavel Baranchikov
+      */
+     private static class UniqueProperties extends Properties
+     {
+         /**
+          * Default serial version id.
+          */
+         private static final long serialVersionUID = 1L;
+         /**
+          * Multiset, holding duplicated keys. Keys are added here only if they
+          * already exist in Properties' inner map.
+          */
+         private final Multiset<String> duplicatedStrings = HashMultiset
+                 .create();
+ 
+         @Override
+-        public synchronized Object put(Object key, Object value)
++        public Object put(Object key, Object value)
+         {
+-            final Object oldValue = super.put(key, value);
+-            if (oldValue != null && key instanceof String) {
+-                final String keyString = (String) key;
+-                duplicatedStrings.add(keyString);
++            synchronized (this) {
++                final Object oldValue = super.put(key, value);
++                if (oldValue != null && key instanceof String) {
++                    final String keyString = (String) key;
++                    duplicatedStrings.add(keyString);
++                }
++                return oldValue;
+             }
+-            return oldValue;
+         }
+ 
+         public Multiset<String> getDuplicatedStrings()
+         {
+             return duplicatedStrings;
+         }
+     }
+ }

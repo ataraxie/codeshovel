@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "FilteredEntryMultimap.java",
+  "functionName": "createKeySet",
+  "functionId": "createKeySet",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/FilteredEntryMultimap.java",
+  "functionStartLine": 217,
+  "functionEndLine": 240,
+  "changeHistory": [
+    "6f22af40e1526b8c194e9e36d457bcd37680c6a3",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "6f22af40e1526b8c194e9e36d457bcd37680c6a3": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6f22af40e1526b8c194e9e36d457bcd37680c6a3": {
+      "type": "Ybodychange",
+      "commitMessage": "Migrate from jsr305 @Nullable to Checker Framework @NullableDecl.\n[]\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d178274875\n",
+      "commitDate": 1512679066000,
+      "commitName": "6f22af40e1526b8c194e9e36d457bcd37680c6a3",
+      "commitAuthor": "cpovirk",
+      "commitDateOld": 1512409023000,
+      "commitNameOld": "fd919e54a55ba169dc7d9f54b7b3485aa7fa0970",
+      "commitAuthorOld": "cpovirk",
+      "daysBetweenCommits": 3.13,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,24 @@\n     Set\u003cK\u003e createKeySet() {\n       @WeakOuter\n       class KeySetImpl extends Maps.KeySet\u003cK, Collection\u003cV\u003e\u003e {\n         KeySetImpl() {\n           super(AsMap.this);\n         }\n \n         @Override\n         public boolean removeAll(Collection\u003c?\u003e c) {\n           return removeEntriesIf(Maps.\u003cK\u003ekeyPredicateOnEntries(in(c)));\n         }\n \n         @Override\n         public boolean retainAll(Collection\u003c?\u003e c) {\n           return removeEntriesIf(Maps.\u003cK\u003ekeyPredicateOnEntries(not(in(c))));\n         }\n \n         @Override\n-        public boolean remove(@Nullable Object o) {\n+        public boolean remove(@NullableDecl Object o) {\n           return AsMap.this.remove(o) !\u003d null;\n         }\n       }\n       return new KeySetImpl();\n     }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

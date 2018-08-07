@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index 8c8ec3065..47ae0d49b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -372,101 +372,101 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck {
+             if (identNode == null) {
+                 identNode = annotationNode.findFirstToken(TokenTypes.DOT)
+                     .findFirstToken(TokenTypes.IDENT);
+             }
+             if (allowedAnnotations.contains(identNode.getText())) {
+                 result = true;
+                 break;
+             }
+             annotationNode = annotationNode.getNextSibling();
+         }
+         return result;
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param methodDef Some javadoc.
+      * @return Some javadoc.
+      */
+     private static int getMethodsNumberOfLine(DetailAST methodDef) {
+         final int numberOfLines;
+         final DetailAST lcurly = methodDef.getLastChild();
+         final DetailAST rcurly = lcurly.getLastChild();
+ 
+         if (lcurly.getFirstChild() == rcurly) {
+             numberOfLines = 1;
+         }
+         else {
+             numberOfLines = rcurly.getLineNo() - lcurly.getLineNo() - 1;
+         }
+         return numberOfLines;
+     }
+ 
+     @Override
+     protected final void logLoadError(Token ident) {
+         logLoadErrorImpl(ident.getLineNo(), ident.getColumnNo(),
+             MSG_CLASS_INFO,
+             JavadocTagInfo.THROWS.getText(), ident.getText());
+     }
+ 
+     /**
+      * The JavadocMethodCheck is about to report a missing Javadoc.
+      * This hook can be used by derived classes to allow a missing javadoc
+      * in some situations.  The default implementation checks
+      * {@code allowMissingJavadoc} and
+      * {@code allowMissingPropertyJavadoc} properties, do not forget
+      * to call {@code super.isMissingJavadocAllowed(ast)} in case
+      * you want to keep this logic.
+      * @param ast the tree node for the method or constructor.
+      * @return True if this method or constructor doesn't need Javadoc.
+      */
+-    protected boolean isMissingJavadocAllowed(final DetailAST ast) {
++    private boolean isMissingJavadocAllowed(final DetailAST ast) {
+         return allowMissingJavadoc
+             || allowMissingPropertyJavadoc
+                 && (CheckUtils.isSetterMethod(ast) || CheckUtils.isGetterMethod(ast))
+             || matchesSkipRegex(ast)
+             || isContentsAllowMissingJavadoc(ast);
+     }
+ 
+     /**
+      * Checks if the Javadoc can be missing if the method or constructor is
+      * below the minimum line count or has a special annotation.
+      *
+      * @param ast the tree node for the method or constructor.
+      * @return True if this method or constructor doesn't need Javadoc.
+      */
+     private boolean isContentsAllowMissingJavadoc(DetailAST ast) {
+         return (ast.getType() == TokenTypes.METHOD_DEF || ast.getType() == TokenTypes.CTOR_DEF)
+                 && (getMethodsNumberOfLine(ast) <= minLineCount || hasAllowedAnnotations(ast));
+     }
+ 
+     /**
+      * Checks if the given method name matches the regex. In that case
+      * we skip enforcement of javadoc for this method
+      * @param methodDef {@link TokenTypes#METHOD_DEF METHOD_DEF}
+      * @return true if given method name matches the regex.
+      */
+     private boolean matchesSkipRegex(DetailAST methodDef) {
+         boolean result = false;
+         if (ignoreMethodNamesRegex != null) {
+             final DetailAST ident = methodDef.findFirstToken(TokenTypes.IDENT);
+             final String methodName = ident.getText();
+ 
+             final Matcher matcher = ignoreMethodNamesRegex.matcher(methodName);
+             if (matcher.matches()) {
+                 result = true;
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Whether we should check this node.
+      *
+      * @param ast a given node.
+      * @param nodeScope the scope of the node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST ast, final Scope nodeScope) {
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(ast);
+ 
+         return (excludeScope == null

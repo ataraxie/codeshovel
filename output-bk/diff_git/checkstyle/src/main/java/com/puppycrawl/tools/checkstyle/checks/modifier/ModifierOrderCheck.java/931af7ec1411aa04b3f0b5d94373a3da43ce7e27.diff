@@ -1,0 +1,59 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java
+index d2e48bd0a..6632dac29 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java
+@@ -126,53 +126,53 @@ public class ModifierOrderCheck
+     }
+ 
+     /**
+      * Checks if the modifiers were added in the order suggested
+      * in the Java language specification.
+      *
+      * @param modifiers list of modifier AST tokens
+      * @return null if the order is correct, otherwise returns the offending
+      * *       modifier AST.
+      */
+     static DetailAST checkOrderSuggestedByJLS(List<DetailAST> modifiers) {
+         final Iterator<DetailAST> it = modifiers.iterator();
+ 
+         //Speed past all initial annotations
+         DetailAST modifier;
+         do {
+             modifier = it.next();
+         }
+         while (it.hasNext() && modifier.getType() == TokenTypes.ANNOTATION);
+ 
+         //All modifiers are annotations, no problem
+         if (modifier.getType() == TokenTypes.ANNOTATION) {
+             return null;
+         }
+ 
+         int i = 0;
+         while (modifier != null) {
+             if (modifier.getType() == TokenTypes.ANNOTATION) {
+                 //Annotation not at start of modifiers, bad
+                 return modifier;
+             }
+ 
+             while (i < JLS_ORDER.length
+                    && !JLS_ORDER[i].equals(modifier.getText())) {
+                 i++;
+             }
+ 
+             if (i == JLS_ORDER.length) {
+                 //Current modifier is out of JLS order
+                 return modifier;
+             }
+             else if (it.hasNext()) {
+                 modifier = it.next();
+             }
+             else {
+                 //Reached end of modifiers without problem
+                 modifier = null;
+             }
+         }
+ 
+-        return modifier;
++        return null;
+     }
+ }

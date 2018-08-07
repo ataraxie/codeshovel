@@ -1,0 +1,298 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+index 94aee955a..bf0b25d24 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+@@ -1,83 +1,83 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2008  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle;
+ 
++import com.google.common.collect.Lists;
++import com.google.common.collect.Maps;
+ import com.puppycrawl.tools.checkstyle.api.AbstractLoader;
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
+ import java.io.BufferedInputStream;
+ import java.io.FileInputStream;
+ import java.io.FileNotFoundException;
+ import java.io.IOException;
+ import java.io.InputStream;
+ import java.net.MalformedURLException;
+ import java.net.URL;
+-import java.util.ArrayList;
+-import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Stack;
+ import javax.xml.parsers.ParserConfigurationException;
+ import org.xml.sax.Attributes;
+ import org.xml.sax.InputSource;
+ import org.xml.sax.SAXException;
+ import org.xml.sax.SAXParseException;
+ 
+ /**
+  * Loads a configuration from a standard configuration XML file.
+  *
+  * @author Oliver Burn
+  * @version 1.0
+  */
+ public final class ConfigurationLoader
+ {
+     /** the public ID for version 1_0 of the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_0 =
+         "-//Puppy Crawl//DTD Check Configuration 1.0//EN";
+ 
+     /** the resource for version 1_0 of the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_0 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_0.dtd";
+ 
+     /** the public ID for version 1_1 of the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_1 =
+         "-//Puppy Crawl//DTD Check Configuration 1.1//EN";
+ 
+     /** the resource for version 1_1 of the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_1 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_1.dtd";
+ 
+     /** the public ID for version 1_2 of the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_2 =
+         "-//Puppy Crawl//DTD Check Configuration 1.2//EN";
+ 
+     /** the resource for version 1_1 of the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_2 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_2.dtd";
+ 
+     /** constant to specify two kilobyte of data */
+     private static final int TWO_KB = 2048;
+ 
+     /**
+      * Implements the SAX document handler interfaces, so they do not
+      * appear in the public API of the ConfigurationLoader.
+      */
+     private final class InternalLoader
+@@ -165,101 +165,101 @@ public final class ConfigurationLoader
+                 final Configuration recentModule =
+                     mConfigStack.pop();
+ 
+                 // remove modules with severity ignore if these modules should
+                 // be omitted
+                 SeverityLevel level = null;
+                 try {
+                     final String severity = recentModule.getAttribute(SEVERITY);
+                     level = SeverityLevel.getInstance(severity);
+                 }
+                 catch (final CheckstyleException e) {
+                     //severity not set -> ignore
+                     ;
+                 }
+ 
+                 // omit this module if these should be omitted and the module
+                 // has the severity 'ignore'
+                 final boolean omitModule = mOmitIgnoredModules
+                     && SeverityLevel.IGNORE.equals(level);
+ 
+                 if (omitModule && !mConfigStack.isEmpty()) {
+                     final DefaultConfiguration parentModule =
+                         mConfigStack.peek();
+                     parentModule.removeChild(recentModule);
+                 }
+             }
+         }
+ 
+     }
+ 
+     /** the SAX document handler */
+     private final InternalLoader mSaxHandler;
+ 
+     /** property resolver **/
+     private final PropertyResolver mOverridePropsResolver;
+     /** the loaded configurations **/
+     private final Stack<DefaultConfiguration> mConfigStack =
+         new Stack<DefaultConfiguration>();
+     /** the Configuration that is being built */
+     private Configuration mConfiguration;
+ 
+     /** flags if modules with the severity 'ignore' should be omitted. */
+     private final boolean mOmitIgnoredModules;
+ 
+     /**
+      * Creates mapping between local resources and dtd ids.
+      * @return map between local resources and dtd ids.
+      */
+     private static Map<String, String> createIdToResourceNameMap()
+     {
+-        final Map<String, String> map = new HashMap<String, String>();
++        final Map<String, String> map = Maps.newHashMap();
+         map.put(DTD_PUBLIC_ID_1_0, DTD_RESOURCE_NAME_1_0);
+         map.put(DTD_PUBLIC_ID_1_1, DTD_RESOURCE_NAME_1_1);
+         map.put(DTD_PUBLIC_ID_1_2, DTD_RESOURCE_NAME_1_2);
+         return map;
+     }
+ 
+     /**
+      * Creates a new <code>ConfigurationLoader</code> instance.
+      * @param aOverrideProps resolver for overriding properties
+      * @param aOmitIgnoredModules <code>true</code> if ignored modules should be
+      *         omitted
+      * @throws ParserConfigurationException if an error occurs
+      * @throws SAXException if an error occurs
+      */
+     private ConfigurationLoader(final PropertyResolver aOverrideProps,
+                                 final boolean aOmitIgnoredModules)
+         throws ParserConfigurationException, SAXException
+     {
+         mSaxHandler = new InternalLoader();
+         mOverridePropsResolver = aOverrideProps;
+         mOmitIgnoredModules = aOmitIgnoredModules;
+     }
+ 
+     /**
+      * Parses the specified stream loading the configuration information.
+      * The stream is NOT closed after parsing, it is the responsibility of
+      * the caller to close the stream.
+      *
+      * @param aStream the stream that contains the configuration data
+      * @throws IOException if an error occurs
+      * @throws SAXException if an error occurs
+      */
+     private void parseInputStream(InputStream aStream)
+         throws IOException, SAXException
+     {
+         final InputStream configStream =
+             new BufferedInputStream(aStream, TWO_KB);
+         final InputSource inputSource = new InputSource(configStream);
+         mSaxHandler.parseInputSource(inputSource);
+     }
+ 
+     /**
+      * Returns the module configurations in a specified file.
+      * @param aConfig location of config file, can be either a URL or a filename
+      * @param aOverridePropsResolver overriding properties
+      * @return the check configurations
+      * @throws CheckstyleException if an error occurs
+      */
+     public static Configuration loadConfiguration(String aConfig,
+             PropertyResolver aOverridePropsResolver) throws CheckstyleException
+@@ -355,102 +355,102 @@ public final class ConfigurationLoader
+         catch (final SAXException e) {
+             throw new CheckstyleException("unable to parse configuration stream"
+                     + " - " + e.getMessage(), e);
+         }
+         catch (final IOException e) {
+             throw new CheckstyleException("unable to read from stream", e);
+         }
+     }
+ 
+     /**
+      * Returns the configuration in the last file parsed.
+      * @return Configuration object
+      */
+     private Configuration getConfiguration()
+     {
+         return mConfiguration;
+     }
+ 
+     /**
+      * Replaces <code>${xxx}</code> style constructions in the given value
+      * with the string value of the corresponding data types.
+      *
+      * The method is package visible to facilitate testing.
+      *
+      * @param aValue The string to be scanned for property references.
+      *              May be <code>null</code>, in which case this
+      *              method returns immediately with no effect.
+      * @param aProps  Mapping (String to String) of property names to their
+      *              values. Must not be <code>null</code>.
+      * @param aDefaultValue default to use if one of the properties in aValue
+      *              cannot be resolved from aProps.
+      *
+      * @throws CheckstyleException if the string contains an opening
+      *                           <code>${</code> without a closing
+      *                           <code>}</code>
+      * @return the original string with the properties replaced, or
+      *         <code>null</code> if the original string is <code>null</code>.
+      *
+      * Code copied from ant -
+      * http://cvs.apache.org/viewcvs/jakarta-ant/src/main/org/apache/tools/ant/ProjectHelper.java
+      */
+     // Package visible for testing purposes
+     static String replaceProperties(
+             String aValue, PropertyResolver aProps, String aDefaultValue)
+         throws CheckstyleException
+     {
+         if (aValue == null) {
+             return null;
+         }
+ 
+-        final List<String> fragments = new ArrayList<String>();
+-        final List<String> propertyRefs = new ArrayList<String>();
++        final List<String> fragments = Lists.newArrayList();
++        final List<String> propertyRefs = Lists.newArrayList();
+         parsePropertyString(aValue, fragments, propertyRefs);
+ 
+         final StringBuffer sb = new StringBuffer();
+         final Iterator<String> i = fragments.iterator();
+         final Iterator<String> j = propertyRefs.iterator();
+         while (i.hasNext()) {
+             String fragment = i.next();
+             if (fragment == null) {
+                 final String propertyName = j.next();
+                 fragment = aProps.resolve(propertyName);
+                 if (fragment == null) {
+                     if (aDefaultValue != null) {
+                         return aDefaultValue;
+                     }
+                     throw new CheckstyleException(
+                         "Property ${" + propertyName + "} has not been set");
+                 }
+             }
+             sb.append(fragment);
+         }
+ 
+         return sb.toString();
+     }
+ 
+     /**
+      * Parses a string containing <code>${xxx}</code> style property
+      * references into two lists. The first list is a collection
+      * of text fragments, while the other is a set of string property names.
+      * <code>null</code> entries in the first list indicate a property
+      * reference from the second list.
+      *
+      * @param aValue     Text to parse. Must not be <code>null</code>.
+      * @param aFragments List to add text fragments to.
+      *                  Must not be <code>null</code>.
+      * @param aPropertyRefs List to add property names to.
+      *                     Must not be <code>null</code>.
+      *
+      * @throws CheckstyleException if the string contains an opening
+      *                           <code>${</code> without a closing
+      *                           <code>}</code>
+      * Code copied from ant -
+      * http://cvs.apache.org/viewcvs/jakarta-ant/src/main/org/apache/tools/ant/ProjectHelper.java
+      */
+     private static void parsePropertyString(String aValue,
+                                            List<String> aFragments,
+                                            List<String> aPropertyRefs)
+         throws CheckstyleException
+     {
+         int prev = 0;
+         int pos;

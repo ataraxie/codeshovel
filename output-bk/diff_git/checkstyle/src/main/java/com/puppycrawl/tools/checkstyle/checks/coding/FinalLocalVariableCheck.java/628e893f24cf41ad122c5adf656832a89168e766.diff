@@ -1,0 +1,312 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+index 9e3b884dc..5049bed1f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java
+@@ -68,233 +68,304 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+  * for (int number : myNumbers) { // violation
+  *    System.out.println(number);
+  * }
+  * }
+  * </p>
+  * @author k_gibbs, r_auckenthaler
+  * @author Vladislav Lisetskiy
+  */
+ public class FinalLocalVariableCheck extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "final.variable";
+ 
+     /**
+      * Assign operator types.
+      */
+     private static final int[] ASSIGN_OPERATOR_TYPES = {
+         TokenTypes.POST_INC,
+         TokenTypes.POST_DEC,
+         TokenTypes.ASSIGN,
+         TokenTypes.PLUS_ASSIGN,
+         TokenTypes.MINUS_ASSIGN,
+         TokenTypes.STAR_ASSIGN,
+         TokenTypes.DIV_ASSIGN,
+         TokenTypes.MOD_ASSIGN,
+         TokenTypes.SR_ASSIGN,
+         TokenTypes.BSR_ASSIGN,
+         TokenTypes.SL_ASSIGN,
+         TokenTypes.BAND_ASSIGN,
+         TokenTypes.BXOR_ASSIGN,
+         TokenTypes.BOR_ASSIGN,
+         TokenTypes.INC,
+         TokenTypes.DEC,
+     };
+ 
+     /**
+      * Loop types.
+      */
+     private static final int[] LOOP_TYPES = {
+         TokenTypes.LITERAL_FOR,
+         TokenTypes.LITERAL_WHILE,
+         TokenTypes.LITERAL_DO,
+     };
+ 
+     /** Scope Deque. */
+     private final Deque<ScopeData> scopeStack = new ArrayDeque<>();
+ 
++    /** Uninitialized variables of previous scope. */
++    private final Deque<Deque<DetailAST>> prevScopeUninitializedVariables =
++            new ArrayDeque<>();
++
+     /** Controls whether to check enhanced for-loop variable. */
+     private boolean validateEnhancedForLoopVariable;
+ 
+     static {
+         // Array sorting for binary search
+         Arrays.sort(ASSIGN_OPERATOR_TYPES);
+         Arrays.sort(LOOP_TYPES);
+     }
+ 
+     /**
+      * Whether to check enhanced for-loop variable or not.
+      * @param validateEnhancedForLoopVariable whether to check for-loop variable
+      */
+     public final void setValidateEnhancedForLoopVariable(boolean validateEnhancedForLoopVariable) {
+         this.validateEnhancedForLoopVariable = validateEnhancedForLoopVariable;
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+         };
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.IDENT,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.SLIST,
+             TokenTypes.OBJBLOCK,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.CTOR_DEF:
+                 scopeStack.push(new ScopeData());
+                 break;
+             case TokenTypes.SLIST:
+                 if (ast.getParent().getType() != TokenTypes.CASE_GROUP
+                     || ast.getParent().getParent().findFirstToken(TokenTypes.CASE_GROUP)
+                     == ast.getParent()) {
++                    storePrevScopeUninitializedVariableData();
+                     scopeStack.push(new ScopeData());
+                 }
+                 break;
+             case TokenTypes.PARAMETER_DEF:
+                 if (!isInLambda(ast)
+                         && !ast.branchContains(TokenTypes.FINAL)
+                         && !isInAbstractOrNativeMethod(ast)
+                         && !ScopeUtils.isInInterfaceBlock(ast)) {
+                     insertParameter(ast);
+                 }
+                 break;
+             case TokenTypes.VARIABLE_DEF:
+                 if (ast.getParent().getType() != TokenTypes.OBJBLOCK
+                         && !ast.branchContains(TokenTypes.FINAL)
+                         && !isVariableInForInit(ast)
+                         && shouldCheckEnhancedForLoopVariable(ast)) {
+                     insertVariable(ast);
+                 }
+                 break;
+ 
+             case TokenTypes.IDENT:
+                 final int parentType = ast.getParent().getType();
+                 if (isAssignOperator(parentType)
+                         && isFirstChild(ast)) {
+                     removeVariable(ast);
+                 }
+                 break;
+ 
+             default:
+                 throw new IllegalStateException("Incorrect token type");
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast) {
+         Map<String, DetailAST> scope = null;
+         switch (ast.getType()) {
+             case TokenTypes.OBJBLOCK:
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.METHOD_DEF:
+                 scope = scopeStack.pop().scope;
+                 break;
+             case TokenTypes.SLIST:
++                final Deque<DetailAST> prevScopeUnitializedVariableData =
++                    prevScopeUninitializedVariables.peek();
+                 if (ast.getParent().getType() != TokenTypes.CASE_GROUP
+-                    || findLastToken(ast.getParent().getParent(), TokenTypes.CASE_GROUP,
+-                        TokenTypes.SLIST) == ast.getParent()) {
++                    || findLastChildWhichContainsSpecifiedToken(ast.getParent().getParent(),
++                            TokenTypes.CASE_GROUP, TokenTypes.SLIST) == ast.getParent()) {
+                     scope = scopeStack.pop().scope;
++                    prevScopeUninitializedVariables.pop();
++                }
++                final DetailAST parent = ast.getParent();
++                if (shouldUpdateUninitializedVariables(parent)) {
++                    updateUninitializedVariables(prevScopeUnitializedVariableData);
+                 }
+                 break;
+             default:
+                 // do nothing
+         }
+         if (scope != null) {
+             for (DetailAST node : scope.values()) {
+                 log(node.getLineNo(), node.getColumnNo(), MSG_KEY, node.getText());
+             }
+         }
+     }
+ 
++    /**
++     * Store un-initialized variables in a temporary stack for future use.
++     */
++    private void storePrevScopeUninitializedVariableData() {
++        final ScopeData scopeData = scopeStack.peek();
++        final Deque<DetailAST> prevScopeUnitializedVariableData =
++                new ArrayDeque<>();
++        for (DetailAST variable : scopeData.uninitializedVariables) {
++            prevScopeUnitializedVariableData.push(variable);
++        }
++        prevScopeUninitializedVariables.push(prevScopeUnitializedVariableData);
++    }
++
++    /**
++     * Update current scope data uninitialized variable according to the previous scope data.
++     * @param prevScopeUnitializedVariableData variable for previous stack of uninitialized
++     *     variables
++     */
++    private void updateUninitializedVariables(Deque<DetailAST>
++            prevScopeUnitializedVariableData) {
++        // Check for only previous scope
++        for (DetailAST variable : prevScopeUnitializedVariableData) {
++            for (ScopeData scopeData : scopeStack) {
++                final DetailAST storedVariable = scopeData.scope.get(variable.getText());
++                if (storedVariable != null && isSameVariables(storedVariable, variable)
++                        && !scopeData.uninitializedVariables.contains(storedVariable)) {
++                    scopeData.uninitializedVariables.push(variable);
++                }
++            }
++        }
++        // Check for rest of the scope
++        for (Deque<DetailAST> unitializedVariableData : prevScopeUninitializedVariables) {
++            for (DetailAST variable : unitializedVariableData) {
++                for (ScopeData scopeData : scopeStack) {
++                    final DetailAST storedVariable = scopeData.scope.get(variable.getText());
++                    if (storedVariable != null
++                            && isSameVariables(storedVariable, variable)
++                            && !scopeData.uninitializedVariables.contains(storedVariable)) {
++                        scopeData.uninitializedVariables.push(variable);
++                    }
++                }
++            }
++        }
++    }
++
++    /**
++     * If token is LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, or LITERAL_ELSE, then do not
++     * update the uninitialized variables.
++     * @param ast token to be checked
++     * @return true if should be updated, else false
++     */
++    private boolean shouldUpdateUninitializedVariables(DetailAST ast) {
++        return ast.getType() != TokenTypes.LITERAL_TRY
++                && ast.getType() != TokenTypes.LITERAL_CATCH
++                && ast.getType() != TokenTypes.LITERAL_FINALLY
++                && ast.getType() != TokenTypes.LITERAL_ELSE;
++    }
++
+     /**
+      * Returns the last child token that makes a specified type and contains containType in
+      * its branch.
+      * @param ast token to be tested
+      * @param childType the token type to match
+      * @param containType the token type which has to be present in the branch
+      * @return the matching token, or null if no match
+      */
+-    public DetailAST findLastToken(DetailAST ast, int childType, int containType) {
++    public DetailAST findLastChildWhichContainsSpecifiedToken(DetailAST ast, int childType,
++            int containType) {
+         DetailAST returnValue = null;
+         for (DetailAST astIterator = ast.getFirstChild(); astIterator != null;
+                 astIterator = astIterator.getNextSibling()) {
+             if (astIterator.getType() == childType && astIterator.branchContains(containType)) {
+                 returnValue = astIterator;
+             }
+         }
+         return returnValue;
+     }
+ 
+     /**
+      * Determines whether enhanced for-loop variable should be checked or not.
+      * @param ast The ast to compare.
+      * @return true if enhanced for-loop variable should be checked.
+      */
+     private boolean shouldCheckEnhancedForLoopVariable(DetailAST ast) {
+         return validateEnhancedForLoopVariable
+                 || ast.getParent().getType() != TokenTypes.FOR_EACH_CLAUSE;
+     }
+ 
+     /**
+      * Insert a parameter at the topmost scope stack.
+      * @param ast the variable to insert.
+      */
+     private void insertParameter(DetailAST ast) {
+         final Map<String, DetailAST> scope = scopeStack.peek().scope;
+         final DetailAST astNode = ast.findFirstToken(TokenTypes.IDENT);
+         scope.put(astNode.getText(), astNode);
+     }
+ 
+     /**
+      * Insert a variable at the topmost scope stack.
+      * @param ast the variable to insert.
+      */
+     private void insertVariable(DetailAST ast) {
+         final Map<String, DetailAST> scope = scopeStack.peek().scope;
+         final DetailAST astNode = ast.findFirstToken(TokenTypes.IDENT);
+         scope.put(astNode.getText(), astNode);
+         if (!isInitialized(astNode)) {
+             scopeStack.peek().uninitializedVariables.add(astNode);
+         }
+     }
+ 
+     /**
+      * Check if VARIABLE_DEF is initialized or not.
+      * @param ast VARIABLE_DEF to be checked
+      * @return true if initialized
+      */
+     private static boolean isInitialized(DetailAST ast) {
+         return ast.getParent().getLastChild().getType() == TokenTypes.ASSIGN;

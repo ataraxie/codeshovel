@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "HiddenFieldCheck.java",
+  "functionName": "isIgnoredConstructorParam",
+  "functionId": "isIgnoredConstructorParam___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java",
+  "functionStartLine": 473,
+  "functionEndLine": 482,
+  "changeHistory": [
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "6784e5bcd5baa6b5086bf8b63709856d685a74c8",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "49d100f325752b15bbee56bfcf99dac223144639",
+    "a00160b33c89916e57bf80a6256e4944407b4de4"
+  ],
+  "changeHistoryShort": {
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "6784e5bcd5baa6b5086bf8b63709856d685a74c8": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "49d100f325752b15bbee56bfcf99dac223144639": "Ybodychange",
+    "a00160b33c89916e57bf80a6256e4944407b4de4": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6ee4a0f805d528cdee03cfc175502d15b5722dab": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2661: Enforce LogicConditionNeedOptimizationCheck of sevntu-checkstyle over Checkstyle source code\n",
+      "commitDate": 1450994367000,
+      "commitName": "6ee4a0f805d528cdee03cfc175502d15b5722dab",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1446818971000,
+      "commitNameOld": "e2cca1a0ad8e34442a7f18e3b214b13d300f165b",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 48.33,
+      "commitsBetweenForRepo": 209,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     private boolean isIgnoredConstructorParam(DetailAST ast) {\n         boolean result \u003d false;\n-        if (ast.getType() \u003d\u003d TokenTypes.PARAMETER_DEF\n-            \u0026\u0026 ignoreConstructorParameter) {\n+        if (ignoreConstructorParameter\n+                \u0026\u0026 ast.getType() \u003d\u003d TokenTypes.PARAMETER_DEF) {\n             final DetailAST parametersAST \u003d ast.getParent();\n             final DetailAST constructorAST \u003d parametersAST.getParent();\n             result \u003d constructorAST.getType() \u003d\u003d TokenTypes.CTOR_DEF;\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1425968536000,
+      "commitNameOld": "aef1f36b5a01b0a8da6557fd82c11a07baf350b2",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.63,
+      "commitsBetweenForRepo": 11,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private boolean isIgnoredConstructorParam(DetailAST ast)\n     {\n         boolean result \u003d false;\n-        if ((ast.getType() \u003d\u003d TokenTypes.PARAMETER_DEF)\n+        if (ast.getType() \u003d\u003d TokenTypes.PARAMETER_DEF\n             \u0026\u0026 ignoreConstructorParameter)\n         {\n             final DetailAST parametersAST \u003d ast.getParent();\n             final DetailAST constructorAST \u003d parametersAST.getParent();\n-            result \u003d (constructorAST.getType() \u003d\u003d TokenTypes.CTOR_DEF);\n+            result \u003d constructorAST.getType() \u003d\u003d TokenTypes.CTOR_DEF;\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "6784e5bcd5baa6b5086bf8b63709856d685a74c8": {
+      "type": "Ybodychange",
+      "commitMessage": "HiddenField module can now accept setterCanReturnItsClass attribute. #598\n",
+      "commitDate": 1422320667000,
+      "commitName": "6784e5bcd5baa6b5086bf8b63709856d685a74c8",
+      "commitAuthor": "Dmitri Priimak",
+      "commitDateOld": 1421929786000,
+      "commitNameOld": "b2eeea93c2b1c9a148a8ecf615637aeea4630638",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 4.52,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,12 @@\n     private boolean isIgnoredConstructorParam(DetailAST ast)\n     {\n-        if ((ast.getType() !\u003d TokenTypes.PARAMETER_DEF)\n-            || !ignoreConstructorParameter)\n+        boolean result \u003d false;\n+        if ((ast.getType() \u003d\u003d TokenTypes.PARAMETER_DEF)\n+            \u0026\u0026 ignoreConstructorParameter)\n         {\n-            return false;\n+            final DetailAST parametersAST \u003d ast.getParent();\n+            final DetailAST constructorAST \u003d parametersAST.getParent();\n+            result \u003d (constructorAST.getType() \u003d\u003d TokenTypes.CTOR_DEF);\n         }\n-        final DetailAST parametersAST \u003d ast.getParent();\n-        final DetailAST constructorAST \u003d parametersAST.getParent();\n-        return (constructorAST.getType() \u003d\u003d TokenTypes.CTOR_DEF);\n+        return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "49d100f325752b15bbee56bfcf99dac223144639": {
+      "type": "Ybodychange",
+      "commitMessage": "small refactoring for HiddenFieldCheck\n",
+      "commitDate": 1117556189000,
+      "commitName": "49d100f325752b15bbee56bfcf99dac223144639",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1115830091000,
+      "commitNameOld": "e27489c7721909245ea5055eac3b9c7c659081f6",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 19.98,
+      "commitsBetweenForRepo": 14,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     private boolean isIgnoredConstructorParam(DetailAST aAST)\n     {\n-        if (!(aAST.getType() \u003d\u003d TokenTypes.PARAMETER_DEF)\n+        if ((aAST.getType() !\u003d TokenTypes.PARAMETER_DEF)\n             || !mIgnoreConstructorParameter)\n         {\n             return false;\n         }\n         final DetailAST parametersAST \u003d aAST.getParent();\n         final DetailAST constructorAST \u003d parametersAST.getParent();\n         return (constructorAST.getType() \u003d\u003d TokenTypes.CTOR_DEF);\n     }\n\\ No newline at end of file\n"
+    },
+    "a00160b33c89916e57bf80a6256e4944407b4de4": {
+      "type": "Yintroduced",
+      "commitMessage": "Added property to HiddenFieldCheck to ignore constructor parameters (request 798240).\n",
+      "commitDate": 1062365707000,
+      "commitName": "a00160b33c89916e57bf80a6256e4944407b4de4",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

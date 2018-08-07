@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RequireThisCheck.java",
+  "functionName": "hasFinalField",
+  "functionId": "hasFinalField___instanceMember-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java",
+  "functionStartLine": 1278,
+  "functionEndLine": 1289,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e": "Ybodychange",
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1501588758000,
+      "commitNameOld": "1efd7acd6ca48569fd09a2a00e5a78505d772743",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 85.62,
+      "commitsBetweenForRepo": 255,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n         public boolean hasFinalField(final DetailAST instanceMember) {\n             boolean result \u003d false;\n             for (DetailAST member : instanceMembers) {\n                 final DetailAST mods \u003d member.getParent().findFirstToken(TokenTypes.MODIFIERS);\n-                final boolean finalMod \u003d mods.branchContains(TokenTypes.FINAL);\n+                final boolean finalMod \u003d mods.findFirstToken(TokenTypes.FINAL) !\u003d null;\n                 if (finalMod \u0026\u0026 member.equals(instanceMember)) {\n                     result \u003d true;\n                     break;\n                 }\n             }\n             return result;\n         }\n\\ No newline at end of file\n"
+    },
+    "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #4102: changed loops to end execution early",
+      "commitDate": 1491393573000,
+      "commitName": "d4bd21d46ceda66dee90b820d9ad487d3ed0d40e",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1488307797000,
+      "commitNameOld": "1a49cdac6fca0c130e212b49f790865f9ad2c267",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 35.72,
+      "commitsBetweenForRepo": 86,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,12 @@\n         public boolean hasFinalField(final DetailAST instanceMember) {\n             boolean result \u003d false;\n             for (DetailAST member : instanceMembers) {\n                 final DetailAST mods \u003d member.getParent().findFirstToken(TokenTypes.MODIFIERS);\n                 final boolean finalMod \u003d mods.branchContains(TokenTypes.FINAL);\n                 if (finalMod \u0026\u0026 member.equals(instanceMember)) {\n                     result \u003d true;\n+                    break;\n                 }\n             }\n             return result;\n         }\n\\ No newline at end of file\n"
+    },
+    "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2362: Add \u0027validateOnlyOverlapping\u0027 option for RequireThisCheck\n",
+      "commitDate": 1457102074000,
+      "commitName": "d274db7b321e4624fbdc86f6f3d5cbf9c0830a25",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

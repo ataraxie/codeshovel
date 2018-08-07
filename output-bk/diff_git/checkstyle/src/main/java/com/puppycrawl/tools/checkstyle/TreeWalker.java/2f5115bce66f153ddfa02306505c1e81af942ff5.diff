@@ -1,0 +1,260 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index a805de22c..f0fd4a1b9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -432,144 +432,141 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
+ 
+         if (visitors != null) {
+             for (AbstractCheck check : visitors) {
+                 check.leaveToken(ast);
+             }
+         }
+     }
+ 
+     /**
+      * Method returns list of checks.
+      *
+      * @param ast
+      *            the node to notify for
+      * @param astState
+      *            state of AST.
+      * @return list of visitors
+      */
+     private Collection<AbstractCheck> getListOfChecks(DetailAST ast, AstState astState) {
+         Collection<AbstractCheck> visitors = null;
+         final String tokenType = TokenUtils.getTokenName(ast.getType());
+ 
+         if (astState == AstState.WITH_COMMENTS) {
+             if (tokenToCommentChecks.containsKey(tokenType)) {
+                 visitors = tokenToCommentChecks.get(tokenType);
+             }
+         }
+         else {
+             if (tokenToOrdinaryChecks.containsKey(tokenType)) {
+                 visitors = tokenToOrdinaryChecks.get(tokenType);
+             }
+         }
+         return visitors;
+     }
+ 
+     /**
+      * Static helper method to parses a Java source file.
+      *
+      * @param contents
+      *                contains the contents of the file
+      * @return the root of the AST
+      * @throws TokenStreamException
+      *                 if lexing failed
+      * @throws RecognitionException
+      *                 if parsing failed
+      */
+     public static DetailAST parse(FileContents contents)
+             throws RecognitionException, TokenStreamException {
+         final String fullText = contents.getText().getFullText().toString();
+         final Reader reader = new StringReader(fullText);
+         final GeneratedJavaLexer lexer = new GeneratedJavaLexer(reader);
+-        lexer.setFilename(contents.getFileName());
+         lexer.setCommentListener(contents);
+-        lexer.setTreatAssertAsKeyword(true);
+-        lexer.setTreatEnumAsKeyword(true);
+         lexer.setTokenObjectClass("antlr.CommonHiddenStreamToken");
+ 
+         final TokenStreamHiddenTokenFilter filter =
+                 new TokenStreamHiddenTokenFilter(lexer);
+         filter.hide(TokenTypes.SINGLE_LINE_COMMENT);
+         filter.hide(TokenTypes.BLOCK_COMMENT_BEGIN);
+ 
+         final GeneratedJavaRecognizer parser =
+             new GeneratedJavaRecognizer(filter);
+         parser.setFilename(contents.getFileName());
+         parser.setASTNodeClass(DetailAST.class.getName());
+         parser.compilationUnit();
+ 
+         return (DetailAST) parser.getAST();
+     }
+ 
+     /**
+      * Parses Java source file. Result AST contains comment nodes.
+      * @param contents source file content
+      * @return DetailAST tree
+      * @throws RecognitionException if parser failed
+      * @throws TokenStreamException if lexer failed
+      */
+     public static DetailAST parseWithComments(FileContents contents)
+             throws RecognitionException, TokenStreamException {
+         return appendHiddenCommentNodes(parse(contents));
+     }
+ 
+     @Override
+     public void destroy() {
+         ordinaryChecks.forEach(AbstractCheck::destroy);
+         commentChecks.forEach(AbstractCheck::destroy);
+         super.destroy();
+     }
+ 
+     @Override
+     public Set<String> getExternalResourceLocations() {
+         final Set<String> ordinaryChecksResources = getExternalResourceLocations(ordinaryChecks);
+         final Set<String> commentChecksResources = getExternalResourceLocations(commentChecks);
+-        final int resultListSize = ordinaryChecksResources.size() + commentChecksResources.size();
++        final int resultListSize = commentChecksResources.size() + ordinaryChecksResources.size();
+         final Set<String> resourceLocations = new HashSet<>(resultListSize);
+         resourceLocations.addAll(ordinaryChecksResources);
+         resourceLocations.addAll(commentChecksResources);
+         return resourceLocations;
+     }
+ 
+     /**
+      * Returns a set of external configuration resource locations which are used by the checks set.
+      * @param checks a set of checks.
+      * @return a set of external configuration resource locations which are used by the checks set.
+      */
+     private static Set<String> getExternalResourceLocations(Set<AbstractCheck> checks) {
+         final Set<String> externalConfigurationResources = new HashSet<>();
+         checks.stream().filter(check -> check instanceof ExternalResourceHolder).forEach(check -> {
+             final Set<String> checkExternalResources =
+                 ((ExternalResourceHolder) check).getExternalResourceLocations();
+             externalConfigurationResources.addAll(checkExternalResources);
+         });
+         return externalConfigurationResources;
+     }
+ 
+     /**
+      * Processes a node calling interested checks at each node.
+      * Uses iterative algorithm.
+      * @param root the root of tree for process
+      * @param astState state of AST.
+      */
+     private void processIter(DetailAST root, AstState astState) {
+         DetailAST curNode = root;
+         while (curNode != null) {
+             notifyVisit(curNode, astState);
+             DetailAST toVisit = curNode.getFirstChild();
+             while (curNode != null && toVisit == null) {
+                 notifyLeave(curNode, astState);
+                 toVisit = curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+     }
+ 
+     /**
+      * Appends comment nodes to existing AST.
+      * It traverses each node in AST, looks for hidden comment tokens
+      * and appends found comment tokens as nodes in AST.
+      * @param root
+      *        root of AST.
+      * @return root of AST with comment nodes.
+@@ -589,107 +586,104 @@ public final class TreeWalker extends AbstractFileSetCheck implements ExternalRe
+             while (tokenBefore != null) {
+                 final DetailAST newCommentNode =
+                          createCommentAstFromToken(tokenBefore);
+ 
+                 currentSibling.addPreviousSibling(newCommentNode);
+ 
+                 if (currentSibling == result) {
+                     result = newCommentNode;
+                 }
+ 
+                 currentSibling = newCommentNode;
+                 tokenBefore = tokenBefore.getHiddenBefore();
+             }
+ 
+             DetailAST toVisit = curNode.getFirstChild();
+             while (curNode != null && toVisit == null) {
+                 toVisit = curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+         if (lastNode != null) {
+             CommonHiddenStreamToken tokenAfter = lastNode.getHiddenAfter();
+             DetailAST currentSibling = lastNode;
+             while (tokenAfter != null) {
+                 final DetailAST newCommentNode =
+                         createCommentAstFromToken(tokenAfter);
+ 
+                 currentSibling.addNextSibling(newCommentNode);
+ 
+                 currentSibling = newCommentNode;
+                 tokenAfter = tokenAfter.getHiddenAfter();
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if position of first DetailAST is greater than position of
+      * second DetailAST. Position is line number and column number in source
+      * file.
+      * @param ast1
+      *        first DetailAST node.
+      * @param ast2
+      *        second DetailAST node.
+      * @return true if position of ast1 is greater than position of ast2.
+      */
+     private static boolean isPositionGreater(DetailAST ast1, DetailAST ast2) {
+-        final boolean isGreater;
+-        if (ast1.getLineNo() == ast2.getLineNo()) {
++        boolean isGreater = ast1.getLineNo() > ast2.getLineNo();
++        if (!isGreater && ast1.getLineNo() == ast2.getLineNo()) {
+             isGreater = ast1.getColumnNo() > ast2.getColumnNo();
+         }
+-        else {
+-            isGreater = ast1.getLineNo() > ast2.getLineNo();
+-        }
+         return isGreater;
+     }
+ 
+     /**
+      * Create comment AST from token. Depending on token type
+      * SINGLE_LINE_COMMENT or BLOCK_COMMENT_BEGIN is created.
+      * @param token
+      *        Token object.
+      * @return DetailAST of comment node.
+      */
+     private static DetailAST createCommentAstFromToken(Token token) {
+         final DetailAST commentAst;
+         if (token.getType() == TokenTypes.SINGLE_LINE_COMMENT) {
+             commentAst = createSlCommentNode(token);
+         }
+         else {
+             commentAst = createBlockCommentNode(token);
+         }
+         return commentAst;
+     }
+ 
+     /**
+      * Create single-line comment from token.
+      * @param token
+      *        Token object.
+      * @return DetailAST with SINGLE_LINE_COMMENT type.
+      */
+     private static DetailAST createSlCommentNode(Token token) {
+         final DetailAST slComment = new DetailAST();
+         slComment.setType(TokenTypes.SINGLE_LINE_COMMENT);
+         slComment.setText("//");
+ 
+         // column counting begins from 0
+         slComment.setColumnNo(token.getColumn() - 1);
+         slComment.setLineNo(token.getLine());
+ 
+         final DetailAST slCommentContent = new DetailAST();
+         slCommentContent.setType(TokenTypes.COMMENT_CONTENT);
+ 
+         // column counting begins from 0
+         // plus length of '//'
+         slCommentContent.setColumnNo(token.getColumn() - 1 + 2);
+         slCommentContent.setLineNo(token.getLine());
+         slCommentContent.setText(token.getText());
+ 
+         slComment.addChild(slCommentContent);
+         return slComment;
+     }
+ 
+     /**

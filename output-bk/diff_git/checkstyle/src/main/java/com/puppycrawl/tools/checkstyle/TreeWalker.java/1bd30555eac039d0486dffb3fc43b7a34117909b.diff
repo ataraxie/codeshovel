@@ -1,0 +1,155 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index c4845ac2f..0a1c59728 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -502,148 +502,148 @@ public final class TreeWalker
+         throws RecognitionException, TokenStreamException
+     {
+         final String fullText = contents.getText().getFullText().toString();
+         final Reader sr = new StringReader(fullText);
+         final GeneratedJavaLexer lexer = new GeneratedJavaLexer(sr);
+         lexer.setFilename(contents.getFilename());
+         lexer.setCommentListener(contents);
+         lexer.setTreatAssertAsKeyword(true);
+         lexer.setTreatEnumAsKeyword(true);
+         lexer.setTokenObjectClass("antlr.CommonHiddenStreamToken");
+ 
+         final TokenStreamHiddenTokenFilter filter =
+                 new TokenStreamHiddenTokenFilter(lexer);
+         filter.hide(TokenTypes.SINGLE_LINE_COMMENT);
+         filter.hide(TokenTypes.BLOCK_COMMENT_BEGIN);
+ 
+         final GeneratedJavaRecognizer parser =
+             new GeneratedJavaRecognizer(filter);
+         parser.setFilename(contents.getFilename());
+         parser.setASTNodeClass(DetailAST.class.getName());
+         parser.compilationUnit();
+ 
+         return (DetailAST) parser.getAST();
+     }
+ 
+     @Override
+     public void destroy()
+     {
+         for (Check c : ordinaryChecks) {
+             c.destroy();
+         }
+         for (Check c : commentChecks) {
+             c.destroy();
+         }
+         cache.destroy();
+         super.destroy();
+     }
+ 
+     /**
+      * Processes a node calling interested checks at each node.
+      * Uses iterative algorithm.
+      * @param root the root of tree for process
+      * @param astState state of AST.
+      */
+     private void processIter(DetailAST root, AstState astState)
+     {
+         DetailAST curNode = root;
+         while (curNode != null) {
+             notifyVisit(curNode, astState);
+             DetailAST toVisit = curNode.getFirstChild();
+-            while ((curNode != null) && (toVisit == null)) {
++            while (curNode != null && toVisit == null) {
+                 notifyLeave(curNode, astState);
+                 toVisit = curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+     }
+ 
+     /**
+      * Appends comment nodes to existing AST.
+      * It traverses each node in AST, looks for hidden comment tokens
+      * and appends found comment tokens as nodes in AST.
+      * @param root
+      *        root of AST.
+      * @return root of AST with comment nodes.
+      */
+     private static DetailAST appendHiddenCommentNodes(DetailAST root)
+     {
+         DetailAST result = root;
+         DetailAST curNode = root;
+         DetailAST lastNode = root;
+ 
+         while (curNode != null) {
+             if (isPositionGreater(curNode, lastNode)) {
+                 lastNode = curNode;
+             }
+ 
+             CommonHiddenStreamToken tokenBefore = curNode.getHiddenBefore();
+             DetailAST currentSibling = curNode;
+             while (tokenBefore != null) { // threat multiple comments
+                 final DetailAST newCommentNode =
+                          createCommentAstFromToken(tokenBefore);
+ 
+                 currentSibling.addPreviousSibling(newCommentNode);
+ 
+                 if (currentSibling == result) {
+                     result = newCommentNode;
+                 }
+ 
+                 currentSibling = newCommentNode;
+                 tokenBefore = tokenBefore.getHiddenBefore();
+             }
+ 
+             DetailAST toVisit = curNode.getFirstChild();
+-            while ((curNode != null) && (toVisit == null)) {
++            while (curNode != null && toVisit == null) {
+                 toVisit = curNode.getNextSibling();
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+             curNode = toVisit;
+         }
+         if (lastNode != null) {
+             CommonHiddenStreamToken tokenAfter = lastNode.getHiddenAfter();
+             DetailAST currentSibling = lastNode;
+             while (tokenAfter != null) {
+                 final DetailAST newCommentNode =
+                         createCommentAstFromToken(tokenAfter);
+ 
+                 currentSibling.addNextSibling(newCommentNode);
+ 
+                 currentSibling = newCommentNode;
+                 tokenAfter = tokenAfter.getHiddenAfter();
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if position of first DetailAST is greater than position of
+      * second DetailAST. Position is line number and column number in source
+      * file.
+      * @param ast1
+      *        first DetailAST node.
+      * @param ast2
+      *        second DetailAST node.
+      * @return true if position of ast1 is greater than position of ast2.
+      */
+     private static boolean isPositionGreater(DetailAST ast1, DetailAST ast2)
+     {
+         if (ast1.getLineNo() > ast2.getLineNo()) {
+             return true;
+         }
+         else if (ast1.getLineNo() < ast2.getLineNo()) {
+             return false;
+         }
+         else {
+             if (ast1.getColumnNo() > ast2.getColumnNo()) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /**

@@ -1,0 +1,86 @@
+diff --git a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule451wheretobreak/InputOperatorWrap.java b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule451wheretobreak/InputOperatorWrap.java
+index 09845b4a7..0a066801d 100644
+--- a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule451wheretobreak/InputOperatorWrap.java
++++ b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule451wheretobreak/InputOperatorWrap.java
+@@ -1,72 +1,81 @@
+ package com.google.checkstyle.test.chapter4formatting.rule451wheretobreak;
+ 
++import java.util.Arrays;
+ import java.util.HashMap;
+ import java.util.Map;
+ 
+ class InputOperatorWrap
+ {
+     void test()
+     {
+         /*warn*/int x = 1 + 
+                 /*warn*/ 2 - 
+             3
+             -
+             4;
+         x = x + 2;
+         boolean y = true
+             &&
+             false;
+         /*warn*/ y = true && 
+             false;
+         y = false
+             && true;
++        /* Note: The three tests below will be used when issue #3381 is closed */
++        Arrays.sort(null, String
++                    ::
++                    compareToIgnoreCase);
++        Arrays.sort(null, String::  /*(warn)*/
++                    compareToIgnoreCase);
++        Arrays.sort(null, String
++                    ::compareToIgnoreCase);
+     }
+     
+     void testAssignment()
+     {
+         int x
+             = 0;
+         int y =
+             0;
+     }
+ 
+     <
+     T extends Comparable & 
+         java.io.Serializable
+     >
+     void testGenerics1()
+     {
+         Comparable
+             <
+             String
+             >
+             c = new String();
+         Map<String, String> map = new HashMap<String, String>();
+ 
+         boolean flag = false;
+         
+         int init = 9;
+         
+         /*ok*/ for (Map.Entry<String, String> entry :
+             map.entrySet())
+         {
+             /*warn*/int i = flag == true ?
+                     1 : 2;
+         }
+         
+         /*warn*/ if (init !=
+                 9)
+         {
+             
+         }
+         
+         /*warn*/ while (init ==
+                 10)
+         {
+             
+         }
+         
+         /*warn*/ if (init >
+                 10)
+         {
+             

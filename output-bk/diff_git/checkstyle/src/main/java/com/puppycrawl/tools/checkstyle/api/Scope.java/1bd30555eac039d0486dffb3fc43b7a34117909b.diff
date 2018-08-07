@@ -1,0 +1,70 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/Scope.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/Scope.java
+index 0fec3bf1e..fd1eee080 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/Scope.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/Scope.java
+@@ -15,64 +15,64 @@
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.api;
+ 
+ /**
+  * Represents a Java visibility scope.
+  *
+  * @author Lars Kühne
+  * @author Travis Schneeberger
+  */
+ public enum Scope
+ {
+     /** nothing scope. */
+     NOTHING,
+     /** public scope. */
+     PUBLIC,
+     /** protected scope. */
+     PROTECTED,
+     /** package or default scope. */
+     PACKAGE,
+     /** private scope. */
+     PRIVATE,
+     /** anonymous inner scope. */
+     ANONINNER;
+ 
+     @Override
+     public String toString()
+     {
+         return getName();
+     }
+ 
+     /**
+      * @return the name of this severity level.
+      */
+     public String getName()
+     {
+         return name().toLowerCase();
+     }
+ 
+     /**
+      * Checks if this scope is a subscope of another scope.
+      * Example: PUBLIC is a subscope of PRIVATE.
+      *
+      * @param scope a <code>Scope</code> value
+      * @return if <code>this</code> is a subscope of <code>scope</code>.
+      */
+     public boolean isIn(Scope scope)
+     {
+-        return (compareTo(scope) <= 0);
++        return compareTo(scope) <= 0;
+     }
+ 
+     /**
+      * Scope factory method.
+      *
+      * @param scopeName scope name, such as "nothing", "public", etc.
+      * @return the <code>Scope</code> associated with <code>scopeName</code>
+      */
+     public static Scope getInstance(String scopeName)
+     {
+         return valueOf(Scope.class, scopeName.trim().toUpperCase());
+     }
+ }

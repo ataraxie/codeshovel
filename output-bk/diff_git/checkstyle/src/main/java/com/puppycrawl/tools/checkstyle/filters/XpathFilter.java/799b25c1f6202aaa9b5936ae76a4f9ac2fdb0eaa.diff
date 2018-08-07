@@ -1,0 +1,113 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/XpathFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/XpathFilter.java
+index 8079be3df..03ffc0a8a 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/XpathFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/XpathFilter.java
+@@ -74,102 +74,106 @@ public class XpathFilter implements TreeWalkerFilter {
+         filePattern = files;
+         fileRegexp = Pattern.compile(files);
+         checkPattern = checks;
+         if (checks == null) {
+             checkRegexp = null;
+         }
+         else {
+             checkRegexp = CommonUtils.createPattern(checks);
+         }
+         this.moduleId = moduleId;
+         xpathQuery = query;
+         if (xpathQuery == null) {
+             xpathExpression = null;
+         }
+         else {
+             final XPathEvaluator xpathEvaluator = new XPathEvaluator();
+             try {
+                 xpathExpression = xpathEvaluator.createExpression(xpathQuery);
+             }
+             catch (XPathException ex) {
+                 throw new IllegalStateException("Unexpected xpath query: " + xpathQuery, ex);
+             }
+         }
+     }
+ 
+     @Override
+     public boolean accept(TreeWalkerAuditEvent event) {
+         return !isFileNameAndModuleAndCheckNameMatching(event)
+                 || !isXpathQueryMatching(event);
+     }
+ 
+     /**
+      * Is matching by file name, moduleId and Check name.
+      * @param event event
+      * @return true if it is matching
+      */
+     private boolean isFileNameAndModuleAndCheckNameMatching(TreeWalkerAuditEvent event) {
+         return event.getFileName() != null
+                 && fileRegexp.matcher(event.getFileName()).find()
+                 && event.getLocalizedMessage() != null
+                 && (moduleId == null || moduleId.equals(event.getModuleId()))
+                 && (checkRegexp == null || checkRegexp.matcher(event.getSourceName()).find());
+     }
+ 
+     /**
+      * Is matching by xpath query.
+      * @param event event
+      * @return true is matching
+      */
+     private boolean isXpathQueryMatching(TreeWalkerAuditEvent event) {
+-        boolean isMatching = false;
+-        if (xpathExpression != null) {
++        boolean isMatching;
++        if (xpathExpression == null) {
++            isMatching = true;
++        }
++        else {
++            isMatching = false;
+             final List<Item> items = getItems(event);
+             for (Item item : items) {
+                 final AbstractNode abstractNode = (AbstractNode) item;
+                 isMatching = abstractNode.getTokenType() == event.getTokenType()
+                         && abstractNode.getLineNumber() == event.getLine()
+                         && abstractNode.getColumnNumber() == event.getColumn();
+                 if (isMatching) {
+                     break;
+                 }
+             }
+         }
+         return isMatching;
+     }
+ 
+     /**
+      * Returns list of nodes matching xpath expression given event.
+      * @param event {@code TreeWalkerAuditEvent} object
+      * @return list of nodes matching xpath expression given event
+      */
+     private List<Item> getItems(TreeWalkerAuditEvent event) {
+         final RootNode rootNode;
+         if (event.getRootAst() == null) {
+             rootNode = null;
+         }
+         else {
+             rootNode = new RootNode(event.getRootAst());
+         }
+         final List<Item> items;
+         try {
+             final XPathDynamicContext xpathDynamicContext =
+                     xpathExpression.createDynamicContext(rootNode);
+             items = xpathExpression.evaluate(xpathDynamicContext);
+         }
+         catch (XPathException ex) {
+             throw new IllegalStateException("Cannot initialize context and evaluate query: "
+                     + xpathQuery, ex);
+         }
+         return items;
+     }
+ 
+     @Override
+     public int hashCode() {
+         return Objects.hash(filePattern, checkPattern, moduleId, xpathQuery);
+     }
+ 
+     @Override
+     public boolean equals(Object other) {
+         if (this == other) {
+             return true;
+         }

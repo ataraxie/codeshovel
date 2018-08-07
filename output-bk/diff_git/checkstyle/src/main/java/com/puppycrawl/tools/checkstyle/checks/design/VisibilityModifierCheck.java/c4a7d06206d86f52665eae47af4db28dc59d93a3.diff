@@ -1,0 +1,181 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+index 12e7db3ed..823be3487 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+@@ -402,101 +402,101 @@ public class VisibilityModifierCheck
+             case TokenTypes.VARIABLE_DEF:
+                 if (!isAnonymousClassVariable(ast)) {
+                     visitVariableDef(ast);
+                 }
+                 break;
+             case TokenTypes.IMPORT:
+                 visitImport(ast);
+                 break;
+             default:
+                 final String exceptionMsg = "Unexpected token type: " + ast.getText();
+                 throw new IllegalArgumentException(exceptionMsg);
+         }
+     }
+ 
+     /**
+      * Checks if current variable definition is definition of an anonymous class.
+      * @param variableDef {@link TokenTypes#VARIABLE_DEF VARIABLE_DEF}
+      * @return true if current variable definition is definition of an anonymous class.
+      */
+     private static boolean isAnonymousClassVariable(DetailAST variableDef) {
+         return variableDef.getParent().getType() != TokenTypes.OBJBLOCK;
+     }
+ 
+     /**
+      * Checks access modifier of given variable.
+      * If it is not proper according to Check - puts violation on it.
+      * @param variableDef variable to check.
+      */
+     private void visitVariableDef(DetailAST variableDef) {
+         final boolean inInterfaceOrAnnotationBlock =
+                 ScopeUtils.inInterfaceOrAnnotationBlock(variableDef);
+ 
+         if (!inInterfaceOrAnnotationBlock && !hasIgnoreAnnotation(variableDef)) {
+             final DetailAST varNameAST = variableDef.findFirstToken(TokenTypes.TYPE)
+                 .getNextSibling();
+             final String varName = varNameAST.getText();
+             if (!hasProperAccessModifier(variableDef, varName)) {
+                 log(varNameAST.getLineNo(), varNameAST.getColumnNo(),
+                         MSG_KEY, varName);
+             }
+         }
+     }
+ 
+     /**
+      * Checks if variable def has ignore annotation.
+      * @param variableDef {@link TokenTypes#VARIABLE_DEF VARIABLE_DEF}
+      * @return true if variable def has ignore annotation.
+      */
+     private boolean hasIgnoreAnnotation(DetailAST variableDef) {
+         final DetailAST firstIgnoreAnnotation =
+-                 containsMatchingAnnotation(variableDef);
++                 findMatchingAnnotation(variableDef);
+         return firstIgnoreAnnotation != null;
+     }
+ 
+     /**
+      * Checks imported type. If type's canonical name was not specified in
+      * <b>immutableClassCanonicalNames</b>, but it's short name collides with one from
+      * <b>immutableClassShortNames</b> - removes it from the last one.
+      * @param importAst {@link TokenTypes#IMPORT Import}
+      */
+     private void visitImport(DetailAST importAst) {
+         if (!isStarImport(importAst)) {
+             final DetailAST type = importAst.getFirstChild();
+             final String canonicalName = getCanonicalName(type);
+             final String shortName = getClassShortName(canonicalName);
+ 
+             // If imported canonical class name is not specified as allowed immutable class,
+             // but its short name collides with one of specified class - removes the short name
+             // from list to avoid names collision
+             if (!immutableClassCanonicalNames.contains(canonicalName)
+                      && immutableClassShortNames.contains(shortName)) {
+                 immutableClassShortNames.remove(shortName);
+             }
+             if (!ignoreAnnotationCanonicalNames.contains(canonicalName)
+                      && ignoreAnnotationShortNames.contains(shortName)) {
+                 ignoreAnnotationShortNames.remove(shortName);
+             }
+         }
+     }
+ 
+     /**
+      * Checks if current import is star import. E.g.:
+      * <p>
+      * {@code
+      * import java.util.*;
+      * }
+      * </p>
+      * @param importAst {@link TokenTypes#IMPORT Import}
+      * @return true if it is star import
+      */
+     private static boolean isStarImport(DetailAST importAst) {
+         boolean result = false;
+         DetailAST toVisit = importAst;
+         while (toVisit != null) {
+             toVisit = getNextSubTreeNode(toVisit, importAst);
+             if (toVisit != null && toVisit.getType() == TokenTypes.STAR) {
+                 result = true;
+                 break;
+             }
+         }
+         return result;
+@@ -704,72 +704,72 @@ public class VisibilityModifierCheck
+      * Gets the list with short names classes.
+      * These names are taken from array of classes canonical names.
+      * @param canonicalClassNames canonical class names.
+      * @return the list of short names of classes.
+      */
+     private static List<String> getClassShortNames(List<String> canonicalClassNames) {
+         final List<String> shortNames = new ArrayList<>();
+         for (String canonicalClassName : canonicalClassNames) {
+             final String shortClassName = canonicalClassName
+                     .substring(canonicalClassName.lastIndexOf('.') + 1,
+                     canonicalClassName.length());
+             shortNames.add(shortClassName);
+         }
+         return shortNames;
+     }
+ 
+     /**
+      * Gets the short class name from given canonical name.
+      * @param canonicalClassName canonical class name.
+      * @return short name of class.
+      */
+     private static String getClassShortName(String canonicalClassName) {
+         return canonicalClassName
+                 .substring(canonicalClassName.lastIndexOf('.') + 1,
+                 canonicalClassName.length());
+     }
+ 
+     /**
+      * Checks whether the AST is annotated with
+      * an annotation containing the passed in regular
+      * expression and return the AST representing that
+      * annotation.
+      *
+      * <p>
+      * This method will not look for imports or package
+      * statements to detect the passed in annotation.
+      * </p>
+      *
+      * <p>
+      * To check if an AST contains a passed in annotation
+      * taking into account fully-qualified names
+      * (ex: java.lang.Override, Override)
+      * this method will need to be called twice. Once for each
+      * name given.
+      * </p>
+      *
+      * @param variableDef {@link TokenTypes#VARIABLE_DEF variable def node}.
+      * @return the AST representing the first such annotation or null if
+      *         no such annotation was found
+      */
+-    private DetailAST containsMatchingAnnotation(DetailAST variableDef) {
++    private DetailAST findMatchingAnnotation(DetailAST variableDef) {
+         DetailAST matchingAnnotation = null;
+ 
+         final DetailAST holder = AnnotationUtility.getAnnotationHolder(variableDef);
+ 
+         for (DetailAST child = holder.getFirstChild();
+             child != null; child = child.getNextSibling()) {
+             if (child.getType() == TokenTypes.ANNOTATION) {
+                 final DetailAST at = child.getFirstChild();
+                 final String name =
+                     FullIdent.createFullIdent(at.getNextSibling()).getText();
+                 if (ignoreAnnotationCanonicalNames.contains(name)
+                          || ignoreAnnotationShortNames.contains(name)) {
+                     matchingAnnotation = child;
+                     break;
+                 }
+             }
+         }
+ 
+         return matchingAnnotation;
+     }
+ }

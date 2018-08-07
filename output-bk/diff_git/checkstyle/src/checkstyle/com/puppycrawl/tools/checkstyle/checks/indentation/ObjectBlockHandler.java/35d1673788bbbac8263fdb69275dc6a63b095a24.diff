@@ -1,0 +1,85 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java
+index d4f909b8a..cf37bfa7a 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ObjectBlockHandler.java
+@@ -42,78 +42,78 @@ public class ObjectBlockHandler extends BlockParentHandler
+         super(aIndentCheck, "object def", aAst, aParent);
+     }
+ 
+     /**
+      * There is no top level expression for this handler.
+      *
+      * @return null
+      */
+     protected DetailAST getToplevelAST()
+     {
+         return null;
+     }
+ 
+     /**
+      * Get the left curly brace portion of the expression we are handling.
+      *
+      * @return the left curly brace expression
+      */
+     protected DetailAST getLCurly()
+     {
+         return getMainAst().findFirstToken(TokenTypes.LCURLY);
+     }
+ 
+     /**
+      * Get the right curly brace portion of the expression we are handling.
+      *
+      * @return the right curly brace expression
+      */
+     protected DetailAST getRCurly()
+     {
+         return getMainAst().findFirstToken(TokenTypes.RCURLY);
+     }
+ 
+     /**
+      * Get the child element representing the list of statements.
+      *
+      * @return the statement list child
+      */
+     protected DetailAST getListChild()
+     {
+         return getMainAst();
+     }
+ 
+     /**
+      * Compute the indentation amount for this handler.
+      *
+      * @return the expected indentation amount
+      */
+     protected IndentLevel getLevelImpl()
+     {
+-        DetailAST parentAST = getMainAst().getParent();
++        final DetailAST parentAST = getMainAst().getParent();
+         IndentLevel indent = getParent().getLevel();
+         if (parentAST.getType() == TokenTypes.LITERAL_NEW) {
+             indent.addAcceptedIndent(super.getLevelImpl());
+         }
+         else if (parentAST.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+             indent = super.getLevelImpl();
+         }
+         return indent;
+     }
+ 
+     /**
+      * Check the indentation of the expression we are handling.
+      */
+     public void checkIndentation()
+     {
+         // if we have a class or interface as a parent, don't do anything,
+         // as this is checked by class def; so
+         // only do this if we have a new for a parent (anonymous inner
+         // class)
+-        DetailAST parentAST = getMainAst().getParent();
++        final DetailAST parentAST = getMainAst().getParent();
+         if (parentAST.getType() != TokenTypes.LITERAL_NEW) {
+             return;
+         }
+ 
+         super.checkIndentation();
+     }
+ }

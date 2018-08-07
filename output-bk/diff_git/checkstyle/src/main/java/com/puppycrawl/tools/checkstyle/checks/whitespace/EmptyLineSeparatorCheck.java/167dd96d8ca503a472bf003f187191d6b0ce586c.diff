@@ -1,0 +1,186 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java
+index b7533ef02..0274169eb 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java
+@@ -1,77 +1,76 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.whitespace;
+ 
+-import org.apache.commons.lang3.ArrayUtils;
+-
+ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
++import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * Checks for empty line separators after header, package, all import declarations,
+  * fields, constructors, methods, nested classes,
+  * static initializers and instance initializers.
+  *
+  * <p> By default the check will check the following statements:
+  *  {@link TokenTypes#PACKAGE_DEF PACKAGE_DEF},
+  *  {@link TokenTypes#IMPORT IMPORT},
+  *  {@link TokenTypes#CLASS_DEF CLASS_DEF},
+  *  {@link TokenTypes#INTERFACE_DEF INTERFACE_DEF},
+  *  {@link TokenTypes#STATIC_INIT STATIC_INIT},
+  *  {@link TokenTypes#INSTANCE_INIT INSTANCE_INIT},
+  *  {@link TokenTypes#METHOD_DEF METHOD_DEF},
+  *  {@link TokenTypes#CTOR_DEF CTOR_DEF},
+  *  {@link TokenTypes#VARIABLE_DEF VARIABLE_DEF}.
+  * </p>
+  *
+  * <p>
+  * Example of declarations without empty line separator:
+  * </p>
+  *
+  * <pre>
+  * ///////////////////////////////////////////////////
+  * //HEADER
+  * ///////////////////////////////////////////////////
+  * package com.puppycrawl.tools.checkstyle.whitespace;
+  * import java.io.Serializable;
+  * class Foo
+  * {
+  *     public static final int FOO_CONST = 1;
+  *     public void foo() {} //should be separated from previous statement.
+  * }
+  * </pre>
+  *
+  * <p> An example of how to configure the check with default parameters is:
+  * </p>
+  *
+  * <pre>
+  * &lt;module name="EmptyLineSeparator"/&gt;
+  * </pre>
+  *
+  * <p>
+  * Example of declarations with empty line separator
+  * that is expected by the Check by default:
+  * </p>
+  *
+  * <pre>
+  * ///////////////////////////////////////////////////
+  * //HEADER
+@@ -167,101 +166,101 @@ public class EmptyLineSeparatorCheck extends AbstractCheck {
+      */
+     public static final String MSG_MULTIPLE_LINES_AFTER =
+             "empty.line.separator.multiple.lines.after";
+ 
+     /** Allows no empty line between fields. */
+     private boolean allowNoEmptyLineBetweenFields;
+ 
+     /** Allows multiple empty lines between class members. */
+     private boolean allowMultipleEmptyLines = true;
+ 
+     /**
+      * Allow no empty line between fields.
+      * @param allow
+      *        User's value.
+      */
+     public final void setAllowNoEmptyLineBetweenFields(boolean allow) {
+         allowNoEmptyLineBetweenFields = allow;
+     }
+ 
+     /**
+      * Allow multiple empty lines between class members.
+      * @param allow User's value.
+      */
+     public void setAllowMultipleEmptyLines(boolean allow) {
+         allowMultipleEmptyLines = allow;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.IMPORT,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return ArrayUtils.EMPTY_INT_ARRAY;
++        return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (hasMultipleLinesBefore(ast)) {
+             log(ast.getLineNo(), MSG_MULTIPLE_LINES, ast.getText());
+         }
+ 
+         final DetailAST nextToken = ast.getNextSibling();
+         if (nextToken != null) {
+             final int astType = ast.getType();
+             switch (astType) {
+                 case TokenTypes.VARIABLE_DEF:
+                     processVariableDef(ast, nextToken);
+                     break;
+                 case TokenTypes.IMPORT:
+                     processImport(ast, nextToken, astType);
+                     break;
+                 case TokenTypes.PACKAGE_DEF:
+                     processPackage(ast, nextToken);
+                     break;
+                 default:
+                     if (nextToken.getType() == TokenTypes.RCURLY) {
+                         if (hasNotAllowedTwoEmptyLinesBefore(nextToken)) {
+                             log(ast.getLineNo(), MSG_MULTIPLE_LINES_AFTER, ast.getText());
+                         }
+                     }
+                     else if (!hasEmptyLineAfter(ast)) {
+                         log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED,
+                             nextToken.getText());
+                     }
+             }
+         }
+     }
+ 
+     /**
+      * Whether the token has not allowed multiple empty lines before.
+      * @param ast the ast to check.
+      * @return true if the token has not allowed multiple empty lines before.
+      */
+     private boolean hasMultipleLinesBefore(DetailAST ast) {
+         boolean result = false;
+         if ((ast.getType() != TokenTypes.VARIABLE_DEF
+             || isTypeField(ast))
+                 && hasNotAllowedTwoEmptyLinesBefore(ast)) {
+             result = true;
+         }
+         return result;
+     }
+ 

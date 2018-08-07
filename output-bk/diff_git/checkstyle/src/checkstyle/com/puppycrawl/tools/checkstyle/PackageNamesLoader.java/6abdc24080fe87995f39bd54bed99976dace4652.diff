@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
+index 2a43948e5..a730d84a1 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/PackageNamesLoader.java
+@@ -33,101 +33,101 @@ import org.xml.sax.SAXException;
+ /**
+  * Loads a list of package names from a package name XML file.
+  * @author Rick Giles
+  * @version 4-Dec-2002
+  */
+ public final class PackageNamesLoader
+     extends AbstractLoader
+ {
+     /** the public ID for the configuration dtd */
+     private static final String DTD_PUBLIC_ID =
+         "-//Puppy Crawl//DTD Package Names 1.0//EN";
+ 
+     /** the resource for the configuration dtd */
+     private static final String DTD_RESOURCE_NAME =
+         "com/puppycrawl/tools/checkstyle/packages_1_0.dtd";
+ 
+     /** Name of default checkstyle package names resource file.
+      * The file must be in the classpath.
+      */
+     private static final String DEFAULT_PACKAGES =
+         "com/puppycrawl/tools/checkstyle/checkstyle_packages.xml";
+ 
+     /**
+      * the factory to return in getModuleFactory(),
+      * configured during parsing
+      */
+     private final PackageObjectFactory mModuleFactory =
+         new PackageObjectFactory();
+ 
+     /** The loaded package names */
+     private final Stack<String> mPackageStack = new Stack<String>();
+ 
+     /**
+      * Creates a new <code>PackageNamesLoader</code> instance.
+      * @throws ParserConfigurationException if an error occurs
+      * @throws SAXException if an error occurs
+      */
+     private PackageNamesLoader()
+         throws ParserConfigurationException, SAXException
+     {
+         super(DTD_PUBLIC_ID, DTD_RESOURCE_NAME);
+     }
+ 
+     @Override
+     public void startElement(String aNamespaceURI,
+                              String aLocalName,
+                              String aQName,
+                              Attributes aAtts)
+         throws SAXException
+     {
+-        if (aQName.equals("package")) {
++        if ("package".equals(aQName)) {
+             //push package name
+             final String name = aAtts.getValue("name");
+             if (name == null) {
+                 throw new SAXException("missing package name");
+             }
+             mPackageStack.push(name);
+         }
+     }
+ 
+     /**
+      * Creates a full package name from the package names on the stack.
+      * @return the full name of the current package.
+      */
+     private String getPackageName()
+     {
+         final StringBuffer buf = new StringBuffer();
+         for (String subPackage : mPackageStack) {
+             buf.append(subPackage);
+             if (!subPackage.endsWith(".")) {
+                 buf.append(".");
+             }
+         }
+         return buf.toString();
+     }
+ 
+     /**
+      * Returns the module factory that has just been configured.
+      * @return the module factory, never null
+      */
+     private ModuleFactory getModuleFactory()
+     {
+         return mModuleFactory;
+     }
+ 
+     @Override
+     public void endElement(String aNamespaceURI,
+                            String aLocalName,
+                            String aQName)
+     {
+         if (aQName.equals("package")) {
+             mModuleFactory.addPackage(getPackageName());
+             mPackageStack.pop();
+         }
+     }
+ 
+     /**
+      * Returns the default list of package names.
+      * @param aClassLoader the class loader that gets the
+      * default package names.
+      * @return the default list of package names.

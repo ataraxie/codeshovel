@@ -1,0 +1,110 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+index b534d636a..371bd54b0 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/AbstractTypeAwareCheck.java
+@@ -290,103 +290,103 @@ public abstract class AbstractTypeAwareCheck extends Check
+                                                     getSeverityLevel(),
+                                                     getId(),
+                                                     this.getClass(),
+                                                     null);
+             throw new RuntimeException(msg.getMessage());
+         }
+ 
+         if (!mSuppressLoadErrors) {
+             log(aLineNo, aColumnNo, aMsgKey, aValues);
+         }
+     }
+ 
+     /**
+      * Collects the details of a package.
+      * @param aAST node containing the package details
+      */
+     private void processPackage(DetailAST aAST)
+     {
+         final DetailAST nameAST = aAST.getLastChild().getPreviousSibling();
+         mPackageFullIdent = FullIdent.createFullIdent(nameAST);
+     }
+ 
+     /**
+      * Collects the details of imports.
+      * @param aAST node containing the import details
+      */
+     private void processImport(DetailAST aAST)
+     {
+         final FullIdent name = FullIdent.createFullIdentBelow(aAST);
+         if (name != null) {
+             mImports.add(name.getText());
+         }
+     }
+ 
+     /**
+      * Process type params (if any) for given class, enum or method.
+      * @param aAST class, enum or method to process.
+      */
+     private void processTypeParams(DetailAST aAST)
+     {
+         final DetailAST typeParams =
+             aAST.findFirstToken(TokenTypes.TYPE_PARAMETERS);
+ 
+         final Map<String, ClassInfo> paramsMap = Maps.newHashMap();
+         mTypeParams.push(paramsMap);
+ 
+         if (typeParams == null) {
+             return;
+         }
+ 
+-        for (DetailAST child = (DetailAST) typeParams.getFirstChild();
++        for (DetailAST child = typeParams.getFirstChild();
+              child != null;
+-             child = (DetailAST) child.getNextSibling())
++             child = child.getNextSibling())
+         {
+             if (child.getType() == TokenTypes.TYPE_PARAMETER) {
+                 final DetailAST param = child;
+                 final String alias =
+                     param.findFirstToken(TokenTypes.IDENT).getText();
+                 final DetailAST bounds =
+                     param.findFirstToken(TokenTypes.TYPE_UPPER_BOUNDS);
+                 if (bounds != null) {
+                     final FullIdent name =
+                         FullIdent.createFullIdentBelow(bounds);
+                     final ClassInfo ci =
+                         createClassInfo(new Token(name), getCurrentClassName());
+                     paramsMap.put(alias, ci);
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Processes class definition.
+      * @param aAST class definition to process.
+      */
+     private void processClass(DetailAST aAST)
+     {
+         final DetailAST ident = aAST.findFirstToken(TokenTypes.IDENT);
+         mCurrentClass += ("".equals(mCurrentClass) ? "" : "$")
+             + ident.getText();
+ 
+         processTypeParams(aAST);
+     }
+ 
+     /**
+      * Returns current class.
+      * @return name of current class.
+      */
+     protected final String getCurrentClassName()
+     {
+         return mCurrentClass;
+     }
+ 
+     /**
+      * Creates class info for given name.
+      * @param aName name of type.
+      * @param aSurroundingClass name of surrounding class.
+      * @return class infor for given name.
+      */
+     protected final ClassInfo createClassInfo(final Token aName,
+                                               final String aSurroundingClass)
+     {
+         final ClassInfo ci = findClassAlias(aName.getText());

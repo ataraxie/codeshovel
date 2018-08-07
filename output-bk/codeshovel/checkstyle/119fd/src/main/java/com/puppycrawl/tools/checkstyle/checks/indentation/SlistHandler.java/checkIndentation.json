@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SlistHandler.java",
+  "functionName": "checkIndentation",
+  "functionId": "checkIndentation",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java",
+  "functionStartLine": 126,
+  "functionEndLine": 132,
+  "changeHistory": [
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+    "82c3f19cdcb29b5936be2fe186b4cf9bee372bc4",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b",
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955"
+  ],
+  "changeHistoryShort": {
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": "Ybodychange",
+    "82c3f19cdcb29b5936be2fe186b4cf9bee372bc4": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3143: forbid empty return statements and fixed violations",
+      "commitDate": 1464356569000,
+      "commitName": "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 143.55,
+      "commitsBetweenForRepo": 343,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,7 @@\n     public void checkIndentation() {\n         // only need to check this if parent is not\n         // an if, else, while, do, ctor, method\n-        if (hasBlockParent() || isSameLineCaseGroup()) {\n-            return;\n+        if (!hasBlockParent() \u0026\u0026 !isSameLineCaseGroup()) {\n+            super.checkIndentation();\n         }\n-        super.checkIndentation();\n     }\n\\ No newline at end of file\n"
+    },
+    "82c3f19cdcb29b5936be2fe186b4cf9bee372bc4": {
+      "type": "Ybodychange",
+      "commitMessage": "Indentation check fails for switch statements #341\n",
+      "commitDate": 1416263338000,
+      "commitName": "82c3f19cdcb29b5936be2fe186b4cf9bee372bc4",
+      "commitAuthor": "maxvetrenko",
+      "commitDateOld": 1393953491000,
+      "commitNameOld": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthorOld": "Ivan Sopov",
+      "daysBetweenCommits": 258.22,
+      "commitsBetweenForRepo": 258,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public void checkIndentation()\n     {\n         // only need to check this if parent is not\n         // an if, else, while, do, ctor, method\n-        if (hasBlockParent()) {\n+        if (hasBlockParent() || isSameLineCaseGroup()) {\n             return;\n         }\n         super.checkIndentation();\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "eaad55fdba73e17e103dc6600867f26fd6a3896b": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Refactoring of original IndentationCheck made by Jeff Weston (Sir Toby) applied.\nFixed two know problems:\n - with static init block (catched by testValidBlockWithChecker())\n - with throws in method definition.\n   unit-test (testInvalidMethodWithChecker()) fixed too.\n",
+      "commitDate": 1052639583000,
+      "commitName": "eaad55fdba73e17e103dc6600867f26fd6a3896b",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "9aab61241e7970ccfb4a9ee66c8eb7f062d31955": {
+      "type": "Yintroduced",
+      "commitMessage": "added IndentationCheck, contributed by John Richardson\nThis check currently fails to pass checkstyle.checkstyle\nbecause most methods are missing javadoc, I hope somebody\ncan help me adding it\n",
+      "commitDate": 1051248087000,
+      "commitName": "9aab61241e7970ccfb4a9ee66c8eb7f062d31955",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

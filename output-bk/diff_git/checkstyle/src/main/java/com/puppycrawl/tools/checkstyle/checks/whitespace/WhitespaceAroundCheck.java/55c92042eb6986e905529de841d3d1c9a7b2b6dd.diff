@@ -1,0 +1,205 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
+index e07906f5a..e56a5b225 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/WhitespaceAroundCheck.java
+@@ -319,196 +319,196 @@ public class WhitespaceAroundCheck extends Check {
+     /**
+      * Sets whether or not to ignore the whitespace around the
+      * colon in an enhanced for loop.
+      * @param ignore {@code true} to ignore enhanced for colon.
+      */
+     public void setIgnoreEnhancedForColon(boolean ignore) {
+         ignoreEnhancedForColon = ignore;
+     }
+ 
+     /**
+      * Sets whether or not empty type bodies are allowed.
+      * @param allow {@code true} to allow empty type bodies.
+      */
+     public void setAllowEmptyTypes(boolean allow) {
+         allowEmptyTypes = allow;
+     }
+ 
+     /**
+      * Sets whether or not empty loop bodies are allowed.
+      * @param allow {@code true} to allow empty loops bodies.
+      */
+     public void setAllowEmptyLoops(boolean allow) {
+         allowEmptyLoops = allow;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final int currentType = ast.getType();
+         if (isNotRelevantSituation(ast, currentType)) {
+             return;
+         }
+ 
+         final String line = getLine(ast.getLineNo() - 1);
+         final int before = ast.getColumnNo() - 1;
+         final int after = ast.getColumnNo() + ast.getText().length();
+ 
+         if (before >= 0 && !Character.isWhitespace(line.charAt(before))) {
+             log(ast.getLineNo(), ast.getColumnNo(),
+                     WS_NOT_PRECEDED, ast.getText());
+         }
+ 
+         if (after >= line.length()) {
+             return;
+         }
+ 
+         final char nextChar = line.charAt(after);
+         if (!Character.isWhitespace(nextChar)
+             // Check for "return;"
+             && !(currentType == TokenTypes.LITERAL_RETURN
+                 && ast.getFirstChild().getType() == TokenTypes.SEMI)
+-            && !isAnnonimousInnerClassEnd(currentType, nextChar)) {
++            && !isAnonymousInnerClassEnd(currentType, nextChar)) {
+ 
+             log(ast.getLineNo(), ast.getColumnNo() + ast.getText().length(),
+                     WS_NOT_FOLLOWED, ast.getText());
+         }
+     }
+ 
+     /**
+      * Check for "})" or "};" or "},". Happens with anon-inners
+      * @param currentType token
+      * @param nextChar next symbol
+      * @return true is that is end of anon inner class
+      */
+-    private static boolean isAnnonimousInnerClassEnd(int currentType, char nextChar) {
++    private static boolean isAnonymousInnerClassEnd(int currentType, char nextChar) {
+         return currentType == TokenTypes.RCURLY
+             && (nextChar == ')'
+                 || nextChar == ';'
+                 || nextChar == ','
+                 || nextChar == '.');
+     }
+ 
+     /**
+      * Is ast is not a target of Check
+      * @param ast ast
+      * @param currentType type of ast
+      * @return true is ok to skip validation
+      */
+     private boolean isNotRelevantSituation(DetailAST ast, int currentType) {
+         final int parentType = ast.getParent().getType();
+ 
+         // Check for CURLY in array initializer
+         if (isArrayInitialization(currentType, parentType)) {
+             return true;
+         }
+ 
+         // Check for import pkg.name.*;
+         if (currentType == TokenTypes.STAR
+             && parentType == TokenTypes.DOT) {
+             return true;
+         }
+ 
+         // Check for an SLIST that has a parent CASE_GROUP. It is not a '{'.
+         if (currentType == TokenTypes.SLIST
+             && parentType == TokenTypes.CASE_GROUP) {
+             return true;
+         }
+ 
+         if (isColonOfCaseOrDefault(currentType, parentType)) {
+             return true;
+         }
+ 
+-        // Checks if empty methods, ctors or loops are allowed.
++        // Checks if empty methods, constructors or loops are allowed.
+         if (isEmptyBlock(ast, parentType)) {
+             return true;
+         }
+ 
+         // Checks if empty classes, interfaces or enums are allowed
+         return allowEmptyTypes && isEmptyType(ast, parentType);
+     }
+ 
+     /**
+      * Is empty block
+      * @param ast ast
+      * @param parentType parent
+      * @return true is block is empty
+      */
+     private boolean isEmptyBlock(DetailAST ast, int parentType) {
+         return isEmptyMethodBlock(ast, parentType)
+                 || isEmptyCtorBlock(ast, parentType)
+                 || isEmptyLoop(ast, parentType);
+     }
+ 
+     /**
+      * We do not want to check colon for cases and defaults
+      * @param currentType current
+      * @param parentType parent
+      * @return true is cur token in colon of case or default tokens
+      */
+     private boolean isColonOfCaseOrDefault(int currentType, int parentType) {
+         if (currentType == TokenTypes.COLON) {
+             //we do not want to check colon for cases and defaults
+             if (parentType == TokenTypes.LITERAL_DEFAULT
+                 || parentType == TokenTypes.LITERAL_CASE) {
+                 return true;
+             }
+             else if (parentType == TokenTypes.FOR_EACH_CLAUSE
+                 && ignoreEnhancedForColon) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Is array initialization
+-     * @param currentType curret token
++     * @param currentType current token
+      * @param parentType parent token
+      * @return true is current token inside array initialization
+      */
+     private static boolean isArrayInitialization(int currentType, int parentType) {
+         return (currentType == TokenTypes.RCURLY
+                 || currentType == TokenTypes.LCURLY)
+             && (parentType == TokenTypes.ARRAY_INIT
+                 || parentType == TokenTypes.ANNOTATION_ARRAY_INIT);
+     }
+ 
+     /**
+      * Test if the given {@code DetailAST} is part of an allowed empty
+      * method block.
+      * @param ast the {@code DetailAST} to test.
+      * @param parentType the token type of {@code ast}'s parent.
+      * @return {@code true} if {@code ast} makes up part of an
+      *         allowed empty method block.
+      */
+     private boolean isEmptyMethodBlock(DetailAST ast, int parentType) {
+         return allowEmptyMethods
+             && isEmptyBlock(ast, parentType, TokenTypes.METHOD_DEF);
+     }
+ 
+     /**
+      * Test if the given {@code DetailAST} is part of an allowed empty
+      * constructor (ctor) block.
+      * @param ast the {@code DetailAST} to test.
+      * @param parentType the token type of {@code ast}'s parent.
+      * @return {@code true} if {@code ast} makes up part of an
+      *         allowed empty constructor block.
+      */
+     private boolean isEmptyCtorBlock(DetailAST ast, int parentType) {
+         return allowEmptyConstructors
+             && isEmptyBlock(ast, parentType, TokenTypes.CTOR_DEF);
+     }
+ 
+     /**
+      *
+      * @param ast ast the {@code DetailAST} to test.
+      * @param parentType the token type of {@code ast}'s parent.
+      * @return {@code true} if {@code ast} makes up part of an
+      *         allowed empty loop block.
+      */
+     private boolean isEmptyLoop(DetailAST ast, int parentType) {
+         return allowEmptyLoops
+             && (isEmptyBlock(ast, parentType, TokenTypes.LITERAL_FOR)
+                     || isEmptyBlock(ast,
+                             parentType, TokenTypes.LITERAL_WHILE)
+                             || isEmptyBlock(ast,
+                                     parentType, TokenTypes.LITERAL_DO));

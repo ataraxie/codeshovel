@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "RegexpSinglelineJavaCheck.java",
+  "functionName": "beginTree",
+  "functionId": "beginTree___rootAST-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/regexp/RegexpSinglelineJavaCheck.java",
+  "functionStartLine": 64,
+  "functionEndLine": 82,
+  "changeHistory": [
+    "3b531fe996078098c7fa30b8ab0645a6157dc6d1",
+    "0c2abadbb7f2887f31011157d62edf40bea131c3",
+    "f9ff86c70140266ac432fee4daaedbae6451f963",
+    "331992aacd23576c72862ea75d83f15e09af958c",
+    "075b3084de3934dbf73f108110b36e01dcf10d1e",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "61f25fbed0f49e67e18b988eb47c86d72544ac23"
+  ],
+  "changeHistoryShort": {
+    "3b531fe996078098c7fa30b8ab0645a6157dc6d1": "Ybodychange",
+    "0c2abadbb7f2887f31011157d62edf40bea131c3": "Ybodychange",
+    "f9ff86c70140266ac432fee4daaedbae6451f963": "Ybodychange",
+    "331992aacd23576c72862ea75d83f15e09af958c": "Ybodychange",
+    "075b3084de3934dbf73f108110b36e01dcf10d1e": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "61f25fbed0f49e67e18b988eb47c86d72544ac23": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3b531fe996078098c7fa30b8ab0645a6157dc6d1": {
+      "type": "Ybodychange",
+      "commitMessage": "minor: fix typos\n",
+      "commitDate": 1514092430000,
+      "commitName": "3b531fe996078098c7fa30b8ab0645a6157dc6d1",
+      "commitAuthor": "Pavel Bludov",
+      "commitDateOld": 1509412562000,
+      "commitNameOld": "5cdbb191a17c65c2956b35d71513e9b59b6d2166",
+      "commitAuthorOld": "Andrew Kuchev",
+      "daysBetweenCommits": 54.17,
+      "commitsBetweenForRepo": 117,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     public void beginTree(DetailAST rootAST) {\n-        MatchSuppressor supressor \u003d null;\n+        MatchSuppressor suppressor \u003d null;\n         if (ignoreComments) {\n-            supressor \u003d new CommentSuppressor(getFileContents());\n+            suppressor \u003d new CommentSuppressor(getFileContents());\n         }\n \n         final DetectorOptions options \u003d DetectorOptions.newBuilder()\n             .reporter(this)\n             .compileFlags(0)\n-            .suppressor(supressor)\n+            .suppressor(suppressor)\n             .format(format)\n             .message(message)\n             .minimum(minimum)\n             .maximum(maximum)\n             .ignoreCase(ignoreCase)\n             .build();\n         final SinglelineDetector detector \u003d new SinglelineDetector(options);\n         detector.processLines(getFileContents().getText());\n     }\n\\ No newline at end of file\n"
+    },
+    "0c2abadbb7f2887f31011157d62edf40bea131c3": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4641: Avoid usage of getLines method from FileText\n",
+      "commitDate": 1499716651000,
+      "commitName": "0c2abadbb7f2887f31011157d62edf40bea131c3",
+      "commitAuthor": "Timur",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 164.23,
+      "commitsBetweenForRepo": 630,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     public void beginTree(DetailAST rootAST) {\n         MatchSuppressor supressor \u003d null;\n         if (ignoreComments) {\n             supressor \u003d new CommentSuppressor(getFileContents());\n         }\n \n         final DetectorOptions options \u003d DetectorOptions.newBuilder()\n             .reporter(this)\n             .compileFlags(0)\n             .suppressor(supressor)\n             .format(format)\n             .message(message)\n             .minimum(minimum)\n             .maximum(maximum)\n             .ignoreCase(ignoreCase)\n             .build();\n         final SinglelineDetector detector \u003d new SinglelineDetector(options);\n-        detector.processLines(Arrays.asList(getLines()));\n+        detector.processLines(getFileContents().getText());\n     }\n\\ No newline at end of file\n"
+    },
+    "f9ff86c70140266ac432fee4daaedbae6451f963": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2523: Make DetectorOptions as final and immutable\n",
+      "commitDate": 1450190766000,
+      "commitName": "f9ff86c70140266ac432fee4daaedbae6451f963",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1439782863000,
+      "commitNameOld": "d56a2a366c6f9e3e8639d492d548ae562b75dc81",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 120.46,
+      "commitsBetweenForRepo": 965,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,19 @@\n     public void beginTree(DetailAST rootAST) {\n-\n+        MatchSuppressor supressor \u003d null;\n         if (ignoreComments) {\n-            options.setSuppressor(new CommentSuppressor(getFileContents()));\n-        }\n-        else {\n-            options.setSuppressor(NeverSuppress.INSTANCE);\n+            supressor \u003d new CommentSuppressor(getFileContents());\n         }\n \n+        final DetectorOptions options \u003d DetectorOptions.newBuilder()\n+            .reporter(this)\n+            .compileFlags(0)\n+            .suppressor(supressor)\n+            .format(format)\n+            .message(message)\n+            .minimum(minimum)\n+            .maximum(maximum)\n+            .ignoreCase(ignoreCase)\n+            .build();\n+        final SinglelineDetector detector \u003d new SinglelineDetector(options);\n         detector.processLines(Arrays.asList(getLines()));\n     }\n\\ No newline at end of file\n"
+    },
+    "331992aacd23576c72862ea75d83f15e09af958c": {
+      "type": "Ybodychange",
+      "commitMessage": "Coverage has been increased to 100% in CommentSuppressor. Issue #1010\n",
+      "commitDate": 1439417143000,
+      "commitName": "331992aacd23576c72862ea75d83f15e09af958c",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1438566537000,
+      "commitNameOld": "30438ebdf9fd28a94613e2aaecde776d906349a7",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 9.84,
+      "commitsBetweenForRepo": 136,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,11 @@\n     public void beginTree(DetailAST rootAST) {\n-        suppressor.setCurrentContents(getFileContents());\n+\n+        if (ignoreComments) {\n+            options.setSuppressor(new CommentSuppressor(getFileContents()));\n+        }\n+        else {\n+            options.setSuppressor(NeverSuppress.INSTANCE);\n+        }\n+\n         detector.processLines(Arrays.asList(getLines()));\n     }\n\\ No newline at end of file\n"
+    },
+    "075b3084de3934dbf73f108110b36e01dcf10d1e": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, regexp, #512\n",
+      "commitDate": 1421677287000,
+      "commitName": "075b3084de3934dbf73f108110b36e01dcf10d1e",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "61f25fbed0f49e67e18b988eb47c86d72544ac23": {
+      "type": "Yintroduced",
+      "commitMessage": "start of refactoring to consolidate all the regexp checks.\n",
+      "commitDate": 1229944895000,
+      "commitName": "61f25fbed0f49e67e18b988eb47c86d72544ac23",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

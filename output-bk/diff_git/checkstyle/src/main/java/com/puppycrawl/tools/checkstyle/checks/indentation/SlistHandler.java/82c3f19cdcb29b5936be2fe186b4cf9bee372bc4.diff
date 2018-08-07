@@ -1,0 +1,73 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java
+index d13755d5d..70a844d4f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java
+@@ -78,56 +78,67 @@ public class SlistHandler extends BlockParentHandler
+     @Override
+     protected DetailAST getListChild()
+     {
+         return getMainAst();
+     }
+ 
+     @Override
+     protected DetailAST getLCurly()
+     {
+         return getMainAst();
+     }
+ 
+     @Override
+     protected DetailAST getRCurly()
+     {
+         return getMainAst().findFirstToken(TokenTypes.RCURLY);
+     }
+ 
+     @Override
+     protected DetailAST getToplevelAST()
+     {
+         return null;
+     }
+ 
+     /**
+      * Determine if the expression we are handling has a block parent.
+      *
+      * @return true if it does, false otherwise
+      */
+     private boolean hasBlockParent()
+     {
+         final int parentType = getMainAst().getParent().getType();
+         return (parentType == TokenTypes.LITERAL_IF)
+             || (parentType == TokenTypes.LITERAL_FOR)
+             || (parentType == TokenTypes.LITERAL_WHILE)
+             || (parentType == TokenTypes.LITERAL_DO)
+             || (parentType == TokenTypes.LITERAL_ELSE)
+             || (parentType == TokenTypes.LITERAL_TRY)
+             || (parentType == TokenTypes.LITERAL_CATCH)
+             || (parentType == TokenTypes.LITERAL_FINALLY)
+             || (parentType == TokenTypes.CTOR_DEF)
+             || (parentType == TokenTypes.METHOD_DEF)
+             || (parentType == TokenTypes.STATIC_INIT);
+     }
+ 
+     @Override
+     public void checkIndentation()
+     {
+         // only need to check this if parent is not
+         // an if, else, while, do, ctor, method
+-        if (hasBlockParent()) {
++        if (hasBlockParent() || isSameLineCaseGroup()) {
+             return;
+         }
+         super.checkIndentation();
+     }
++
++    /**
++     * Checks if SLIST node is placed at the same line as CASE_GROUP node.
++     * @return true, if SLIST node is places at the same line as CASE_GROUP node.
++     */
++    private boolean isSameLineCaseGroup()
++    {
++        final DetailAST parentNode = getMainAst().getParent();
++        return parentNode.getType() == TokenTypes.CASE_GROUP
++            && getMainAst().getLineNo() == parentNode.getLineNo();
++    }
+ }

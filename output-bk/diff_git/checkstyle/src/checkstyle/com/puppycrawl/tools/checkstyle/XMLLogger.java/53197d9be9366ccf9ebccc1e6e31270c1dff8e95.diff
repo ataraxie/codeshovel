@@ -1,0 +1,108 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/XMLLogger.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/XMLLogger.java
+index cbbe9bf9c..1e7bb9e2a 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/XMLLogger.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/XMLLogger.java
+@@ -64,100 +64,103 @@ public class XMLLogger
+     private void setOutputStream(OutputStream aOS)
+     {
+         try {
+             final OutputStreamWriter osw = new OutputStreamWriter(aOS, "UTF8");
+             mWriter = new PrintWriter(osw);
+         }
+         catch (UnsupportedEncodingException e) {
+             // unlikely to happen...
+             throw new ExceptionInInitializerError(e);
+         }
+     }
+ 
+     /** @see AuditListener **/
+     public void auditStarted(AuditEvent aEvt)
+     {
+         mWriter.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+         mWriter.println("<checkstyle>");
+     }
+ 
+     /** @see AuditListener **/
+     public void auditFinished(AuditEvent aEvt)
+     {
+         mWriter.println("</checkstyle>");
+         if (mCloseStream) {
+             mWriter.close();
+         }
+         else {
+             mWriter.flush();
+         }
+     }
+ 
+     /** @see AuditListener **/
+     public void fileStarted(AuditEvent aEvt)
+     {
+         mWriter.println("<file name=\"" + aEvt.getFileName() + "\">");
+     }
+ 
+     /** @see AuditListener **/
+     public void fileFinished(AuditEvent aEvt)
+     {
+         mWriter.println("</file>");
+     }
+ 
+     /** @see AuditListener **/
+     public void addError(AuditEvent aEvt)
+     {
+         mWriter.print("<error" + " line=\"" + aEvt.getLine() + "\"");
+         if (aEvt.getColumn() > 0) {
+             mWriter.print(" column=\"" + aEvt.getColumn() + "\"");
+         }
++        mWriter.print(" severity=\""
++                      + aEvt.getSeverityLevel().getName()
++                      + "\"");
+         mWriter.println(" message=\"" + encode(aEvt.getMessage()) + "\"/>");
+     }
+ 
+     /** @see AuditListener **/
+     public void addException(AuditEvent aEvt, Throwable aThrowable)
+     {
+         final StringWriter sw = new StringWriter();
+         final PrintWriter pw = new PrintWriter(sw);
+         pw.println("<exception>");
+         pw.println("<![CDATA[");
+         aThrowable.printStackTrace(pw);
+         pw.println("]]>");
+         pw.println("</exception>");
+         pw.flush();
+         mWriter.println(encode(sw.toString()));
+     }
+ 
+     /**
+      * Escape &lt;, &gt; &amp; &apos; and &quot; as their entities.
+      * @param aValue the value to escape.
+      * @return the escaped value if necessary.
+      */
+     public String encode(String aValue)
+     {
+         final StringBuffer sb = new StringBuffer();
+         for (int i = 0; i < aValue.length(); i++) {
+             char c = aValue.charAt(i);
+             switch (c) {
+             case '<':
+                 sb.append("&lt;");
+                 break;
+             case '>':
+                 sb.append("&gt;");
+                 break;
+             case '\'':
+                 sb.append("&apos;");
+                 break;
+             case '\"':
+                 sb.append("&quot;");
+                 break;
+             case '&':
+                 int nextSemi = aValue.indexOf(";", i);
+                 if ((nextSemi < 0)
+                     || !isReference(aValue.substring(i, nextSemi + 1)))
+                 {
+                     sb.append("&amp;");
+                 }
+                 else {
+                     sb.append('&');
+                 }

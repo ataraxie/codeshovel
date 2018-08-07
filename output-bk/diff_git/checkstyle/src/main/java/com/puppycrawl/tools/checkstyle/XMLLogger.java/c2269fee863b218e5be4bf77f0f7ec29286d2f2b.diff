@@ -1,0 +1,163 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java b/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
+index 008998b71..3d8eea228 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
+@@ -1,157 +1,156 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2018 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle;
+ 
+ import java.io.OutputStream;
+ import java.io.OutputStreamWriter;
+ import java.io.PrintWriter;
+ import java.io.StringWriter;
+ import java.nio.charset.StandardCharsets;
+ import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.ResourceBundle;
+ import java.util.concurrent.ConcurrentHashMap;
+ 
+ import com.puppycrawl.tools.checkstyle.api.AuditEvent;
+ import com.puppycrawl.tools.checkstyle.api.AuditListener;
+ import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
+-import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
+ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * Simple XML logger.
+  * It outputs everything in UTF-8 (default XML encoding is UTF-8) in case
+  * we want to localize error messages or simply that file names are
+  * localized and takes care about escaping as well.
+ 
+  * @author <a href="mailto:stephane.bailliez@wanadoo.fr">Stephane Bailliez</a>
+  */
+ // -@cs[AbbreviationAsWordInName] We can not change it as,
+ // check's name is part of API (used in configurations).
+ public class XMLLogger
+     extends AutomaticBean
+     implements AuditListener {
+ 
+     /** Decimal radix. */
+     private static final int BASE_10 = 10;
+ 
+     /** Hex radix. */
+     private static final int BASE_16 = 16;
+ 
+     /** Some known entities to detect. */
+     private static final String[] ENTITIES = {"gt", "amp", "lt", "apos",
+                                               "quot", };
+ 
+     /** Close output stream in auditFinished. */
+     private final boolean closeStream;
+ 
+     /** The writer lock object. */
+     private final Object writerLock = new Object();
+ 
+     /** Holds all messages for the given file. */
+     private final Map<String, FileMessages> fileMessages =
+             new ConcurrentHashMap<>();
+ 
+     /**
+      * Helper writer that allows easy encoding and printing.
+      */
+     private final PrintWriter writer;
+ 
+     /**
+      * Creates a new {@code XMLLogger} instance.
+      * Sets the output to a defined stream.
+      * @param outputStream the stream to write logs to.
+      * @param closeStream close oS in auditFinished
+      * @deprecated in order to fulfill demands of BooleanParameter IDEA check.
+      * @noinspection BooleanParameter
+      */
+     @Deprecated
+     public XMLLogger(OutputStream outputStream, boolean closeStream) {
+         writer = new PrintWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
+         this.closeStream = closeStream;
+     }
+ 
+     /**
+      * Creates a new {@code XMLLogger} instance.
+      * Sets the output to a defined stream.
+      * @param outputStream the stream to write logs to.
+      * @param outputStreamOptions if {@code CLOSE} stream should be closed in auditFinished()
+      */
+     public XMLLogger(OutputStream outputStream, OutputStreamOptions outputStreamOptions) {
+         writer = new PrintWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
+         closeStream = outputStreamOptions == OutputStreamOptions.CLOSE;
+     }
+ 
+     @Override
+-    protected void finishLocalSetup() throws CheckstyleException {
++    protected void finishLocalSetup() {
+         // No code by default
+     }
+ 
+     @Override
+     public void auditStarted(AuditEvent event) {
+         writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+ 
+         final ResourceBundle compilationProperties =
+             ResourceBundle.getBundle("checkstylecompilation", Locale.ROOT);
+         final String version =
+             compilationProperties.getString("checkstyle.compile.version");
+ 
+         writer.println("<checkstyle version=\"" + version + "\">");
+     }
+ 
+     @Override
+     public void auditFinished(AuditEvent event) {
+         writer.println("</checkstyle>");
+         if (closeStream) {
+             writer.close();
+         }
+         else {
+             writer.flush();
+         }
+     }
+ 
+     @Override
+     public void fileStarted(AuditEvent event) {
+         fileMessages.put(event.getFileName(), new FileMessages());
+     }
+ 
+     @Override
+     public void fileFinished(AuditEvent event) {
+         final String fileName = event.getFileName();
+         final FileMessages messages = fileMessages.get(fileName);
+ 
+         synchronized (writerLock) {
+             writeFileMessages(fileName, messages);
+         }
+ 
+         fileMessages.remove(fileName);
+     }
+ 
+     /**
+      * Prints the file section with all file errors and exceptions.
+      * @param fileName The file name, as should be printed in the opening file tag.
+      * @param messages The file messages.
+      */
+     private void writeFileMessages(String fileName, FileMessages messages) {
+         writeFileOpeningTag(fileName);

@@ -1,0 +1,189 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+index 7f015caca..4865e6c2b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+@@ -1,80 +1,80 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2015 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.checks.blocks;
+ 
+ import org.apache.commons.lang3.ArrayUtils;
+ 
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.Scope;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.AbstractOptionCheck;
+ import com.puppycrawl.tools.checkstyle.utils.CheckUtils;
++import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+-import com.puppycrawl.tools.checkstyle.utils.Utils;
+ 
+ /**
+  * <p>
+  * Checks the placement of right curly braces.
+  * The policy to verify is specified using the {@link RightCurlyOption} class
+  * and defaults to {@link RightCurlyOption#SAME}.
+  * </p>
+  * <p> By default the check will check the following tokens:
+  *  {@link TokenTypes#LITERAL_TRY LITERAL_TRY},
+  *  {@link TokenTypes#LITERAL_CATCH LITERAL_CATCH},
+  *  {@link TokenTypes#LITERAL_FINALLY LITERAL_FINALLY},
+  *  {@link TokenTypes#LITERAL_IF LITERAL_IF},
+  *  {@link TokenTypes#LITERAL_ELSE LITERAL_ELSE}.
+  * Other acceptable tokens are:
+  *  {@link TokenTypes#CLASS_DEF CLASS_DEF},
+  *  {@link TokenTypes#METHOD_DEF METHOD_DEF},
+  *  {@link TokenTypes#CTOR_DEF CTOR_DEF}.
+  *  {@link TokenTypes#LITERAL_FOR LITERAL_FOR}.
+  *  {@link TokenTypes#LITERAL_WHILE LITERAL_WHILE}.
+  *  {@link TokenTypes#LITERAL_DO LITERAL_DO}.
+  *  {@link TokenTypes#STATIC_INIT STATIC_INIT}.
+  *  {@link TokenTypes#INSTANCE_INIT INSTANCE_INIT}.
+  * </p>
+  * <p>
+  * <b>shouldStartLine</b> - does the check need to check
+  * if right curly starts line. Default value is <b>true</b>
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="RightCurly"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check with policy
+  * {@link RightCurlyOption#ALONE} for {@code else} and
+  * {@code {@link TokenTypes#METHOD_DEF METHOD_DEF}}tokens is:
+  * </p>
+  * <pre>
+  * &lt;module name="RightCurly"&gt;
+  *     &lt;property name="tokens" value="LITERAL_ELSE"/&gt;
+  *     &lt;property name="option" value="alone"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author Oliver Burn
+  * @author lkuehne
+  * @author o_sukhodolsky
+  * @author maxvetrenko
+  * @author Andrei Selkin
+@@ -180,101 +180,101 @@ public class RightCurlyCheck extends AbstractOptionCheck<RightCurlyOption> {
+         if (!violation.isEmpty()) {
+             log(rcurly, violation, "}", rcurly.getColumnNo() + 1);
+         }
+     }
+ 
+     /**
+      * Does general validation.
+      * @param details for validation.
+      * @param bracePolicy for placing the right curly brace.
+      * @param shouldStartLine do we need to check if right curly starts line.
+      * @param targetSourceLine line that we need to check if shouldStartLine is true.
+      * @return violation message or empty string
+      * if there was not violation durning validation.
+      */
+     private static String validate(Details details, RightCurlyOption bracePolicy,
+                                    boolean shouldStartLine, String targetSourceLine) {
+         final DetailAST rcurly = details.rcurly;
+         final DetailAST lcurly = details.lcurly;
+         final DetailAST nextToken = details.nextToken;
+         final boolean shouldCheckLastRcurly = details.shouldCheckLastRcurly;
+         String violation = "";
+ 
+         if (bracePolicy == RightCurlyOption.SAME
+                 && !hasLineBreakBefore(rcurly)
+                 && lcurly.getLineNo() != rcurly.getLineNo()) {
+             violation = MSG_KEY_LINE_BREAK_BEFORE;
+         }
+         else if (shouldCheckLastRcurly) {
+             if (rcurly.getLineNo() == nextToken.getLineNo()) {
+                 violation = MSG_KEY_LINE_ALONE;
+             }
+         }
+         else if (bracePolicy == RightCurlyOption.SAME
+                 && rcurly.getLineNo() != nextToken.getLineNo()) {
+             violation = MSG_KEY_LINE_SAME;
+         }
+         else if (bracePolicy == RightCurlyOption.ALONE
+                 && !isAloneOnLine(details)
+                 && !isEmptyBody(lcurly)) {
+             violation = MSG_KEY_LINE_ALONE;
+         }
+         else if (bracePolicy == RightCurlyOption.ALONE_OR_SINGLELINE
+                 && !isAloneOnLine(details)
+                 && !isSingleLineBlock(details)
+                 && !isAnonInnerClassInit(lcurly)
+                 && !isEmptyBody(lcurly)) {
+             violation = MSG_KEY_LINE_ALONE;
+         }
+         else if (shouldStartLine) {
+             final boolean startsLine =
+-                Utils.whitespaceBefore(rcurly.getColumnNo(), targetSourceLine);
++                    CommonUtils.whitespaceBefore(rcurly.getColumnNo(), targetSourceLine);
+ 
+             if (!startsLine && lcurly.getLineNo() != rcurly.getLineNo()) {
+                 violation = MSG_KEY_LINE_NEW;
+             }
+         }
+         return violation;
+     }
+ 
+     /**
+      * Checks whether right curly is alone on a line.
+      * @param details for validation.
+      * @return true if right curly is alone on a line.
+      */
+     private static boolean isAloneOnLine(Details details) {
+         final DetailAST rcurly = details.rcurly;
+         final DetailAST lcurly = details.lcurly;
+         final DetailAST nextToken = details.nextToken;
+         return rcurly.getLineNo() != lcurly.getLineNo()
+             && rcurly.getLineNo() != nextToken.getLineNo();
+     }
+ 
+     /**
+      * Checks whether block has a single-line format.
+      * @param details for validation.
+      * @return true if block has single-line format.
+      */
+     private static boolean isSingleLineBlock(Details details) {
+         final DetailAST rcurly = details.rcurly;
+         final DetailAST lcurly = details.lcurly;
+         final DetailAST nextToken = details.nextToken;
+         return rcurly.getLineNo() == lcurly.getLineNo()
+             && rcurly.getLineNo() != nextToken.getLineNo();
+     }
+ 
+     /**
+      * Checks wthether lcurly is in anonymous inner class initialization.
+      * @param lcurly left curly token.
+      * @return true if lcurly begins anonymous inner class initialization.
+      */
+     private static boolean isAnonInnerClassInit(DetailAST lcurly) {
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(lcurly);
+         return surroundingScope.ordinal() == Scope.ANONINNER.ordinal();
+     }
+ 
+     /**
+      * Collects validation details.
+      * @param ast detail ast.
+      * @return object that contain all details to make a validation.
+      */
+     private static Details getDetails(DetailAST ast) {

@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DetailAST.java",
+  "functionName": "findColumnNo",
+  "functionId": "findColumnNo___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java",
+  "functionStartLine": 304,
+  "functionEndLine": 318,
+  "changeHistory": [
+    "e89837b42ece86ae3a0efc8ba272f550c98cd33c",
+    "e4282ad407f1d025c26b85c0709f2ff418b74f57"
+  ],
+  "changeHistoryShort": {
+    "e89837b42ece86ae3a0efc8ba272f550c98cd33c": "Ymodifierchange",
+    "e4282ad407f1d025c26b85c0709f2ff418b74f57": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e89837b42ece86ae3a0efc8ba272f550c98cd33c": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Issue #1555: Mark methods as static\n\nFixes `MethodMayBeStatic` inspection violation.\n\nDescription:\n\u003eReports any methods which may safely be made static. A method may be static if it is not synchronized, it does not reference any of its class\u0027 non static methods and non static fields and is not overridden in a sub class.\n",
+      "commitDate": 1440942808000,
+      "commitName": "e89837b42ece86ae3a0efc8ba272f550c98cd33c",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440739998000,
+      "commitNameOld": "e4282ad407f1d025c26b85c0709f2ff418b74f57",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 2.35,
+      "commitsBetweenForRepo": 95,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n-    private int findColumnNo(DetailAST ast) {\n+    private static int findColumnNo(DetailAST ast) {\n         int resultNo \u003d -1;\n         DetailAST node \u003d ast;\n         while (node !\u003d null) {\n             // comment node can\u0027t be start of any java statement/definition\n             if (TokenUtils.isCommentType(node.getType())) {\n                 node \u003d node.getNextSibling();\n             }\n             else {\n                 resultNo \u003d node.getColumnNo();\n                 break;\n             }\n         }\n         return resultNo;\n     }\n\\ No newline at end of file\n"
+    },
+    "e4282ad407f1d025c26b85c0709f2ff418b74f57": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1566: ReturnCount violation fixed for DetailAST\n",
+      "commitDate": 1440739998000,
+      "commitName": "e4282ad407f1d025c26b85c0709f2ff418b74f57",
+      "commitAuthor": "Ruslan Diachenko"
+    }
+  }
+}

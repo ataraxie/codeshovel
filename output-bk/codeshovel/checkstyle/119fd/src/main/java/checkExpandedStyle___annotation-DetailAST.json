@@ -1,0 +1,87 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "checkExpandedStyle___annotation-DetailAST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 372,
+  "changeHistory": [
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7",
+    "09a7ca60414ea04b64f45bb190eaa26c767086be",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "8a7713b4f7890e2f6493eacc5806b5eb8cfbe767"
+  ],
+  "changeHistoryShort": {
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86": "Ybodychange",
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "09a7ca60414ea04b64f45bb190eaa26c767086be": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "8a7713b4f7890e2f6493eacc5806b5eb8cfbe767": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove unnecessary this keyword. #1555\n\nFixes `UnnecessaryThis` inspection violations.\n\nDescription:\n\u003eReports on any unnecessary uses of this in the code. Using this to disambiguate a code reference may easily become unnecessary via automatic refactorings, and is discouraged by many coding styles.\n For example:\n ```\n this.a \u003d 3;\n ```\n",
+      "commitDate": 1439131302000,
+      "commitName": "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439088829000,
+      "commitNameOld": "93914f360e7f533c6d8c23ba61e93cb045eaba7d",
+      "commitAuthorOld": "Ruslan Diachenko",
+      "daysBetweenCommits": 0.49,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     private void checkExpandedStyle(final DetailAST annotation) {\n         final int valuePairCount \u003d\n             annotation.getChildCount(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);\n \n         if (valuePairCount \u003d\u003d 0\n             \u0026\u0026 annotation.branchContains(TokenTypes.EXPR)) {\n-            this.log(annotation.getLineNo(), MSG_KEY_ANNOTATION_INCORRECT_STYLE,\n+            log(annotation.getLineNo(), MSG_KEY_ANNOTATION_INCORRECT_STYLE,\n                 ElementStyle.EXPANDED);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd7f9bdf3dc678b70e79481971aebc50db69dc7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, annotation, #512\n",
+      "commitDate": 1421678156000,
+      "commitName": "1bd7f9bdf3dc678b70e79481971aebc50db69dc7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "09a7ca60414ea04b64f45bb190eaa26c767086be": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #537 refactoring: remove copy-paste of messages from UTests\n",
+      "commitDate": 1419808443000,
+      "commitName": "09a7ca60414ea04b64f45bb190eaa26c767086be",
+      "commitAuthor": "ychulovskyy",
+      "commitDateOld": 1419294880000,
+      "commitNameOld": "f0c6c6ad7c33dc8af5a46c6ae2ecdff24f13a70b",
+      "commitAuthorOld": "ychulovskyy",
+      "daysBetweenCommits": 5.94,
+      "commitsBetweenForRepo": 14,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private void checkExpandedStyle(final DetailAST aAnnotation)\n     {\n         final int valuePairCount \u003d\n             aAnnotation.getChildCount(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);\n \n         if (valuePairCount \u003d\u003d 0\n             \u0026\u0026 aAnnotation.branchContains(TokenTypes.EXPR))\n         {\n-            this.log(aAnnotation.getLineNo(), \"annotation.incorrect.style\",\n+            this.log(aAnnotation.getLineNo(), MSG_KEY_ANNOTATION_INCORRECT_STYLE,\n                 ElementStyle.EXPANDED);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "8a7713b4f7890e2f6493eacc5806b5eb8cfbe767": {
+      "type": "Yintroduced",
+      "commitMessage": "record work on patch #2534038 from Travis for new annotation checks. Very good patch as usual from Travis. Shame on me for taking so long to apply it.\n",
+      "commitDate": 1237805379000,
+      "commitName": "8a7713b4f7890e2f6493eacc5806b5eb8cfbe767",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

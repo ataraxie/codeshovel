@@ -1,0 +1,121 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+index b1f78caa5..be1187bf3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+@@ -277,113 +277,113 @@ public final class Main {
+ 
+         }
+         finally {
+             checker.destroy();
+         }
+ 
+         return errorCounter;
+     }
+ 
+     /**
+      * Loads properties from a File.
+      * @param file
+      *        the properties file
+      * @return the properties in file
+      * @throws CheckstyleException
+      *         when could not load properties file
+      */
+     private static Properties loadProperties(File file)
+             throws CheckstyleException {
+         final Properties properties = new Properties();
+ 
+         FileInputStream fis = null;
+         try {
+             fis = new FileInputStream(file);
+             properties.load(fis);
+         }
+         catch (final IOException ex) {
+             throw new CheckstyleException(String.format(
+                     "Unable to load properties from file '%s'.", file.getAbsolutePath()), ex);
+         }
+         finally {
+             Closeables.closeQuietly(fis);
+         }
+ 
+         return properties;
+     }
+ 
+     /**
+      * Creates the audit listener.
+      *
+      * @param format format of the audit listener
+      * @param outputLocation the location of output
+      * @return a fresh new {@code AuditListener}
+      * @exception FileNotFoundException when provided output location is not found
+      */
+     private static AuditListener createListener(String format,
+                                                 String outputLocation)
+             throws FileNotFoundException {
+ 
+         // setup the output stream
+-        OutputStream out;
+-        boolean closeOutputStream;
++        final OutputStream out;
++        final boolean closeOutputStream;
+         if (outputLocation == null) {
+             out = System.out;
+             closeOutputStream = false;
+         }
+         else {
+             out = new FileOutputStream(outputLocation);
+             closeOutputStream = true;
+         }
+ 
+         // setup a listener
+-        AuditListener listener;
++        final AuditListener listener;
+         if (XML_FORMAT_NAME.equals(format)) {
+             listener = new XMLLogger(out, closeOutputStream);
+ 
+         }
+         else if (PLAIN_FORMAT_NAME.equals(format)) {
+             listener = new DefaultLogger(out, closeOutputStream, out, false);
+ 
+         }
+         else {
+             if (closeOutputStream) {
+                 CommonUtils.close(out);
+             }
+             throw new IllegalStateException(String.format(
+                     "Invalid output format. Found '%s' but expected '%s' or '%s'.",
+                     format, PLAIN_FORMAT_NAME, XML_FORMAT_NAME));
+         }
+ 
+         return listener;
+     }
+ 
+     /**
+      * Determines the files to process.
+      * @param filesToProcess
+      *        arguments that were not processed yet but shall be
+      * @return list of files to process
+      */
+     private static List<File> getFilesToProcess(String... filesToProcess) {
+         final List<File> files = Lists.newLinkedList();
+         for (String element : filesToProcess) {
+             files.addAll(listFiles(new File(element)));
+         }
+ 
+         return files;
+     }
+ 
+     /**
+      * Traverses a specified node looking for files to check. Found files are added to a specified
+      * list. Subdirectories are also traversed.
+      * @param node
+      *        the node to process
+      * @return found files
+      */
+     private static List<File> listFiles(File node) {
+         // could be replaced with org.apache.commons.io.FileUtils.list() method
+         // if only we add commons-io library
+         final List<File> result = Lists.newLinkedList();
+ 
+         if (node.canRead()) {
+             if (node.isDirectory()) {
+                 final File[] files = node.listFiles();

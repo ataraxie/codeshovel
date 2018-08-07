@@ -1,0 +1,129 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index c3740152c..3f277dfc9 100755
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -280,122 +280,122 @@ public final class TreeWalker
+         else {
+             tokenToOrdinaryChecks.put(token, check);
+         }
+     }
+ 
+     /**
+      * Validates that check's required tokens are subset of default tokens.
+      * @param check to validate
+      * @throws CheckstyleException when validation of default tokens fails
+      */
+     private static void validateDefaultTokens(Check check) throws CheckstyleException {
+         if (check.getRequiredTokens().length != 0) {
+             final int[] defaultTokens = check.getDefaultTokens();
+             Arrays.sort(defaultTokens);
+             for (final int token : check.getRequiredTokens()) {
+                 if (Arrays.binarySearch(defaultTokens, token) < 0) {
+                     final String message = String.format(Locale.ROOT, "Token \"%s\" from required "
+                             + "tokens was not found in default tokens list in check %s",
+                             token, check.getClass().getName());
+                     throw new CheckstyleException(message);
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Initiates the walk of an AST.
+      * @param ast the root AST
+      * @param contents the contents of the file the AST was generated from.
+      * @param astState state of AST.
+      */
+     private void walk(DetailAST ast, FileContents contents,
+             AstState astState) {
+         notifyBegin(ast, contents, astState);
+ 
+         // empty files are not flagged by javac, will yield ast == null
+         if (ast != null) {
+             processIter(ast, astState);
+         }
+         notifyEnd(ast, astState);
+     }
+ 
+     /**
+      * Notify checks that we are about to begin walking a tree.
+      * @param rootAST the root of the tree.
+      * @param contents the contents of the file the AST was generated from.
+      * @param astState state of AST.
+      */
+     private void notifyBegin(DetailAST rootAST, FileContents contents,
+             AstState astState) {
+-        Set<Check> checks;
++        final Set<Check> checks;
+ 
+         if (astState == AstState.WITH_COMMENTS) {
+             checks = commentChecks;
+         }
+         else {
+             checks = ordinaryChecks;
+         }
+ 
+         for (Check check : checks) {
+             check.setFileContents(contents);
+             check.beginTree(rootAST);
+         }
+     }
+ 
+     /**
+      * Notify checks that we have finished walking a tree.
+      * @param rootAST the root of the tree.
+      * @param astState state of AST.
+      */
+     private void notifyEnd(DetailAST rootAST, AstState astState) {
+-        Set<Check> checks;
++        final Set<Check> checks;
+ 
+         if (astState == AstState.WITH_COMMENTS) {
+             checks = commentChecks;
+         }
+         else {
+             checks = ordinaryChecks;
+         }
+ 
+         for (Check check : checks) {
+             check.finishTree(rootAST);
+         }
+     }
+ 
+     /**
+      * Notify checks that visiting a node.
+      * @param ast the node to notify for.
+      * @param astState state of AST.
+      */
+     private void notifyVisit(DetailAST ast, AstState astState) {
+         final Collection<Check> visitors = getListOfChecks(ast, astState);
+ 
+         if (visitors != null) {
+             for (Check check : visitors) {
+                 check.visitToken(ast);
+             }
+         }
+     }
+ 
+     /**
+      * Notify checks that leaving a node.
+      * @param ast
+      *        the node to notify for
+      * @param astState state of AST.
+      */
+     private void notifyLeave(DetailAST ast, AstState astState) {
+         final Collection<Check> visitors = getListOfChecks(ast, astState);
+ 
+         if (visitors != null) {
+             for (Check check : visitors) {
+                 check.leaveToken(ast);
+             }
+         }
+     }
+ 
+     /**
+      * Method returns list of checks
+      *
+      * @param ast
+      *            the node to notify for
+      * @param astState

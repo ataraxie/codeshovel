@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "ImmutableMap.java",
+  "functionName": "copyOf",
+  "functionId": "copyOf___map-Map__? extends K,? extends V__",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/ImmutableMap.java",
+  "functionStartLine": 374,
+  "functionEndLine": 383,
+  "changeHistory": [
+    "bae9a59c562acacd1be81c4421fb2c96b6efcc18",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "bae9a59c562acacd1be81c4421fb2c96b6efcc18": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "bae9a59c562acacd1be81c4421fb2c96b6efcc18": {
+      "type": "Ybodychange",
+      "commitMessage": "Make documentation on iteration order more explicit.\n\nImmutableCollection specified that each construction pathway would specify how it does ordering, but we didn\u0027t really follow through on that.  Now, we\n\n- add more explicit documentation to the main construction pathways for the main immutable collections\n- specify in ImmutableCollection that it\u0027s usually insertion order\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d161237788\n",
+      "commitDate": 1499696868000,
+      "commitName": "bae9a59c562acacd1be81c4421fb2c96b6efcc18",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1492741671000,
+      "commitNameOld": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthorOld": "zhenghua",
+      "daysBetweenCommits": 80.5,
+      "commitsBetweenForRepo": 150,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,10 @@\n   public static \u003cK, V\u003e ImmutableMap\u003cK, V\u003e copyOf(Map\u003c? extends K, ? extends V\u003e map) {\n     if ((map instanceof ImmutableMap) \u0026\u0026 !(map instanceof SortedMap)) {\n-      // TODO(lowasser): Make ImmutableMap.copyOf(immutableBiMap) call copyOf()\n-      // on the ImmutableMap delegate(), rather than the bimap itself\n-\n       @SuppressWarnings(\"unchecked\") // safe since map is not writable\n       ImmutableMap\u003cK, V\u003e kvMap \u003d (ImmutableMap\u003cK, V\u003e) map;\n       if (!kvMap.isPartialView()) {\n         return kvMap;\n       }\n     }\n     return copyOf(map.entrySet());\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

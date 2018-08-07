@@ -1,0 +1,114 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index 015a384f3..e87139594 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -84,107 +84,108 @@ public class SuppressionCommentFilter
+ 
+     /** Whether to look in comments of the C type. */
+     private boolean checkC = true;
+ 
+     /** Whether to look in comments of the C++ type. */
+     // -@cs[AbbreviationAsWordInName] we can not change it as,
+     // Check property is a part of API (used in configurations)
+     private boolean checkCPP = true;
+ 
+     /** Parsed comment regexp that turns checkstyle reporting off. */
+     private Pattern offCommentFormat = Pattern.compile(DEFAULT_OFF_FORMAT);
+ 
+     /** Parsed comment regexp that turns checkstyle reporting on. */
+     private Pattern onCommentFormat = Pattern.compile(DEFAULT_ON_FORMAT);
+ 
+     /** The check format to suppress. */
+     private String checkFormat = DEFAULT_CHECK_FORMAT;
+ 
+     /** The message format to suppress. */
+     private String messageFormat;
+ 
+     /**
+      * References the current FileContents for this filter.
+      * Since this is a weak reference to the FileContents, the FileContents
+      * can be reclaimed as soon as the strong references in TreeWalker
+      * are reassigned to the next FileContents, at which time filtering for
+      * the current FileContents is finished.
+      */
+     private WeakReference<FileContents> fileContentsReference = new WeakReference<>(null);
+ 
+     /**
+      * Set the format for a comment that turns off reporting.
+      * @param pattern a pattern.
+      */
+     public final void setOffCommentFormat(Pattern pattern) {
+         offCommentFormat = pattern;
+     }
+ 
+     /**
+      * Set the format for a comment that turns on reporting.
+      * @param pattern a pattern.
+      */
+     public final void setOnCommentFormat(Pattern pattern) {
+         onCommentFormat = pattern;
+     }
+ 
+     /**
+      * Returns FileContents for this filter.
+      * @return the FileContents for this filter.
+      */
+-    public FileContents getFileContents() {
++    private FileContents getFileContents() {
+         return fileContentsReference.get();
+     }
+ 
+     /**
+      * Set the FileContents for this filter.
+      * @param fileContents the FileContents for this filter.
++     * @noinspection WeakerAccess
+      */
+     public void setFileContents(FileContents fileContents) {
+         fileContentsReference = new WeakReference<>(fileContents);
+     }
+ 
+     /**
+      * Set the format for a check.
+      * @param format a {@code String} value
+      */
+     public final void setCheckFormat(String format) {
+         checkFormat = format;
+     }
+ 
+     /**
+      * Set the format for a message.
+      * @param format a {@code String} value
+      */
+     public void setMessageFormat(String format) {
+         messageFormat = format;
+     }
+ 
+     /**
+      * Set whether to look in C++ comments.
+      * @param checkCpp {@code true} if C++ comments are checked.
+      */
+     // -@cs[AbbreviationAsWordInName] We can not change it as,
+     // check's property is a part of API (used in configurations).
+     public void setCheckCPP(boolean checkCpp) {
+         checkCPP = checkCpp;
+     }
+ 
+     /**
+      * Set whether to look in C comments.
+      * @param checkC {@code true} if C comments are checked.
+      */
+     public void setCheckC(boolean checkC) {
+         this.checkC = checkC;
+     }
+ 
+     @Override
+     public boolean accept(TreeWalkerAuditEvent event) {
+         boolean accepted = true;
+ 
+         if (event.getLocalizedMessage() != null) {
+             // Lazy update. If the first event for the current file, update file
+             // contents and tag suppressions
+             final FileContents currentContents = event.getFileContents();
+ 
+             if (getFileContents() != currentContents) {
+                 setFileContents(currentContents);

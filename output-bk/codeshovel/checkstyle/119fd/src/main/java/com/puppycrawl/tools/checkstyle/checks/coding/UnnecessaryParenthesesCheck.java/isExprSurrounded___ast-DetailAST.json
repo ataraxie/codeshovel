@@ -1,0 +1,117 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "UnnecessaryParenthesesCheck.java",
+  "functionName": "isExprSurrounded",
+  "functionId": "isExprSurrounded___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/UnnecessaryParenthesesCheck.java",
+  "functionStartLine": 300,
+  "functionEndLine": 302,
+  "changeHistory": [
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "b433c987fa86905ffa686d6b45180508d759d450",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "8e5c074c4403492df21fce8ca2c86eddd7dff9d2"
+  ],
+  "changeHistoryShort": {
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "b433c987fa86905ffa686d6b45180508d759d450": "Ymultichange(Yrename,Ybodychange)",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "8e5c074c4403492df21fce8ca2c86eddd7dff9d2": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436222773000,
+      "commitNameOld": "b433c987fa86905ffa686d6b45180508d759d450",
+      "commitAuthorOld": "Baratali Izmailov",
+      "daysBetweenCommits": 11.25,
+      "commitsBetweenForRepo": 114,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n-    private boolean isExprSurrounded(DetailAST ast) {\n+    private static boolean isExprSurrounded(DetailAST ast) {\n         return ast.getFirstChild().getType() \u003d\u003d TokenTypes.LPAREN;\n     }\n\\ No newline at end of file\n"
+    },
+    "b433c987fa86905ffa686d6b45180508d759d450": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "Issue #1293: Refactoring of UnnecessaryParanthesesCheck. UT coverage was increased up to 100%.\n",
+      "commitDate": 1436222773000,
+      "commitName": "b433c987fa86905ffa686d6b45180508d759d450",
+      "commitAuthor": "Baratali Izmailov",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437367000,
+      "commitNameOld": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 18.36,
+      "commitsBetweenForRepo": 91,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     private boolean exprSurrounded(DetailAST ast)\n     {\n         if (ast.getType() !\u003d TokenTypes.EXPR) {\n             throw new IllegalArgumentException(\"Not an expression node.\");\n         }\n         boolean surrounded \u003d false;\n         if (ast.getChildCount() \u003e\u003d MIN_CHILDREN_FOR_MATCH) {\n             final AST n1 \u003d ast.getFirstChild();\n             final AST nn \u003d ast.getLastChild();\n \n-            surrounded \u003d (n1.getType() \u003d\u003d TokenTypes.LPAREN)\n-                \u0026\u0026 (nn.getType() \u003d\u003d TokenTypes.RPAREN);\n+            surrounded \u003d n1.getType() \u003d\u003d TokenTypes.LPAREN\n+                \u0026\u0026 nn.getType() \u003d\u003d TokenTypes.RPAREN;\n         }\n         return surrounded;\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1130786628000,
+      "commitNameOld": "1aee9d55cc5bd8cca011e17369f6e370efcc85bb",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 248.34,
+      "commitsBetweenForRepo": 40,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n     private boolean exprSurrounded(DetailAST aAST)\n     {\n         if (aAST.getType() !\u003d TokenTypes.EXPR) {\n             throw new IllegalArgumentException(\"Not an expression node.\");\n         }\n         boolean surrounded \u003d false;\n         if (aAST.getChildCount() \u003e\u003d MIN_CHILDREN_FOR_MATCH) {\n             final AST n1 \u003d aAST.getFirstChild();\n             final AST nn \u003d aAST.getLastChild();\n \n-            surrounded \u003d n1.getType() \u003d\u003d TokenTypes.LPAREN\n-                \u0026\u0026 nn.getType() \u003d\u003d TokenTypes.RPAREN;\n+            surrounded \u003d (n1.getType() \u003d\u003d TokenTypes.LPAREN)\n+                \u0026\u0026 (nn.getType() \u003d\u003d TokenTypes.RPAREN);\n         }\n         return surrounded;\n     }\n\\ No newline at end of file\n"
+    },
+    "8e5c074c4403492df21fce8ca2c86eddd7dff9d2": {
+      "type": "Yintroduced",
+      "commitMessage": "UnnecessaryParentheses check (patch from Eric Roe)\n",
+      "commitDate": 1078814441000,
+      "commitName": "8e5c074c4403492df21fce8ca2c86eddd7dff9d2",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

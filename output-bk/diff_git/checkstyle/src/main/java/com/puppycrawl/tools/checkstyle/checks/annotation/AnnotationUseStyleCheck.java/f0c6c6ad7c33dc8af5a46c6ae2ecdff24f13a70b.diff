@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+index f086f35b8..753747929 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+@@ -369,100 +369,102 @@ public final class AnnotationUseStyleCheck extends Check
+      * logs a trailing array comma violation if one exists.
+      *
+      * @param aAST the array init
+      * {@link TokenTypes#ANNOTATION_ARRAY_INIT ANNOTATION_ARRAY_INIT}.
+      */
+     private void logCommaViolation(final DetailAST aAST)
+     {
+         final DetailAST rCurly = aAST.findFirstToken(TokenTypes.RCURLY);
+ 
+         //comma can be null if array is empty
+         final DetailAST comma = rCurly.getPreviousSibling();
+ 
+         if (TrailingArrayComma.ALWAYS.equals(this.mComma)
+             && (comma == null || comma.getType() != TokenTypes.COMMA))
+         {
+             this.log(rCurly.getLineNo(),
+                 rCurly.getColumnNo(), "annotation.trailing.comma.missing");
+         }
+         else if (TrailingArrayComma.NEVER.equals(this.mComma)
+             && comma != null && comma.getType() == TokenTypes.COMMA)
+         {
+             this.log(comma.getLineNo(),
+                 comma.getColumnNo(), "annotation.trailing.comma.present");
+         }
+     }
+ 
+     /**
+      * Checks to see if the closing parenthesis are present if required or
+      * prohibited.
+      *
+      * @param aAST the annotation token
+      */
+     private void checkCheckClosingParens(final DetailAST aAST)
+     {
+         if (ClosingParens.IGNORE.equals(this.mParens)
+             || this.mParens == null)
+         {
+             return;
+         }
+ 
+         final DetailAST paren = aAST.getLastChild();
+         final boolean parenExists = paren.getType() == TokenTypes.RPAREN;
+ 
+         if (ClosingParens.ALWAYS.equals(this.mParens)
+             && !parenExists)
+         {
+             this.log(aAST.getLineNo(), "annotation.parens.missing");
+         }
+         else if (ClosingParens.NEVER.equals(this.mParens)
+             && !aAST.branchContains(TokenTypes.EXPR)
++            && !aAST.branchContains(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR)
++            && !aAST.branchContains(TokenTypes.ANNOTATION_ARRAY_INIT)
+             && parenExists)
+         {
+             this.log(aAST.getLineNo(), "annotation.parens.present");
+         }
+     }
+ 
+     /**
+      * Defines the styles for defining elements in an annotation.
+      * @author Travis Schneeberger
+      */
+     public static enum ElementStyle {
+ 
+         /**
+          * expanded example
+          *
+          * <pre>@SuppressWarnings(value={"unchecked","unused",})</pre>.
+          */
+         EXPANDED,
+ 
+         /**
+          * compact example
+          *
+          * <pre>@SuppressWarnings({"unchecked","unused",})</pre>
+          * <br>or<br>
+          * <pre>@SuppressWarnings("unchecked")</pre>.
+          */
+         COMPACT,
+ 
+         /**
+          * compact example.]
+          *
+          * <pre>@SuppressWarnings("unchecked")</pre>.
+          */
+         COMPACT_NO_ARRAY,
+ 
+         /**
+          * mixed styles.
+          */
+         IGNORE,
+     }
+ 
+     /**
+      * Defines the two styles for defining
+      * elements in an annotation.
+      *
+      * @author Travis Schneeberger
+      */
+     public static enum TrailingArrayComma {
+ 
+         /**

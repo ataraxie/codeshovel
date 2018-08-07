@@ -1,0 +1,152 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ArrayTrailingCommaCheck.java",
+  "functionName": "visitToken",
+  "functionId": "visitToken___arrayInit-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ArrayTrailingCommaCheck.java",
+  "functionStartLine": 116,
+  "functionEndLine": 127,
+  "changeHistory": [
+    "0c382fd7b1fc9819f38bdd1c2cf9c50c76e0b725",
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "27149f3504a2f350b74f456a9bffbae76a460060",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "9920857810ecc9efdbca19e2749b75abc0cbbf14",
+    "aa8763be0ea52d830e27a3a4e218e7a36d1c0649",
+    "55512ae033f68926c415ae8a6ff3a9b74849a646"
+  ],
+  "changeHistoryShort": {
+    "0c382fd7b1fc9819f38bdd1c2cf9c50c76e0b725": "Ybodychange",
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "27149f3504a2f350b74f456a9bffbae76a460060": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "9920857810ecc9efdbca19e2749b75abc0cbbf14": "Yfilerename",
+    "aa8763be0ea52d830e27a3a4e218e7a36d1c0649": "Ybodychange",
+    "55512ae033f68926c415ae8a6ff3a9b74849a646": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0c382fd7b1fc9819f38bdd1c2cf9c50c76e0b725": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1509: Extra comma is required in multi-line array value\n",
+      "commitDate": 1492893303000,
+      "commitName": "0c382fd7b1fc9819f38bdd1c2cf9c50c76e0b725",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 85.25,
+      "commitsBetweenForRepo": 297,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,12 @@\n     public void visitToken(DetailAST arrayInit) {\n         final DetailAST rcurly \u003d arrayInit.findFirstToken(TokenTypes.RCURLY);\n+        final DetailAST previousSibling \u003d rcurly.getPreviousSibling();\n \n-        // if curlies are on the same line\n-        // or array is empty then check nothing\n         if (arrayInit.getLineNo() !\u003d rcurly.getLineNo()\n-            \u0026\u0026 arrayInit.getChildCount() !\u003d 1) {\n-            final DetailAST prev \u003d rcurly.getPreviousSibling();\n-            if (prev.getType() !\u003d TokenTypes.COMMA) {\n-                log(rcurly.getLineNo(), MSG_KEY);\n-            }\n+                \u0026\u0026 arrayInit.getChildCount() !\u003d 1\n+                \u0026\u0026 rcurly.getLineNo() !\u003d previousSibling.getLineNo()\n+                \u0026\u0026 arrayInit.getLineNo() !\u003d previousSibling.getLineNo()\n+                \u0026\u0026 previousSibling.getType() !\u003d TokenTypes.COMMA) {\n+            log(rcurly.getLineNo(), MSG_KEY);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3143: forbid empty return statements and fixed violations",
+      "commitDate": 1464356569000,
+      "commitName": "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1454680863000,
+      "commitNameOld": "cf96dd9adcf0c3c8f8f05a9ffdcb765cafe17479",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 111.99,
+      "commitsBetweenForRepo": 276,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,13 @@\n     public void visitToken(DetailAST arrayInit) {\n         final DetailAST rcurly \u003d arrayInit.findFirstToken(TokenTypes.RCURLY);\n \n         // if curlies are on the same line\n         // or array is empty then check nothing\n-        if (arrayInit.getLineNo() \u003d\u003d rcurly.getLineNo()\n-            || arrayInit.getChildCount() \u003d\u003d 1) {\n-            return;\n-        }\n-\n-        final DetailAST prev \u003d rcurly.getPreviousSibling();\n-        if (prev.getType() !\u003d TokenTypes.COMMA) {\n-            log(rcurly.getLineNo(), MSG_KEY);\n+        if (arrayInit.getLineNo() !\u003d rcurly.getLineNo()\n+            \u0026\u0026 arrayInit.getChildCount() !\u003d 1) {\n+            final DetailAST prev \u003d rcurly.getPreviousSibling();\n+            if (prev.getType() !\u003d TokenTypes.COMMA) {\n+                log(rcurly.getLineNo(), MSG_KEY);\n+            }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424437367000,
+      "commitNameOld": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 18.36,
+      "commitsBetweenForRepo": 91,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     public void visitToken(DetailAST arrayInit)\n     {\n         final DetailAST rcurly \u003d arrayInit.findFirstToken(TokenTypes.RCURLY);\n \n         // if curlys are on the same line\n         // or array is empty then check nothing\n-        if ((arrayInit.getLineNo() \u003d\u003d rcurly.getLineNo())\n-            || (arrayInit.getChildCount() \u003d\u003d 1))\n+        if (arrayInit.getLineNo() \u003d\u003d rcurly.getLineNo()\n+            || arrayInit.getChildCount() \u003d\u003d 1)\n         {\n             return;\n         }\n \n         final DetailAST prev \u003d rcurly.getPreviousSibling();\n         if (prev.getType() !\u003d TokenTypes.COMMA) {\n             log(rcurly.getLineNo(), MSG_KEY);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "27149f3504a2f350b74f456a9bffbae76a460060": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactored UTs, coding package, issue #537\n",
+      "commitDate": 1424437367000,
+      "commitName": "27149f3504a2f350b74f456a9bffbae76a460060",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 1.66,
+      "commitsBetweenForRepo": 16,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     public void visitToken(DetailAST arrayInit)\n     {\n         final DetailAST rcurly \u003d arrayInit.findFirstToken(TokenTypes.RCURLY);\n \n         // if curlys are on the same line\n         // or array is empty then check nothing\n         if ((arrayInit.getLineNo() \u003d\u003d rcurly.getLineNo())\n             || (arrayInit.getChildCount() \u003d\u003d 1))\n         {\n             return;\n         }\n \n         final DetailAST prev \u003d rcurly.getPreviousSibling();\n         if (prev.getType() !\u003d TokenTypes.COMMA) {\n-            log(rcurly.getLineNo(), \"array.trailing.comma\");\n+            log(rcurly.getLineNo(), MSG_KEY);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "9920857810ecc9efdbca19e2749b75abc0cbbf14": {
+      "type": "Yfilerename",
+      "commitMessage": "Refactored the Coding checks\n",
+      "commitDate": 1055680780000,
+      "commitName": "9920857810ecc9efdbca19e2749b75abc0cbbf14",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1055612861000,
+      "commitNameOld": "e464c231eccec72f964131d9aeb5e49982c4b3bb",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 0.79,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "aa8763be0ea52d830e27a3a4e218e7a36d1c0649": {
+      "type": "Ybodychange",
+      "commitMessage": "cosmetics\n",
+      "commitDate": 1054181395000,
+      "commitName": "aa8763be0ea52d830e27a3a4e218e7a36d1c0649",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1054179044000,
+      "commitNameOld": "55512ae033f68926c415ae8a6ff3a9b74849a646",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     public void visitToken(DetailAST aArrayInit)\n     {\n-        DetailAST rcurly \u003d aArrayInit.findFirstToken(TokenTypes.RCURLY);\n+        final DetailAST rcurly \u003d aArrayInit.findFirstToken(TokenTypes.RCURLY);\n \n         // if curlys are on the same line\n         // or array is empty then check nothing\n-        if (aArrayInit.getLineNo() \u003d\u003d rcurly.getLineNo()\n-            || aArrayInit.getChildCount() \u003d\u003d 1)\n+        if ((aArrayInit.getLineNo() \u003d\u003d rcurly.getLineNo())\n+            || (aArrayInit.getChildCount() \u003d\u003d 1))\n         {\n             return;\n         }\n \n-        DetailAST prev \u003d rcurly.getPreviousSibling();\n+        final DetailAST prev \u003d rcurly.getPreviousSibling();\n         if (prev.getType() !\u003d TokenTypes.COMMA) {\n             log(rcurly.getLineNo(), \"array.trailing.comma\");\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "55512ae033f68926c415ae8a6ff3a9b74849a646": {
+      "type": "Yintroduced",
+      "commitMessage": "Added check for trailing comma in array initialization. (module ArrayTrailingComma, request 696301)\n",
+      "commitDate": 1054179044000,
+      "commitName": "55512ae033f68926c415ae8a6ff3a9b74849a646",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/SeverityLevelCounter.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/SeverityLevelCounter.java
+index 248fc6542..8c48cd4b7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/SeverityLevelCounter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/SeverityLevelCounter.java
+@@ -21,70 +21,73 @@ package com.puppycrawl.tools.checkstyle.api;
+ 
+ /**
+  * An audit listener that counts how many {@link AuditEvent AuditEvents}
+  * of a given severity have been generated.
+  *
+  * @author lkuehne
+  */
+ public final class SeverityLevelCounter implements AuditListener {
+     /** The severity level to watch out for. */
+     private SeverityLevel level;
+ 
+     /** Keeps track of the number of counted events. */
+     private int count;
+ 
+     /**
+      * Creates a new counter.
+      * @param level the severity level events need to have, must be non-null.
+      */
+     public SeverityLevelCounter(SeverityLevel level) {
+         if (level == null) {
+             throw new IllegalArgumentException();
+         }
+         this.level = level;
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void addError(AuditEvent evt) {
+         if (level == evt.getSeverityLevel()) {
+             count++;
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void addException(AuditEvent evt, Throwable throwable) {
+         if (SeverityLevel.ERROR == level) {
+             count++;
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void auditStarted(AuditEvent evt) {
+         count = 0;
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void fileStarted(AuditEvent evt) {
++        // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void auditFinished(AuditEvent evt) {
++        // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void fileFinished(AuditEvent evt) {
++        // No code by default, should be overridden only by demand at subclasses
+     }
+ 
+     /**
+      * Returns the number of counted events since audit started.
+      * @return the number of counted events since audit started.
+      */
+     public int getCount() {
+         return count;
+     }
+ }

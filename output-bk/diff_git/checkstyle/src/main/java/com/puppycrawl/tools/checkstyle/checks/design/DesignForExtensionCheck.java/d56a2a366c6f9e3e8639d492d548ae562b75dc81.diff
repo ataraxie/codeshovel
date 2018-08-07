@@ -1,0 +1,119 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java
+index 052c82ee6..4e8cef65b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java
+@@ -19,108 +19,113 @@
+ 
+ package com.puppycrawl.tools.checkstyle.checks.design;
+ 
+ import com.puppycrawl.tools.checkstyle.ScopeUtils;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.Scope;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Checks that classes are designed for inheritance.
+  *
+  * <p>
+  * More specifically, it enforces a programming style
+  * where superclasses provide empty "hooks" that can be
+  * implemented by subclasses.
+  * </p>
+  *
+  * <p>
+  * The exact rule is that nonprivate, nonstatic methods in
+  * nonfinal classes (or classes that do not
+  * only have private constructors) must either be
+  * <ul>
+  * <li>abstract or</li>
+  * <li>final or</li>
+  * <li>have an empty implementation</li>
+  * </ul>
+  *
+  *
+  * <p>
+  * This protects superclasses against being broken by
+  * subclasses. The downside is that subclasses are limited
+  * in their flexibility, in particular they cannot prevent
+  * execution of code in the superclass, but that also
+  * means that subclasses can't forget to call their super
+  * method.
+  * </p>
+  *
+  * @author lkuehne
+  */
+ public class DesignForExtensionCheck extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "design.forExtension";
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[] {TokenTypes.METHOD_DEF};
++        return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.METHOD_DEF};
+     }
+ 
++    @Override
++    public int[] getRequiredTokens() {
++        return getAcceptableTokens();
++    }
++
+     @Override
+     public void visitToken(DetailAST ast) {
+         // nothing to do for Interfaces
+         if (ScopeUtils.inInterfaceOrAnnotationBlock(ast)) {
+             return;
+         }
+         if (isPrivateOrFinalOrAbstract(ast)) {
+             return;
+         }
+ 
+         // method is ok if containing class is not visible in API and
+         // cannot be extended by 3rd parties (bug #884035)
+         if (!ScopeUtils.getSurroundingScope(ast).isIn(Scope.PROTECTED)) {
+             return;
+         }
+ 
+         // method is ok if it is implementation can verified to be empty
+         // Note: native methods don't have impl in java code, so
+         // implementation can be null even if method not abstract
+         final DetailAST implementation = ast.findFirstToken(TokenTypes.SLIST);
+         if (implementation != null
+             && implementation.getFirstChild().getType() == TokenTypes.RCURLY) {
+             return;
+         }
+ 
+         // check if the containing class can be subclassed
+         final DetailAST classDef = findContainingClass(ast);
+         final DetailAST classMods =
+             classDef.findFirstToken(TokenTypes.MODIFIERS);
+         if (classDef.getType() == TokenTypes.ENUM_DEF
+             || classMods.branchContains(TokenTypes.FINAL)) {
+             return;
+         }
+ 
+         if (hasDefaultOrExplNonPrivateCtor(classDef)) {
+             final String name = ast.findFirstToken(TokenTypes.IDENT).getText();
+             log(ast.getLineNo(), ast.getColumnNo(),
+                 MSG_KEY, name);
+         }
+     }
+ 
+     /**
+      * check for modifiers
+      * @param ast modifier ast
+      * @return tru in modifier is in checked ones
+      */
+     private static boolean isPrivateOrFinalOrAbstract(DetailAST ast) {
+         // method is ok if it is private or abstract or final
+         final DetailAST modifiers = ast.findFirstToken(TokenTypes.MODIFIERS);
+         return modifiers.branchContains(TokenTypes.LITERAL_PRIVATE)

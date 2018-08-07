@@ -1,0 +1,131 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleVariableDeclarationsCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleVariableDeclarationsCheck.java
+index efcd89319..b0d14a8a4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleVariableDeclarationsCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleVariableDeclarationsCheck.java
+@@ -9,117 +9,117 @@
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.coding;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
+ 
+ /**
+  * <p>
+  * Checks that each variable declaration is in its own statement
+  * and on its own line.
+  * </p>
+  * <p>
+  * Rationale: <a
+  * href="http://java.sun.com/docs/codeconv/html/CodeConventions.doc5.html#2991">
+  * the SUN Code conventions chapter 6.1</a> recommends that
+  * declarations should be one per line.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="MultipleVariableDeclarations"/&gt;
+  * </pre>
+  * @author o_sukhodolsky
+  */
+ public class MultipleVariableDeclarationsCheck extends Check
+ {
+     /** Creates new instance of the check. */
+     public MultipleVariableDeclarationsCheck()
+     {
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     @Override
+-    public void visitToken(DetailAST aAST)
++    public void visitToken(DetailAST ast)
+     {
+-        DetailAST nextNode = aAST.getNextSibling();
++        DetailAST nextNode = ast.getNextSibling();
+         final boolean isCommaSeparated =
+             ((nextNode != null) && (nextNode.getType() == TokenTypes.COMMA));
+ 
+         if (nextNode == null) {
+             // no next statement - no check
+             return;
+         }
+ 
+         if ((nextNode.getType() == TokenTypes.COMMA)
+             || (nextNode.getType() == TokenTypes.SEMI))
+         {
+             nextNode = nextNode.getNextSibling();
+         }
+ 
+         if ((nextNode != null)
+             && (nextNode.getType() == TokenTypes.VARIABLE_DEF))
+         {
+-            final DetailAST firstNode = CheckUtils.getFirstNode(aAST);
++            final DetailAST firstNode = CheckUtils.getFirstNode(ast);
+             if (isCommaSeparated) {
+                 // Check if the multiple variable declarations are in a
+                 // for loop initializer. If they are, then no warning
+                 // should be displayed. Declaring multiple variables in
+                 // a for loop initializer is a good way to minimize
+                 // variable scope. Refer Feature Request Id - 2895985
+                 // for more details
+-                if (aAST.getParent().getType() != TokenTypes.FOR_INIT) {
++                if (ast.getParent().getType() != TokenTypes.FOR_INIT) {
+                     log(firstNode, "multiple.variable.declarations.comma");
+                 }
+                 return;
+             }
+ 
+-            final DetailAST lastNode = getLastNode(aAST);
++            final DetailAST lastNode = getLastNode(ast);
+             final DetailAST firstNextNode = CheckUtils.getFirstNode(nextNode);
+ 
+             if (firstNextNode.getLineNo() == lastNode.getLineNo()) {
+                 log(firstNode, "multiple.variable.declarations");
+             }
+         }
+ 
+     }
+ 
+     /**
+      * Finds sub-node for given node maximum (line, column) pair.
+-     * @param aNode the root of tree for search.
++     * @param node the root of tree for search.
+      * @return sub-node with maximum (line, column) pair.
+      */
+-    private static DetailAST getLastNode(final DetailAST aNode)
++    private static DetailAST getLastNode(final DetailAST node)
+     {
+-        DetailAST currentNode = aNode;
+-        DetailAST child = aNode.getFirstChild();
++        DetailAST currentNode = node;
++        DetailAST child = node.getFirstChild();
+         while (child != null) {
+             final DetailAST newNode = getLastNode(child);
+             if ((newNode.getLineNo() > currentNode.getLineNo())
+                 || ((newNode.getLineNo() == currentNode.getLineNo())
+                     && (newNode.getColumnNo() > currentNode.getColumnNo())))
+             {
+                 currentNode = newNode;
+             }
+             child = child.getNextSibling();
+         }
+ 
+         return currentNode;
+     }
+ }

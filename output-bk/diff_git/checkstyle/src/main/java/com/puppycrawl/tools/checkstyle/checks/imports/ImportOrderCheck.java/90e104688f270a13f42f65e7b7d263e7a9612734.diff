@@ -1,0 +1,137 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+index 885185955..345b29e92 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+@@ -240,122 +240,122 @@ public class ImportOrderCheck
+     public void setSortStaticImportsAlphabetically(boolean sortAlphabetically) {
+         this.sortStaticImportsAlphabetically = sortAlphabetically;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         lastGroup = Integer.MIN_VALUE;
+         lastImportLine = Integer.MIN_VALUE;
+         lastImport = "";
+         lastImportStatic = false;
+         beforeFirstImport = true;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final FullIdent ident;
+         final boolean isStatic;
+ 
+         if (ast.getType() == TokenTypes.IMPORT) {
+             ident = FullIdent.createFullIdentBelow(ast);
+             isStatic = false;
+         }
+         else {
+             ident = FullIdent.createFullIdent(ast.getFirstChild()
+                     .getNextSibling());
+             isStatic = true;
+         }
+ 
+         final boolean isStaticAndNotLastImport = isStatic && !lastImportStatic;
+         final boolean isNotStaticAndLastImport = !isStatic && lastImportStatic;
+         final ImportOrderOption abstractOption = getAbstractOption();
+         switch (abstractOption) {
+             case TOP:
+                 if (isNotStaticAndLastImport) {
+                     lastGroup = Integer.MIN_VALUE;
+                     lastImport = "";
+                 }
+                 doVisitToken(ident, isStatic, isStaticAndNotLastImport);
+                 break;
+ 
+-            case ABOVE:
+-                // previous non-static but current is static
+-                doVisitToken(ident, isStatic, isStaticAndNotLastImport);
+-                break;
+-
+-            case INFLOW:
+-                // previous argument is useless here
+-                doVisitToken(ident, isStatic, true);
+-                break;
+-
+             case BOTTOM:
+                 if (isStaticAndNotLastImport) {
+                     lastGroup = Integer.MIN_VALUE;
+                     lastImport = "";
+                 }
+                 doVisitToken(ident, isStatic, isNotStaticAndLastImport);
+                 break;
+ 
++            case ABOVE:
++                // previous non-static but current is static
++                doVisitToken(ident, isStatic, isStaticAndNotLastImport);
++                break;
++
+             case UNDER:
+                 doVisitToken(ident, isStatic, isNotStaticAndLastImport);
+                 break;
+ 
++            case INFLOW:
++                // previous argument is useless here
++                doVisitToken(ident, isStatic, true);
++                break;
++
+             default:
+                 throw new IllegalStateException(
+                         "Unexpected option for static imports: " + abstractOption.toString());
+ 
+         }
+ 
+         lastImportLine = ast.findFirstToken(TokenTypes.SEMI).getLineNo();
+         lastImportStatic = isStatic;
+         beforeFirstImport = false;
+     }
+ 
+     /**
+      * Shares processing...
+      *
+      * @param ident the import to process.
+      * @param isStatic whether the token is static or not.
+      * @param previous previous non-static but current is static (above), or
+      *                  previous static but current is non-static (under).
+      */
+     private void doVisitToken(FullIdent ident, boolean isStatic,
+             boolean previous) {
+         final String name = ident.getText();
+         final int groupIdx = getGroupNumber(name);
+         final int line = ident.getLineNo();
+ 
+         if (groupIdx > lastGroup) {
+             // This check should be made more robust to handle
+             // comments and imports that span more than one line.
+             if (!beforeFirstImport && separated && line - lastImportLine < 2) {
+                 log(line, MSG_SEPARATION, name);
+             }
+         }
+         else if (groupIdx == lastGroup || sortStaticImportsAlphabetically
+                  && isAlphabeticallySortableStaticImport(isStatic)) {
+             doVisitTokenInSameGroup(isStatic, previous, name, line);
+         }
+         else {
+             log(line, MSG_ORDERING, name);
+         }
+ 
+         lastGroup = groupIdx;
+         lastImport = name;
+     }
+ 
+     /**
+      * Checks whether static imports grouped by <b>top</b> or <b>bottom</b> option
+      * are sorted alphabetically or not.
+      * @param isStatic if current import is static.
+      * @return true if static imports should be sorted alphabetically.
+      */

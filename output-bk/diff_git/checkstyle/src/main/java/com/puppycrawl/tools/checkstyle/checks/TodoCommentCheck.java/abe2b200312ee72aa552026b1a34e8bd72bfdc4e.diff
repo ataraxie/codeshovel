@@ -1,0 +1,73 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TodoCommentCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TodoCommentCheck.java
+index 8f11a1cac..46c952f96 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TodoCommentCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TodoCommentCheck.java
+@@ -38,62 +38,68 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * </pre>
+  * <p>
+  * An example of how to configure the check for comments that contain
+  * <code>WARNING</code> is:
+  * </p>
+  *
+  * <pre>
+  * &lt;module name="TodoComment"&gt;
+  *    &lt;property name="format" value="WARNING"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Oliver Burn
+  * @author Baratali Izmailov
+  * @version 1.0
+  */
+ public class TodoCommentCheck
+         extends Check
+ {
+     /**
+      * Format of todo comment.
+      */
+     private String format = "TODO:";
+ 
+     /**
+      * Regular expression pattern compiled from format.
+      */
+     private Pattern regexp = Pattern.compile(format);
+ 
+     @Override
+     public boolean isCommentNodesRequired()
+     {
+         return true;
+     }
+ 
+     /**
+      * Setter for todo comment format.
+      * @param format format of todo comment.
+      */
+     public void setFormat(String format)
+     {
+         this.format = format;
+         regexp = Pattern.compile(format);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.COMMENT_CONTENT };
+     }
+ 
++    @Override
++    public int[] getAcceptableTokens()
++    {
++        return new int[] {TokenTypes.COMMENT_CONTENT };
++    }
++
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         final String[] lines = ast.getText().split("\n");
+ 
+         for (int i = 0; i < lines.length; i++) {
+             if (regexp.matcher(lines[i]).find()) {
+                 log(ast.getLineNo() + i, "todo.match", format);
+             }
+         }
+     }
+ }

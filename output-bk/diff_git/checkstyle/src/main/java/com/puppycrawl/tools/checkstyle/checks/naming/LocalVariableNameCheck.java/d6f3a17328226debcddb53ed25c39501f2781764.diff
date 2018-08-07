@@ -1,0 +1,86 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalVariableNameCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalVariableNameCheck.java
+index ccb2496b7..4d7da9fe7 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalVariableNameCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/naming/LocalVariableNameCheck.java
+@@ -66,72 +66,74 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+  *    &lt;property name="allowOneCharVarInForLoop" value="true"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author Rick Giles
+  * @author maxvetrenko
+  */
+ public class LocalVariableNameCheck
+     extends AbstractNameCheck {
+     /** Regexp for one-char loop variables. */
+     private static final Pattern SINGLE_CHAR = Pattern.compile("^[a-z]$");
+ 
+     /**
+      * Allow one character name for initialization expression in FOR loop.
+      */
+     private boolean allowOneCharVarInForLoop;
+ 
+     /** Creates a new {@code LocalVariableNameCheck} instance. */
+     public LocalVariableNameCheck() {
+         super("^[a-z][a-zA-Z0-9]*$");
+     }
+ 
+     /**
+      * Sets whether to allow one character name in FOR loop or not.
+      *
+      * @param allow Flag for allowing or not one character name in FOR loop.
+      */
+     public final void setAllowOneCharVarInForLoop(boolean allow) {
+         allowOneCharVarInForLoop = allow;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     protected final boolean mustCheckName(DetailAST ast) {
++        final boolean result;
+         if (allowOneCharVarInForLoop && isForLoopVariable(ast)) {
+-            final String variableName =
+-                    ast.findFirstToken(TokenTypes.IDENT).getText();
+-            return !SINGLE_CHAR.matcher(variableName).find();
++            final String variableName = ast.findFirstToken(TokenTypes.IDENT).getText();
++            result = !SINGLE_CHAR.matcher(variableName).find();
+         }
+-        final DetailAST modifiersAST =
+-            ast.findFirstToken(TokenTypes.MODIFIERS);
+-        final boolean isFinal = modifiersAST.branchContains(TokenTypes.FINAL);
+-        return !isFinal && ScopeUtils.isLocalVariableDef(ast);
++        else {
++            final DetailAST modifiersAST = ast.findFirstToken(TokenTypes.MODIFIERS);
++            final boolean isFinal = modifiersAST.branchContains(TokenTypes.FINAL);
++            result = !isFinal && ScopeUtils.isLocalVariableDef(ast);
++        }
++        return result;
+     }
+ 
+     /**
+      * Checks if a variable is the loop's one.
+      * @param variableDef variable definition.
+      * @return true if a variable is the loop's one.
+      */
+     private static boolean isForLoopVariable(DetailAST variableDef) {
+         final int parentType = variableDef.getParent().getType();
+         return parentType == TokenTypes.FOR_INIT
+                 || parentType == TokenTypes.FOR_EACH_CLAUSE;
+     }
+ }

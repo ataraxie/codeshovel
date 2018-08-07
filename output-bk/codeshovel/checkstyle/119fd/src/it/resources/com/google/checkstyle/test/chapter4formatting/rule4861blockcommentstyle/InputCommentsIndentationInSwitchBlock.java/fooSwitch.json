@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "InputCommentsIndentationInSwitchBlock.java",
+  "functionName": "fooSwitch",
+  "functionId": "fooSwitch",
+  "sourceFilePath": "src/it/resources/com/google/checkstyle/test/chapter4formatting/rule4861blockcommentstyle/InputCommentsIndentationInSwitchBlock.java",
+  "functionStartLine": 5,
+  "functionEndLine": 80,
+  "changeHistory": [
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6",
+    "edb810c10e121b34f4222a4bba9012add00f1e41",
+    "662cb2e20e296d1546bb7c845e4661dcdcc77855",
+    "e21676f52f3d68294122244cea63b4ecbe92de8f"
+  ],
+  "changeHistoryShort": {
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6": "Ybodychange",
+    "edb810c10e121b34f4222a4bba9012add00f1e41": "Ybodychange",
+    "662cb2e20e296d1546bb7c845e4661dcdcc77855": "Yfilerename",
+    "e21676f52f3d68294122244cea63b4ecbe92de8f": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3126: Fix a lot of CommentsIndentationCheck false-positives and false-negatives\n",
+      "commitDate": 1464613701000,
+      "commitName": "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1447250211000,
+      "commitNameOld": "edb810c10e121b34f4222a4bba9012add00f1e41",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 200.97,
+      "commitsBetweenForRepo": 571,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,76 +1,76 @@\n     private static void fooSwitch() {\n         switch(\"\") {\n             case \"0\": //some comment\n             case \"1\":\n                 // my comment\n                 foo1();\n                 break;\n             case \"2\":\n                 // my comment\n                 //comment\n                 foo1();\n                 // comment\n                 break;\n             case \"3\":\n-            /* com */\n+            /* // warn */\n                 foo1();\n                 /* com */\n                 break;\n             case \"5\":\n                 foo1();\n                    // warn\n             case \"6\":\n                 int k \u003d 7;\n                 // fall through\n             case \"7\":\n                 if (true) {}\n                    // warn\n             case \"8\":\n                 break;\n             case \"9\":\n                 foo1();\n                 // fall through\n             case \"10\": {\n                 if (true) {}\n                 // fall through\n             }\n             case \"11\": {\n             // fall through\n             }\n             case \"28\": {\n                 // fall through\n             }\n             case \"12\": {\n       // warn\n                 int i;\n             }\n             case \"13\": {\n                        // some comment in empty case block\n             }\n             case \"14\": {\n         // warn\n             }\n             case \"15\": {\n                 foo1();\n                       // warn\n             }\n             case \"16\": {\n                 int a;\n             }\n             // fall through\n             case \"17\": {\n                 int a;\n             }\n               // warn\n                 case \"18\": { System.lineSeparator();\n                 }   // trailing comment\n             case \"19\":\n                 // comment\n             case \"20\":\n             // comment\n             case \"21\":\n             default:\n                 // comment\n                 break;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "edb810c10e121b34f4222a4bba9012add00f1e41": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2541: Clean up input files to not use forbidden APIs\n",
+      "commitDate": 1447250211000,
+      "commitName": "edb810c10e121b34f4222a4bba9012add00f1e41",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1447163412000,
+      "commitNameOld": "662cb2e20e296d1546bb7c845e4661dcdcc77855",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 1.0,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,76 +1,76 @@\n     private static void fooSwitch() {\n         switch(\"\") {\n             case \"0\": //some comment\n             case \"1\":\n                 // my comment\n                 foo1();\n                 break;\n             case \"2\":\n                 // my comment\n                 //comment\n                 foo1();\n                 // comment\n                 break;\n             case \"3\":\n             /* com */\n                 foo1();\n                 /* com */\n                 break;\n             case \"5\":\n                 foo1();\n                    // warn\n             case \"6\":\n                 int k \u003d 7;\n                 // fall through\n             case \"7\":\n                 if (true) {}\n                    // warn\n             case \"8\":\n                 break;\n             case \"9\":\n                 foo1();\n                 // fall through\n             case \"10\": {\n                 if (true) {}\n                 // fall through\n             }\n             case \"11\": {\n             // fall through\n             }\n             case \"28\": {\n                 // fall through\n             }\n             case \"12\": {\n       // warn\n                 int i;\n             }\n             case \"13\": {\n                        // some comment in empty case block\n             }\n             case \"14\": {\n         // warn\n             }\n             case \"15\": {\n                 foo1();\n                       // warn\n             }\n             case \"16\": {\n                 int a;\n             }\n             // fall through\n             case \"17\": {\n                 int a;\n             }\n               // warn\n-                case \"18\": { System.out.println();\n+                case \"18\": { System.lineSeparator();\n                 }   // trailing comment\n             case \"19\":\n                 // comment\n             case \"20\":\n             // comment\n             case \"21\":\n             default:\n                 // comment\n                 break;\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "662cb2e20e296d1546bb7c845e4661dcdcc77855": {
+      "type": "Yfilerename",
+      "commitMessage": "Issue #2540: unify it input file names for chapter4formatting",
+      "commitDate": 1447163412000,
+      "commitName": "662cb2e20e296d1546bb7c845e4661dcdcc77855",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1447163348000,
+      "commitNameOld": "4346d41010a729e14991e30706bdb16ff18ff39a",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "e21676f52f3d68294122244cea63b4ecbe92de8f": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2078: Update ITs for CommentsIndentationCheck\n",
+      "commitDate": 1446331712000,
+      "commitName": "e21676f52f3d68294122244cea63b4ecbe92de8f",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

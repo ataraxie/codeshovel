@@ -1,0 +1,258 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+index 408dffa8c..bdc007d7c 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java
+@@ -1,161 +1,163 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2013  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.metrics;
+ 
++import com.google.common.collect.ImmutableSet;
+ import com.google.common.collect.Sets;
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.FastStack;
+ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
++
+ import java.util.Set;
+ 
+ /**
+  * Base class for coupling calculation.
+  *
+  * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+  * @author o_sukhodolsky
+  */
+ public abstract class AbstractClassCouplingCheck extends Check
+ {
+     /** Class names to ignore. */
+-    private final Set<String> mIgnoredClassNames = Sets.newHashSet();
++    private static final Set<String> DEFAULT_EXCLUDED_CLASSES =
++                ImmutableSet.<String>builder()
++                // primitives
++                .add("boolean", "byte", "char", "double", "float", "int")
++                .add("long", "short", "void")
++                // wrappers
++                .add("Boolean", "Byte", "Character", "Double", "Float")
++                .add("Integer", "Long", "Short", "Void")
++                // java.lang.*
++                .add("Object", "Class")
++                .add("String", "StringBuffer", "StringBuilder")
++                // Exceptions
++                .add("ArrayIndexOutOfBoundsException", "Exception")
++                .add("RuntimeException", "IllegalArgumentException")
++                .add("IllegalStateException", "IndexOutOfBoundsException")
++                .add("NullPointerException", "Throwable", "SecurityException")
++                .add("UnsupportedOperationException")
++                // java.util.*
++                .add("List", "ArrayList", "Deque", "Queue", "LinkedList")
++                .add("Set", "HashSet", "SortedSet", "TreeSet")
++                .add("Map", "HashMap", "SortedMap", "TreeMap")
++                .build();
++    /** User-configured class names to ignore. */
++    private Set<String> mExcludedClasses = DEFAULT_EXCLUDED_CLASSES;
+     /** Allowed complexity. */
+     private int mMax;
+     /** package of the file we check. */
+     private String mPackageName;
+ 
+     /** Stack of contexts. */
+     private final FastStack<Context> mContextStack = FastStack.newInstance();
+     /** Current context. */
+     private Context mContext;
+ 
+     /**
+      * Creates new instance of the check.
+      * @param aDefaultMax default value for allowed complexity.
+      */
+     protected AbstractClassCouplingCheck(int aDefaultMax)
+     {
+         setMax(aDefaultMax);
+-
+-        mIgnoredClassNames.add("boolean");
+-        mIgnoredClassNames.add("byte");
+-        mIgnoredClassNames.add("char");
+-        mIgnoredClassNames.add("double");
+-        mIgnoredClassNames.add("float");
+-        mIgnoredClassNames.add("int");
+-        mIgnoredClassNames.add("long");
+-        mIgnoredClassNames.add("short");
+-        mIgnoredClassNames.add("void");
+-        mIgnoredClassNames.add("Boolean");
+-        mIgnoredClassNames.add("Byte");
+-        mIgnoredClassNames.add("Character");
+-        mIgnoredClassNames.add("Double");
+-        mIgnoredClassNames.add("Float");
+-        mIgnoredClassNames.add("Integer");
+-        mIgnoredClassNames.add("Long");
+-        mIgnoredClassNames.add("Object");
+-        mIgnoredClassNames.add("Short");
+-        mIgnoredClassNames.add("String");
+-        mIgnoredClassNames.add("StringBuffer");
+-        mIgnoredClassNames.add("Void");
+-        mIgnoredClassNames.add("ArrayIndexOutOfBoundsException");
+-        mIgnoredClassNames.add("Exception");
+-        mIgnoredClassNames.add("RuntimeException");
+-        mIgnoredClassNames.add("IllegalArgumentException");
+-        mIgnoredClassNames.add("IllegalStateException");
+-        mIgnoredClassNames.add("IndexOutOfBoundsException");
+-        mIgnoredClassNames.add("NullPointerException");
+-        mIgnoredClassNames.add("Throwable");
+-        mIgnoredClassNames.add("SecurityException");
+-        mIgnoredClassNames.add("UnsupportedOperationException");
+     }
+ 
+     @Override
+     public final int[] getDefaultTokens()
+     {
+         return getRequiredTokens();
+     }
+ 
+     /** @return allowed complexity. */
+     public final int getMax()
+     {
+         return mMax;
+     }
+ 
+     /**
+      * Sets maximul allowed complexity.
+      * @param aMax allowed complexity.
+      */
+     public final void setMax(int aMax)
+     {
+         mMax = aMax;
+     }
+ 
++    /**
++     * Sets user-excluded classes to ignore.
++     * @param aExcludedClasses the list of classes to ignore.
++     */
++    public final void setExcludedClasses(String[] aExcludedClasses)
++    {
++        mExcludedClasses = ImmutableSet.copyOf(aExcludedClasses);
++    }
++
+     @Override
+     public final void beginTree(DetailAST aAST)
+     {
+         mPackageName = "";
+     }
+ 
+     /** @return message key we use for log violations. */
+     protected abstract String getLogMessageId();
+ 
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.PACKAGE_DEF:
+             visitPackageDef(aAST);
+             break;
+         case TokenTypes.CLASS_DEF:
+         case TokenTypes.INTERFACE_DEF:
+         case TokenTypes.ANNOTATION_DEF:
+         case TokenTypes.ENUM_DEF:
+             visitClassDef(aAST);
+             break;
+         case TokenTypes.TYPE:
+             mContext.visitType(aAST);
+             break;
+         case TokenTypes.LITERAL_NEW:
+             mContext.visitLiteralNew(aAST);
+             break;
+         case TokenTypes.LITERAL_THROWS:
+             mContext.visitLiteralThrows(aAST);
+             break;
+         default:
+             throw new IllegalStateException(aAST.toString());
+         }
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST aAST)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.CLASS_DEF:
+         case TokenTypes.INTERFACE_DEF:
+         case TokenTypes.ANNOTATION_DEF:
+         case TokenTypes.ENUM_DEF:
+             leaveClassDef();
+             break;
+         default:
+             // Do nothing
+         }
+     }
+@@ -256,55 +258,55 @@ public abstract class AbstractClassCouplingCheck extends Check
+          * Visits NEW.
+          * @param aAST NEW to process.
+          */
+         public void visitLiteralNew(DetailAST aAST)
+         {
+             mContext.addReferencedClassName(aAST.getFirstChild());
+         }
+ 
+         /**
+          * Adds new referenced class.
+          * @param aAST a node which represents referenced class.
+          */
+         private void addReferencedClassName(DetailAST aAST)
+         {
+             final String className = FullIdent.createFullIdent(aAST).getText();
+             addReferencedClassName(className);
+         }
+ 
+         /**
+          * Adds new referenced class.
+          * @param aClassName class name of the referenced class.
+          */
+         private void addReferencedClassName(String aClassName)
+         {
+             if (isSignificant(aClassName)) {
+                 mReferencedClassNames.add(aClassName);
+             }
+         }
+ 
+         /** Checks if coupling less than allowed or not. */
+         public void checkCoupling()
+         {
+             mReferencedClassNames.remove(mClassName);
+             mReferencedClassNames.remove(mPackageName + "." + mClassName);
+ 
+             if (mReferencedClassNames.size() > mMax) {
+                 log(mLineNo, mColumnNo, getLogMessageId(),
+                         mReferencedClassNames.size(), getMax(),
+                         mReferencedClassNames.toString());
+             }
+         }
+ 
+         /**
+          * Checks if given class shouldn't be ignored and not from java.lang.
+          * @param aClassName class to check.
+          * @return true if we should count this class.
+          */
+         private boolean isSignificant(String aClassName)
+         {
+             return (aClassName.length() > 0)
+-                    && !mIgnoredClassNames.contains(aClassName)
++                    && !mExcludedClasses.contains(aClassName)
+                     && !aClassName.startsWith("java.lang.");
+         }
+     }
+ }

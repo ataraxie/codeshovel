@@ -1,0 +1,107 @@
+diff --git a/android/guava/src/com/google/common/collect/FilteredEntryMultimap.java b/android/guava/src/com/google/common/collect/FilteredEntryMultimap.java
+index db35525c2..5860d885c 100644
+--- a/android/guava/src/com/google/common/collect/FilteredEntryMultimap.java
++++ b/android/guava/src/com/google/common/collect/FilteredEntryMultimap.java
+@@ -93,101 +93,101 @@ class FilteredEntryMultimap<K, V> extends AbstractMultimap<K, V> implements Filt
+   }
+ 
+   @Override
+   public boolean containsKey(@NullableDecl Object key) {
+     return asMap().get(key) != null;
+   }
+ 
+   @Override
+   public Collection<V> removeAll(@NullableDecl Object key) {
+     return MoreObjects.firstNonNull(asMap().remove(key), unmodifiableEmptyCollection());
+   }
+ 
+   Collection<V> unmodifiableEmptyCollection() {
+     // These return false, rather than throwing a UOE, on remove calls.
+     return (unfiltered instanceof SetMultimap)
+         ? Collections.<V>emptySet()
+         : Collections.<V>emptyList();
+   }
+ 
+   @Override
+   public void clear() {
+     entries().clear();
+   }
+ 
+   @Override
+   public Collection<V> get(final K key) {
+     return filterCollection(unfiltered.get(key), new ValuePredicate(key));
+   }
+ 
+   @Override
+   Collection<Entry<K, V>> createEntries() {
+     return filterCollection(unfiltered.entries(), predicate);
+   }
+ 
+   @Override
+   Collection<V> createValues() {
+     return new FilteredMultimapValues<>(this);
+   }
+ 
+   @Override
+   Iterator<Entry<K, V>> entryIterator() {
+     throw new AssertionError("should never be called");
+   }
+ 
+   @Override
+   Map<K, Collection<V>> createAsMap() {
+     return new AsMap();
+   }
+ 
+   @Override
+-  public Set<K> keySet() {
++  Set<K> createKeySet() {
+     return asMap().keySet();
+   }
+ 
+   boolean removeEntriesIf(Predicate<? super Entry<K, Collection<V>>> predicate) {
+     Iterator<Entry<K, Collection<V>>> entryIterator = unfiltered.asMap().entrySet().iterator();
+     boolean changed = false;
+     while (entryIterator.hasNext()) {
+       Entry<K, Collection<V>> entry = entryIterator.next();
+       K key = entry.getKey();
+       Collection<V> collection = filterCollection(entry.getValue(), new ValuePredicate(key));
+       if (!collection.isEmpty() && predicate.apply(Maps.immutableEntry(key, collection))) {
+         if (collection.size() == entry.getValue().size()) {
+           entryIterator.remove();
+         } else {
+           collection.clear();
+         }
+         changed = true;
+       }
+     }
+     return changed;
+   }
+ 
+   @WeakOuter
+   class AsMap extends ViewCachingAbstractMap<K, Collection<V>> {
+     @Override
+     public boolean containsKey(@NullableDecl Object key) {
+       return get(key) != null;
+     }
+ 
+     @Override
+     public void clear() {
+       FilteredEntryMultimap.this.clear();
+     }
+ 
+     @Override
+     public Collection<V> get(@NullableDecl Object key) {
+       Collection<V> result = unfiltered.asMap().get(key);
+       if (result == null) {
+         return null;
+       }
+       @SuppressWarnings("unchecked") // key is equal to a K, if not a K itself
+       K k = (K) key;
+       result = filterCollection(result, new ValuePredicate(k));
+       return result.isEmpty() ? null : result;
+     }
+ 
+     @Override
+     public Collection<V> remove(@NullableDecl Object key) {
+       Collection<V> collection = unfiltered.asMap().get(key);
+       if (collection == null) {

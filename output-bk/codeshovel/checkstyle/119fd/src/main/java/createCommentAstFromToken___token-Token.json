@@ -1,0 +1,103 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "createCommentAstFromToken___token-Token",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 226,
+  "changeHistory": [
+    "58327e1dd9707b09f82ae2d4d4ce14c253247154",
+    "9b383e05bb3b14318c5ec5794ba2df0952a30f8a",
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c",
+    "8da777a68ad936f1a4e07d59cee17ecab2fc293e",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+    "a24df47cafeab03fd65cf72b460aad3d2fafce3d"
+  ],
+  "changeHistoryShort": {
+    "58327e1dd9707b09f82ae2d4d4ce14c253247154": "Ymovefromfile",
+    "9b383e05bb3b14318c5ec5794ba2df0952a30f8a": "Ybodychange",
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c": "Ybodychange",
+    "8da777a68ad936f1a4e07d59cee17ecab2fc293e": "Ybodychange",
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": "Ymultichange(Yparameterchange,Ybodychange)",
+    "a24df47cafeab03fd65cf72b460aad3d2fafce3d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "58327e1dd9707b09f82ae2d4d4ce14c253247154": {
+      "type": "Ymovefromfile",
+      "commitMessage": "Issue #5436: Split TreeWalker to TreeWalker and JavaParser\n",
+      "commitDate": 1516775986000,
+      "commitName": "58327e1dd9707b09f82ae2d4d4ce14c253247154",
+      "commitAuthor": "Pavel Bludov",
+      "commitDateOld": 1516672490000,
+      "commitNameOld": "9bcb6bffd03dc4f42f402bd126f22c730007861a",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 1.2,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "9b383e05bb3b14318c5ec5794ba2df0952a30f8a": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4785: Method createBlockCommentNode was created in CommonUtils\n",
+      "commitDate": 1508521220000,
+      "commitName": "9b383e05bb3b14318c5ec5794ba2df0952a30f8a",
+      "commitAuthor": "Turkin Ivan",
+      "commitDateOld": 1506566816000,
+      "commitNameOld": "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec",
+      "commitAuthorOld": "Timur",
+      "daysBetweenCommits": 22.62,
+      "commitsBetweenForRepo": 33,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     private static DetailAST createCommentAstFromToken(Token token) {\n         final DetailAST commentAst;\n         if (token.getType() \u003d\u003d TokenTypes.SINGLE_LINE_COMMENT) {\n             commentAst \u003d createSlCommentNode(token);\n         }\n         else {\n-            commentAst \u003d createBlockCommentNode(token);\n+            commentAst \u003d CommonUtils.createBlockCommentNode(token);\n         }\n         return commentAst;\n     }\n\\ No newline at end of file\n"
+    },
+    "de50d3465849b83d25910590e1f5f39a25fe6e2c": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.checks and com.puppycrawl.tools.checkstyle\n",
+      "commitDate": 1492827278000,
+      "commitName": "de50d3465849b83d25910590e1f5f39a25fe6e2c",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1491885633000,
+      "commitNameOld": "4cef3f91f575f45ea18fa3568ec44c0beef6a1fe",
+      "commitAuthorOld": "Subbu Dantu",
+      "daysBetweenCommits": 10.9,
+      "commitsBetweenForRepo": 60,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,10 @@\n     private static DetailAST createCommentAstFromToken(Token token) {\n+        final DetailAST commentAst;\n         if (token.getType() \u003d\u003d TokenTypes.SINGLE_LINE_COMMENT) {\n-            return createSlCommentNode(token);\n+            commentAst \u003d createSlCommentNode(token);\n         }\n         else {\n-            return createBlockCommentNode(token);\n+            commentAst \u003d createBlockCommentNode(token);\n         }\n+        return commentAst;\n     }\n\\ No newline at end of file\n"
+    },
+    "8da777a68ad936f1a4e07d59cee17ecab2fc293e": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove dead code from TreeWalker. #1294\n",
+      "commitDate": 1436718750000,
+      "commitName": "8da777a68ad936f1a4e07d59cee17ecab2fc293e",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 56.2,
+      "commitsBetweenForRepo": 328,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,8 @@\n     private static DetailAST createCommentAstFromToken(Token token) {\n-        switch (token.getType()) {\n-            case TokenTypes.SINGLE_LINE_COMMENT:\n-                return createSlCommentNode(token);\n-            case TokenTypes.BLOCK_COMMENT_BEGIN:\n-                return createBlockCommentNode(token);\n-            default:\n-                throw new IllegalArgumentException(\"Unknown comment type\");\n+        if (token.getType() \u003d\u003d TokenTypes.SINGLE_LINE_COMMENT) {\n+            return createSlCommentNode(token);\n+        }\n+        else {\n+            return createBlockCommentNode(token);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checkstyle, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java\n",
+      "commitDate": 1421678312000,
+      "commitName": "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "a24df47cafeab03fd65cf72b460aad3d2fafce3d": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #49. Added support of single-line and block comments\n",
+      "commitDate": 1413609550000,
+      "commitName": "a24df47cafeab03fd65cf72b460aad3d2fafce3d",
+      "commitAuthor": "Baratali Izmailov"
+    }
+  }
+}

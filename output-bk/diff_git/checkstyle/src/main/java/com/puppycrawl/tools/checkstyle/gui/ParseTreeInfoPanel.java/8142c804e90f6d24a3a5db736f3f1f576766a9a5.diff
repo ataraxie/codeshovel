@@ -1,0 +1,134 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java
+index 5ac7a7932..76e166656 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/ParseTreeInfoPanel.java
+@@ -130,126 +130,126 @@ public class ParseTreeInfoPanel extends JPanel {
+             try {
+                 Main.getFrame().setTitle("Checkstyle : " + file.getName());
+                 final FileText text = new FileText(file.getAbsoluteFile(),
+                                                    getEncoding());
+                 final DetailAST parseTree = parseFile(text);
+                 parseTreeModel.setParseTree(parseTree);
+                 currentFile = file;
+                 lastDirectory = file.getParentFile();
+                 reloadAction.setEnabled(true);
+ 
+                 final String[] sourceLines = text.toLinesArray();
+ 
+                 // clear for each new file
+                 clearLinesToPosition();
+                 // starts line counting at 1
+                 addLineToPosition(0);
+                 // insert the contents of the file to the text area
+                 for (String element : sourceLines) {
+                     addLineToPosition(textArea.getText().length());
+                     textArea.append(element + System.lineSeparator());
+                 }
+ 
+                 //clean the text area before inserting the lines of the new file
+                 if (!textArea.getText().isEmpty()) {
+                     textArea.replaceRange("", 0, textArea.getText()
+                             .length());
+                 }
+ 
+                 // insert the contents of the file to the text area
+                 for (final String element : sourceLines) {
+                     textArea.append(element + System.lineSeparator());
+                 }
+ 
+                 // move back to the top of the file
+                 textArea.moveCaretPosition(0);
+             }
+             catch (final IOException | ANTLRException ex) {
+                 showErrorDialog(
+                         parent,
+                         "Could not parse" + file + ": " + ex.getMessage());
+             }
+         }
+     }
+ 
+     /**
+      * Parses a file and returns the parse tree.
+      * @param text the file to parse
+      * @return the root node of the parse tree
+      * @throws ANTLRException if the file is not a Java source
+      */
+-    public static DetailAST parseFile(FileText text)
++    private static DetailAST parseFile(FileText text)
+         throws ANTLRException {
+         final FileContents contents = new FileContents(text);
+         return TreeWalker.parse(contents);
+     }
+ 
+     /**
+      * Returns the configured file encoding.
+      * This can be set using the {@code file.encoding} system property.
+      * It defaults to UTF-8.
+      * @return the configured file encoding
+      */
+     private static String getEncoding() {
+         return System.getProperty("file.encoding", "UTF-8");
+     }
+ 
+     private static void showErrorDialog(final Component parent, final String msg) {
+         final Runnable showError = new FrameShower(parent, msg);
+         SwingUtilities.invokeLater(showError);
+     }
+ 
+-    void addLineToPosition(int value) {
++    private void addLineToPosition(int value) {
+         linesToPosition.add(value);
+     }
+ 
+-    void clearLinesToPosition() {
++    private void clearLinesToPosition() {
+         linesToPosition.clear();
+     }
+ 
+     /**
+      * Http://findbugs.sourceforge.net/bugDescriptions.html#SW_SWING_METHODS_INVOKED_IN_SWING_THREAD
+      */
+     private static class FrameShower implements Runnable {
+         /**
+          * Frame
+          */
+         private final Component parent;
+ 
+         /**
+          * Frame
+          */
+         private final String msg;
+ 
+         /**
+          * Contstructor
+          */
+         FrameShower(Component parent, final String msg) {
+             this.parent = parent;
+             this.msg = msg;
+         }
+ 
+         /**
+          * Display a frame
+          */
+         @Override
+         public void run() {
+             JOptionPane.showMessageDialog(parent, msg);
+         }
+     }
+ 
+     private static class JavaFileFilter extends FileFilter {
+         @Override
+         public boolean accept(File file) {
+             if (file == null) {
+                 return false;
+             }
+             return file.isDirectory() || file.getName().endsWith(".java");
+         }
+ 
+         @Override
+         public String getDescription() {
+             return "Java Source Code";
+         }
+     }
+ 
+     private class FileSelectionAction extends AbstractAction {

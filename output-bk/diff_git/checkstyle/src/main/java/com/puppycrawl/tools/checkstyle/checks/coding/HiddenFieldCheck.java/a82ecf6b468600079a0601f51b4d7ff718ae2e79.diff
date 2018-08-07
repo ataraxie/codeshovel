@@ -1,0 +1,161 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+index f94191598..58a76831d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+@@ -127,131 +127,155 @@ import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
+  * </pre>
+  *
+  * @author Dmitri Priimak
+  */
+ public class HiddenFieldCheck
+     extends Check {
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "hidden.field";
+ 
+     /** Stack of sets of field names,
+      * one for each class of a set of nested classes.
+      */
+     private FieldFrame frame;
+ 
+     /** Pattern for names of variables and parameters to ignore. */
+     private Pattern regexp;
+ 
+     /** Controls whether to check the parameter of a property setter method. */
+     private boolean ignoreSetter;
+ 
+     /**
+      * If ignoreSetter is set to true then this variable controls what
+      * the setter method can return By default setter must return void.
+      * However, is this variable is set to true then setter can also
+      * return class in which is declared.
+      */
+     private boolean setterCanReturnItsClass;
+ 
+     /** Controls whether to check the parameter of a constructor. */
+     private boolean ignoreConstructorParameter;
+ 
+     /** Controls whether to check the parameter of abstract methods. */
+     private boolean ignoreAbstractMethods;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
++            TokenTypes.LAMBDA,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         frame = new FieldFrame(null, true, null);
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final int type = ast.getType();
+         switch (type) {
+             case TokenTypes.VARIABLE_DEF:
+             case TokenTypes.PARAMETER_DEF:
+                 processVariable(ast);
+                 break;
+-
++            case TokenTypes.LAMBDA:
++                processLambda(ast);
++                break;
+             default:
+                 visitOtherTokens(ast, type);
+         }
+     }
+ 
++    /**
++     * Process a lambda token.
++     * Checks whether a lambda parameter shadows a field.
++     * Note, that when parameter of lambda expression is untyped,
++     * ANTLR parses the parameter as an identifier.
++     * @param ast the lambda token.
++     */
++    private void processLambda(DetailAST ast) {
++        final DetailAST firstChild = ast.getFirstChild();
++        if (firstChild.getType() == TokenTypes.IDENT) {
++            final String untypedLambdaParameterName = firstChild.getText();
++            if (isStaticOrInstanceField(firstChild, untypedLambdaParameterName)) {
++                log(firstChild, MSG_KEY, untypedLambdaParameterName);
++            }
++        }
++        else {
++            // Type of lambda parameter is not omitted.
++            processVariable(ast);
++        }
++    }
++
+     /**
+      * Called to process tokens other than {@link TokenTypes#VARIABLE_DEF}
+      * and {@link TokenTypes#PARAMETER_DEF}.
+      *
+      * @param ast token to process
+      * @param type type of the token
+      */
+     private void visitOtherTokens(DetailAST ast, int type) {
+         //A more thorough check of enum constant class bodies is
+         //possible (checking for hidden fields against the enum
+         //class body in addition to enum constant class bodies)
+         //but not attempted as it seems out of the scope of this
+         //check.
+         final DetailAST typeMods = ast.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isStaticInnerType =
+                 typeMods != null
+                         && typeMods.branchContains(TokenTypes.LITERAL_STATIC);
+         final String frameName;
+ 
+         if (type == TokenTypes.CLASS_DEF || type == TokenTypes.ENUM_DEF) {
+             frameName = ast.findFirstToken(TokenTypes.IDENT).getText();
+         }
+         else {
+             frameName = null;
+         }
+         final FieldFrame newFrame = new FieldFrame(frame, isStaticInnerType, frameName);
+ 
+         //add fields to container
+         final DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);
+         // enum constants may not have bodies
+         if (objBlock != null) {
+             DetailAST child = objBlock.getFirstChild();
+             while (child != null) {
+                 if (child.getType() == TokenTypes.VARIABLE_DEF) {
+                     final String name =
+                         child.findFirstToken(TokenTypes.IDENT).getText();
+                     final DetailAST mods =
+                         child.findFirstToken(TokenTypes.MODIFIERS);
+                     if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {
+                         newFrame.addStaticField(name);
+                     }
+                     else {
+                         newFrame.addInstanceField(name);
+                     }
+                 }
+                 child = child.getNextSibling();
+             }
+         }
+         // push container
+         frame = newFrame;

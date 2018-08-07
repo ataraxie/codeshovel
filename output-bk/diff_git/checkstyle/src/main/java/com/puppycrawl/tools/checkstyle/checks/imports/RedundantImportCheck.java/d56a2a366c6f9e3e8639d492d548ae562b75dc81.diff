@@ -1,0 +1,125 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java
+index 2e913b1f2..428add90b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/RedundantImportCheck.java
+@@ -41,114 +41,116 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  *  current package.</li>
+  *</ul>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="RedundantImport"/&gt;
+  * </pre>
+  *
+  * Compatible with Java 1.5 source.
+  *
+  * @author Oliver Burn
+  */
+ public class RedundantImportCheck
+     extends Check {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_LANG = "import.lang";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_SAME = "import.same";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_DUPLICATE = "import.duplicate";
+ 
+     /** name of package in file */
+     private String pkgName;
+     /** set of the imports */
+     private final Set<FullIdent> imports = Sets.newHashSet();
+     /** set of static imports */
+     private final Set<FullIdent> staticImports = Sets.newHashSet();
+ 
+     @Override
+     public void beginTree(DetailAST aRootAST) {
+         pkgName = null;
+         imports.clear();
+         staticImports.clear();
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[]
+-        {TokenTypes.IMPORT,
+-         TokenTypes.STATIC_IMPORT,
+-         TokenTypes.PACKAGE_DEF, };
++        return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[]
+         {TokenTypes.IMPORT,
+          TokenTypes.STATIC_IMPORT,
+          TokenTypes.PACKAGE_DEF, };
+     }
+ 
++    @Override
++    public int[] getRequiredTokens() {
++        return getAcceptableTokens();
++    }
++
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+             pkgName = FullIdent.createFullIdent(
+                     ast.getLastChild().getPreviousSibling()).getText();
+         }
+         else if (ast.getType() == TokenTypes.IMPORT) {
+             final FullIdent imp = FullIdent.createFullIdentBelow(ast);
+             if (fromPackage(imp.getText(), "java.lang")) {
+                 log(ast.getLineNo(), ast.getColumnNo(), MSG_LANG,
+                     imp.getText());
+             }
+             // imports from unnamed package are not allowed,
+             // so we are checking SAME rule only for named packages
+             else if (pkgName != null && fromPackage(imp.getText(), pkgName)) {
+                 log(ast.getLineNo(), ast.getColumnNo(), MSG_SAME,
+                     imp.getText());
+             }
+             // Check for a duplicate import
+             for (FullIdent full : imports) {
+                 if (imp.getText().equals(full.getText())) {
+                     log(ast.getLineNo(), ast.getColumnNo(),
+                             MSG_DUPLICATE, full.getLineNo(),
+                             imp.getText());
+                 }
+             }
+ 
+             imports.add(imp);
+         }
+         else {
+             // Check for a duplicate static import
+             final FullIdent imp =
+                 FullIdent.createFullIdent(
+                     ast.getLastChild().getPreviousSibling());
+             for (FullIdent full : staticImports) {
+                 if (imp.getText().equals(full.getText())) {
+                     log(ast.getLineNo(), ast.getColumnNo(),
+                         MSG_DUPLICATE, full.getLineNo(), imp.getText());
+                 }
+             }
+ 
+             staticImports.add(imp);
+         }
+     }
+ 
+     /**
+      * Determines if an import statement is for types from a specified package.
+      * @param importName the import name
+      * @param pkg the package name
+      * @return whether from the package

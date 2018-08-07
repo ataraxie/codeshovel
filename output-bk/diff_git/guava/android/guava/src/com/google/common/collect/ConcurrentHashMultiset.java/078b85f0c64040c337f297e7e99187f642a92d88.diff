@@ -1,0 +1,110 @@
+diff --git a/android/guava/src/com/google/common/collect/ConcurrentHashMultiset.java b/android/guava/src/com/google/common/collect/ConcurrentHashMultiset.java
+index adb2f7fb6..8bdfca32d 100644
+--- a/android/guava/src/com/google/common/collect/ConcurrentHashMultiset.java
++++ b/android/guava/src/com/google/common/collect/ConcurrentHashMultiset.java
+@@ -428,100 +428,105 @@ public final class ConcurrentHashMultiset<E> extends AbstractMultiset<E> impleme
+           return (countMap.putIfAbsent(element, newCounter) == null)
+               || countMap.replace(element, existingCounter, newCounter);
+         }
+       } else {
+         if (existingCounter.compareAndSet(oldValue, newCount)) {
+           if (newCount == 0) {
+             // Just CASed to 0; remove the entry to clean up the map. If the removal fails,
+             // another thread has already replaced it with a new counter, which is fine.
+             countMap.remove(element, existingCounter);
+           }
+           return true;
+         }
+       }
+     }
+     return false;
+   }
+ 
+   // Views
+ 
+   @Override
+   Set<E> createElementSet() {
+     final Set<E> delegate = countMap.keySet();
+     return new ForwardingSet<E>() {
+       @Override
+       protected Set<E> delegate() {
+         return delegate;
+       }
+ 
+       @Override
+       public boolean contains(@NullableDecl Object object) {
+         return object != null && Collections2.safeContains(delegate, object);
+       }
+ 
+       @Override
+       public boolean containsAll(Collection<?> collection) {
+         return standardContainsAll(collection);
+       }
+ 
+       @Override
+       public boolean remove(Object object) {
+         return object != null && Collections2.safeRemove(delegate, object);
+       }
+ 
+       @Override
+       public boolean removeAll(Collection<?> c) {
+         return standardRemoveAll(c);
+       }
+     };
+   }
+ 
++  @Override
++  Iterator<E> elementIterator() {
++    throw new AssertionError("should never be called");
++  }
++
+   /** @deprecated Internal method, use {@link #entrySet()}. */
+   @Deprecated
+   @Override
+   public Set<Multiset.Entry<E>> createEntrySet() {
+     return new EntrySet();
+   }
+ 
+   @Override
+   int distinctElements() {
+     return countMap.size();
+   }
+ 
+   @Override
+   public boolean isEmpty() {
+     return countMap.isEmpty();
+   }
+ 
+   @Override
+   Iterator<Entry<E>> entryIterator() {
+     // AbstractIterator makes this fairly clean, but it doesn't support remove(). To support
+     // remove(), we create an AbstractIterator, and then use ForwardingIterator to delegate to it.
+     final Iterator<Entry<E>> readOnlyIterator =
+         new AbstractIterator<Entry<E>>() {
+           private final Iterator<Map.Entry<E, AtomicInteger>> mapEntries =
+               countMap.entrySet().iterator();
+ 
+           @Override
+           protected Entry<E> computeNext() {
+             while (true) {
+               if (!mapEntries.hasNext()) {
+                 return endOfData();
+               }
+               Map.Entry<E, AtomicInteger> mapEntry = mapEntries.next();
+               int count = mapEntry.getValue().get();
+               if (count != 0) {
+                 return Multisets.immutableEntry(mapEntry.getKey(), count);
+               }
+             }
+           }
+         };
+ 
+     return new ForwardingIterator<Entry<E>>() {
+       @NullableDecl private Entry<E> last;
+ 
+       @Override
+       protected Iterator<Entry<E>> delegate() {
+         return readOnlyIterator;
+       }
+ 
+       @Override

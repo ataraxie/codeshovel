@@ -1,0 +1,127 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index ad3eff6c2..52eb6d587 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -207,117 +207,119 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck
+     /**
+      * controls whether to allow a method which declares that it throws
+      * exceptions to omit matching throws tags in the javadoc. Defaults to
+      * false.
+      *
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingThrowsTags(boolean aFlag)
+     {
+         mAllowMissingThrowsTags = aFlag;
+     }
+ 
+     /**
+      * controls whether to allow a method which returns non-void type to omit
+      * the return tag in the javadoc. Defaults to false.
+      *
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingReturnTag(boolean aFlag)
+     {
+         mAllowMissingReturnTag = aFlag;
+     }
+ 
+     /**
+      * Controls whether to ignore errors when there is no javadoc. Defaults to
+      * false.
+      *
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingJavadoc(boolean aFlag)
+     {
+         mAllowMissingJavadoc = aFlag;
+     }
+ 
+     /**
+      * Controls whether to ignore errors when there is no javadoc for a
+      * property accessor (setter/getter methods). Defaults to false.
+      *
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingPropertyJavadoc(final boolean aFlag)
+     {
+         mAllowMissingPropertyJavadoc = aFlag;
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT,
+-            TokenTypes.CLASS_DEF, TokenTypes.METHOD_DEF,
+-            TokenTypes.CTOR_DEF, TokenTypes.ANNOTATION_FIELD_DEF, };
++            TokenTypes.CLASS_DEF, TokenTypes.ENUM_DEF,
++            TokenTypes.METHOD_DEF, TokenTypes.CTOR_DEF,
++            TokenTypes.ANNOTATION_FIELD_DEF, };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.METHOD_DEF, TokenTypes.CTOR_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF, };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+-            TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT, TokenTypes.CLASS_DEF, };
++            TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT,
++            TokenTypes.CLASS_DEF, TokenTypes.ENUM_DEF};
+     }
+ 
+     /**
+      * Checks Javadoc comments for a method or constructor.
+      *
+      * @param aAST the tree node for the method or constructor.
+      */
+     protected final void processAST(DetailAST aAST)
+     {
+         if (shouldCheck(aAST)) {
+             final FileContents contents = getFileContents();
+             final TextBlock cmt = contents.getJavadocBefore(aAST.getLineNo());
+ 
+             if (cmt == null) {
+                 if (!mAllowMissingJavadoc
+                     && !(mAllowMissingPropertyJavadoc
+                          && (isSetterMethod(aAST) || isGetterMethod(aAST))))
+                 {
+                     log(aAST, "javadoc.missing");
+                 }
+             }
+             else {
+                 checkComment(aAST, cmt);
+             }
+         }
+     }
+ 
+     /**
+      * Logs error if unable to load class information.
+      *
+      * @param aIdent class name for which we can no load class.
+      */
+     protected final void logLoadError(FullIdent aIdent)
+     {
+         logLoadErrorImpl(aIdent.getLineNo(), aIdent.getColumnNo(),
+                          "javadoc.classInfo",
+                          new Object[] {"@throws", aIdent.getText()});
+     }
+ 
+     /**
+      * Whether we should check this node.
+      *
+      * @param aAST a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST aAST)
+     {
+         final DetailAST mods = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
+         final Scope scope = ScopeUtils.inInterfaceOrAnnotationBlock(aAST)

@@ -1,0 +1,109 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java
+index 1172a8a07..b080acb05 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java
+@@ -119,101 +119,103 @@ class TagParser
+             }
+             position = findChar(aText, '<', position);
+         }
+     }
+ 
+     /**
+      * Checks if the given position is start one for HTML tag.
+      * @param aText text of javadoc comments.
+      * @param aPos position to check.
+      * @return <code>true</code> some HTML tag starts from given position.
+      */
+     private boolean isTag(String[] aText, Point aPos)
+     {
+         final int column = aPos.getColumnNo() + 1;
+         final String text = aText[aPos.getLineNo()];
+ 
+         return (column < text.length()
+                 && (((text.charAt(column) >= 'A')
+                      && (text.charAt(column) <= 'Z'))
+                     || ((text.charAt(column) >= 'a')
+                         && (text.charAt(column) <= 'z'))
+                     || (text.charAt(column) == '/'))
+                 || column >= text.length());
+     }
+ 
+     /**
+      * Parse tag id.
+      * @param aText text of javadoc comments.
+      * @param aTagStart start position of the tag
+      * @return id for given tag
+      */
+     private String getTagId(String[] aText, Point aTagStart)
+     {
+         int column = aTagStart.getColumnNo() + 1;
+         String text = aText[aTagStart.getLineNo()];
+         if (column >= text.length()) {
+             return "";
+         }
+ 
+         if (text.charAt(column) == '/') {
+             column++;
+         }
+ 
+         text = text.substring(column).trim();
+         column = 0;
+ 
+         while (column < text.length()
+                && ((text.charAt(column) >= 'A'
+                     && text.charAt(column) <= 'Z')
+                    || (text.charAt(column) >= 'a'
+-                       && text.charAt(column) <= 'z')))
++                       && text.charAt(column) <= 'z')
++                   || (text.charAt(column) >= '0'
++                       && text.charAt(column) <= '9')))
+         {
+             column++;
+         }
+ 
+         return text.substring(0, column);
+     }
+ 
+     /**
+      * If this is a HTML-comments.
+      * @param aText text of javadoc comments
+      * @param aPos position to check
+      * @return <code>true</code> if HTML-comments
+      *         starts form given position.
+      */
+     private boolean isCommentTag(String[] aText, Point aPos)
+     {
+         return aText[aPos.getLineNo()].startsWith("<!--", aPos.getColumnNo());
+     }
+ 
+     /**
+      * Skips HTML comments.
+      * @param aText text of javadoc comments.
+      * @param aFrom start position of HTML-comments
+      * @return position after HTML-comments
+      */
+     private Point skipHtmlComment(String[] aText, Point aFrom)
+     {
+         Point to = aFrom;
+         to = findChar(aText, '>', to);
+         while (to.getLineNo() < aText.length
+                && !aText[to.getLineNo()]
+                .substring(0, to.getColumnNo()).endsWith("-->"))
+         {
+             to = findChar(aText, '>', getNextCharPos(aText, to));
+         }
+         return to;
+     }
+ 
+     /**
+      * Finds next occurence of given character.
+      * @param aText text to search
+      * @param aChar character to search
+      * @param aFrom position to start search
+      * @return position of next occurence of given character
+      */
+     private Point findChar(String[] aText, char aChar, Point aFrom)
+     {
+         Point curr = new Point(aFrom.getLineNo(), aFrom.getColumnNo());
+         while (curr.getLineNo() < aText.length
+                && aText[curr.getLineNo()].charAt(curr.getColumnNo()) != aChar)

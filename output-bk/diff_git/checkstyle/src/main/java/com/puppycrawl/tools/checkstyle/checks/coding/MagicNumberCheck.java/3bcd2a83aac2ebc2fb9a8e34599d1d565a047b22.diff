@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+index 0a8960fef..ca5e3fd9b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MagicNumberCheck.java
+@@ -224,101 +224,101 @@ public class MagicNumberCheck extends AbstractCheck {
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Is magic number some where at ast tree.
+      * @param ast ast token
+      * @param constantDefAST constant ast
+      * @return true if magic number is present
+      */
+     private boolean isMagicNumberExists(DetailAST ast, DetailAST constantDefAST) {
+         boolean found = false;
+         DetailAST astNode = ast.getParent();
+         while (astNode != constantDefAST) {
+             final int type = astNode.getType();
+             if (Arrays.binarySearch(constantWaiverParentToken, type) < 0) {
+                 found = true;
+                 break;
+             }
+             astNode = astNode.getParent();
+         }
+         return found;
+     }
+ 
+     /**
+      * Finds the constant definition that contains aAST.
+      * @param ast the AST
+      * @return the constant def or null if ast is not contained in a constant definition.
+      */
+     private static DetailAST findContainingConstantDef(DetailAST ast) {
+         DetailAST varDefAST = ast;
+         while (varDefAST != null
+                 && varDefAST.getType() != TokenTypes.VARIABLE_DEF
+                 && varDefAST.getType() != TokenTypes.ENUM_CONSTANT_DEF) {
+             varDefAST = varDefAST.getParent();
+         }
+         DetailAST constantDef = null;
+ 
+         // no containing variable definition?
+         if (varDefAST != null) {
+             // implicit constant?
+             if (ScopeUtils.isInInterfaceOrAnnotationBlock(varDefAST)
+                     || varDefAST.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+                 constantDef = varDefAST;
+             }
+             else {
+                 // explicit constant
+                 final DetailAST modifiersAST = varDefAST.findFirstToken(TokenTypes.MODIFIERS);
+ 
+-                if (modifiersAST.branchContains(TokenTypes.FINAL)) {
++                if (modifiersAST.findFirstToken(TokenTypes.FINAL) != null) {
+                     constantDef = varDefAST;
+                 }
+             }
+         }
+         return constantDef;
+     }
+ 
+     /**
+      * Reports aAST as a magic number, includes unary operators as needed.
+      * @param ast the AST node that contains the number to report
+      */
+     private void reportMagicNumber(DetailAST ast) {
+         String text = ast.getText();
+         final DetailAST parent = ast.getParent();
+         DetailAST reportAST = ast;
+         if (parent.getType() == TokenTypes.UNARY_MINUS) {
+             reportAST = parent;
+             text = "-" + text;
+         }
+         else if (parent.getType() == TokenTypes.UNARY_PLUS) {
+             reportAST = parent;
+             text = "+" + text;
+         }
+         log(reportAST.getLineNo(),
+                 reportAST.getColumnNo(),
+                 MSG_KEY,
+                 text);
+     }
+ 
+     /**
+      * Determines whether or not the given AST is in a valid hash code method.
+      * A valid hash code method is considered to be a method of the signature
+      * {@code public int hashCode()}.
+      *
+      * @param ast the AST from which to search for an enclosing hash code
+      *     method definition
+      *
+      * @return {@code true} if {@code ast} is in the scope of a valid hash code method.
+      */
+     private static boolean isInHashCodeMethod(DetailAST ast) {
+         boolean inHashCodeMethod = false;
+ 
+         // if not in a code block, can't be in hashCode()
+         if (ScopeUtils.isInCodeBlock(ast)) {
+             // find the method definition AST
+             DetailAST methodDefAST = ast.getParent();
+             while (methodDefAST != null
+                     && methodDefAST.getType() != TokenTypes.METHOD_DEF) {
+                 methodDefAST = methodDefAST.getParent();
+             }

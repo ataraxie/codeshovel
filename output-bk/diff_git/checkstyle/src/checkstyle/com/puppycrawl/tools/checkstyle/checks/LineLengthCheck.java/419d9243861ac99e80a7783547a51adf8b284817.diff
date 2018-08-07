@@ -1,0 +1,66 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/LineLengthCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/LineLengthCheck.java
+index 7e15d6837..efed7e862 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/LineLengthCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/LineLengthCheck.java
+@@ -48,60 +48,61 @@ public class LineLengthCheck extends Check
+     private int mMax = 80;
+ 
+     /** the regexp when long lines are ignored */
+     private RE mIgnorePattern;
+ 
+     /**
+      * Creates a new <code>LineLengthCheck</code> instance.
+      */
+     public LineLengthCheck()
+     {
+         setIgnorePattern("^$");
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[0];
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public void beginTree()
+     {
+         final String[] lines = getLines();
+         for (int i = 0; i < lines.length; i++) {
+ 
+             final String line = lines[i];
+             final int realLength = Utils.lengthExpandedTabs(
+                 line, line.length(), getTabWidth());
+ 
+ 
+             if (realLength > mMax && !mIgnorePattern.match(line)) {
+                 log(i + 1, "maxLineLen", new Integer(mMax));
+             }
+         }
+     }
+ 
+     /**
+      * @param aLength the maximum length of a line
+      */
+     public void setMax(int aLength)
+     {
+         mMax = aLength;
+     }
+ 
+     /**
+      * Set the ignore pattern.
+      * @param aFormat a <code>String</code> value
+      * @throws ConversionException unable to parse aFormat
+      */
+     public void setIgnorePattern(String aFormat)
++        throws ConversionException
+     {
+         try {
+             mIgnorePattern = Utils.getRE(aFormat);
+         }
+         catch (RESyntaxException e) {
+             throw new ConversionException("unable to parse " + aFormat, e);
+         }
+     }
+ 
+ }

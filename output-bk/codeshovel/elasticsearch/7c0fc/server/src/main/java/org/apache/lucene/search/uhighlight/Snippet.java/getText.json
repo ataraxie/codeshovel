@@ -1,0 +1,91 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "Snippet.java",
+  "functionName": "getText",
+  "functionId": "getText",
+  "sourceFilePath": "server/src/main/java/org/apache/lucene/search/uhighlight/Snippet.java",
+  "functionStartLine": 40,
+  "functionEndLine": 42,
+  "changeHistory": [
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+    "8250aa42678e086f2c0f3aeb35860051858826a7",
+    "f6d38d480af8b2b1f4731bd7373b84b934d809b5",
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+    "48ac9747a8c9a3206aaff165add1c12e75c79604"
+  ],
+  "changeHistoryShort": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": "Yfilerename",
+    "8250aa42678e086f2c0f3aeb35860051858826a7": "Yfilerename",
+    "f6d38d480af8b2b1f4731bd7373b84b934d809b5": "Yfilerename",
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5": "Yfilerename",
+    "48ac9747a8c9a3206aaff165add1c12e75c79604": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "99f88f15c5febbca2d13b5b5fda27b844153bf1a": {
+      "type": "Yfilerename",
+      "commitMessage": "Rename core module to server (#28180)\n\nThis is related to #27933. It renames the core module to server. This is\r\nthe first step towards introducing an elasticsearch-core jar.",
+      "commitDate": 1515695443000,
+      "commitName": "99f88f15c5febbca2d13b5b5fda27b844153bf1a",
+      "commitAuthor": "Tim Brooks",
+      "commitDateOld": 1515688270000,
+      "commitNameOld": "7d0eb3292b8f8ba27ef50dbbf38783dc68c70728",
+      "commitAuthorOld": "Martijn van Groningen",
+      "daysBetweenCommits": 0.08,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "8250aa42678e086f2c0f3aeb35860051858826a7": {
+      "type": "Yfilerename",
+      "commitMessage": "Remove the postings highlighter and make unified the default highlighter choice (#25028)\n\nThis change removes the `postings` highlighter. This highlighter has been removed from Lucene master (7.x) because it behaves\r\nexactly like the `unified` highlighter when index_options is set to `offsets`:\r\nhttps://issues.apache.org/jira/browse/LUCENE-7815\r\n\r\nIt also makes the `unified` highlighter the default choice for highlighting a field (if `type` is not provided).\r\nThe strategy used internally by this highlighter remain the same as before, it checks `term_vectors` first, then `postings` and ultimately it re-analyzes the text.\r\nUltimately it rewrites the docs so that the options that the `unified` highlighter cannot handle are clearly marked as such.\r\nThere are few features that the `unified` highlighter is not able to handle which is why the other highlighters (`plain` and `fvh`) are still available.\r\nI\u0027ll open separate issues for these features and we\u0027ll deprecate the `fvh` and `plain` highlighters when full support for these features have been added to the `unified`.\r\n",
+      "commitDate": 1497010197000,
+      "commitName": "8250aa42678e086f2c0f3aeb35860051858826a7",
+      "commitAuthor": "Jim Ferenczi",
+      "commitDateOld": 1497005169000,
+      "commitNameOld": "eca4f24b1686cc134d9a27b26ea5d85473e81813",
+      "commitAuthorOld": "Christoph Büscher",
+      "daysBetweenCommits": 0.06,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "f6d38d480af8b2b1f4731bd7373b84b934d809b5": {
+      "type": "Yfilerename",
+      "commitMessage": "Integrate UnifiedHighlighter (#21621)\n\n* Integrate UnifiedHighlighter\r\n\r\nThis change integrates the Lucene highlighter called \"unified\" in the list of supported highlighters for ES.\r\nThis highlighter can extract offsets from either postings, term vectors, or via re-analyzing text.\r\nThe best strategy is picked automatically at query time and depends on the field and the query to highlight.",
+      "commitDate": 1485885963000,
+      "commitName": "f6d38d480af8b2b1f4731bd7373b84b934d809b5",
+      "commitAuthor": "Jim Ferenczi",
+      "commitDateOld": 1485883398000,
+      "commitNameOld": "f90051e6e0bf2b318f4cda1349368562fcf625fd",
+      "commitAuthorOld": "Nik Everett",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5": {
+      "type": "Yfilerename",
+      "commitMessage": "create core module\n",
+      "commitDate": 1433502723000,
+      "commitName": "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1433502668000,
+      "commitNameOld": "7ccc193a666e2ae888e7ac93d677a2143e5e07c3",
+      "commitAuthorOld": "Simon Willnauer",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "48ac9747a8c9a3206aaff165add1c12e75c79604": {
+      "type": "Yintroduced",
+      "commitMessage": "Added third highlighter type based on lucene postings highlighter\n\nRequires field index_options set to \"offsets\" in order to store positions and offsets in the postings list.\nConsiderably faster than the plain highlighter since it doesn\u0027t require to reanalyze the text to be highlighted: the larger the documents the better the performance gain should be.\nRequires less disk space than term_vectors, needed for the fast_vector_highlighter.\nBreaks the text into sentences and highlights them. Uses a BreakIterator to find sentences in the text. Plays really well with natural text, not quite the same if the text contains html markup for instance.\nTreats the document as the whole corpus, and scores individual sentences as if they were documents in this corpus, using the BM25 algorithm.\n\nUses forked version of lucene postings highlighter to support:\n- per value discrete highlighting for fields that have multiple values, needed when number_of_fragments\u003d0 since we want to return a snippet per value\n- manually passing in query terms to avoid calling extract terms multiple times, since we use a different highlighter instance per doc/field, but the query is always the same\n\nThe lucene postings highlighter api is  quite different compared to the existing highlighters api, the main difference being that it allows to highlight multiple fields in multiple docs with a single call, ensuring sequential IO.\nThe way it is introduced in elasticsearch in this first round is a compromise trying not to change the current highlight api, which works per document, per field. The main disadvantage is that we lose the sequential IO, but we can always refactor the highlight api to work with multiple documents.\n\nSupports pre_tag, post_tag, number_of_fragments (0 highlights the whole field), require_field_match, no_match_size, order by score and html encoding.\n\nCloses #3704\n",
+      "commitDate": 1382650680000,
+      "commitName": "48ac9747a8c9a3206aaff165add1c12e75c79604",
+      "commitAuthor": "Luca Cavanna"
+    }
+  }
+}

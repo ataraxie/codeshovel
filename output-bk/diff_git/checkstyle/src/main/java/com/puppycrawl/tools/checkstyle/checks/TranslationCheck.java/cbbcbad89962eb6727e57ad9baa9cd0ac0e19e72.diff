@@ -1,0 +1,106 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+index 35aa20c14..c52d109e4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TranslationCheck.java
+@@ -280,101 +280,100 @@ public class TranslationCheck extends AbstractFileSetCheck {
+                 logMissingTranslation(bundle.getPath(), fileName.get());
+             }
+         }
+     }
+ 
+     /**
+      * Returns the name of translation file which is absent in resource bundle or Guava's Optional,
+      * if there is not missing translation.
+      * @param bundle resource bundle.
+      * @param languageCode language code.
+      * @return the name of translation file which is absent in resource bundle or Guava's Optional,
+      *         if there is not missing translation.
+      */
+     private static Optional<String> getMissingFileName(ResourceBundle bundle, String languageCode) {
+         final String fileNameRegexp;
+         final boolean searchForDefaultTranslation;
+         final String extension = bundle.getExtension();
+         final String baseName = bundle.getBaseName();
+         if (languageCode == null) {
+             searchForDefaultTranslation = true;
+             fileNameRegexp = String.format(Locale.ROOT, REGEXP_FORMAT_TO_CHECK_DEFAULT_TRANSLATIONS,
+                     baseName, extension);
+         }
+         else {
+             searchForDefaultTranslation = false;
+             fileNameRegexp = String.format(Locale.ROOT,
+                 REGEXP_FORMAT_TO_CHECK_REQUIRED_TRANSLATIONS, baseName, languageCode, extension);
+         }
+         Optional<String> missingFileName = Optional.empty();
+         if (!bundle.containsFile(fileNameRegexp)) {
+             if (searchForDefaultTranslation) {
+                 missingFileName = Optional.of(String.format(Locale.ROOT,
+                         DEFAULT_TRANSLATION_FILE_NAME_FORMATTER, baseName, extension));
+             }
+             else {
+                 missingFileName = Optional.of(String.format(Locale.ROOT,
+                         FILE_NAME_WITH_LANGUAGE_CODE_FORMATTER, baseName, languageCode, extension));
+             }
+         }
+         return missingFileName;
+     }
+ 
+     /**
+      * Logs that translation file is missing.
+      * @param filePath file path.
+      * @param fileName file name.
+      */
+     private void logMissingTranslation(String filePath, String fileName) {
+         log(0, MSG_KEY_MISSING_TRANSLATION_FILE, fileName);
+         fireErrors(filePath);
+-        getMessageDispatcher().fireFileFinished(filePath);
+     }
+ 
+     /**
+      * Groups a set of files into bundles.
+      * Only files, which names match base name regexp pattern will be grouped.
+      * @param files set of files.
+      * @param baseNameRegexp base name regexp pattern.
+      * @return set of ResourceBundles.
+      */
+     private static Set<ResourceBundle> groupFilesIntoBundles(Set<File> files,
+                                                              Pattern baseNameRegexp) {
+         final Set<ResourceBundle> resourceBundles = new HashSet<>();
+         for (File currentFile : files) {
+             final String fileName = currentFile.getName();
+             final String baseName = extractBaseName(fileName);
+             final Matcher baseNameMatcher = baseNameRegexp.matcher(baseName);
+             if (baseNameMatcher.matches()) {
+                 final String extension = CommonUtils.getFileExtension(fileName);
+                 final String path = getPath(currentFile.getAbsolutePath());
+                 final ResourceBundle newBundle = new ResourceBundle(baseName, path, extension);
+                 final Optional<ResourceBundle> bundle = findBundle(resourceBundles, newBundle);
+                 if (bundle.isPresent()) {
+                     bundle.get().addFile(currentFile);
+                 }
+                 else {
+                     newBundle.addFile(currentFile);
+                     resourceBundles.add(newBundle);
+                 }
+             }
+         }
+         return resourceBundles;
+     }
+ 
+     /**
+      * Searches for specific resource bundle in a set of resource bundles.
+      * @param bundles set of resource bundles.
+      * @param targetBundle target bundle to search for.
+      * @return Guava's Optional of resource bundle (present if target bundle is found).
+      */
+     private static Optional<ResourceBundle> findBundle(Set<ResourceBundle> bundles,
+                                                        ResourceBundle targetBundle) {
+         Optional<ResourceBundle> result = Optional.empty();
+         for (ResourceBundle currentBundle : bundles) {
+             if (targetBundle.getBaseName().equals(currentBundle.getBaseName())
+                     && targetBundle.getExtension().equals(currentBundle.getExtension())
+                     && targetBundle.getPath().equals(currentBundle.getPath())) {
+                 result = Optional.of(currentBundle);
+                 break;
+             }
+         }

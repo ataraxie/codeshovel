@@ -1,0 +1,104 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "OuterTypeFilenameCheck.java",
+  "functionName": "visitToken",
+  "functionId": "visitToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/OuterTypeFilenameCheck.java",
+  "functionStartLine": 92,
+  "functionEndLine": 111,
+  "changeHistory": [
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2",
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "6f6179fb52b2a104adc1c60bf92f8bdf3818255a",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "84a9ea5f6b3f000b840f184100ed3d2ebc096978"
+  ],
+  "changeHistoryShort": {
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2": "Ybodychange",
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1": "Ybodychange",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "6f6179fb52b2a104adc1c60bf92f8bdf3818255a": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "84a9ea5f6b3f000b840f184100ed3d2ebc096978": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #4328: moved variables inside if blocks to reduce execution time",
+      "commitDate": 1494119754000,
+      "commitName": "82bc23f45d7d57dfa26d1a1d4ec0f7dfcd88abb2",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 99.45,
+      "commitsBetweenForRepo": 383,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     public void visitToken(DetailAST ast) {\n-        final String outerTypeName \u003d ast.findFirstToken(TokenTypes.IDENT).getText();\n         if (seenFirstToken) {\n             final DetailAST modifiers \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n             if (modifiers.findFirstToken(TokenTypes.LITERAL_PUBLIC) !\u003d null\n                     \u0026\u0026 ast.getParent() \u003d\u003d null) {\n                 hasPublic \u003d true;\n             }\n         }\n         else {\n+            final String outerTypeName \u003d ast.findFirstToken(TokenTypes.IDENT).getText();\n \n             if (fileName.equals(outerTypeName)) {\n                 validFirst \u003d true;\n             }\n             else {\n                 wrongType \u003d ast;\n             }\n         }\n         seenFirstToken \u003d true;\n     }\n\\ No newline at end of file\n"
+    },
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1": {
+      "type": "Ybodychange",
+      "commitMessage": "Invert if statements with negated conditions. #1555\n\nFixes `NegatedIfElse` inspection violations.\n\nDescription:\n\u003eReports if statements which contain else branches and whose conditions are negated. Flipping the order of the if and else branches will usually increase the clarity of such statements.\n",
+      "commitDate": 1439189206000,
+      "commitName": "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1438565592000,
+      "commitNameOld": "2e1ab8dd86e798ecc8cde6e3f2cde3a86053f80b",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 7.22,
+      "commitsBetweenForRepo": 112,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     public void visitToken(DetailAST ast) {\n         final String outerTypeName \u003d ast.findFirstToken(TokenTypes.IDENT).getText();\n-        if (!seenFirstToken) {\n+        if (seenFirstToken) {\n+            final DetailAST modifiers \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n+            if (modifiers.findFirstToken(TokenTypes.LITERAL_PUBLIC) !\u003d null\n+                    \u0026\u0026 ast.getParent() \u003d\u003d null) {\n+                hasPublic \u003d true;\n+            }\n+        }\n+        else {\n \n             if (fileName.equals(outerTypeName)) {\n                 validFirst \u003d true;\n             }\n             else {\n                 wrongType \u003d ast;\n             }\n         }\n-        else {\n-            final DetailAST modifiers \u003d ast.findFirstToken(TokenTypes.MODIFIERS);\n-            if (modifiers.findFirstToken(TokenTypes.LITERAL_PUBLIC) !\u003d null\n-                    \u0026\u0026 ast.getParent() \u003d\u003d null) {\n-                hasPublic \u003d true;\n-            }\n-        }\n         seenFirstToken \u003d true;\n     }\n\\ No newline at end of file\n"
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "6f6179fb52b2a104adc1c60bf92f8bdf3818255a": {
+      "type": "Ybodychange",
+      "commitMessage": "OuterTypeFilenameCheck. Update Check logic #248\n",
+      "commitDate": 1407928513000,
+      "commitName": "6f6179fb52b2a104adc1c60bf92f8bdf3818255a",
+      "commitAuthor": "Max",
+      "commitDateOld": 1393953491000,
+      "commitNameOld": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthorOld": "Ivan Sopov",
+      "daysBetweenCommits": 161.75,
+      "commitsBetweenForRepo": 100,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,22 +1,22 @@\n     public void visitToken(DetailAST aAST)\n     {\n-        // Only check first declaration\n-        if (mSeenFirstToken) {\n-            return;\n+        final String outerTypeName \u003d aAST.findFirstToken(TokenTypes.IDENT).getText();\n+        if (!mSeenFirstToken) {\n+\n+            if (mFileName.equals(outerTypeName)) {\n+                mValidFirst \u003d true;\n+            }\n+            else {\n+                mWrongType \u003d aAST;\n+            }\n+        }\n+        else {\n+            final DetailAST modifiers \u003d aAST.findFirstToken(TokenTypes.MODIFIERS);\n+            if (modifiers.findFirstToken(TokenTypes.LITERAL_PUBLIC) !\u003d null\n+                    \u0026\u0026 aAST.getParent() \u003d\u003d null)\n+            {\n+                mHasPublic \u003d true;\n+            }\n         }\n         mSeenFirstToken \u003d true;\n-\n-        final String outerTypeName \u003d\n-            aAST.findFirstToken(TokenTypes.IDENT).getText();\n-\n-        // Calculate the file name without the leading path or\n-        // the trailing .java suffix. Will be lax and just remove whatever\n-        // is after the \u0027.\u0027 character.\n-        String fname \u003d getFileContents().getFilename();\n-        fname \u003d fname.substring(fname.lastIndexOf(File.separatorChar) + 1);\n-        fname \u003d fname.replaceAll(\"\\\\.[^\\\\.]*$\", \"\");\n-\n-        if (!(fname.equals(outerTypeName))) {\n-            log(aAST.getLineNo(), \"type.file.mismatch\");\n-        }\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "84a9ea5f6b3f000b840f184100ed3d2ebc096978": {
+      "type": "Yintroduced",
+      "commitMessage": "Added OuterTypeFilename that checks that the outer type name and the file name match.\n\nFor example, the class Foo must be in a file named Foo.java.\n",
+      "commitDate": 1285649049000,
+      "commitName": "84a9ea5f6b3f000b840f184100ed3d2ebc096978",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

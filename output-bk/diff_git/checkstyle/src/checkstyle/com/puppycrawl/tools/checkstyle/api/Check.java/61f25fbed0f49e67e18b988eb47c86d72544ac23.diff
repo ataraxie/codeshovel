@@ -1,0 +1,91 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Check.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Check.java
+index f32258f9d..780a76001 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Check.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/api/Check.java
+@@ -178,84 +178,84 @@ public abstract class Check extends AbstractViolationReporter
+      * @param aContents the manager
+      */
+     public final void setFileContents(FileContents aContents)
+     {
+         mFileContents = aContents;
+     }
+ 
+     /**
+      * Returns the file contents associated with the tree.
+      * @return the file contents
+      */
+     public final FileContents getFileContents()
+     {
+         return mFileContents;
+     }
+ 
+     /**
+      * Set the class loader associated with the tree.
+      * @param aLoader the class loader
+      */
+     public final void setClassLoader(ClassLoader aLoader)
+     {
+         mLoader = aLoader;
+     }
+ 
+     /**
+      * Returns the class loader associated with the tree.
+      * @return the class loader
+      */
+     public final ClassLoader getClassLoader()
+     {
+         return mLoader;
+     }
+ 
+     /** @return the tab width to report errors with */
+     protected final int getTabWidth()
+     {
+         return mTabWidth;
+     }
+ 
+     /**
+      * Set the tab width to report errors with.
+      * @param aTabWidth an <code>int</code> value
+      */
+     public final void setTabWidth(int aTabWidth)
+     {
+         mTabWidth = aTabWidth;
+     }
+ 
+     @Override
+-    protected final void log(int aLine, String aKey, Object... aArgs)
++    public final void log(int aLine, String aKey, Object... aArgs)
+     {
+         mMessages.add(
+             new LocalizedMessage(
+                 aLine,
+                 getMessageBundle(),
+                 aKey,
+                 aArgs,
+                 getSeverityLevel(),
+                 getId(),
+                 this.getClass(),
+                 this.getCustomMessages().get(aKey)));
+     }
+ 
+ 
+     @Override
+-    protected final void log(int aLineNo, int aColNo, String aKey,
++    public final void log(int aLineNo, int aColNo, String aKey,
+             Object... aArgs)
+     {
+         final int col = 1 + Utils.lengthExpandedTabs(
+             getLines()[aLineNo - 1], aColNo, getTabWidth());
+         mMessages.add(
+             new LocalizedMessage(
+                 aLineNo,
+                 col,
+                 getMessageBundle(),
+                 aKey,
+                 aArgs,
+                 getSeverityLevel(),
+                 getId(),
+                 this.getClass(),
+                 this.getCustomMessages().get(aKey)));
+     }
+ }

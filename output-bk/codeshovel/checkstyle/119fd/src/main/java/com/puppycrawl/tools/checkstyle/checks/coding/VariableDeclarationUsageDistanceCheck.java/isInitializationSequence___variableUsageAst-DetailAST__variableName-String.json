@@ -1,0 +1,72 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "VariableDeclarationUsageDistanceCheck.java",
+  "functionName": "isInitializationSequence",
+  "functionId": "isInitializationSequence___variableUsageAst-DetailAST__variableName-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java",
+  "functionStartLine": 320,
+  "functionEndLine": 374,
+  "changeHistory": [
+    "c4339df8b3d6b58b327b6cfcaca7413e9c526dcf",
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "c4e886312aae13b6cfadceed25b1b8aec18d4a96"
+  ],
+  "changeHistoryShort": {
+    "c4339df8b3d6b58b327b6cfcaca7413e9c526dcf": "Ybodychange",
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "c4e886312aae13b6cfadceed25b1b8aec18d4a96": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "c4339df8b3d6b58b327b6cfcaca7413e9c526dcf": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1293. Improved coverage for VariableDecalarationUsageCheck.\n",
+      "commitDate": 1439215017000,
+      "commitName": "c4339df8b3d6b58b327b6cfcaca7413e9c526dcf",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1439189206000,
+      "commitNameOld": "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.3,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,57 +1,56 @@\n     private static boolean isInitializationSequence(\n             DetailAST variableUsageAst, String variableName) {\n         boolean result \u003d true;\n         boolean isUsedVariableDeclarationFound \u003d false;\n         DetailAST currentSiblingAst \u003d variableUsageAst;\n         String initInstanceName \u003d \"\";\n \n         while (result\n                 \u0026\u0026 !isUsedVariableDeclarationFound\n                 \u0026\u0026 currentSiblingAst !\u003d null) {\n \n             switch (currentSiblingAst.getType()) {\n \n                 case TokenTypes.EXPR:\n                     final DetailAST methodCallAst \u003d currentSiblingAst.getFirstChild();\n \n-                    if (methodCallAst !\u003d null\n-                        \u0026\u0026 methodCallAst.getType() \u003d\u003d TokenTypes.METHOD_CALL) {\n+                    if (methodCallAst.getType() \u003d\u003d TokenTypes.METHOD_CALL) {\n                         final String instanceName \u003d\n                             getInstanceName(methodCallAst);\n                         // method is called without instance\n                         if (instanceName.isEmpty()) {\n                             result \u003d false;\n                         }\n                         // differs from previous instance\n                         else if (!instanceName.equals(initInstanceName)) {\n                             if (initInstanceName.isEmpty()) {\n                                 initInstanceName \u003d instanceName;\n                             }\n                             else {\n                                 result \u003d false;\n                             }\n                         }\n                     }\n                     else { // is not method call\n                         result \u003d false;\n                     }\n                     break;\n \n                 case TokenTypes.VARIABLE_DEF:\n                     final String currentVariableName \u003d currentSiblingAst\n                         .findFirstToken(TokenTypes.IDENT).getText();\n                     isUsedVariableDeclarationFound \u003d variableName.equals(currentVariableName);\n                     break;\n \n                 case TokenTypes.SEMI:\n                     break;\n \n                 default:\n                     result \u003d false;\n             }\n \n             currentSiblingAst \u003d currentSiblingAst.getPreviousSibling();\n         }\n \n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1": {
+      "type": "Ybodychange",
+      "commitMessage": "Invert if statements with negated conditions. #1555\n\nFixes `NegatedIfElse` inspection violations.\n\nDescription:\n\u003eReports if statements which contain else branches and whose conditions are negated. Flipping the order of the if and else branches will usually increase the clarity of such statements.\n",
+      "commitDate": 1439189206000,
+      "commitName": "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439131302000,
+      "commitNameOld": "6d5c0da42fa54ceabbc1959e9db354ed64a2ff86",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 0.67,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,57 +1,57 @@\n     private static boolean isInitializationSequence(\n             DetailAST variableUsageAst, String variableName) {\n         boolean result \u003d true;\n         boolean isUsedVariableDeclarationFound \u003d false;\n         DetailAST currentSiblingAst \u003d variableUsageAst;\n         String initInstanceName \u003d \"\";\n \n         while (result\n                 \u0026\u0026 !isUsedVariableDeclarationFound\n                 \u0026\u0026 currentSiblingAst !\u003d null) {\n \n             switch (currentSiblingAst.getType()) {\n \n                 case TokenTypes.EXPR:\n                     final DetailAST methodCallAst \u003d currentSiblingAst.getFirstChild();\n \n                     if (methodCallAst !\u003d null\n                         \u0026\u0026 methodCallAst.getType() \u003d\u003d TokenTypes.METHOD_CALL) {\n                         final String instanceName \u003d\n                             getInstanceName(methodCallAst);\n                         // method is called without instance\n                         if (instanceName.isEmpty()) {\n                             result \u003d false;\n                         }\n                         // differs from previous instance\n                         else if (!instanceName.equals(initInstanceName)) {\n-                            if (!initInstanceName.isEmpty()) {\n-                                result \u003d false;\n+                            if (initInstanceName.isEmpty()) {\n+                                initInstanceName \u003d instanceName;\n                             }\n                             else {\n-                                initInstanceName \u003d instanceName;\n+                                result \u003d false;\n                             }\n                         }\n                     }\n                     else { // is not method call\n                         result \u003d false;\n                     }\n                     break;\n \n                 case TokenTypes.VARIABLE_DEF:\n                     final String currentVariableName \u003d currentSiblingAst\n                         .findFirstToken(TokenTypes.IDENT).getText();\n                     isUsedVariableDeclarationFound \u003d variableName.equals(currentVariableName);\n                     break;\n \n                 case TokenTypes.SEMI:\n                     break;\n \n                 default:\n                     result \u003d false;\n             }\n \n             currentSiblingAst \u003d currentSiblingAst.getPreviousSibling();\n         }\n \n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "c4e886312aae13b6cfadceed25b1b8aec18d4a96": {
+      "type": "Yintroduced",
+      "commitMessage": "VariableDeclarationUsageDistanceCheck was imported #223\n",
+      "commitDate": 1407390645000,
+      "commitName": "c4e886312aae13b6cfadceed25b1b8aec18d4a96",
+      "commitAuthor": "Max"
+    }
+  }
+}

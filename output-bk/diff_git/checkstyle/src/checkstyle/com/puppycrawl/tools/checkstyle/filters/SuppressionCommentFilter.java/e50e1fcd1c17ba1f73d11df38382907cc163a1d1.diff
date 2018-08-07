@@ -1,0 +1,233 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index 8b2a2edc2..fdfccc376 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -1,82 +1,81 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2007  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.filters;
+ 
+ import com.puppycrawl.tools.checkstyle.api.AuditEvent;
+ import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.Filter;
+ import com.puppycrawl.tools.checkstyle.api.TextBlock;
+ import com.puppycrawl.tools.checkstyle.api.Utils;
+ import com.puppycrawl.tools.checkstyle.checks.FileContentsHolder;
+ import java.lang.ref.WeakReference;
+ import java.util.ArrayList;
+ import java.util.Collection;
+ import java.util.Collections;
+-import java.util.Iterator;
+ import java.util.List;
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ import java.util.regex.PatternSyntaxException;
+ import org.apache.commons.beanutils.ConversionException;
+ 
+ /**
+  * <p>
+  * A filter that uses comments to suppress audit events.
+  * </p>
+  * <p>
+  * Rationale:
+  * Sometimes there are legitimate reasons for violating a check.  When
+  * this is a matter of the code in question and not personal
+  * preference, the best place to override the policy is in the code
+  * itself.  Semi-structured comments can be associated with the check.
+  * This is sometimes superior to a separate suppressions file, which
+  * must be kept up-to-date as the source file is edited.
+  * </p>
+  * <p>
+  * Usage:
+  * This check only works in conjunction with the FileContentsHolder module
+  * since that module makes the suppression comments in the .java
+  * files available <i>sub rosa</i>.
+  * </p>
+  * @see FileContentsHolder
+  * @author Mike McMahon
+  * @author Rick Giles
+  */
+ public class SuppressionCommentFilter
+     extends AutomaticBean
+     implements Filter
+ {
+     /**
+      * A Tag holds a suppression comment and its location, and determines
+      * whether the supression turns checkstyle reporting on or off.
+      * @author Rick Giles
+      */
+     public class Tag
+         implements Comparable<Tag>
+     {
+         /** The text of the tag. */
+         private final String mText;
+ 
+         /** The line number of the tag. */
+         private final int mLine;
+ 
+         /** The column number of the tag. */
+         private final int mColumn;
+ 
+@@ -397,142 +396,136 @@ public class SuppressionCommentFilter
+     {
+         mCheckCPP = aCheckCPP;
+     }
+ 
+     /**
+      * Set whether to look in C comments.
+      * @param aCheckC <code>true</code> if C comments are checked.
+      */
+     public void setCheckC(boolean aCheckC)
+     {
+         mCheckC = aCheckC;
+     }
+ 
+     /** {@inheritDoc} */
+     public boolean accept(AuditEvent aEvent)
+     {
+         if (aEvent.getLocalizedMessage() == null) {
+             return true;        // A special event.
+         }
+ 
+         // Lazy update. If the first event for the current file, update file
+         // contents and tag suppressions
+         final FileContents currentContents = FileContentsHolder.getContents();
+         if (currentContents == null) {
+             // we have no contents, so we can not filter.
+             // TODO: perhaps we should notify user somehow?
+             return true;
+         }
+         if (getFileContents() != currentContents) {
+             setFileContents(currentContents);
+             tagSuppressions();
+         }
+         final Tag matchTag = findNearestMatch(aEvent);
+         if ((matchTag != null) && !matchTag.isOn()) {
+             return false;
+         }
+         return true;
+     }
+ 
+     /**
+      * Finds the nearest comment text tag that matches an audit event.
+      * The nearest tag is before the line and column of the event.
+      * @param aEvent the <code>AuditEvent</code> to match.
+      * @return The <code>Tag</code> nearest aEvent.
+      */
+     private Tag findNearestMatch(AuditEvent aEvent)
+     {
+         Tag result = null;
+         // TODO: try binary search if sequential search becomes a performance
+         // problem.
+-        for (final Iterator<Tag> iter = mTags.iterator(); iter.hasNext();) {
+-            final Tag tag = iter.next();
++        for (Tag tag : mTags) {
+             if ((tag.getLine() > aEvent.getLine())
+                 || ((tag.getLine() == aEvent.getLine())
+                     && (tag.getColumn() > aEvent.getColumn())))
+             {
+                 break;
+             }
+             if (tag.isMatch(aEvent)) {
+                 result = tag;
+             }
+         };
+         return result;
+     }
+ 
+     /**
+      * Collects all the suppression tags for all comments into a list and
+      * sorts the list.
+      */
+     private void tagSuppressions()
+     {
+         mTags.clear();
+         final FileContents contents = getFileContents();
+         if (mCheckCPP) {
+             tagSuppressions(contents.getCppComments().values());
+         }
+         if (mCheckC) {
+             final Collection<List<TextBlock>> cComments = contents
+                     .getCComments().values();
+-            final Iterator<List<TextBlock>> iter = cComments.iterator();
+-            while (iter.hasNext()) {
+-                final List<TextBlock> element = iter.next();
++            for (List<TextBlock> element : cComments) {
+                 tagSuppressions(element);
+             }
+         }
+         Collections.sort(mTags);
+     }
+ 
+     /**
+      * Appends the suppressions in a collection of comments to the full
+      * set of suppression tags.
+      * @param aComments the set of comments.
+      */
+     private void tagSuppressions(Collection<TextBlock> aComments)
+     {
+-        for (final Iterator<TextBlock> iter = aComments.iterator(); iter
+-                .hasNext();)
+-        {
+-            final TextBlock comment = iter.next();
++        for (TextBlock comment : aComments) {
+             final int startLineNo = comment.getStartLineNo();
+             final String[] text = comment.getText();
+             tagCommentLine(text[0], startLineNo, comment.getStartColNo());
+             for (int i = 1; i < text.length; i++) {
+                 tagCommentLine(text[i], startLineNo + i, 0);
+             }
+         }
+     }
+ 
+     /**
+      * Tags a string if it matches the format for turning
+      * checkstyle reporting on or the format for turning reporting off.
+      * @param aText the string to tag.
+      * @param aLine the line number of aText.
+      * @param aColumn the column number of aText.
+      */
+     private void tagCommentLine(String aText, int aLine, int aColumn)
+     {
+         final Matcher offMatcher = mOffRegexp.matcher(aText);
+         if (offMatcher.find()) {
+             addTag(offMatcher.group(0), aLine, aColumn, false);
+         }
+         else {
+             final Matcher onMatcher = mOnRegexp.matcher(aText);
+             if (onMatcher.find()) {
+                 addTag(onMatcher.group(0), aLine, aColumn, true);
+             }
+         }
+     }
+ 
+     /**
+      * Adds a <code>Tag</code> to the list of all tags.
+      * @param aText the text of the tag.
+      * @param aLine the line number of the tag.
+      * @param aColumn the column number of the tag.
+      * @param aOn <code>true</code> if the tag turns checkstyle reporting on.
+      */
+     private void addTag(String aText, int aLine, int aColumn, boolean aOn)
+     {
+         final Tag tag = new Tag(aLine, aColumn, aText, aOn);
+         mTags.add(tag);
+     }
+ }

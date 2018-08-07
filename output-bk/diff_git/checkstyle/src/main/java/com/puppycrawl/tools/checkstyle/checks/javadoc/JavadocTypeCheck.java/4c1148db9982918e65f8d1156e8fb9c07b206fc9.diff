@@ -1,0 +1,110 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+index 27cddbc17..aba9a0c08 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+@@ -151,103 +151,103 @@ public class JavadocTypeCheck
+      * @param flag a <code>Boolean</code> value
+      */
+     public void setAllowUnknownTags(boolean flag) {
+         allowUnknownTags = flag;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ANNOTATION_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ANNOTATION_DEF,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (shouldCheck(ast)) {
+             final FileContents contents = getFileContents();
+             final int lineNo = ast.getLineNo();
+             final TextBlock cmt = contents.getJavadocBefore(lineNo);
+             if (cmt == null) {
+                 log(lineNo, JAVADOC_MISSING);
+             }
+             else {
+                 final List<JavadocTag> tags = getJavadocTags(cmt);
+                 if (ScopeUtils.isOuterMostType(ast)) {
+                     // don't check author/version for inner classes
+                     checkTag(lineNo, tags, JavadocTagInfo.AUTHOR.getName(),
+                             authorFormatPattern, authorFormat);
+                     checkTag(lineNo, tags, JavadocTagInfo.VERSION.getName(),
+                             versionFormatPattern, versionFormat);
+                 }
+ 
+                 final List<String> typeParamNames =
+                     CheckUtils.getTypeParameterNames(ast);
+ 
+                 if (!allowMissingParamTags) {
+                     //Check type parameters that should exist, do
+-                    for (final String string : typeParamNames) {
++                    for (final String typeParamName : typeParamNames) {
+                         checkTypeParamTag(
+-                            lineNo, tags, string);
++                            lineNo, tags, typeParamName);
+                     }
+                 }
+ 
+                 checkUnusedTypeParamTags(tags, typeParamNames);
+             }
+         }
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param ast a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST ast) {
+         final DetailAST mods = ast.findFirstToken(TokenTypes.MODIFIERS);
+         final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
+         final Scope scope =
+             ScopeUtils.inInterfaceOrAnnotationBlock(ast)
+                 ? Scope.PUBLIC : declaredScope;
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(ast);
+ 
+         return scope.isIn(this.scope)
+             && (surroundingScope == null || surroundingScope.isIn(this.scope))
+             && (excludeScope == null
+                 || !scope.isIn(excludeScope)
+                 || surroundingScope != null
+                 && !surroundingScope.isIn(excludeScope));
+     }
+ 
+     /**
+      * Gets all standalone tags from a given javadoc.
+      * @param cmt the Javadoc comment to process.
+      * @return all standalone tags from the given javadoc.
+      */
+     private List<JavadocTag> getJavadocTags(TextBlock cmt) {
+         final JavadocTags tags = JavadocUtils.getJavadocTags(cmt,
+             JavadocUtils.JavadocTagType.BLOCK);
+         if (!allowUnknownTags) {
+             for (final InvalidJavadocTag tag : tags.getInvalidTags()) {
+                 log(tag.getLine(), tag.getCol(), UNKNOWN_TAG,
+                     tag.getName());
+             }
+         }
+         return tags.getValidTags();
+     }
+ 
+     /**
+      * Verifies that a type definition has a required tag.
+      * @param lineNo the line number for the type definition.
+      * @param tags tags from the Javadoc comment for the type definition.

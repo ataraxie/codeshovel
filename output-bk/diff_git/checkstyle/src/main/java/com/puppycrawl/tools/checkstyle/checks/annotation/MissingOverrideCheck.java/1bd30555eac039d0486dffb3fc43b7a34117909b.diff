@@ -1,0 +1,89 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/MissingOverrideCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/MissingOverrideCheck.java
+index dbdd476ab..d76f19978 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/MissingOverrideCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/MissingOverrideCheck.java
+@@ -125,82 +125,82 @@ public final class MissingOverrideCheck extends Check
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return this.getRequiredTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return this.getRequiredTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getRequiredTokens()
+     {
+         return new int[]
+         {TokenTypes.METHOD_DEF, };
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void visitToken(final DetailAST ast)
+     {
+         final TextBlock javadoc =
+             this.getFileContents().getJavadocBefore(ast.getLineNo());
+ 
+ 
+         final boolean containastag = this.containsJavadocTag(javadoc);
+         if (containastag && !JavadocTagInfo.INHERIT_DOC.isValidOn(ast)) {
+             this.log(ast.getLineNo(), MSG_KEY_TAG_NOT_VALID_ON,
+                 JavadocTagInfo.INHERIT_DOC.getText());
+             return;
+         }
+ 
+         if (this.javaFiveCompatibility) {
+             final DetailAST defOrNew = ast.getParent().getParent();
+ 
+             if (defOrNew.branchContains(TokenTypes.EXTENDS_CLAUSE)
+                 || defOrNew.branchContains(TokenTypes.IMPLEMENTS_CLAUSE)
+                 || defOrNew.getType() == TokenTypes.LITERAL_NEW)
+             {
+                 return;
+             }
+         }
+ 
+         if (containastag
+-            && (!AnnotationUtility.containsAnnotation(ast, OVERRIDE)
+-            && !AnnotationUtility.containsAnnotation(ast, FQ_OVERRIDE)))
++            && !AnnotationUtility.containsAnnotation(ast, OVERRIDE)
++            && !AnnotationUtility.containsAnnotation(ast, FQ_OVERRIDE))
+         {
+             this.log(ast.getLineNo(), MSG_KEY_ANNOTATION_MISSING_OVERRIDE);
+         }
+     }
+ 
+     /**
+      * Checks to see if the text block contains a inheritDoc tag.
+      *
+      * @param javadoc the javadoc of the AST
+      * @return true if contains the tag
+      */
+     private boolean containsJavadocTag(final TextBlock javadoc)
+     {
+         if (javadoc == null) {
+             return false;
+         }
+ 
+         final String[] lines = javadoc.getText();
+ 
+         for (final String line : lines) {
+             final Matcher matchInheritDoc =
+                 MissingOverrideCheck.MATCH_INHERITDOC.matcher(line);
+ 
+             if (matchInheritDoc.find()) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ }

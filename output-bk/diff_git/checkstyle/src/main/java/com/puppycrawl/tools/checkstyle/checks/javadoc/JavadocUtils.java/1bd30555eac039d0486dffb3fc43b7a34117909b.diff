@@ -1,0 +1,210 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java
+index e5ed83bc2..4d898d44e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocUtils.java
+@@ -115,101 +115,101 @@ public final class JavadocUtils
+                 Utils.getPattern("/\\*{2,}\\s*@(\\p{Alpha}+)\\s");
+         for (int i = 0; i < text.length; i++) {
+             final String s = text[i];
+             final Matcher blockTagMatcher = blockTagPattern.matcher(s);
+             if ((tagType == JavadocTagType.ALL || tagType == JavadocTagType.BLOCK)
+                     && blockTagMatcher.find())
+             {
+                 final String tagName = blockTagMatcher.group(1);
+                 String content = s.substring(blockTagMatcher.end(1));
+                 if (content.endsWith("*/")) {
+                     content = content.substring(0, content.length() - 2);
+                 }
+                 final int line = cmt.getStartLineNo() + i;
+                 int col = blockTagMatcher.start(1) - 1;
+                 if (i == 0) {
+                     col += cmt.getStartColNo();
+                 }
+                 if (JavadocTagInfo.isValidName(tagName)) {
+                     tags.add(
+                             new JavadocTag(line, col, tagName, content.trim()));
+                 }
+                 else {
+                     invalidTags.add(new InvalidJavadocTag(line, col, tagName));
+                 }
+             }
+             // No block tag, so look for inline validTags
+             else if (tagType == JavadocTagType.ALL || tagType == JavadocTagType.INLINE)
+             {
+                 // Match Javadoc text after comment characters
+                 final Pattern commentPattern =
+                         Utils.getPattern("^\\s*(?:/\\*{2,}|\\*+)\\s*(.*)");
+                 final Matcher commentMatcher = commentPattern.matcher(s);
+                 final String commentContents;
+                 final int commentOffset; // offset including comment characters
+                 if (!commentMatcher.find()) {
+                     commentContents = s; // No leading asterisks, still valid
+                     commentOffset = 0;
+                 }
+                 else {
+                     commentContents = commentMatcher.group(1);
+                     commentOffset = commentMatcher.start(1) - 1;
+                 }
+                 final Pattern tagPattern =
+                         Utils.getPattern(".*?\\{@(\\p{Alpha}+)\\s+(.*?)\\}");
+                 final Matcher tagMatcher = tagPattern.matcher(commentContents);
+                 while (tagMatcher.find()) {
+                     if (tagMatcher.groupCount() == 2) {
+                         final String tagName = tagMatcher.group(1);
+                         final String tagValue = tagMatcher.group(2).trim();
+                         final int line = cmt.getStartLineNo() + i;
+-                        int col = commentOffset + (tagMatcher.start(1) - 1);
++                        int col = commentOffset + tagMatcher.start(1) - 1;
+                         if (i == 0) {
+                             col += cmt.getStartColNo();
+                         }
+                         if (JavadocTagInfo.isValidName(tagName)) {
+                             tags.add(new JavadocTag(line, col, tagName,
+                                     tagValue));
+                         }
+                         else {
+                             invalidTags.add(new InvalidJavadocTag(line, col,
+                                     tagName));
+                         }
+                     }
+                     // else Error: Unexpected match count for inline Javadoc
+                     // tag!
+                 }
+             }
+             blockTagPattern =
+                     Utils.getPattern("^\\s*\\**\\s*@(\\p{Alpha}+)\\s");
+         }
+         return new JavadocTags(tags, invalidTags);
+     }
+ 
+     /**
+      * The type of Javadoc tag we want returned.
+      */
+     public enum JavadocTagType
+     {
+         /** block type. */
+         BLOCK,
+         /** inline type. */
+         INLINE,
+         /** all validTags. */
+         ALL;
+     }
+ 
+     /**
+      * Checks that commentContent starts with '*' javadoc comment identifier.
+      * @param commentContent
+      *        content of block comment
+      * @return true if commentContent starts with '*' javadoc comment
+      *         identifier.
+      */
+     public static boolean isJavadocComment(String commentContent)
+     {
+         boolean result = false;
+ 
+         if (!commentContent.isEmpty()) {
+             final char docCommentIdentificator = commentContent.charAt(0);
+             result = docCommentIdentificator == '*';
+         }
+@@ -255,101 +255,101 @@ public final class JavadocUtils
+     }
+ 
+     /**
+      * Returns the first child token that has a specified type.
+      * @param node
+      *        Javadoc AST node
+      * @param type
+      *        the token type to match
+      * @return the matching token, or null if no match
+      */
+     public static DetailNode findFirstToken(DetailNode node, int type)
+     {
+         DetailNode retVal = null;
+         for (DetailNode i = getFirstChild(node); i != null; i = getNextSibling(i)) {
+             if (i.getType() == type) {
+                 retVal = i;
+                 break;
+             }
+         }
+         return retVal;
+     }
+ 
+     /**
+      * Gets first child node of specified node.
+      *
+      * @param node DetailNode
+      * @return first child
+      */
+     public static DetailNode getFirstChild(DetailNode node)
+     {
+         return node.getChildren().length > 0 ? node.getChildren()[0] : null;
+     }
+ 
+     /**
+      * Checks whether node contains any node of specified type among children on any deep level.
+      *
+      * @param node DetailNode
+      * @param type token type
+      * @return true if node contains any node of type type among children on any deep level.
+      */
+     public static boolean branchContains(DetailNode node, int type)
+     {
+         DetailNode curNode = node;
+         while (curNode != null) {
+ 
+             if (type == curNode.getType()) {
+                 return true;
+             }
+ 
+             DetailNode toVisit = getFirstChild(curNode);
+-            while ((curNode != null) && (toVisit == null)) {
++            while (curNode != null && toVisit == null) {
+                 toVisit = getNextSibling(curNode);
+                 if (toVisit == null) {
+                     curNode = curNode.getParent();
+                 }
+             }
+ 
+             if (curNode == toVisit) {
+                 break;
+             }
+ 
+             curNode = toVisit;
+         }
+ 
+         return false;
+     }
+ 
+     /**
+      * Gets next sibling of specified node.
+      *
+      * @param node DetailNode
+      * @return next sibling.
+      */
+     public static DetailNode getNextSibling(DetailNode node)
+     {
+         final DetailNode parent = node.getParent();
+         if (parent != null) {
+             final int nextSiblingIndex = node.getIndex() + 1;
+             final DetailNode[] children = parent.getChildren();
+             if (nextSiblingIndex <= children.length - 1) {
+                 return children[nextSiblingIndex];
+             }
+         }
+         return null;
+     }
+ 
+     /**
+      * Gets previous sibling of specified node.
+      * @param node DetailNode
+      * @return previous sibling
+      */
+     public static DetailNode getPreviousSibling(DetailNode node)
+     {
+         final DetailNode parent = node.getParent();
+         if (parent != null) {
+             final int previousSiblingIndex = node.getIndex() - 1;
+             final DetailNode[] children = parent.getChildren();
+             if (previousSiblingIndex >= 0) {
+                 return children[previousSiblingIndex];
+             }
+         }

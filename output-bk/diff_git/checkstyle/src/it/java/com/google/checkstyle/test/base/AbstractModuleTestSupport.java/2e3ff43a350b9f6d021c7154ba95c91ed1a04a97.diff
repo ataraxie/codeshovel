@@ -1,0 +1,107 @@
+diff --git a/src/it/java/com/google/checkstyle/test/base/AbstractModuleTestSupport.java b/src/it/java/com/google/checkstyle/test/base/AbstractModuleTestSupport.java
+index ed43f8994..4724ebeef 100644
+--- a/src/it/java/com/google/checkstyle/test/base/AbstractModuleTestSupport.java
++++ b/src/it/java/com/google/checkstyle/test/base/AbstractModuleTestSupport.java
+@@ -87,101 +87,101 @@ public abstract class AbstractModuleTestSupport extends AbstractPathTestSupport
+      * Returns test logger.
+      * @return logger test logger
+      */
+     public final BriefUtLogger getBriefUtLogger() {
+         return new BriefUtLogger(stream);
+     }
+ 
+     /**
+      * Returns {@link Configuration} based on Google's checks xml-configuration (google_checks.xml).
+      * This implementation uses {@link ConfigurationLoader} in order to load configuration
+      * from xml-file.
+      * @return {@link Configuration} based on Google's checks xml-configuration (google_checks.xml).
+      * @throws CheckstyleException if exception occurs during configuration loading.
+      */
+     protected static Configuration getConfiguration() throws CheckstyleException {
+         if (configuration == null) {
+             configuration = ConfigurationLoader.loadConfiguration(XML_NAME, new PropertiesExpander(
+                     System.getProperties()));
+         }
+ 
+         return configuration;
+     }
+ 
+     /**
+      * Creates {@link DefaultConfiguration} instance for the given module class.
+      * @param clazz module class.
+      * @return {@link DefaultConfiguration} instance.
+      */
+     private static DefaultConfiguration createModuleConfig(Class<?> clazz) {
+         return new DefaultConfiguration(clazz.getName());
+     }
+ 
+     /**
+      * Creates {@link Checker} instance based on the given {@link Configuration} instance.
+      * @param moduleConfig {@link Configuration} instance.
+      * @return {@link Checker} instance based on the given {@link Configuration} instance.
+      * @throws Exception if an exception occurs during checker configuration.
+      */
+     public final Checker createChecker(Configuration moduleConfig)
+             throws Exception {
+         if (checkstyleModules == null) {
+             checkstyleModules = CheckUtil.getCheckstyleModules();
+         }
+ 
+         final String name = moduleConfig.getName();
+         ModuleCreationOption moduleCreationOption = ModuleCreationOption.IN_CHECKER;
+ 
+         for (Class<?> moduleClass : checkstyleModules) {
+             if (moduleClass.getSimpleName().equals(name)
+                     || moduleClass.getSimpleName().equals(name + "Check")) {
+-                if (ModuleReflectionUtils.isCheckstyleCheck(moduleClass)
++                if (ModuleReflectionUtils.isCheckstyleTreeWalkerCheck(moduleClass)
+                         || ModuleReflectionUtils.isTreeWalkerFilterModule(moduleClass)) {
+                     moduleCreationOption = ModuleCreationOption.IN_TREEWALKER;
+                 }
+                 break;
+             }
+         }
+ 
+         return createChecker(moduleConfig, moduleCreationOption);
+     }
+ 
+     /**
+      * Creates {@link Checker} instance based on specified {@link Configuration}.
+      * @param moduleConfig {@link Configuration} instance.
+      * @param moduleCreationOption {@code IN_TREEWALKER} if the {@code moduleConfig} should be added
+      *                                                  under {@link TreeWalker}.
+      * @return {@link Checker} instance.
+      * @throws CheckstyleException if an exception occurs during checker configuration.
+      */
+     protected final Checker createChecker(Configuration moduleConfig,
+                                     ModuleCreationOption moduleCreationOption)
+             throws Exception {
+         final DefaultConfiguration dc;
+ 
+         if (moduleCreationOption == ModuleCreationOption.IN_TREEWALKER) {
+             dc = createTreeWalkerConfig(moduleConfig);
+         }
+         else {
+             dc = createRootConfig(moduleConfig);
+         }
+ 
+         final Checker checker = new Checker();
+         // make sure the tests always run with English error messages
+         // so the tests don't fail in supported locales like German
+         final Locale locale = Locale.ENGLISH;
+         checker.setLocaleCountry(locale.getCountry());
+         checker.setLocaleLanguage(locale.getLanguage());
+         checker.setModuleClassLoader(Thread.currentThread().getContextClassLoader());
+         checker.configure(dc);
+         checker.addListener(getBriefUtLogger());
+         return checker;
+     }
+ 
+     /**
+      * Creates {@link DefaultConfiguration} or the {@link Checker}.
+      * based on the given {@link Configuration}.
+      * @param config {@link Configuration} instance.
+      * @return {@link DefaultConfiguration} for the {@link Checker}.
+      */
+     protected static DefaultConfiguration createTreeWalkerConfig(Configuration config) {
+         final DefaultConfiguration dc =

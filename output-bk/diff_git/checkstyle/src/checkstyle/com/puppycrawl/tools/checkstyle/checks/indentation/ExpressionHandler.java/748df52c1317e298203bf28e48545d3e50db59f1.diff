@@ -1,0 +1,108 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+index c9417d5ef..cfb3ea101 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ExpressionHandler.java
+@@ -83,101 +83,102 @@ public abstract class ExpressionHandler
+     }
+ 
+     /**
+      * Compute the indentation amount for this handler.
+      *
+      * @return the expected indentation amount
+      */
+     protected IndentLevel getLevelImpl()
+     {
+         return mParent.suggestedChildLevel(this);
+     }
+ 
+     /**
+      * Indentation level suggested for a child element. Children don't have
+      * to respect this, but most do.
+      *
+      * @param aChild  child AST (so suggestion level can differ based on child
+      *                  type)
+      *
+      * @return suggested indentation for child
+      */
+     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)
+     {
+         return new IndentLevel(getLevel(), getBasicOffset());
+     }
+ 
+     /**
+      * Log an indentation error.
+      *
+      * @param aAst           the expression that caused the error
+      * @param aSubtypeName   the type of the expression
+      * @param aActualLevel    the actual indent level of the expression
+      */
+     protected final void logError(DetailAST aAst, String aSubtypeName,
+                                   int aActualLevel)
+     {
+         logError(aAst, aSubtypeName, aActualLevel, getLevel());
+     }
+ 
+     /**
+      * Log an indentation error.
+      *
+      * @param aAst           the expression that caused the error
+      * @param aSubtypeName   the type of the expression
+      * @param aActualLevel   the actual indent level of the expression
+      * @param aExpectedLevel the expected indent level of the expression
+      */
+     protected final void logError(DetailAST aAst, String aSubtypeName,
+                                   int aActualLevel, IndentLevel aExpectedLevel)
+     {
+-        String typeStr = (aSubtypeName == "" ? "" : (" " + aSubtypeName));
++        String typeStr =
++            (aSubtypeName.length() == 0 ? "" : (" " + aSubtypeName));
+         Object[] args = new Object[] {
+             mTypeName + typeStr,
+             new Integer(aActualLevel),
+             aExpectedLevel,
+         };
+         mIndentCheck.indentationLog(aAst.getLineNo(),
+                                     "indentation.error",
+                                     args);
+     }
+ 
+     /**
+      * Log child indentation error.
+      *
+      * @param aLine           the expression that caused the error
+      * @param aActualLevel   the actual indent level of the expression
+      * @param aExpectedLevel the expected indent level of the expression
+      */
+     private void logChildError(int aLine,
+                                int aActualLevel,
+                                IndentLevel aExpectedLevel)
+     {
+         Object[] args = new Object[] {
+             mTypeName,
+             new Integer(aActualLevel),
+             aExpectedLevel,
+         };
+         mIndentCheck.indentationLog(aLine,
+                                     "indentation.child.error",
+                                     args);
+     }
+ 
+     /**
+      * Determines if the given expression is at the start of a line.
+      *
+      * @param aAst   the expression to check
+      *
+      * @return true if it is, false otherwise
+      */
+     protected final boolean startsLine(DetailAST aAst)
+     {
+         return getLineStart(aAst) == expandedTabsColumnNo(aAst);
+     }
+ 
+     /**
+      * Determines if two expressions are on the same line.
+      *
+      * @param aAst1   the first expression
+      * @param aAst2   the second expression
+      *
+      * @return true if they are, false otherwise

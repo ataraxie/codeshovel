@@ -1,0 +1,119 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+index 3a951bf68..09ef3cdb0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+@@ -199,108 +199,113 @@ public class VariableDeclarationUsageDistanceCheck extends Check {
+      */
+     private boolean validateBetweenScopes;
+ 
+     /** Allows to ignore variables with 'final' modifier. */
+     private boolean ignoreFinal = true;
+ 
+     /**
+      * Sets an allowed distance between declaration of variable and its first
+      * usage.
+      * @param allowedDistance
+      *        Allowed distance between declaration of variable and its first
+      *        usage.
+      */
+     public void setAllowedDistance(int allowedDistance) {
+         this.allowedDistance = allowedDistance;
+     }
+ 
+     /**
+      * Sets RegExp pattern to ignore distance calculation for variables listed in this pattern.
+      * @param ignorePattern
+      *        Pattern contains ignored variables.
+      * @throws org.apache.commons.beanutils.ConversionException
+      *         if unable to create Pattern object.
+      */
+     public void setIgnoreVariablePattern(String ignorePattern) {
+         ignoreVariablePattern = Utils.createPattern(ignorePattern);
+     }
+ 
+     /**
+      * Sets option which allows to calculate distance between declaration of
+      * variable and its first usage in different scopes.
+      * @param validateBetweenScopes
+      *        Defines if allow to calculate distance between declaration of
+      *        variable and its first usage in different scopes or not.
+      */
+     public void setValidateBetweenScopes(boolean validateBetweenScopes) {
+         this.validateBetweenScopes = validateBetweenScopes;
+     }
+ 
+     /**
+      * Sets ignore option for variables with 'final' modifier.
+      * @param ignoreFinal
+      *        Defines if ignore variables with 'final' modifier or not.
+      */
+     public void setIgnoreFinal(boolean ignoreFinal) {
+         this.ignoreFinal = ignoreFinal;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[] {TokenTypes.VARIABLE_DEF};
++        return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
++    @Override
++    public int[] getRequiredTokens() {
++        return getAcceptableTokens();
++    }
++
+     @Override
+     public void visitToken(DetailAST ast) {
+         final int parentType = ast.getParent().getType();
+         final DetailAST modifiers = ast.getFirstChild();
+ 
+         if (!(ignoreFinal && modifiers.branchContains(TokenTypes.FINAL)
+                 || parentType == TokenTypes.OBJBLOCK)) {
+             final DetailAST variable = ast.findFirstToken(TokenTypes.IDENT);
+ 
+             if (!isVariableMatchesIgnorePattern(variable.getText())) {
+                 final DetailAST semicolonAst = ast.getNextSibling();
+                 Entry<DetailAST, Integer> entry;
+                 if (validateBetweenScopes) {
+                     entry = calculateDistanceBetweenScopes(semicolonAst, variable);
+                 }
+                 else {
+                     entry = calculateDistanceInSingleScope(semicolonAst, variable);
+                 }
+                 final DetailAST variableUsageAst = entry.getKey();
+                 final int dist = entry.getValue();
+                 if (dist > allowedDistance
+                         && !isInitializationSequence(variableUsageAst, variable.getText())) {
+                     if (ignoreFinal) {
+                         log(variable.getLineNo(),
+                                 MSG_KEY_EXT, variable.getText(), dist, allowedDistance);
+                     }
+                     else {
+                         log(variable.getLineNo(),
+                                 MSG_KEY, variable.getText(), dist, allowedDistance);
+                     }
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Get name of instance whose method is called.
+      * @param methodCallAst
+      *        DetailAST of METHOD_CALL.
+      * @return name of instance.
+      */
+     private static String getInstanceName(DetailAST methodCallAst) {
+         final String methodCallName =
+                 FullIdent.createFullIdentBelow(methodCallAst).getText();
+         final int lastDotIndex = methodCallName.lastIndexOf('.');
+         String instanceName = "";
+         if (lastDotIndex != -1) {
+             instanceName = methodCallName.substring(0, lastDotIndex);
+         }
+         return instanceName;

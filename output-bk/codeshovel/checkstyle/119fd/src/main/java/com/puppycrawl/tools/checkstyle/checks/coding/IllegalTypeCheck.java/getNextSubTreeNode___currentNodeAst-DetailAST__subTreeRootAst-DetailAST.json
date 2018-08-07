@@ -1,0 +1,56 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "IllegalTypeCheck.java",
+  "functionName": "getNextSubTreeNode",
+  "functionId": "getNextSubTreeNode___currentNodeAst-DetailAST__subTreeRootAst-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalTypeCheck.java",
+  "functionStartLine": 397,
+  "functionEndLine": 410,
+  "changeHistory": [
+    "e2f265251a601054b36a9464d0f6e389371723d5",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "b06e2e0015944ceaa74a10134bf06ac5c9e53782"
+  ],
+  "changeHistoryShort": {
+    "e2f265251a601054b36a9464d0f6e389371723d5": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "b06e2e0015944ceaa74a10134bf06ac5c9e53782": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e2f265251a601054b36a9464d0f6e389371723d5": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1555: Avoid reusing variables\n\nFixes `ReuseOfLocalVariable` inspection violation.\n\nDescription:\n\u003eReports local variables that are \"reused\", overwriting their values with new values unrelated to their original use. Such local variable reuse may be confusing, as the intended semantics of the local variable may vary with each use. It may also be prone to bugs, if code changes result in values that were thought to be overwritten actually being live. It is good practices to keep variable lifetimes as short as possible, and not reuse local variables for the sake of brevity.\n",
+      "commitDate": 1440853936000,
+      "commitName": "e2f265251a601054b36a9464d0f6e389371723d5",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440784022000,
+      "commitNameOld": "751805442819ae5f08f32347faf44f4c1b214eb3",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.81,
+      "commitsBetweenForRepo": 43,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,14 @@\n         getNextSubTreeNode(DetailAST currentNodeAst, DetailAST subTreeRootAst) {\n         DetailAST currentNode \u003d currentNodeAst;\n         DetailAST toVisitAst \u003d currentNode.getFirstChild();\n         while (toVisitAst \u003d\u003d null) {\n             toVisitAst \u003d currentNode.getNextSibling();\n             if (toVisitAst \u003d\u003d null) {\n                 if (currentNode.getParent().equals(subTreeRootAst)) {\n                     break;\n                 }\n                 currentNode \u003d currentNode.getParent();\n             }\n         }\n-        currentNode \u003d toVisitAst;\n-        return currentNode;\n+        return toVisitAst;\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "b06e2e0015944ceaa74a10134bf06ac5c9e53782": {
+      "type": "Yintroduced",
+      "commitMessage": "Illegal Type Check, fixed false positives on same file names, added support of analyzing imports, issue #78\n",
+      "commitDate": 1420585264000,
+      "commitName": "b06e2e0015944ceaa74a10134bf06ac5c9e53782",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

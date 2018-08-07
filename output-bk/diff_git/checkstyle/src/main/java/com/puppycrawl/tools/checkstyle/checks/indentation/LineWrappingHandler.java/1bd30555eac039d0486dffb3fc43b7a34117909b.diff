@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
+index f91eea5e1..081f07e74 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
+@@ -174,101 +174,101 @@ public class LineWrappingHandler
+             }
+         }
+         return indentLevel;
+     }
+ 
+     /**
+      * Finds first nodes on line and puts them into Map.
+      *
+      * @return NavigableMap which contains lines numbers as a key and first
+      *         nodes on lines as a values.
+      */
+     private NavigableMap<Integer, DetailAST> collectFirstNodes()
+     {
+         final NavigableMap<Integer, DetailAST> result = new TreeMap<>();
+ 
+         result.put(firstNode.getLineNo(), firstNode);
+         DetailAST curNode = firstNode.getFirstChild();
+ 
+         while (curNode != null && curNode != lastNode) {
+ 
+             if (curNode.getType() == TokenTypes.OBJBLOCK) {
+                 curNode = curNode.getNextSibling();
+             }
+ 
+             if (curNode != null) {
+                 final DetailAST firstTokenOnLine = result.get(curNode.getLineNo());
+ 
+                 if (firstTokenOnLine == null
+                         || firstTokenOnLine != null
+                         && firstTokenOnLine.getColumnNo() >= curNode.getColumnNo())
+                 {
+                     result.put(curNode.getLineNo(), curNode);
+                 }
+                 curNode = getNextCurNode(curNode);
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Returns next curNode node.
+      *
+      * @param curNode current node.
+      * @return next curNode node.
+      */
+     private DetailAST getNextCurNode(DetailAST curNode)
+     {
+         DetailAST nodeToVisit = curNode.getFirstChild();
+         DetailAST currentNode = curNode;
+ 
+-        while ((currentNode != null) && (nodeToVisit == null)) {
++        while (currentNode != null && nodeToVisit == null) {
+             nodeToVisit = currentNode.getNextSibling();
+             if (nodeToVisit == null) {
+                 currentNode = currentNode.getParent();
+             }
+         }
+         return nodeToVisit;
+     }
+ 
+     /**
+      * Checks line wrapping into annotations.
+      *
+      * @param atNode at-clause node.
+      * @param firstNodesOnLines map which contains
+      *     first nodes as values and line numbers as keys.
+      */
+     private void checkAnnotationIndentation(DetailAST atNode,
+             NavigableMap<Integer, DetailAST> firstNodesOnLines)
+     {
+         final int currentIndent = atNode.getColumnNo() + indentLevel;
+         final int firstNodeIndent = atNode.getColumnNo();
+         final Collection<DetailAST> values = firstNodesOnLines.values();
+         final DetailAST lastAnnotationNode = getLastAnnotationNode(atNode);
+         final int lastAnnotationLine = lastAnnotationNode.getLineNo();
+         final int lastAnnotattionColumn = lastAnnotationNode.getColumnNo();
+ 
+         final Iterator<DetailAST> itr = values.iterator();
+         while (itr.hasNext() && firstNodesOnLines.size() > 1) {
+             final DetailAST node = itr.next();
+ 
+             if (node.getLineNo() < lastAnnotationLine
+                     || node.getLineNo() == lastAnnotationLine
+                     && node.getColumnNo() <= lastAnnotattionColumn)
+             {
+                 final DetailAST parentNode = node.getParent();
+                 if (node.getType() == TokenTypes.AT
+                         && parentNode.getParent().getType() == TokenTypes.MODIFIERS)
+                 {
+                     logWarningMessage(node, firstNodeIndent);
+                 }
+                 else {
+                     logWarningMessage(node, currentIndent);
+                 }
+                 itr.remove();
+             }
+             else {
+                 break;
+             }
+         }
+     }
+ 

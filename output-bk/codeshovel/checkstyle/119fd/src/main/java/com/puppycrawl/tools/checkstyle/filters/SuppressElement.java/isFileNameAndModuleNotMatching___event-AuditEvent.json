@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SuppressElement.java",
+  "functionName": "isFileNameAndModuleNotMatching",
+  "functionId": "isFileNameAndModuleNotMatching___event-AuditEvent",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressElement.java",
+  "functionStartLine": 140,
+  "functionEndLine": 146,
+  "changeHistory": [
+    "70fd1618553f9bff32c4cfc39754ea3c2e99fc88",
+    "15818b826024e6fef6c21e2831ec246af0a8ba7a",
+    "68dbad577945e3b731064808b6766d69c73ab381"
+  ],
+  "changeHistoryShort": {
+    "70fd1618553f9bff32c4cfc39754ea3c2e99fc88": "Ybodychange",
+    "15818b826024e6fef6c21e2831ec246af0a8ba7a": "Yrename",
+    "68dbad577945e3b731064808b6766d69c73ab381": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "70fd1618553f9bff32c4cfc39754ea3c2e99fc88": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2804: allow suppression by message",
+      "commitDate": 1512921364000,
+      "commitName": "70fd1618553f9bff32c4cfc39754ea3c2e99fc88",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1501378335000,
+      "commitNameOld": "f244f7f1e2fe49d2fcda9cd5c901d751769f73e8",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 133.6,
+      "commitsBetweenForRepo": 364,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,7 @@\n     private boolean isFileNameAndModuleNotMatching(AuditEvent event) {\n         return event.getFileName() \u003d\u003d null\n-                || !fileRegexp.matcher(event.getFileName()).find()\n+                || fileRegexp !\u003d null \u0026\u0026 !fileRegexp.matcher(event.getFileName()).find()\n                 || event.getLocalizedMessage() \u003d\u003d null\n                 || moduleId !\u003d null \u0026\u0026 !moduleId.equals(event.getModuleId())\n                 || checkRegexp !\u003d null \u0026\u0026 !checkRegexp.matcher(event.getSourceName()).find();\n     }\n\\ No newline at end of file\n"
+    },
+    "15818b826024e6fef6c21e2831ec246af0a8ba7a": {
+      "type": "Yrename",
+      "commitMessage": "UTs coverage of SuppressElement is 100%. #1296\n",
+      "commitDate": 1436760768000,
+      "commitName": "15818b826024e6fef6c21e2831ec246af0a8ba7a",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1436323201000,
+      "commitNameOld": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 5.06,
+      "commitsBetweenForRepo": 49,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,7 @@\n-    private boolean isFileNameAndModuleMatching(AuditEvent event) {\n+    private boolean isFileNameAndModuleNotMatching(AuditEvent event) {\n         return event.getFileName() \u003d\u003d null\n                 || !fileRegexp.matcher(event.getFileName()).find()\n                 || event.getLocalizedMessage() \u003d\u003d null\n-                || moduleId !\u003d null \u0026\u0026 !moduleId.equals(event\n-                        .getModuleId())\n-                || checkRegexp !\u003d null \u0026\u0026 !checkRegexp.matcher(\n-                        event.getSourceName()).find();\n+                || moduleId !\u003d null \u0026\u0026 !moduleId.equals(event.getModuleId())\n+                || checkRegexp !\u003d null \u0026\u0026 !checkRegexp.matcher(event.getSourceName()).find();\n     }\n\\ No newline at end of file\n"
+    },
+    "68dbad577945e3b731064808b6766d69c73ab381": {
+      "type": "Yintroduced",
+      "commitMessage": "SuppressElement updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344165000,
+      "commitName": "68dbad577945e3b731064808b6766d69c73ab381",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

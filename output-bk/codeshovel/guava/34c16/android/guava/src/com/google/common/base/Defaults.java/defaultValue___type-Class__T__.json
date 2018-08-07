@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "Defaults.java",
+  "functionName": "defaultValue",
+  "functionId": "defaultValue___type-Class__T__",
+  "sourceFilePath": "android/guava/src/com/google/common/base/Defaults.java",
+  "functionStartLine": 42,
+  "functionEndLine": 63,
+  "changeHistory": [
+    "bcb3d6528966b1fb33fdcfd51c2ef16b190cb611",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "bcb3d6528966b1fb33fdcfd51c2ef16b190cb611": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "bcb3d6528966b1fb33fdcfd51c2ef16b190cb611": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove static map allocation and map lookup in base.Defaults.\n\nFixes https://github.com/google/guava/issues/2709\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d161114331\n",
+      "commitDate": 1499370126000,
+      "commitName": "bcb3d6528966b1fb33fdcfd51c2ef16b190cb611",
+      "commitAuthor": "kak",
+      "commitDateOld": 1492741671000,
+      "commitNameOld": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthorOld": "zhenghua",
+      "daysBetweenCommits": 76.72,
+      "commitsBetweenForRepo": 144,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,22 @@\n   public static \u003cT\u003e T defaultValue(Class\u003cT\u003e type) {\n-    // Primitives.wrap(type).cast(...) would avoid the warning, but we can\u0027t use that from here\n-    @SuppressWarnings(\"unchecked\") // the put method enforces this key-value relationship\n-    T t \u003d (T) DEFAULTS.get(checkNotNull(type));\n-    return t;\n+    checkNotNull(type);\n+    if (type \u003d\u003d boolean.class) {\n+      return (T) Boolean.FALSE;\n+    } else if (type \u003d\u003d char.class) {\n+      return (T) Character.valueOf(\u0027\\0\u0027);\n+    } else if (type \u003d\u003d byte.class) {\n+      return (T) Byte.valueOf((byte) 0);\n+    } else if (type \u003d\u003d short.class) {\n+      return (T) Short.valueOf((short) 0);\n+    } else if (type \u003d\u003d int.class) {\n+      return (T) Integer.valueOf(0);\n+    } else if (type \u003d\u003d long.class) {\n+      return (T) Long.valueOf(0L);\n+    } else if (type \u003d\u003d float.class) {\n+      return (T) FLOAT_DEFAULT;\n+    } else if (type \u003d\u003d double.class) {\n+      return (T) DOUBLE_DEFAULT;\n+    } else {\n+      return null;\n+    }\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

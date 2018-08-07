@@ -1,0 +1,167 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
+index f89e0727c..c8ecc53a3 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
+@@ -32,100 +32,101 @@ import org.xml.sax.Attributes;
+ import org.xml.sax.InputSource;
+ import org.xml.sax.SAXException;
+ 
+ /**
+  * Loads a filter chain of suppressions.
+  * @author Rick Giles
+  */
+ public final class SuppressionsLoader
+     extends AbstractLoader
+ {
+     /** the public ID for the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_0 =
+         "-//Puppy Crawl//DTD Suppressions 1.0//EN";
+     /** the resource for the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_0 =
+         "com/puppycrawl/tools/checkstyle/suppressions_1_0.dtd";
+     /** the public ID for the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_1 =
+         "-//Puppy Crawl//DTD Suppressions 1.1//EN";
+     /** the resource for the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_1 =
+         "com/puppycrawl/tools/checkstyle/suppressions_1_1.dtd";
+ 
+     /**
+      * the filter chain to return in getAFilterChain(),
+      * configured during parsing
+      */
+     private final FilterSet mFilterChain = new FilterSet();
+ 
+     /**
+      * Creates a new <code>SuppressionsLoader</code> instance.
+      * @throws ParserConfigurationException if an error occurs
+      * @throws SAXException if an error occurs
+      */
+     private SuppressionsLoader()
+         throws ParserConfigurationException, SAXException
+     {
+         super(createIdToResourceNameMap());
+     }
+ 
+     /**
+      * Returns the loaded filter chain.
+      * @return the loaded filter chain.
+      */
+     public FilterSet getFilterChain()
+     {
+         return mFilterChain;
+     }
+ 
+     /** {@inheritDoc} **/
++    @Override
+     public void startElement(String aNamespaceURI,
+                              String aLocalName,
+                              String aQName,
+                              Attributes aAtts)
+         throws SAXException
+     {
+         if (aQName.equals("suppress")) {
+             //add SuppressElement filter to the filter chain
+             final String files = aAtts.getValue("files");
+             if (files == null) {
+                 throw new SAXException("missing files attribute");
+             }
+             final String checks = aAtts.getValue("checks");
+             final String modId = aAtts.getValue("id");
+             if ((checks == null) && (modId == null)) {
+                 throw new SAXException("missing checks and id attribute");
+             }
+             final SuppressElement suppress;
+             try {
+                 suppress = new SuppressElement(files);
+                 if (modId != null) {
+                     suppress.setModuleId(modId);
+                 }
+                 if (checks != null) {
+                     suppress.setChecks(checks);
+                 }
+             }
+             catch (final PatternSyntaxException e) {
+                 throw new SAXException("invalid files or checks format");
+             }
+             final String lines = aAtts.getValue("lines");
+             if (lines != null) {
+                 suppress.setLines(lines);
+             }
+             final String columns = aAtts.getValue("columns");
+             if (columns != null) {
+                 suppress.setColumns(columns);
+             }
+             mFilterChain.addFilter(suppress);
+         }
+     }
+ 
+     /**
+      * Returns the suppression filters in a specified file.
+      * @param aFilename name of the suppresssions file.
+      * @return the filter chain of suppression elements specified in the file.
+      * @throws CheckstyleException if an error occurs.
+      */
+     public static FilterSet loadSuppressions(String aFilename)
+         throws CheckstyleException
+@@ -135,58 +136,58 @@ public final class SuppressionsLoader
+             fis = new FileInputStream(aFilename);
+         }
+         catch (final FileNotFoundException e) {
+             throw new CheckstyleException(
+                 "unable to find " + aFilename, e);
+         }
+         final InputSource source = new InputSource(fis);
+         return loadSuppressions(source, aFilename);
+     }
+ 
+     /**
+      * Returns the suppression filters in a specified source.
+      * @param aSource the source for the suppressions.
+      * @param aSourceName the name of the source.
+      * @return the filter chain of suppression elements in aSource.
+      * @throws CheckstyleException if an error occurs.
+      */
+     private static FilterSet loadSuppressions(
+             InputSource aSource, String aSourceName)
+         throws CheckstyleException
+     {
+         try {
+             final SuppressionsLoader suppressionsLoader =
+                 new SuppressionsLoader();
+             suppressionsLoader.parseInputSource(aSource);
+             return suppressionsLoader.getFilterChain();
+         }
+         catch (final FileNotFoundException e) {
+             throw new CheckstyleException("unable to find " + aSourceName, e);
+         }
+         catch (final ParserConfigurationException e) {
+             throw new CheckstyleException("unable to parse " + aSourceName, e);
+         }
+         catch (final SAXException e) {
+             throw new CheckstyleException("unable to parse "
+                     + aSourceName + " - " + e.getMessage(), e);
+         }
+         catch (final IOException e) {
+             throw new CheckstyleException("unable to read " + aSourceName, e);
+         }
+         catch (final NumberFormatException e) {
+             throw new CheckstyleException("number format exception "
+                 + aSourceName + " - " + e.getMessage(), e);
+         }
+     }
+ 
+     /**
+      * Creates mapping between local resources and dtd ids.
+      * @return map between local resources and dtd ids.
+      */
+-    private static Map createIdToResourceNameMap()
++    private static Map<String, String> createIdToResourceNameMap()
+     {
+-        final Map map = new HashMap();
++        final Map<String, String> map = new HashMap<String, String>();
+         map.put(DTD_PUBLIC_ID_1_0, DTD_RESOURCE_NAME_1_0);
+         map.put(DTD_PUBLIC_ID_1_1, DTD_RESOURCE_NAME_1_1);
+         return map;
+     }
+ }

@@ -1,0 +1,259 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+index b6afbc0e3..e2df93793 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+@@ -149,140 +149,140 @@ public class HiddenFieldCheck
+     private boolean ignoreSetter;
+ 
+     /**
+      * if ignoreSetter is set to true then this variable controls what
+      * the setter method can return By default setter must return void.
+      * However, is this variable is set to true then setter can also
+      * return class in which is declared.
+      */
+     private boolean setterCanReturnItsClass;
+ 
+     /** controls whether to check the parameter of a constructor */
+     private boolean ignoreConstructorParameter;
+ 
+     /** controls whether to check the parameter of abstract methods. */
+     private boolean ignoreAbstractMethods;
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.PARAMETER_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+         };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST)
+     {
+-        currentFrame = new FieldFrame(null, true, null, null);
++        currentFrame = new FieldFrame(null, true, null);
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         final int type = ast.getType();
+         switch (type) {
+             case TokenTypes.VARIABLE_DEF:
+             case TokenTypes.PARAMETER_DEF:
+                 processVariable(ast);
+                 break;
+ 
+             default:
+                 visitOtherTokens(ast, type);
+         }
+     }
+ 
+     /**
+      * Called to process tokens other than {@link TokenTypes.VARIABLE_DEF}
+      * and {@link TokenTypes.PARAMETER_DEF}
+      *
+      * @param ast token to process
+      * @param type type of the token
+      */
+     private void visitOtherTokens(DetailAST ast, int type)
+     {
+         //A more thorough check of enum constant class bodies is
+         //possible (checking for hidden fields against the enum
+         //class body in addition to enum constant class bodies)
+         //but not attempted as it seems out of the scope of this
+         //check.
+         final DetailAST typeMods = ast.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isStaticInnerType =
+                 typeMods != null
+                         && typeMods.branchContains(TokenTypes.LITERAL_STATIC);
+ 
+         final FieldFrame frame =
+-            new FieldFrame(currentFrame, isStaticInnerType, type,
+-                type == TokenTypes.CLASS_DEF || type == TokenTypes.ENUM_DEF
++            new FieldFrame(currentFrame, isStaticInnerType,
++                    type == TokenTypes.CLASS_DEF || type == TokenTypes.ENUM_DEF
+                     ? ast.findFirstToken(TokenTypes.IDENT).getText()
+                     : null
+             );
+ 
+         //add fields to container
+         final DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);
+         // enum constants may not have bodies
+         if (objBlock != null) {
+             DetailAST child = objBlock.getFirstChild();
+             while (child != null) {
+                 if (child.getType() == TokenTypes.VARIABLE_DEF) {
+                     final String name =
+                         child.findFirstToken(TokenTypes.IDENT).getText();
+                     final DetailAST mods =
+                         child.findFirstToken(TokenTypes.MODIFIERS);
+                     if (mods.branchContains(TokenTypes.LITERAL_STATIC)) {
+                         frame.addStaticField(name);
+                     }
+                     else {
+                         frame.addInstanceField(name);
+                     }
+                 }
+                 child = child.getNextSibling();
+             }
+         }
+         // push container
+         currentFrame = frame;
+     }
+ 
+     @Override
+     public void leaveToken(DetailAST ast)
+     {
+         if (ast.getType() == TokenTypes.CLASS_DEF
+             || ast.getType() == TokenTypes.ENUM_DEF
+             || ast.getType() == TokenTypes.ENUM_CONSTANT_DEF)
+         {
+             //pop
+             currentFrame = currentFrame.getParent();
+         }
+     }
+ 
+     /**
+      * Process a variable token.
+      * Check whether a local variable or parameter shadows a field.
+      * Store a field for later comparison with local variables and parameters.
+      * @param ast the variable token.
+      */
+     private void processVariable(DetailAST ast)
+     {
+         if (!ScopeUtils.inInterfaceOrAnnotationBlock(ast)
+@@ -511,108 +511,105 @@ public class HiddenFieldCheck
+      * constructor parameters.
+      */
+     public void setIgnoreConstructorParameter(
+         boolean ignoreConstructorParameter)
+     {
+         this.ignoreConstructorParameter = ignoreConstructorParameter;
+     }
+ 
+     /**
+      * Set whether to ignore parameters of abstract methods.
+      * @param ignoreAbstractMethods decide whether to ignore
+      * parameters of abstract methods.
+      */
+     public void setIgnoreAbstractMethods(
+         boolean ignoreAbstractMethods)
+     {
+         this.ignoreAbstractMethods = ignoreAbstractMethods;
+     }
+ 
+     /** @return the regexp to match against */
+     public Pattern getRegexp()
+     {
+         return regexp;
+     }
+ 
+     /**
+      * Holds the names of static and instance fields of a type.
+      * @author Rick Giles
+      * Describe class FieldFrame
+      * @author Rick Giles
+      */
+     private static class FieldFrame
+     {
+         /** name of the frame, such name of the class or enum declaration */
+         private final String frameName;
+ 
+         /** is this a static inner type */
+         private final boolean staticType;
+ 
+         /** parent frame. */
+         private final FieldFrame parent;
+ 
+         /** set of instance field names */
+         private final Set<String> instanceFields = Sets.newHashSet();
+ 
+         /** set of static field names */
+         private final Set<String> staticFields = Sets.newHashSet();
+ 
+         /**
+          * Creates new frame.
+-         * @param staticType is this a static inner type (class or enum).
+          * @param parent parent frame.
+-         * @param frameType frameType derived from {@link TokenTypes}
++         * @param staticType is this a static inner type (class or enum).
+          * @param frameName name associated with the frame, which can be a
+-         * class or enum name or null if no relevan information is available.
+          */
+-        public FieldFrame(FieldFrame parent, boolean staticType,
+-            Integer frameType, String frameName)
++        public FieldFrame(FieldFrame parent, boolean staticType, String frameName)
+         {
+             this.parent = parent;
+             this.staticType = staticType;
+             this.frameName = frameName;
+         }
+ 
+         /**
+          * Is this frame for static inner type.
+          * @return is this field frame for static inner type.
+          */
+         boolean isStaticType()
+         {
+             return staticType;
+         }
+ 
+         /**
+          * Adds an instance field to this FieldFrame.
+          * @param field  the name of the instance field.
+          */
+         public void addInstanceField(String field)
+         {
+             instanceFields.add(field);
+         }
+ 
+         /**
+          * Adds a static field to this FieldFrame.
+          * @param field  the name of the instance field.
+          */
+         public void addStaticField(String field)
+         {
+             staticFields.add(field);
+         }
+ 
+         /**
+          * Determines whether this FieldFrame contains an instance field.
+          * @param field the field to check.
+          * @return true if this FieldFrame contains instance field field.
+          */
+         public boolean containsInstanceField(String field)
+         {
+             return instanceFields.contains(field)
+                     || !isStaticType()
+                     && parent != null
+                     && parent.containsInstanceField(field);
+ 
+         }
+ 
+         /**
+          * Determines whether this FieldFrame contains a static field.
+          * @param field the field to check.

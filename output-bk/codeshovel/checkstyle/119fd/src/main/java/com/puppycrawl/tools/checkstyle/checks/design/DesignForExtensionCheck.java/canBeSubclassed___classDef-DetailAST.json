@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DesignForExtensionCheck.java",
+  "functionName": "canBeSubclassed",
+  "functionId": "canBeSubclassed___classDef-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java",
+  "functionStartLine": 286,
+  "functionEndLine": 291,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "06716249cfb86d9f213f33a26877112e8ab45adc"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "06716249cfb86d9f213f33a26877112e8ab45adc": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1500842894000,
+      "commitNameOld": "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 94.25,
+      "commitsBetweenForRepo": 304,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     private static boolean canBeSubclassed(DetailAST classDef) {\n         final DetailAST modifiers \u003d classDef.findFirstToken(TokenTypes.MODIFIERS);\n         return classDef.getType() !\u003d TokenTypes.ENUM_DEF\n-            \u0026\u0026 !modifiers.branchContains(TokenTypes.FINAL)\n+            \u0026\u0026 modifiers.findFirstToken(TokenTypes.FINAL) \u003d\u003d null\n             \u0026\u0026 hasDefaultOrExplicitNonPrivateCtor(classDef);\n     }\n\\ No newline at end of file\n"
+    },
+    "06716249cfb86d9f213f33a26877112e8ab45adc": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #3102: DesignForExtension: consider overridable methods and javadoc\n",
+      "commitDate": 1477175779000,
+      "commitName": "06716249cfb86d9f213f33a26877112e8ab45adc",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

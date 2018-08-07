@@ -1,0 +1,77 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+index 55b268133..1c8cac311 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Main.java
+@@ -223,63 +223,69 @@ public final class Main
+             System.exit(1);
+             return null; // can never get here
+         }
+     }
+ 
+     /** Prints the usage information. **/
+     private static void usage()
+     {
+         final HelpFormatter hf = new HelpFormatter();
+         hf.printHelp(
+             "java "
+                 + Main.class.getName()
+                 + " [options] -c <config.xml> file...",
+             OPTS);
+         System.exit(1);
+     }
+ 
+     /**
+      * Traverses a specified node looking for files to check. Found
+      * files are added to a specified list. Subdirectories are also
+      * traversed.
+      *
+      * @param aNode the node to process
+      * @param aFiles list to add found files to
+      */
+     private static void traverse(File aNode, List<File> aFiles)
+     {
+         if (aNode.canRead()) {
+             if (aNode.isDirectory()) {
+                 final File[] nodes = aNode.listFiles();
+                 for (File element : nodes) {
+                     traverse(element, aFiles);
+                 }
+             }
+             else if (aNode.isFile()) {
+                 aFiles.add(aNode);
+             }
+         }
+     }
+ 
+     /**
+      * Loads properties from a File.
+      * @param aFile the properties file
+      * @return the properties in aFile
+      */
+     private static Properties loadProperties(File aFile)
+     {
+         final Properties properties = new Properties();
+         try {
+             FileInputStream fis = null;
+-            fis = new FileInputStream(aFile);
+-            properties.load(fis);
+-            fis.close();
++            try {
++                fis = new FileInputStream(aFile);
++                properties.load(fis);
++            }
++            finally {
++                if (fis != null) {
++                    fis.close();
++                }
++            }
+         }
+         catch (final IOException ex) {
+             System.out.println("Unable to load properties from file: "
+                                + aFile.getAbsolutePath());
+             ex.printStackTrace(System.out);
+             System.exit(1);
+         }
+         return properties;
+     }
+ }

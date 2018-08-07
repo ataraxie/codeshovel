@@ -1,0 +1,189 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
+index b66b957ac..0f90177cb 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
+@@ -51,180 +51,175 @@ public class FallThroughCheck extends Check
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         final DetailAST nextGroup = (DetailAST) aAST.getNextSibling();
+         if (nextGroup == null || nextGroup.getType() != TokenTypes.CASE_GROUP) {
+             // last group we shouldn't check it
+             return;
+         }
+ 
+         final DetailAST slist = aAST.findFirstToken(TokenTypes.SLIST);
+ 
+         if (!isTerminated(slist, true, true)) {
+             log(nextGroup, "fall.through");
+         }
+     }
+ 
+     /**
+      * Checks if a given subtree terminated by return, throw or,
+      * if allowed break, continue.
+      * @param aAST root of given subtree
+      * @param aUseBreak should we consider break as terminator.
+      * @param aUseContinue should we consider continue as terminator.
+      * @return true if the subtree is terminated.
+      */
+     private boolean isTerminated(final DetailAST aAST, boolean aUseBreak,
+                                  boolean aUseContinue)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.LITERAL_RETURN:
+         case TokenTypes.LITERAL_THROW:
+             return true;
+         case TokenTypes.LITERAL_BREAK:
+             return aUseBreak;
+         case TokenTypes.LITERAL_CONTINUE:
+             return aUseContinue;
+         case TokenTypes.SLIST:
+             return checkSlist(aAST, aUseBreak, aUseContinue);
+         case TokenTypes.LITERAL_IF:
+             return checkIf(aAST, aUseBreak, aUseContinue);
+         case TokenTypes.LITERAL_FOR:
+         case TokenTypes.LITERAL_WHILE:
+         case TokenTypes.LITERAL_DO:
+-            return checkLoop(aAST, aUseBreak, aUseContinue);
++            return checkLoop(aAST);
+         case TokenTypes.LITERAL_TRY:
+             return checkTry(aAST, aUseBreak, aUseContinue);
+         case TokenTypes.LITERAL_SWITCH:
+-            return checkSwitch(aAST, aUseBreak, aUseContinue);
++            return checkSwitch(aAST, aUseContinue);
+         default:
+             return false;
+         }
+     }
+ 
+     /**
+      * Checks if a given SLIST terminated by return, throw or,
+      * if allowed break, continue.
+      * @param aAST SLIST to check
+      * @param aUseBreak should we consider break as terminator.
+      * @param aUseContinue should we consider continue as terminator.
+      * @return true if SLIST is terminated.
+      */
+     private boolean checkSlist(final DetailAST aAST, boolean aUseBreak,
+                                boolean aUseContinue)
+     {
+         DetailAST lastStmt = aAST.getLastChild();
+ 
+         if (lastStmt.getType() == TokenTypes.RCURLY) {
+             lastStmt = lastStmt.getPreviousSibling();
+         }
+ 
+         return lastStmt != null
+             && isTerminated(lastStmt, aUseBreak, aUseContinue);
+     }
+ 
+     /**
+      * Checks if a given IF terminated by return, throw or,
+      * if allowed break, continue.
+      * @param aAST IF to check
+      * @param aUseBreak should we consider break as terminator.
+      * @param aUseContinue should we consider continue as terminator.
+      * @return true if IF is terminated.
+      */
+     private boolean checkIf(final DetailAST aAST, boolean aUseBreak,
+                             boolean aUseContinue)
+     {
+         final DetailAST thenStmt = (DetailAST)
+             aAST.findFirstToken(TokenTypes.RPAREN).getNextSibling();
+         final DetailAST elseStmt = (DetailAST) thenStmt.getNextSibling();
+         boolean isTerminated = isTerminated(thenStmt, aUseBreak, aUseContinue);
+ 
+         if (isTerminated && elseStmt != null) {
+             isTerminated = isTerminated((DetailAST) elseStmt.getFirstChild(),
+                                         aUseBreak, aUseContinue);
+         }
+         return isTerminated;
+     }
+ 
+     /**
+      * Checks if a given loop terminated by return, throw or,
+      * if allowed break, continue.
+      * @param aAST loop to check
+-     * @param aUseBreak should we consider break as terminator.
+-     * @param aUseContinue should we consider continue as terminator.
+      * @return true if loop is terminated.
+      */
+-    private boolean checkLoop(final DetailAST aAST, boolean aUseBreak,
+-                              boolean aUseContinue)
++    private boolean checkLoop(final DetailAST aAST)
+     {
+         DetailAST loopBody = null;
+         if (aAST.getType() == TokenTypes.LITERAL_DO) {
+             final DetailAST lparen = aAST.findFirstToken(TokenTypes.LPAREN);
+             loopBody = lparen.getPreviousSibling();
+         }
+         else {
+             final DetailAST rparen = aAST.findFirstToken(TokenTypes.RPAREN);
+             loopBody = (DetailAST) rparen.getNextSibling();
+         }
+         return isTerminated(loopBody, false, false);
+     }
+ 
+     /**
+      * Checks if a given try/cath/finally block terminated by return, throw or,
+      * if allowed break, continue.
+      * @param aAST loop to check
+      * @param aUseBreak should we consider break as terminator.
+      * @param aUseContinue should we consider continue as terminator.
+      * @return true if try/cath/finally block is terminated.
+      */
+     private boolean checkTry(final DetailAST aAST, boolean aUseBreak,
+                              boolean aUseContinue)
+     {
+         final DetailAST finalStmt = aAST.getLastChild();
+         if (finalStmt.getType() == TokenTypes.LITERAL_FINALLY) {
+             return isTerminated(finalStmt.findFirstToken(TokenTypes.SLIST),
+                                 aUseBreak, aUseContinue);
+         }
+ 
+         boolean isTerminated = isTerminated((DetailAST) aAST.getFirstChild(),
+                                             aUseBreak, aUseContinue);
+ 
+         DetailAST catchStmt = aAST.findFirstToken(TokenTypes.LITERAL_CATCH);
+         while (catchStmt != null && isTerminated) {
+             DetailAST catchBody = catchStmt.findFirstToken(TokenTypes.SLIST);
+             isTerminated &= isTerminated(catchBody, aUseBreak, aUseContinue);
+             catchStmt = (DetailAST) catchStmt.getNextSibling();
+         }
+         return isTerminated;
+     }
+ 
+     /**
+      * Checks if a given switch terminated by return, throw or,
+      * if allowed break, continue.
+      * @param aAST loop to check
+-     * @param aUseBreak should we consider break as terminator.
+      * @param aUseContinue should we consider continue as terminator.
+      * @return true if switch is terminated.
+      */
+-    private boolean checkSwitch(final DetailAST aAST, boolean aUseBreak,
+-                                boolean aUseContinue)
++    private boolean checkSwitch(final DetailAST aAST, boolean aUseContinue)
+     {
+         DetailAST caseGroup = aAST.findFirstToken(TokenTypes.CASE_GROUP);
+         boolean isTerminated = (caseGroup != null);
+         while (isTerminated && caseGroup != null
+                && caseGroup.getType() != TokenTypes.RCURLY)
+         {
+             DetailAST caseBody = caseGroup.findFirstToken(TokenTypes.SLIST);
+             isTerminated &= isTerminated(caseBody, false, aUseContinue);
+             caseGroup = (DetailAST) caseGroup.getNextSibling();
+         }
+         return isTerminated;
+     }
+ 
+ }

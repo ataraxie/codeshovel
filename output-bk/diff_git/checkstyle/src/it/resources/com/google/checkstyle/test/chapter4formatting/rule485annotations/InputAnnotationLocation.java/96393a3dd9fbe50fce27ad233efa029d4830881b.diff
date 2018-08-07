@@ -1,0 +1,78 @@
+diff --git a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule485annotations/InputAnnotationLocation.java b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule485annotations/InputAnnotationLocation.java
+index 78cfb8241..acd1750ec 100644
+--- a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule485annotations/InputAnnotationLocation.java
++++ b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule485annotations/InputAnnotationLocation.java
+@@ -1,71 +1,71 @@
+ package com.google.checkstyle.test.chapter4formatting.rule485annotations;
+ 
+ @MyAnnotation2 @MyAnnotation1 //warn
+-class InputCorrectAnnotationIndentation
++class InputAnnotationLocation
+ {
+ 
+     @MyAnnotation2 @MyAnnotation1
+     public int a;
+ 
+     @MyAnnotation1 public int b;
+ 
+     @MyAnnotation2
+     @MyAnnotation1
+     public int c;
+ 
+     @MyAnnotation1
+     public int d;
+ 
+     @MyAnnotation2
+         @MyAnnotation1 //warn
+-    public InputCorrectAnnotationIndentation() {}
++    public InputAnnotationLocation() {}
+ 
+     @MyAnnotationWithParam("foo")
+     @MyAnnotation2 void foo1() {}
+ 
+     @MyAnnotation1
+        @MyAnnotation2 //warn
+     void foo2() {}
+ 
+     @MyAnnotation1
+         @MyAnnotation2 //warn
+       @MyAnnotation3 //warn
+           @MyAnnotation4 //warn
+     class InnerClass
+     {
+         @MyAnnotation2 @MyAnnotation1
+         public int a;
+ 
+         @MyAnnotation1 public int b;
+         
+         @MyAnnotation2
+         @MyAnnotation1
+         public int c;
+         
+         @MyAnnotation1
+         public int d;
+         
+         @MyAnnotation2
+         @MyAnnotation1 public InnerClass()
+         {
+             // TODO Auto-generated constructor stub
+         }
+         @MyAnnotation1
+             @MyAnnotation2 //warn
+         void foo1() {}
+         
+         @MyAnnotation1
+             @MyAnnotation2 //warn
+         void foo2() {}
+     }
+ 
+     @MyAnnotation1
+        @MyAnnotation2
+     InnerClass anon = new InnerClass()
+     {
+         @MyAnnotation2 @MyAnnotation1 public int a;
+ 
+         @MyAnnotation1 public int b;
+         
+         @MyAnnotation2
+         @MyAnnotation1

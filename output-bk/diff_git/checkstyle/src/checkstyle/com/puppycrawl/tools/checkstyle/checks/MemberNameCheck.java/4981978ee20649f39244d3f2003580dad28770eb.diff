@@ -1,0 +1,59 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/MemberNameCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/MemberNameCheck.java
+index c3a4d7bc7..096894120 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/MemberNameCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/MemberNameCheck.java
+@@ -26,53 +26,53 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * <p>
+  * Checks that instance variable names conform to a format specified
+  * by the format property. The format is a
+  * <a href="http://jakarta.apache.org/regexp/apidocs/org/apache/regexp/RE.html">
+  * regular expression</a>
+  * and defaults to
+  * <strong>^[a-z][a-zA-Z0-9]*$</strong>.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="MemberName"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check for names that begin with
+  * &quot;m&quot;, followed by an upper case letter, and then letters and
+  * digits is:
+  * </p>
+  * <pre>
+  * &lt;module name="MemberName"&gt;
+  *    &lt;property name="format" value="^m[A-Z][a-zA-Z0-9]*$"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Rick Giles
+  * @version 1.0
+  */
+ public class MemberNameCheck
+     extends AbstractNameCheck
+ {
+     /** Creates a new <code>MemberNameCheck</code> instance. */
+     public MemberNameCheck()
+     {
+         super("^[a-z][a-zA-Z0-9]*$");
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.checks.AbstractNameCheck */
+     protected final boolean mustCheckName(DetailAST aAST)
+     {
+         DetailAST modifiersAST = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         final boolean isStatic = (modifiersAST != null)
+             && modifiersAST.branchContains(TokenTypes.LITERAL_STATIC);
+ 
+         return (!isStatic && !ScopeUtils.inInterfaceBlock(aAST)
+-            && !ScopeUtils.inCodeBlock(aAST));
++            && !ScopeUtils.isLocalVariableDef(aAST));
+     }
+ }

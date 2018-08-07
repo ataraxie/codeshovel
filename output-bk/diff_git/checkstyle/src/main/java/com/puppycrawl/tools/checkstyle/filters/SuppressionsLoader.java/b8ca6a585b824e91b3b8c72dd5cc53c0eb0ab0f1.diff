@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
+index 2ccf791a0..e20c8dff8 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
+@@ -40,101 +40,101 @@ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.FilterSet;
+ 
+ /**
+  * Loads a filter chain of suppressions.
+  * @author Rick Giles
+  */
+ public final class SuppressionsLoader
+     extends AbstractLoader
+ {
+     /** the public ID for the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_0 =
+         "-//Puppy Crawl//DTD Suppressions 1.0//EN";
+     /** the resource for the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_0 =
+         "com/puppycrawl/tools/checkstyle/suppressions_1_0.dtd";
+     /** the public ID for the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_1 =
+         "-//Puppy Crawl//DTD Suppressions 1.1//EN";
+     /** the resource for the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_1 =
+         "com/puppycrawl/tools/checkstyle/suppressions_1_1.dtd";
+ 
+     /**
+      * the filter chain to return in getAFilterChain(),
+      * configured during parsing
+      */
+     private final FilterSet filterChain = new FilterSet();
+ 
+     /**
+      * Creates a new <code>SuppressionsLoader</code> instance.
+      * @throws ParserConfigurationException if an error occurs
+      * @throws SAXException if an error occurs
+      */
+     private SuppressionsLoader()
+         throws ParserConfigurationException, SAXException
+     {
+         super(createIdToResourceNameMap());
+     }
+ 
+     /**
+      * Returns the loaded filter chain.
+      * @return the loaded filter chain.
+      */
+     public FilterSet getFilterChain()
+     {
+         return filterChain;
+     }
+ 
+     @Override
+     public void startElement(String namespaceURI,
+-                             String locqName,
++                             String localName,
+                              String qName,
+                              Attributes atts)
+         throws SAXException
+     {
+         if ("suppress".equals(qName)) {
+             //add SuppressElement filter to the filter chain
+             final String files = atts.getValue("files");
+             if (files == null) {
+                 throw new SAXException("missing files attribute");
+             }
+             final String checks = atts.getValue("checks");
+             final String modId = atts.getValue("id");
+             if ((checks == null) && (modId == null)) {
+                 throw new SAXException("missing checks and id attribute");
+             }
+             final SuppressElement suppress;
+             try {
+                 suppress = new SuppressElement(files);
+                 if (modId != null) {
+                     suppress.setModuleId(modId);
+                 }
+                 if (checks != null) {
+                     suppress.setChecks(checks);
+                 }
+             }
+             catch (final PatternSyntaxException e) {
+                 throw new SAXException("invalid files or checks format");
+             }
+             final String lines = atts.getValue("lines");
+             if (lines != null) {
+                 suppress.setLines(lines);
+             }
+             final String columns = atts.getValue("columns");
+             if (columns != null) {
+                 suppress.setColumns(columns);
+             }
+             filterChain.addFilter(suppress);
+         }
+     }
+ 
+     /**
+      * Returns the suppression filters in a specified file.
+      * @param filename name of the suppresssions file.
+      * @return the filter chain of suppression elements specified in the file.
+      * @throws CheckstyleException if an error occurs.
+      */
+     public static FilterSet loadSuppressions(String filename)
+         throws CheckstyleException
+     {
+         try {

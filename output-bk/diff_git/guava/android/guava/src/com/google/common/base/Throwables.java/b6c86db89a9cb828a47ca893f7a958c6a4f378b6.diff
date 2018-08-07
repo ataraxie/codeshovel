@@ -1,0 +1,107 @@
+diff --git a/android/guava/src/com/google/common/base/Throwables.java b/android/guava/src/com/google/common/base/Throwables.java
+index 852cc5f33..bd4b5cb4f 100644
+--- a/android/guava/src/com/google/common/base/Throwables.java
++++ b/android/guava/src/com/google/common/base/Throwables.java
+@@ -352,101 +352,101 @@ public final class Throwables {
+     throwable.printStackTrace(new PrintWriter(stringWriter));
+     return stringWriter.toString();
+   }
+ 
+   /**
+    * Returns the stack trace of {@code throwable}, possibly providing slower iteration over the full
+    * trace but faster iteration over parts of the trace. Here, "slower" and "faster" are defined in
+    * comparison to the normal way to access the stack trace, {@link Throwable#getStackTrace()
+    * throwable.getStackTrace()}. Note, however, that this method's special implementation is not
+    * available for all platforms and configurations. If that implementation is unavailable, this
+    * method falls back to {@code getStackTrace}. Callers that require the special implementation can
+    * check its availability with {@link #lazyStackTraceIsLazy()}.
+    *
+    * <p>The expected (but not guaranteed) performance of the special implementation differs from
+    * {@code getStackTrace} in one main way: The {@code lazyStackTrace} call itself returns quickly
+    * by delaying the per-stack-frame work until each element is accessed. Roughly speaking:
+    *
+    * <ul>
+    *   <li>{@code getStackTrace} takes {@code stackSize} time to return but then negligible time to
+    *       retrieve each element of the returned list.
+    *   <li>{@code lazyStackTrace} takes negligible time to return but then {@code 1/stackSize} time
+    *       to retrieve each element of the returned list (probably slightly more than {@code
+    *       1/stackSize}).
+    * </ul>
+    *
+    * <p>Note: The special implementation does not respect calls to {@link Throwable#setStackTrace
+    * throwable.setStackTrace}. Instead, it always reflects the original stack trace from the
+    * exception's creation.
+    *
+    * @since 19.0
+    */
+   // TODO(cpovirk): Say something about the possibility that List access could fail at runtime?
+   @Beta
+   @GwtIncompatible // lazyStackTraceIsLazy, jlaStackTrace
+   // TODO(cpovirk): Consider making this available under GWT (slow implementation only).
+   public static List<StackTraceElement> lazyStackTrace(Throwable throwable) {
+     return lazyStackTraceIsLazy()
+         ? jlaStackTrace(throwable)
+         : unmodifiableList(asList(throwable.getStackTrace()));
+   }
+ 
+   /**
+    * Returns whether {@link #lazyStackTrace} will use the special implementation described in its
+    * documentation.
+    *
+    * @since 19.0
+    */
+   @Beta
+   @GwtIncompatible // getStackTraceElementMethod
+   public static boolean lazyStackTraceIsLazy() {
+-    return getStackTraceElementMethod != null & getStackTraceDepthMethod != null;
++    return getStackTraceElementMethod != null && getStackTraceDepthMethod != null;
+   }
+ 
+   @GwtIncompatible // invokeAccessibleNonThrowingMethod
+   private static List<StackTraceElement> jlaStackTrace(final Throwable t) {
+     checkNotNull(t);
+     /*
+      * TODO(cpovirk): Consider optimizing iterator() to catch IOOBE instead of doing bounds checks.
+      *
+      * TODO(cpovirk): Consider the UnsignedBytes pattern if it performs faster and doesn't cause
+      * AOSP grief.
+      */
+     return new AbstractList<StackTraceElement>() {
+       @Override
+       public StackTraceElement get(int n) {
+         return (StackTraceElement)
+             invokeAccessibleNonThrowingMethod(getStackTraceElementMethod, jla, t, n);
+       }
+ 
+       @Override
+       public int size() {
+         return (Integer) invokeAccessibleNonThrowingMethod(getStackTraceDepthMethod, jla, t);
+       }
+     };
+   }
+ 
+   @GwtIncompatible // java.lang.reflect
+   private static Object invokeAccessibleNonThrowingMethod(
+       Method method, Object receiver, Object... params) {
+     try {
+       return method.invoke(receiver, params);
+     } catch (IllegalAccessException e) {
+       throw new RuntimeException(e);
+     } catch (InvocationTargetException e) {
+       throw propagate(e.getCause());
+     }
+   }
+ 
+   /** JavaLangAccess class name to load using reflection */
+   @GwtIncompatible // not used by GWT emulation
+   private static final String JAVA_LANG_ACCESS_CLASSNAME = "sun.misc.JavaLangAccess";
+ 
+   /** SharedSecrets class name to load using reflection */
+   @GwtIncompatible // not used by GWT emulation
+   @VisibleForTesting
+   static final String SHARED_SECRETS_CLASSNAME = "sun.misc.SharedSecrets";
+ 
+   /** Access to some fancy internal JVM internals. */
+   @GwtIncompatible // java.lang.reflect
+   @Nullable
+   private static final Object jla = getJLA();

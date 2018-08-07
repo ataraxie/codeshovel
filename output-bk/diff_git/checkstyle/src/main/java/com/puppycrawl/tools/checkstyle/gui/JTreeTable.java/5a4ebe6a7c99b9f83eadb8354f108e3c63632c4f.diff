@@ -1,0 +1,200 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/JTreeTable.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/JTreeTable.java
+index a43ab111e..fa8f9128e 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/JTreeTable.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/JTreeTable.java
+@@ -1,92 +1,91 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2016 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.gui;
+ 
+ import java.awt.Component;
+ import java.awt.Dimension;
+ import java.awt.FontMetrics;
+ import java.awt.event.ActionEvent;
+ import java.awt.event.MouseAdapter;
+ import java.awt.event.MouseEvent;
+ import java.util.EventObject;
+ import java.util.List;
+ 
+ import javax.swing.AbstractAction;
+ import javax.swing.Action;
+ import javax.swing.JTable;
+ import javax.swing.JTextArea;
+ import javax.swing.JTree;
+ import javax.swing.KeyStroke;
+ import javax.swing.LookAndFeel;
+ import javax.swing.table.TableCellEditor;
+ import javax.swing.tree.TreePath;
+ 
+ import com.google.common.collect.ImmutableList;
+-import com.google.common.primitives.Ints;
+ 
+ /**
+  * This example shows how to create a simple JTreeTable component,
+  * by using a JTree as a renderer (and editor) for the cells in a
+  * particular column in the JTable.
+  *
+  * <a href=
+  * "https://docs.oracle.com/cd/E48246_01/apirefs.1111/e13403/oracle/ide/controls/TreeTableModel.html">
+  * Original&nbsp;Source&nbsp;Location</a>
+  *
+  * @author Philip Milne
+  * @author Scott Violet
+  * @author Lars Kühne
+  */
+ public class JTreeTable extends JTable {
+     private static final long serialVersionUID = -8493693409423365387L;
+     /** A subclass of JTree. */
+     private final TreeTableCellRenderer tree;
+     /** JTextArea editor. */
+     private JTextArea editor;
+     /** Line position map. */
+     private List<Integer> linePositionMap;
+ 
+     /**
+      * Creates JTreeTable base on TreeTableModel.
+      * @param treeTableModel Tree table model
+      */
+     public JTreeTable(ParseTreeTableModel treeTableModel) {
+ 
+         // Create the tree. It will be used as a renderer and editor.
+         tree = new TreeTableCellRenderer(this, treeTableModel);
+ 
+         // Install a tableModel representing the visible rows in the tree.
+         setModel(new TreeTableModelAdapter(treeTableModel, tree));
+ 
+         // Force the JTable and JTree to share their row selection models.
+         final ListToTreeSelectionModelWrapper selectionWrapper = new
+                 ListToTreeSelectionModelWrapper(this);
+         tree.setSelectionModel(selectionWrapper);
+         setSelectionModel(selectionWrapper.getListSelectionModel());
+ 
+         // Install the tree editor renderer and editor.
+         setDefaultRenderer(ParseTreeTableModel.class, tree);
+         setDefaultEditor(ParseTreeTableModel.class, new TreeTableCellEditor());
+ 
+         // No grid.
+         setShowGrid(false);
+ 
+         // No intercell spacing
+         setIntercellSpacing(new Dimension(0, 0));
+@@ -116,101 +115,101 @@ public class JTreeTable extends JTable {
+         addMouseListener(new MouseAdapter() {
+             @Override
+             public void mouseClicked(MouseEvent event) {
+                 if (event.getClickCount() == 2) {
+                     expandSelectedNode();
+                 }
+             }
+         });
+     }
+ 
+     /**
+      * Do expansion of a tree node.
+      */
+     private void expandSelectedNode() {
+         final TreePath selected = tree.getSelectionPath();
+         makeCodeSelection();
+ 
+         if (tree.isExpanded(selected)) {
+             tree.collapsePath(selected);
+         }
+         else {
+             tree.expandPath(selected);
+         }
+         tree.setSelectionPath(selected);
+     }
+ 
+     /**
+      * Make selection of code in a text area.
+      */
+     private void makeCodeSelection() {
+         // temporary disabled. Have to deal with Javadoc nodes as well
+         // see https://github.com/checkstyle/checkstyle/issues/3432
+         new CodeSelector(null, editor, linePositionMap);
+     }
+ 
+     /**
+      * Set initial value of width for columns in table.
+      */
+     private void setColumnsInitialWidth() {
+         final FontMetrics fontMetrics = getFontMetrics(getFont());
+         // Six character string to contain "Column" column.
+         final int widthOfSixCharacterString = fontMetrics.stringWidth("XXXXXX");
+         // Padding must be added to width for columns to make them fully
+         // visible in table header.
+         final int padding = 10;
+         final int widthOfColumnContainingSixCharacterString =
+                 widthOfSixCharacterString + padding;
+         getColumn("Line").setMaxWidth(widthOfColumnContainingSixCharacterString);
+         getColumn("Column").setMaxWidth(widthOfColumnContainingSixCharacterString);
+         final int preferredTreeColumnWidth =
+-                Ints.checkedCast(Math.round(getPreferredSize().getWidth() * 0.6));
++                Math.toIntExact(Math.round(getPreferredSize().getWidth() * 0.6));
+         getColumn("Tree").setPreferredWidth(preferredTreeColumnWidth);
+         // Twenty eight character string to contain "Type" column
+         final int widthOfTwentyEightCharacterString =
+                 fontMetrics.stringWidth("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+         final int preferredTypeColumnWidth = widthOfTwentyEightCharacterString + padding;
+         getColumn("Type").setPreferredWidth(preferredTypeColumnWidth);
+     }
+ 
+     /**
+      * Overridden to message super and forward the method to the tree.
+      * Since the tree is not actually in the component hierarchy it will
+      * never receive this unless we forward it in this manner.
+      */
+     @Override
+     public void updateUI() {
+         super.updateUI();
+         if (tree != null) {
+             tree.updateUI();
+         }
+         // Use the tree's default foreground and background colors in the
+         // table.
+         LookAndFeel.installColorsAndFont(this, "Tree.background",
+                 "Tree.foreground", "Tree.font");
+     }
+ 
+     /* Workaround for BasicTableUI anomaly. Make sure the UI never tries to
+      * paint the editor. The UI currently uses different techniques to
+      * paint the renderers and editors and overriding setBounds() below
+      * is not the right thing to do for an editor. Returning -1 for the
+      * editing row in this case, ensures the editor is never painted.
+      */
+     @Override
+     public int getEditingRow() {
+         final Class<?> editingClass = getColumnClass(editingColumn);
+ 
+         if (editingClass == ParseTreeTableModel.class) {
+             return -1;
+         }
+         else {
+             return editingRow;
+         }
+     }
+ 
+     /**
+      * Overridden to pass the new rowHeight to the tree.
+      */
+     @Override
+     public final void setRowHeight(int newRowHeight) {
+         super.setRowHeight(newRowHeight);
+         if (tree != null && tree.getRowHeight() != newRowHeight) {

@@ -1,0 +1,116 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java b/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+index 2959416af..96fc724f9 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+@@ -390,106 +390,106 @@ public final class ConfigurationLoader {
+         }
+         catch (final ParserConfigurationException | IOException | SAXException e) {
+             throw new CheckstyleException("unable to parse configuration stream", e);
+         }
+     }
+ 
+     /**
+      * Returns the configuration in the last file parsed.
+      * @return Configuration object
+      */
+     private Configuration getConfiguration() {
+         return configuration;
+     }
+ 
+     /**
+      * Replaces <code>${xxx}</code> style constructions in the given value
+      * with the string value of the corresponding data types.
+      *
+      * The method is package visible to facilitate testing.
+      *
+      * @param value The string to be scanned for property references.
+      *              May be <code>null</code>, in which case this
+      *              method returns immediately with no effect.
+      * @param props Mapping (String to String) of property names to their
+      *              values. Must not be <code>null</code>.
+      * @param defaultValue default to use if one of the properties in value
+      *              cannot be resolved from props.
+      *
+      * @return the original string with the properties replaced, or
+      *         <code>null</code> if the original string is <code>null</code>.
+      * @throws CheckstyleException if the string contains an opening
+      *                           <code>${</code> without a closing
+      *                           <code>}</code>
+      *
+      * Code copied from ant -
+      * http://cvs.apache.org/viewcvs/jakarta-ant/src/main/org/apache/tools/ant/ProjectHelper.java
+      */
+     // Package visible for testing purposes
+     static String replaceProperties(
+             String value, PropertyResolver props, String defaultValue)
+         throws CheckstyleException {
+         if (value == null) {
+             return null;
+         }
+ 
+         final List<String> fragments = Lists.newArrayList();
+         final List<String> propertyRefs = Lists.newArrayList();
+         parsePropertyString(value, fragments, propertyRefs);
+ 
+         final StringBuilder sb = new StringBuilder();
+-        final Iterator<String> i = fragments.iterator();
+-        final Iterator<String> j = propertyRefs.iterator();
+-        while (i.hasNext()) {
+-            String fragment = i.next();
++        final Iterator<String> fragmentsIterator = fragments.iterator();
++        final Iterator<String> propertyRefsIterator = propertyRefs.iterator();
++        while (fragmentsIterator.hasNext()) {
++            String fragment = fragmentsIterator.next();
+             if (fragment == null) {
+-                final String propertyName = j.next();
++                final String propertyName = propertyRefsIterator.next();
+                 fragment = props.resolve(propertyName);
+                 if (fragment == null) {
+                     if (defaultValue != null) {
+                         return defaultValue;
+                     }
+                     throw new CheckstyleException(
+                         "Property ${" + propertyName + "} has not been set");
+                 }
+             }
+             sb.append(fragment);
+         }
+ 
+         return sb.toString();
+     }
+ 
+     /**
+      * Parses a string containing <code>${xxx}</code> style property
+      * references into two lists. The first list is a collection
+      * of text fragments, while the other is a set of string property names.
+      * <code>null</code> entries in the first list indicate a property
+      * reference from the second list.
+      *
+      * @param value     Text to parse. Must not be <code>null</code>.
+      * @param fragments List to add text fragments to.
+      *                  Must not be <code>null</code>.
+      * @param propertyRefs List to add property names to.
+      *                     Must not be <code>null</code>.
+      *
+      * @throws CheckstyleException if the string contains an opening
+      *                           <code>${</code> without a closing
+      *                           <code>}</code>
+      * Code copied from ant -
+      * http://cvs.apache.org/viewcvs/jakarta-ant/src/main/org/apache/tools/ant/ProjectHelper.java
+      */
+     private static void parsePropertyString(String value,
+                                            List<String> fragments,
+                                            List<String> propertyRefs)
+         throws CheckstyleException {
+         int prev = 0;
+         //search for the next instance of $ from the 'prev' position
+         int pos = value.indexOf('$', prev);
+         while (pos >= 0) {
+ 
+             //if there was any text before this, add it as a fragment
+             if (pos > 0) {
+                 fragments.add(value.substring(prev, pos));
+             }
+             //if we are at the end of the string, we tack on a $
+             //then move past it
+             if (pos == value.length() - 1) {

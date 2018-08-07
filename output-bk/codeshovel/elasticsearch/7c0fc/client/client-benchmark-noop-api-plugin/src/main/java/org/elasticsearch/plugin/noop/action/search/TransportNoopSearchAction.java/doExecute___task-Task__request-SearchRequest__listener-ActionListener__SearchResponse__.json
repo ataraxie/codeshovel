@@ -1,0 +1,107 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "TransportNoopSearchAction.java",
+  "functionName": "doExecute",
+  "functionId": "doExecute___task-Task__request-SearchRequest__listener-ActionListener__SearchResponse__",
+  "sourceFilePath": "client/client-benchmark-noop-api-plugin/src/main/java/org/elasticsearch/plugin/noop/action/search/TransportNoopSearchAction.java",
+  "functionStartLine": 48,
+  "functionEndLine": 56,
+  "changeHistory": [
+    "7a150ec06d5b846caa89520c1388e9c751a0c8af",
+    "29450de7b56dd34182bd73e13c85867ce545849f",
+    "e81804cfa47bb485b7736d7fe1575c53460a638a",
+    "ce625ebdccc35639d7423ad6309119422c99ccf3",
+    "ecb01c15b9a6645f22f153eb099a377e70e398c8",
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518"
+  ],
+  "changeHistoryShort": {
+    "7a150ec06d5b846caa89520c1388e9c751a0c8af": "Yparameterchange",
+    "29450de7b56dd34182bd73e13c85867ce545849f": "Ybodychange",
+    "e81804cfa47bb485b7736d7fe1575c53460a638a": "Ybodychange",
+    "ce625ebdccc35639d7423ad6309119422c99ccf3": "Ybodychange",
+    "ecb01c15b9a6645f22f153eb099a377e70e398c8": "Ybodychange",
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7a150ec06d5b846caa89520c1388e9c751a0c8af": {
+      "type": "Yparameterchange",
+      "commitMessage": "Core: Combine doExecute methods in TransportAction (#31517)\n\nTransportAction currently contains 2 doExecute methods, one which takes\r\na the task, and one that does not. The latter is what some subclasses\r\nimplement, while the first one just calls the latter, dropping the given\r\ntask. This commit combines these methods, in favor of just always\r\nassuming a task is present.\r\n",
+      "commitDate": 1529704981000,
+      "commitName": "7a150ec06d5b846caa89520c1388e9c751a0c8af",
+      "commitAuthor": "Ryan Ernst",
+      "commitDateOld": 1529605526000,
+      "commitNameOld": "4f9332ee16bcc422144a866122eb8bc2df2c0040",
+      "commitAuthorOld": "Ryan Ernst",
+      "daysBetweenCommits": 1.15,
+      "commitsBetweenForRepo": 17,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n-    protected void doExecute(SearchRequest request, ActionListener\u003cSearchResponse\u003e listener) {\n+    protected void doExecute(Task task, SearchRequest request, ActionListener\u003cSearchResponse\u003e listener) {\n         listener.onResponse(new SearchResponse(new InternalSearchResponse(\n             new SearchHits(\n                 new SearchHit[0], 0L, 0.0f),\n             new InternalAggregations(Collections.emptyList()),\n             new Suggest(Collections.emptyList()),\n             new SearchProfileShardResults(Collections.emptyMap()), false, false, 1), \"\", 1, 1, 0, 0, ShardSearchFailure.EMPTY_ARRAY,\n                 SearchResponse.Clusters.EMPTY));\n     }\n\\ No newline at end of file\n"
+    },
+    "29450de7b56dd34182bd73e13c85867ce545849f": {
+      "type": "Ybodychange",
+      "commitMessage": "Cross Cluster Search: make remote clusters optional (#27182)\n\nToday Cross Cluster Search requires at least one node in each remote cluster to be up once the cross cluster search is run. Otherwise the whole search request fails despite some of the data (either local and/or remote) is available. This happens when performing the _search/shards calls to find out which remote shards the query has to be executed on. This scenario is different from shard failures that may happen later on when the query is actually executed, in case e.g. remote shards are missing, which is not going to fail the whole request but rather yield partial results, and the _shards section in the response will indicate that.\r\n\r\nThis commit introduces a boolean setting per cluster called search.remote.$cluster_alias.skip_if_disconnected, set to false by default, which allows to skip certain clusters if they are down when trying to reach them through a cross cluster search requests. By default all clusters are mandatory.\r\n\r\nScroll requests support such setting too when they are first initiated (first search request with scroll parameter), but subsequent scroll rounds (_search/scroll endpoint) will fail if some of the remote clusters went down meanwhile.\r\n\r\nThe search API response contains now a new _clusters section, similar to the _shards section, that gets returned whenever one or more clusters were disconnected and got skipped:\r\n\r\n\"_clusters\" : {\r\n    \"total\" : 3,\r\n    \"successful\" : 2,\r\n    \"skipped\" : 1\r\n}\r\nSuch section won\u0027t be part of the response if no clusters have been skipped.\r\n\r\nThe per cluster skip_unavailable setting value has also been added to the output of the remote/info API.",
+      "commitDate": 1511260907000,
+      "commitName": "29450de7b56dd34182bd73e13c85867ce545849f",
+      "commitAuthor": "Luca Cavanna",
+      "commitDateOld": 1504116033000,
+      "commitNameOld": "ed151d829d9e41529b101abec40018c1acab2c83",
+      "commitAuthorOld": "Tal Levy",
+      "daysBetweenCommits": 82.7,
+      "commitsBetweenForRepo": 536,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,9 @@\n     protected void doExecute(SearchRequest request, ActionListener\u003cSearchResponse\u003e listener) {\n         listener.onResponse(new SearchResponse(new InternalSearchResponse(\n             new SearchHits(\n                 new SearchHit[0], 0L, 0.0f),\n             new InternalAggregations(Collections.emptyList()),\n             new Suggest(Collections.emptyList()),\n-            new SearchProfileShardResults(Collections.emptyMap()), false, false, 1), \"\", 1, 1, 0, 0, new ShardSearchFailure[0]));\n+            new SearchProfileShardResults(Collections.emptyMap()), false, false, 1), \"\", 1, 1, 0, 0, ShardSearchFailure.EMPTY_ARRAY,\n+                SearchResponse.Clusters.EMPTY));\n     }\n\\ No newline at end of file\n"
+    },
+    "e81804cfa47bb485b7736d7fe1575c53460a638a": {
+      "type": "Ybodychange",
+      "commitMessage": "Add a shard filter search phase to pre-filter shards based on query rewriting (#25658)\n\nToday if we search across a large amount of shards we hit every shard. Yet, it\u0027s quite\r\ncommon to search across an index pattern for time based indices but filtering will exclude\r\nall results outside a certain time range ie. `now-3d`. While the search can potentially hit\r\nhundreds of shards the majority of the shards might yield 0 results since there is not document\r\nthat is within this date range. Kibana for instance does this regularly but used `_field_stats`\r\nto optimize the indexes they need to query. Now with the deprecation of `_field_stats` and it\u0027s upcoming removal a single dashboard in kibana can potentially turn into searches hitting hundreds or thousands of shards and that can easily cause search rejections even though the most of the requests are very likely super cheap and only need a query rewriting to early terminate with 0 results.\r\n\r\nThis change adds a pre-filter phase for searches that can, if the number of shards are higher than a the `pre_filter_shard_size` threshold (defaults to 128 shards), fan out to the shards\r\nand check if the query can potentially match any documents at all. While false positives are possible, a negative response means that no matches are possible. These requests are not subject to rejection and can greatly reduce the number of shards a request needs to hit. The approach here is preferable to the kibana approach with field stats since it correctly handles aliases and uses the correct threadpools to execute these requests. Further it\u0027s completely transparent to the user and improves scalability of elasticsearch in general on large clusters.",
+      "commitDate": 1499890760000,
+      "commitName": "e81804cfa47bb485b7736d7fe1575c53460a638a",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1487698619000,
+      "commitNameOld": "ce625ebdccc35639d7423ad6309119422c99ccf3",
+      "commitAuthorOld": "Simon Willnauer",
+      "daysBetweenCommits": 141.11,
+      "commitsBetweenForRepo": 1585,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     protected void doExecute(SearchRequest request, ActionListener\u003cSearchResponse\u003e listener) {\n         listener.onResponse(new SearchResponse(new InternalSearchResponse(\n             new SearchHits(\n                 new SearchHit[0], 0L, 0.0f),\n             new InternalAggregations(Collections.emptyList()),\n             new Suggest(Collections.emptyList()),\n-            new SearchProfileShardResults(Collections.emptyMap()), false, false, 1), \"\", 1, 1, 0, new ShardSearchFailure[0]));\n+            new SearchProfileShardResults(Collections.emptyMap()), false, false, 1), \"\", 1, 1, 0, 0, new ShardSearchFailure[0]));\n     }\n\\ No newline at end of file\n"
+    },
+    "ce625ebdccc35639d7423ad6309119422c99ccf3": {
+      "type": "Ybodychange",
+      "commitMessage": "Expose `batched_reduce_size` via `_search` (#23288)\n\nIn #23253 we added an the ability to incrementally reduce search results.\r\nThis change exposes the parameter to control the batch since and therefore\r\nthe memory consumption of a large search request.",
+      "commitDate": 1487698619000,
+      "commitName": "ce625ebdccc35639d7423ad6309119422c99ccf3",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1486561208000,
+      "commitNameOld": "ecb01c15b9a6645f22f153eb099a377e70e398c8",
+      "commitAuthorOld": "Simon Willnauer",
+      "daysBetweenCommits": 13.16,
+      "commitsBetweenForRepo": 145,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     protected void doExecute(SearchRequest request, ActionListener\u003cSearchResponse\u003e listener) {\n         listener.onResponse(new SearchResponse(new InternalSearchResponse(\n             new SearchHits(\n                 new SearchHit[0], 0L, 0.0f),\n             new InternalAggregations(Collections.emptyList()),\n             new Suggest(Collections.emptyList()),\n-            new SearchProfileShardResults(Collections.emptyMap()), false, false), \"\", 1, 1, 0, new ShardSearchFailure[0]));\n+            new SearchProfileShardResults(Collections.emptyMap()), false, false, 1), \"\", 1, 1, 0, new ShardSearchFailure[0]));\n     }\n\\ No newline at end of file\n"
+    },
+    "ecb01c15b9a6645f22f153eb099a377e70e398c8": {
+      "type": "Ybodychange",
+      "commitMessage": "Fold InternalSearchHits and friends into their interfaces (#23042)\n\nWe have a bunch of interfaces that have only a single implementation\r\nfor 6 years now. These interfaces are pretty useless from a SW development\r\nperspective and only add unnecessary abstractions. They also require\r\nlots of casting in many places where we expect that there is only one\r\nconcrete implementation. This change removes the interfaces, makes\r\nall of the classes final and removes the duplicate `foo` `getFoo` accessors\r\nin favor of `getFoo` from these classes.",
+      "commitDate": 1486561208000,
+      "commitName": "ecb01c15b9a6645f22f153eb099a377e70e398c8",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1472195147000,
+      "commitNameOld": "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 166.27,
+      "commitsBetweenForRepo": 2143,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     protected void doExecute(SearchRequest request, ActionListener\u003cSearchResponse\u003e listener) {\n         listener.onResponse(new SearchResponse(new InternalSearchResponse(\n-            new InternalSearchHits(\n-                new InternalSearchHit[0], 0L, 0.0f),\n+            new SearchHits(\n+                new SearchHit[0], 0L, 0.0f),\n             new InternalAggregations(Collections.emptyList()),\n             new Suggest(Collections.emptyList()),\n             new SearchProfileShardResults(Collections.emptyMap()), false, false), \"\", 1, 1, 0, new ShardSearchFailure[0]));\n     }\n\\ No newline at end of file\n"
+    },
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": {
+      "type": "Yintroduced",
+      "commitMessage": "Add client-benchmark-noop-api-plugin to stress clients even more in benchmarks (#20103)\n\n",
+      "commitDate": 1472195147000,
+      "commitName": "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+      "commitAuthor": "Daniel Mitterdorfer"
+    }
+  }
+}

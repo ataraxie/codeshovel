@@ -1,0 +1,64 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java
+index 6fb4b99b3..c8ae67da3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/DetailAST.java
+@@ -374,57 +374,57 @@ public final class DetailAST extends CommonASTWithHiddenTokens {
+     public DetailAST getPreviousSibling() {
+         return previousSibling;
+     }
+ 
+     /**
+      * Returns the first child token that makes a specified type.
+      * @param type the token type to match
+      * @return the matching token, or null if no match
+      */
+     public DetailAST findFirstToken(int type) {
+         DetailAST returnValue = null;
+         for (DetailAST ast = getFirstChild(); ast != null; ast = ast.getNextSibling()) {
+             if (ast.getType() == type) {
+                 returnValue = ast;
+                 break;
+             }
+         }
+         return returnValue;
+     }
+ 
+     @Override
+     public String toString() {
+         return super.toString() + "[" + getLineNo() + "x" + getColumnNo() + "]";
+     }
+ 
+     @Override
+     public DetailAST getNextSibling() {
+         return (DetailAST) super.getNextSibling();
+     }
+ 
+     @Override
+     public DetailAST getFirstChild() {
+         return (DetailAST) super.getFirstChild();
+     }
+ 
+     /**
+      * Clears the child count for the ast instance.
+      * @param ast The ast to clear.
+      */
+     private static void clearChildCountCache(DetailAST ast) {
+         if (ast != null) {
+             ast.childCount = NOT_INITIALIZED;
+         }
+     }
+ 
+     /**
+      * Clears branchTokenTypes cache for all parents of the current DetailAST instance, and the
+      * child count for the current DetailAST instance.
+      */
+     private void clearBranchTokenTypes() {
+-        DetailAST prevParent = getParent();
++        DetailAST prevParent = parent;
+         while (prevParent != null) {
+             prevParent.branchTokenTypes = null;
+-            prevParent = prevParent.getParent();
++            prevParent = prevParent.parent;
+         }
+     }
+ }

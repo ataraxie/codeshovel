@@ -1,0 +1,87 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "convertCliToPojo___cmdLine-CommandLine__filesToProcess-List__File__",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 468,
+  "changeHistory": [
+    "036582d728d2e2bb37f360bb3a74f899f04d587d",
+    "fe7655e7d82152b57fd68d37df621d22b47132ad",
+    "1b72b4905bf3520aa47697cc7d1bcdad8b7ad1e6",
+    "8c3e4a50749044ae3177fc4c84db9c4fd93abca2",
+    "1a2c318e22a0b2b22ccc76019217c0892fe2d59b"
+  ],
+  "changeHistoryShort": {
+    "036582d728d2e2bb37f360bb3a74f899f04d587d": "Ybodychange",
+    "fe7655e7d82152b57fd68d37df621d22b47132ad": "Ybodychange",
+    "1b72b4905bf3520aa47697cc7d1bcdad8b7ad1e6": "Ymultichange(Yparameterchange,Ybodychange)",
+    "8c3e4a50749044ae3177fc4c84db9c4fd93abca2": "Ybodychange",
+    "1a2c318e22a0b2b22ccc76019217c0892fe2d59b": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "036582d728d2e2bb37f360bb3a74f899f04d587d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4370: Add multi thread mode to checkstyle launcher\n",
+      "commitDate": 1499049797000,
+      "commitName": "036582d728d2e2bb37f360bb3a74f899f04d587d",
+      "commitAuthor": "Andrew Kuchev",
+      "commitDateOld": 1497909220000,
+      "commitNameOld": "fe7655e7d82152b57fd68d37df621d22b47132ad",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 13.2,
+      "commitsBetweenForRepo": 90,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,19 @@\n     private static CliOptions convertCliToPojo(CommandLine cmdLine, List\u003cFile\u003e filesToProcess) {\n         final CliOptions conf \u003d new CliOptions();\n         conf.format \u003d cmdLine.getOptionValue(OPTION_F_NAME);\n         if (conf.format \u003d\u003d null) {\n             conf.format \u003d PLAIN_FORMAT_NAME;\n         }\n         conf.outputLocation \u003d cmdLine.getOptionValue(OPTION_O_NAME);\n         conf.configLocation \u003d cmdLine.getOptionValue(OPTION_C_NAME);\n         conf.propertiesLocation \u003d cmdLine.getOptionValue(OPTION_P_NAME);\n         conf.files \u003d filesToProcess;\n         conf.executeIgnoredModules \u003d cmdLine.hasOption(OPTION_EXECUTE_IGNORED_MODULES_NAME);\n+        final String checkerThreadsNumber \u003d cmdLine.getOptionValue(\n+                OPTION_CAPITAL_C_NAME, ONE_STRING_VALUE);\n+        conf.checkerThreadsNumber \u003d Integer.parseInt(checkerThreadsNumber);\n+        final String treeWalkerThreadsNumber \u003d cmdLine.getOptionValue(\n+                OPTION_CAPITAL_W_NAME, ONE_STRING_VALUE);\n+        conf.treeWalkerThreadsNumber \u003d Integer.parseInt(treeWalkerThreadsNumber);\n         return conf;\n     }\n\\ No newline at end of file\n"
+    },
+    "fe7655e7d82152b57fd68d37df621d22b47132ad": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3566: added execute ignored modules to CLI",
+      "commitDate": 1497909220000,
+      "commitName": "fe7655e7d82152b57fd68d37df621d22b47132ad",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1497307870000,
+      "commitNameOld": "35d5d4d9e8cea4b9fec731b67a15f488d61cdf61",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 6.96,
+      "commitsBetweenForRepo": 15,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,13 @@\n     private static CliOptions convertCliToPojo(CommandLine cmdLine, List\u003cFile\u003e filesToProcess) {\n         final CliOptions conf \u003d new CliOptions();\n         conf.format \u003d cmdLine.getOptionValue(OPTION_F_NAME);\n         if (conf.format \u003d\u003d null) {\n             conf.format \u003d PLAIN_FORMAT_NAME;\n         }\n         conf.outputLocation \u003d cmdLine.getOptionValue(OPTION_O_NAME);\n         conf.configLocation \u003d cmdLine.getOptionValue(OPTION_C_NAME);\n         conf.propertiesLocation \u003d cmdLine.getOptionValue(OPTION_P_NAME);\n         conf.files \u003d filesToProcess;\n+        conf.executeIgnoredModules \u003d cmdLine.hasOption(OPTION_EXECUTE_IGNORED_MODULES_NAME);\n         return conf;\n     }\n\\ No newline at end of file\n"
+    },
+    "1b72b4905bf3520aa47697cc7d1bcdad8b7ad1e6": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #2103: removed excess file gathering in main",
+      "commitDate": 1455113230000,
+      "commitName": "1b72b4905bf3520aa47697cc7d1bcdad8b7ad1e6",
+      "commitAuthor": "rnveach",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "8c3e4a50749044ae3177fc4c84db9c4fd93abca2": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: MultipleStringLiterals violations partial fix\n",
+      "commitDate": 1440504773000,
+      "commitName": "8c3e4a50749044ae3177fc4c84db9c4fd93abca2",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1440042157000,
+      "commitNameOld": "da6a8d083cb82a94707146de559911578f39affe",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 5.35,
+      "commitsBetweenForRepo": 91,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private static CliOptions convertCliToPojo(CommandLine cmdLine) {\n         final CliOptions conf \u003d new CliOptions();\n-        conf.format \u003d cmdLine.getOptionValue(\"f\");\n+        conf.format \u003d cmdLine.getOptionValue(OPTION_F_NAME);\n         if (conf.format \u003d\u003d null) {\n-            conf.format \u003d \"plain\";\n+            conf.format \u003d PLAIN_FORMAT_NAME;\n         }\n-        conf.outputLocation \u003d cmdLine.getOptionValue(\"o\");\n-        conf.configLocation \u003d cmdLine.getOptionValue(\"c\");\n-        conf.propertiesLocation \u003d cmdLine.getOptionValue(\"p\");\n+        conf.outputLocation \u003d cmdLine.getOptionValue(OPTION_O_NAME);\n+        conf.configLocation \u003d cmdLine.getOptionValue(OPTION_C_NAME);\n+        conf.propertiesLocation \u003d cmdLine.getOptionValue(OPTION_P_NAME);\n         conf.files \u003d getFilesToProcess(cmdLine.getArgs());\n         return conf;\n     }\n\\ No newline at end of file\n"
+    },
+    "1a2c318e22a0b2b22ccc76019217c0892fe2d59b": {
+      "type": "Yintroduced",
+      "commitMessage": "huge refactoring for CLI Main class. Issue #596\n",
+      "commitDate": 1430849532000,
+      "commitName": "1a2c318e22a0b2b22ccc76019217c0892fe2d59b",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

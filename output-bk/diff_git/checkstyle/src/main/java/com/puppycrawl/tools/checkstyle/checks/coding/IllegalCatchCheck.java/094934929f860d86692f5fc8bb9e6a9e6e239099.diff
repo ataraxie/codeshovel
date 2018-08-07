@@ -1,0 +1,77 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalCatchCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalCatchCheck.java
+index 5843e3faa..bf3d1c2b3 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalCatchCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalCatchCheck.java
+@@ -58,71 +58,71 @@ public final class IllegalCatchCheck extends Check {
+         illegalClassNames.clear();
+         for (final String name : classNames) {
+             illegalClassNames.add(name);
+             final int lastDot = name.lastIndexOf('.');
+             if (lastDot > 0 && lastDot < name.length() - 1) {
+                 final String shortName = name
+                         .substring(name.lastIndexOf('.') + 1);
+                 illegalClassNames.add(shortName);
+             }
+         }
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {TokenTypes.LITERAL_CATCH};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getDefaultTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.LITERAL_CATCH};
+     }
+ 
+     @Override
+     public void visitToken(DetailAST detailAST) {
+         final DetailAST parameterDef =
+             detailAST.findFirstToken(TokenTypes.PARAMETER_DEF);
+         final DetailAST excTypeParent =
+                 parameterDef.findFirstToken(TokenTypes.TYPE);
+         final List<DetailAST> excTypes = getAllExceptionTypes(excTypeParent);
+ 
+         for (DetailAST excType : excTypes) {
+             final FullIdent ident = FullIdent.createFullIdent(excType);
+ 
+             if (illegalClassNames.contains(ident.getText())) {
+                 log(detailAST, MSG_KEY, ident.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Finds all exception types in current catch.
+      * We need it till we can have few different exception types into one catch.
+      * @param parentToken - parent node for types (TYPE or BOR)
+      * @return list, that contains all exception types in current catch
+      */
+-    public static List<DetailAST> getAllExceptionTypes(DetailAST parentToken) {
++    private static List<DetailAST> getAllExceptionTypes(DetailAST parentToken) {
+         DetailAST currentNode = parentToken.getFirstChild();
+         final List<DetailAST> exceptionTypes = new LinkedList<>();
+         if (currentNode.getType() == TokenTypes.BOR) {
+             exceptionTypes.addAll(getAllExceptionTypes(currentNode));
+             currentNode = currentNode.getNextSibling();
+             if (currentNode != null) {
+                 exceptionTypes.add(currentNode);
+             }
+         }
+         else {
+             exceptionTypes.add(currentNode);
+             currentNode = currentNode.getNextSibling();
+             while (currentNode != null) {
+                 exceptionTypes.add(currentNode);
+                 currentNode = currentNode.getNextSibling();
+             }
+         }
+         return exceptionTypes;
+     }
+ }

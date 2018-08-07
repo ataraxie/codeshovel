@@ -1,0 +1,99 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/Utils.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/Utils.java
+index 2e15fb2a5..f3e0000d0 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/Utils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/Utils.java
+@@ -200,92 +200,92 @@ public final class Utils
+         try {
+             lnr = new LineNumberReader(new InputStreamReader(fr, charsetName));
+         }
+         catch (final UnsupportedEncodingException ex) {
+             fr.close();
+             final String message = "unsupported charset: " + ex.getMessage();
+             throw new UnsupportedEncodingException(message);
+         }
+         try {
+             while (true) {
+                 final String l = lnr.readLine();
+                 if (l == null) {
+                     break;
+                 }
+                 lines.add(l);
+             }
+         }
+         finally {
+             Utils.closeQuietly(lnr);
+         }
+         return lines.toArray(new String[lines.size()]);
+     }
+ 
+     /**
+      * Helper method to create a regular expression.
+      * @param pattern the pattern to match
+      * @return a created regexp object
+      * @throws ConversionException if unable to create Pattern object.
+      **/
+     public static Pattern createPattern(String pattern)
+         throws ConversionException
+     {
+         Pattern retVal = null;
+         try {
+             retVal = getPattern(pattern);
+         }
+         catch (final PatternSyntaxException e) {
+             throw new ConversionException(
+                 "Failed to initialise regexp expression " + pattern, e);
+         }
+         return retVal;
+     }
+ 
+     /**
+      * @return the base class name from a fully qualified name
+      * @param type the fully qualified name. Cannot be null
+      */
+     public static String baseClassname(String type)
+     {
+         final int i = type.lastIndexOf(".");
+-        return (i == -1) ? type : type.substring(i + 1);
++        return i == -1 ? type : type.substring(i + 1);
+     }
+ 
+     /**
+      * Create a stripped down version of a filename.
+      * @param basedir the prefix to strip off the original filename
+      * @param fileName the original filename
+      * @return the filename where an initial prefix of basedir is stripped
+      */
+     public static String getStrippedFileName(
+             final String basedir, final String fileName)
+     {
+         final String stripped;
+-        if ((basedir == null) || !fileName.startsWith(basedir)) {
++        if (basedir == null || !fileName.startsWith(basedir)) {
+             stripped = fileName;
+         }
+         else {
+             // making the assumption that there is text after basedir
+             final int skipSep = basedir.endsWith(File.separator) ? 0 : 1;
+             stripped = fileName.substring(basedir.length() + skipSep);
+         }
+         return stripped;
+     }
+ 
+     /**
+      * Closes the supplied {@link Closeable} object ignoring an
+      * {@link IOException} if it is thrown. Honestly, what are you going to
+      * do if you cannot close a file.
+      * @param shutting the object to be closed.
+      */
+     public static void closeQuietly(Closeable shutting)
+     {
+         if (null != shutting) {
+             try {
+                 shutting.close();
+             }
+             catch (IOException e) {
+                 ; // ignore
+             }
+         }
+     }
+ }

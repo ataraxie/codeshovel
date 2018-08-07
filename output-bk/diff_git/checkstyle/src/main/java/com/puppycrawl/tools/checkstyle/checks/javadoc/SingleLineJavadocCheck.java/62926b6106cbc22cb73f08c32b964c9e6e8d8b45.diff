@@ -1,0 +1,110 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/SingleLineJavadocCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/SingleLineJavadocCheck.java
+index 744ae1082..1a314c137 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/SingleLineJavadocCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/SingleLineJavadocCheck.java
+@@ -53,100 +53,105 @@ import com.puppycrawl.tools.checkstyle.utils.JavadocUtils;
+  *     &lt;property name=&quot;ignoreInlineTags&quot; value=&quot;false&quot;/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author baratali
+  * @author maxvetrenko
+  * @author vladlis
+  *
+  */
+ public class SingleLineJavadocCheck extends AbstractJavadocCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "singleline.javadoc";
+ 
+     /**
+      * Allows to specify a list of tags to be ignored by check.
+      */
+     private List<String> ignoredTags = new ArrayList<>();
+ 
+     /** Whether inline tags must be ignored. **/
+     private boolean ignoreInlineTags = true;
+ 
+     /**
+      * Sets a list of tags to be ignored by check.
+      *
+      * @param tags to be ignored by check.
+      */
+     public void setIgnoredTags(String... tags) {
+         ignoredTags = Arrays.stream(tags).collect(Collectors.toList());
+     }
+ 
+     /**
+      * Sets whether inline tags must be ignored.
+      *
+      * @param ignoreInlineTags whether inline tags must be ignored.
+      */
+     public void setIgnoreInlineTags(boolean ignoreInlineTags) {
+         this.ignoreInlineTags = ignoreInlineTags;
+     }
+ 
+     @Override
+     public int[] getDefaultJavadocTokens() {
+         return new int[] {
+             JavadocTokenTypes.JAVADOC,
+         };
+     }
+ 
++    @Override
++    public int[] getRequiredJavadocTokens() {
++        return getAcceptableJavadocTokens();
++    }
++
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.BLOCK_COMMENT_BEGIN };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void visitJavadocToken(DetailNode ast) {
+         if (isSingleLineJavadoc(getBlockCommentAst())
+                 && (hasJavadocTags(ast) || !ignoreInlineTags && hasJavadocInlineTags(ast))) {
+             log(ast.getLineNumber(), MSG_KEY);
+         }
+     }
+ 
+     /**
+      * Checks if comment is single line comment.
+      *
+      * @param blockCommentStart the AST tree in which a block comment starts
+      * @return true, if comment is single line comment.
+      */
+     private static boolean isSingleLineJavadoc(DetailAST blockCommentStart) {
+         final DetailAST blockCommentEnd = blockCommentStart.getLastChild();
+         return blockCommentStart.getLineNo() == blockCommentEnd.getLineNo();
+     }
+ 
+     /**
+      * Checks if comment has javadoc tags which are not ignored. Also works
+      * on custom tags. As block tags can be interpreted only at the beginning of a line,
+      * only the first instance is checked.
+      *
+      * @param javadocRoot javadoc root node.
+      * @return true, if comment has javadoc tags which are not ignored.
+      * @see <a href=
+      * http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html#blockandinlinetags>
+      * Block and inline tags</a>
+      */
+     private boolean hasJavadocTags(DetailNode javadocRoot) {
+         final DetailNode javadocTagSection =
+                 JavadocUtils.findFirstToken(javadocRoot, JavadocTokenTypes.JAVADOC_TAG);
+         return javadocTagSection != null && !isTagIgnored(javadocTagSection);
+     }
+ 
+     /**
+      * Checks if comment has in-line tags which are not ignored.
+      *
+      * @param javadocRoot javadoc root node.

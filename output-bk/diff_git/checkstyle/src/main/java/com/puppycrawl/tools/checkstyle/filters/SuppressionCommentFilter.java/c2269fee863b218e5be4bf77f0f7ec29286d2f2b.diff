@@ -1,0 +1,193 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index 352413770..98766086b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -1,85 +1,84 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2018 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.filters;
+ 
+ import java.lang.ref.WeakReference;
+ import java.util.ArrayList;
+ import java.util.Collection;
+ import java.util.Collections;
+ import java.util.List;
+ import java.util.Objects;
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ import java.util.regex.PatternSyntaxException;
+ 
+ import com.puppycrawl.tools.checkstyle.TreeWalkerAuditEvent;
+ import com.puppycrawl.tools.checkstyle.TreeWalkerFilter;
+ import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
+-import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.FileContents;
+ import com.puppycrawl.tools.checkstyle.api.TextBlock;
+ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * <p>
+  * A filter that uses comments to suppress audit events.
+  * </p>
+  * <p>
+  * Rationale:
+  * Sometimes there are legitimate reasons for violating a check.  When
+  * this is a matter of the code in question and not personal
+  * preference, the best place to override the policy is in the code
+  * itself.  Semi-structured comments can be associated with the check.
+  * This is sometimes superior to a separate suppressions file, which
+  * must be kept up-to-date as the source file is edited.
+  * </p>
+  * @author Mike McMahon
+  * @author Rick Giles
+  */
+ public class SuppressionCommentFilter
+     extends AutomaticBean
+     implements TreeWalkerFilter {
+ 
+     /**
+      * Enum to be used for switching checkstyle reporting for tags.
+      */
+     public enum TagType {
+ 
+         /**
+          * Switch reporting on.
+          */
+         ON,
+         /**
+          * Switch reporting off.
+          */
+         OFF
+ 
+     }
+ 
+     /** Turns checkstyle reporting off. */
+     private static final String DEFAULT_OFF_FORMAT = "CHECKSTYLE:OFF";
+ 
+     /** Turns checkstyle reporting on. */
+     private static final String DEFAULT_ON_FORMAT = "CHECKSTYLE:ON";
+ 
+     /** Control all checks. */
+     private static final String DEFAULT_CHECK_FORMAT = ".*";
+ 
+     /** Tagged comments. */
+@@ -135,101 +134,101 @@ public class SuppressionCommentFilter
+      * @return the FileContents for this filter.
+      */
+     private FileContents getFileContents() {
+         return fileContentsReference.get();
+     }
+ 
+     /**
+      * Set the FileContents for this filter.
+      * @param fileContents the FileContents for this filter.
+      * @noinspection WeakerAccess
+      */
+     public void setFileContents(FileContents fileContents) {
+         fileContentsReference = new WeakReference<>(fileContents);
+     }
+ 
+     /**
+      * Set the format for a check.
+      * @param format a {@code String} value
+      */
+     public final void setCheckFormat(String format) {
+         checkFormat = format;
+     }
+ 
+     /**
+      * Set the format for a message.
+      * @param format a {@code String} value
+      */
+     public void setMessageFormat(String format) {
+         messageFormat = format;
+     }
+ 
+     /**
+      * Set whether to look in C++ comments.
+      * @param checkCpp {@code true} if C++ comments are checked.
+      */
+     // -@cs[AbbreviationAsWordInName] We can not change it as,
+     // check's property is a part of API (used in configurations).
+     public void setCheckCPP(boolean checkCpp) {
+         checkCPP = checkCpp;
+     }
+ 
+     /**
+      * Set whether to look in C comments.
+      * @param checkC {@code true} if C comments are checked.
+      */
+     public void setCheckC(boolean checkC) {
+         this.checkC = checkC;
+     }
+ 
+     @Override
+-    protected void finishLocalSetup() throws CheckstyleException {
++    protected void finishLocalSetup() {
+         // No code by default
+     }
+ 
+     @Override
+     public boolean accept(TreeWalkerAuditEvent event) {
+         boolean accepted = true;
+ 
+         if (event.getLocalizedMessage() != null) {
+             // Lazy update. If the first event for the current file, update file
+             // contents and tag suppressions
+             final FileContents currentContents = event.getFileContents();
+ 
+             if (getFileContents() != currentContents) {
+                 setFileContents(currentContents);
+                 tagSuppressions();
+             }
+             final Tag matchTag = findNearestMatch(event);
+             accepted = matchTag == null || matchTag.getTagType() == TagType.ON;
+         }
+         return accepted;
+     }
+ 
+     /**
+      * Finds the nearest comment text tag that matches an audit event.
+      * The nearest tag is before the line and column of the event.
+      * @param event the {@code TreeWalkerAuditEvent} to match.
+      * @return The {@code Tag} nearest event.
+      */
+     private Tag findNearestMatch(TreeWalkerAuditEvent event) {
+         Tag result = null;
+         for (Tag tag : tags) {
+             if (tag.getLine() > event.getLine()
+                 || tag.getLine() == event.getLine()
+                     && tag.getColumn() > event.getColumn()) {
+                 break;
+             }
+             if (tag.isMatch(event)) {
+                 result = tag;
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Collects all the suppression tags for all comments into a list and
+      * sorts the list.
+      */
+     private void tagSuppressions() {
+         tags.clear();
+         final FileContents contents = getFileContents();

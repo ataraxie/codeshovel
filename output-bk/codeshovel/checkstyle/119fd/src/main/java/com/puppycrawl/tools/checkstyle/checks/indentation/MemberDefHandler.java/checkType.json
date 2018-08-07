@@ -1,0 +1,123 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "MemberDefHandler.java",
+  "functionName": "checkType",
+  "functionId": "checkType",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/MemberDefHandler.java",
+  "functionStartLine": 79,
+  "functionEndLine": 86,
+  "changeHistory": [
+    "8c891372187779376158becd95fcaf4e28b8bb8d",
+    "4a6e1a3541fc31dc7450de00943fd94a20d9223e",
+    "24d7448294b03e49709c8e5588e89c27091ba0f2",
+    "eb5896a4a1d66552f5100046413f15d62b485b62",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "33b703a724ddd2090f771cb9834c85e0ccb569e1"
+  ],
+  "changeHistoryShort": {
+    "8c891372187779376158becd95fcaf4e28b8bb8d": "Ybodychange",
+    "4a6e1a3541fc31dc7450de00943fd94a20d9223e": "Ybodychange",
+    "24d7448294b03e49709c8e5588e89c27091ba0f2": "Ybodychange",
+    "eb5896a4a1d66552f5100046413f15d62b485b62": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "33b703a724ddd2090f771cb9834c85e0ccb569e1": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "8c891372187779376158becd95fcaf4e28b8bb8d": {
+      "type": "Ybodychange",
+      "commitMessage": "minor: renaming indentation methods to more natural name",
+      "commitDate": 1450282560000,
+      "commitName": "8c891372187779376158becd95fcaf4e28b8bb8d",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1450281394000,
+      "commitNameOld": "4a6e1a3541fc31dc7450de00943fd94a20d9223e",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private void checkType() {\n         final DetailAST type \u003d getMainAst().findFirstToken(TokenTypes.TYPE);\n         final DetailAST ident \u003d AbstractExpressionHandler.getFirstToken(type);\n         final int columnNo \u003d expandedTabsColumnNo(ident);\n-        if (isOnStartOfLine(ident) \u0026\u0026 !getLevel().isAcceptable(columnNo)) {\n+        if (isOnStartOfLine(ident) \u0026\u0026 !getIndent().isAcceptable(columnNo)) {\n             logError(ident, \"type\", columnNo);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "4a6e1a3541fc31dc7450de00943fd94a20d9223e": {
+      "type": "Ybodychange",
+      "commitMessage": "minor: renaming indentation methods to more natural name",
+      "commitDate": 1450281394000,
+      "commitName": "4a6e1a3541fc31dc7450de00943fd94a20d9223e",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1449255189000,
+      "commitNameOld": "ab74399c2d18b8881c4a0c13155b7afce869eebf",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 11.88,
+      "commitsBetweenForRepo": 73,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private void checkType() {\n         final DetailAST type \u003d getMainAst().findFirstToken(TokenTypes.TYPE);\n         final DetailAST ident \u003d AbstractExpressionHandler.getFirstToken(type);\n         final int columnNo \u003d expandedTabsColumnNo(ident);\n-        if (startsLine(ident) \u0026\u0026 !getLevel().isAcceptable(columnNo)) {\n+        if (isOnStartOfLine(ident) \u0026\u0026 !getLevel().isAcceptable(columnNo)) {\n             logError(ident, \"type\", columnNo);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "24d7448294b03e49709c8e5588e89c27091ba0f2": {
+      "type": "Ybodychange",
+      "commitMessage": "Rename boolean methods to start with question word. #1555\n\nFixes some `BooleanMethodNameMustStartWithQuestion` inspection violations.\n\nDescription:\n\u003eReports boolean methods whose names do not start with a question word. Boolean methods that override library methods are ignored by this inspection\n",
+      "commitDate": 1440679495000,
+      "commitName": "24d7448294b03e49709c8e5588e89c27091ba0f2",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439189206000,
+      "commitNameOld": "86826e1fa3fe3d793ee4723bb84ee0fc4ca38df1",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 17.25,
+      "commitsBetweenForRepo": 276,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private void checkType() {\n         final DetailAST type \u003d getMainAst().findFirstToken(TokenTypes.TYPE);\n         final DetailAST ident \u003d AbstractExpressionHandler.getFirstToken(type);\n         final int columnNo \u003d expandedTabsColumnNo(ident);\n-        if (startsLine(ident) \u0026\u0026 !getLevel().accept(columnNo)) {\n+        if (startsLine(ident) \u0026\u0026 !getLevel().isAcceptable(columnNo)) {\n             logError(ident, \"type\", columnNo);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "eb5896a4a1d66552f5100046413f15d62b485b62": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix PMD violations for AbstractNaming rule #983\n",
+      "commitDate": 1434649920000,
+      "commitName": "eb5896a4a1d66552f5100046413f15d62b485b62",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 32.25,
+      "commitsBetweenForRepo": 181,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private void checkType() {\n         final DetailAST type \u003d getMainAst().findFirstToken(TokenTypes.TYPE);\n-        final DetailAST ident \u003d ExpressionHandler.getFirstToken(type);\n+        final DetailAST ident \u003d AbstractExpressionHandler.getFirstToken(type);\n         final int columnNo \u003d expandedTabsColumnNo(ident);\n         if (startsLine(ident) \u0026\u0026 !getLevel().accept(columnNo)) {\n             logError(ident, \"type\", columnNo);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1121670737000,
+      "commitNameOld": "33b703a724ddd2090f771cb9834c85e0ccb569e1",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 353.86,
+      "commitsBetweenForRepo": 107,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     private void checkType()\n     {\n-        DetailAST type \u003d getMainAst().findFirstToken(TokenTypes.TYPE);\n-        DetailAST ident \u003d ExpressionHandler.getFirstToken(type);\n-        int columnNo \u003d expandedTabsColumnNo(ident);\n+        final DetailAST type \u003d getMainAst().findFirstToken(TokenTypes.TYPE);\n+        final DetailAST ident \u003d ExpressionHandler.getFirstToken(type);\n+        final int columnNo \u003d expandedTabsColumnNo(ident);\n         if (startsLine(ident) \u0026\u0026 !getLevel().accept(columnNo)) {\n             logError(ident, \"type\", columnNo);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "33b703a724ddd2090f771cb9834c85e0ccb569e1": {
+      "type": "Yintroduced",
+      "commitMessage": "Fixed 1193848, added handler for class fields.\n",
+      "commitDate": 1121670737000,
+      "commitName": "33b703a724ddd2090f771cb9834c85e0ccb569e1",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

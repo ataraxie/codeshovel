@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/xpath/AbstractNode.java b/src/main/java/com/puppycrawl/tools/checkstyle/xpath/AbstractNode.java
+index 3b1c072fb..6a6997148 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/xpath/AbstractNode.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/xpath/AbstractNode.java
+@@ -99,101 +99,101 @@ public abstract class AbstractNode implements NodeInfo {
+     /**
+      * Returns uri of the namespace for the current node.
+      * @return uri
+      */
+     @Override
+     public String getURI() {
+         return "";
+     }
+ 
+     /**
+      * Returns if current node has children.
+      * @return if current node has children
+      */
+     @Override
+     public boolean hasChildNodes() {
+         return !children.isEmpty();
+     }
+ 
+     /**
+      * Determines axis iteration algorithm.
+      * @param axisNumber element from {@code AxisInfo}
+      * @param nodeTest filter for iterator
+      * @return {@code AxisIterator} object
+      */
+     @Override
+     public AxisIterator iterateAxis(byte axisNumber, NodeTest nodeTest) {
+         AxisIterator axisIterator = iterateAxis(axisNumber);
+         if (nodeTest != null) {
+             axisIterator = new Navigator.AxisFilter(axisIterator, nodeTest);
+         }
+         return axisIterator;
+     }
+ 
+     /**
+      * Compares current object with specified for order.
+      * @param nodeInfo another {@code NodeInfo} object
+      * @return number representing order of current object to specified one
+      */
+     @Override
+     public int compareOrder(NodeInfo nodeInfo) {
+         return getLocalPart().compareTo(nodeInfo.getLocalPart());
+     }
+ 
+     /**
+      * Returns namespace array. Throws {@code UnsupportedOperationException}, because no child
+      * class implements it and this method is not used for querying.
+      * @param namespaceBindings namespace array
+      * @return namespace array
+      */
+     @Override
+-    public final NamespaceBinding[] getDeclaredNamespaces(NamespaceBinding... namespaceBindings) {
++    public final NamespaceBinding[] getDeclaredNamespaces(NamespaceBinding[] namespaceBindings) {
+         throw throwUnsupportedOperationException();
+     }
+ 
+     /**
+      * Returns tree info. Throws {@code UnsupportedOperationException}, because no child
+      * class implements it and this method is not used for querying.
+      * @return tree info
+      */
+     @Override
+     public final TreeInfo getTreeInfo() {
+         throw throwUnsupportedOperationException();
+     }
+ 
+     /**
+      * Returns boolean. Throws {@code UnsupportedOperationException}, because no child
+      * class implements it and this method is not used for querying.
+      * @return boolean
+      */
+     @Override
+     public final boolean isId() {
+         throw throwUnsupportedOperationException();
+     }
+ 
+     /**
+      * Returns boolean. Throws {@code UnsupportedOperationException}, because no child
+      * class implements it and this method is not used for querying.
+      * @return boolean
+      */
+     @Override
+     public final boolean isIdref() {
+         throw throwUnsupportedOperationException();
+     }
+ 
+     /**
+      * Returns boolean. Throws {@code UnsupportedOperationException}, because no child
+      * class implements it and this method is not used for querying.
+      * @return boolean
+      */
+     @Override
+     public final boolean isNilled() {
+         throw throwUnsupportedOperationException();
+     }
+ 
+     /**
+      * Returns boolean. Throws {@code UnsupportedOperationException}, because no child
+      * class implements it and this method is not used for querying.
+      * @return boolean
+      */
+     @Override
+     public final boolean isStreamed() {

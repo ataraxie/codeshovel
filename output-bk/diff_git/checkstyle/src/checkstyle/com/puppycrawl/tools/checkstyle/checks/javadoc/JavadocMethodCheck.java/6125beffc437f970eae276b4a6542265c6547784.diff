@@ -1,0 +1,208 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index 05110820c..184a37be8 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -209,187 +209,191 @@ public class JavadocMethodCheck
+      * controls whether to allow documented exception that
+      * are subclass of one of declared exceptions.
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowThrowsTagsForSubclasses(boolean aFlag)
+     {
+         mAllowThrowsTagsForSubclasses = aFlag;
+     }
+ 
+     /**
+      * controls whether to allow a method which has parameters
+      * to omit matching param tags in the javadoc.
+      * Defaults to false.
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingParamTags(boolean aFlag)
+     {
+         mAllowMissingParamTags = aFlag;
+     }
+ 
+     /**
+      * controls whether to allow a method which declares that
+      * it throws exceptions to omit matching throws tags
+      * in the javadoc. Defaults to false.
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingThrowsTags(boolean aFlag)
+     {
+         mAllowMissingThrowsTags = aFlag;
+     }
+ 
+     /**
+      * controls whether to allow a method which returns
+      * non-void type to omit the return tag in the javadoc.
+      * Defaults to false.
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingReturnTag(boolean aFlag)
+     {
+         mAllowMissingReturnTag = aFlag;
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.IMPORT,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
++            TokenTypes.ANNOTATION_FIELD_DEF,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
++            TokenTypes.ANNOTATION_FIELD_DEF,
+         };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getRequiredTokens()
+     {
+         return new int[] {
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.IMPORT,
+         };
+     }
+ 
+     /**
+      * Checks Javadoc comments for a method or constructor.
+      * @param aAST the tree node for the method or constructor.
+      */
+     protected final void processAST(DetailAST aAST)
+     {
+         if (shouldCheck(aAST)) {
+             final FileContents contents = getFileContents();
+             final TextBlock cmt = contents.getJavadocBefore(aAST.getLineNo());
+ 
+             if (cmt == null) {
+                 log(aAST, "javadoc.missing");
+             }
+             else {
+                 checkComment(aAST, cmt);
+             }
+         }
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param aAST a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST aAST)
+     {
+         final DetailAST mods = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
+-        final Scope scope =
+-            ScopeUtils.inInterfaceBlock(aAST) ? Scope.PUBLIC : declaredScope;
++        final Scope scope = ScopeUtils.inInterfaceOrAnnotationBlock(aAST)
++                ? Scope.PUBLIC : declaredScope;
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(aAST);
+ 
+         return scope.isIn(mScope) && surroundingScope.isIn(mScope)
+             && ((mExcludeScope == null)
+                 || !scope.isIn(mExcludeScope)
+                 || !surroundingScope.isIn(mExcludeScope));
+     }
+ 
+     /**
+      * Checks the Javadoc for a method.
+      * @param aAST the token for the method
+      * @param aComment the Javadoc comment
+      */
+     private void checkComment(DetailAST aAST, TextBlock aComment)
+     {
+         final List tags = getMethodTags(aComment);
+ 
+         // Check for only one @see or inheritDoc tag
+         if ((tags.size() == 1)
+             && ((JavadocTag) tags.get(0)).isSeeOrInheritDocTag())
+         {
+             return;
+         }
+ 
+-        // Check for inheritDoc
+-        boolean hasInheritDocTag = false;
+         Iterator it = tags.iterator();
+-        while (it.hasNext() && !hasInheritDocTag) {
+-            hasInheritDocTag |=
+-                ((JavadocTag) it.next()).isInheritDocTag();
+-        }
++        if (aAST.getType() != TokenTypes.ANNOTATION_FIELD_DEF) {
++            // Check for inheritDoc
++            boolean hasInheritDocTag = false;
++            while (it.hasNext() && !hasInheritDocTag) {
++                hasInheritDocTag |=
++                    ((JavadocTag) it.next()).isInheritDocTag();
++            }
+ 
+-        checkParamTags(tags, getParameters(aAST), !hasInheritDocTag);
+-        checkThrowsTags(tags, getThrows(aAST), !hasInheritDocTag);
+-        if (isFunction(aAST)) {
+-            checkReturnTag(tags, aAST.getLineNo(), !hasInheritDocTag);
++            checkParamTags(tags, getParameters(aAST), !hasInheritDocTag);
++            checkThrowsTags(tags, getThrows(aAST), !hasInheritDocTag);
++            if (isFunction(aAST)) {
++                checkReturnTag(tags, aAST.getLineNo(), !hasInheritDocTag);
++            }
+         }
+ 
+         // Dump out all unused tags
+         it = tags.iterator();
+         while (it.hasNext()) {
+             final JavadocTag jt = (JavadocTag) it.next();
+             if (!jt.isSeeOrInheritDocTag()) {
+                 log(jt.getLineNo(), "javadoc.unusedTagGeneral");
+             }
+         }
+     }
+ 
+     /**
+      * Returns the tags in a javadoc comment. Only finds throws, exception,
+      * param, return and see tags.
+      * @return the tags found
+      * @param aComment the Javadoc comment
+      */
+     private List getMethodTags(TextBlock aComment)
+     {
+         final String[] lines = aComment.getText();
+         final List tags = new ArrayList();
+         int currentLine = aComment.getStartLineNo() - 1;
+ 
+         for (int i = 0; i < lines.length; i++) {
+             currentLine++;
+             if (MATCH_JAVADOC_ARG.match(lines[i])) {
+                 tags.add(new JavadocTag(currentLine,
+                                         MATCH_JAVADOC_ARG.getParen(1),
+                                         MATCH_JAVADOC_ARG.getParen(2)));
+             }
+             else if (MATCH_JAVADOC_NOARG.match(lines[i])) {
+                 tags.add(new JavadocTag(currentLine,
+                                         MATCH_JAVADOC_NOARG.getParen(1)));
+             }
+             else if (MATCH_JAVADOC_NOARG_CURLY.match(lines[i])) {
+                 tags.add(new JavadocTag(currentLine,
+                                         MATCH_JAVADOC_NOARG_CURLY.getParen(1)));
+             }
+             else if (MATCH_JAVADOC_ARG_MULTILINE_START.match(lines[i])) {
+                 final String p1 = MATCH_JAVADOC_ARG_MULTILINE_START.getParen(1);
+                 final String p2 = MATCH_JAVADOC_ARG_MULTILINE_START.getParen(2);
+ 
+                 // Look for the rest of the comment if all we saw was
+                 // the tag and the name. Stop when we see '*/' (end of
+                 // Javadoc, '@' (start of next tag), or anything that's
+                 // not whitespace or '*' characters.
+                 int remIndex = i + 1;
+                 while (remIndex < lines.length) {
+                     if (MATCH_JAVADOC_MULTILINE_CONT.match(lines[remIndex])) {

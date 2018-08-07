@@ -1,0 +1,63 @@
+diff --git a/src/main/java/org/elasticsearch/common/lucene/docset/AllDocIdSet.java b/src/main/java/org/elasticsearch/common/lucene/docset/AllDocIdSet.java
+index 4c0ad71091f..bea1b7e62be 100644
+--- a/src/main/java/org/elasticsearch/common/lucene/docset/AllDocIdSet.java
++++ b/src/main/java/org/elasticsearch/common/lucene/docset/AllDocIdSet.java
+@@ -37,52 +37,58 @@ public class AllDocIdSet extends DocIdSet {
+     }
+ 
+     /**
+      * Does not go to the reader and ask for data, so can be cached.
+      */
+     @Override
+     public boolean isCacheable() {
+         return true;
+     }
+ 
+     @Override
+     public DocIdSetIterator iterator() throws IOException {
+         return new Iterator(maxDoc);
+     }
+ 
+     @Override
+     public Bits bits() throws IOException {
+         return new Bits.MatchAllBits(maxDoc);
+     }
+ 
+     public static final class Iterator extends DocIdSetIterator {
+ 
+         private final int maxDoc;
+         private int doc = -1;
+ 
+         public Iterator(int maxDoc) {
+             this.maxDoc = maxDoc;
+         }
+ 
+         @Override
+         public int docID() {
+             return doc;
+         }
+ 
+         @Override
+         public int nextDoc() throws IOException {
+             if (++doc < maxDoc) {
+                 return doc;
+             }
+             return doc = NO_MORE_DOCS;
+         }
+ 
+         @Override
+         public int advance(int target) throws IOException {
+             doc = target;
+             if (doc < maxDoc) {
+                 return doc;
+             }
+             return doc = NO_MORE_DOCS;
+         }
++
++        @Override
++        public long cost() {
++            
++            return maxDoc;
++        }
+     }
+ }

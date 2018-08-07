@@ -1,0 +1,275 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+index 588a2a105..14b3e03b5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/utils/CommonUtils.java
+@@ -1,152 +1,270 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2017 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle.utils;
+ 
+ import java.io.Closeable;
+ import java.io.File;
+ import java.io.IOException;
+ import java.lang.reflect.Constructor;
+ import java.lang.reflect.InvocationTargetException;
+ import java.net.MalformedURLException;
+ import java.net.URI;
+ import java.net.URISyntaxException;
+ import java.net.URL;
+ import java.nio.file.Path;
+ import java.nio.file.Paths;
++import java.util.AbstractMap;
++import java.util.Map;
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ import java.util.regex.PatternSyntaxException;
+ 
+ import org.apache.commons.beanutils.ConversionException;
+ 
++import antlr.Token;
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
++import com.puppycrawl.tools.checkstyle.api.DetailAST;
++import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Contains utility methods.
+  *
+  * @author <a href="mailto:nesterenko-aleksey@list.ru">Aleksey Nesterenko</a>
+  */
+ public final class CommonUtils {
+ 
+     /** Copied from org.apache.commons.lang3.ArrayUtils. */
+     public static final String[] EMPTY_STRING_ARRAY = new String[0];
+     /** Copied from org.apache.commons.lang3.ArrayUtils. */
+     public static final Integer[] EMPTY_INTEGER_OBJECT_ARRAY = new Integer[0];
+     /** Copied from org.apache.commons.lang3.ArrayUtils. */
+     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+     /** Copied from org.apache.commons.lang3.ArrayUtils. */
+     public static final int[] EMPTY_INT_ARRAY = new int[0];
+     /** Copied from org.apache.commons.lang3.ArrayUtils. */
+     public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+     /** Copied from org.apache.commons.lang3.ArrayUtils. */
+     public static final double[] EMPTY_DOUBLE_ARRAY = new double[0];
+ 
+     /** Prefix for the exception when unable to find resource. */
+     private static final String UNABLE_TO_FIND_EXCEPTION_PREFIX = "Unable to find: ";
+ 
++    /** Symbols with which javadoc starts. */
++    private static final String JAVADOC_START = "/**";
++    /** Symbols with which multiple comment starts. */
++    private static final String BLOCK_MULTIPLE_COMMENT_BEGIN = "/*";
++    /** Symbols with which multiple comment ends. */
++    private static final String BLOCK_MULTIPLE_COMMENT_END = "*/";
++
+     /** Stop instances being created. **/
+     private CommonUtils() {
+ 
+     }
+ 
+     /**
+      * Helper method to create a regular expression.
+      *
+      * @param pattern
+      *            the pattern to match
+      * @return a created regexp object
+      * @throws ConversionException
+      *             if unable to create Pattern object.
+      **/
+     public static Pattern createPattern(String pattern) {
+         return createPattern(pattern, 0);
+     }
+ 
+     /**
+      * Helper method to create a regular expression with a specific flags.
+      *
+      * @param pattern
+      *            the pattern to match
+      * @param flags
+      *            the flags to set
+      * @return a created regexp object
+      * @throws IllegalArgumentException
+      *             if unable to create Pattern object.
+      **/
+     public static Pattern createPattern(String pattern, int flags) {
+         try {
+             return Pattern.compile(pattern, flags);
+         }
+         catch (final PatternSyntaxException ex) {
+             throw new IllegalArgumentException(
+                 "Failed to initialise regular expression " + pattern, ex);
+         }
+     }
+ 
++    /**
++     * Create block comment from string content.
++     * @param content comment content.
++     * @return DetailAST block comment
++     */
++    public static DetailAST createBlockCommentNode(String content) {
++        final DetailAST blockCommentBegin = new DetailAST();
++        blockCommentBegin.setType(TokenTypes.BLOCK_COMMENT_BEGIN);
++        blockCommentBegin.setText(BLOCK_MULTIPLE_COMMENT_BEGIN);
++        blockCommentBegin.setLineNo(0);
++        blockCommentBegin.setColumnNo(-JAVADOC_START.length());
++
++        final DetailAST commentContent = new DetailAST();
++        commentContent.setType(TokenTypes.COMMENT_CONTENT);
++        commentContent.setText("*" + content);
++        commentContent.setLineNo(0);
++        // javadoc should starts at 0 column, so COMMENT_CONTENT node
++        // that contains javadoc identificator has -1 column
++        commentContent.setColumnNo(-1);
++
++        final DetailAST blockCommentEnd = new DetailAST();
++        blockCommentEnd.setType(TokenTypes.BLOCK_COMMENT_END);
++        blockCommentEnd.setText(BLOCK_MULTIPLE_COMMENT_END);
++
++        blockCommentBegin.setFirstChild(commentContent);
++        commentContent.setNextSibling(blockCommentEnd);
++        return blockCommentBegin;
++    }
++
++    /**
++     * Create block comment from token.
++     * @param token
++     *        Token object.
++     * @return DetailAST with BLOCK_COMMENT type.
++     */
++    public static DetailAST createBlockCommentNode(Token token) {
++        final DetailAST blockComment = new DetailAST();
++        blockComment.initialize(TokenTypes.BLOCK_COMMENT_BEGIN, BLOCK_MULTIPLE_COMMENT_BEGIN);
++
++        // column counting begins from 0
++        blockComment.setColumnNo(token.getColumn() - 1);
++        blockComment.setLineNo(token.getLine());
++
++        final DetailAST blockCommentContent = new DetailAST();
++        blockCommentContent.setType(TokenTypes.COMMENT_CONTENT);
++
++        // column counting begins from 0
++        // plus length of '/*'
++        blockCommentContent.setColumnNo(token.getColumn() - 1 + 2);
++        blockCommentContent.setLineNo(token.getLine());
++        blockCommentContent.setText(token.getText());
++
++        final DetailAST blockCommentClose = new DetailAST();
++        blockCommentClose.initialize(TokenTypes.BLOCK_COMMENT_END, BLOCK_MULTIPLE_COMMENT_END);
++
++        final Map.Entry<Integer, Integer> linesColumns = countLinesColumns(
++                token.getText(), token.getLine(), token.getColumn());
++        blockCommentClose.setLineNo(linesColumns.getKey());
++        blockCommentClose.setColumnNo(linesColumns.getValue());
++
++        blockComment.addChild(blockCommentContent);
++        blockComment.addChild(blockCommentClose);
++        return blockComment;
++    }
++
++    /**
++     * Count lines and columns (in last line) in text.
++     * @param text
++     *        String.
++     * @param initialLinesCnt
++     *        initial value of lines counter.
++     * @param initialColumnsCnt
++     *        initial value of columns counter.
++     * @return entry(pair), first element is lines counter, second - columns
++     *         counter.
++     */
++    private static Map.Entry<Integer, Integer> countLinesColumns(
++            String text, int initialLinesCnt, int initialColumnsCnt) {
++        int lines = initialLinesCnt;
++        int columns = initialColumnsCnt;
++        boolean foundCr = false;
++        for (char c : text.toCharArray()) {
++            if (c == '\n') {
++                foundCr = false;
++                lines++;
++                columns = 0;
++            }
++            else {
++                if (foundCr) {
++                    foundCr = false;
++                    lines++;
++                    columns = 0;
++                }
++                if (c == '\r') {
++                    foundCr = true;
++                }
++                columns++;
++            }
++        }
++        if (foundCr) {
++            lines++;
++            columns = 0;
++        }
++        return new AbstractMap.SimpleEntry<>(lines, columns);
++    }
++
+     /**
+      * Returns whether the file extension matches what we are meant to process.
+      *
+      * @param file
+      *            the file to be checked.
+      * @param fileExtensions
+      *            files extensions, empty property in config makes it matches to all.
+      * @return whether there is a match.
+      */
+     public static boolean matchesFileExtension(File file, String... fileExtensions) {
+         boolean result = false;
+         if (fileExtensions == null || fileExtensions.length == 0) {
+             result = true;
+         }
+         else {
+             // normalize extensions so all of them have a leading dot
+             final String[] withDotExtensions = new String[fileExtensions.length];
+             for (int i = 0; i < fileExtensions.length; i++) {
+                 final String extension = fileExtensions[i];
+                 if (startsWithChar(extension, '.')) {
+                     withDotExtensions[i] = extension;
+                 }
+                 else {
+                     withDotExtensions[i] = "." + extension;
+                 }
+             }
+ 
+             final String fileName = file.getName();
+             for (final String fileExtension : withDotExtensions) {
+                 if (fileName.endsWith(fileExtension)) {
+                     result = true;
+                     break;
+                 }
+             }
+         }
+ 
+         return result;
+     }
+ 
+     /**
+      * Returns whether the specified string contains only whitespace up to the specified index.
+      *
+      * @param index
+      *            index to check up to
+      * @param line
+      *            the line to check
+      * @return whether there is only whitespace
+      */
+     public static boolean hasWhitespaceBefore(int index, String line) {
+         boolean result = true;

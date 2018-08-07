@@ -1,0 +1,127 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TrailingCommentCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TrailingCommentCheck.java
+index c2b0e80f5..e23d86d77 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/TrailingCommentCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/TrailingCommentCheck.java
+@@ -69,114 +69,113 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+  * have to bumped out to match. Styles that are hard to
+  * maintain aren't maintained....&quot;
+  * </li>
+  * <li>
+  * &quot;Endline comments also tend to be cryptic. The right side of
+  * the line doesn't offer much room and the desire to keep the
+  * comment on one line means the comment must be short.
+  * Work then goes into making the line as short as possible
+  * instead of as clear as possible. The comment usually ends
+  * up as cryptic as possible....&quot;
+  * </li>
+  * <li>
+  * &quot;A systemic problem with endline comments is that it's hard
+  * to write a meaningful comment for one line of code. Most
+  * endline comments just repeat the line of code, which hurts
+  * more than it helps.&quot;
+  * </li>
+  * </ul>
+  * His comments on being hard to maintain when the size of
+  * the line changes are even more important in the age of
+  * automated refactorings.
+  *
+  * <p>To configure the check so it enforces only comment on a line:
+  * <pre>
+  * &lt;module name=&quot;TrailingComment&quot;&gt;
+  *    &lt;property name=&quot;format&quot; value=&quot;^\\s*$&quot;/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  *
+  * @author o_sukhodolsky
+  */
+ public class TrailingCommentCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "trailing.comments";
+ 
+     /** Pattern for legal trailing comment. */
+     private Pattern legalComment;
+ 
+     /** The format string of the regexp. */
+     private String format = "^[\\s\\});]*$";
+ 
+     /** The regexp to match against. */
+     private Pattern regexp = Pattern.compile(format);
+ 
+     /**
+      * Sets patter for legal trailing comments.
+-     * @param legalComment format to set.
++     * @param legalComment pattern to set.
+      */
+-    public void setLegalComment(final String legalComment) {
+-        this.legalComment = CommonUtils.createPattern(legalComment);
++    public void setLegalComment(final Pattern legalComment) {
++        this.legalComment = legalComment;
+     }
+ 
+     /**
+-     * Set the format to the specified regular expression.
+-     * @param format a {@code String} value
+-     * @throws org.apache.commons.beanutils.ConversionException unable to parse format
++     * Set the format for the specified regular expression.
++     * @param pattern a pattern
+      */
+-    public final void setFormat(String format) {
+-        this.format = format;
+-        regexp = CommonUtils.createPattern(format);
++    public final void setFormat(Pattern pattern) {
++        format = pattern.pattern();
++        regexp = pattern;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return CommonUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         throw new IllegalStateException("visitToken() shouldn't be called.");
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         final Map<Integer, TextBlock> cppComments = getFileContents()
+                 .getCppComments();
+         final Map<Integer, List<TextBlock>> cComments = getFileContents()
+                 .getCComments();
+         final Set<Integer> lines = new HashSet<>();
+         lines.addAll(cppComments.keySet());
+         lines.addAll(cComments.keySet());
+ 
+         for (Integer lineNo : lines) {
+             final String line = getLines()[lineNo - 1];
+             final String lineBefore;
+             final TextBlock comment;
+             if (cppComments.containsKey(lineNo)) {
+                 comment = cppComments.get(lineNo);
+                 lineBefore = line.substring(0, comment.getStartColNo());
+             }
+             else {
+                 final List<TextBlock> commentList = cComments.get(lineNo);
+                 comment = commentList.get(commentList.size() - 1);
+                 lineBefore = line.substring(0, comment.getStartColNo());
+ 
+                 // do not check comment which doesn't end line
+                 if (comment.getText().length == 1
+                         && !line.substring(comment.getEndColNo() + 1).trim().isEmpty()) {
+                     continue;
+                 }

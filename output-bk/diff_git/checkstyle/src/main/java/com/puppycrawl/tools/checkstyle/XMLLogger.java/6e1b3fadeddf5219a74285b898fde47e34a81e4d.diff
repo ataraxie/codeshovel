@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java b/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
+index 487d4938b..4d00a4d80 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/XMLLogger.java
+@@ -94,101 +94,101 @@ public class XMLLogger
+     @Override
+     public void auditFinished(AuditEvent evt) {
+         writer.println("</checkstyle>");
+         if (closeStream) {
+             writer.close();
+         }
+         else {
+             writer.flush();
+         }
+     }
+ 
+     @Override
+     public void fileStarted(AuditEvent evt) {
+         writer.println("<file name=\"" + encode(evt.getFileName()) + "\">");
+     }
+ 
+     @Override
+     public void fileFinished(AuditEvent evt) {
+         writer.println("</file>");
+     }
+ 
+     @Override
+     public void addError(AuditEvent evt) {
+         if (evt.getSeverityLevel() != SeverityLevel.IGNORE) {
+             writer.print("<error" + " line=\"" + evt.getLine() + "\"");
+             if (evt.getColumn() > 0) {
+                 writer.print(" column=\"" + evt.getColumn() + "\"");
+             }
+             writer.print(" severity=\""
+                 + evt.getSeverityLevel().getName()
+                 + "\"");
+             writer.print(" message=\""
+                 + encode(evt.getMessage())
+                 + "\"");
+             writer.println(" source=\""
+                 + encode(evt.getSourceName())
+                 + "\"/>");
+         }
+     }
+ 
+     @Override
+     public void addException(AuditEvent evt, Throwable throwable) {
+         final StringWriter stringWriter = new StringWriter();
+         final PrintWriter printer = new PrintWriter(stringWriter);
+         printer.println("<exception>");
+         printer.println("<![CDATA[");
+         throwable.printStackTrace(printer);
+         printer.println("]]>");
+         printer.println("</exception>");
+         printer.flush();
+-        this.writer.println(encode(stringWriter.toString()));
++        writer.println(encode(stringWriter.toString()));
+     }
+ 
+     /**
+      * Escape &lt;, &gt; &amp; &#39; and &quot; as their entities.
+      * @param value the value to escape.
+      * @return the escaped value if necessary.
+      */
+     public static String encode(String value) {
+         final StringBuilder sb = new StringBuilder();
+         for (int i = 0; i < value.length(); i++) {
+             final char chr = value.charAt(i);
+             switch (chr) {
+                 case '<':
+                     sb.append("&lt;");
+                     break;
+                 case '>':
+                     sb.append("&gt;");
+                     break;
+                 case '\'':
+                     sb.append("&apos;");
+                     break;
+                 case '\"':
+                     sb.append("&quot;");
+                     break;
+                 case '&':
+                     final int nextSemi = value.indexOf(';', i);
+                     if (nextSemi < 0
+                         || !isReference(value.substring(i, nextSemi + 1))) {
+                         sb.append("&amp;");
+                     }
+                     else {
+                         sb.append('&');
+                     }
+                     break;
+                 default:
+                     sb.append(chr);
+                     break;
+             }
+         }
+         return sb.toString();
+     }
+ 
+     /**
+      * @param ent the possible entity to look for.
+      * @return whether the given argument a character or entity reference
+      */
+     public static boolean isReference(String ent) {
+         boolean reference = false;
+ 
+         if (ent.charAt(0) != '&' || !CommonUtils.endsWithChar(ent, ';')) {

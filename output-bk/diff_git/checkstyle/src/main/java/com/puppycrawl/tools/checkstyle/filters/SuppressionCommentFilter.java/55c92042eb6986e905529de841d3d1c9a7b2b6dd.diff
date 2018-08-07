@@ -1,0 +1,272 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index 06311cb78..c0d2e7280 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -59,101 +59,101 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+  * files available <i>sub rosa</i>.
+  * </p>
+  * @author Mike McMahon
+  * @author Rick Giles
+  * @see FileContentsHolder
+  */
+ public class SuppressionCommentFilter
+     extends AutomaticBean
+     implements Filter {
+ 
+     /** Turns checkstyle reporting off. */
+     private static final String DEFAULT_OFF_FORMAT = "CHECKSTYLE\\:OFF";
+ 
+     /** Turns checkstyle reporting on. */
+     private static final String DEFAULT_ON_FORMAT = "CHECKSTYLE\\:ON";
+ 
+     /** Control all checks */
+     private static final String DEFAULT_CHECK_FORMAT = ".*";
+ 
+     /** Whether to look in comments of the C type. */
+     private boolean checkC = true;
+ 
+     /** Whether to look in comments of the C++ type. */
+     private boolean checkCPP = true;
+ 
+     /** Parsed comment regexp that turns checkstyle reporting off. */
+     private Pattern offRegexp;
+ 
+     /** Parsed comment regexp that turns checkstyle reporting on. */
+     private Pattern onRegexp;
+ 
+     /** The check format to suppress. */
+     private String checkFormat;
+ 
+     /** The message format to suppress. */
+     private String messageFormat;
+ 
+     /** Tagged comments */
+     private final List<Tag> tags = Lists.newArrayList();
+ 
+     /**
+      * References the current FileContents for this filter.
+      * Since this is a weak reference to the FileContents, the FileContents
+      * can be reclaimed as soon as the strong references in TreeWalker
+      * and FileContentsHolder are reassigned to the next FileContents,
+      * at which time filtering for the current FileContents is finished.
+      */
+     private WeakReference<FileContents> fileContentsReference = new WeakReference<>(null);
+ 
+     /**
+-     * Constructs a SuppressionCoontFilter.
++     * Constructs a SuppressionCommentFilter.
+      * Initializes comment on, comment off, and check formats
+      * to defaults.
+      */
+     public SuppressionCommentFilter() {
+         setOnCommentFormat(DEFAULT_ON_FORMAT);
+         setOffCommentFormat(DEFAULT_OFF_FORMAT);
+         checkFormat = DEFAULT_CHECK_FORMAT;
+     }
+ 
+     /**
+      * Set the format for a comment that turns off reporting.
+      * @param format a {@code String} value.
+      * @throws ConversionException if unable to create Pattern object.
+      */
+     public final void setOffCommentFormat(String format) {
+         offRegexp = CommonUtils.createPattern(format);
+     }
+ 
+     /**
+      * Set the format for a comment that turns on reporting.
+      * @param format a {@code String} value
+      * @throws ConversionException if unable to create Pattern object.
+      */
+     public final void setOnCommentFormat(String format) {
+         onRegexp = CommonUtils.createPattern(format);
+     }
+ 
+     /** @return the FileContents for this filter. */
+     public FileContents getFileContents() {
+         return fileContentsReference.get();
+     }
+ 
+     /**
+      * Set the FileContents for this filter.
+      * @param fileContents the FileContents for this filter.
+      */
+     public void setFileContents(FileContents fileContents) {
+         fileContentsReference = new WeakReference<>(fileContents);
+     }
+ 
+     /**
+      * Set the format for a check.
+      * @param format a {@code String} value
+      */
+     public final void setCheckFormat(String format) {
+         checkFormat = format;
+     }
+ 
+     /**
+      * Set the format for a message.
+@@ -186,160 +186,160 @@ public class SuppressionCommentFilter
+             return true;
+         }
+ 
+         // Lazy update. If the first event for the current file, update file
+         // contents and tag suppressions
+         final FileContents currentContents = FileContentsHolder.getContents();
+         if (currentContents == null) {
+             // we have no contents, so we can not filter.
+             return true;
+         }
+         if (getFileContents() != currentContents) {
+             setFileContents(currentContents);
+             tagSuppressions();
+         }
+         final Tag matchTag = findNearestMatch(event);
+         return matchTag == null || matchTag.isOn();
+     }
+ 
+     /**
+      * Finds the nearest comment text tag that matches an audit event.
+      * The nearest tag is before the line and column of the event.
+      * @param event the {@code AuditEvent} to match.
+      * @return The {@code Tag} nearest event.
+      */
+     private Tag findNearestMatch(AuditEvent event) {
+         Tag result = null;
+         for (Tag tag : tags) {
+             if (tag.getLine() > event.getLine()
+                 || tag.getLine() == event.getLine()
+                     && tag.getColumn() > event.getColumn()) {
+                 break;
+             }
+             if (tag.isMatch(event)) {
+                 result = tag;
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Collects all the suppression tags for all comments into a list and
+      * sorts the list.
+      */
+     private void tagSuppressions() {
+         tags.clear();
+         final FileContents contents = getFileContents();
+         if (checkCPP) {
+             tagSuppressions(contents.getCppComments().values());
+         }
+         if (checkC) {
+-            final Collection<List<TextBlock>> cCoonts = contents
++            final Collection<List<TextBlock>> cComments = contents
+                     .getCComments().values();
+-            for (List<TextBlock> eleont : cCoonts) {
+-                tagSuppressions(eleont);
++            for (List<TextBlock> element : cComments) {
++                tagSuppressions(element);
+             }
+         }
+         Collections.sort(tags);
+     }
+ 
+     /**
+      * Appends the suppressions in a collection of comments to the full
+      * set of suppression tags.
+      * @param comments the set of comments.
+      */
+     private void tagSuppressions(Collection<TextBlock> comments) {
+         for (TextBlock comment : comments) {
+             final int startLineNo = comment.getStartLineNo();
+             final String[] text = comment.getText();
+             tagCommentLine(text[0], startLineNo, comment.getStartColNo());
+             for (int i = 1; i < text.length; i++) {
+                 tagCommentLine(text[i], startLineNo + i, 0);
+             }
+         }
+     }
+ 
+     /**
+      * Tags a string if it matches the format for turning
+      * checkstyle reporting on or the format for turning reporting off.
+      * @param text the string to tag.
+      * @param line the line number of text.
+      * @param column the column number of text.
+      */
+     private void tagCommentLine(String text, int line, int column) {
+         final Matcher offMatcher = offRegexp.matcher(text);
+         if (offMatcher.find()) {
+             addTag(offMatcher.group(0), line, column, false);
+         }
+         else {
+             final Matcher onMatcher = onRegexp.matcher(text);
+             if (onMatcher.find()) {
+                 addTag(onMatcher.group(0), line, column, true);
+             }
+         }
+     }
+ 
+     /**
+      * Adds a {@code Tag} to the list of all tags.
+      * @param text the text of the tag.
+      * @param line the line number of the tag.
+      * @param column the column number of the tag.
+      * @param on {@code true} if the tag turns checkstyle reporting on.
+      */
+     private void addTag(String text, int line, int column, boolean on) {
+         final Tag tag = new Tag(line, column, text, on, this);
+         tags.add(tag);
+     }
+ 
+     /**
+      * A Tag holds a suppression comment and its location, and determines
+-     * whether the supression turns checkstyle reporting on or off.
++     * whether the suppression turns checkstyle reporting on or off.
+      * @author Rick Giles
+      */
+     public static class Tag
+         implements Comparable<Tag> {
+         /** The text of the tag. */
+         private final String text;
+ 
+         /** The line number of the tag. */
+         private final int line;
+ 
+         /** The column number of the tag. */
+         private final int column;
+ 
+         /** Determines whether the suppression turns checkstyle reporting on. */
+         private final boolean on;
+ 
+         /** The parsed check regexp, expanded for the text of this tag. */
+         private final Pattern tagCheckRegexp;
+ 
+         /** The parsed message regexp, expanded for the text of this tag. */
+         private final Pattern tagMessageRegexp;
+ 
+         /**
+          * Constructs a tag.
+          * @param line the line number.
+          * @param column the column number.
+          * @param text the text of the suppression.
+          * @param on {@code true} if the tag turns checkstyle reporting.
+          * @param filter the {@code SuppressionCommentFilter} with the context
+          * @throws ConversionException if unable to parse expanded text.
+          * on.
+          */
+         public Tag(int line, int column, String text, boolean on, SuppressionCommentFilter filter) {
+             this.line = line;
+             this.column = column;
+             this.text = text;
+             this.on = on;
+ 
+             //Expand regexp for check and message
+             //Does not intern Patterns with Utils.getPattern()
+             String format = "";
+             try {
+                 if (on) {
+                     format =
+                         expandFromCoont(text, filter.checkFormat, filter.onRegexp);
+                     tagCheckRegexp = Pattern.compile(format);
+                     if (filter.messageFormat != null) {
+                         format =
+                             expandFromCoont(text, filter.messageFormat, filter.onRegexp);
+                         tagMessageRegexp = Pattern.compile(format);

@@ -1,0 +1,194 @@
+diff --git a/client/client-benchmark-noop-api-plugin/src/main/java/org/elasticsearch/plugin/noop/action/search/NoopSearchRequestBuilder.java b/client/client-benchmark-noop-api-plugin/src/main/java/org/elasticsearch/plugin/noop/action/search/NoopSearchRequestBuilder.java
+index e73edb143e0..e66ef6208a6 100644
+--- a/client/client-benchmark-noop-api-plugin/src/main/java/org/elasticsearch/plugin/noop/action/search/NoopSearchRequestBuilder.java
++++ b/client/client-benchmark-noop-api-plugin/src/main/java/org/elasticsearch/plugin/noop/action/search/NoopSearchRequestBuilder.java
+@@ -282,187 +282,187 @@ public class NoopSearchRequestBuilder extends ActionRequestBuilder<SearchRequest
+ 
+     /**
+      * Adds a docvalue based field to load and return. The field does not have to be stored,
+      * but its recommended to use non analyzed or numeric fields.
+      *
+      * @param name The field to get from the docvalue
+      */
+     public NoopSearchRequestBuilder addDocValueField(String name) {
+         sourceBuilder().docValueField(name);
+         return this;
+     }
+ 
+     /**
+      * Adds a stored field to load and return (note, it must be stored) as part of the search request.
+      * If none are specified, the source of the document will be return.
+      */
+     public NoopSearchRequestBuilder addStoredField(String field) {
+         sourceBuilder().storedField(field);
+         return this;
+     }
+ 
+ 
+     /**
+      * Adds a script based field to load and return. The field does not have to be stored,
+      * but its recommended to use non analyzed or numeric fields.
+      *
+      * @param name   The name that will represent this value in the return hit
+      * @param script The script to use
+      */
+     public NoopSearchRequestBuilder addScriptField(String name, Script script) {
+         sourceBuilder().scriptField(name, script);
+         return this;
+     }
+ 
+     /**
+      * Adds a sort against the given field name and the sort ordering.
+      *
+      * @param field The name of the field
+      * @param order The sort ordering
+      */
+     public NoopSearchRequestBuilder addSort(String field, SortOrder order) {
+         sourceBuilder().sort(field, order);
+         return this;
+     }
+ 
+     /**
+      * Adds a generic sort builder.
+      *
+      * @see org.elasticsearch.search.sort.SortBuilders
+      */
+-    public NoopSearchRequestBuilder addSort(SortBuilder sort) {
++    public NoopSearchRequestBuilder addSort(SortBuilder<?> sort) {
+         sourceBuilder().sort(sort);
+         return this;
+     }
+ 
+     /**
+      * Set the sort values that indicates which docs this request should "search after".
+      */
+     public NoopSearchRequestBuilder searchAfter(Object[] values) {
+         sourceBuilder().searchAfter(values);
+         return this;
+     }
+ 
+     public NoopSearchRequestBuilder slice(SliceBuilder builder) {
+         sourceBuilder().slice(builder);
+         return this;
+     }
+ 
+     /**
+      * Applies when sorting, and controls if scores will be tracked as well. Defaults to
+      * {@code false}.
+      */
+     public NoopSearchRequestBuilder setTrackScores(boolean trackScores) {
+         sourceBuilder().trackScores(trackScores);
+         return this;
+     }
+ 
+ 
+     /**
+      * Sets the fields to load and return as part of the search request. If none
+      * are specified, the source of the document will be returned.
+      */
+     public NoopSearchRequestBuilder storedFields(String... fields) {
+         sourceBuilder().storedFields(Arrays.asList(fields));
+         return this;
+     }
+ 
+     /**
+      * Adds an aggregation to the search operation.
+      */
+     public NoopSearchRequestBuilder addAggregation(AggregationBuilder aggregation) {
+         sourceBuilder().aggregation(aggregation);
+         return this;
+     }
+ 
+     /**
+      * Adds an aggregation to the search operation.
+      */
+     public NoopSearchRequestBuilder addAggregation(PipelineAggregationBuilder aggregation) {
+         sourceBuilder().aggregation(aggregation);
+         return this;
+     }
+ 
+     public NoopSearchRequestBuilder highlighter(HighlightBuilder highlightBuilder) {
+         sourceBuilder().highlighter(highlightBuilder);
+         return this;
+     }
+ 
+     /**
+      * Delegates to {@link org.elasticsearch.search.builder.SearchSourceBuilder#suggest(SuggestBuilder)}
+      */
+     public NoopSearchRequestBuilder suggest(SuggestBuilder suggestBuilder) {
+         sourceBuilder().suggest(suggestBuilder);
+         return this;
+     }
+ 
+     /**
+      * Clears all rescorers on the builder and sets the first one.  To use multiple rescore windows use
+      * {@link #addRescorer(org.elasticsearch.search.rescore.RescorerBuilder, int)}.
+      *
+      * @param rescorer rescorer configuration
+      * @return this for chaining
+      */
+     public NoopSearchRequestBuilder setRescorer(RescorerBuilder<?> rescorer) {
+         sourceBuilder().clearRescorers();
+         return addRescorer(rescorer);
+     }
+ 
+     /**
+      * Clears all rescorers on the builder and sets the first one.  To use multiple rescore windows use
+      * {@link #addRescorer(org.elasticsearch.search.rescore.RescorerBuilder, int)}.
+      *
+      * @param rescorer rescorer configuration
+      * @param window   rescore window
+      * @return this for chaining
+      */
+-    public NoopSearchRequestBuilder setRescorer(RescorerBuilder rescorer, int window) {
++    public NoopSearchRequestBuilder setRescorer(RescorerBuilder<?> rescorer, int window) {
+         sourceBuilder().clearRescorers();
+         return addRescorer(rescorer.windowSize(window));
+     }
+ 
+     /**
+      * Adds a new rescorer.
+      *
+      * @param rescorer rescorer configuration
+      * @return this for chaining
+      */
+     public NoopSearchRequestBuilder addRescorer(RescorerBuilder<?> rescorer) {
+         sourceBuilder().addRescorer(rescorer);
+         return this;
+     }
+ 
+     /**
+      * Adds a new rescorer.
+      *
+      * @param rescorer rescorer configuration
+      * @param window   rescore window
+      * @return this for chaining
+      */
+     public NoopSearchRequestBuilder addRescorer(RescorerBuilder<?> rescorer, int window) {
+         sourceBuilder().addRescorer(rescorer.windowSize(window));
+         return this;
+     }
+ 
+     /**
+      * Clears all rescorers from the builder.
+      *
+      * @return this for chaining
+      */
+     public NoopSearchRequestBuilder clearRescorers() {
+         sourceBuilder().clearRescorers();
+         return this;
+     }
+ 
+     /**
+      * Sets the source of the request as a SearchSourceBuilder.
+      */
+     public NoopSearchRequestBuilder setSource(SearchSourceBuilder source) {
+         request.source(source);
+         return this;
+     }
+ 
+     /**
+      * Sets if this request should use the request cache or not, assuming that it can (for
+      * example, if "now" is used, it will never be cached). By default (not set, or null,
+      * will default to the index level setting if request cache is enabled or not).
+      */

@@ -1,0 +1,225 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+index 117aeba25..108205471 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ImportOrderCheck.java
+@@ -210,213 +210,213 @@ public class ImportOrderCheck
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST)
+     {
+         lastGroup = Integer.MIN_VALUE;
+         lastImportLine = Integer.MIN_VALUE;
+         lastImport = "";
+         lastImportStatic = false;
+         beforeFirstImport = true;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         final FullIdent ident;
+         final boolean isStatic;
+ 
+         if (ast.getType() == TokenTypes.IMPORT) {
+             ident = FullIdent.createFullIdentBelow(ast);
+             isStatic = false;
+         }
+         else {
+             ident = FullIdent.createFullIdent(ast.getFirstChild()
+                     .getNextSibling());
+             isStatic = true;
+         }
+ 
+         switch (getAbstractOption()) {
+             case TOP:
+                 if (!isStatic && lastImportStatic) {
+                     lastGroup = Integer.MIN_VALUE;
+                     lastImport = "";
+                 }
+                 // no break;
+ 
+             case ABOVE:
+                 // previous non-static but current is static
+-                doVisitToken(ident, isStatic, (!lastImportStatic && isStatic));
++                doVisitToken(ident, isStatic, !lastImportStatic && isStatic);
+                 break;
+ 
+             case INFLOW:
+                 // previous argument is useless here
+                 doVisitToken(ident, isStatic, true);
+                 break;
+ 
+             case BOTTOM:
+                 if (isStatic && !lastImportStatic) {
+                     lastGroup = Integer.MIN_VALUE;
+                     lastImport = "";
+                 }
+                 // no break;
+ 
+             case UNDER:
+                 // previous static but current is non-static
+-                doVisitToken(ident, isStatic, (lastImportStatic && !isStatic));
++                doVisitToken(ident, isStatic, lastImportStatic && !isStatic);
+                 break;
+ 
+             default:
+                 break;
+         }
+ 
+         lastImportLine = ast.findFirstToken(TokenTypes.SEMI).getLineNo();
+         lastImportStatic = isStatic;
+         beforeFirstImport = false;
+     }
+ 
+     /**
+      * Shares processing...
+      *
+      * @param ident the import to process.
+      * @param isStatic whether the token is static or not.
+      * @param previous previous non-static but current is static (above), or
+      *                  previous static but current is non-static (under).
+      */
+     private void doVisitToken(FullIdent ident, boolean isStatic,
+             boolean previous)
+     {
+         if (ident != null) {
+             final String name = ident.getText();
+             final int groupIdx = getGroupNumber(name);
+             final int line = ident.getLineNo();
+ 
+             if (groupIdx > lastGroup) {
+                 if (!beforeFirstImport && separated) {
+                     // This check should be made more robust to handle
+                     // comments and imports that span more than one line.
+-                    if ((line - lastImportLine) < 2) {
++                    if (line - lastImportLine < 2) {
+                         log(line, MSG_SEPARATION, name);
+                     }
+                 }
+             }
+             else if (groupIdx == lastGroup) {
+                 doVisitTokenInSameGroup(isStatic, previous, name, line);
+             }
+             else {
+                 log(line, MSG_ORDERING, name);
+             }
+ 
+             lastGroup = groupIdx;
+             lastImport = name;
+         }
+     }
+ 
+     /**
+      * Shares processing...
+      *
+      * @param isStatic whether the token is static or not.
+      * @param previous previous non-static but current is static (above), or
+      *    previous static but current is non-static (under).
+      * @param name the name of the current import.
+      * @param line the line of the current import.
+      */
+     private void doVisitTokenInSameGroup(boolean isStatic,
+             boolean previous, String name, int line)
+     {
+         if (!ordered) {
+             return;
+         }
+ 
+         if (getAbstractOption() == ImportOrderOption.INFLOW) {
+             // out of lexicographic order
+             if (compare(lastImport, name, caseSensitive) > 0) {
+                 log(line, MSG_ORDERING, name);
+             }
+         }
+         else {
+             final boolean shouldFireError =
+                 // current and previous static or current and
+                 // previous non-static
+-                (!(lastImportStatic ^ isStatic)
++                !(lastImportStatic ^ isStatic)
+                 &&
+                 // and out of lexicographic order
+-                (compare(lastImport, name, caseSensitive) > 0))
++                        compare(lastImport, name, caseSensitive) > 0
+                 ||
+                 // previous non-static but current is static (above)
+                 // or
+                 // previous static but current is non-static (under)
+                 previous;
+ 
+             if (shouldFireError) {
+                 log(line, MSG_ORDERING, name);
+             }
+         }
+     }
+ 
+     /**
+      * Finds out what group the specified import belongs to.
+      *
+      * @param name the import name to find.
+      * @return group number for given import name.
+      */
+     private int getGroupNumber(String name)
+     {
+         int bestIndex = groups.length;
+         int bestLength = -1;
+         int bestPos = 0;
+ 
+         // find out what group this belongs in
+         // loop over groups and get index
+         for (int i = 0; i < groups.length; i++) {
+             final Matcher matcher = groups[i].matcher(name);
+             while (matcher.find()) {
+                 final int length = matcher.end() - matcher.start();
+-                if ((length > bestLength)
+-                    || ((length == bestLength) && (matcher.start() < bestPos)))
++                if (length > bestLength
++                    || length == bestLength && matcher.start() < bestPos)
+                 {
+                     bestIndex = i;
+                     bestLength = length;
+                     bestPos = matcher.start();
+                 }
+             }
+         }
+ 
+         return bestIndex;
+     }
+ 
+     /**
+      * Compares two strings.
+      *
+      * @param string1
+      *            the first string.
+      * @param string2
+      *            the second string.
+      * @param caseSensitive
+      *            whether the comparison is case sensitive.
+      * @return the value <code>0</code> if string1 is equal to string2; a value
+      *         less than <code>0</code> if string1 is lexicographically less
+      *         than the string2; and a value greater than <code>0</code> if
+      *         string1 is lexicographically greater than string2.
+      */
+     private int compare(String string1, String string2,
+             boolean caseSensitive)
+     {
+         if (caseSensitive) {
+             return string1.compareTo(string2);
+         }
+ 
+         return string1.compareToIgnoreCase(string2);
+     }
+ }

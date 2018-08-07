@@ -1,0 +1,139 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
+index 8cc7533a8..5aea2f569 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
+@@ -34,128 +34,128 @@ import javax.xml.parsers.ParserConfigurationException;
+ import org.xml.sax.Attributes;
+ import org.xml.sax.InputSource;
+ import org.xml.sax.SAXException;
+ 
+ import com.google.common.collect.Maps;
+ import com.puppycrawl.tools.checkstyle.api.AbstractLoader;
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.FilterSet;
+ 
+ /**
+  * Loads a filter chain of suppressions.
+  * @author Rick Giles
+  */
+ public final class SuppressionsLoader
+     extends AbstractLoader {
+     /** The public ID for the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_0 =
+         "-//Puppy Crawl//DTD Suppressions 1.0//EN";
+     /** The resource for the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_0 =
+         "com/puppycrawl/tools/checkstyle/suppressions_1_0.dtd";
+     /** The public ID for the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_1 =
+         "-//Puppy Crawl//DTD Suppressions 1.1//EN";
+     /** The resource for the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_1 =
+         "com/puppycrawl/tools/checkstyle/suppressions_1_1.dtd";
+     /** File search error message **/
+     private static final String UNABLE_TO_FIND_ERROR_MESSAGE = "Unable to find: ";
+ 
+     /**
+      * The filter chain to return in getAFilterChain(),
+      * configured during parsing
+      */
+     private final FilterSet filterChain = new FilterSet();
+ 
+     /**
+      * Creates a new {@code SuppressionsLoader} instance.
+      * @throws ParserConfigurationException if an error occurs
+      * @throws SAXException if an error occurs
+      */
+     private SuppressionsLoader()
+         throws ParserConfigurationException, SAXException {
+         super(createIdToResourceNameMap());
+     }
+ 
+     @Override
+     public void startElement(String namespaceURI,
+                              String localName,
+                              String qName,
+-                             Attributes atts)
++                             Attributes attributes)
+         throws SAXException {
+         if ("suppress".equals(qName)) {
+             //add SuppressElement filter to the filter chain
+-            final String checks = atts.getValue("checks");
+-            final String modId = atts.getValue("id");
++            final String checks = attributes.getValue("checks");
++            final String modId = attributes.getValue("id");
+             if (checks == null && modId == null) {
+                 throw new SAXException("missing checks and id attribute");
+             }
+             final SuppressElement suppress;
+             try {
+-                final String files = atts.getValue("files");
++                final String files = attributes.getValue("files");
+                 suppress = new SuppressElement(files);
+                 if (modId != null) {
+                     suppress.setModuleId(modId);
+                 }
+                 if (checks != null) {
+                     suppress.setChecks(checks);
+                 }
+             }
+             catch (final PatternSyntaxException ignored) {
+                 throw new SAXException("invalid files or checks format");
+             }
+-            final String lines = atts.getValue("lines");
++            final String lines = attributes.getValue("lines");
+             if (lines != null) {
+                 suppress.setLines(lines);
+             }
+-            final String columns = atts.getValue("columns");
++            final String columns = attributes.getValue("columns");
+             if (columns != null) {
+                 suppress.setColumns(columns);
+             }
+             filterChain.addFilter(suppress);
+         }
+     }
+ 
+     /**
+      * Returns the suppression filters in a specified file.
+      * @param filename name of the suppressions file.
+      * @return the filter chain of suppression elements specified in the file.
+      * @throws CheckstyleException if an error occurs.
+      */
+     public static FilterSet loadSuppressions(String filename)
+         throws CheckstyleException {
+         // figure out if this is a File or a URL
+         URI uri;
+         try {
+             final URL url = new URL(filename);
+             uri = url.toURI();
+         }
+         catch (final MalformedURLException | URISyntaxException ignored) {
+             // URL violating RFC 2396
+             uri = null;
+         }
+         if (uri == null) {
+             final File file = new File(filename);
+             if (file.exists()) {
+                 uri = file.toURI();
+             }
+             else {
+                 // check to see if the file is in the classpath
+                 try {
+                     final URL configUrl = SuppressionsLoader.class
+                             .getResource(filename);
+                     if (configUrl == null) {
+                         throw new CheckstyleException(UNABLE_TO_FIND_ERROR_MESSAGE + filename);
+                     }
+                     uri = configUrl.toURI();
+                 }
+                 catch (final URISyntaxException e) {
+                     throw new CheckstyleException(UNABLE_TO_FIND_ERROR_MESSAGE + filename, e);
+                 }
+             }
+         }
+         final InputSource source = new InputSource(uri.toString());
+         return loadSuppressions(source, filename);
+     }
+ 
+     /**

@@ -1,0 +1,136 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ModifiedControlVariableCheck.java",
+  "functionName": "leaveToken",
+  "functionId": "leaveToken___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ModifiedControlVariableCheck.java",
+  "functionStartLine": 214,
+  "functionEndLine": 254,
+  "changeHistory": [
+    "ee1b845b7936df396543bc11dced4676d5af86b6",
+    "22c396868005e7ecf77b09c52ab312d54f662235",
+    "d80e678fa0939d845583a3acc7501859254c5f2c",
+    "5026b7228df4e3d9b79d13f27846987247f9e922",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "0ac000841c1535baabe230787649013331289f3f",
+    "ed7bdbd3b2072acbadf4260e26f59a6499556ada"
+  ],
+  "changeHistoryShort": {
+    "ee1b845b7936df396543bc11dced4676d5af86b6": "Ybodychange",
+    "22c396868005e7ecf77b09c52ab312d54f662235": "Ybodychange",
+    "d80e678fa0939d845583a3acc7501859254c5f2c": "Ybodychange",
+    "5026b7228df4e3d9b79d13f27846987247f9e922": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "0ac000841c1535baabe230787649013331289f3f": "Ybodychange",
+    "ed7bdbd3b2072acbadf4260e26f59a6499556ada": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "ee1b845b7936df396543bc11dced4676d5af86b6": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove redundant toString() calls. #1555\n\nFixes `UnnecessaryToStringCall` inspection violations.\n\nDescription:\n\u003eReports on any calls to toString() used in string concatenations and as arguments to the print() and println() methods of java.io.PrintWriter and java.io.PrintStream, the append() method of java.lang.StringBuilder and java.lang.StringBuffer or the trace(), debug(), info(), warn() and error() methods of org.slf4j.Logger. In these cases the conversion to string will be handled by the underlying library methods and an explicit call to toString() is no needed.\n Note that without the toString() call the expression will have slightly different semantics (the string null will be used instead of throwing a NullPointerException).\n",
+      "commitDate": 1439087055000,
+      "commitName": "ee1b845b7936df396543bc11dced4676d5af86b6",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439011412000,
+      "commitNameOld": "186625600d7678f597f56aa6a83d4b0a89e1fe35",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.88,
+      "commitsBetweenForRepo": 24,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,41 +1,41 @@\n     public void leaveToken(DetailAST ast) {\n         switch (ast.getType()) {\n             case TokenTypes.FOR_ITERATOR:\n                 leaveForIter(ast.getParent());\n                 break;\n             case TokenTypes.FOR_EACH_CLAUSE:\n                 if (!skipEnhancedForLoopVariable) {\n                     final DetailAST paramDef \u003d ast.findFirstToken(TokenTypes.VARIABLE_DEF);\n                     leaveForEach(paramDef);\n                 }\n                 break;\n             case TokenTypes.LITERAL_FOR:\n                 if (!getCurrentVariables().isEmpty()) {\n                     leaveForDef(ast);\n                 }\n                 break;\n             case TokenTypes.OBJBLOCK:\n                 exitBlock();\n                 break;\n             case TokenTypes.ASSIGN:\n             case TokenTypes.PLUS_ASSIGN:\n             case TokenTypes.MINUS_ASSIGN:\n             case TokenTypes.STAR_ASSIGN:\n             case TokenTypes.DIV_ASSIGN:\n             case TokenTypes.MOD_ASSIGN:\n             case TokenTypes.SR_ASSIGN:\n             case TokenTypes.BSR_ASSIGN:\n             case TokenTypes.SL_ASSIGN:\n             case TokenTypes.BAND_ASSIGN:\n             case TokenTypes.BXOR_ASSIGN:\n             case TokenTypes.BOR_ASSIGN:\n             case TokenTypes.INC:\n             case TokenTypes.POST_INC:\n             case TokenTypes.DEC:\n             case TokenTypes.POST_DEC:\n                 //we need that Tokens only at visitToken()\n                 break;\n             default:\n-                throw new IllegalStateException(ILLEGAL_TYPE_OF_TOKEN + ast.toString());\n+                throw new IllegalStateException(ILLEGAL_TYPE_OF_TOKEN + ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "22c396868005e7ecf77b09c52ab312d54f662235": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1293: Improved coverage for ModifiedControlVariableCheck.\n",
+      "commitDate": 1438117549000,
+      "commitName": "22c396868005e7ecf77b09c52ab312d54f662235",
+      "commitAuthor": "Baratali Izmailov",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 5.63,
+      "commitsBetweenForRepo": 61,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,42 +1,41 @@\n     public void leaveToken(DetailAST ast) {\n         switch (ast.getType()) {\n             case TokenTypes.FOR_ITERATOR:\n                 leaveForIter(ast.getParent());\n                 break;\n             case TokenTypes.FOR_EACH_CLAUSE:\n-                final DetailAST paramDef \u003d\n-                    ast.findFirstToken(TokenTypes.VARIABLE_DEF);\n-                if (shouldCheckEnhancedForLoopVariable(paramDef)) {\n+                if (!skipEnhancedForLoopVariable) {\n+                    final DetailAST paramDef \u003d ast.findFirstToken(TokenTypes.VARIABLE_DEF);\n                     leaveForEach(paramDef);\n                 }\n                 break;\n             case TokenTypes.LITERAL_FOR:\n                 if (!getCurrentVariables().isEmpty()) {\n                     leaveForDef(ast);\n                 }\n                 break;\n             case TokenTypes.OBJBLOCK:\n                 exitBlock();\n                 break;\n             case TokenTypes.ASSIGN:\n             case TokenTypes.PLUS_ASSIGN:\n             case TokenTypes.MINUS_ASSIGN:\n             case TokenTypes.STAR_ASSIGN:\n             case TokenTypes.DIV_ASSIGN:\n             case TokenTypes.MOD_ASSIGN:\n             case TokenTypes.SR_ASSIGN:\n             case TokenTypes.BSR_ASSIGN:\n             case TokenTypes.SL_ASSIGN:\n             case TokenTypes.BAND_ASSIGN:\n             case TokenTypes.BXOR_ASSIGN:\n             case TokenTypes.BOR_ASSIGN:\n             case TokenTypes.INC:\n             case TokenTypes.POST_INC:\n             case TokenTypes.DEC:\n             case TokenTypes.POST_DEC:\n                 //we need that Tokens only at visitToken()\n                 break;\n             default:\n                 throw new IllegalStateException(ILLEGAL_TYPE_OF_TOKEN + ast.toString());\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d80e678fa0939d845583a3acc7501859254c5f2c": {
+      "type": "Ybodychange",
+      "commitMessage": "skipEnhancedForLoopVariable property is added in ModifiedControlVariableCheck. solves #1015\n",
+      "commitDate": 1435069346000,
+      "commitName": "d80e678fa0939d845583a3acc7501859254c5f2c",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 37.11,
+      "commitsBetweenForRepo": 188,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,36 +1,42 @@\n     public void leaveToken(DetailAST ast) {\n         switch (ast.getType()) {\n             case TokenTypes.FOR_ITERATOR:\n                 leaveForIter(ast.getParent());\n                 break;\n             case TokenTypes.FOR_EACH_CLAUSE:\n-                leaveForEach(ast);\n+                final DetailAST paramDef \u003d\n+                    ast.findFirstToken(TokenTypes.VARIABLE_DEF);\n+                if (shouldCheckEnhancedForLoopVariable(paramDef)) {\n+                    leaveForEach(paramDef);\n+                }\n                 break;\n             case TokenTypes.LITERAL_FOR:\n-                leaveForDef(ast);\n+                if (!getCurrentVariables().isEmpty()) {\n+                    leaveForDef(ast);\n+                }\n                 break;\n             case TokenTypes.OBJBLOCK:\n                 exitBlock();\n                 break;\n             case TokenTypes.ASSIGN:\n             case TokenTypes.PLUS_ASSIGN:\n             case TokenTypes.MINUS_ASSIGN:\n             case TokenTypes.STAR_ASSIGN:\n             case TokenTypes.DIV_ASSIGN:\n             case TokenTypes.MOD_ASSIGN:\n             case TokenTypes.SR_ASSIGN:\n             case TokenTypes.BSR_ASSIGN:\n             case TokenTypes.SL_ASSIGN:\n             case TokenTypes.BAND_ASSIGN:\n             case TokenTypes.BXOR_ASSIGN:\n             case TokenTypes.BOR_ASSIGN:\n             case TokenTypes.INC:\n             case TokenTypes.POST_INC:\n             case TokenTypes.DEC:\n             case TokenTypes.POST_DEC:\n                 //we need that Tokens only at visitToken()\n                 break;\n             default:\n                 throw new IllegalStateException(ILLEGAL_TYPE_OF_TOKEN + ast.toString());\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "5026b7228df4e3d9b79d13f27846987247f9e922": {
+      "type": "Ybodychange",
+      "commitMessage": "Added option in ModifiedControlVariable Check to ignore validation of variables defined in for which are not change in for iterator part, fix issue #286\n",
+      "commitDate": 1427924658000,
+      "commitName": "5026b7228df4e3d9b79d13f27846987247f9e922",
+      "commitAuthor": "liscju",
+      "commitDateOld": 1426740846000,
+      "commitNameOld": "303d7cc6182e72f5472c8bcd9aa37432986793d1",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 13.7,
+      "commitsBetweenForRepo": 56,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,37 +1,37 @@\n     public void leaveToken(DetailAST ast)\n     {\n         switch (ast.getType()) {\n             case TokenTypes.FOR_ITERATOR:\n                 leaveForIter(ast.getParent());\n                 break;\n             case TokenTypes.FOR_EACH_CLAUSE:\n                 leaveForEach(ast);\n                 break;\n             case TokenTypes.LITERAL_FOR:\n                 leaveForDef(ast);\n                 break;\n             case TokenTypes.OBJBLOCK:\n                 exitBlock();\n                 break;\n             case TokenTypes.ASSIGN:\n             case TokenTypes.PLUS_ASSIGN:\n             case TokenTypes.MINUS_ASSIGN:\n             case TokenTypes.STAR_ASSIGN:\n             case TokenTypes.DIV_ASSIGN:\n             case TokenTypes.MOD_ASSIGN:\n             case TokenTypes.SR_ASSIGN:\n             case TokenTypes.BSR_ASSIGN:\n             case TokenTypes.SL_ASSIGN:\n             case TokenTypes.BAND_ASSIGN:\n             case TokenTypes.BXOR_ASSIGN:\n             case TokenTypes.BOR_ASSIGN:\n             case TokenTypes.INC:\n             case TokenTypes.POST_INC:\n             case TokenTypes.DEC:\n             case TokenTypes.POST_DEC:\n-                // Do nothing\n+                //we need that Tokens only at visitToken()\n                 break;\n             default:\n-                throw new IllegalStateException(ast.toString());\n+                throw new IllegalStateException(ILLEGAL_TYPE_OF_TOKEN + ast.toString());\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "0ac000841c1535baabe230787649013331289f3f": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed ModifiedControlVariable check to work with for-each (bug 1101851)\n",
+      "commitDate": 1106642116000,
+      "commitName": "0ac000841c1535baabe230787649013331289f3f",
+      "commitAuthor": "Oleg Sukhodolsky",
+      "commitDateOld": 1105267857000,
+      "commitNameOld": "0d887cde58e54d920644ee543dab346b93e8aae9",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 15.91,
+      "commitsBetweenForRepo": 44,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,34 +1,37 @@\n     public void leaveToken(DetailAST aAST)\n     {\n         switch (aAST.getType()) {\n         case TokenTypes.FOR_ITERATOR:\n-            visitForDef(aAST.getParent());\n+            leaveForIter(aAST.getParent());\n+            break;\n+        case TokenTypes.FOR_EACH_CLAUSE:\n+            leaveForEach(aAST);\n             break;\n         case TokenTypes.LITERAL_FOR:\n             leaveForDef(aAST);\n             break;\n         case TokenTypes.OBJBLOCK:\n             exitBlock();\n             break;\n         case TokenTypes.ASSIGN:\n         case TokenTypes.PLUS_ASSIGN:\n         case TokenTypes.MINUS_ASSIGN:\n         case TokenTypes.STAR_ASSIGN:\n         case TokenTypes.DIV_ASSIGN:\n         case TokenTypes.MOD_ASSIGN:\n         case TokenTypes.SR_ASSIGN:\n         case TokenTypes.BSR_ASSIGN:\n         case TokenTypes.SL_ASSIGN:\n         case TokenTypes.BAND_ASSIGN:\n         case TokenTypes.BXOR_ASSIGN:\n         case TokenTypes.BOR_ASSIGN:\n         case TokenTypes.INC:\n         case TokenTypes.POST_INC:\n         case TokenTypes.DEC:\n         case TokenTypes.POST_DEC:\n             // Do nothing\n             break;\n         default:\n             throw new IllegalStateException(aAST.toString());\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "ed7bdbd3b2072acbadf4260e26f59a6499556ada": {
+      "type": "Yintroduced",
+      "commitMessage": "ModifiedControlVariableCheck contributed by Daniel Grenner, patch 927680\n",
+      "commitDate": 1085045915000,
+      "commitName": "ed7bdbd3b2072acbadf4260e26f59a6499556ada",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

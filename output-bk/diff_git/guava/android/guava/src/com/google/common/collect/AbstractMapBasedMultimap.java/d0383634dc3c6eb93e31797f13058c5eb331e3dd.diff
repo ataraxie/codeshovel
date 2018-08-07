@@ -1,0 +1,426 @@
+diff --git a/android/guava/src/com/google/common/collect/AbstractMapBasedMultimap.java b/android/guava/src/com/google/common/collect/AbstractMapBasedMultimap.java
+index 707abcc86..2fc5992be 100644
+--- a/android/guava/src/com/google/common/collect/AbstractMapBasedMultimap.java
++++ b/android/guava/src/com/google/common/collect/AbstractMapBasedMultimap.java
+@@ -213,182 +213,162 @@ abstract class AbstractMapBasedMultimap<K, V> extends AbstractMultimap<K, V>
+   /**
+    * {@inheritDoc}
+    *
+    * <p>The returned collection is immutable.
+    */
+   @Override
+   public Collection<V> replaceValues(@NullableDecl K key, Iterable<? extends V> values) {
+     Iterator<? extends V> iterator = values.iterator();
+     if (!iterator.hasNext()) {
+       return removeAll(key);
+     }
+ 
+     // TODO(lowasser): investigate atomic failure?
+     Collection<V> collection = getOrCreateCollection(key);
+     Collection<V> oldValues = createCollection();
+     oldValues.addAll(collection);
+ 
+     totalSize -= collection.size();
+     collection.clear();
+ 
+     while (iterator.hasNext()) {
+       if (collection.add(iterator.next())) {
+         totalSize++;
+       }
+     }
+ 
+     return unmodifiableCollectionSubclass(oldValues);
+   }
+ 
+   /**
+    * {@inheritDoc}
+    *
+    * <p>The returned collection is immutable.
+    */
+   @Override
+   public Collection<V> removeAll(@NullableDecl Object key) {
+     Collection<V> collection = map.remove(key);
+ 
+     if (collection == null) {
+       return createUnmodifiableEmptyCollection();
+     }
+ 
+     Collection<V> output = createCollection();
+     output.addAll(collection);
+     totalSize -= collection.size();
+     collection.clear();
+ 
+     return unmodifiableCollectionSubclass(output);
+   }
+ 
+-  static <E> Collection<E> unmodifiableCollectionSubclass(Collection<E> collection) {
+-    if (collection instanceof NavigableSet) {
+-      return Sets.unmodifiableNavigableSet((NavigableSet<E>) collection);
+-    } else if (collection instanceof SortedSet) {
+-      return Collections.unmodifiableSortedSet((SortedSet<E>) collection);
+-    } else if (collection instanceof Set) {
+-      return Collections.unmodifiableSet((Set<E>) collection);
+-    } else if (collection instanceof List) {
+-      return Collections.unmodifiableList((List<E>) collection);
+-    } else {
+-      return Collections.unmodifiableCollection(collection);
+-    }
++  <E> Collection<E> unmodifiableCollectionSubclass(Collection<E> collection) {
++    return Collections.unmodifiableCollection(collection);
+   }
+ 
+   @Override
+   public void clear() {
+     // Clear each collection, to make previously returned collections empty.
+     for (Collection<V> collection : map.values()) {
+       collection.clear();
+     }
+     map.clear();
+     totalSize = 0;
+   }
+ 
+   // Views
+ 
+   /**
+    * {@inheritDoc}
+    *
+    * <p>The returned collection is not serializable.
+    */
+   @Override
+   public Collection<V> get(@NullableDecl K key) {
+     Collection<V> collection = map.get(key);
+     if (collection == null) {
+       collection = createCollection(key);
+     }
+     return wrapCollection(key, collection);
+   }
+ 
+   /**
+    * Generates a decorated collection that remains consistent with the values in the multimap for
+    * the provided key. Changes to the multimap may alter the returned collection, and vice versa.
+    */
+   Collection<V> wrapCollection(@NullableDecl K key, Collection<V> collection) {
+-    if (collection instanceof NavigableSet) {
+-      return new WrappedNavigableSet(key, (NavigableSet<V>) collection, null);
+-    } else if (collection instanceof SortedSet) {
+-      return new WrappedSortedSet(key, (SortedSet<V>) collection, null);
+-    } else if (collection instanceof Set) {
+-      return new WrappedSet(key, (Set<V>) collection);
+-    } else if (collection instanceof List) {
+-      return wrapList(key, (List<V>) collection, null);
+-    } else {
+-      return new WrappedCollection(key, collection, null);
+-    }
++    return new WrappedCollection(key, collection, null);
+   }
+ 
+-  private List<V> wrapList(
++  final List<V> wrapList(
+       @NullableDecl K key, List<V> list, @NullableDecl WrappedCollection ancestor) {
+     return (list instanceof RandomAccess)
+         ? new RandomAccessWrappedList(key, list, ancestor)
+         : new WrappedList(key, list, ancestor);
+   }
+ 
+   /**
+    * Collection decorator that stays in sync with the multimap values for a key. There are two kinds
+    * of wrapped collections: full and subcollections. Both have a delegate pointing to the
+    * underlying collection class.
+    *
+    * <p>Full collections, identified by a null ancestor field, contain all multimap values for a
+    * given key. Its delegate is a value in {@link AbstractMapBasedMultimap#map} whenever the
+    * delegate is non-empty. The {@code refreshIfEmpty}, {@code removeIfEmpty}, and {@code addToMap}
+    * methods ensure that the {@code WrappedCollection} and map remain consistent.
+    *
+    * <p>A subcollection, such as a sublist, contains some of the values for a given key. Its
+    * ancestor field points to the full wrapped collection with all values for the key. The
+    * subcollection {@code refreshIfEmpty}, {@code removeIfEmpty}, and {@code addToMap} methods call
+    * the corresponding methods of the full wrapped collection.
+    */
+   @WeakOuter
+-  private class WrappedCollection extends AbstractCollection<V> {
++  class WrappedCollection extends AbstractCollection<V> {
+     final K key;
+     Collection<V> delegate;
+     final WrappedCollection ancestor;
+     final Collection<V> ancestorDelegate;
+ 
+     WrappedCollection(
+         @NullableDecl K key, Collection<V> delegate, @NullableDecl WrappedCollection ancestor) {
+       this.key = key;
+       this.delegate = delegate;
+       this.ancestor = ancestor;
+       this.ancestorDelegate = (ancestor == null) ? null : ancestor.getDelegate();
+     }
+ 
+     /**
+      * If the delegate collection is empty, but the multimap has values for the key, replace the
+      * delegate with the new collection for the key.
+      *
+      * <p>For a subcollection, refresh its ancestor and validate that the ancestor delegate hasn't
+      * changed.
+      */
+     void refreshIfEmpty() {
+       if (ancestor != null) {
+         ancestor.refreshIfEmpty();
+         if (ancestor.getDelegate() != ancestorDelegate) {
+           throw new ConcurrentModificationException();
+         }
+       } else if (delegate.isEmpty()) {
+         Collection<V> newDelegate = map.get(key);
+         if (newDelegate != null) {
+           delegate = newDelegate;
+         }
+       }
+     }
+ 
+     /**
+      * If collection is empty, remove it from {@code AbstractMapBasedMultimap.this.map}. For
+      * subcollections, check whether the ancestor collection is empty.
+      */
+     void removeIfEmpty() {
+       if (ancestor != null) {
+         ancestor.removeIfEmpty();
+       } else if (delegate.isEmpty()) {
+         map.remove(key);
+       }
+     }
+ 
+     K getKey() {
+       return key;
+     }
+ 
+@@ -552,128 +532,128 @@ abstract class AbstractMapBasedMultimap<K, V> extends AbstractMultimap<K, V>
+     }
+ 
+     @Override
+     public boolean remove(Object o) {
+       refreshIfEmpty();
+       boolean changed = delegate.remove(o);
+       if (changed) {
+         totalSize--;
+         removeIfEmpty();
+       }
+       return changed;
+     }
+ 
+     @Override
+     public boolean removeAll(Collection<?> c) {
+       if (c.isEmpty()) {
+         return false;
+       }
+       int oldSize = size(); // calls refreshIfEmpty
+       boolean changed = delegate.removeAll(c);
+       if (changed) {
+         int newSize = delegate.size();
+         totalSize += (newSize - oldSize);
+         removeIfEmpty();
+       }
+       return changed;
+     }
+ 
+     @Override
+     public boolean retainAll(Collection<?> c) {
+       checkNotNull(c);
+       int oldSize = size(); // calls refreshIfEmpty
+       boolean changed = delegate.retainAll(c);
+       if (changed) {
+         int newSize = delegate.size();
+         totalSize += (newSize - oldSize);
+         removeIfEmpty();
+       }
+       return changed;
+     }
+   }
+ 
+   private static <E> Iterator<E> iteratorOrListIterator(Collection<E> collection) {
+     return (collection instanceof List)
+         ? ((List<E>) collection).listIterator()
+         : collection.iterator();
+   }
+ 
+   /** Set decorator that stays in sync with the multimap values for a key. */
+   @WeakOuter
+-  private class WrappedSet extends WrappedCollection implements Set<V> {
++  class WrappedSet extends WrappedCollection implements Set<V> {
+     WrappedSet(@NullableDecl K key, Set<V> delegate) {
+       super(key, delegate, null);
+     }
+ 
+     @Override
+     public boolean removeAll(Collection<?> c) {
+       if (c.isEmpty()) {
+         return false;
+       }
+       int oldSize = size(); // calls refreshIfEmpty
+ 
+       // Guava issue 1013: AbstractSet and most JDK set implementations are
+       // susceptible to quadratic removeAll performance on lists;
+       // use a slightly smarter implementation here
+       boolean changed = Sets.removeAllImpl((Set<V>) delegate, c);
+       if (changed) {
+         int newSize = delegate.size();
+         totalSize += (newSize - oldSize);
+         removeIfEmpty();
+       }
+       return changed;
+     }
+   }
+ 
+   /** SortedSet decorator that stays in sync with the multimap values for a key. */
+   @WeakOuter
+-  private class WrappedSortedSet extends WrappedCollection implements SortedSet<V> {
++  class WrappedSortedSet extends WrappedCollection implements SortedSet<V> {
+     WrappedSortedSet(
+         @NullableDecl K key, SortedSet<V> delegate, @NullableDecl WrappedCollection ancestor) {
+       super(key, delegate, ancestor);
+     }
+ 
+     SortedSet<V> getSortedSetDelegate() {
+       return (SortedSet<V>) getDelegate();
+     }
+ 
+     @Override
+     public Comparator<? super V> comparator() {
+       return getSortedSetDelegate().comparator();
+     }
+ 
+     @Override
+     public V first() {
+       refreshIfEmpty();
+       return getSortedSetDelegate().first();
+     }
+ 
+     @Override
+     public V last() {
+       refreshIfEmpty();
+       return getSortedSetDelegate().last();
+     }
+ 
+     @Override
+     public SortedSet<V> headSet(V toElement) {
+       refreshIfEmpty();
+       return new WrappedSortedSet(
+           getKey(),
+           getSortedSetDelegate().headSet(toElement),
+           (getAncestor() == null) ? this : getAncestor());
+     }
+ 
+     @Override
+     public SortedSet<V> subSet(V fromElement, V toElement) {
+       refreshIfEmpty();
+       return new WrappedSortedSet(
+           getKey(),
+           getSortedSetDelegate().subSet(fromElement, toElement),
+           (getAncestor() == null) ? this : getAncestor());
+     }
+ 
+     @Override
+     public SortedSet<V> tailSet(V fromElement) {
+       refreshIfEmpty();
+       return new WrappedSortedSet(
+           getKey(),
+           getSortedSetDelegate().tailSet(fromElement),
+@@ -710,101 +690,101 @@ abstract class AbstractMapBasedMultimap<K, V> extends AbstractMultimap<K, V>
+ 
+     @Override
+     public V higher(V v) {
+       return getSortedSetDelegate().higher(v);
+     }
+ 
+     @Override
+     public V pollFirst() {
+       return Iterators.pollNext(iterator());
+     }
+ 
+     @Override
+     public V pollLast() {
+       return Iterators.pollNext(descendingIterator());
+     }
+ 
+     private NavigableSet<V> wrap(NavigableSet<V> wrapped) {
+       return new WrappedNavigableSet(key, wrapped, (getAncestor() == null) ? this : getAncestor());
+     }
+ 
+     @Override
+     public NavigableSet<V> descendingSet() {
+       return wrap(getSortedSetDelegate().descendingSet());
+     }
+ 
+     @Override
+     public Iterator<V> descendingIterator() {
+       return new WrappedIterator(getSortedSetDelegate().descendingIterator());
+     }
+ 
+     @Override
+     public NavigableSet<V> subSet(
+         V fromElement, boolean fromInclusive, V toElement, boolean toInclusive) {
+       return wrap(
+           getSortedSetDelegate().subSet(fromElement, fromInclusive, toElement, toInclusive));
+     }
+ 
+     @Override
+     public NavigableSet<V> headSet(V toElement, boolean inclusive) {
+       return wrap(getSortedSetDelegate().headSet(toElement, inclusive));
+     }
+ 
+     @Override
+     public NavigableSet<V> tailSet(V fromElement, boolean inclusive) {
+       return wrap(getSortedSetDelegate().tailSet(fromElement, inclusive));
+     }
+   }
+ 
+   /** List decorator that stays in sync with the multimap values for a key. */
+   @WeakOuter
+-  private class WrappedList extends WrappedCollection implements List<V> {
++  class WrappedList extends WrappedCollection implements List<V> {
+     WrappedList(@NullableDecl K key, List<V> delegate, @NullableDecl WrappedCollection ancestor) {
+       super(key, delegate, ancestor);
+     }
+ 
+     List<V> getListDelegate() {
+       return (List<V>) getDelegate();
+     }
+ 
+     @Override
+     public boolean addAll(int index, Collection<? extends V> c) {
+       if (c.isEmpty()) {
+         return false;
+       }
+       int oldSize = size(); // calls refreshIfEmpty
+       boolean changed = getListDelegate().addAll(index, c);
+       if (changed) {
+         int newSize = getDelegate().size();
+         totalSize += (newSize - oldSize);
+         if (oldSize == 0) {
+           addToMap();
+         }
+       }
+       return changed;
+     }
+ 
+     @Override
+     public V get(int index) {
+       refreshIfEmpty();
+       return getListDelegate().get(index);
+     }
+ 
+     @Override
+     public V set(int index, V element) {
+       refreshIfEmpty();
+       return getListDelegate().set(index, element);
+     }
+ 
+     @Override
+     public void add(int index, V element) {
+       refreshIfEmpty();
+       boolean wasEmpty = getDelegate().isEmpty();
+       getListDelegate().add(index, element);
+       totalSize++;
+       if (wasEmpty) {
+         addToMap();
+       }
+     }
+ 
+     @Override
+     public V remove(int index) {

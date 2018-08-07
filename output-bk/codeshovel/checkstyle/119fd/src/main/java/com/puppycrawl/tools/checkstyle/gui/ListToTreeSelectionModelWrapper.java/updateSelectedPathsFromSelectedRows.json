@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ListToTreeSelectionModelWrapper.java",
+  "functionName": "updateSelectedPathsFromSelectedRows",
+  "functionId": "updateSelectedPathsFromSelectedRows",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/gui/ListToTreeSelectionModelWrapper.java",
+  "functionStartLine": 92,
+  "functionEndLine": 112,
+  "changeHistory": [
+    "8142c804e90f6d24a3a5db736f3f1f576766a9a5",
+    "fca2fd4d07ad057664ec43b83a3835693a1b1c88",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "d3433c91e0a791b0d1f44bf1975e930e15ed74b8"
+  ],
+  "changeHistoryShort": {
+    "8142c804e90f6d24a3a5db736f3f1f576766a9a5": "Ymodifierchange",
+    "fca2fd4d07ad057664ec43b83a3835693a1b1c88": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "d3433c91e0a791b0d1f44bf1975e930e15ed74b8": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "8142c804e90f6d24a3a5db736f3f1f576766a9a5": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Decrease visibility of fields and methods where applicable. #1555\n\nFixes some `WeakerAccess` inspection violations.\n\nDescription:\n\u003eThis inspection reports all fields, methods or classes, found in the specified inspection scope, that may have their access modifier narrowed down.\n",
+      "commitDate": 1440705174000,
+      "commitName": "8142c804e90f6d24a3a5db736f3f1f576766a9a5",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440502770000,
+      "commitNameOld": "d345f3beb27f3d8e3fde06f7e2c7612ddf691b95",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 2.34,
+      "commitsBetweenForRepo": 61,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,21 @@\n-    protected void updateSelectedPathsFromSelectedRows() {\n+    private void updateSelectedPathsFromSelectedRows() {\n         if (!updatingListSelectionModel) {\n             updatingListSelectionModel \u003d true;\n             try {\n                 // This is way expensive, ListSelectionModel needs an\n                 // enumerator for iterating.\n                 final int min \u003d listSelectionModel.getMinSelectionIndex();\n                 final int max \u003d listSelectionModel.getMaxSelectionIndex();\n \n                 clearSelection();\n                 if (min !\u003d -1 \u0026\u0026 max !\u003d -1) {\n                     for (int counter \u003d min; counter \u003c\u003d max; counter++) {\n                         updateSelectedPathIfRowIsSelected(counter);\n                     }\n                 }\n             }\n             finally {\n                 updatingListSelectionModel \u003d false;\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "fca2fd4d07ad057664ec43b83a3835693a1b1c88": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Extract nested class with other class nested to separate file. #1555\n\nFixes `ClassNestingDepth` inspection violation.\n\nDescription:\n\u003eReports inner classes too deeply nested. Nesting inner classes inside inner classes is almost certain to be confusing, and is a good sign that refactoring may be necessary.\n",
+      "commitDate": 1439355715000,
+      "commitName": "fca2fd4d07ad057664ec43b83a3835693a1b1c88",
+      "commitAuthor": "Michal Kordas",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1420821881000,
+      "commitNameOld": "dcb3029c008907edf6aa4b59a51349f0ca94f54b",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 60.2,
+      "commitsBetweenForRepo": 207,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,28 @@\n         protected void updateSelectedPathsFromSelectedRows()\n         {\n             if (!updatingListSelectionModel) {\n                 updatingListSelectionModel \u003d true;\n                 try {\n                     // This is way expensive, ListSelectionModel needs an\n                     // enumerator for iterating.\n                     final int min \u003d listSelectionModel.getMinSelectionIndex();\n                     final int max \u003d listSelectionModel.getMaxSelectionIndex();\n \n                     clearSelection();\n-                    if ((min !\u003d -1) \u0026\u0026 (max !\u003d -1)) {\n+                    if (min !\u003d -1 \u0026\u0026 max !\u003d -1) {\n                         for (int counter \u003d min; counter \u003c\u003d max; counter++) {\n                             if (listSelectionModel.isSelectedIndex(counter)) {\n                                 final TreePath selPath \u003d tree.getPathForRow\n                                         (counter);\n \n                                 if (selPath !\u003d null) {\n                                     addSelectionPath(selPath);\n                                 }\n                             }\n                         }\n                     }\n                 } finally {\n                     updatingListSelectionModel \u003d false;\n                 }\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1152242806000,
+      "commitNameOld": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,28 @@\n         protected void updateSelectedPathsFromSelectedRows()\n         {\n             if (!updatingListSelectionModel) {\n                 updatingListSelectionModel \u003d true;\n                 try {\n                     // This is way expensive, ListSelectionModel needs an\n                     // enumerator for iterating.\n-                    int min \u003d listSelectionModel.getMinSelectionIndex();\n-                    int max \u003d listSelectionModel.getMaxSelectionIndex();\n+                    final int min \u003d listSelectionModel.getMinSelectionIndex();\n+                    final int max \u003d listSelectionModel.getMaxSelectionIndex();\n \n                     clearSelection();\n                     if ((min !\u003d -1) \u0026\u0026 (max !\u003d -1)) {\n                         for (int counter \u003d min; counter \u003c\u003d max; counter++) {\n                             if (listSelectionModel.isSelectedIndex(counter)) {\n-                                TreePath selPath \u003d tree.getPathForRow\n+                                final TreePath selPath \u003d tree.getPathForRow\n                                         (counter);\n \n                                 if (selPath !\u003d null) {\n                                     addSelectionPath(selPath);\n                                 }\n                             }\n                         }\n                     }\n                 } finally {\n                     updatingListSelectionModel \u003d false;\n                 }\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1151841139000,
+      "commitNameOld": "ef791720f010bcc2a05da76cac8021085bc71155",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 4.65,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,28 @@\n         protected void updateSelectedPathsFromSelectedRows()\n         {\n             if (!updatingListSelectionModel) {\n                 updatingListSelectionModel \u003d true;\n                 try {\n                     // This is way expensive, ListSelectionModel needs an\n                     // enumerator for iterating.\n                     int min \u003d listSelectionModel.getMinSelectionIndex();\n                     int max \u003d listSelectionModel.getMaxSelectionIndex();\n \n                     clearSelection();\n-                    if (min !\u003d -1 \u0026\u0026 max !\u003d -1) {\n+                    if ((min !\u003d -1) \u0026\u0026 (max !\u003d -1)) {\n                         for (int counter \u003d min; counter \u003c\u003d max; counter++) {\n                             if (listSelectionModel.isSelectedIndex(counter)) {\n                                 TreePath selPath \u003d tree.getPathForRow\n                                         (counter);\n \n                                 if (selPath !\u003d null) {\n                                     addSelectionPath(selPath);\n                                 }\n                             }\n                         }\n                     }\n                 } finally {\n                     updatingListSelectionModel \u003d false;\n                 }\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "d3433c91e0a791b0d1f44bf1975e930e15ed74b8": {
+      "type": "Yintroduced",
+      "commitMessage": "Added initial GUI.\n\nOliver, please check that the file headers do not\nlead to license problems with Sun - maybe we need to remove\nour own header and exclude the gui package from the run.checkstyle\ntarget?\n",
+      "commitDate": 1034813584000,
+      "commitName": "d3433c91e0a791b0d1f44bf1975e930e15ed74b8",
+      "commitAuthor": "Lars Kühne"
+    }
+  }
+}

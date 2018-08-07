@@ -1,0 +1,109 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+index f1f5a47a1..67961c707 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/RequireThisCheck.java
+@@ -1165,102 +1165,102 @@ public class RequireThisCheck extends AbstractCheck {
+                     result = true;
+                 }
+             }
+             return result;
+         }
+ 
+         @Override
+         protected boolean containsFieldOrVariable(DetailAST nameToFind) {
+             return containsFieldOrVariableDef(instanceMembers, nameToFind)
+                     || containsFieldOrVariableDef(staticMembers, nameToFind);
+         }
+ 
+         @Override
+         protected boolean isProperDefinition(DetailAST ident, DetailAST ast) {
+             final String nameToFind = ident.getText();
+             return nameToFind.equals(ast.getText());
+         }
+ 
+         @Override
+         protected AbstractFrame getIfContains(DetailAST nameToFind, boolean lookForMethod) {
+             AbstractFrame frame = null;
+ 
+             if (lookForMethod && containsMethod(nameToFind)
+                 || containsFieldOrVariable(nameToFind)) {
+                 frame = this;
+             }
+             else if (getParent() != null) {
+                 frame = getParent().getIfContains(nameToFind, lookForMethod);
+             }
+             return frame;
+         }
+ 
+         /**
+          * Check whether the frame contains a given method.
+          * @param methodToFind the AST of the method to find.
+          * @return true, if a method with the same name and number of parameters is found.
+          */
+         private boolean containsMethod(DetailAST methodToFind) {
+             return containsMethodDef(instanceMethods, methodToFind)
+                 || containsMethodDef(staticMethods, methodToFind);
+         }
+ 
+         /**
+          * Whether the set contains a method definition with the
+          *     same name and number of parameters.
+          * @param set the set of definitions.
+          * @param ident the specified method call IDENT ast.
+          * @return true if the set contains a definition with the
+          *     same name and number of parameters.
+          */
+-        private boolean containsMethodDef(Set<DetailAST> set, DetailAST ident) {
++        private static boolean containsMethodDef(Set<DetailAST> set, DetailAST ident) {
+             boolean result = false;
+             for (DetailAST ast: set) {
+                 if (isSimilarSignature(ident, ast)) {
+                     result = true;
+                     break;
+                 }
+             }
+             return result;
+         }
+ 
+         /**
+          * Whether the method definition has the same name and number of parameters.
+          * @param ident the specified method call IDENT ast.
+          * @param ast the ast of a method definition to compare with.
+          * @return true if a method definition has the same name and number of parameters
+          *     as the method call.
+          */
+-        private boolean isSimilarSignature(DetailAST ident, DetailAST ast) {
++        private static boolean isSimilarSignature(DetailAST ident, DetailAST ast) {
+             boolean result = false;
+             final DetailAST elistToken = ident.getParent().findFirstToken(TokenTypes.ELIST);
+             if (elistToken != null && ident.getText().equals(ast.getText())) {
+                 final int paramsNumber =
+                     ast.getParent().findFirstToken(TokenTypes.PARAMETERS).getChildCount();
+                 final int argsNumber = elistToken.getChildCount();
+                 result = paramsNumber == argsNumber;
+             }
+             return result;
+         }
+     }
+ 
+     /**
+      * A frame initiated on entering a statement list; holds local variable names.
+      * @author Stephen Bloch
+      */
+     private static class BlockFrame extends AbstractFrame {
+ 
+         /**
+          * Creates block frame.
+          * @param parent parent frame.
+          * @param ident ident frame name ident.
+          */
+         protected BlockFrame(AbstractFrame parent, DetailAST ident) {
+             super(parent, ident);
+         }
+ 
+         @Override
+         protected FrameType getType() {
+             return FrameType.BLOCK_FRAME;
+         }
+     }
+ }

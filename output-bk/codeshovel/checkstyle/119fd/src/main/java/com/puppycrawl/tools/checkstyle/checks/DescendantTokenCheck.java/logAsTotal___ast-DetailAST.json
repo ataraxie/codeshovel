@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DescendantTokenCheck.java",
+  "functionName": "logAsTotal",
+  "functionId": "logAsTotal___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/DescendantTokenCheck.java",
+  "functionStartLine": 286,
+  "functionEndLine": 312,
+  "changeHistory": [
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e",
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78",
+    "40bb6812631517615cfc45efeb5bdcc93b95a8ae"
+  ],
+  "changeHistoryShort": {
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": "Ybodychange",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": "Ybodychange",
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78": "Ybodychange",
+    "40bb6812631517615cfc45efeb5bdcc93b95a8ae": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": {
+      "type": "Ybodychange",
+      "commitMessage": "Utils class has been splitted to CommonUtils and TokenUtils. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,27 +1,27 @@\n     private void logAsTotal(DetailAST ast) {\n         // name of this token\n-        final String name \u003d Utils.getTokenName(ast.getType());\n+        final String name \u003d TokenUtils.getTokenName(ast.getType());\n \n         int total \u003d 0;\n         for (int element : limitedTokens) {\n             total +\u003d counts[element - 1];\n         }\n         if (total \u003c minimumNumber) {\n             if (minimumMessage \u003d\u003d null) {\n                 minimumMessage \u003d MSG_KEY_SUM_MIN;\n             }\n             log(ast.getLineNo(), ast.getColumnNo(),\n                     minimumMessage,\n                     String.valueOf(total),\n                     String.valueOf(minimumNumber), name);\n         }\n         if (total \u003e maximumNumber) {\n             if (maximumMessage \u003d\u003d null) {\n                 maximumMessage \u003d MSG_KEY_SUM_MAX;\n             }\n             log(ast.getLineNo(), ast.getColumnNo(),\n                     maximumMessage,\n                     String.valueOf(total),\n                     String.valueOf(maximumNumber), name);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: AvoidInlineConditional violations fixed\n",
+      "commitDate": 1439784080000,
+      "commitName": "23c8774d2e2fd245de1e5df02758fd23702c565e",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1439782863000,
+      "commitNameOld": "d56a2a366c6f9e3e8639d492d548ae562b75dc81",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,27 @@\n     private void logAsTotal(DetailAST ast) {\n         // name of this token\n         final String name \u003d Utils.getTokenName(ast.getType());\n \n         int total \u003d 0;\n         for (int element : limitedTokens) {\n             total +\u003d counts[element - 1];\n         }\n         if (total \u003c minimumNumber) {\n+            if (minimumMessage \u003d\u003d null) {\n+                minimumMessage \u003d MSG_KEY_SUM_MIN;\n+            }\n             log(ast.getLineNo(), ast.getColumnNo(),\n-                minimumMessage \u003d\u003d null ? MSG_KEY_SUM_MIN\n-                            : minimumMessage,\n+                    minimumMessage,\n                     String.valueOf(total),\n                     String.valueOf(minimumNumber), name);\n         }\n         if (total \u003e maximumNumber) {\n+            if (maximumMessage \u003d\u003d null) {\n+                maximumMessage \u003d MSG_KEY_SUM_MAX;\n+            }\n             log(ast.getLineNo(), ast.getColumnNo(),\n-                maximumMessage \u003d\u003d null ? MSG_KEY_SUM_MAX\n-                            : maximumMessage,\n+                    maximumMessage,\n                     String.valueOf(total),\n-                    String.valueOf(maximumNumber),\n-                    name);\n+                    String.valueOf(maximumNumber), name);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "4d6e2376db89b69167de867bfc28f8d8624a6b78": {
+      "type": "Ybodychange",
+      "commitMessage": "Move constants to left side of comparison. #1555\n\nFixes `ConstantOnLHSOfComparison` inspection violations.\n\nDescription:\n\u003eReports on comparison operations with constant values on their left-hand side. Some coding conventions specify that constants should be on the right-hand side of comparisons.\n",
+      "commitDate": 1439084780000,
+      "commitName": "4d6e2376db89b69167de867bfc28f8d8624a6b78",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1439024061000,
+      "commitNameOld": "2da168644500c915660b7cfac9668b44317d81fc",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.7,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,24 @@\n     private void logAsTotal(DetailAST ast) {\n         // name of this token\n         final String name \u003d Utils.getTokenName(ast.getType());\n \n         int total \u003d 0;\n         for (int element : limitedTokens) {\n             total +\u003d counts[element - 1];\n         }\n         if (total \u003c minimumNumber) {\n             log(ast.getLineNo(), ast.getColumnNo(),\n-                    null \u003d\u003d minimumMessage ? MSG_KEY_SUM_MIN\n+                minimumMessage \u003d\u003d null ? MSG_KEY_SUM_MIN\n                             : minimumMessage,\n                     String.valueOf(total),\n                     String.valueOf(minimumNumber), name);\n         }\n         if (total \u003e maximumNumber) {\n             log(ast.getLineNo(), ast.getColumnNo(),\n-                    null \u003d\u003d maximumMessage ? MSG_KEY_SUM_MAX\n+                maximumMessage \u003d\u003d null ? MSG_KEY_SUM_MAX\n                             : maximumMessage,\n                     String.valueOf(total),\n                     String.valueOf(maximumNumber),\n                     name);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "40bb6812631517615cfc45efeb5bdcc93b95a8ae": {
+      "type": "Yintroduced",
+      "commitMessage": "DescendantTokenCheck  updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434261690000,
+      "commitName": "40bb6812631517615cfc45efeb5bdcc93b95a8ae",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

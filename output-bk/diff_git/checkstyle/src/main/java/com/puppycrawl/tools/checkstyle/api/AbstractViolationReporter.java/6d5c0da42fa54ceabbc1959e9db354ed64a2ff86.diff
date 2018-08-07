@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractViolationReporter.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractViolationReporter.java
+index b87d00231..6b81313be 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractViolationReporter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/AbstractViolationReporter.java
+@@ -64,101 +64,101 @@ public abstract class AbstractViolationReporter
+      */
+     public final String getSeverity() {
+         return severityLevel.getName();
+     }
+ 
+     /**
+      * Returns the identifier of the reporter. Can be null.
+      * @return the id
+      */
+     public final String getId() {
+         return id;
+     }
+ 
+     /**
+      * Sets the identifier of the reporter. Can be null.
+      * @param id the id
+      */
+     public final void setId(final String id) {
+         this.id = id;
+     }
+ 
+     /**
+      * Helper method to log a LocalizedMessage.
+      *
+      * @param ast a node to get line id column numbers associated
+      *             with the message
+      * @param key key to locale message format
+      * @param args arguments to format
+      */
+     protected final void log(DetailAST ast, String key, Object... args) {
+         log(ast.getLineNo(), ast.getColumnNo(), key, args);
+     }
+ 
+     /**
+      * Returns the message bundle name resourcebundle that contains the messages
+      * used by this module.
+      * <p>
+      * The default implementation expects the resource files to be named
+      * messages.properties, messages_de.properties, etc. The file must
+      * be placed in the same package as the module implementation.
+      * </p>
+      * <p>
+      * Example: If you write com/foo/MyCoolCheck, create resource files
+      * com/foo/messages.properties, com/foo/messages_de.properties, etc.
+      * </p>
+      *
+      * @return name of a resource bundle that contains the messages
+      * used by this module.
+      */
+     protected String getMessageBundle() {
+-        final String className = this.getClass().getName();
++        final String className = getClass().getName();
+         return getMessageBundle(className);
+     }
+ 
+     /**
+      * Returns an unmodifiable map instance containing the custom messages
+      * for this configuration.
+      * @return unmodifiable map containing custom messages
+      */
+     protected Map<String, String> getCustomMessages() {
+         return getConfiguration().getMessages();
+     }
+ 
+     /**
+      * for unit tests, especially with a class with no package name.
+      * @param className class name of the module.
+      * @return name of a resource bundle that contains the messages
+      * used by the module.
+      */
+     static String getMessageBundle(final String className) {
+         final int endIndex = className.lastIndexOf('.');
+         final String messages = "messages";
+         if (endIndex < 0) {
+             return messages;
+         }
+         final String packageName = className.substring(0, endIndex);
+         return packageName + "." + messages;
+     }
+ 
+     /**
+      * Log a message that has no column information.
+      *
+      * @param line the line number where the error was found
+      * @param key the message that describes the error
+      * @param args the details of the message
+      *
+      * @see java.text.MessageFormat
+      */
+     public abstract void log(int line, String key, Object... args);
+ 
+     /**
+      * Log a message that has column information.
+      *
+      * @param line the line number where the error was found
+      * @param col the column number where the error was found
+      * @param key the message that describes the error
+      * @param args the details of the message
+      *
+      * @see java.text.MessageFormat
+      */
+     public abstract void log(int line, int col, String key,

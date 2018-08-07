@@ -1,0 +1,22 @@
+{
+  "function": {
+    "commitName": "e15f70ac5b1460236e14237acc3a041102238efd",
+    "name": "findBetterPatternMatch",
+    "path": "findBetterPatternMatch___importPath-String__group-String__regExp-Pattern__currentBestMatch-RuleMatchForImport",
+    "body": "{\n    RuleMatchForImport betterMatchCandidate \u003d currentBestMatch;\n    final Matcher matcher \u003d regExp.matcher(importPath);\n    while (matcher.find()) {\n        final int length \u003d matcher.end() - matcher.start();\n        if (length \u003e betterMatchCandidate.matchLength || length \u003d\u003d betterMatchCandidate.matchLength \u0026\u0026 matcher.start() \u003c betterMatchCandidate.matchPosition) {\n            betterMatchCandidate \u003d new RuleMatchForImport(group, length, matcher.start());\n        }\n    }\n    return betterMatchCandidate;\n}"
+  },
+  "mostSimilarFunction": {
+    "commitName": "5ca96679525171c73fc4d5c257301f51d2100071",
+    "name": "matchesSamePackageImportGroup",
+    "path": "matchesSamePackageImportGroup___isStatic-boolean__importFullPath-String__currentGroup-String",
+    "body": "{\n    final String importPathTrimmedToSamePackageDepth \u003d getFirstNDomainsFromIdent(samePackageMatchingDepth, importFullPath);\n    return !isStatic \u0026\u0026 SAME_PACKAGE_RULE_GROUP.equals(currentGroup) \u0026\u0026 samePackageDomainsRegExp.equals(importPathTrimmedToSamePackageDepth);\n}"
+  },
+  "similarity": {
+    "crossFile": false,
+    "bodySimilarity": 0.5841315317145382,
+    "lineNumberSimilarity": 0.9563269876819709,
+    "scopeSimilarity": 1.0,
+    "overallSimilarity": 0.5299148056036607,
+    "nameSimilarity": 0.5355276907001044
+  }
+}

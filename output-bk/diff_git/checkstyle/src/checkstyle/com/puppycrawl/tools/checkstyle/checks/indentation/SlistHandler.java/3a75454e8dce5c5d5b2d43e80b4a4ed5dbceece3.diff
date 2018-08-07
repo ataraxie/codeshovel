@@ -1,0 +1,94 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java
+index 756a98049..b1b01ab31 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/SlistHandler.java
+@@ -100,77 +100,77 @@ public class SlistHandler extends BlockParentHandler
+     }
+ 
+     /**
+      * Get the left curly brace portion of the expression we are handling.
+      *
+      * @return the left curly brace expression
+      */
+     protected DetailAST getLCurly()
+     {
+         return getMainAst();
+     }
+ 
+     /**
+      * Get the right curly brace portion of the expression we are handling.
+      *
+      * @return the right curly brace expression
+      */
+     protected DetailAST getRCurly()
+     {
+         return getMainAst().findFirstToken(TokenTypes.RCURLY);
+     }
+ 
+     /**
+      * There is no top level expression for this handler.
+      *
+      * @return null
+      */
+     protected DetailAST getToplevelAST()
+     {
+         return null;
+ 
+         //            // TODO: STATIC_INIT has column num of lcurly... need
+         //            //   to ask about this
+         //            DetailAST mParent = mMainAst.getParent();
+         //            if (mParent.getType() == TokenTypes.STATIC_INIT) {
+         //                if (mParent.getColumnNo() == getLevel()) {
+         //                    return;
+         //                }
+         //                logError(mParent, "static",
+         //                    mParent.getColumnNo());
+         //            }
+     }
+ 
+     /**
+      * Determine if the expression we are handling has a block parent.
+      *
+      * @return true if it does, false otherwise
+      */
+     private boolean hasBlockParent()
+     {
+-        int parentType = getMainAst().getParent().getType();
+-        return parentType == TokenTypes.LITERAL_IF
+-            || parentType == TokenTypes.LITERAL_FOR
+-            || parentType == TokenTypes.LITERAL_WHILE
+-            || parentType == TokenTypes.LITERAL_DO
+-            || parentType == TokenTypes.LITERAL_ELSE
+-            || parentType == TokenTypes.LITERAL_TRY
+-            || parentType == TokenTypes.LITERAL_CATCH
+-            || parentType == TokenTypes.LITERAL_FINALLY
+-            || parentType == TokenTypes.CTOR_DEF
+-            || parentType == TokenTypes.METHOD_DEF
+-            || parentType == TokenTypes.STATIC_INIT;
++        final int parentType = getMainAst().getParent().getType();
++        return (parentType == TokenTypes.LITERAL_IF)
++            || (parentType == TokenTypes.LITERAL_FOR)
++            || (parentType == TokenTypes.LITERAL_WHILE)
++            || (parentType == TokenTypes.LITERAL_DO)
++            || (parentType == TokenTypes.LITERAL_ELSE)
++            || (parentType == TokenTypes.LITERAL_TRY)
++            || (parentType == TokenTypes.LITERAL_CATCH)
++            || (parentType == TokenTypes.LITERAL_FINALLY)
++            || (parentType == TokenTypes.CTOR_DEF)
++            || (parentType == TokenTypes.METHOD_DEF)
++            || (parentType == TokenTypes.STATIC_INIT);
+     }
+ 
+     /**
+      * Check the indentation of the expression we are handling.
+      */
+     public void checkIndentation()
+     {
+         // only need to check this if parent is not
+         // an if, else, while, do, ctor, method
+         if (hasBlockParent()) {
+             return;
+         }
+         super.checkIndentation();
+     }
+ }

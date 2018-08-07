@@ -1,0 +1,153 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
+index 396be8299..07e87c8fc 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
+@@ -179,126 +179,130 @@ public class IllegalInstantiationCheck
+      * @param ast the package token
+      */
+     private void processPackageDef(DetailAST ast) {
+         final DetailAST packageNameAST = ast.getLastChild()
+                 .getPreviousSibling();
+         final FullIdent packageIdent =
+                 FullIdent.createFullIdent(packageNameAST);
+         pkgName = packageIdent.getText();
+     }
+ 
+     /**
+      * Collects a "new" token.
+      * @param ast the "new" token
+      */
+     private void processLiteralNew(DetailAST ast) {
+         if (ast.getParent().getType() != TokenTypes.METHOD_REF) {
+             instantiations.add(ast);
+         }
+     }
+ 
+     /**
+      * Processes one of the collected "new" tokens when walking tree
+      * has finished.
+      * @param newTokenAst the "new" token.
+      */
+     private void postProcessLiteralNew(DetailAST newTokenAst) {
+         final DetailAST typeNameAst = newTokenAst.getFirstChild();
+         final AST nameSibling = typeNameAst.getNextSibling();
+         if (nameSibling.getType() == TokenTypes.ARRAY_DECLARATOR) {
+             // ast == "new Boolean[]"
+             return;
+         }
+ 
+         final FullIdent typeIdent = FullIdent.createFullIdent(typeNameAst);
+         final String typeName = typeIdent.getText();
+         final int lineNo = newTokenAst.getLineNo();
+         final int colNo = newTokenAst.getColumnNo();
+         final String fqClassName = getIllegalInstantiation(typeName);
+         if (fqClassName != null) {
+             log(lineNo, colNo, MSG_KEY, fqClassName);
+         }
+     }
+ 
+     /**
+      * Checks illegal instantiations.
+      * @param className instantiated class, may or may not be qualified
+      * @return the fully qualified class name of className
+      * or null if instantiation of className is OK
+      */
+     private String getIllegalInstantiation(String className) {
+-        if (illegalClasses.contains(className)) {
+-            return className;
+-        }
+-        final int pkgNameLen;
++        String fullClassName = null;
+ 
+-        if (pkgName == null) {
+-            pkgNameLen = 0;
++        if (illegalClasses.contains(className)) {
++            fullClassName = className;
+         }
+         else {
+-            pkgNameLen = pkgName.length();
+-        }
+-
+-        for (String illegal : illegalClasses) {
++            final int pkgNameLen;
+ 
+-            if (isStandardClass(className, illegal)) {
+-                return illegal;
++            if (pkgName == null) {
++                pkgNameLen = 0;
+             }
+-            if (isSamePackage(className, pkgNameLen, illegal)) {
+-                return illegal;
++            else {
++                pkgNameLen = pkgName.length();
+             }
+-            final String importArg = checkImportStatements(className);
+-            if (importArg != null) {
+-                return importArg;
++
++            for (String illegal : illegalClasses) {
++                if (isStandardClass(className, illegal)
++                        || isSamePackage(className, pkgNameLen, illegal)) {
++                    fullClassName = illegal;
++                }
++                else {
++                    fullClassName = checkImportStatements(className);
++                }
++
++                if (fullClassName != null) {
++                    break;
++                }
+             }
+         }
+-        return null;
++        return fullClassName;
+     }
+ 
+     /**
+      * Check import statements
+      * @param className name of the class
+      * @return value of illegal instantiated type
+      */
+     private String checkImportStatements(String className) {
+         String illegalType = null;
+         // import statements
+         for (FullIdent importLineText : imports) {
+             final String importArg = importLineText.getText();
+             if (importArg.endsWith(".*")) {
+                 final String fqClass =
+                     importArg.substring(0, importArg.length() - 1)
+                     + className;
+                 // assume that illegalInstances only contain existing classes
+                 // or else we might create a false alarm here
+                 if (illegalClasses.contains(fqClass)) {
+                     illegalType = fqClass;
+                     break;
+                 }
+             }
+             else {
+                 if (CommonUtils.baseClassName(importArg).equals(className)
+                     && illegalClasses.contains(importArg)) {
+                     illegalType = importArg;
+                     break;
+                 }
+             }
+         }
+         return illegalType;
+     }
+ 
+     /**
+      * Check that type is of the same package
+      * @param className class name
+      * @param pkgNameLen package name
+      * @param illegal illegal value
+      * @return true if type of the same package
+      */
+     private boolean isSamePackage(String className, int pkgNameLen, String illegal) {
+         // class from same package
+ 
+         // the top level package (pkgName == null) is covered by the
+         // "illegalInstances.contains(className)" check above
+ 
+         // the test is the "no garbage" version of
+         // illegal.equals(pkgName + "." + className)
+         return pkgName != null

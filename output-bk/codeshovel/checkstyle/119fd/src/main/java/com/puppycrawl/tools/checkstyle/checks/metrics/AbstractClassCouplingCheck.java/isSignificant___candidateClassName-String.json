@@ -1,0 +1,165 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AbstractClassCouplingCheck.java",
+  "functionName": "isSignificant",
+  "functionId": "isSignificant___candidateClassName-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java",
+  "functionStartLine": 438,
+  "functionEndLine": 450,
+  "changeHistory": [
+    "57785f3aa7d71b67a3c8adc8b60a008f921c33c8",
+    "7b95603c0e5036f397365a05b68483d0da690c63",
+    "3bd699bd593414d63c7139aa410f13ec8341a027",
+    "60eacf91e616d2b6eec8c3d66a72d694da368cec",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "1d6bf23ccda5197dfdd11d9dc2f653128e6b4d82",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "cd7d040b4d2c4a80e87ef9b5be9bbd964f19e97d",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "c044038c3b932586c0d384b614254cc2d1838838"
+  ],
+  "changeHistoryShort": {
+    "57785f3aa7d71b67a3c8adc8b60a008f921c33c8": "Ybodychange",
+    "7b95603c0e5036f397365a05b68483d0da690c63": "Ybodychange",
+    "3bd699bd593414d63c7139aa410f13ec8341a027": "Ymultichange(Yparameterchange,Ybodychange)",
+    "60eacf91e616d2b6eec8c3d66a72d694da368cec": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "1d6bf23ccda5197dfdd11d9dc2f653128e6b4d82": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "cd7d040b4d2c4a80e87ef9b5be9bbd964f19e97d": "Ybodychange",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "c044038c3b932586c0d384b614254cc2d1838838": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "57785f3aa7d71b67a3c8adc8b60a008f921c33c8": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3309: Added excludedPackages to class coupling checks\n",
+      "commitDate": 1491832459000,
+      "commitName": "57785f3aa7d71b67a3c8adc8b60a008f921c33c8",
+      "commitAuthor": "Andrew Kuchev",
+      "commitDateOld": 1491390503000,
+      "commitNameOld": "7b95603c0e5036f397365a05b68483d0da690c63",
+      "commitAuthorOld": "Tima",
+      "daysBetweenCommits": 5.12,
+      "commitsBetweenForRepo": 31,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n         private boolean isSignificant(String candidateClassName) {\n             boolean result \u003d !excludedClasses.contains(candidateClassName)\n-                    \u0026\u0026 !candidateClassName.startsWith(\"java.lang.\");\n+                \u0026\u0026 !isFromExcludedPackage(candidateClassName);\n             if (result) {\n                 for (Pattern pattern : excludeClassesRegexps) {\n                     if (pattern.matcher(candidateClassName).matches()) {\n                         result \u003d false;\n                         break;\n                     }\n                 }\n             }\n             return result;\n         }\n\\ No newline at end of file\n"
+    },
+    "7b95603c0e5036f397365a05b68483d0da690c63": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3234: ClassDataAbstractionCoupling : Add a regex attribut\n",
+      "commitDate": 1491390503000,
+      "commitName": "7b95603c0e5036f397365a05b68483d0da690c63",
+      "commitAuthor": "Tima",
+      "commitDateOld": 1488034522000,
+      "commitNameOld": "55aa8cedc60d4faa776d7a36f8ae2d0bed0ada45",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 38.84,
+      "commitsBetweenForRepo": 109,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,13 @@\n         private boolean isSignificant(String candidateClassName) {\n-            return !excludedClasses.contains(candidateClassName)\n+            boolean result \u003d !excludedClasses.contains(candidateClassName)\n                     \u0026\u0026 !candidateClassName.startsWith(\"java.lang.\");\n+            if (result) {\n+                for (Pattern pattern : excludeClassesRegexps) {\n+                    if (pattern.matcher(candidateClassName).matches()) {\n+                        result \u003d false;\n+                        break;\n+                    }\n+                }\n+            }\n+            return result;\n         }\n\\ No newline at end of file\n"
+    },
+    "3bd699bd593414d63c7139aa410f13ec8341a027": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Issue #1566: HiddenField violations fixed\n",
+      "commitDate": 1439356761000,
+      "commitName": "3bd699bd593414d63c7139aa410f13ec8341a027",
+      "commitAuthor": "Ruslan Diachenko",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "60eacf91e616d2b6eec8c3d66a72d694da368cec": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1287: \u0027AbstractClassCouplingCheck\u0027 refactored, UT coverage improved\n",
+      "commitDate": 1438143855000,
+      "commitName": "60eacf91e616d2b6eec8c3d66a72d694da368cec",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1437631122000,
+      "commitNameOld": "acbd47a66b01acc392a7bd37ad3a2e65eecd308a",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 5.93,
+      "commitsBetweenForRepo": 71,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,4 @@\n         private boolean isSignificant(String className) {\n-            return className.length() \u003e 0\n-                    \u0026\u0026 !excludedClasses.contains(className)\n+            return !excludedClasses.contains(className)\n                     \u0026\u0026 !className.startsWith(\"java.lang.\");\n         }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 20.02,
+      "commitsBetweenForRepo": 107,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n         private boolean isSignificant(String className)\n         {\n-            return (className.length() \u003e 0)\n+            return className.length() \u003e 0\n                     \u0026\u0026 !excludedClasses.contains(className)\n                     \u0026\u0026 !className.startsWith(\"java.lang.\");\n         }\n\\ No newline at end of file\n"
+    },
+    "1d6bf23ccda5197dfdd11d9dc2f653128e6b4d82": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, metrics, #512\n",
+      "commitDate": 1421677646000,
+      "commitName": "1d6bf23ccda5197dfdd11d9dc2f653128e6b4d82",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "cd7d040b4d2c4a80e87ef9b5be9bbd964f19e97d": {
+      "type": "Ybodychange",
+      "commitMessage": "fix for issues #31 and #33\n",
+      "commitDate": 1385991773000,
+      "commitName": "cd7d040b4d2c4a80e87ef9b5be9bbd964f19e97d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1380946942000,
+      "commitNameOld": "788f87df4db1368ee0563e1ba1199177618cc01f",
+      "commitAuthorOld": "picomancer",
+      "daysBetweenCommits": 58.39,
+      "commitsBetweenForRepo": 10,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n         private boolean isSignificant(String aClassName)\n         {\n             return (aClassName.length() \u003e 0)\n-                    \u0026\u0026 !mIgnoredClassNames.contains(aClassName)\n+                    \u0026\u0026 !mExcludedClasses.contains(aClassName)\n                     \u0026\u0026 !aClassName.startsWith(\"java.lang.\");\n         }\n\\ No newline at end of file\n"
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1108034631000,
+      "commitNameOld": "08a286dbec6dec2a6a5bdc75e18152daf7ef77ff",
+      "commitAuthorOld": "Oleg Sukhodolsky",
+      "daysBetweenCommits": 511.67,
+      "commitsBetweenForRepo": 217,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n         private boolean isSignificant(String aClassName)\n         {\n-            return aClassName.length() \u003e 0\n+            return (aClassName.length() \u003e 0)\n                     \u0026\u0026 !mIgnoredClassNames.contains(aClassName)\n                     \u0026\u0026 !aClassName.startsWith(\"java.lang.\");\n         }\n\\ No newline at end of file\n"
+    },
+    "c044038c3b932586c0d384b614254cc2d1838838": {
+      "type": "Yintroduced",
+      "commitMessage": "Added NPathComplexity, ClassDataAbstractionCoupling,\nBooleanExpressionComplexity and ClassFanOutComplexity checks\ncontributed by Simon Harris (requests 750757, 750758, 750760 and\n750759).\nIsEqualsMethod() moved from CovariantEqualsCheck to ChecUtils.\n\nTODO: add documentation.\n",
+      "commitDate": 1073030748000,
+      "commitName": "c044038c3b932586c0d384b614254cc2d1838838",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

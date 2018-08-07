@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "CommentsIndentationCheck.java",
+  "functionName": "isTrailingBlockComment",
+  "functionId": "isTrailingBlockComment___blockComment-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/CommentsIndentationCheck.java",
+  "functionStartLine": 951,
+  "functionEndLine": 957,
+  "changeHistory": [
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6",
+    "46a52f84c014e4d25379f429f11ed3de11fe8ae7",
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+    "df5eac375738952fdaa3bbf7de41965aa01a8cb6"
+  ],
+  "changeHistoryShort": {
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6": "Ybodychange",
+    "46a52f84c014e4d25379f429f11ed3de11fe8ae7": "Ybodychange",
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": "Ybodychange",
+    "df5eac375738952fdaa3bbf7de41965aa01a8cb6": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3126: Fix a lot of CommentsIndentationCheck false-positives and false-negatives\n",
+      "commitDate": 1464613701000,
+      "commitName": "e5c8a2a88433c9439b2cd17a60de6913a45ae0b6",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1461504289000,
+      "commitNameOld": "3defd234041f34854f50f1a77ae94d18fb730036",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 35.99,
+      "commitsBetweenForRepo": 88,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,7 @@\n     private boolean isTrailingBlockComment(DetailAST blockComment) {\n         final String commentLine \u003d getLine(blockComment.getLineNo() - 1);\n         final int commentColumnNo \u003d blockComment.getColumnNo();\n+        final DetailAST nextSibling \u003d blockComment.getNextSibling();\n         return !CommonUtils.hasWhitespaceBefore(commentColumnNo, commentLine)\n-            || blockComment.getNextSibling().getLineNo() \u003d\u003d blockComment.getLineNo();\n+            || nextSibling !\u003d null \u0026\u0026 nextSibling.getLineNo() \u003d\u003d blockComment.getLineNo();\n     }\n\\ No newline at end of file\n"
+    },
+    "46a52f84c014e4d25379f429f11ed3de11fe8ae7": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1555: Rename methods returning boolean to use question word\n\nFixes some `BooleanMethodNameMustStartWithQuestion` inspection violations.\n\nDescription:\n\u003eReports boolean methods whose names do not start with a question word. Boolean methods that override library methods are ignored by this inspection.\n",
+      "commitDate": 1440827451000,
+      "commitName": "46a52f84c014e4d25379f429f11ed3de11fe8ae7",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 1.73,
+      "commitsBetweenForRepo": 92,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     private boolean isTrailingBlockComment(DetailAST blockComment) {\n         final String commentLine \u003d getLine(blockComment.getLineNo() - 1);\n         final int commentColumnNo \u003d blockComment.getColumnNo();\n-        return !CommonUtils.whitespaceBefore(commentColumnNo, commentLine)\n+        return !CommonUtils.hasWhitespaceBefore(commentColumnNo, commentLine)\n             || blockComment.getNextSibling().getLineNo() \u003d\u003d blockComment.getLineNo();\n     }\n\\ No newline at end of file\n"
+    },
+    "cdf3e56bacd3895262af8a1df9ca5c81f4071970": {
+      "type": "Ybodychange",
+      "commitMessage": "Utils class has been splitted to CommonUtils and TokenUtils. Issue #1898\n",
+      "commitDate": 1440677821000,
+      "commitName": "cdf3e56bacd3895262af8a1df9ca5c81f4071970",
+      "commitAuthor": "Ilja Dubinin",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     private boolean isTrailingBlockComment(DetailAST blockComment) {\n         final String commentLine \u003d getLine(blockComment.getLineNo() - 1);\n         final int commentColumnNo \u003d blockComment.getColumnNo();\n-        return !Utils.whitespaceBefore(commentColumnNo, commentLine)\n+        return !CommonUtils.whitespaceBefore(commentColumnNo, commentLine)\n             || blockComment.getNextSibling().getLineNo() \u003d\u003d blockComment.getLineNo();\n     }\n\\ No newline at end of file\n"
+    },
+    "df5eac375738952fdaa3bbf7de41965aa01a8cb6": {
+      "type": "Yintroduced",
+      "commitMessage": "Added new Check: CommentsIndentationCheck, issue #333\n",
+      "commitDate": 1439024061000,
+      "commitName": "df5eac375738952fdaa3bbf7de41965aa01a8cb6",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "Strings.java",
+  "functionName": "lenientFormat",
+  "functionId": "lenientFormat___template-String__args-Object",
+  "sourceFilePath": "android/guava/src/com/google/common/base/Strings.java",
+  "functionStartLine": 260,
+  "functionEndLine": 298,
+  "changeHistory": [
+    "01181d7da17e763ec06a344514ed441caa3f9198",
+    "57e9707542f5dc59beeee0f21a0f2e718f791c3a",
+    "b3a48123f3d7eb9dd9b08ae7354a925ba2138103",
+    "7fe1702aeacff37ad4a7aca5d82ac9958e46e639"
+  ],
+  "changeHistoryShort": {
+    "01181d7da17e763ec06a344514ed441caa3f9198": "Ybodychange",
+    "57e9707542f5dc59beeee0f21a0f2e718f791c3a": "Ybodychange",
+    "b3a48123f3d7eb9dd9b08ae7354a925ba2138103": "Ybodychange",
+    "7fe1702aeacff37ad4a7aca5d82ac9958e46e639": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "01181d7da17e763ec06a344514ed441caa3f9198": {
+      "type": "Ybodychange",
+      "commitMessage": "Suppress exceptions raised from argument\u0027s toString methods during lenient formatting - take 2.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d198468540\n",
+      "commitDate": 1527787642000,
+      "commitName": "01181d7da17e763ec06a344514ed441caa3f9198",
+      "commitAuthor": "diamondm",
+      "commitDateOld": 1527096711000,
+      "commitNameOld": "824f80f850edec1be70465ac3e40621a9b67f892",
+      "commitAuthorOld": "cgdecker",
+      "daysBetweenCommits": 8.0,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,33 +1,39 @@\n   public static String lenientFormat(@NullableDecl String template, @NullableDecl Object... args) {\n     template \u003d String.valueOf(template); // null -\u003e \"null\"\n \n-    args \u003d args \u003d\u003d null ? new Object[] {\"(Object[])null\"} : args;\n+    if (args \u003d\u003d null) {\n+      args \u003d new Object[] {\"(Object[])null\"};\n+    } else {\n+      for (int i \u003d 0; i \u003c args.length; i++) {\n+        args[i] \u003d lenientToString(args[i]);\n+      }\n+    }\n \n     // start substituting the arguments into the \u0027%s\u0027 placeholders\n     StringBuilder builder \u003d new StringBuilder(template.length() + 16 * args.length);\n     int templateStart \u003d 0;\n     int i \u003d 0;\n     while (i \u003c args.length) {\n       int placeholderStart \u003d template.indexOf(\"%s\", templateStart);\n       if (placeholderStart \u003d\u003d -1) {\n         break;\n       }\n       builder.append(template, templateStart, placeholderStart);\n       builder.append(args[i++]);\n       templateStart \u003d placeholderStart + 2;\n     }\n     builder.append(template, templateStart, template.length());\n \n     // if we run out of placeholders, append the extra args in square braces\n     if (i \u003c args.length) {\n       builder.append(\" [\");\n       builder.append(args[i++]);\n       while (i \u003c args.length) {\n         builder.append(\", \");\n         builder.append(args[i++]);\n       }\n       builder.append(\u0027]\u0027);\n     }\n \n     return builder.toString();\n   }\n\\ No newline at end of file\n"
+    },
+    "57e9707542f5dc59beeee0f21a0f2e718f791c3a": {
+      "type": "Ybodychange",
+      "commitMessage": "Automated g4 rollback of changelist 197588491.\n\n*** Reason for rollback ***\n\nBreaking a JS build\n\n*** Original change description ***\n\nSuppress exceptions raised from argument\u0027s toString methods during lenient formatting.\n\n***\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d197631208\n",
+      "commitDate": 1527096576000,
+      "commitName": "57e9707542f5dc59beeee0f21a0f2e718f791c3a",
+      "commitAuthor": "diamondm",
+      "commitDateOld": 1527096097000,
+      "commitNameOld": "b3a48123f3d7eb9dd9b08ae7354a925ba2138103",
+      "commitAuthorOld": "diamondm",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,39 +1,33 @@\n   public static String lenientFormat(@NullableDecl String template, @NullableDecl Object... args) {\n     template \u003d String.valueOf(template); // null -\u003e \"null\"\n \n-    if (args \u003d\u003d null) {\n-      args \u003d new Object[] {\"(Object[])null\"};\n-    } else {\n-      for (int i \u003d 0; i \u003c args.length; i++) {\n-        args[i] \u003d lenientToString(args[i]);\n-      }\n-    }\n+    args \u003d args \u003d\u003d null ? new Object[] {\"(Object[])null\"} : args;\n \n     // start substituting the arguments into the \u0027%s\u0027 placeholders\n     StringBuilder builder \u003d new StringBuilder(template.length() + 16 * args.length);\n     int templateStart \u003d 0;\n     int i \u003d 0;\n     while (i \u003c args.length) {\n       int placeholderStart \u003d template.indexOf(\"%s\", templateStart);\n       if (placeholderStart \u003d\u003d -1) {\n         break;\n       }\n       builder.append(template, templateStart, placeholderStart);\n       builder.append(args[i++]);\n       templateStart \u003d placeholderStart + 2;\n     }\n     builder.append(template, templateStart, template.length());\n \n     // if we run out of placeholders, append the extra args in square braces\n     if (i \u003c args.length) {\n       builder.append(\" [\");\n       builder.append(args[i++]);\n       while (i \u003c args.length) {\n         builder.append(\", \");\n         builder.append(args[i++]);\n       }\n       builder.append(\u0027]\u0027);\n     }\n \n     return builder.toString();\n   }\n\\ No newline at end of file\n"
+    },
+    "b3a48123f3d7eb9dd9b08ae7354a925ba2138103": {
+      "type": "Ybodychange",
+      "commitMessage": "Suppress exceptions raised from argument\u0027s toString methods during lenient formatting.\n\nRELNOTES\u003dn/a\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d197588491\n",
+      "commitDate": 1527096097000,
+      "commitName": "b3a48123f3d7eb9dd9b08ae7354a925ba2138103",
+      "commitAuthor": "diamondm",
+      "commitDateOld": 1526415906000,
+      "commitNameOld": "7fe1702aeacff37ad4a7aca5d82ac9958e46e639",
+      "commitAuthorOld": "diamondm",
+      "daysBetweenCommits": 7.87,
+      "commitsBetweenForRepo": 11,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,33 +1,39 @@\n   public static String lenientFormat(@NullableDecl String template, @NullableDecl Object... args) {\n     template \u003d String.valueOf(template); // null -\u003e \"null\"\n \n-    args \u003d args \u003d\u003d null ? new Object[] {\"(Object[])null\"} : args;\n+    if (args \u003d\u003d null) {\n+      args \u003d new Object[] {\"(Object[])null\"};\n+    } else {\n+      for (int i \u003d 0; i \u003c args.length; i++) {\n+        args[i] \u003d lenientToString(args[i]);\n+      }\n+    }\n \n     // start substituting the arguments into the \u0027%s\u0027 placeholders\n     StringBuilder builder \u003d new StringBuilder(template.length() + 16 * args.length);\n     int templateStart \u003d 0;\n     int i \u003d 0;\n     while (i \u003c args.length) {\n       int placeholderStart \u003d template.indexOf(\"%s\", templateStart);\n       if (placeholderStart \u003d\u003d -1) {\n         break;\n       }\n       builder.append(template, templateStart, placeholderStart);\n       builder.append(args[i++]);\n       templateStart \u003d placeholderStart + 2;\n     }\n     builder.append(template, templateStart, template.length());\n \n     // if we run out of placeholders, append the extra args in square braces\n     if (i \u003c args.length) {\n       builder.append(\" [\");\n       builder.append(args[i++]);\n       while (i \u003c args.length) {\n         builder.append(\", \");\n         builder.append(args[i++]);\n       }\n       builder.append(\u0027]\u0027);\n     }\n \n     return builder.toString();\n   }\n\\ No newline at end of file\n"
+    },
+    "7fe1702aeacff37ad4a7aca5d82ac9958e46e639": {
+      "type": "Yintroduced",
+      "commitMessage": "Introduce Strings.lenientFormat(), copied from Preconditions.format(). Rewrote documentation but the method body remains unchanged.\n\nRELNOTES\u003dIntroduce `Strings.lenientFormat()`, copied from `Preconditions.format()`.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d196586088\n",
+      "commitDate": 1526415906000,
+      "commitName": "7fe1702aeacff37ad4a7aca5d82ac9958e46e639",
+      "commitAuthor": "diamondm"
+    }
+  }
+}

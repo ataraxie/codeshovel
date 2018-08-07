@@ -1,0 +1,115 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/api/FileContents.java b/src/main/java/com/puppycrawl/tools/checkstyle/api/FileContents.java
+index cff966d96..51524517b 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/api/FileContents.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/api/FileContents.java
+@@ -202,100 +202,110 @@ public final class FileContents implements CommentListener
+         return retVal;
+     }
+ 
+     /**
+      * Returns the Javadoc comment before the specified line.
+      * A return value of <code>null</code> means there is no such comment.
+      * @return the Javadoc comment, or <code>null</code> if none
+      * @param aLineNo the line number to check before
+      **/
+     public TextBlock getJavadocBefore(int aLineNo)
+     {
+         // Lines start at 1 to the callers perspective, so need to take off 2
+         int lineNo = aLineNo - 2;
+ 
+         // skip blank lines
+         while ((lineNo > 0) && (lineIsBlank(lineNo) || lineIsComment(lineNo))) {
+             lineNo--;
+         }
+ 
+         return mJavadocComments.get(lineNo);
+     }
+ 
+     /**
+      * Get a single line.
+      * For internal use only, as getText().get(lineNo) is just as
+      * suitable for external use and avoids method duplication.
+      * @param aLineNo the number of the line to get
+      * @return the corresponding line, without terminator
+      * @throws IndexOutOfBoundsException if lineNo is invalid
+      */
+     private String line(int aLineNo)
+     {
+         return mText.get(aLineNo);
+     }
+ 
+     /**
+      * Get the full text of the file.
+      * @return an object containing the full text of the file
+      */
+     public FileText getText()
+     {
+         return mText;
+     }
+ 
+     /** @return the lines in the file */
+     public String[] getLines()
+     {
+         return mText.toLinesArray();
+     }
+ 
++    /**
++     * Get the line from text of the file.
++     * @param aIndex index of the line
++     * @return line from text of the file
++     */
++    public String getLine(int aIndex)
++    {
++        return mText.get(aIndex);
++    }
++
+     /** @return the name of the file */
+     public String getFilename()
+     {
+         return mFilename;
+     }
+ 
+     /**
+      * Checks if the specified line is blank.
+      * @param aLineNo the line number to check
+      * @return if the specified line consists only of tabs and spaces.
+      **/
+     public boolean lineIsBlank(int aLineNo)
+     {
+         // possible improvement: avoid garbage creation in trim()
+         return "".equals(line(aLineNo).trim());
+     }
+ 
+     /**
+      * Checks if the specified line is a single-line comment without code.
+      * @param aLineNo  the line number to check
+      * @return if the specified line consists of only a single line comment
+      *         without code.
+      **/
+     public boolean lineIsComment(int aLineNo)
+     {
+         return MATCH_SINGLELINE_COMMENT.matcher(line(aLineNo)).matches();
+     }
+ 
+     /**
+      * Checks if the specified position intersects with a comment.
+      * @param aStartLineNo the starting line number
+      * @param aStartColNo the starting column number
+      * @param aEndLineNo the ending line number
+      * @param aEndColNo the ending column number
+      * @return true if the positions intersects with a comment.
+      **/
+     public boolean hasIntersectionWithComment(int aStartLineNo,
+             int aStartColNo, int aEndLineNo, int aEndColNo)
+     {
+         // Check C comments (all comments should be checked)
+         final Collection<List<TextBlock>> values = mCComments.values();
+         for (final List<TextBlock> row : values) {
+             for (final TextBlock comment : row) {
+                 if (comment.intersects(aStartLineNo, aStartColNo, aEndLineNo,
+                         aEndColNo))
+                 {
+                     return true;
+                 }
+             }
+         }

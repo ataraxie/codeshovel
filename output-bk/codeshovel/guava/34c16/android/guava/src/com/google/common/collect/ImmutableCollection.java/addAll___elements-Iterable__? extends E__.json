@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "ImmutableCollection.java",
+  "functionName": "addAll",
+  "functionId": "addAll___elements-Iterable__? extends E__",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/ImmutableCollection.java",
+  "functionStartLine": 466,
+  "functionEndLine": 478,
+  "changeHistory": [
+    "0c434ff088d811e34064c6a0720d45962492f090",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "0c434ff088d811e34064c6a0720d45962492f090": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0c434ff088d811e34064c6a0720d45962492f090": {
+      "type": "Ybodychange",
+      "commitMessage": "Optimize ImmutableCollection.Builder.addAll(ImmutableCollection) to use System.arraycopy when possible.\n\nRELNOTES\u003dn/a\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d174373581\n",
+      "commitDate": 1509656068000,
+      "commitName": "0c434ff088d811e34064c6a0720d45962492f090",
+      "commitAuthor": "lowasser",
+      "commitDateOld": 1502369441000,
+      "commitNameOld": "fd6b6e1cbdec0bff0753ac0d5cb82740d00c5ea8",
+      "commitAuthorOld": "lowasser",
+      "daysBetweenCommits": 84.34,
+      "commitsBetweenForRepo": 140,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,13 @@\n     public Builder\u003cE\u003e addAll(Iterable\u003c? extends E\u003e elements) {\n       if (elements instanceof Collection) {\n         Collection\u003c?\u003e collection \u003d (Collection\u003c?\u003e) elements;\n         getReadyToExpandTo(size + collection.size());\n+        if (collection instanceof ImmutableCollection) {\n+          ImmutableCollection\u003c?\u003e immutableCollection \u003d (ImmutableCollection\u003c?\u003e) collection;\n+          size \u003d immutableCollection.copyIntoArray(contents, size);\n+          return this;\n+        }\n       }\n       super.addAll(elements);\n       return this;\n     }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

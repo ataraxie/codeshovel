@@ -1,0 +1,152 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "TagParser.java",
+  "functionName": "getTagId",
+  "functionId": "getTagId___javadocText-String[]__tagStart-Point",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/TagParser.java",
+  "functionStartLine": 172,
+  "functionEndLine": 195,
+  "changeHistory": [
+    "ed5d4d98da5963b658eafaaa3aaee98ba989db65",
+    "e81ca8290b4efd42c3454ffa0159b739f958ea48",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "979b0b5c20f79d7ac2281ae539859a60dad48c6e",
+    "c2d3932843e70e4bb5df7161800aca248f9af778",
+    "d6175fd6c95f64e854c1604e0331d8d1ab9dcaf3",
+    "fd6a743fd4b3c9283d62174327dd978bda694892"
+  ],
+  "changeHistoryShort": {
+    "ed5d4d98da5963b658eafaaa3aaee98ba989db65": "Ybodychange",
+    "e81ca8290b4efd42c3454ffa0159b739f958ea48": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "979b0b5c20f79d7ac2281ae539859a60dad48c6e": "Ybodychange",
+    "c2d3932843e70e4bb5df7161800aca248f9af778": "Ybodychange",
+    "d6175fd6c95f64e854c1604e0331d8d1ab9dcaf3": "Ybodychange",
+    "fd6a743fd4b3c9283d62174327dd978bda694892": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "ed5d4d98da5963b658eafaaa3aaee98ba989db65": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3496: Enforce ReturnCount max\u003d1 in com.puppycrawl.tools.checkstyle.checks.javadoc\n",
+      "commitDate": 1493089749000,
+      "commitName": "ed5d4d98da5963b658eafaaa3aaee98ba989db65",
+      "commitAuthor": "Vladislav Lisetskii",
+      "commitDateOld": 1485527514000,
+      "commitNameOld": "b4a337a599e853cdc44b19a76da28fcfab2956cd",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 87.53,
+      "commitsBetweenForRepo": 320,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,25 @@\n     private static String getTagId(String[] javadocText, Point tagStart) {\n+        String tagId \u003d \"\";\n         int column \u003d tagStart.getColumnNo() + 1;\n         String text \u003d javadocText[tagStart.getLineNo()];\n-        if (column \u003e\u003d text.length()) {\n-            return \"\";\n+        if (column \u003c text.length()) {\n+\n+            if (text.charAt(column) \u003d\u003d \u0027/\u0027) {\n+                column++;\n+            }\n+\n+            text \u003d text.substring(column).trim();\n+            int position \u003d 0;\n+\n+            //Character.isJavaIdentifier... may not be a valid HTML\n+            //identifier but is valid for generics\n+            while (position \u003c text.length()\n+                    \u0026\u0026 (Character.isJavaIdentifierStart(text.charAt(position))\n+                        || Character.isJavaIdentifierPart(text.charAt(position)))) {\n+                position++;\n+            }\n+\n+            tagId \u003d text.substring(0, position);\n         }\n-\n-        if (text.charAt(column) \u003d\u003d \u0027/\u0027) {\n-            column++;\n-        }\n-\n-        text \u003d text.substring(column).trim();\n-        int position \u003d 0;\n-\n-        //Character.isJavaIdentifier... may not be a valid HTML\n-        //identifier but is valid for generics\n-        while (position \u003c text.length()\n-            \u0026\u0026 (Character.isJavaIdentifierStart(text.charAt(position))\n-                || Character.isJavaIdentifierPart(text.charAt(position)))) {\n-            position++;\n-        }\n-\n-        return text.substring(0, position);\n+        return tagId;\n     }\n\\ No newline at end of file\n"
+    },
+    "e81ca8290b4efd42c3454ffa0159b739f958ea48": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1555: Avoid reuse of local variables\n\nFixes `ReuseOfLocalVariable` inspection violation.\n\nDescription:\n\u003eReports local variables that are \"reused\", overwriting their values with new values unrelated to their original use. Such local variable reuse may be confusing, as the intended semantics of the local variable may vary with each use. It may also be prone to bugs, if code changes result in values that were thought to be overwritten actually being live. It is good practices to keep variable lifetimes as short as possible, and not reuse local variables for the sake of brevity.\n",
+      "commitDate": 1440912854000,
+      "commitName": "e81ca8290b4efd42c3454ffa0159b739f958ea48",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440498848000,
+      "commitNameOld": "0aec69c702a43a0219a7cc1e3d0c2a21d8d871f0",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 4.79,
+      "commitsBetweenForRepo": 173,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,24 @@\n     private static String getTagId(String[] javadocText, Point tagStart) {\n         int column \u003d tagStart.getColumnNo() + 1;\n         String text \u003d javadocText[tagStart.getLineNo()];\n         if (column \u003e\u003d text.length()) {\n             return \"\";\n         }\n \n         if (text.charAt(column) \u003d\u003d \u0027/\u0027) {\n             column++;\n         }\n \n         text \u003d text.substring(column).trim();\n-        column \u003d 0;\n+        int position \u003d 0;\n \n         //Character.isJavidentifier... may not be a valid HTML\n         //identifier but is valid for generics\n-        while (column \u003c text.length()\n-            \u0026\u0026 (Character.isJavaIdentifierStart(text.charAt(column))\n-                || Character.isJavaIdentifierPart(text.charAt(column)))) {\n-            column++;\n+        while (position \u003c text.length()\n+            \u0026\u0026 (Character.isJavaIdentifierStart(text.charAt(position))\n+                || Character.isJavaIdentifierPart(text.charAt(position)))) {\n+            position++;\n         }\n \n-        return text.substring(0, column);\n+        return text.substring(0, position);\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 61.71,
+      "commitsBetweenForRepo": 387,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,24 +1,24 @@\n-    private String getTagId(String[] javadocText, Point tagStart) {\n+    private static String getTagId(String[] javadocText, Point tagStart) {\n         int column \u003d tagStart.getColumnNo() + 1;\n         String text \u003d javadocText[tagStart.getLineNo()];\n         if (column \u003e\u003d text.length()) {\n             return \"\";\n         }\n \n         if (text.charAt(column) \u003d\u003d \u0027/\u0027) {\n             column++;\n         }\n \n         text \u003d text.substring(column).trim();\n         column \u003d 0;\n \n         //Character.isJavidentifier... may not be a valid HTML\n         //identifier but is valid for generics\n         while (column \u003c text.length()\n             \u0026\u0026 (Character.isJavaIdentifierStart(text.charAt(column))\n                 || Character.isJavaIdentifierPart(text.charAt(column)))) {\n             column++;\n         }\n \n         return text.substring(0, column);\n     }\n\\ No newline at end of file\n"
+    },
+    "89a51ba032fd9126651fa9efad31baf10c006ddf": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, javadoc, #512\n",
+      "commitDate": 1421677262000,
+      "commitName": "89a51ba032fd9126651fa9efad31baf10c006ddf",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "979b0b5c20f79d7ac2281ae539859a60dad48c6e": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed bug #1649020 where generic parameters for methods\nrecognized as HTML tags. Used patch #1936389 from Travis\nSchneeberger.\n",
+      "commitDate": 1208673630000,
+      "commitName": "979b0b5c20f79d7ac2281ae539859a60dad48c6e",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200192438000,
+      "commitNameOld": "5a7e221b757e91d49be1aea105eb4b839e653fbd",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 98.16,
+      "commitsBetweenForRepo": 28,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,26 @@\n     private String getTagId(String[] aText, Point aTagStart)\n     {\n         int column \u003d aTagStart.getColumnNo() + 1;\n         String text \u003d aText[aTagStart.getLineNo()];\n         if (column \u003e\u003d text.length()) {\n             return \"\";\n         }\n \n         if (text.charAt(column) \u003d\u003d \u0027/\u0027) {\n             column++;\n         }\n \n         text \u003d text.substring(column).trim();\n         column \u003d 0;\n \n-        while ((column \u003c text.length())\n-               \u0026\u0026 (((text.charAt(column) \u003e\u003d \u0027A\u0027)\n-                    \u0026\u0026 (text.charAt(column) \u003c\u003d \u0027Z\u0027))\n-                   || ((text.charAt(column) \u003e\u003d \u0027a\u0027)\n-                       \u0026\u0026 (text.charAt(column) \u003c\u003d \u0027z\u0027))\n-                   || ((text.charAt(column) \u003e\u003d \u00270\u0027)\n-                       \u0026\u0026 (text.charAt(column) \u003c\u003d \u00279\u0027))))\n+        //Character.isJavaIdentifier... may not be a valid HTML\n+        //identifier but is valid for generics\n+        while (column \u003c text.length()\n+            \u0026\u0026 (Character.isJavaIdentifierStart(text.charAt(column))\n+                || Character.isJavaIdentifierPart(text.charAt(column))))\n         {\n             column++;\n         }\n \n         return text.substring(0, column);\n     }\n\\ No newline at end of file\n"
+    },
+    "c2d3932843e70e4bb5df7161800aca248f9af778": {
+      "type": "Ybodychange",
+      "commitMessage": "Clean up the use of ()\u0027s\n",
+      "commitDate": 1152242806000,
+      "commitName": "c2d3932843e70e4bb5df7161800aca248f9af778",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1123546736000,
+      "commitNameOld": "d6175fd6c95f64e854c1604e0331d8d1ab9dcaf3",
+      "commitAuthorOld": "Michael Studman",
+      "daysBetweenCommits": 332.13,
+      "commitsBetweenForRepo": 82,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,28 @@\n     private String getTagId(String[] aText, Point aTagStart)\n     {\n         int column \u003d aTagStart.getColumnNo() + 1;\n         String text \u003d aText[aTagStart.getLineNo()];\n         if (column \u003e\u003d text.length()) {\n             return \"\";\n         }\n \n         if (text.charAt(column) \u003d\u003d \u0027/\u0027) {\n             column++;\n         }\n \n         text \u003d text.substring(column).trim();\n         column \u003d 0;\n \n-        while (column \u003c text.length()\n-               \u0026\u0026 ((text.charAt(column) \u003e\u003d \u0027A\u0027\n-                    \u0026\u0026 text.charAt(column) \u003c\u003d \u0027Z\u0027)\n-                   || (text.charAt(column) \u003e\u003d \u0027a\u0027\n-                       \u0026\u0026 text.charAt(column) \u003c\u003d \u0027z\u0027)\n-                   || (text.charAt(column) \u003e\u003d \u00270\u0027\n-                       \u0026\u0026 text.charAt(column) \u003c\u003d \u00279\u0027)))\n+        while ((column \u003c text.length())\n+               \u0026\u0026 (((text.charAt(column) \u003e\u003d \u0027A\u0027)\n+                    \u0026\u0026 (text.charAt(column) \u003c\u003d \u0027Z\u0027))\n+                   || ((text.charAt(column) \u003e\u003d \u0027a\u0027)\n+                       \u0026\u0026 (text.charAt(column) \u003c\u003d \u0027z\u0027))\n+                   || ((text.charAt(column) \u003e\u003d \u00270\u0027)\n+                       \u0026\u0026 (text.charAt(column) \u003c\u003d \u00279\u0027))))\n         {\n             column++;\n         }\n \n         return text.substring(0, column);\n     }\n\\ No newline at end of file\n"
+    },
+    "d6175fd6c95f64e854c1604e0331d8d1ab9dcaf3": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix for 1220036\n",
+      "commitDate": 1123546736000,
+      "commitName": "d6175fd6c95f64e854c1604e0331d8d1ab9dcaf3",
+      "commitAuthor": "Michael Studman",
+      "commitDateOld": 1105267857000,
+      "commitNameOld": "0d887cde58e54d920644ee543dab346b93e8aae9",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 211.56,
+      "commitsBetweenForRepo": 191,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,28 @@\n     private String getTagId(String[] aText, Point aTagStart)\n     {\n         int column \u003d aTagStart.getColumnNo() + 1;\n         String text \u003d aText[aTagStart.getLineNo()];\n         if (column \u003e\u003d text.length()) {\n             return \"\";\n         }\n \n         if (text.charAt(column) \u003d\u003d \u0027/\u0027) {\n             column++;\n         }\n \n         text \u003d text.substring(column).trim();\n         column \u003d 0;\n \n         while (column \u003c text.length()\n                \u0026\u0026 ((text.charAt(column) \u003e\u003d \u0027A\u0027\n                     \u0026\u0026 text.charAt(column) \u003c\u003d \u0027Z\u0027)\n                    || (text.charAt(column) \u003e\u003d \u0027a\u0027\n-                       \u0026\u0026 text.charAt(column) \u003c\u003d \u0027z\u0027)))\n+                       \u0026\u0026 text.charAt(column) \u003c\u003d \u0027z\u0027)\n+                   || (text.charAt(column) \u003e\u003d \u00270\u0027\n+                       \u0026\u0026 text.charAt(column) \u003c\u003d \u00279\u0027)))\n         {\n             column++;\n         }\n \n         return text.substring(0, column);\n     }\n\\ No newline at end of file\n"
+    },
+    "fd6a743fd4b3c9283d62174327dd978bda694892": {
+      "type": "Yintroduced",
+      "commitMessage": "Draft fix for 843887 (XHTML not handled correctly in JavadocStyle).  Feel free to improve it.\n",
+      "commitDate": 1069327160000,
+      "commitName": "fd6a743fd4b3c9283d62174327dd978bda694892",
+      "commitAuthor": "Oleg Sukhodolsky"
+    }
+  }
+}

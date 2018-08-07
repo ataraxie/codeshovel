@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+index ae0d13cd6..61a71567c 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+@@ -174,101 +174,101 @@ public class VariableDeclarationUsageDistanceCheck extends Check {
+     public static final String MSG_KEY = "variable.declaration.usage.distance";
+ 
+     /**
+      * Warning message key.
+      */
+     public static final String MSG_KEY_EXT = "variable.declaration.usage.distance.extend";
+ 
+     /**
+      * Default value of distance between declaration of variable and its first
+      * usage.
+      */
+     private static final int DEFAULT_DISTANCE = 3;
+ 
+     /** Allowed distance between declaration of variable and its first usage. */
+     private int allowedDistance = DEFAULT_DISTANCE;
+ 
+     /**
+      * RegExp pattern to ignore distance calculation for variables listed in
+      * this pattern.
+      */
+     private Pattern ignoreVariablePattern = Pattern.compile("");
+ 
+     /**
+      * Allows to calculate distance between declaration of variable and its
+      * first usage in different scopes.
+      */
+     private boolean validateBetweenScopes;
+ 
+     /** Allows to ignore variables with 'final' modifier. */
+     private boolean ignoreFinal = true;
+ 
+     /**
+      * Sets an allowed distance between declaration of variable and its first
+      * usage.
+      * @param allowedDistance
+      *        Allowed distance between declaration of variable and its first
+      *        usage.
+      */
+     public void setAllowedDistance(int allowedDistance) {
+         this.allowedDistance = allowedDistance;
+     }
+ 
+     /**
+      * Sets RegExp pattern to ignore distance calculation for variables listed in this pattern.
+      * @param ignorePattern
+      *        Pattern contains ignored variables.
+      * @throws org.apache.commons.beanutils.ConversionException
+      *         if unable to create Pattern object.
+      */
+     public void setIgnoreVariablePattern(String ignorePattern) {
+-        this.ignoreVariablePattern = Utils.createPattern(ignorePattern);
++        ignoreVariablePattern = Utils.createPattern(ignorePattern);
+     }
+ 
+     /**
+      * Sets option which allows to calculate distance between declaration of
+      * variable and its first usage in different scopes.
+      * @param validateBetweenScopes
+      *        Defines if allow to calculate distance between declaration of
+      *        variable and its first usage in different scopes or not.
+      */
+     public void setValidateBetweenScopes(boolean validateBetweenScopes) {
+         this.validateBetweenScopes = validateBetweenScopes;
+     }
+ 
+     /**
+      * Sets ignore option for variables with 'final' modifier.
+      * @param ignoreFinal
+      *        Defines if ignore variables with 'final' modifier or not.
+      */
+     public void setIgnoreFinal(boolean ignoreFinal) {
+         this.ignoreFinal = ignoreFinal;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.VARIABLE_DEF};
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final int parentType = ast.getParent().getType();
+         final DetailAST modifiers = ast.getFirstChild();
+ 
+         if (!(ignoreFinal && modifiers.branchContains(TokenTypes.FINAL)
+                 || parentType == TokenTypes.OBJBLOCK)) {
+             final DetailAST variable = ast.findFirstToken(TokenTypes.IDENT);
+ 
+             if (!isVariableMatchesIgnorePattern(variable.getText())) {
+                 final DetailAST semicolonAst = ast.getNextSibling();
+                 Entry<DetailAST, Integer> entry;
+                 if (validateBetweenScopes) {
+                     entry = calculateDistanceBetweenScopes(semicolonAst, variable);
+                 }
+                 else {
+                     entry = calculateDistanceInSingleScope(semicolonAst, variable);
+                 }

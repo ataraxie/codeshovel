@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "AvoidEscapedUnicodeCharactersCheck.java",
+  "functionName": "hasUnicodeChar",
+  "functionId": "hasUnicodeChar___literal-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/AvoidEscapedUnicodeCharactersCheck.java",
+  "functionStartLine": 320,
+  "functionEndLine": 324,
+  "changeHistory": [
+    "a3e4bcc8b78326ee2fab31803ba0336461e10b6d",
+    "30438ebdf9fd28a94613e2aaecde776d906349a7",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+    "154016d609d1846eb0cbfd6183e47c291e96d91a"
+  ],
+  "changeHistoryShort": {
+    "a3e4bcc8b78326ee2fab31803ba0336461e10b6d": "Ybodychange",
+    "30438ebdf9fd28a94613e2aaecde776d906349a7": "Ybodychange",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": "Ymultichange(Yparameterchange,Ybodychange)",
+    "154016d609d1846eb0cbfd6183e47c291e96d91a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "a3e4bcc8b78326ee2fab31803ba0336461e10b6d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3476: Improve escaped unicode chars detection for AvoidEscapedUnicodeCharacters\n",
+      "commitDate": 1476138260000,
+      "commitName": "a3e4bcc8b78326ee2fab31803ba0336461e10b6d",
+      "commitAuthor": "Dzmitry Rusak",
+      "commitDateOld": 1459293777000,
+      "commitNameOld": "5416e767af4685573e974087f0ff9040adc14e5c",
+      "commitAuthorOld": "Vladislav Lisetskiy",
+      "daysBetweenCommits": 194.96,
+      "commitsBetweenForRepo": 343,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,5 @@\n     private static boolean hasUnicodeChar(String literal) {\n-        return UNICODE_REGEXP.matcher(literal).find();\n+        final String literalWithoutEscapedBackslashes \u003d\n+                ESCAPED_BACKSLASH.matcher(literal).replaceAll(\"\");\n+        return UNICODE_REGEXP.matcher(literalWithoutEscapedBackslashes).find();\n     }\n\\ No newline at end of file\n"
+    },
+    "30438ebdf9fd28a94613e2aaecde776d906349a7": {
+      "type": "Ybodychange",
+      "commitMessage": "Mark fields final where possible. #1538\n",
+      "commitDate": 1438566537000,
+      "commitName": "30438ebdf9fd28a94613e2aaecde776d906349a7",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1438144018000,
+      "commitNameOld": "777a4e04d85611a1e857ea92cdb6f155c21c28a0",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 4.89,
+      "commitsBetweenForRepo": 46,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n     private static boolean hasUnicodeChar(String literal) {\n-        return sUnicodeRegexp.matcher(literal).find();\n+        return UNICODE_REGEXP.matcher(literal).find();\n     }\n\\ No newline at end of file\n"
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 61.71,
+      "commitsBetweenForRepo": 387,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n-    private boolean hasUnicodeChar(String literal) {\n+    private static boolean hasUnicodeChar(String literal) {\n         return sUnicodeRegexp.matcher(literal).find();\n     }\n\\ No newline at end of file\n"
+    },
+    "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, checks, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/checks/NewlineAtEndOfFileCheck.java\n",
+      "commitDate": 1421678220000,
+      "commitName": "58219b9bd31c8f7fbc4f4bba0eeb811851f276b3",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "154016d609d1846eb0cbfd6183e47c291e96d91a": {
+      "type": "Yintroduced",
+      "commitMessage": "AvoidEscapedUnicodeCharactersCheck #194. Avoided using Unicode escapes.\n",
+      "commitDate": 1405697813000,
+      "commitName": "154016d609d1846eb0cbfd6183e47c291e96d91a",
+      "commitAuthor": "Max"
+    }
+  }
+}

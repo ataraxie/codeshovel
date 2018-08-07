@@ -1,0 +1,101 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/AbstractParenPadCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/AbstractParenPadCheck.java
+index 97b29c8ae..d329303e5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/AbstractParenPadCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/AbstractParenPadCheck.java
+@@ -27,89 +27,89 @@ import com.puppycrawl.tools.checkstyle.checks.AbstractOptionCheck;
+  * space is required after a left parenthesis and before a right parenthesis,
+  * or such spaces are forbidden.
+  * </p>
+  * @author Oliver Burn
+  */
+ abstract class AbstractParenPadCheck
+     extends AbstractOptionCheck<PadOption>
+ {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String WS_FOLLOWED = "ws.followed";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String WS_NOT_FOLLOWED = "ws.notFollowed";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String WS_PRECEDED = "ws.preceded";
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String WS_NOT_PRECEDED = "ws.notPreceded";
+ 
+     /**
+      * Sets the paren pad option to nospace.
+      */
+     AbstractParenPadCheck()
+     {
+         super(PadOption.NOSPACE, PadOption.class);
+     }
+ 
+     /**
+      * Process a token representing a left parentheses.
+      * @param ast the token representing a left parentheses
+      */
+     protected void processLeft(DetailAST ast)
+     {
+         final String line = getLines()[ast.getLineNo() - 1];
+         final int after = ast.getColumnNo() + 1;
+         if (after < line.length()) {
+-            if ((PadOption.NOSPACE == getAbstractOption())
+-                && (Character.isWhitespace(line.charAt(after))))
++            if (PadOption.NOSPACE == getAbstractOption()
++                && Character.isWhitespace(line.charAt(after)))
+             {
+                 log(ast.getLineNo(), after, WS_FOLLOWED, "(");
+             }
+-            else if ((PadOption.SPACE == getAbstractOption())
++            else if (PadOption.SPACE == getAbstractOption()
+                      && !Character.isWhitespace(line.charAt(after))
+-                     && (line.charAt(after) != ')'))
++                     && line.charAt(after) != ')')
+             {
+                 log(ast.getLineNo(), after, WS_NOT_FOLLOWED, "(");
+             }
+         }
+     }
+ 
+     /**
+      * Process a token representing a right parentheses.
+      * @param ast the token representing a right parentheses
+      */
+     protected void processRight(DetailAST ast)
+     {
+         final String line = getLines()[ast.getLineNo() - 1];
+         final int before = ast.getColumnNo() - 1;
+         if (before >= 0) {
+-            if ((PadOption.NOSPACE == getAbstractOption())
++            if (PadOption.NOSPACE == getAbstractOption()
+                 && Character.isWhitespace(line.charAt(before))
+                 && !Utils.whitespaceBefore(before, line))
+             {
+                 log(ast.getLineNo(), before, WS_PRECEDED, ")");
+             }
+-            else if ((PadOption.SPACE == getAbstractOption())
++            else if (PadOption.SPACE == getAbstractOption()
+                 && !Character.isWhitespace(line.charAt(before))
+-                && (line.charAt(before) != '('))
++                && line.charAt(before) != '(')
+             {
+                 log(ast.getLineNo(), ast.getColumnNo(),
+                     WS_NOT_PRECEDED, ")");
+             }
+         }
+     }
+ }

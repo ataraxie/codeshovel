@@ -1,0 +1,210 @@
+diff --git a/android/guava/src/com/google/common/collect/ImmutableList.java b/android/guava/src/com/google/common/collect/ImmutableList.java
+index 3b4187192..744114e8a 100644
+--- a/android/guava/src/com/google/common/collect/ImmutableList.java
++++ b/android/guava/src/com/google/common/collect/ImmutableList.java
+@@ -1,70 +1,71 @@
+ /*
+  * Copyright (C) 2007 The Guava Authors
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+  *
+  * http://www.apache.org/licenses/LICENSE-2.0
+  *
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+ 
+ package com.google.common.collect;
+ 
+ import static com.google.common.base.Preconditions.checkElementIndex;
+ import static com.google.common.base.Preconditions.checkNotNull;
++import static com.google.common.base.Preconditions.checkPositionIndex;
+ import static com.google.common.base.Preconditions.checkPositionIndexes;
+ import static com.google.common.collect.CollectPreconditions.checkNonnegative;
+ import static com.google.common.collect.ObjectArrays.checkElementsNotNull;
+ import static com.google.common.collect.RegularImmutableList.EMPTY;
+ 
+ import com.google.common.annotations.Beta;
+ import com.google.common.annotations.GwtCompatible;
+ import com.google.errorprone.annotations.CanIgnoreReturnValue;
+ import java.io.InvalidObjectException;
+ import java.io.ObjectInputStream;
+ import java.io.Serializable;
+ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.Collections;
+ import java.util.Comparator;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.RandomAccess;
+ import javax.annotation.Nullable;
+ 
+ /**
+  * A {@link List} whose contents will never change, with many other important properties detailed at
+  * {@link ImmutableCollection}.
+  *
+  * <p>See the Guava User Guide article on <a href=
+  * "https://github.com/google/guava/wiki/ImmutableCollectionsExplained">
+  * immutable collections</a>.
+  *
+  * @see ImmutableMap
+  * @see ImmutableSet
+  * @author Kevin Bourrillion
+  * @since 2.0
+  */
+ @GwtCompatible(serializable = true, emulated = true)
+ @SuppressWarnings("serial") // we're overriding default serialization
+ public abstract class ImmutableList<E> extends ImmutableCollection<E>
+     implements List<E>, RandomAccess {
+   /**
+    * Returns the empty immutable list. This list behaves and performs comparably
+    * to {@link Collections#emptyList}, and is preferable mainly for consistency
+    * and maintainability of your code.
+    */
+   // Casting to any type is safe because the list will never hold any elements.
+   @SuppressWarnings("unchecked")
+   public static <E> ImmutableList<E> of() {
+     return (ImmutableList<E>) EMPTY;
+   }
+ 
+   /**
+    * Returns an immutable list containing a single element. This list behaves
+@@ -311,108 +312,127 @@ public abstract class ImmutableList<E> extends ImmutableCollection<E>
+    * @since 21.0
+    */
+   public static <E> ImmutableList<E> sortedCopyOf(
+       Comparator<? super E> comparator, Iterable<? extends E> elements) {
+     checkNotNull(comparator);
+     @SuppressWarnings("unchecked") // all supported methods are covariant
+     E[] array = (E[]) Iterables.toArray(elements);
+     checkElementsNotNull(array);
+     Arrays.sort(array, comparator);
+     return asImmutableList(array);
+   }
+ 
+   /**
+    * Views the array as an immutable list.  Checks for nulls; does not copy.
+    */
+   private static <E> ImmutableList<E> construct(Object... elements) {
+     return asImmutableList(checkElementsNotNull(elements));
+   }
+ 
+   /**
+    * Views the array as an immutable list.  Does not check for nulls; does not copy.
+    *
+    * <p>The array must be internally created.
+    */
+   static <E> ImmutableList<E> asImmutableList(Object[] elements) {
+     return asImmutableList(elements, elements.length);
+   }
+ 
+   /** Views the array as an immutable list. Does not check for nulls. */
+   static <E> ImmutableList<E> asImmutableList(Object[] elements, int length) {
+     if (length == 0) {
+       return of();
+     }
+     return new RegularImmutableList<E>(elements, length);
+   }
+ 
+   ImmutableList() {}
+ 
+   // This declaration is needed to make List.iterator() and
+   // ImmutableCollection.iterator() consistent.
+   @Override
+   public UnmodifiableIterator<E> iterator() {
+     return listIterator();
+   }
+ 
+   @Override
+   public UnmodifiableListIterator<E> listIterator() {
+     return listIterator(0);
+   }
+ 
++  /** A singleton implementation of iterator() for the empty ImmutableList. */
++  private static final UnmodifiableListIterator<Object> EMPTY_ITR =
++      new Itr<Object>(RegularImmutableList.EMPTY, 0);
++
++  @SuppressWarnings("unchecked")
+   @Override
+   public UnmodifiableListIterator<E> listIterator(int index) {
+-    return new AbstractIndexedListIterator<E>(size(), index) {
+-      @Override
+-      protected E get(int index) {
+-        return ImmutableList.this.get(index);
+-      }
+-    };
++    checkPositionIndex(index, size());
++    if (isEmpty()) {
++      return (UnmodifiableListIterator<E>) EMPTY_ITR;
++    } else {
++      return new Itr<E>(this, index);
++    }
++  }
++
++  static class Itr<E> extends AbstractIndexedListIterator<E> {
++    private final ImmutableList<E> list;
++
++    Itr(ImmutableList<E> list, int index) {
++      super(list.size(), index);
++      this.list = list;
++    }
++
++    @Override
++    protected E get(int index) {
++      return list.get(index);
++    }
+   }
+ 
+   @Override
+   public int indexOf(@Nullable Object object) {
+     return (object == null) ? -1 : Lists.indexOfImpl(this, object);
+   }
+ 
+   @Override
+   public int lastIndexOf(@Nullable Object object) {
+     return (object == null) ? -1 : Lists.lastIndexOfImpl(this, object);
+   }
+ 
+   @Override
+   public boolean contains(@Nullable Object object) {
+     return indexOf(object) >= 0;
+   }
+ 
+   // constrain the return type to ImmutableList<E>
+ 
+   /**
+    * Returns an immutable list of the elements between the specified {@code
+    * fromIndex}, inclusive, and {@code toIndex}, exclusive. (If {@code
+    * fromIndex} and {@code toIndex} are equal, the empty immutable list is
+    * returned.)
+    */
+   @Override
+   public ImmutableList<E> subList(int fromIndex, int toIndex) {
+     checkPositionIndexes(fromIndex, toIndex, size());
+     int length = toIndex - fromIndex;
+     if (length == size()) {
+       return this;
+     } else if (length == 0) {
+       return of();
+     } else {
+       return subListUnchecked(fromIndex, toIndex);
+     }
+   }
+ 
+   /**
+    * Called by the default implementation of {@link #subList} when {@code
+    * toIndex - fromIndex > 1}, after index validation has already been
+    * performed.
+    */
+   ImmutableList<E> subListUnchecked(int fromIndex, int toIndex) {
+     return new SubList(fromIndex, toIndex - fromIndex);
+   }
+ 
+   class SubList extends ImmutableList<E> {
+     final transient int offset;
+     final transient int length;

@@ -1,0 +1,107 @@
+diff --git a/android/guava/src/com/google/common/collect/ImmutableCollection.java b/android/guava/src/com/google/common/collect/ImmutableCollection.java
+index 69ad36053..cd8d6596e 100644
+--- a/android/guava/src/com/google/common/collect/ImmutableCollection.java
++++ b/android/guava/src/com/google/common/collect/ImmutableCollection.java
+@@ -233,101 +233,101 @@ public abstract class ImmutableCollection<E> extends AbstractCollection<E> imple
+ 
+   /**
+    * Guaranteed to throw an exception and leave the collection unmodified.
+    *
+    * @throws UnsupportedOperationException always
+    * @deprecated Unsupported operation.
+    */
+   @CanIgnoreReturnValue
+   @Deprecated
+   @Override
+   public final boolean removeAll(Collection<?> oldElements) {
+     throw new UnsupportedOperationException();
+   }
+ 
+   /**
+    * Guaranteed to throw an exception and leave the collection unmodified.
+    *
+    * @throws UnsupportedOperationException always
+    * @deprecated Unsupported operation.
+    */
+   @CanIgnoreReturnValue
+   @Deprecated
+   @Override
+   public final boolean retainAll(Collection<?> elementsToKeep) {
+     throw new UnsupportedOperationException();
+   }
+ 
+   /**
+    * Guaranteed to throw an exception and leave the collection unmodified.
+    *
+    * @throws UnsupportedOperationException always
+    * @deprecated Unsupported operation.
+    */
+   @Deprecated
+   @Override
+   public final void clear() {
+     throw new UnsupportedOperationException();
+   }
+ 
+   /**
+    * Returns an {@code ImmutableList} containing the same elements, in the same order, as this
+    * collection.
+    *
+    * <p><b>Performance note:</b> in most cases this method can return quickly without actually
+    * copying anything. The exact circumstances under which the copy is performed are undefined and
+    * subject to change.
+    *
+    * @since 2.0
+    */
+   public ImmutableList<E> asList() {
+-    return isEmpty() ? ImmutableList.of() : ImmutableList.asImmutableList(toArray());
++    return isEmpty() ? ImmutableList.<E>of() : ImmutableList.<E>asImmutableList(toArray());
+   }
+ 
+   /**
+    * Returns {@code true} if this immutable collection's implementation contains references to
+    * user-created objects that aren't accessible via this collection's methods. This is generally
+    * used to determine whether {@code copyOf} implementations should make an explicit copy to avoid
+    * memory leaks.
+    */
+   abstract boolean isPartialView();
+ 
+   /**
+    * Copies the contents of this immutable collection into the specified array at the specified
+    * offset.  Returns {@code offset + size()}.
+    */
+   @CanIgnoreReturnValue
+   int copyIntoArray(Object[] dst, int offset) {
+     for (E e : this) {
+       dst[offset++] = e;
+     }
+     return offset;
+   }
+ 
+   Object writeReplace() {
+     // We serialize by default to ImmutableList, the simplest thing that works.
+     return new ImmutableList.SerializedForm(toArray());
+   }
+ 
+   /**
+    * Abstract base class for builders of {@link ImmutableCollection} types.
+    *
+    * @since 10.0
+    */
+   public abstract static class Builder<E> {
+     static final int DEFAULT_INITIAL_CAPACITY = 4;
+ 
+     static int expandedCapacity(int oldCapacity, int minCapacity) {
+       if (minCapacity < 0) {
+         throw new AssertionError("cannot store more than MAX_VALUE elements");
+       }
+       // careful of overflow!
+       int newCapacity = oldCapacity + (oldCapacity >> 1) + 1;
+       if (newCapacity < minCapacity) {
+         newCapacity = Integer.highestOneBit(minCapacity - 1) << 1;
+       }
+       if (newCapacity < 0) {
+         newCapacity = Integer.MAX_VALUE;
+         // guaranteed to be >= newCapacity
+       }
+       return newCapacity;
+     }

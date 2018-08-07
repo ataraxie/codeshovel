@@ -1,0 +1,111 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/ParenPadCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/ParenPadCheck.java
+index 15e0a58a8..44b372c9f 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/ParenPadCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/whitespace/ParenPadCheck.java
+@@ -44,103 +44,102 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="ParenPad"/&gt;
+  * </pre>
+  * <p>
+  * An example of how to configure the check to require spaces for the
+  * parentheses of constructor, method, and super constructor invocations is:
+  * </p>
+  * <pre>
+  * &lt;module name="ParenPad"&gt;
+  *     &lt;property name="tokens"
+  *               value="CTOR_CALL, METHOD_CALL, SUPER_CTOR_CALL"/&gt;
+  *     &lt;property name="option" value="space"/&gt;
+  * &lt;/module&gt;
+  * </pre>
+  * @author Oliver Burn
+  * @version 1.0
+  */
+ public class ParenPadCheck extends AbstractParenPadCheck
+ {
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.RPAREN,
+                           TokenTypes.LPAREN,
+                           TokenTypes.CTOR_CALL,
+                           TokenTypes.SUPER_CTOR_CALL,
+                           TokenTypes.METHOD_CALL,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         DetailAST theAst = aAST;
+         // Strange logic in this method to guard against checking RPAREN tokens
+         // that are associated with a TYPECAST token.
+         if (theAst.getType() != TokenTypes.RPAREN) {
+             if ((theAst.getType() == TokenTypes.CTOR_CALL)
+                 || (theAst.getType() == TokenTypes.SUPER_CTOR_CALL))
+             {
+                 theAst = theAst.getFirstChild();
+             }
+             if (!isPreceedsEmptyForInit(theAst)) {
+                 processLeft(theAst);
+             }
+         }
+-        else if ((theAst.getParent() == null)
++        else if (((theAst.getParent() == null)
+                  || (theAst.getParent().getType() != TokenTypes.TYPECAST)
+                  || (theAst.getParent().findFirstToken(TokenTypes.RPAREN)
+                      != theAst))
++                 && !isFollowsEmptyForIterator(theAst))
+         {
+-            if (!isFollowsEmptyForIterator(theAst)) {
+-                processRight(theAst);
+-            }
++            processRight(theAst);
+         }
+     }
+ 
+     /**
+      * @param aAST the token to check
+      * @return whether a token follows an empty for iterator
+      */
+     private boolean isFollowsEmptyForIterator(DetailAST aAST)
+     {
+         boolean followsEmptyForIterator = false;
+         final DetailAST parent = aAST.getParent();
+         //Only traditional for statements are examined, not for-each statements
+         if ((parent != null)
+             && (parent.getType() == TokenTypes.LITERAL_FOR)
+             && (parent.findFirstToken(TokenTypes.FOR_EACH_CLAUSE) == null))
+         {
+             final DetailAST forIterator =
+                 parent.findFirstToken(TokenTypes.FOR_ITERATOR);
+             followsEmptyForIterator = (forIterator.getChildCount() == 0)
+                 && (aAST == forIterator.getNextSibling());
+         }
+         return followsEmptyForIterator;
+     }
+ 
+     /**
+      * @param aAST the token to check
+      * @return whether a token preceeds an empty for initializer
+      */
+     private boolean isPreceedsEmptyForInit(DetailAST aAST)
+     {
+         boolean preceedsEmptyForInintializer = false;
+         final DetailAST parent = aAST.getParent();
+         //Only traditional for statements are examined, not for-each statements
+         if ((parent != null)
+             && (parent.getType() == TokenTypes.LITERAL_FOR)
+             && (parent.findFirstToken(TokenTypes.FOR_EACH_CLAUSE) == null))
+         {
+             final DetailAST forIterator =
+                     parent.findFirstToken(TokenTypes.FOR_INIT);
+             preceedsEmptyForInintializer = (forIterator.getChildCount() == 0)
+                     && (aAST == forIterator.getPreviousSibling());
+         }
+         return preceedsEmptyForInintializer;
+     }
+ }

@@ -1,0 +1,88 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/MainFrameModel.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/MainFrameModel.java
+index e8f0ec037..a33a61b06 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/MainFrameModel.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/MainFrameModel.java
+@@ -193,80 +193,80 @@ public class MainFrameModel {
+                 currentFile = file;
+                 title = "Checkstyle GUI : " + file.getName();
+                 reloadActionEnabled = true;
+                 final DetailAST parseTree;
+ 
+                 switch (parseMode) {
+                     case PLAIN_JAVA:
+                         parseTree = parseFile(file);
+                         break;
+                     case JAVA_WITH_COMMENTS:
+                     case JAVA_WITH_JAVADOC_AND_COMMENTS:
+                         parseTree = parseFileWithComments(file);
+                         break;
+                     default:
+                         throw new IllegalArgumentException("Unknown mode: " + parseMode);
+                 }
+ 
+                 parseTreeTableModel.setParseTree(parseTree);
+                 parseTreeTableModel.setParseMode(parseMode);
+                 final String[] sourceLines = getFileText(file).toLinesArray();
+ 
+                 final List<Integer> linesToPositionTemp = new ArrayList<>();
+                 // starts line counting at 1
+                 linesToPositionTemp.add(0);
+ 
+                 final StringBuilder sb = new StringBuilder(1024);
+                 // insert the contents of the file to the text area
+                 for (final String element : sourceLines) {
+                     linesToPositionTemp.add(sb.length());
+                     sb.append(element).append(System.lineSeparator());
+                 }
+                 linesToPosition = ImmutableList.copyOf(linesToPositionTemp);
+                 text = sb.toString();
+             }
+             catch (IOException | ANTLRException ex) {
+                 final String exceptionMsg = String.format(Locale.ROOT,
+                     "%s occurred while opening file %s.",
+                     ex.getClass().getSimpleName(), file.getPath());
+                 throw new CheckstyleException(exceptionMsg, ex);
+             }
+         }
+     }
+ 
+     /**
+      * Parse a file and return the parse tree.
+      * @param file the file to parse.
+      * @return the root node of the parse tree.
+      * @throws IOException if the file could not be read.
+      * @throws ANTLRException if the file is not a Java source.
+      */
+-    public DetailAST parseFile(File file) throws IOException, ANTLRException {
++    private static DetailAST parseFile(File file) throws IOException, ANTLRException {
+         final FileText fileText = getFileText(file);
+         final FileContents contents = new FileContents(fileText);
+         return TreeWalker.parse(contents);
+     }
+ 
+     /**
+      * Parse a file and return the parse tree with comment nodes.
+      * @param file the file to parse.
+      * @return the root node of the parse tree.
+      * @throws IOException if the file could not be read.
+      * @throws ANTLRException if the file is not a Java source.
+      */
+-    public DetailAST parseFileWithComments(File file) throws IOException, ANTLRException {
++    private static DetailAST parseFileWithComments(File file) throws IOException, ANTLRException {
+         final FileText fileText = getFileText(file);
+         final FileContents contents = new FileContents(fileText);
+         return TreeWalker.parseWithComments(contents);
+     }
+ 
+     /**
+      * Get FileText from a file.
+      * @param file the file to get the FileText from.
+      * @return the FileText.
+      * @throws IOException if the file could not be read.
+      */
+-    public FileText getFileText(File file) throws IOException {
++    private static FileText getFileText(File file) throws IOException {
+         return new FileText(file.getAbsoluteFile(),
+                 System.getProperty("file.encoding", "UTF-8"));
+     }
+ }

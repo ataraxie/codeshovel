@@ -1,0 +1,105 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "PackageObjectFactory.java",
+  "functionName": "joinPackageNamesWithClassName",
+  "functionId": "joinPackageNamesWithClassName___className-String__packages-Set__String__",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/PackageObjectFactory.java",
+  "functionStartLine": 320,
+  "functionEndLine": 324,
+  "changeHistory": [
+    "361e6be42428e868bd5c4f11499c0b2687e0bd88",
+    "ddeb553834f10570089a033fa1ac1501b74ac358",
+    "de022d2434e58dd633fd50a7f9bb50565a8767b5",
+    "9eafaedfc010a179c284df98162c4d3ab8ab2645",
+    "6b82f01378346226e0c999370c0e614cc6af878b",
+    "bd9efb5e66d8a99fb1bd616213e4966d088d6932"
+  ],
+  "changeHistoryShort": {
+    "361e6be42428e868bd5c4f11499c0b2687e0bd88": "Ybodychange",
+    "ddeb553834f10570089a033fa1ac1501b74ac358": "Ybodychange",
+    "de022d2434e58dd633fd50a7f9bb50565a8767b5": "Ybodychange",
+    "9eafaedfc010a179c284df98162c4d3ab8ab2645": "Ymultichange(Yparameterchange,Ymodifierchange,Ybodychange)",
+    "6b82f01378346226e0c999370c0e614cc6af878b": "Ybodychange",
+    "bd9efb5e66d8a99fb1bd616213e4966d088d6932": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "361e6be42428e868bd5c4f11499c0b2687e0bd88": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4885: fixed list of packages when module can\u0027t be found",
+      "commitDate": 1501734444000,
+      "commitName": "361e6be42428e868bd5c4f11499c0b2687e0bd88",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1501588871000,
+      "commitNameOld": "6f9d5a8c85086a0e575a710b34afbe12ec9ff71d",
+      "commitAuthorOld": "Timur",
+      "daysBetweenCommits": 1.68,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n     private static String joinPackageNamesWithClassName(String className, Set\u003cString\u003e packages) {\n-        return packages.stream()\n-            .collect(Collectors.joining(\n-                    className + STRING_SEPARATOR, \"\", PACKAGE_SEPARATOR + className));\n+        return packages.stream().collect(\n+            Collectors.joining(PACKAGE_SEPARATOR + className + STRING_SEPARATOR, \"\",\n+                    PACKAGE_SEPARATOR + className));\n     }\n\\ No newline at end of file\n"
+    },
+    "ddeb553834f10570089a033fa1ac1501b74ac358": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3607: (using Guava) Use reflection to load Checks base on checkstyle_packages.xml\n",
+      "commitDate": 1495140203000,
+      "commitName": "ddeb553834f10570089a033fa1ac1501b74ac358",
+      "commitAuthor": "Luolc",
+      "commitDateOld": 1491395871000,
+      "commitNameOld": "3bd3a52280388520c64ec813dd1e4ffb3a0063a2",
+      "commitAuthorOld": "Vladislav Lisetskii",
+      "daysBetweenCommits": 43.34,
+      "commitsBetweenForRepo": 195,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,5 @@\n     private static String joinPackageNamesWithClassName(String className, Set\u003cString\u003e packages) {\n-        return packages.stream().filter(name -\u003e name !\u003d null)\n-            .collect(Collectors.joining(className + STRING_SEPARATOR, \"\", className));\n+        return packages.stream()\n+            .collect(Collectors.joining(\n+                    className + STRING_SEPARATOR, \"\", PACKAGE_SEPARATOR + className));\n     }\n\\ No newline at end of file\n"
+    },
+    "de022d2434e58dd633fd50a7f9bb50565a8767b5": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3233: Resolve IntelijIdea inspection violations for java8 migration (#3434)\n\n",
+      "commitDate": 1473337840000,
+      "commitName": "de022d2434e58dd633fd50a7f9bb50565a8767b5",
+      "commitAuthor": "Mariia Mykhailova",
+      "commitDateOld": 1473207257000,
+      "commitNameOld": "9eafaedfc010a179c284df98162c4d3ab8ab2645",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 1.51,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,4 @@\n     private static String joinPackageNamesWithClassName(String className, Set\u003cString\u003e packages) {\n-        return packages.stream().filter(new Predicate\u003cString\u003e() {\n-            @Override\n-            public boolean test(String name) {\n-                return name !\u003d null;\n-            }\n-        }).collect(Collectors.joining(className + STRING_SEPARATOR, \"\", className));\n+        return packages.stream().filter(name -\u003e name !\u003d null)\n+            .collect(Collectors.joining(className + STRING_SEPARATOR, \"\", className));\n     }\n\\ No newline at end of file\n"
+    },
+    "9eafaedfc010a179c284df98162c4d3ab8ab2645": {
+      "type": "Ymultichange(Yparameterchange,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Pull #3406: Replace Guava\u0027s Joiner with Java 8 native approach\n\n",
+      "commitDate": 1473207257000,
+      "commitName": "9eafaedfc010a179c284df98162c4d3ab8ab2645",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "6b82f01378346226e0c999370c0e614cc6af878b": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1159: Resolve PMD ExceptionAsFlowControl in PackageObjectFactory\n",
+      "commitDate": 1455633134000,
+      "commitName": "6b82f01378346226e0c999370c0e614cc6af878b",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 42.59,
+      "commitsBetweenForRepo": 105,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,4 +1,4 @@\n     private String joinPackageNamesWithClassName(String className) {\n-        final Joiner joiner \u003d Joiner.on(className + \", \").skipNulls();\n+        final Joiner joiner \u003d Joiner.on(className + STRING_SEPARATOR).skipNulls();\n         return joiner.join(packages) + className;\n     }\n\\ No newline at end of file\n"
+    },
+    "bd9efb5e66d8a99fb1bd616213e4966d088d6932": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #759: Create wide message for CheckstyleException in PackageObjectFactory\n",
+      "commitDate": 1441983885000,
+      "commitName": "bd9efb5e66d8a99fb1bd616213e4966d088d6932",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

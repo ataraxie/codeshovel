@@ -1,0 +1,64 @@
+diff --git a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule413emptyblocks/InputEmptyBlockBasic.java b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule413emptyblocks/InputEmptyBlockBasic.java
+index 5e45ea28e..3f4bc68b3 100644
+--- a/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule413emptyblocks/InputEmptyBlockBasic.java
++++ b/src/it/resources/com/google/checkstyle/test/chapter4formatting/rule413emptyblocks/InputEmptyBlockBasic.java
+@@ -278,50 +278,59 @@ class NewClass {
+                 } else if (a != 1) {
+                     /*ignore*/
+                 } else {
+                     /*ignore*/
+                 }
+                 
+                 if (a == 1) {
+                     /*ignore*/
+                 } else if (a != 1) {
+                     System.identityHashCode("a");
+                 } else {
+                     /*ignore*/
+                 }
+                 
+                 if (a == 1) {
+                     /*ignore*/
+                 } else if (a != 1) {
+                     /*ignore*/
+                 } else {
+                     System.identityHashCode("a");
+                 }
+                 
+                 if (a == 1) {
+                     /*ignore*/
+                 } else if (a != 1) {
+                     /*ignore*/
+                 } else {
+                     /*ignore*/
+                 }
+                 
+                 if (a == 1) {
+                     /*ignore*/
+                 } else if (a != 1) {} //warn
+                 else {} //warn
+                 
+                 if (a == 1) {} //warn
+                 else if (a != 1) {
+                     /*ignore*/
+                 }
+                 else {} //warn
+                 
+                 if (a == 1) {} //warn
+                 else if (a != 1) {} //warn
+                 else {
+                     /*ignore*/
+                 }
+             }
+         };
+     }
+ }
++
++class Example {
++
++    void doNothing() {} // ok
++
++    void doNothingElse() { // ok
++
++    }
++}

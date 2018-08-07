@@ -1,0 +1,208 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+index 30814d311..0d1a12375 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.java
+@@ -354,198 +354,198 @@ public class HiddenFieldCheck
+      * @return true is regexp is matching
+      */
+     private boolean isMatchingRegexp(String name) {
+         return regexp != null && regexp.matcher(name).find();
+     }
+ 
+     /**
+      * Determines whether an AST node is in a static method or static
+      * initializer.
+      * @param ast the node to check.
+      * @return true if ast is in a static method or a static block;
+      */
+     private static boolean isInStatic(DetailAST ast) {
+         DetailAST parent = ast.getParent();
+         boolean inStatic = false;
+ 
+         while (parent != null && !inStatic) {
+             if (parent.getType() == TokenTypes.STATIC_INIT) {
+                 inStatic = true;
+             }
+             else if (parent.getType() == TokenTypes.METHOD_DEF
+                         && !ScopeUtils.isInScope(parent, Scope.ANONINNER)
+                         || parent.getType() == TokenTypes.VARIABLE_DEF) {
+                 final DetailAST mods =
+                     parent.findFirstToken(TokenTypes.MODIFIERS);
+                 inStatic = mods.branchContains(TokenTypes.LITERAL_STATIC);
+                 break;
+             }
+             else {
+                 parent = parent.getParent();
+             }
+         }
+         return inStatic;
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of a
+      * setter method, where the property setter method for field 'xyz' has
+      * name 'setXyz', one parameter named 'xyz', and return type void
+      * (default behavior) or return type is name of the class in which
+      * such method is declared (allowed only if
+      * {@link #setSetterCanReturnItsClass(boolean)} is called with
+      * value <em>true</em>)
+      *
+      * @param ast the AST to check.
+      * @param name the name of ast.
+      * @return true if ast should be ignored because check property
+      *     ignoreSetter is true and ast is the parameter of a setter method.
+      */
+     private boolean isIgnoredSetterParam(DetailAST ast, String name) {
+-        if (ast.getType() == TokenTypes.PARAMETER_DEF && ignoreSetter) {
++        if (ignoreSetter && ast.getType() == TokenTypes.PARAMETER_DEF) {
+             final DetailAST parametersAST = ast.getParent();
+             final DetailAST methodAST = parametersAST.getParent();
+             if (parametersAST.getChildCount() == 1
+                 && methodAST.getType() == TokenTypes.METHOD_DEF
+                 && isSetterMethod(methodAST, name)) {
+                 return true;
+             }
+         }
+         return false;
+     }
+ 
+     /**
+      * Determine if a specific method identified by methodAST and a single
+      * variable name aName is a setter. This recognition partially depends
+      * on mSetterCanReturnItsClass property.
+      *
+      * @param aMethodAST AST corresponding to a method call
+      * @param aName name of single parameter of this method.
+      * @return true of false indicating of method is a setter or not.
+      */
+     private boolean isSetterMethod(DetailAST aMethodAST, String aName) {
+         final String methodName =
+             aMethodAST.findFirstToken(TokenTypes.IDENT).getText();
+         boolean isSetterMethod = false;
+ 
+         if (("set" + capitalize(aName)).equals(methodName)) {
+             // method name did match set${Name}(${anyType} ${aName})
+             // where ${Name} is capitalized version of ${aName}
+             // therefore this method is potentially a setter
+             final DetailAST typeAST = aMethodAST.findFirstToken(TokenTypes.TYPE);
+             final String returnType = typeAST.getFirstChild().getText();
+             if (typeAST.branchContains(TokenTypes.LITERAL_VOID)
+                     || setterCanReturnItsClass && frame.isEmbeddedIn(returnType)) {
+                 // this method has signature
+                 //
+                 //     void set${Name}(${anyType} ${name})
+                 //
+                 // and therefore considered to be a setter
+                 //
+                 // or
+                 //
+                 // return type is not void, but it is the same as the class
+                 // where method is declared and and mSetterCanReturnItsClass
+                 // is set to true
+                 isSetterMethod = true;
+             }
+         }
+ 
+         return isSetterMethod;
+     }
+ 
+     /**
+      * Capitalizes a given property name the way we expect to see it in
+      * a setter name.
+      * @param name a property name
+      * @return capitalized property name
+      */
+     private static String capitalize(final String name) {
+         String setterName = name;
+         // we should not capitalize the first character if the second
+         // one is a capital one, since according to JavaBeans spec
+         // setXYzz() is a setter for XYzz property, not for xYzz one.
+         if (name.length() == 1 || !Character.isUpperCase(name.charAt(1))) {
+             setterName = name.substring(0, 1).toUpperCase(Locale.ENGLISH) + name.substring(1);
+         }
+         return setterName;
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of a
+      * constructor.
+      * @param ast the AST to check.
+      * @return true if ast should be ignored because check property
+      *     ignoreConstructorParameter is true and ast is a constructor parameter.
+      */
+     private boolean isIgnoredConstructorParam(DetailAST ast) {
+         boolean result = false;
+-        if (ast.getType() == TokenTypes.PARAMETER_DEF
+-            && ignoreConstructorParameter) {
++        if (ignoreConstructorParameter
++                && ast.getType() == TokenTypes.PARAMETER_DEF) {
+             final DetailAST parametersAST = ast.getParent();
+             final DetailAST constructorAST = parametersAST.getParent();
+             result = constructorAST.getType() == TokenTypes.CTOR_DEF;
+         }
+         return result;
+     }
+ 
+     /**
+      * Decides whether to ignore an AST node that is the parameter of an
+      * abstract method.
+      * @param ast the AST to check.
+      * @return true if ast should be ignored because check property
+      *     ignoreAbstractMethods is true and ast is a parameter of abstract methods.
+      */
+     private boolean isIgnoredParamOfAbstractMethod(DetailAST ast) {
+         boolean result = false;
+-        if (ast.getType() == TokenTypes.PARAMETER_DEF
+-            && ignoreAbstractMethods) {
++        if (ignoreAbstractMethods
++                && ast.getType() == TokenTypes.PARAMETER_DEF) {
+             final DetailAST method = ast.getParent().getParent();
+             if (method.getType() == TokenTypes.METHOD_DEF) {
+                 final DetailAST mods = method.findFirstToken(TokenTypes.MODIFIERS);
+                 result = mods.branchContains(TokenTypes.ABSTRACT);
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Set the ignore format to the specified regular expression.
+      * @param format a {@code String} value
+      */
+     public void setIgnoreFormat(String format) {
+         regexp = CommonUtils.createPattern(format);
+     }
+ 
+     /**
+      * Set whether to ignore the parameter of a property setter method.
+      * @param ignoreSetter decide whether to ignore the parameter of
+      *     a property setter method.
+      */
+     public void setIgnoreSetter(boolean ignoreSetter) {
+         this.ignoreSetter = ignoreSetter;
+     }
+ 
+     /**
+      * Controls if setter can return only void (default behavior) or it
+      * can also return class in which it is declared.
+      *
+      * @param aSetterCanReturnItsClass if true then setter can return
+      *        either void or class in which it is declared. If false then
+      *        in order to be recognized as setter method (otherwise
+      *        already recognized as a setter) must return void.  Later is
+      *        the default behavior.
+      */
+     public void setSetterCanReturnItsClass(
+         boolean aSetterCanReturnItsClass) {
+         setterCanReturnItsClass = aSetterCanReturnItsClass;
+     }
+ 
+     /**
+      * Set whether to ignore constructor parameters.
+      * @param ignoreConstructorParameter decide whether to ignore
+      *     constructor parameters.
+      */
+     public void setIgnoreConstructorParameter(
+         boolean ignoreConstructorParameter) {
+         this.ignoreConstructorParameter = ignoreConstructorParameter;
+     }

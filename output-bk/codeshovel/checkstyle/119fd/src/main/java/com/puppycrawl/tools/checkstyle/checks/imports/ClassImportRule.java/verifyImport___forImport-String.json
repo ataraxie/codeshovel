@@ -1,0 +1,179 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "ClassImportRule.java",
+  "functionName": "verifyImport",
+  "functionId": "verifyImport___forImport-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/ClassImportRule.java",
+  "functionStartLine": 51,
+  "functionEndLine": 62,
+  "changeHistory": [
+    "e9b3b9cdede98c359157dd8ccb501901ebe4ca88",
+    "3b970321aa2fa100376cd7a19a12e408664030e9",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e",
+    "eb70f7062f2517a2f7a511090b31789a92c15a2e",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "e292d5fa53a78828d45565e27d305eb3f7cb9d6a",
+    "c38185458ab824874b8465c46b4dc42646440aaa",
+    "a5d30bf353dde01376d45fb031d9236b11a835d1",
+    "1951594e90a04aa2f2b14021ce3318604218ba19"
+  ],
+  "changeHistoryShort": {
+    "e9b3b9cdede98c359157dd8ccb501901ebe4ca88": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "3b970321aa2fa100376cd7a19a12e408664030e9": "Ymodifierchange",
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": "Ybodychange",
+    "eb70f7062f2517a2f7a511090b31789a92c15a2e": "Ybodychange",
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": "Ybodychange",
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "e292d5fa53a78828d45565e27d305eb3f7cb9d6a": "Ybodychange",
+    "c38185458ab824874b8465c46b4dc42646440aaa": "Yparameterchange",
+    "a5d30bf353dde01376d45fb031d9236b11a835d1": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+    "1951594e90a04aa2f2b14021ce3318604218ba19": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "e9b3b9cdede98c359157dd8ccb501901ebe4ca88": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Issue #3497: Split Guard class in two\n",
+      "commitDate": 1477249937000,
+      "commitName": "e9b3b9cdede98c359157dd8ccb501901ebe4ca88",
+      "commitAuthor": "Jochen Van de Velde",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "3b970321aa2fa100376cd7a19a12e408664030e9": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Issue #957: Resolve PMD DefaultPackage rule problems in imports package\n",
+      "commitDate": 1455807292000,
+      "commitName": "3b970321aa2fa100376cd7a19a12e408664030e9",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 44.6,
+      "commitsBetweenForRepo": 117,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,33 +1,33 @@\n-    AccessResult verifyImport(final String forImport) {\n+    public AccessResult verifyImport(final String forImport) {\n         if (className !\u003d null) {\n             final boolean classMatch;\n \n             if (regExp) {\n                 classMatch \u003d forImport.matches(className);\n             }\n             else {\n                 classMatch \u003d forImport.equals(className);\n             }\n             return calculateResult(classMatch);\n         }\n \n         // Must be checking a package. First check that we actually match\n         // the package. Then check if matched and we must be an exact match.\n         // In this case, the text after the first \".\" must not contain\n         // another \".\" as this indicates that it is not an exact match.\n         boolean pkgMatch;\n         if (regExp) {\n             pkgMatch \u003d forImport.matches(pkgName + \"\\\\..*\");\n             if (pkgMatch \u0026\u0026 exactMatch) {\n                 pkgMatch \u003d !forImport.matches(pkgName + \"\\\\..*\\\\..*\");\n             }\n         }\n         else {\n             pkgMatch \u003d forImport.startsWith(pkgName + \".\");\n             if (pkgMatch \u0026\u0026 exactMatch) {\n                 pkgMatch \u003d forImport.indexOf(\u0027.\u0027,\n                         pkgName.length() + 1) \u003d\u003d -1;\n             }\n         }\n         return calculateResult(pkgMatch);\n     }\n\\ No newline at end of file\n"
+    },
+    "23c8774d2e2fd245de1e5df02758fd23702c565e": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1566: AvoidInlineConditional violations fixed\n",
+      "commitDate": 1439784080000,
+      "commitName": "23c8774d2e2fd245de1e5df02758fd23702c565e",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1436191377000,
+      "commitNameOld": "eb70f7062f2517a2f7a511090b31789a92c15a2e",
+      "commitAuthorOld": "Aleksandr Ivanov",
+      "daysBetweenCommits": 41.58,
+      "commitsBetweenForRepo": 502,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,33 @@\n     AccessResult verifyImport(final String forImport) {\n         if (className !\u003d null) {\n-            final boolean classMatch \u003d regExp\n-                ? forImport.matches(className)\n-                : forImport.equals(className);\n+            final boolean classMatch;\n+\n+            if (regExp) {\n+                classMatch \u003d forImport.matches(className);\n+            }\n+            else {\n+                classMatch \u003d forImport.equals(className);\n+            }\n             return calculateResult(classMatch);\n         }\n \n         // Must be checking a package. First check that we actually match\n         // the package. Then check if matched and we must be an exact match.\n         // In this case, the text after the first \".\" must not contain\n         // another \".\" as this indicates that it is not an exact match.\n         boolean pkgMatch;\n         if (regExp) {\n             pkgMatch \u003d forImport.matches(pkgName + \"\\\\..*\");\n             if (pkgMatch \u0026\u0026 exactMatch) {\n                 pkgMatch \u003d !forImport.matches(pkgName + \"\\\\..*\\\\..*\");\n             }\n         }\n         else {\n             pkgMatch \u003d forImport.startsWith(pkgName + \".\");\n             if (pkgMatch \u0026\u0026 exactMatch) {\n                 pkgMatch \u003d forImport.indexOf(\u0027.\u0027,\n                         pkgName.length() + 1) \u003d\u003d -1;\n             }\n         }\n         return calculateResult(pkgMatch);\n     }\n\\ No newline at end of file\n"
+    },
+    "eb70f7062f2517a2f7a511090b31789a92c15a2e": {
+      "type": "Ybodychange",
+      "commitMessage": "Removed all assert statements #1298\n",
+      "commitDate": 1436191377000,
+      "commitName": "eb70f7062f2517a2f7a511090b31789a92c15a2e",
+      "commitAuthor": "Aleksandr Ivanov",
+      "commitDateOld": 1431863229000,
+      "commitNameOld": "0f58857d73933c7b6b7e62f0c7c16ad7af51556f",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 50.09,
+      "commitsBetweenForRepo": 269,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,30 +1,28 @@\n     AccessResult verifyImport(final String forImport) {\n-        assert forImport !\u003d null;\n         if (className !\u003d null) {\n             final boolean classMatch \u003d regExp\n                 ? forImport.matches(className)\n                 : forImport.equals(className);\n             return calculateResult(classMatch);\n         }\n \n         // Must be checking a package. First check that we actually match\n         // the package. Then check if matched and we must be an exact match.\n         // In this case, the text after the first \".\" must not contain\n         // another \".\" as this indicates that it is not an exact match.\n-        assert pkgName !\u003d null;\n         boolean pkgMatch;\n         if (regExp) {\n             pkgMatch \u003d forImport.matches(pkgName + \"\\\\..*\");\n             if (pkgMatch \u0026\u0026 exactMatch) {\n                 pkgMatch \u003d !forImport.matches(pkgName + \"\\\\..*\\\\..*\");\n             }\n         }\n         else {\n             pkgMatch \u003d forImport.startsWith(pkgName + \".\");\n             if (pkgMatch \u0026\u0026 exactMatch) {\n                 pkgMatch \u003d forImport.indexOf(\u0027.\u0027,\n                         pkgName.length() + 1) \u003d\u003d -1;\n             }\n         }\n         return calculateResult(pkgMatch);\n     }\n\\ No newline at end of file\n"
+    },
+    "1bd30555eac039d0486dffb3fc43b7a34117909b": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove useless parentheses to fix PMD violations, issue #744\n\nParentheses are considered unnecessary if the evaluation order of an expression remains unchanged if the parentheses are removed.\n",
+      "commitDate": 1426023398000,
+      "commitName": "1bd30555eac039d0486dffb3fc43b7a34117909b",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1424294072000,
+      "commitNameOld": "c9a9e6508c15e00cf6820b213d79d5ebf41c6343",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 20.02,
+      "commitsBetweenForRepo": 107,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,31 +1,31 @@\n     AccessResult verifyImport(final String forImport)\n     {\n         assert forImport !\u003d null;\n         if (className !\u003d null) {\n             final boolean classMatch \u003d regExp\n                 ? forImport.matches(className)\n                 : forImport.equals(className);\n             return calculateResult(classMatch);\n         }\n \n         // Must be checking a package. First check that we actually match\n         // the package. Then check if matched and we must be an exact match.\n         // In this case, the text after the first \".\" must not contain\n         // another \".\" as this indicates that it is not an exact match.\n         assert pkgName !\u003d null;\n         boolean pkgMatch;\n         if (regExp) {\n             pkgMatch \u003d forImport.matches(pkgName + \"\\\\..*\");\n             if (pkgMatch \u0026\u0026 exactMatch) {\n                 pkgMatch \u003d !forImport.matches(pkgName + \"\\\\..*\\\\..*\");\n             }\n         }\n         else {\n             pkgMatch \u003d forImport.startsWith(pkgName + \".\");\n             if (pkgMatch \u0026\u0026 exactMatch) {\n-                pkgMatch \u003d (forImport.indexOf(\u0027.\u0027,\n-                    (pkgName.length() + 1)) \u003d\u003d -1);\n+                pkgMatch \u003d forImport.indexOf(\u0027.\u0027,\n+                        pkgName.length() + 1) \u003d\u003d -1;\n             }\n         }\n         return calculateResult(pkgMatch);\n     }\n\\ No newline at end of file\n"
+    },
+    "16dac636b246c658cad31ee9b2e45c53b851d4f2": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, imports, #512\n",
+      "commitDate": 1421678111000,
+      "commitName": "16dac636b246c658cad31ee9b2e45c53b851d4f2",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "e292d5fa53a78828d45565e27d305eb3f7cb9d6a": {
+      "type": "Ybodychange",
+      "commitMessage": "Enhanced the ImportContro check to support regular expressions. Thanks to lbaeumer for patch #2937442.\n",
+      "commitDate": 1266143086000,
+      "commitName": "e292d5fa53a78828d45565e27d305eb3f7cb9d6a",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1266029835000,
+      "commitNameOld": "523080bbf2be11354b94b851ac85d06e7e8a2c14",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 1.31,
+      "commitsBetweenForRepo": 5,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,31 @@\n     AccessResult verifyImport(final String aForImport)\n     {\n         assert aForImport !\u003d null;\n         if (mClassName !\u003d null) {\n-            final boolean classMatch \u003d mClassName.equals(aForImport);\n+            final boolean classMatch \u003d mRegExp\n+                ? aForImport.matches(mClassName)\n+                : aForImport.equals(mClassName);\n             return calculateResult(classMatch);\n         }\n \n         // Must be checking a package. First check that we actually match\n         // the package. Then check if matched and we must be an exact match.\n         // In this case, the text after the first \".\" must not contain\n         // another \".\" as this indicates that it is not an exact match.\n         assert mPkgName !\u003d null;\n-        //boolean pkgMatch \u003d aForImport.startsWith(mPkgName + \".\");\n-        boolean pkgMatch \u003d aForImport.startsWith(mPkgName + \".\");\n-        if (pkgMatch \u0026\u0026 mExactMatch) {\n-            pkgMatch \u003d (aForImport.indexOf(\u0027.\u0027, (mPkgName.length() + 1)) \u003d\u003d -1);\n+        boolean pkgMatch;\n+        if (mRegExp) {\n+            pkgMatch \u003d aForImport.matches(mPkgName + \"\\\\..*\");\n+            if (pkgMatch \u0026\u0026 mExactMatch) {\n+                pkgMatch \u003d !aForImport.matches(mPkgName + \"\\\\..*\\\\..*\");\n+            }\n+        }\n+        else {\n+            pkgMatch \u003d aForImport.startsWith(mPkgName + \".\");\n+            if (pkgMatch \u0026\u0026 mExactMatch) {\n+                pkgMatch \u003d (aForImport.indexOf(\u0027.\u0027,\n+                    (mPkgName.length() + 1)) \u003d\u003d -1);\n+            }\n         }\n         return calculateResult(pkgMatch);\n     }\n\\ No newline at end of file\n"
+    },
+    "c38185458ab824874b8465c46b4dc42646440aaa": {
+      "type": "Yparameterchange",
+      "commitMessage": "Code cleanup\n",
+      "commitDate": 1137847382000,
+      "commitName": "c38185458ab824874b8465c46b4dc42646440aaa",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1122812864000,
+      "commitNameOld": "a5d30bf353dde01376d45fb031d9236b11a835d1",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 174.01,
+      "commitsBetweenForRepo": 80,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n-    AccessResult verifyImport(final String aForImport, final String aInPkg)\n+    AccessResult verifyImport(final String aForImport)\n     {\n         assert aForImport !\u003d null;\n         if (mClassName !\u003d null) {\n             final boolean classMatch \u003d mClassName.equals(aForImport);\n             return calculateResult(classMatch);\n         }\n \n         // Must be checking a package. First check that we actually match\n         // the package. Then check if matched and we must be an exact match.\n         // In this case, the text after the first \".\" must not contain\n         // another \".\" as this indicates that it is not an exact match.\n         assert mPkgName !\u003d null;\n         //boolean pkgMatch \u003d aForImport.startsWith(mPkgName + \".\");\n         boolean pkgMatch \u003d aForImport.startsWith(mPkgName + \".\");\n         if (pkgMatch \u0026\u0026 mExactMatch) {\n             pkgMatch \u003d (aForImport.indexOf(\u0027.\u0027, (mPkgName.length() + 1)) \u003d\u003d -1);\n         }\n         return calculateResult(pkgMatch);\n     }\n\\ No newline at end of file\n"
+    },
+    "a5d30bf353dde01376d45fb031d9236b11a835d1": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ybodychange)",
+      "commitMessage": "Added a lot more configuration options for the ImportControlCheck that\ncame out of using at work. I still need to improve the unit tests and\nproperly document the support options. Wanted to check in now for\nbackup.\n",
+      "commitDate": 1122812864000,
+      "commitName": "a5d30bf353dde01376d45fb031d9236b11a835d1",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "1951594e90a04aa2f2b14021ce3318604218ba19": {
+      "type": "Yintroduced",
+      "commitMessage": "Added the ImportControl check. This is a check that can be used to\nenforce which packages can import which packages. I was required to\ndevelop this for a large project to enforce application layering rules.\n\nThe check is fairly basic at the moment, but is still sufficiently\npowerful to be useful. I am sure there will be feature requests in the\nfuture.\n",
+      "commitDate": 1122496168000,
+      "commitName": "1951594e90a04aa2f2b14021ce3318604218ba19",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

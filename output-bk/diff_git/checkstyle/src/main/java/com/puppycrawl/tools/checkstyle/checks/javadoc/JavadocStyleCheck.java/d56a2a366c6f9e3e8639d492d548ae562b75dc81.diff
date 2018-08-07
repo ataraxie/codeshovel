@@ -1,0 +1,141 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+index 0db7637cd..a537747ae 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocStyleCheck.java
+@@ -65,130 +65,124 @@ public class JavadocStyleCheck
+     /** Message property key for the Extra HTML message. */
+     public static final String EXTRA_HTML = "javadoc.extrahtml";
+ 
+     /** HTML tags that do not require a close tag. */
+     private static final Set<String> SINGLE_TAGS = ImmutableSortedSet.of(
+             "br", "li", "dt", "dd", "hr", "img", "p", "td", "tr", "th");
+ 
+     /** HTML tags that are allowed in java docs.
+      * From http://www.w3schools.com/tags/default.asp
+      * The froms and structure tags are not allowed
+      */
+     private static final Set<String> ALLOWED_TAGS = ImmutableSortedSet.of(
+             "a", "abbr", "acronym", "address", "area", "b", "bdo", "big",
+             "blockquote", "br", "caption", "cite", "code", "colgroup", "dd",
+             "del", "div", "dfn", "dl", "dt", "em", "fieldset", "font", "h1",
+             "h2", "h3", "h4", "h5", "h6", "hr", "i", "img", "ins", "kbd",
+             "li", "ol", "p", "pre", "q", "samp", "small", "span", "strong",
+             "style", "sub", "sup", "table", "tbody", "td", "tfoot", "th",
+             "thead", "tr", "tt", "u", "ul");
+ 
+     /** The scope to check. */
+     private Scope scope = Scope.PRIVATE;
+ 
+     /** the visibility scope where Javadoc comments shouldn't be checked **/
+     private Scope excludeScope;
+ 
+     /** Format for matching the end of a sentence. */
+     private String endOfSentenceFormat = "([.?!][ \t\n\r\f<])|([.?!]$)";
+ 
+     /** Regular expression for matching the end of a sentence. */
+     private Pattern endOfSentencePattern;
+ 
+     /**
+      * Indicates if the first sentence should be checked for proper end of
+      * sentence punctuation.
+      */
+     private boolean checkingFirstSentence = true;
+ 
+     /**
+      * Indicates if the HTML within the comment should be checked.
+      */
+     private boolean checkingHtml = true;
+ 
+     /**
+      * Indicates if empty javadoc statements should be checked.
+      */
+     private boolean checkingEmptyJavadoc;
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[] {
+-            TokenTypes.INTERFACE_DEF,
+-            TokenTypes.CLASS_DEF,
+-            TokenTypes.ANNOTATION_DEF,
+-            TokenTypes.ENUM_DEF,
+-            TokenTypes.METHOD_DEF,
+-            TokenTypes.CTOR_DEF,
+-            TokenTypes.VARIABLE_DEF,
+-            TokenTypes.ENUM_CONSTANT_DEF,
+-            TokenTypes.ANNOTATION_FIELD_DEF,
+-            TokenTypes.PACKAGE_DEF,
+-        };
++        return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF,
+             TokenTypes.PACKAGE_DEF,
+         };
+     }
+ 
++    @Override
++    public int[] getRequiredTokens() {
++        return getAcceptableTokens();
++    }
++
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (shouldCheck(ast)) {
+             final FileContents contents = getFileContents();
+             // Need to start searching for the comment before the annotations
+             // that may exist. Even if annotations are not defined on the
+             // package, the ANNOTATIONS AST is defined.
+             final TextBlock cmt =
+                 contents.getJavadocBefore(ast.getFirstChild().getLineNo());
+ 
+             checkComment(ast, cmt);
+         }
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param ast a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST ast) {
+         if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+             return getFileContents().inPackageInfo();
+         }
+ 
+         if (ScopeUtils.inCodeBlock(ast)) {
+             return false;
+         }
+ 
+         final Scope declaredScope;
+         if (ast.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
+             declaredScope = Scope.PUBLIC;
+         }
+         else {
+             declaredScope = ScopeUtils.getScopeFromMods(
+                 ast.findFirstToken(TokenTypes.MODIFIERS));
+         }
+ 
+         final Scope customScope =
+             ScopeUtils.inInterfaceOrAnnotationBlock(ast)
+             ? Scope.PUBLIC : declaredScope;
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(ast);
+ 
+         return customScope.isIn(scope)
+             && (surroundingScope == null || surroundingScope.isIn(scope))
+             && (excludeScope == null
+                 || !customScope.isIn(excludeScope)
+                 || surroundingScope != null
+                 && !surroundingScope.isIn(excludeScope));
+     }
+ 

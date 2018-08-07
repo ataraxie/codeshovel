@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "guava",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/guava/.git",
+  "startCommitName": "34c1616279efe08089960aafd3df486cf8a04820",
+  "sourceFileName": "ImmutableMultiset.java",
+  "functionName": "iterator",
+  "functionId": "iterator",
+  "sourceFilePath": "android/guava/src/com/google/common/collect/ImmutableMultiset.java",
+  "functionStartLine": 186,
+  "functionEndLine": 208,
+  "changeHistory": [
+    "9f0f396d5800173b45677149180c87a9fb876049",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c"
+  ],
+  "changeHistoryShort": {
+    "9f0f396d5800173b45677149180c87a9fb876049": "Ybodychange",
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "9f0f396d5800173b45677149180c87a9fb876049": {
+      "type": "Ybodychange",
+      "commitMessage": "Add nullness annotations on the fields in ImmutableMultiset.java\n\nRELNOTES\u003dn/a.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d180937690\n",
+      "commitDate": 1515175536000,
+      "commitName": "9f0f396d5800173b45677149180c87a9fb876049",
+      "commitAuthor": "cnsun",
+      "commitDateOld": 1513631719000,
+      "commitNameOld": "9aaeb95faee253d0742003bab6f1365f27f6aba9",
+      "commitAuthorOld": "lowasser",
+      "daysBetweenCommits": 17.87,
+      "commitsBetweenForRepo": 88,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,23 @@\n   public UnmodifiableIterator\u003cE\u003e iterator() {\n     final Iterator\u003cEntry\u003cE\u003e\u003e entryIterator \u003d entrySet().iterator();\n     return new UnmodifiableIterator\u003cE\u003e() {\n       int remaining;\n-      E element;\n+      @MonotonicNonNullDecl E element;\n \n       @Override\n       public boolean hasNext() {\n         return (remaining \u003e 0) || entryIterator.hasNext();\n       }\n \n       @Override\n       public E next() {\n         if (remaining \u003c\u003d 0) {\n           Entry\u003cE\u003e entry \u003d entryIterator.next();\n           element \u003d entry.getElement();\n           remaining \u003d entry.getCount();\n         }\n         remaining--;\n         return element;\n       }\n     };\n   }\n\\ No newline at end of file\n"
+    },
+    "9b94fb3965c6869b0ac47420958a4bbae0b2d54c": {
+      "type": "Yintroduced",
+      "commitMessage": "Begin exporting sources of Guava for Android.\n\npom.xml files to come.\n\n-------------\nCreated by MOE: https://github.com/google/moe\nMOE_MIGRATED_REVID\u003d153757913\n",
+      "commitDate": 1492741671000,
+      "commitName": "9b94fb3965c6869b0ac47420958a4bbae0b2d54c",
+      "commitAuthor": "zhenghua"
+    }
+  }
+}

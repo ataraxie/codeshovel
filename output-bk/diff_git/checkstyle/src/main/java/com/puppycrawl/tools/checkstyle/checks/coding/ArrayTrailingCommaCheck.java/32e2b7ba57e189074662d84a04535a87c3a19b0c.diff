@@ -1,0 +1,85 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ArrayTrailingCommaCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ArrayTrailingCommaCheck.java
+index 146df4076..47feea750 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ArrayTrailingCommaCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/ArrayTrailingCommaCheck.java
+@@ -52,77 +52,77 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+  *
+  * {
+  *     100000000000000000000,
+  *     200000000000000000000,
+  *     300000000000000000000,  // Just this line added, no other changes
+  * }
+  * </pre>
+  * <p>
+  * If closing brace is on the same line as training comma, this benefit is gone
+  * (as the Check does not demand a certain location of curly braces the following
+  * two cases will not produce a violation):
+  * </p>
+  * <pre>
+  * {100000000000000000000,
+  *     200000000000000000000,} // Trailing comma not needed, line needs to be modified anyway
+  *
+  * {100000000000000000000,
+  *     200000000000000000000, // Modified line
+  *     300000000000000000000,} // Added line
+  * </pre>
+  * <p>
+  * If opening brace is on the same line as training comma there's also (more arguable) problem:
+  * </p>
+  * <pre>
+  * {100000000000000000000, // Line cannot be just duplicated to slightly modify entry
+  * }
+  *
+  * {100000000000000000000,
+  *     100000000000000000001, // More work needed to duplicate
+  * }
+  * </pre>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="ArrayTrailingComma"/&gt;
+  * </pre>
+  * @author o_sukhodolsky
+  */
+ @StatelessCheck
+ public class ArrayTrailingCommaCheck extends AbstractCheck {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "array.trailing.comma";
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return getAcceptableTokens();
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+-        return new int[] {TokenTypes.ARRAY_INIT};
++        return getRequiredTokens();
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+-        return getAcceptableTokens();
++        return new int[] {TokenTypes.ARRAY_INIT};
+     }
+ 
+     @Override
+     public void visitToken(DetailAST arrayInit) {
+         final DetailAST rcurly = arrayInit.findFirstToken(TokenTypes.RCURLY);
+         final DetailAST previousSibling = rcurly.getPreviousSibling();
+ 
+         if (arrayInit.getLineNo() != rcurly.getLineNo()
+                 && arrayInit.getChildCount() != 1
+                 && rcurly.getLineNo() != previousSibling.getLineNo()
+                 && arrayInit.getLineNo() != previousSibling.getLineNo()
+                 && previousSibling.getType() != TokenTypes.COMMA) {
+             log(rcurly.getLineNo(), MSG_KEY);
+         }
+     }
+ }

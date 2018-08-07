@@ -1,0 +1,110 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/ModifiedControlVariableCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/ModifiedControlVariableCheck.java
+index 2b73e58ef..3a2cfb94a 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/ModifiedControlVariableCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/ModifiedControlVariableCheck.java
+@@ -123,102 +123,102 @@ public final class ModifiedControlVariableCheck extends Check
+         case TokenTypes.OBJBLOCK:
+             exitBlock();
+             break;
+         case TokenTypes.ASSIGN:
+         case TokenTypes.PLUS_ASSIGN:
+         case TokenTypes.MINUS_ASSIGN:
+         case TokenTypes.STAR_ASSIGN:
+         case TokenTypes.DIV_ASSIGN:
+         case TokenTypes.MOD_ASSIGN:
+         case TokenTypes.SR_ASSIGN:
+         case TokenTypes.BSR_ASSIGN:
+         case TokenTypes.SL_ASSIGN:
+         case TokenTypes.BAND_ASSIGN:
+         case TokenTypes.BXOR_ASSIGN:
+         case TokenTypes.BOR_ASSIGN:
+         case TokenTypes.INC:
+         case TokenTypes.POST_INC:
+         case TokenTypes.DEC:
+         case TokenTypes.POST_DEC:
+             // Do nothing
+             break;
+         default:
+             throw new IllegalStateException(aAST.toString());
+         }
+     }
+ 
+     /**
+      * Enters an inner class, which requires a new variable set.
+      */
+     private void enterBlock()
+     {
+         mVariableStack.push(mCurrentVariables);
+         mCurrentVariables = new Stack();
+ 
+     }
+     /**
+      * Leave an inner class, so restore variable set.
+      */
+     private void exitBlock()
+     {
+         mCurrentVariables = (Stack) mVariableStack.pop();
+     }
+ 
+     /**
+      * Check if ident is parameter.
+      * @param aAST ident to check.
+      */
+     private void checkIdent(DetailAST aAST)
+     {
+         if (mCurrentVariables != null && !mCurrentVariables.isEmpty()) {
+-            DetailAST identAST = (DetailAST) aAST.getFirstChild();
++            final DetailAST identAST = (DetailAST) aAST.getFirstChild();
+ 
+             if (identAST != null
+                 && identAST.getType() == TokenTypes.IDENT
+                 && mCurrentVariables.contains(identAST.getText()))
+             {
+                 log(aAST.getLineNo(), aAST.getColumnNo(),
+                     "modified.control.variable", identAST.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Push current variables to the stack.
+      * @param aAST a for definition.
+      */
+     private void visitForDef(DetailAST aAST)
+     {
+-        DetailAST forInitAST = aAST.findFirstToken(TokenTypes.FOR_INIT);
++        final DetailAST forInitAST = aAST.findFirstToken(TokenTypes.FOR_INIT);
+         DetailAST parameterDefAST =
+             forInitAST.findFirstToken(TokenTypes.VARIABLE_DEF);
+ 
+         for (; parameterDefAST != null;
+              parameterDefAST = (DetailAST) parameterDefAST.getNextSibling())
+         {
+             if (parameterDefAST.getType() == TokenTypes.VARIABLE_DEF) {
+                 final DetailAST param =
+                     parameterDefAST.findFirstToken(TokenTypes.IDENT);
+                 mCurrentVariables.push(param.getText());
+             }
+         }
+     }
+ 
+     /**
+      * Pops the variables from the stack.
+      * @param aAST a for definition.
+      */
+     private void leaveForDef(DetailAST aAST)
+     {
+-        DetailAST forInitAST = aAST.findFirstToken(TokenTypes.FOR_INIT);
++        final DetailAST forInitAST = aAST.findFirstToken(TokenTypes.FOR_INIT);
+         DetailAST parameterDefAST =
+             forInitAST.findFirstToken(TokenTypes.VARIABLE_DEF);
+ 
+         for (; parameterDefAST != null;
+              parameterDefAST = (DetailAST) parameterDefAST.getNextSibling())
+         {
+             if (parameterDefAST.getType() == TokenTypes.VARIABLE_DEF) {
+                 mCurrentVariables.pop();
+             }
+         }
+     }
+ }

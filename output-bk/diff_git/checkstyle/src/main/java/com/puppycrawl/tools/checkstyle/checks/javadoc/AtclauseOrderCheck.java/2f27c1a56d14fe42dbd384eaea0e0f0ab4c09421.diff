@@ -1,0 +1,69 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AtclauseOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AtclauseOrderCheck.java
+index 94ff8335c..bebce58e5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AtclauseOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/AtclauseOrderCheck.java
+@@ -136,61 +136,58 @@ public class AtclauseOrderCheck extends AbstractJavadocCheck {
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.BLOCK_COMMENT_BEGIN};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void visitJavadocToken(DetailNode ast) {
+         final int parentType = getParentType(getBlockCommentAst());
+ 
+         if (target.contains(parentType)) {
+             checkOrderInTagSection(ast);
+         }
+     }
+ 
+     /**
+      * Checks order of atclauses in tag section node.
+      * @param javadoc Javadoc root node.
+      */
+     private void checkOrderInTagSection(DetailNode javadoc) {
+         int maxIndexOfPreviousTag = 0;
+ 
+         for (DetailNode node : javadoc.getChildren()) {
+             if (node.getType() == JavadocTokenTypes.JAVADOC_TAG) {
+                 final String tagText = JavadocUtils.getFirstChild(node).getText();
+                 final int indexOfCurrentTag = tagOrder.indexOf(tagText);
+ 
+                 if (indexOfCurrentTag != -1) {
+                     if (indexOfCurrentTag < maxIndexOfPreviousTag) {
+                         log(node.getLineNumber(), MSG_KEY, tagOrder.toString());
+                     }
+                     else {
+                         maxIndexOfPreviousTag = indexOfCurrentTag;
+                     }
+                 }
+             }
+         }
+     }
+ 
+     /**
+      * Returns type of parent node.
+      * @param commentBlock child node.
+      * @return parent type.
+      */
+     private static int getParentType(DetailAST commentBlock) {
+-        int type = 0;
+         final DetailAST parentNode = commentBlock.getParent();
+-        if (parentNode != null) {
+-            type = parentNode.getType();
+-            if (type == TokenTypes.TYPE || type == TokenTypes.MODIFIERS) {
+-                type = parentNode.getParent().getType();
+-            }
++        int type = parentNode.getType();
++        if (type == TokenTypes.TYPE || type == TokenTypes.MODIFIERS) {
++            type = parentNode.getParent().getType();
+         }
+         return type;
+     }
+ }

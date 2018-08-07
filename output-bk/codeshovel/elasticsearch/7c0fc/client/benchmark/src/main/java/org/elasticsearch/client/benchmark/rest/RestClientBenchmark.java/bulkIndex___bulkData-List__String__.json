@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "RestClientBenchmark.java",
+  "functionName": "bulkIndex",
+  "functionId": "bulkIndex___bulkData-List__String__",
+  "sourceFilePath": "client/benchmark/src/main/java/org/elasticsearch/client/benchmark/rest/RestClientBenchmark.java",
+  "functionStartLine": 74,
+  "functionEndLine": 89,
+  "changeHistory": [
+    "b8bf4807426cd60b49514a97ecd5f5126025eb58",
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+    "c33f85bc37bbfee87158738f538d380c0cc31d13"
+  ],
+  "changeHistoryShort": {
+    "b8bf4807426cd60b49514a97ecd5f5126025eb58": "Ybodychange",
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": "Ybodychange",
+    "c33f85bc37bbfee87158738f538d380c0cc31d13": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b8bf4807426cd60b49514a97ecd5f5126025eb58": {
+      "type": "Ybodychange",
+      "commitMessage": "Clients: Switch to new performRequest (#30543)\n\nSwitch several calls in the client projects from the deprecated\r\n`performRequest` calls to the new version.",
+      "commitDate": 1526308673000,
+      "commitName": "b8bf4807426cd60b49514a97ecd5f5126025eb58",
+      "commitAuthor": "Nik Everett",
+      "commitDateOld": 1503688392000,
+      "commitNameOld": "cfd14cd2b86ed5bdd268e137e78aa8a0b1d474b3",
+      "commitAuthorOld": "Michael Basnight",
+      "daysBetweenCommits": 261.81,
+      "commitsBetweenForRepo": 3623,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,16 @@\n         public boolean bulkIndex(List\u003cString\u003e bulkData) {\n             StringBuilder bulkRequestBody \u003d new StringBuilder();\n             for (String bulkItem : bulkData) {\n                 bulkRequestBody.append(actionMetaData);\n                 bulkRequestBody.append(bulkItem);\n                 bulkRequestBody.append(\"\\n\");\n             }\n-            HttpEntity entity \u003d new NStringEntity(bulkRequestBody.toString(), ContentType.APPLICATION_JSON);\n+            Request request \u003d new Request(\"POST\", \"/geonames/type/_noop_bulk\");\n+            request.setJsonEntity(bulkRequestBody.toString());\n             try {\n-                Response response \u003d client.performRequest(\"POST\", \"/geonames/type/_noop_bulk\", Collections.emptyMap(), entity);\n+                Response response \u003d client.performRequest(request);\n                 return response.getStatusLine().getStatusCode() \u003d\u003d HttpStatus.SC_OK;\n             } catch (Exception e) {\n                 throw new ElasticsearchException(e);\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": {
+      "type": "Ybodychange",
+      "commitMessage": "Add client-benchmark-noop-api-plugin to stress clients even more in benchmarks (#20103)\n\n",
+      "commitDate": 1472195147000,
+      "commitName": "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+      "commitAuthor": "Daniel Mitterdorfer",
+      "commitDateOld": 1469523682000,
+      "commitNameOld": "c33f85bc37bbfee87158738f538d380c0cc31d13",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 30.92,
+      "commitsBetweenForRepo": 437,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n         public boolean bulkIndex(List\u003cString\u003e bulkData) {\n             StringBuilder bulkRequestBody \u003d new StringBuilder();\n             for (String bulkItem : bulkData) {\n                 bulkRequestBody.append(actionMetaData);\n                 bulkRequestBody.append(bulkItem);\n                 bulkRequestBody.append(\"\\n\");\n             }\n             HttpEntity entity \u003d new NStringEntity(bulkRequestBody.toString(), ContentType.APPLICATION_JSON);\n             try {\n-                Response response \u003d client.performRequest(\"POST\", \"/geonames/type/_bulk\", Collections.emptyMap(), entity);\n+                Response response \u003d client.performRequest(\"POST\", \"/geonames/type/_noop_bulk\", Collections.emptyMap(), entity);\n                 return response.getStatusLine().getStatusCode() \u003d\u003d HttpStatus.SC_OK;\n             } catch (Exception e) {\n                 throw new ElasticsearchException(e);\n             }\n         }\n\\ No newline at end of file\n"
+    },
+    "c33f85bc37bbfee87158738f538d380c0cc31d13": {
+      "type": "Yintroduced",
+      "commitMessage": "Add client benchmark\n\nWith this commit we add a benchmark for the new REST client and the\nexisting transport client.\n\nCloses #19281\n",
+      "commitDate": 1469523682000,
+      "commitName": "c33f85bc37bbfee87158738f538d380c0cc31d13",
+      "commitAuthor": "Daniel Mitterdorfer"
+    }
+  }
+}

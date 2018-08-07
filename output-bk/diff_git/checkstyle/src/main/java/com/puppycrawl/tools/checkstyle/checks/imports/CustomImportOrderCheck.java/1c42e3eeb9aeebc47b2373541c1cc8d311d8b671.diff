@@ -1,0 +1,245 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+index df245b236..b17c79f1f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+@@ -493,101 +493,101 @@ public class CustomImportOrderCheck extends Check
+             }
+         }
+         return NON_GROUP_RULE_GROUP;
+     }
+ 
+     /**
+      * Checks if the import is placed in the correct group.
+      * @param isStatic
+      *        if import is static.
+      * @param importPath
+      *        import full path.
+      * @param currentGroup
+      *        current group.
+      * @return true, if import placed in the correct group.
+      */
+     private boolean matchesImportGroup(boolean isStatic, String importPath, String currentGroup)
+     {
+         return matchesStaticImportGroup(isStatic, currentGroup)
+                 || matchesSamePackageImportGroup(isStatic, importPath, currentGroup)
+                 || matchesSpecialImportsGroup(isStatic, importPath, currentGroup)
+                 || matchesStandartImportGroup(isStatic, importPath, currentGroup)
+                 || matchesThirdPartyImportGroup(isStatic, importPath, currentGroup);
+     }
+ 
+     /**
+      * Checks if the import is placed in the STATIC group.
+      * @param isStatic
+      *        is static import.
+      * @param currentGroup
+      *        current group.
+      * @return true, if the import is placed in the static group.
+      */
+     private boolean matchesStaticImportGroup(boolean isStatic, String currentGroup)
+     {
+         return isStatic && STATIC_RULE_GROUP.equals(currentGroup);
+     }
+ 
+     /**
+      * Checks if the import is placed in the correct group.
+      * @param isStatic
+      *        if import is static.
+      * @param importFullPath
+      *        import full path.
+      * @param currentGroup
+      *        current group.
+      * @return true, if the import is placed in the same package group.
+      */
+     private boolean matchesSamePackageImportGroup(boolean isStatic,
+         String importFullPath, String currentGroup)
+     {
+-        final String importPath = importFullPath.substring(0, importFullPath.lastIndexOf("."));
++        final String importPath = importFullPath.substring(0, importFullPath.lastIndexOf('.'));
+         return !isStatic && SAME_PACKAGE_RULE_GROUP.equals(currentGroup)
+                 && samePackageDomainsRegExp.contains(importPath);
+     }
+ 
+     /**
+      * Checks if the import is placed in the correct group.
+      * @param isStatic
+      *        if import is static.
+      * @param currentImport
+      *        import full path.
+      * @param currentGroup
+      *        current group.
+      * @return true, if the import is placed in the standard group.
+      */
+     private boolean matchesStandartImportGroup(boolean isStatic,
+         String currentImport, String currentGroup)
+     {
+         return !isStatic && STANDARD_JAVA_PACKAGE_RULE_GROUP.equals(currentGroup)
+                 && standardPackageRegExp.matcher(currentImport).find();
+     }
+ 
+     /**
+      * Checks if the import is placed in the correct group.
+      * @param isStatic
+      *        if import is static.
+      * @param currentImport
+      *        import full path.
+      * @param currentGroup
+      *        current group.
+      * @return true, if the import is placed in the special group.
+      */
+     private boolean matchesSpecialImportsGroup(boolean isStatic,
+         String currentImport, String currentGroup)
+     {
+         return !isStatic && SPECIAL_IMPORTS_RULE_GROUP.equals(currentGroup)
+                 && specialImportsRegExp.matcher(currentImport).find();
+     }
+ 
+     /**
+      * Checks if the import is placed in the correct group.
+      * @param isStatic
+      *        if import is static.
+      * @param currentImport
+      *        import full path.
+      * @param currentGroup
+      *        current group.
+      * @return true, if the import is placed in the third party group.
+      */
+     private boolean matchesThirdPartyImportGroup(boolean isStatic,
+         String currentImport, String currentGroup)
+@@ -623,134 +623,134 @@ public class CustomImportOrderCheck extends Check
+             if (result != 0) {
+                 break;
+             }
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks if a token has a empty line before.
+      * @param lineNo
+      *        Line number of current import.
+      * @return true, if token have empty line before.
+      */
+     private boolean hasEmptyLineBefore(int lineNo)
+     {
+         //  [lineNo - 2] is the number of the previous line
+         //  because the numbering starts from zero.
+         final String lineBefore = getLine(lineNo - 2);
+         return lineBefore.trim().isEmpty();
+     }
+ 
+     /**
+      * Forms import full path.
+      * @param token
+      *        current token.
+      * @return full path or null.
+      */
+     private static String getFullImportIdent(DetailAST token)
+     {
+         return token != null ? FullIdent.createFullIdent(token.
+                 findFirstToken(TokenTypes.DOT)).getText() : "";
+     }
+ 
+     /**
+      * Parses ordering rule and adds it to the list with rules.
+      * @param ruleStr
+      *        String with rule.
+      */
+     private void addRuleastoList(String ruleStr)
+     {
+         if (STATIC_RULE_GROUP.equals(ruleStr)
+                 || THIRD_PARTY_PACKAGE_RULE_GROUP.equals(ruleStr)
+                 || STANDARD_JAVA_PACKAGE_RULE_GROUP.equals(ruleStr)
+                 || SPECIAL_IMPORTS_RULE_GROUP.equals(ruleStr))
+         {
+             customImportOrderRules.add(ruleStr);
+ 
+         }
+         else if (ruleStr.startsWith(SAME_PACKAGE_RULE_GROUP)) {
+ 
+-            final String rule = ruleStr.substring(ruleStr.indexOf("(") + 1,
+-                    ruleStr.indexOf(")"));
++            final String rule = ruleStr.substring(ruleStr.indexOf('(') + 1,
++                    ruleStr.indexOf(')'));
+             try {
+                 samePackageMatchingDepth = Integer.parseInt(rule);
+             }
+             catch (Exception e) {
+                 samePackageDomainsRegExp = rule;
+             }
+             customImportOrderRules.add(SAME_PACKAGE_RULE_GROUP);
+ 
+         }
+         else {
+             throw new RuntimeException("Unexpected rule: " + ruleStr);
+         }
+     }
+ 
+     /**
+      * Creates samePackageDomainsRegExp of the first package domains.
+      * @param firstPackageDomainsCount
+      *        number of first package domains.
+      * @param packageNode
+      *        package node.
+      * @return same package regexp.
+      */
+     private static String createSamePackageRegexp(int firstPackageDomainsCount,
+              DetailAST packageNode)
+     {
+         final StringBuilder builder = new StringBuilder();
+         final String packageFullPath = getFullImportIdent(packageNode);
+         final StringTokenizer tokens = new StringTokenizer(packageFullPath, ".");
+         int count = firstPackageDomainsCount;
+ 
+         while (tokens.hasMoreTokens() && count > 0) {
+-            builder.append(tokens.nextToken()).append(".");
++            builder.append(tokens.nextToken()).append('.');
+             count--;
+         }
+         return builder.append("*").toString();
+     }
+ 
+     /**
+      * Contains import attributes as line number, import full path, import
+      * group.
+      * @author max
+      */
+     static class ImportDetails
+     {
+         /** Import full path */
+         private String importFullPath;
+ 
+         /** Import line number */
+         private int lineNumber;
+ 
+         /** Import group */
+         private String importGroup;
+ 
+         /** Is static import */
+         private boolean isStatic;
+ 
+         /**
+          * @param importFullPath
+          *        import full path.
+          * @param lineNumber
+          *        import line number.
+          * @param importGroup
+          *        import group.
+          * @param isStatic
+          *        if import is static.
+          */
+         public ImportDetails(String importFullPath,
+                 int lineNumber, String importGroup, boolean isStatic)
+         {
+             setImportFullPath(importFullPath);
+             setLineNumber(lineNumber);
+             setImportGroup(importGroup);
+             setStatic(isStatic);
+         }
+ 
+         /**
+          * Get import full path variable.
+          * @return import full path variable.
+          */
+         public String getImportFullPath()
+         {
+             return importFullPath;

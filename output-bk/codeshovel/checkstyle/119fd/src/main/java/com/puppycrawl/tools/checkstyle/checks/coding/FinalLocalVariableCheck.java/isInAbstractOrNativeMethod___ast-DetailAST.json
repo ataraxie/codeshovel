@@ -1,0 +1,118 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "FinalLocalVariableCheck.java",
+  "functionName": "isInAbstractOrNativeMethod",
+  "functionId": "isInAbstractOrNativeMethod___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java",
+  "functionStartLine": 612,
+  "functionEndLine": 625,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "4d2e6647f9e8385749c382bcab5e64965a943178",
+    "c9c475a6c7a8cb728ba1c091b386db46f11a781f",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "deb4d7a38805032ea8c9e2476eff5e00e38f1015",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "2af259b791c8655a2b9862099763f860d3d7ae42"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "4d2e6647f9e8385749c382bcab5e64965a943178": "Yrename",
+    "c9c475a6c7a8cb728ba1c091b386db46f11a781f": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "deb4d7a38805032ea8c9e2476eff5e00e38f1015": "Ymultichange(Yrename,Ymodifierchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "2af259b791c8655a2b9862099763f860d3d7ae42": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1501383011000,
+      "commitNameOld": "8fef90609bcf29c84823f4a9affae013ded9379d",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 88.0,
+      "commitsBetweenForRepo": 264,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n     private static boolean isInAbstractOrNativeMethod(DetailAST ast) {\n         boolean abstractOrNative \u003d false;\n         DetailAST parent \u003d ast.getParent();\n         while (parent !\u003d null \u0026\u0026 !abstractOrNative) {\n             if (parent.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n                 final DetailAST modifiers \u003d\n                     parent.findFirstToken(TokenTypes.MODIFIERS);\n-                abstractOrNative \u003d modifiers.branchContains(TokenTypes.ABSTRACT)\n-                        || modifiers.branchContains(TokenTypes.LITERAL_NATIVE);\n+                abstractOrNative \u003d modifiers.findFirstToken(TokenTypes.ABSTRACT) !\u003d null\n+                        || modifiers.findFirstToken(TokenTypes.LITERAL_NATIVE) !\u003d null;\n             }\n             parent \u003d parent.getParent();\n         }\n         return abstractOrNative;\n     }\n\\ No newline at end of file\n"
+    },
+    "4d2e6647f9e8385749c382bcab5e64965a943178": {
+      "type": "Yrename",
+      "commitMessage": "Rename boolean methods to start with question word. #1555\n\nFixes `BooleanMethodNameMustStartWithQuestion` inspection violations.\n\nDescription:\n\u003eReports boolean methods whose names do not start with a question word. Boolean methods that override library methods are ignored by this inspection.\n",
+      "commitDate": 1440705239000,
+      "commitName": "4d2e6647f9e8385749c382bcab5e64965a943178",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1440677821000,
+      "commitNameOld": "ed595de84fba2db507adaf01d04cb089a5e0bac5",
+      "commitAuthorOld": "Ilja Dubinin",
+      "daysBetweenCommits": 0.32,
+      "commitsBetweenForRepo": 31,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,14 @@\n-    private static boolean inAbstractOrNativeMethod(DetailAST ast) {\n+    private static boolean isInAbstractOrNativeMethod(DetailAST ast) {\n         boolean abstractOrNative \u003d false;\n         DetailAST parent \u003d ast.getParent();\n         while (parent !\u003d null \u0026\u0026 !abstractOrNative) {\n             if (parent.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n                 final DetailAST modifiers \u003d\n                     parent.findFirstToken(TokenTypes.MODIFIERS);\n                 abstractOrNative \u003d modifiers.branchContains(TokenTypes.ABSTRACT)\n                         || modifiers.branchContains(TokenTypes.LITERAL_NATIVE);\n             }\n             parent \u003d parent.getParent();\n         }\n         return abstractOrNative;\n     }\n\\ No newline at end of file\n"
+    },
+    "c9c475a6c7a8cb728ba1c091b386db46f11a781f": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactoring of FinalLocalVariableCheck to avoid \u0027fall through\u0027 violation, issue #1395.\n",
+      "commitDate": 1437411741000,
+      "commitName": "c9c475a6c7a8cb728ba1c091b386db46f11a781f",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1437195084000,
+      "commitNameOld": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 2.51,
+      "commitsBetweenForRepo": 30,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,14 @@\n     private static boolean inAbstractOrNativeMethod(DetailAST ast) {\n+        boolean abstractOrNative \u003d false;\n         DetailAST parent \u003d ast.getParent();\n-        while (parent !\u003d null) {\n+        while (parent !\u003d null \u0026\u0026 !abstractOrNative) {\n             if (parent.getType() \u003d\u003d TokenTypes.METHOD_DEF) {\n                 final DetailAST modifiers \u003d\n                     parent.findFirstToken(TokenTypes.MODIFIERS);\n-                return modifiers.branchContains(TokenTypes.ABSTRACT)\n+                abstractOrNative \u003d modifiers.branchContains(TokenTypes.ABSTRACT)\n                         || modifiers.branchContains(TokenTypes.LITERAL_NATIVE);\n             }\n             parent \u003d parent.getParent();\n         }\n-        return false;\n+        return abstractOrNative;\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "deb4d7a38805032ea8c9e2476eff5e00e38f1015": {
+      "type": "Ymultichange(Yrename,Ymodifierchange,Ybodychange)",
+      "commitMessage": "Final Local Variable Check, fixed false-positive - native method\u0027s param should be declared final, issue #158\n",
+      "commitDate": 1418710173000,
+      "commitName": "deb4d7a38805032ea8c9e2476eff5e00e38f1015",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yrename",
+        "Ymodifierchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "2af259b791c8655a2b9862099763f860d3d7ae42": {
+      "type": "Yintroduced",
+      "commitMessage": "FinalParametersCheck and FinalLocalVariablesCheck ignore abstract methods (bug 1002849)\n",
+      "commitDate": 1091618276000,
+      "commitName": "2af259b791c8655a2b9862099763f860d3d7ae42",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

@@ -1,0 +1,94 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
+index 1a5450f56..e99d9dac5 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionsLoader.java
+@@ -97,79 +97,79 @@ public final class SuppressionsLoader
+                 }
+                 if (checks != null) {
+                     suppress.setChecks(checks);
+                 }
+             }
+             catch (final PatternSyntaxException ex) {
+                 throw new SAXException("invalid files or checks format", ex);
+             }
+             final String lines = attributes.getValue("lines");
+             if (lines != null) {
+                 suppress.setLines(lines);
+             }
+             final String columns = attributes.getValue("columns");
+             if (columns != null) {
+                 suppress.setColumns(columns);
+             }
+             filterChain.addFilter(suppress);
+         }
+     }
+ 
+     /**
+      * Returns the suppression filters in a specified file.
+      * @param filename name of the suppressions file.
+      * @return the filter chain of suppression elements specified in the file.
+      * @throws CheckstyleException if an error occurs.
+      */
+     public static FilterSet loadSuppressions(String filename)
+         throws CheckstyleException {
+         // figure out if this is a File or a URL
+         final URI uri = CommonUtils.getUriByFilename(filename);
+         final InputSource source = new InputSource(uri.toString());
+         return loadSuppressions(source, filename);
+     }
+ 
+     /**
+      * Returns the suppression filters in a specified source.
+      * @param source the source for the suppressions.
+      * @param sourceName the name of the source.
+      * @return the filter chain of suppression elements in source.
+      * @throws CheckstyleException if an error occurs.
+      */
+     private static FilterSet loadSuppressions(
+             InputSource source, String sourceName)
+         throws CheckstyleException {
+         try {
+             final SuppressionsLoader suppressionsLoader =
+                 new SuppressionsLoader();
+             suppressionsLoader.parseInputSource(source);
+             return suppressionsLoader.filterChain;
+         }
+-        catch (final FileNotFoundException e) {
+-            throw new CheckstyleException(UNABLE_TO_FIND_ERROR_MESSAGE + sourceName, e);
++        catch (final FileNotFoundException ex) {
++            throw new CheckstyleException(UNABLE_TO_FIND_ERROR_MESSAGE + sourceName, ex);
+         }
+-        catch (final ParserConfigurationException | SAXException e) {
++        catch (final ParserConfigurationException | SAXException ex) {
+             final String message = String.format(Locale.ROOT, "Unable to parse %s - %s",
+-                    sourceName, e.getMessage());
+-            throw new CheckstyleException(message, e);
++                    sourceName, ex.getMessage());
++            throw new CheckstyleException(message, ex);
+         }
+-        catch (final IOException e) {
+-            throw new CheckstyleException("Unable to read " + sourceName, e);
++        catch (final IOException ex) {
++            throw new CheckstyleException("Unable to read " + sourceName, ex);
+         }
+-        catch (final NumberFormatException e) {
++        catch (final NumberFormatException ex) {
+             final String message = String.format(Locale.ROOT, "Number format exception %s - %s",
+-                    sourceName, e.getMessage());
+-            throw new CheckstyleException(message, e);
++                    sourceName, ex.getMessage());
++            throw new CheckstyleException(message, ex);
+         }
+     }
+ 
+     /**
+      * Creates mapping between local resources and dtd ids.
+      * @return map between local resources and dtd ids.
+      */
+     private static Map<String, String> createIdToResourceNameMap() {
+         final Map<String, String> map = Maps.newHashMap();
+         map.put(DTD_PUBLIC_ID_1_0, DTD_RESOURCE_NAME_1_0);
+         map.put(DTD_PUBLIC_ID_1_1, DTD_RESOURCE_NAME_1_1);
+         return map;
+     }
+ }

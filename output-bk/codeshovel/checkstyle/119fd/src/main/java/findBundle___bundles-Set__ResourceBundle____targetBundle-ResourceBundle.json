@@ -1,0 +1,73 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "findBundle___bundles-Set__ResourceBundle____targetBundle-ResourceBundle",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 385,
+  "changeHistory": [
+    "eb5b977a475c2240db5efc83aec8973d734895eb",
+    "d843dd8439cc5163bcd743443f970c392f4ae30e",
+    "dea6dab124d3db9508da7c86bc331a9516cbb6e9",
+    "b8f2d25b644bf719774c5516e0681d54e38f6e36"
+  ],
+  "changeHistoryShort": {
+    "eb5b977a475c2240db5efc83aec8973d734895eb": "Ybodychange",
+    "d843dd8439cc5163bcd743443f970c392f4ae30e": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+    "dea6dab124d3db9508da7c86bc331a9516cbb6e9": "Ybodychange",
+    "b8f2d25b644bf719774c5516e0681d54e38f6e36": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "eb5b977a475c2240db5efc83aec8973d734895eb": {
+      "type": "Ybodychange",
+      "commitMessage": "Pull #3293: Replace Guava\u0027s Optional with Java\u0027s native (#3293)\n\n",
+      "commitDate": 1466685482000,
+      "commitName": "eb5b977a475c2240db5efc83aec8973d734895eb",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1464355679000,
+      "commitNameOld": "48d32f40d2253fc94792a8841ce604ba1b91255c",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 26.97,
+      "commitsBetweenForRepo": 88,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private static Optional\u003cResourceBundle\u003e findBundle(Set\u003cResourceBundle\u003e bundles,\n                                                        ResourceBundle targetBundle) {\n-        Optional\u003cResourceBundle\u003e result \u003d Optional.absent();\n+        Optional\u003cResourceBundle\u003e result \u003d Optional.empty();\n         for (ResourceBundle currentBundle : bundles) {\n             if (targetBundle.getBaseName().equals(currentBundle.getBaseName())\n                     \u0026\u0026 targetBundle.getExtension().equals(currentBundle.getExtension())\n                     \u0026\u0026 targetBundle.getPath().equals(currentBundle.getPath())) {\n                 result \u003d Optional.of(currentBundle);\n                 break;\n             }\n         }\n         return result;\n     }\n\\ No newline at end of file\n"
+    },
+    "d843dd8439cc5163bcd743443f970c392f4ae30e": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Yreturntypechange,Ybodychange)",
+      "commitMessage": "Issue #2204: Add \u0027baseName\u0027 option for TranslationCheck\n",
+      "commitDate": 1457803906000,
+      "commitName": "d843dd8439cc5163bcd743443f970c392f4ae30e",
+      "commitAuthor": "Andrei Selkin",
+      "subchanges": [
+        "Yrename",
+        "Yparameterchange",
+        "Yreturntypechange",
+        "Ybodychange"
+      ]
+    },
+    "dea6dab124d3db9508da7c86bc331a9516cbb6e9": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2251: Fix wrong support for resources with language, country, variant\n",
+      "commitDate": 1455654604000,
+      "commitName": "dea6dab124d3db9508da7c86bc331a9516cbb6e9",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1451953543000,
+      "commitNameOld": "617ebf2bf27d284dcc7b866f85439fcf6dab3402",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 42.84,
+      "commitsBetweenForRepo": 108,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     private static boolean isMissing(String fileName, Set\u003cFile\u003e filesInResourceBundle) {\n         boolean missing \u003d false;\n         for (File file : filesInResourceBundle) {\n             final String currentFileName \u003d file.getPath();\n-            missing \u003d !currentFileName.equals(fileName);\n+            missing \u003d !currentFileName.contains(fileName);\n             if (!missing) {\n                 break;\n             }\n         }\n         return missing;\n     }\n\\ No newline at end of file\n"
+    },
+    "b8f2d25b644bf719774c5516e0681d54e38f6e36": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #2166: Add \u0027requiredTranslations\u0027 option to Translation check\n",
+      "commitDate": 1443304979000,
+      "commitName": "b8f2d25b644bf719774c5516e0681d54e38f6e36",
+      "commitAuthor": "Andrei Selkin"
+    }
+  }
+}

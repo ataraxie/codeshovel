@@ -1,0 +1,62 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocNodeImpl.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocNodeImpl.java
+index 2340c04c0..6e59b0016 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocNodeImpl.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocNodeImpl.java
+@@ -89,55 +89,55 @@ public class JavadocNodeImpl implements DetailNode {
+     @Override
+     public DetailNode[] getChildren() {
+         if (children == null) {
+             return new DetailNode[0];
+         }
+         else {
+             return Arrays.copyOf(children, children.length);
+         }
+     }
+ 
+     @Override
+     public DetailNode getParent() {
+         return parent;
+     }
+ 
+     @Override
+     public int getIndex() {
+         return index;
+     }
+ 
+     public void setType(int type) {
+         this.type = type;
+     }
+ 
+     public void setText(String text) {
+         this.text = text;
+     }
+ 
+     public void setLineNumber(int lineNumber) {
+         this.lineNumber = lineNumber;
+     }
+ 
+     public void setColumnNumber(int columnNumber) {
+         this.columnNumber = columnNumber;
+     }
+ 
+     public void setChildren(DetailNode... children) {
+         this.children = Arrays.copyOf(children, children.length);
+     }
+ 
+     public void setParent(DetailNode parent) {
+         this.parent = parent;
+     }
+ 
+     public void setIndex(int index) {
+         this.index = index;
+     }
+ 
+     @Override
+     public String toString() {
+-        return JavadocUtils.getTokenName(getType())
+-                + "[" + getLineNumber() + "x" + getColumnNumber() + "]";
++        return JavadocUtils.getTokenName(type)
++                + "[" + lineNumber + "x" + columnNumber + "]";
+     }
+ 
+ }

@@ -1,0 +1,128 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
+index bc3cb6766..35bbd3ed6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/indentation/LineWrappingHandler.java
+@@ -115,116 +115,114 @@ public class LineWrappingHandler {
+                     || currentType == TokenTypes.ARRAY_INIT) {
+                 logWarningMessage(node, firstNodeIndent);
+             }
+             else {
+                 logWarningMessage(node, currentIndent);
+             }
+         }
+     }
+ 
+     /**
+      * Calculates indentation of first node.
+      *
+      * @param node
+      *            first node.
+      * @return indentation of first node.
+      */
+     private int getFirstNodeIndent(DetailAST node) {
+         final int result;
+ 
+         if (node.getType() == TokenTypes.LITERAL_IF
+                 && node.getParent().getType() == TokenTypes.LITERAL_ELSE) {
+             final DetailAST lcurly = node.getParent().getPreviousSibling();
+             final DetailAST rcurly = lcurly.getLastChild();
+ 
+             if (lcurly.getType() == TokenTypes.SLIST
+                     && rcurly.getLineNo() == node.getLineNo()) {
+                 result = expandedTabsColumnNo(rcurly);
+             }
+             else {
+                 result = expandedTabsColumnNo(node.getParent());
+             }
+         }
+         else {
+             result = expandedTabsColumnNo(node);
+         }
+         return result;
+     }
+ 
+     /**
+      * Finds first nodes on line and puts them into Map.
+      *
+      * @return NavigableMap which contains lines numbers as a key and first
+      *         nodes on lines as a values.
+      */
+     private NavigableMap<Integer, DetailAST> collectFirstNodes() {
+         final NavigableMap<Integer, DetailAST> result = new TreeMap<>();
+ 
+         result.put(firstNode.getLineNo(), firstNode);
+         DetailAST curNode = firstNode.getFirstChild();
+ 
+-        while (curNode != null && curNode != lastNode) {
++        while (curNode != lastNode) {
+ 
+             if (curNode.getType() == TokenTypes.OBJBLOCK
+                     || curNode.getType() == TokenTypes.SLIST) {
+-                curNode = curNode.getNextSibling();
++                curNode = curNode.getLastChild();
+             }
+ 
+-            if (curNode != null) {
+-                final DetailAST firstTokenOnLine = result.get(curNode.getLineNo());
++            final DetailAST firstTokenOnLine = result.get(curNode.getLineNo());
+ 
+-                if (firstTokenOnLine == null
+-                    || expandedTabsColumnNo(firstTokenOnLine) >= expandedTabsColumnNo(curNode)) {
+-                    result.put(curNode.getLineNo(), curNode);
+-                }
+-                curNode = getNextCurNode(curNode);
++            if (firstTokenOnLine == null
++                || expandedTabsColumnNo(firstTokenOnLine) >= expandedTabsColumnNo(curNode)) {
++                result.put(curNode.getLineNo(), curNode);
+             }
++            curNode = getNextCurNode(curNode);
+         }
+         return result;
+     }
+ 
+     /**
+      * Returns next curNode node.
+      *
+      * @param curNode current node.
+      * @return next curNode node.
+      */
+     private static DetailAST getNextCurNode(DetailAST curNode) {
+         DetailAST nodeToVisit = curNode.getFirstChild();
+         DetailAST currentNode = curNode;
+ 
+         while (nodeToVisit == null) {
+             nodeToVisit = currentNode.getNextSibling();
+             if (nodeToVisit == null) {
+                 currentNode = currentNode.getParent();
+             }
+         }
+         return nodeToVisit;
+     }
+ 
+     /**
+      * Checks line wrapping into annotations.
+      *
+      * @param atNode at-clause node.
+      * @param firstNodesOnLines map which contains
+      *     first nodes as values and line numbers as keys.
+      */
+     private void checkAnnotationIndentation(DetailAST atNode,
+             NavigableMap<Integer, DetailAST> firstNodesOnLines) {
+         final int firstNodeIndent = expandedTabsColumnNo(atNode);
+         final int currentIndent = firstNodeIndent + indentLevel;
+         final Collection<DetailAST> values = firstNodesOnLines.values();
+         final DetailAST lastAnnotationNode = getLastAnnotationNode(atNode);
+         final int lastAnnotationLine = lastAnnotationNode.getLineNo();
+ 
+         final Iterator<DetailAST> itr = values.iterator();
+         while (firstNodesOnLines.size() > 1) {
+             final DetailAST node = itr.next();
+ 
+             if (node.getLineNo() <= lastAnnotationLine) {
+                 final DetailAST parentNode = node.getParent();
+                 final boolean isCurrentNodeCloseAnnotationAloneInLine =
+                         node.getLineNo() == lastAnnotationLine
+                         && node.equals(lastAnnotationNode);
+                 if (isCurrentNodeCloseAnnotationAloneInLine
+                         || node.getType() == TokenTypes.AT
+                         && parentNode.getParent().getType() == TokenTypes.MODIFIERS) {

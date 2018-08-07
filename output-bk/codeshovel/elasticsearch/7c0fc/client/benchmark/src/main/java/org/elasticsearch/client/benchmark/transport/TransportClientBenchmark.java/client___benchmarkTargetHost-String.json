@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "TransportClientBenchmark.java",
+  "functionName": "client",
+  "functionId": "client___benchmarkTargetHost-String",
+  "sourceFilePath": "client/benchmark/src/main/java/org/elasticsearch/client/benchmark/transport/TransportClientBenchmark.java",
+  "functionStartLine": 53,
+  "functionEndLine": 57,
+  "changeHistory": [
+    "194a6b1df031a95977b6ca395a74a8b74d9af31d",
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+    "c33f85bc37bbfee87158738f538d380c0cc31d13"
+  ],
+  "changeHistoryShort": {
+    "194a6b1df031a95977b6ca395a74a8b74d9af31d": "Ybodychange",
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": "Ybodychange",
+    "c33f85bc37bbfee87158738f538d380c0cc31d13": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "194a6b1df031a95977b6ca395a74a8b74d9af31d": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove LocalTransport in favor of MockTcpTransport (#20695)\n\nThis change proposes the removal of all non-tcp transport implementations. The\r\nmock transport can be used by default to run tests instead of local transport that has\r\nroughly the same performance compared to TCP or at least not noticeably slower.\r\n\r\nThis is a master only change, deprecation notice in 5.x will be committed as a\r\nseparate change.",
+      "commitDate": 1475832467000,
+      "commitName": "194a6b1df031a95977b6ca395a74a8b74d9af31d",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1472195147000,
+      "commitNameOld": "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 42.1,
+      "commitsBetweenForRepo": 522,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n     protected TransportClient client(String benchmarkTargetHost) throws Exception {\n         TransportClient client \u003d new PreBuiltTransportClient(Settings.EMPTY, NoopPlugin.class);\n-        client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(benchmarkTargetHost), 9300));\n+        client.addTransportAddress(new TransportAddress(InetAddress.getByName(benchmarkTargetHost), 9300));\n         return client;\n     }\n\\ No newline at end of file\n"
+    },
+    "7b81c4ca59fb209cecc87b3a4ea482faa3c88518": {
+      "type": "Ybodychange",
+      "commitMessage": "Add client-benchmark-noop-api-plugin to stress clients even more in benchmarks (#20103)\n\n",
+      "commitDate": 1472195147000,
+      "commitName": "7b81c4ca59fb209cecc87b3a4ea482faa3c88518",
+      "commitAuthor": "Daniel Mitterdorfer",
+      "commitDateOld": 1469523682000,
+      "commitNameOld": "c33f85bc37bbfee87158738f538d380c0cc31d13",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 30.92,
+      "commitsBetweenForRepo": 437,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n     protected TransportClient client(String benchmarkTargetHost) throws Exception {\n-        TransportClient client \u003d new PreBuiltTransportClient(Settings.EMPTY);\n+        TransportClient client \u003d new PreBuiltTransportClient(Settings.EMPTY, NoopPlugin.class);\n         client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(benchmarkTargetHost), 9300));\n         return client;\n     }\n\\ No newline at end of file\n"
+    },
+    "c33f85bc37bbfee87158738f538d380c0cc31d13": {
+      "type": "Yintroduced",
+      "commitMessage": "Add client benchmark\n\nWith this commit we add a benchmark for the new REST client and the\nexisting transport client.\n\nCloses #19281\n",
+      "commitDate": 1469523682000,
+      "commitName": "c33f85bc37bbfee87158738f538d380c0cc31d13",
+      "commitAuthor": "Daniel Mitterdorfer"
+    }
+  }
+}

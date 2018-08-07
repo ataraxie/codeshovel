@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "EmptyBlockCheck.java",
+  "functionName": "getAcceptableTokens",
+  "functionId": "getAcceptableTokens",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/EmptyBlockCheck.java",
+  "functionStartLine": 118,
+  "functionEndLine": 136,
+  "changeHistory": [
+    "9ea33d0720a75c067ad5264978ebe0ba4c2f3a06",
+    "dd6b080a16e0933b3d19305f84ba01c8893839f3",
+    "a4c5c652f6f82eeb5ad0709e57f2306ea0d3b815",
+    "516b0df8c4cef67ef175fb8cab2365e4e978c721"
+  ],
+  "changeHistoryShort": {
+    "9ea33d0720a75c067ad5264978ebe0ba4c2f3a06": "Ybodychange",
+    "dd6b080a16e0933b3d19305f84ba01c8893839f3": "Ybodychange",
+    "a4c5c652f6f82eeb5ad0709e57f2306ea0d3b815": "Ybodychange",
+    "516b0df8c4cef67ef175fb8cab2365e4e978c721": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "9ea33d0720a75c067ad5264978ebe0ba4c2f3a06": {
+      "type": "Ybodychange",
+      "commitMessage": "Extend EmptyBlock check to verify synchronized blocks, issue #964\n",
+      "commitDate": 1429817095000,
+      "commitName": "9ea33d0720a75c067ad5264978ebe0ba4c2f3a06",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1429810711000,
+      "commitNameOld": "dd6b080a16e0933b3d19305f84ba01c8893839f3",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.07,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     public int[] getAcceptableTokens()\n     {\n         return new int[] {\n             TokenTypes.LITERAL_WHILE,\n             TokenTypes.LITERAL_TRY,\n             TokenTypes.LITERAL_CATCH,\n             TokenTypes.LITERAL_FINALLY,\n             TokenTypes.LITERAL_DO,\n             TokenTypes.LITERAL_IF,\n             TokenTypes.LITERAL_ELSE,\n             TokenTypes.LITERAL_FOR,\n             TokenTypes.INSTANCE_INIT,\n             TokenTypes.STATIC_INIT,\n             TokenTypes.LITERAL_SWITCH,\n+            TokenTypes.LITERAL_SYNCHRONIZED,\n             TokenTypes.LITERAL_CASE,\n-            TokenTypes.LITERAL_SWITCH,\n             TokenTypes.LITERAL_DEFAULT,\n             TokenTypes.ARRAY_INIT,\n         };\n     }\n\\ No newline at end of file\n"
+    },
+    "dd6b080a16e0933b3d19305f84ba01c8893839f3": {
+      "type": "Ybodychange",
+      "commitMessage": "all TODO/FIXME were removed , some of them converted to issues\n",
+      "commitDate": 1429810711000,
+      "commitName": "dd6b080a16e0933b3d19305f84ba01c8893839f3",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1429113367000,
+      "commitNameOld": "1c42e3eeb9aeebc47b2373541c1cc8d311d8b671",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 8.07,
+      "commitsBetweenForRepo": 36,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,20 @@\n     public int[] getAcceptableTokens()\n     {\n         return new int[] {\n             TokenTypes.LITERAL_WHILE,\n             TokenTypes.LITERAL_TRY,\n             TokenTypes.LITERAL_CATCH,\n             TokenTypes.LITERAL_FINALLY,\n             TokenTypes.LITERAL_DO,\n             TokenTypes.LITERAL_IF,\n             TokenTypes.LITERAL_ELSE,\n             TokenTypes.LITERAL_FOR,\n             TokenTypes.INSTANCE_INIT,\n             TokenTypes.STATIC_INIT,\n             TokenTypes.LITERAL_SWITCH,\n             TokenTypes.LITERAL_CASE,\n             TokenTypes.LITERAL_SWITCH,\n             TokenTypes.LITERAL_DEFAULT,\n             TokenTypes.ARRAY_INIT,\n-            //TODO: does this handle TokenTypes.LITERAL_SYNCHRONIZED?\n         };\n     }\n\\ No newline at end of file\n"
+    },
+    "a4c5c652f6f82eeb5ad0709e57f2306ea0d3b815": {
+      "type": "Ybodychange",
+      "commitMessage": "extra method getAcceptableTokens was removed\n",
+      "commitDate": 1423433211000,
+      "commitName": "a4c5c652f6f82eeb5ad0709e57f2306ea0d3b815",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1423431987000,
+      "commitNameOld": "abe2b200312ee72aa552026b1a34e8bd72bfdc4e",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,21 @@\n     public int[] getAcceptableTokens()\n     {\n         return new int[] {\n             TokenTypes.LITERAL_WHILE,\n             TokenTypes.LITERAL_TRY,\n             TokenTypes.LITERAL_CATCH,\n             TokenTypes.LITERAL_FINALLY,\n             TokenTypes.LITERAL_DO,\n             TokenTypes.LITERAL_IF,\n             TokenTypes.LITERAL_ELSE,\n             TokenTypes.LITERAL_FOR,\n             TokenTypes.INSTANCE_INIT,\n             TokenTypes.STATIC_INIT,\n             TokenTypes.LITERAL_SWITCH,\n+            TokenTypes.LITERAL_CASE,\n+            TokenTypes.LITERAL_SWITCH,\n+            TokenTypes.LITERAL_DEFAULT,\n+            TokenTypes.ARRAY_INIT,\n             //TODO: does this handle TokenTypes.LITERAL_SYNCHRONIZED?\n         };\n     }\n\\ No newline at end of file\n"
+    },
+    "516b0df8c4cef67ef175fb8cab2365e4e978c721": {
+      "type": "Yintroduced",
+      "commitMessage": "New Check: Empty Catch Block Check, issue #571\n",
+      "commitDate": 1423424621000,
+      "commitName": "516b0df8c4cef67ef175fb8cab2365e4e978c721",
+      "commitAuthor": "alexkravin"
+    }
+  }
+}

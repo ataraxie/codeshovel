@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+index 04a615818..35b8e9de6 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ant/CheckstyleAntTask.java
+@@ -460,101 +460,101 @@ public class CheckstyleAntTask extends Task {
+         // override with Ant properties like ${basedir}
+         final Map<String, Object> antProps = getProject().getProperties();
+         for (Map.Entry<String, Object> entry : antProps.entrySet()) {
+             final String value = String.valueOf(entry.getValue());
+             returnValue.setProperty(entry.getKey(), value);
+         }
+ 
+         // override with properties specified in subelements
+         for (Property p : overrideProps) {
+             returnValue.setProperty(p.getKey(), p.getValue());
+         }
+ 
+         return returnValue;
+     }
+ 
+     /**
+      * Return the list of listeners set in this task.
+      * @return the list of listeners.
+      */
+     private AuditListener[] getListeners() {
+         final int formatterCount = Math.max(1, formatters.size());
+ 
+         final AuditListener[] listeners = new AuditListener[formatterCount];
+ 
+         // formatters
+         try {
+             if (formatters.isEmpty()) {
+                 final OutputStream debug = new LogOutputStream(this, Project.MSG_DEBUG);
+                 final OutputStream err = new LogOutputStream(this, Project.MSG_ERR);
+                 listeners[0] = new DefaultLogger(debug, AutomaticBean.OutputStreamOptions.CLOSE,
+                         err, AutomaticBean.OutputStreamOptions.CLOSE);
+             }
+             else {
+                 for (int i = 0; i < formatterCount; i++) {
+                     final Formatter formatter = formatters.get(i);
+                     listeners[i] = formatter.createListener(this);
+                 }
+             }
+         }
+         catch (IOException ex) {
+             throw new BuildException(String.format(Locale.ROOT, "Unable to create listeners: "
+                     + "formatters {%s}.", formatters), ex);
+         }
+         return listeners;
+     }
+ 
+     /**
+      * Returns the list of files (full path name) to process.
+      * @return the list of files included via the fileName, filesets and paths.
+      */
+-    protected List<File> getFilesToCheck() {
++    private List<File> getFilesToCheck() {
+         final List<File> allFiles = new ArrayList<>();
+         if (fileName != null) {
+             // oops we've got an additional one to process, don't
+             // forget it. No sweat, it's fully resolved via the setter.
+             log("Adding standalone file for audit", Project.MSG_VERBOSE);
+             allFiles.add(new File(fileName));
+         }
+ 
+         final List<File> filesFromFileSets = scanFileSets();
+         allFiles.addAll(filesFromFileSets);
+ 
+         final List<File> filesFromPaths = scanPaths();
+         allFiles.addAll(filesFromPaths);
+ 
+         return allFiles;
+     }
+ 
+     /**
+      * Retrieves all files from the defined paths.
+      * @return a list of files defined via paths.
+      */
+     private List<File> scanPaths() {
+         final List<File> allFiles = new ArrayList<>();
+ 
+         for (int i = 0; i < paths.size(); i++) {
+             final Path currentPath = paths.get(i);
+             final List<File> pathFiles = scanPath(currentPath, i + 1);
+             allFiles.addAll(pathFiles);
+         }
+ 
+         return allFiles;
+     }
+ 
+     /**
+      * Scans the given path and retrieves all files for the given path.
+      *
+      * @param path      A path to scan.
+      * @param pathIndex The index of the given path. Used in log messages only.
+      * @return A list of files, extracted from the given path.
+      */
+     private List<File> scanPath(Path path, int pathIndex) {
+         final String[] resources = path.list();
+         log(pathIndex + ") Scanning path " + path, Project.MSG_VERBOSE);
+         final List<File> allFiles = new ArrayList<>();
+         int concreteFilesCount = 0;
+ 
+         for (String resource : resources) {
+             final File file = new File(resource);
+             if (file.isFile()) {
+                 concreteFilesCount++;

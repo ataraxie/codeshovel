@@ -1,0 +1,114 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
+index 7f680222b..4a2f416df 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/IllegalInstantiationCheck.java
+@@ -180,102 +180,108 @@ public class IllegalInstantiationCheck
+         final DetailAST packageNameAST = ast.getLastChild()
+                 .getPreviousSibling();
+         final FullIdent packageIdent =
+                 FullIdent.createFullIdent(packageNameAST);
+         pkgName = packageIdent.getText();
+     }
+ 
+     /**
+      * Collects a "new" token.
+      * @param ast the "new" token
+      */
+     private void processLiteralNew(DetailAST ast) {
+         if (ast.getParent().getType() != TokenTypes.METHOD_REF) {
+             instantiations.add(ast);
+         }
+     }
+ 
+     /**
+      * Processes one of the collected "new" tokens when treewalking
+      * has finished.
+      * @param newTokenAst the "new" token.
+      */
+     private void postprocessLiteralNew(DetailAST newTokenAst) {
+         final DetailAST typeNameAst = newTokenAst.getFirstChild();
+         final AST nameSibling = typeNameAst.getNextSibling();
+         if (nameSibling.getType() == TokenTypes.ARRAY_DECLARATOR) {
+             // ast == "new Boolean[]"
+             return;
+         }
+ 
+         final FullIdent typeIdent = FullIdent.createFullIdent(typeNameAst);
+         final String typeName = typeIdent.getText();
+         final int lineNo = newTokenAst.getLineNo();
+         final int colNo = newTokenAst.getColumnNo();
+         final String fqClassName = getIllegalInstantiation(typeName);
+         if (fqClassName != null) {
+             log(lineNo, colNo, MSG_KEY, fqClassName);
+         }
+     }
+ 
+     /**
+      * Checks illegal instantiations.
+      * @param className instantiated class, may or may not be qualified
+      * @return the fully qualified class name of className
+      * or null if instantiation of className is OK
+      */
+     private String getIllegalInstantiation(String className) {
+         if (illegalClasses.contains(className)) {
+             return className;
+         }
++        final int pkgNameLen;
+ 
+-        final int pkgNameLen = pkgName == null ? 0 : pkgName.length();
++        if (pkgName == null) {
++            pkgNameLen = 0;
++        }
++        else {
++            pkgNameLen = pkgName.length();
++        }
+ 
+         for (String illegal : illegalClasses) {
+ 
+             if (isStandardClass(className, illegal)) {
+                 return illegal;
+             }
+             if (isSamePackage(className, pkgNameLen, illegal)) {
+                 return illegal;
+             }
+             final String importArg = checkImportStatements(className);
+             if (importArg != null) {
+                 return importArg;
+             }
+         }
+         return null;
+     }
+ 
+     /**
+      * check import statements
+      * @param className name of the class
+      * @return value of illegal instatiated type
+      */
+     private String checkImportStatements(String className) {
+         // import statements
+         for (FullIdent importLineText : imports) {
+             final String importArg = importLineText.getText();
+             if (importArg.endsWith(".*")) {
+                 final String fqClass =
+                     importArg.substring(0, importArg.length() - 1)
+                     + className;
+                 // assume that illegalInsts only contain existing classes
+                 // or else we might create a false alarm here
+                 if (illegalClasses.contains(fqClass)) {
+                     return fqClass;
+                 }
+             }
+             else {
+                 if (Utils.baseClassname(importArg).equals(className)
+                     && illegalClasses.contains(importArg)) {
+                     return importArg;
+                 }
+             }
+         }
+         return null;
+     }
+ 
+     /**
+      * check that type is of the same package
+      * @param className class name
+      * @param pkgNameLen package name

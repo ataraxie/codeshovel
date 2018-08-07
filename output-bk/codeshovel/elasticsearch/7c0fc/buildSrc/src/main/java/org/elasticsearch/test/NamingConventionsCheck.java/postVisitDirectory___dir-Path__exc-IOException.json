@@ -1,0 +1,88 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "NamingConventionsCheck.java",
+  "functionName": "postVisitDirectory",
+  "functionId": "postVisitDirectory___dir-Path__exc-IOException",
+  "sourceFilePath": "buildSrc/src/main/java/org/elasticsearch/test/NamingConventionsCheck.java",
+  "functionStartLine": 281,
+  "functionEndLine": 285,
+  "changeHistory": [
+    "fc97e25b564011bdb1d272a15e5b6b1f22c0c633",
+    "d0e4485d421360ff3967bc5fe20ca08086b742c8",
+    "95cc3e38fc3c4e7a415473140497fed40394dccc",
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+    "df8206853bc34306fc70420a9146c00a637bc6db"
+  ],
+  "changeHistoryShort": {
+    "fc97e25b564011bdb1d272a15e5b6b1f22c0c633": "Ymodifierchange",
+    "d0e4485d421360ff3967bc5fe20ca08086b742c8": "Yfilerename",
+    "95cc3e38fc3c4e7a415473140497fed40394dccc": "Ymultichange(Ymovefromfile,Ybodychange)",
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5": "Yfilerename",
+    "df8206853bc34306fc70420a9146c00a637bc6db": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "fc97e25b564011bdb1d272a15e5b6b1f22c0c633": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Add task to look for tests in src/main (#24298)\n\nCreates a new task `namingConventionsMain`, that runs on the\r\n`buildSrc` and `test:framework` projects and fails the build if\r\nany of the classes in the main artifacts are named like tests or\r\nare non-abstract subclasses of ESTestCase.\r\n\r\nIt also fixes the three tests that would cause it to fail.",
+      "commitDate": 1493169107000,
+      "commitName": "fc97e25b564011bdb1d272a15e5b6b1f22c0c633",
+      "commitAuthor": "Nik Everett",
+      "commitDateOld": 1466163987000,
+      "commitNameOld": "8c6037428490f266b3a73133e37acd44949c192a",
+      "commitAuthorOld": "javanna",
+      "daysBetweenCommits": 312.56,
+      "commitsBetweenForRepo": 3947,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n-            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {\n-                // Go up one package by jumping back to the second to last \u0027.\u0027\n-                packageName \u003d packageName.substring(0, 1 + packageName.lastIndexOf(\u0027.\u0027, packageName.length() - 2));\n-                return FileVisitResult.CONTINUE;\n-            }\n\\ No newline at end of file\n+        public final FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {\n+            // Go up one package by jumping back to the second to last \u0027.\u0027\n+            packageName \u003d packageName.substring(0, 1 + packageName.lastIndexOf(\u0027.\u0027, packageName.length() - 2));\n+            return FileVisitResult.CONTINUE;\n+        }\n\\ No newline at end of file\n"
+    },
+    "d0e4485d421360ff3967bc5fe20ca08086b742c8": {
+      "type": "Yfilerename",
+      "commitMessage": "Move NamingConventionsCheck into buildSrc\n\nThis will let things that don\u0027t depend on :test:framework like the\nclient use it.\n\nAlso skip initializing the classes we check because we don\u0027t care\nabout their initialization behavior because we\u0027re not executing them.\nThis makes the naming conventions check pretty close to instant\nfrom a \"human eye\" perspective.\n",
+      "commitDate": 1465943434000,
+      "commitName": "d0e4485d421360ff3967bc5fe20ca08086b742c8",
+      "commitAuthor": "Nik Everett",
+      "commitDateOld": 1465940726000,
+      "commitNameOld": "f132a8f1c84fd835d941db547c0f668e0abdf415",
+      "commitAuthorOld": "Jack Conradson",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "95cc3e38fc3c4e7a415473140497fed40394dccc": {
+      "type": "Ymultichange(Ymovefromfile,Ybodychange)",
+      "commitMessage": "Check test naming conventions on all modules\n\nThe big win here is catching tests that are incorrectly named and will\nbe skipped by gradle, providing a false sense of security.\n\nThe whole thing takes about 10 seconds on my Macbook Air, not counting\ncompiling the test classes, which seems worth it. Because this runs as\na gradle task with propery UP-TO-DATE handling it can be skipped if the\ntests haven\u0027t been changed which should save some time.\n\nI chose to keep this in test:framework rather than a new subproject of\nbuildSrc because ESIntegTestCase and doesn\u0027t inroduce any additional\ndependencies.\n",
+      "commitDate": 1456781509000,
+      "commitName": "95cc3e38fc3c4e7a415473140497fed40394dccc",
+      "commitAuthor": "Nik Everett",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ybodychange"
+      ]
+    },
+    "15a62448343fd24f8e63f43b1e4b16f50005e4a5": {
+      "type": "Yfilerename",
+      "commitMessage": "create core module\n",
+      "commitDate": 1433502723000,
+      "commitName": "15a62448343fd24f8e63f43b1e4b16f50005e4a5",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1433502668000,
+      "commitNameOld": "7ccc193a666e2ae888e7ac93d677a2143e5e07c3",
+      "commitAuthorOld": "Simon Willnauer",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "df8206853bc34306fc70420a9146c00a637bc6db": {
+      "type": "Yintroduced",
+      "commitMessage": "[TESTS] Make sure test end with ..Tests\n\nThis commit adds a simple testcase that ensures all our tests end with the right naming.\n\nCloses #9945\n",
+      "commitDate": 1425313879000,
+      "commitName": "df8206853bc34306fc70420a9146c00a637bc6db",
+      "commitAuthor": "Simon Willnauer"
+    }
+  }
+}

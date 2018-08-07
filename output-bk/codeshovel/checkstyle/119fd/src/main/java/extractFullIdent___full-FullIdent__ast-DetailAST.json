@@ -1,0 +1,167 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "java",
+  "functionId": "extractFullIdent___full-FullIdent__ast-DetailAST",
+  "sourceFilePath": "src/main/java",
+  "functionStartLine": 0,
+  "functionEndLine": 124,
+  "changeHistory": [
+    "c91ffeaafb46d8f2558b4e3029597634029f404d",
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+    "8970d005176c83e9f1d21086346a89a97f14843b",
+    "31ac01616c5544f85205329965f491a40cf6f138",
+    "4cbd709c019cf1b69796858506d673f7b66d37c7",
+    "aa5dbacdcbf20a9b56e2f7ecb577bb47778b0c54",
+    "d077a402da51bb238a7da99d5e2542437b145192"
+  ],
+  "changeHistoryShort": {
+    "c91ffeaafb46d8f2558b4e3029597634029f404d": "Ybodychange",
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": "Ybodychange",
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": "Ybodychange",
+    "8970d005176c83e9f1d21086346a89a97f14843b": "Ybodychange",
+    "31ac01616c5544f85205329965f491a40cf6f138": "Ymodifierchange",
+    "4cbd709c019cf1b69796858506d673f7b66d37c7": "Ybodychange",
+    "aa5dbacdcbf20a9b56e2f7ecb577bb47778b0c54": "Ymultichange(Ymovefromfile,Ymodifierchange,Ybodychange,Yrename,Yparameterchange)",
+    "d077a402da51bb238a7da99d5e2542437b145192": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "c91ffeaafb46d8f2558b4e3029597634029f404d": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #4429: IllegalType: support arrays as types\n",
+      "commitDate": 1517770736000,
+      "commitName": "c91ffeaafb46d8f2558b4e3029597634029f404d",
+      "commitAuthor": "kazachka",
+      "commitDateOld": 1515079236000,
+      "commitNameOld": "0847a10b9430d9fb0a3f44df03e891da906bea47",
+      "commitAuthorOld": "Pavel Bludov",
+      "daysBetweenCommits": 31.15,
+      "commitsBetweenForRepo": 45,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,17 @@\n     private static void extractFullIdent(FullIdent full, DetailAST ast) {\n         if (ast !\u003d null) {\n             if (ast.getType() \u003d\u003d TokenTypes.DOT) {\n                 extractFullIdent(full, ast.getFirstChild());\n                 full.append(\".\");\n                 extractFullIdent(\n                     full, ast.getFirstChild().getNextSibling());\n             }\n+            else if (ast.getType() \u003d\u003d TokenTypes.ARRAY_DECLARATOR) {\n+                extractFullIdent(full, ast.getFirstChild());\n+                full.append(\"[]\");\n+            }\n             else {\n                 full.append(ast);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "39b343a32a4f1ce18ee98a34618fda0a5404d6a0": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3143: forbid empty return statements and fixed violations",
+      "commitDate": 1464356569000,
+      "commitName": "39b343a32a4f1ce18ee98a34618fda0a5404d6a0",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1458221995000,
+      "commitNameOld": "167dd96d8ca503a472bf003f187191d6b0ce586c",
+      "commitAuthorOld": "Rasmus Kaj",
+      "daysBetweenCommits": 71.0,
+      "commitsBetweenForRepo": 145,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,13 @@\n     private static void extractFullIdent(FullIdent full, DetailAST ast) {\n-        if (ast \u003d\u003d null) {\n-            return;\n-        }\n-\n-        if (ast.getType() \u003d\u003d TokenTypes.DOT) {\n-            extractFullIdent(full, ast.getFirstChild());\n-            full.append(\".\");\n-            extractFullIdent(\n-                full, ast.getFirstChild().getNextSibling());\n-        }\n-        else {\n-            full.append(ast);\n+        if (ast !\u003d null) {\n+            if (ast.getType() \u003d\u003d TokenTypes.DOT) {\n+                extractFullIdent(full, ast.getFirstChild());\n+                full.append(\".\");\n+                extractFullIdent(\n+                    full, ast.getFirstChild().getNextSibling());\n+            }\n+            else {\n+                full.append(ast);\n+            }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "b94bac0719851b65b59b4aafc5bd3ef029321ed7": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, api, #512\n",
+      "commitDate": 1421677181000,
+      "commitName": "b94bac0719851b65b59b4aafc5bd3ef029321ed7",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "d62a2cc02092cb6c1a1666630a51a6ec7c50a878": {
+      "type": "Ybodychange",
+      "commitMessage": "Inspired by patch# 2111354 - changes to remove casting. Neat trick\n",
+      "commitDate": 1221737656000,
+      "commitName": "d62a2cc02092cb6c1a1666630a51a6ec7c50a878",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1200296548000,
+      "commitNameOld": "fd90bd5aa5cd623b08a2e44ef05e8fac8045d333",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 248.16,
+      "commitsBetweenForRepo": 71,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     private static void extractFullIdent(FullIdent aFull, DetailAST aAST)\n     {\n         if (aAST \u003d\u003d null) {\n             return;\n         }\n \n         if (aAST.getType() \u003d\u003d TokenTypes.DOT) {\n-            extractFullIdent(aFull, (DetailAST) aAST.getFirstChild());\n+            extractFullIdent(aFull, aAST.getFirstChild());\n             aFull.append(\".\");\n             extractFullIdent(\n-                aFull, (DetailAST) aAST.getFirstChild().getNextSibling());\n+                aFull, aAST.getFirstChild().getNextSibling());\n         }\n         else {\n             aFull.append(aAST);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "8970d005176c83e9f1d21086346a89a97f14843b": {
+      "type": "Ybodychange",
+      "commitMessage": "hide default constructor in FullIdent and make the class final.\n\nInstances should only be created through the factory method\n",
+      "commitDate": 1039070858000,
+      "commitName": "8970d005176c83e9f1d21086346a89a97f14843b",
+      "commitAuthor": "Lars Kühne",
+      "commitDateOld": 1038034015000,
+      "commitNameOld": "18e561669b0f1c086eaa942696ab32e25b33029a",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 12.0,
+      "commitsBetweenForRepo": 79,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,16 @@\n     private static void extractFullIdent(FullIdent aFull, DetailAST aAST)\n     {\n-        // A guard to be paranoid\n         if (aAST \u003d\u003d null) {\n             return;\n         }\n \n         if (aAST.getType() \u003d\u003d TokenTypes.DOT) {\n             extractFullIdent(aFull, (DetailAST) aAST.getFirstChild());\n             aFull.append(\".\");\n             extractFullIdent(\n                 aFull, (DetailAST) aAST.getFirstChild().getNextSibling());\n         }\n         else {\n             aFull.append(aAST);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "31ac01616c5544f85205329965f491a40cf6f138": {
+      "type": "Ymodifierchange",
+      "commitMessage": "improved javadoc and made append methods private.\n",
+      "commitDate": 1038033341000,
+      "commitName": "31ac01616c5544f85205329965f491a40cf6f138",
+      "commitAuthor": "Lars Kühne",
+      "commitDateOld": 1037161281000,
+      "commitNameOld": "4cbd709c019cf1b69796858506d673f7b66d37c7",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 10.09,
+      "commitsBetweenForRepo": 62,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n-    public static void extractFullIdent(FullIdent aFull, DetailAST aAST)\n+    private static void extractFullIdent(FullIdent aFull, DetailAST aAST)\n     {\n         // A guard to be paranoid\n         if (aAST \u003d\u003d null) {\n             return;\n         }\n \n         if (aAST.getType() \u003d\u003d TokenTypes.DOT) {\n             extractFullIdent(aFull, (DetailAST) aAST.getFirstChild());\n             aFull.append(\".\");\n             extractFullIdent(\n                 aFull, (DetailAST) aAST.getFirstChild().getNextSibling());\n         }\n         else {\n             aFull.append(aAST);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "4cbd709c019cf1b69796858506d673f7b66d37c7": {
+      "type": "Ybodychange",
+      "commitMessage": "This is a really enjoyable commit to make. I have finally got to remove the\nugly Verifier class. The only remaining check are based on the new fileset\ncheck that Lars putting together. Magic. :-)\n",
+      "commitDate": 1037161281000,
+      "commitName": "4cbd709c019cf1b69796858506d673f7b66d37c7",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1034638571000,
+      "commitNameOld": "696e7f063faa55192160fc78c7f06c4ccbbc1fcf",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 29.2,
+      "commitsBetweenForRepo": 163,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,17 @@\n     public static void extractFullIdent(FullIdent aFull, DetailAST aAST)\n     {\n         // A guard to be paranoid\n         if (aAST \u003d\u003d null) {\n             return;\n         }\n \n-        if (aAST.getType() \u003d\u003d JavaTokenTypes.DOT) {\n+        if (aAST.getType() \u003d\u003d TokenTypes.DOT) {\n             extractFullIdent(aFull, (DetailAST) aAST.getFirstChild());\n             aFull.append(\".\");\n             extractFullIdent(\n                 aFull, (DetailAST) aAST.getFirstChild().getNextSibling());\n         }\n         else {\n             aFull.append(aAST);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "aa5dbacdcbf20a9b56e2f7ecb577bb47778b0c54": {
+      "type": "Ymultichange(Ymovefromfile,Ymodifierchange,Ybodychange,Yrename,Yparameterchange)",
+      "commitMessage": "Moved across nearly all the unit tests, just the illegal import to go\n",
+      "commitDate": 1033275694000,
+      "commitName": "aa5dbacdcbf20a9b56e2f7ecb577bb47778b0c54",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ymodifierchange",
+        "Ybodychange",
+        "Yrename",
+        "Yparameterchange"
+      ]
+    },
+    "d077a402da51bb238a7da99d5e2542437b145192": {
+      "type": "Yintroduced",
+      "commitMessage": "Added a lot more checks for name format. Also endeavouring to get Checkstyle\npassing Javadoc again before it gets out of control.\n",
+      "commitDate": 1033108888000,
+      "commitName": "d077a402da51bb238a7da99d5e2542437b145192",
+      "commitAuthor": "Oliver Burn"
+    }
+  }
+}

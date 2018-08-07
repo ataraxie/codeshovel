@@ -1,0 +1,117 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "SuppressionCommentFilter.java",
+  "functionName": "tagSuppressions",
+  "functionId": "tagSuppressions___comments-Collection__TextBlock__",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java",
+  "functionStartLine": 251,
+  "functionEndLine": 260,
+  "changeHistory": [
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "e50e1fcd1c17ba1f73d11df38382907cc163a1d1",
+    "262209477f39964a63103613f3e2c985da083371",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24",
+    "d622cf7e4255dd35e2592a71653c51e7c2b698f0"
+  ],
+  "changeHistoryShort": {
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": "Ybodychange",
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "e50e1fcd1c17ba1f73d11df38382907cc163a1d1": "Ybodychange",
+    "262209477f39964a63103613f3e2c985da083371": "Ymultichange(Yparameterchange,Ybodychange)",
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": "Ybodychange",
+    "d622cf7e4255dd35e2592a71653c51e7c2b698f0": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": {
+      "type": "Ybodychange",
+      "commitMessage": "Prefixes, checkstyle, #512\n\nConflicts:\n\tsrc/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java\n",
+      "commitDate": 1421678312000,
+      "commitName": "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1",
+      "commitAuthor": "alexkravin",
+      "commitDateOld": 1421677232000,
+      "commitNameOld": "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d",
+      "commitAuthorOld": "alexkravin",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 18,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     private void tagSuppressions(Collection\u003cTextBlock\u003e comments)\n     {\n         for (TextBlock comment : comments) {\n             final int startLineNo \u003d comment.getStartLineNo();\n             final String[] text \u003d comment.getText();\n-            tagCoontLine(text[0], startLineNo, comment.getStartColNo());\n+            tagCommentLine(text[0], startLineNo, comment.getStartColNo());\n             for (int i \u003d 1; i \u003c text.length; i++) {\n-                tagCoontLine(text[i], startLineNo + i, 0);\n+                tagCommentLine(text[i], startLineNo + i, 0);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, filters, #512\n",
+      "commitDate": 1421677232000,
+      "commitName": "5cfe30d7ad6b98069f66ac2494afdcebcbcc8f1d",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "e50e1fcd1c17ba1f73d11df38382907cc163a1d1": {
+      "type": "Ybodychange",
+      "commitMessage": "Use the new syntactic sugar \"for loop\".\n\nEnd of the cosmetic changes.\n",
+      "commitDate": 1197714527000,
+      "commitName": "e50e1fcd1c17ba1f73d11df38382907cc163a1d1",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1197697256000,
+      "commitNameOld": "262209477f39964a63103613f3e2c985da083371",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.2,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,11 @@\n     private void tagSuppressions(Collection\u003cTextBlock\u003e aComments)\n     {\n-        for (final Iterator\u003cTextBlock\u003e iter \u003d aComments.iterator(); iter\n-                .hasNext();)\n-        {\n-            final TextBlock comment \u003d iter.next();\n+        for (TextBlock comment : aComments) {\n             final int startLineNo \u003d comment.getStartLineNo();\n             final String[] text \u003d comment.getText();\n             tagCommentLine(text[0], startLineNo, comment.getStartColNo());\n             for (int i \u003d 1; i \u003c text.length; i++) {\n                 tagCommentLine(text[i], startLineNo + i, 0);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "262209477f39964a63103613f3e2c985da083371": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Start of adding generics.\n",
+      "commitDate": 1197697256000,
+      "commitName": "262209477f39964a63103613f3e2c985da083371",
+      "commitAuthor": "Oliver Burn",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "35d1673788bbbac8263fdb69275dc6a63b095a24": {
+      "type": "Ybodychange",
+      "commitMessage": "Making local variables final where possible.\n",
+      "commitDate": 1152243856000,
+      "commitName": "35d1673788bbbac8263fdb69275dc6a63b095a24",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1152243235000,
+      "commitNameOld": "f4a92dad02a3a36b5e2e988bba04debb1e2c9db9",
+      "commitAuthorOld": "Oliver Burn",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     private void tagSuppressions(Collection aComments)\n     {\n-        for (Iterator iter \u003d aComments.iterator(); iter.hasNext();) {\n+        for (final Iterator iter \u003d aComments.iterator(); iter.hasNext();) {\n             final TextBlock comment \u003d (TextBlock) iter.next();\n             final int startLineNo \u003d comment.getStartLineNo();\n             final String[] text \u003d comment.getText();\n             tagCommentLine(text[0], startLineNo, comment.getStartColNo());\n             for (int i \u003d 1; i \u003c text.length; i++) {\n                 tagCommentLine(text[i], startLineNo + i, 0);\n             }\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "d622cf7e4255dd35e2592a71653c51e7c2b698f0": {
+      "type": "Yintroduced",
+      "commitMessage": "add filter that suppresses audit events according to source file comments\n",
+      "commitDate": 1087056253000,
+      "commitName": "d622cf7e4255dd35e2592a71653c51e7c2b698f0",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

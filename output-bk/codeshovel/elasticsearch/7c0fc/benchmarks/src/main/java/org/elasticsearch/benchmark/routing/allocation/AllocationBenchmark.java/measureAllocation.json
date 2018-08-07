@@ -1,0 +1,43 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "AllocationBenchmark.java",
+  "functionName": "measureAllocation",
+  "functionId": "measureAllocation",
+  "sourceFilePath": "benchmarks/src/main/java/org/elasticsearch/benchmark/routing/allocation/AllocationBenchmark.java",
+  "functionStartLine": 159,
+  "functionEndLine": 167,
+  "changeHistory": [
+    "2ee9ab25d9055cc8355921a0f94612c0a1bb4d65",
+    "2c467fd9c21cc2f79a58b6c1d412a87b83be94f3"
+  ],
+  "changeHistoryShort": {
+    "2ee9ab25d9055cc8355921a0f94612c0a1bb4d65": "Ybodychange",
+    "2c467fd9c21cc2f79a58b6c1d412a87b83be94f3": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "2ee9ab25d9055cc8355921a0f94612c0a1bb4d65": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove `RoutingAllocation.Result` (#20538)\n\nCurrently all the reroute-like methods of `AllocationService` return a result object of type `RoutingAllocation.Result`. The result object contains the new `RoutingTable` and `MetaData` plus an indication whether those were changed. The caller is then responsible of updating a cluster state with these. These means that things can easily go wrong and one can take one of these but not the other causing inconsistencies. We already have a utility method on the `ClusterState` builder that does but no one forces you to do so. Also 99% of the callers do the same thing: i.e., check if the result was changed and if so update the very same cluster state that was passed to `AllocationService`.  This PR folds this pattern into `AllocationService` and changes almost all it\u0027s methods to return a new cluster state (potentially the original one).  This saves some 500 lines of code.\r\n\r\nThe one exception here is the reroute API which executes allocation commands and potentially returns an explanation as well (next to the routing table and metadata). That API now returns a `CommandsResult` object which encapsulate a cluster state and the explanation. ",
+      "commitDate": 1474286075000,
+      "commitName": "2ee9ab25d9055cc8355921a0f94612c0a1bb4d65",
+      "commitAuthor": "Boaz Leskes",
+      "commitDateOld": 1470380283000,
+      "commitNameOld": "609a199bd49efb6542fd167f0591c9d6a2847727",
+      "commitAuthorOld": "Boaz Leskes",
+      "daysBetweenCommits": 45.21,
+      "commitsBetweenForRepo": 606,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,9 @@\n     public ClusterState measureAllocation() {\n         ClusterState clusterState \u003d initialClusterState;\n         while (clusterState.getRoutingNodes().hasUnassignedShards()) {\n-            RoutingAllocation.Result result \u003d strategy.applyStartedShards(clusterState, clusterState.getRoutingNodes()\n+            clusterState \u003d strategy.applyStartedShards(clusterState, clusterState.getRoutingNodes()\n                     .shardsWithState(ShardRoutingState.INITIALIZING));\n-            clusterState \u003d ClusterState.builder(clusterState).routingResult(result).build();\n-            result \u003d strategy.reroute(clusterState, \"reroute\");\n-            clusterState \u003d ClusterState.builder(clusterState).routingResult(result).build();\n+            clusterState \u003d strategy.reroute(clusterState, \"reroute\");\n         }\n         return clusterState;\n     }\n\\ No newline at end of file\n"
+    },
+    "2c467fd9c21cc2f79a58b6c1d412a87b83be94f3": {
+      "type": "Yintroduced",
+      "commitMessage": "Add microbenchmarking infrastructure (#18891)\n\nWith this commit we add a benchmarks project that contains the necessary build\r\ninfrastructure and an example benchmark. It is added as a separate project to avoid\r\ninterfering with the regular build too much (especially sanity checks) and to keep\r\nthe microbenchmarks isolated.\r\n\r\nMicrobenchmarks are generated with `gradle :benchmarks:jmhJar` and can be run with\r\n` gradle :benchmarks:jmh`.\r\n\r\nWe intentionally do not use the\r\n[jmh-gradle-plugin](https://github.com/melix/jmh-gradle-plugin) as it causes all\r\nsorts of problems (dependencies are not properly excluded, not all JMH parameters\r\ncan be set) and it adds another abstraction layer that is not needed.\r\n\r\nCloses #18242",
+      "commitDate": 1466002082000,
+      "commitName": "2c467fd9c21cc2f79a58b6c1d412a87b83be94f3",
+      "commitAuthor": "Daniel Mitterdorfer"
+    }
+  }
+}

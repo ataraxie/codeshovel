@@ -1,0 +1,110 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java
+index 8899dab32..a631c0b2d 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/blocks/LeftCurlyCheck.java
+@@ -79,105 +79,101 @@ public class LeftCurlyCheck
+     public LeftCurlyCheck()
+     {
+         super(LeftCurlyOption.EOL, LeftCurlyOption.class);
+     }
+ 
+     /**
+      * Sets the maximum line length used in calculating the placement of the
+      * left curly brace.
+      * @param aMaxLineLength the max allowed line length
+      */
+     public void setMaxLineLength(int aMaxLineLength)
+     {
+         mMaxLineLength = aMaxLineLength;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ANNOTATION_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.ENUM_CONSTANT_DEF,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_TRY,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.LITERAL_SYNCHRONIZED,
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_FOR,
+             // TODO: need to handle....
+             //TokenTypes.STATIC_INIT,
+         };
+     }
+ 
+     @Override
+     public void visitToken(DetailAST aAST)
+     {
+         final DetailAST startToken;
+         final DetailAST brace;
+ 
+         switch (aAST.getType()) {
+         case TokenTypes.CTOR_DEF :
+         case TokenTypes.METHOD_DEF :
+-            // Orig
+-            //startToken = aAST;
+-            // New
+             startToken = skipAnnotationOnlyLines(aAST);
+-            // End
+             brace = aAST.findFirstToken(TokenTypes.SLIST);
+             break;
+ 
+         case TokenTypes.INTERFACE_DEF :
+         case TokenTypes.CLASS_DEF :
+         case TokenTypes.ANNOTATION_DEF :
+         case TokenTypes.ENUM_DEF :
+         case TokenTypes.ENUM_CONSTANT_DEF :
+             startToken = (DetailAST) skipAnnotationOnlyLines(aAST);
+             final DetailAST objBlock = aAST.findFirstToken(TokenTypes.OBJBLOCK);
+             brace = (objBlock == null)
+                 ? null
+                 : (DetailAST) objBlock.getFirstChild();
+             break;
+ 
+         case TokenTypes.LITERAL_WHILE:
+         case TokenTypes.LITERAL_CATCH:
+         case TokenTypes.LITERAL_SYNCHRONIZED:
+         case TokenTypes.LITERAL_FOR:
+         case TokenTypes.LITERAL_TRY:
+         case TokenTypes.LITERAL_FINALLY:
+         case TokenTypes.LITERAL_DO:
+         case TokenTypes.LITERAL_IF :
+             startToken = aAST;
+             brace = aAST.findFirstToken(TokenTypes.SLIST);
+             break;
+ 
+         case TokenTypes.LITERAL_ELSE :
+             startToken = aAST;
+             final DetailAST candidate = (DetailAST) aAST.getFirstChild();
+             brace =
+                 (candidate.getType() == TokenTypes.SLIST)
+                 ? candidate
+                 : null; // silently ignore
+             break;
+ 
+         case TokenTypes.LITERAL_SWITCH :
+             startToken = aAST;
+             brace = aAST.findFirstToken(TokenTypes.LCURLY);
+             break;
+ 
+         default :
+             startToken = null;
+             brace = null;
+         }
+ 
+         if ((brace != null) && (startToken != null)) {
+             verifyBrace(brace, startToken);
+         }
+     }

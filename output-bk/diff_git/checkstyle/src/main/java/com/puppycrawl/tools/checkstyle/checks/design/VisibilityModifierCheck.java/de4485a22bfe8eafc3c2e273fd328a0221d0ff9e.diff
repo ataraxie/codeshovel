@@ -1,0 +1,107 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+index 40d5a8ca3..855373668 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/VisibilityModifierCheck.java
+@@ -246,101 +246,101 @@ public class VisibilityModifierCheck
+     public boolean isPackageAllowed()
+     {
+         return packageAllowed;
+     }
+ 
+     /**
+      * Set whether package visible members are allowed.
+      * @param packageAllowed whether package visible members are allowed
+      */
+     public void setPackageAllowed(boolean packageAllowed)
+     {
+         this.packageAllowed = packageAllowed;
+     }
+ 
+     /**
+      * Set the pattern for public members to ignore.
+      * @param pattern pattern for public members to ignore.
+      */
+     public void setPublicMemberPattern(String pattern)
+     {
+         try {
+             publicMemberPattern = Utils.getPattern(pattern);
+             publicMemberFormat = pattern;
+         }
+         catch (final PatternSyntaxException e) {
+             throw new ConversionException("unable to parse " + pattern, e);
+         }
+     }
+ 
+     /**
+      * @return the regexp for public members to ignore.
+      */
+     private Pattern getPublicMemberRegexp()
+     {
+         return publicMemberPattern;
+     }
+ 
+     /**
+      * Sets whether public immutable are allowed.
+      * @param allow user's value.
+      */
+     public void setAllowPublicImmutableFields(boolean allow)
+     {
+         this.allowPublicImmutableFields = allow;
+     }
+ 
+     /**
+      * Set the list of immutable classes types names.
+      * @param classNames array of immutable types short names.
+      */
+-    public void setImmutableClassNames(String[] classNames)
++    public void setImmutableClassCanonicalNames(String[] classNames)
+     {
+         immutableClassCanonicalNames = Arrays.asList(classNames);
+     }
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.IMPORT,
+         };
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.OBJBLOCK,
+             TokenTypes.IMPORT,
+         };
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAst)
+     {
+         immutableClassShortNames.clear();
+         final List<String> shortNames = getClassShortNames(immutableClassCanonicalNames);
+         immutableClassShortNames.addAll(shortNames);
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         switch (ast.getType()) {
+             case TokenTypes.VARIABLE_DEF:
+                 if (!isAnonymousClassVariable(ast)) {
+                     visitVariableDef(ast);
+                 }
+                 break;
+             case TokenTypes.IMPORT:
+                 visitImport(ast);
+                 break;
+             default:
+                 final String exceptionMsg = "Unexpected token type: " + ast.getText();
+                 throw new IllegalArgumentException(exceptionMsg);
+         }
+     }
+ 
+     /**

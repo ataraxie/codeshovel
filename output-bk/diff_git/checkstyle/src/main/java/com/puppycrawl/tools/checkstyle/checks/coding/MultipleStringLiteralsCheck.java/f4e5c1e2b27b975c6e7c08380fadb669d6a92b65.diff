@@ -1,0 +1,114 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java
+index 619c6ef7f..97afbd37f 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/MultipleStringLiteralsCheck.java
+@@ -46,106 +46,105 @@ public class MultipleStringLiteralsCheck extends Check {
+      */
+     public static final String MSG_KEY = "multiple.string.literal";
+ 
+     /**
+      * The found strings and their positions.
+      * {@code <String, ArrayList>}, with the ArrayList containing StringInfo
+      * objects.
+      */
+     private final Map<String, List<StringInfo>> stringMap = Maps.newHashMap();
+ 
+     /**
+      * Marks the TokenTypes where duplicate strings should be ignored.
+      */
+     private final BitSet ignoreOccurrenceContext = new BitSet();
+ 
+     /**
+      * The allowed number of string duplicates in a file before an error is
+      * generated.
+      */
+     private int allowedDuplicates = 1;
+ 
+     /**
+      * Pattern for matching ignored strings.
+      */
+     private Pattern pattern;
+ 
+     /**
+      * Construct an instance with default values.
+      */
+     public MultipleStringLiteralsCheck() {
+         setIgnoreStringsRegexp("^\"\"$");
+         ignoreOccurrenceContext.set(TokenTypes.ANNOTATION);
+     }
+ 
+     /**
+      * Sets the maximum allowed duplicates of a string.
+      * @param allowedDuplicates The maximum number of duplicates.
+      */
+     public void setAllowedDuplicates(int allowedDuplicates) {
+         this.allowedDuplicates = allowedDuplicates;
+     }
+ 
+     /**
+      * Sets regular expression pattern for ignored strings.
+      * @param ignoreStringsRegexp
+      *        regular expression pattern for ignored strings
+      * @throws org.apache.commons.beanutils.ConversionException
+      *         if unable to create Pattern object
+      */
+     public final void setIgnoreStringsRegexp(String ignoreStringsRegexp) {
+-        if (ignoreStringsRegexp != null
+-            && !ignoreStringsRegexp.isEmpty()) {
+-            pattern = CommonUtils.createPattern(ignoreStringsRegexp);
++        if (ignoreStringsRegexp == null || ignoreStringsRegexp.isEmpty()) {
++            pattern = null;
+         }
+         else {
+-            pattern = null;
++            pattern = CommonUtils.createPattern(ignoreStringsRegexp);
+         }
+     }
+ 
+     /**
+      * Adds a set of tokens the check is interested in.
+      * @param strRep the string representation of the tokens interested in
+      */
+     public final void setIgnoreOccurrenceContext(String... strRep) {
+         ignoreOccurrenceContext.clear();
+         for (final String s : strRep) {
+             final int type = TokenUtils.getTokenId(s);
+             ignoreOccurrenceContext.set(type);
+         }
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {TokenTypes.STRING_LITERAL};
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (isInIgnoreOccurrenceContext(ast)) {
+             return;
+         }
+         final String currentString = ast.getText();
+         if (pattern == null || !pattern.matcher(currentString).find()) {
+             List<StringInfo> hitList = stringMap.get(currentString);
+             if (hitList == null) {
+                 hitList = Lists.newArrayList();
+                 stringMap.put(currentString, hitList);
+             }
+             final int line = ast.getLineNo();
+             final int col = ast.getColumnNo();
+             hitList.add(new StringInfo(line, col));
+         }
+     }
+ 
+     /**
+      * Analyses the path from the AST root to a given AST for occurrences

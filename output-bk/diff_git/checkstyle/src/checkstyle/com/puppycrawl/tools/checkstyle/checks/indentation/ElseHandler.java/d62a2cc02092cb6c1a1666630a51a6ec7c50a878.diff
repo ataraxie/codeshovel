@@ -1,0 +1,59 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ElseHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ElseHandler.java
+index 908854af3..3257122d5 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ElseHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/ElseHandler.java
+@@ -21,53 +21,53 @@ package com.puppycrawl.tools.checkstyle.checks.indentation;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ 
+ /**
+  * Handler for else blocks.
+  *
+  * @author jrichard
+  */
+ public class ElseHandler extends BlockParentHandler
+ {
+     /**
+      * Construct an instance of this handler with the given indentation check,
+      * abstract syntax tree, and parent handler.
+      *
+      * @param aIndentCheck   the indentation check
+      * @param aAst           the abstract syntax tree
+      * @param aParent        the parent handler
+      */
+     public ElseHandler(IndentationCheck aIndentCheck,
+         DetailAST aAst, ExpressionHandler aParent)
+     {
+         super(aIndentCheck, "else", aAst, aParent);
+     }
+ 
+     @Override
+     protected void checkToplevelToken()
+     {
+         // check if else is nested with rcurly of if:
+         //
+         //  } else ...
+ 
+         final DetailAST ifAST = getMainAst().getParent();
+         if (ifAST != null) {
+             final DetailAST slist = ifAST.findFirstToken(TokenTypes.SLIST);
+             if (slist != null) {
+                 final DetailAST lcurly = slist.getLastChild();
+                 if ((lcurly != null)
+                     && (lcurly.getLineNo() == getMainAst().getLineNo()))
+                 {
+                     // indentation checked as part of LITERAL IF check
+                     return;
+                 }
+             }
+         }
+         super.checkToplevelToken();
+     }
+ 
+     @Override
+     protected DetailAST getNonlistChild()
+     {
+-        return (DetailAST) getMainAst().getFirstChild();
++        return getMainAst().getFirstChild();
+     }
+ }

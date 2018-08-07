@@ -1,0 +1,72 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "DesignForExtensionCheck.java",
+  "functionName": "hasDefaultOrExplicitNonPrivateCtor",
+  "functionId": "hasDefaultOrExplicitNonPrivateCtor___classDef-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/design/DesignForExtensionCheck.java",
+  "functionStartLine": 298,
+  "functionEndLine": 322,
+  "changeHistory": [
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+    "d282053d9ce02c13c779decfd079a8305086f752",
+    "4c078ba710068498ca513ce115993e30dab4562a",
+    "3a7ab7d24d0b865fd95a8c72ce7e765a801ea555"
+  ],
+  "changeHistoryShort": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": "Ybodychange",
+    "d282053d9ce02c13c779decfd079a8305086f752": "Ymultichange(Yrename,Ybodychange)",
+    "4c078ba710068498ca513ce115993e30dab4562a": "Ymodifierchange",
+    "3a7ab7d24d0b865fd95a8c72ce7e765a801ea555": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5124: removed usage of branchContains for modifiers",
+      "commitDate": 1508986494000,
+      "commitName": "3bcd2a83aac2ebc2fb9a8e34599d1d565a047b22",
+      "commitAuthor": "rnveach",
+      "commitDateOld": 1500842894000,
+      "commitNameOld": "359ce65a7b6ec7725d4fea3aca1a299cd2b7f7ba",
+      "commitAuthorOld": "vasilyeva",
+      "daysBetweenCommits": 94.25,
+      "commitsBetweenForRepo": 304,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,25 @@\n     private static boolean hasDefaultOrExplicitNonPrivateCtor(DetailAST classDef) {\n         // check if subclassing is prevented by having only private ctors\n         final DetailAST objBlock \u003d classDef.findFirstToken(TokenTypes.OBJBLOCK);\n \n         boolean hasDefaultConstructor \u003d true;\n         boolean hasExplicitNonPrivateCtor \u003d false;\n \n         DetailAST candidate \u003d objBlock.getFirstChild();\n \n         while (candidate !\u003d null) {\n             if (candidate.getType() \u003d\u003d TokenTypes.CTOR_DEF) {\n                 hasDefaultConstructor \u003d false;\n \n                 final DetailAST ctorMods \u003d\n                         candidate.findFirstToken(TokenTypes.MODIFIERS);\n-                if (!ctorMods.branchContains(TokenTypes.LITERAL_PRIVATE)) {\n+                if (ctorMods.findFirstToken(TokenTypes.LITERAL_PRIVATE) \u003d\u003d null) {\n                     hasExplicitNonPrivateCtor \u003d true;\n                     break;\n                 }\n             }\n             candidate \u003d candidate.getNextSibling();\n         }\n \n         return hasDefaultConstructor || hasExplicitNonPrivateCtor;\n     }\n\\ No newline at end of file\n"
+    },
+    "d282053d9ce02c13c779decfd079a8305086f752": {
+      "type": "Ymultichange(Yrename,Ybodychange)",
+      "commitMessage": "Issue #2080: Fix typos in code\n",
+      "commitDate": 1443132627000,
+      "commitName": "d282053d9ce02c13c779decfd079a8305086f752",
+      "commitAuthor": "Michal Kordas",
+      "subchanges": [
+        "Yrename",
+        "Ybodychange"
+      ]
+    },
+    "4c078ba710068498ca513ce115993e30dab4562a": {
+      "type": "Ymodifierchange",
+      "commitMessage": "Make \"private\" methods \"static\" where possible. #46\n\nSonarQube rule: [\"private\" methods that don\u0027t access instance data should be \"static\"](http://nemo.sonarqube.org/coding_rules#rule_key\u003dsquid%3AS2325).\n\nRationale: private methods that don\u0027t access instance data can be static to prevent any misunderstanding about the contract of the method.\n",
+      "commitDate": 1437195084000,
+      "commitName": "4c078ba710068498ca513ce115993e30dab4562a",
+      "commitAuthor": "Michal Kordas",
+      "commitDateOld": 1436323201000,
+      "commitNameOld": "1b3e900ee47bd289ddbf72e3fd69e8a15e51b20a",
+      "commitAuthorOld": "Michal Kordas",
+      "daysBetweenCommits": 10.09,
+      "commitsBetweenForRepo": 97,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,25 +1,25 @@\n-    private boolean hasDefaultOrExplNonPrivateCtor(DetailAST classDef) {\n+    private static boolean hasDefaultOrExplNonPrivateCtor(DetailAST classDef) {\n         // check if subclassing is prevented by having only private ctors\n         final DetailAST objBlock \u003d classDef.findFirstToken(TokenTypes.OBJBLOCK);\n \n         boolean hasDefaultConstructor \u003d true;\n         boolean hasExplNonPrivateCtor \u003d false;\n \n         DetailAST candidate \u003d objBlock.getFirstChild();\n \n         while (candidate !\u003d null) {\n             if (candidate.getType() \u003d\u003d TokenTypes.CTOR_DEF) {\n                 hasDefaultConstructor \u003d false;\n \n                 final DetailAST ctorMods \u003d\n                         candidate.findFirstToken(TokenTypes.MODIFIERS);\n                 if (!ctorMods.branchContains(TokenTypes.LITERAL_PRIVATE)) {\n                     hasExplNonPrivateCtor \u003d true;\n                     break;\n                 }\n             }\n             candidate \u003d candidate.getNextSibling();\n         }\n \n         return hasDefaultConstructor || hasExplNonPrivateCtor;\n     }\n\\ No newline at end of file\n"
+    },
+    "3a7ab7d24d0b865fd95a8c72ce7e765a801ea555": {
+      "type": "Yintroduced",
+      "commitMessage": "DesignForExtensionCheck  updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344165000,
+      "commitName": "3a7ab7d24d0b865fd95a8c72ce7e765a801ea555",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}

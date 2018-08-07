@@ -1,0 +1,123 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+index 400244135..56f492de2 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationUseStyleCheck.java
+@@ -213,115 +213,109 @@ public final class AnnotationUseStyleCheck extends Check {
+      * @return the enum type
+      */
+     private static <T extends Enum<T>> T getOption(final Class<T> enuclass,
+         final String string) {
+         try {
+             return Enum.valueOf(enuclass, string.trim().toUpperCase(Locale.ENGLISH));
+         }
+         catch (final IllegalArgumentException iae) {
+             throw new ConversionException("unable to parse " + string, iae);
+         }
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getDefaultTokens() {
+         return this.getRequiredTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getRequiredTokens() {
+         return new int[] {
+             TokenTypes.ANNOTATION,
+         };
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public int[] getAcceptableTokens() {
+         return this.getRequiredTokens();
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public void visitToken(final DetailAST ast) {
+         this.checkStyleType(ast);
+         this.checkCheckClosingParens(ast);
+         this.checkTrailingComma(ast);
+     }
+ 
+     /**
+      * Checks to see if the
+      * {@link ElementStyle AnnotationElementStyle}
+      * is correct.
+      *
+      * @param annotation the annotation token
+      */
+     private void checkStyleType(final DetailAST annotation) {
+ 
+         switch (this.style) {
+-
+-            case COMPACT_NO_ARRAY: {
++            case COMPACT_NO_ARRAY:
+                 checkCompactNoArrayStyle(annotation);
+                 break;
+-            }
+-
+-            case COMPACT: {
++            case COMPACT:
+                 checkCompactStyle(annotation);
+                 break;
+-            }
+-
+-            case EXPANDED: {
++            case EXPANDED:
+                 checkExpandedStyle(annotation);
+                 break;
+-            }
+             default:
+                 break;
+         }
+     }
+ 
+     /**
+      * Checks for expanded style type violations.
+      *
+      * @param annotation the annotation token
+      */
+     private void checkExpandedStyle(final DetailAST annotation) {
+         final int valuePairCount =
+             annotation.getChildCount(TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
+ 
+         if (valuePairCount == 0
+             && annotation.branchContains(TokenTypes.EXPR)) {
+             this.log(annotation.getLineNo(), MSG_KEY_ANNOTATION_INCORRECT_STYLE,
+                 ElementStyle.EXPANDED);
+         }
+     }
+ 
+     /**
+      * Checks for compact style type violations.
+      *
+      * @param annotation the annotation token
+      */
+     private void checkCompactStyle(final DetailAST annotation) {
+         final int valuePairCount =
+             annotation.getChildCount(
+                 TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
+ 
+         final DetailAST valuePair =
+             annotation.findFirstToken(
+                 TokenTypes.ANNOTATION_MEMBER_VALUE_PAIR);
+ 
+         if (valuePairCount == 1
+             && AnnotationUseStyleCheck.ANNOTATION_ELEMENT_SINGLE_NAME.equals(
+                 valuePair.getFirstChild().getText())) {
+             this.log(annotation.getLineNo(), MSG_KEY_ANNOTATION_INCORRECT_STYLE,
+                 ElementStyle.COMPACT);
+         }
+     }
+ 
+     /**
+      * Checks for compact no array style type violations.
+      *
+      * @param annotation the annotation token
+      */
+     private void checkCompactNoArrayStyle(final DetailAST annotation) {
+         final DetailAST arrayInit =

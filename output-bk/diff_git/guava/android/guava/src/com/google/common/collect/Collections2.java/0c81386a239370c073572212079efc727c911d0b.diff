@@ -1,0 +1,107 @@
+diff --git a/android/guava/src/com/google/common/collect/Collections2.java b/android/guava/src/com/google/common/collect/Collections2.java
+index 5075c4e0c..c5e27be0c 100644
+--- a/android/guava/src/com/google/common/collect/Collections2.java
++++ b/android/guava/src/com/google/common/collect/Collections2.java
+@@ -219,101 +219,101 @@ public final class Collections2 {
+       }
+       return changed;
+     }
+ 
+     @Override
+     public int size() {
+       int size = 0;
+       for (E e : unfiltered) {
+         if (predicate.apply(e)) {
+           size++;
+         }
+       }
+       return size;
+     }
+ 
+     @Override
+     public Object[] toArray() {
+       // creating an ArrayList so filtering happens once
+       return Lists.newArrayList(iterator()).toArray();
+     }
+ 
+     @Override
+     public <T> T[] toArray(T[] array) {
+       return Lists.newArrayList(iterator()).toArray(array);
+     }
+   }
+ 
+   /**
+    * Returns a collection that applies {@code function} to each element of
+    * {@code fromCollection}. The returned collection is a live view of {@code
+    * fromCollection}; changes to one affect the other.
+    *
+    * <p>The returned collection's {@code add()} and {@code addAll()} methods
+    * throw an {@link UnsupportedOperationException}. All other collection
+    * methods are supported, as long as {@code fromCollection} supports them.
+    *
+    * <p>The returned collection isn't threadsafe or serializable, even if
+    * {@code fromCollection} is.
+    *
+    * <p>When a live view is <i>not</i> needed, it may be faster to copy the
+    * transformed collection and use the copy.
+    *
+    * <p>If the input {@code Collection} is known to be a {@code List}, consider
+    * {@link Lists#transform}. If only an {@code Iterable} is available, use
+    * {@link Iterables#transform}.
+    *
+    * <p><b>{@code Stream} equivalent:</b> {@link java.util.stream.Stream#map Stream.map}.
+    */
+   public static <F, T> Collection<T> transform(
+       Collection<F> fromCollection, Function<? super F, T> function) {
+-    return new TransformedCollection<F, T>(fromCollection, function);
++    return new TransformedCollection<>(fromCollection, function);
+   }
+ 
+   static class TransformedCollection<F, T> extends AbstractCollection<T> {
+     final Collection<F> fromCollection;
+     final Function<? super F, ? extends T> function;
+ 
+     TransformedCollection(Collection<F> fromCollection, Function<? super F, ? extends T> function) {
+       this.fromCollection = checkNotNull(fromCollection);
+       this.function = checkNotNull(function);
+     }
+ 
+     @Override
+     public void clear() {
+       fromCollection.clear();
+     }
+ 
+     @Override
+     public boolean isEmpty() {
+       return fromCollection.isEmpty();
+     }
+ 
+     @Override
+     public Iterator<T> iterator() {
+       return Iterators.transform(fromCollection.iterator(), function);
+     }
+ 
+     @Override
+     public int size() {
+       return fromCollection.size();
+     }
+   }
+ 
+   /**
+    * Returns {@code true} if the collection {@code self} contains all of the
+    * elements in the collection {@code c}.
+    *
+    * <p>This method iterates over the specified collection {@code c}, checking
+    * each element returned by the iterator in turn to see if it is contained in
+    * the specified collection {@code self}. If all elements are so contained,
+    * {@code true} is returned, otherwise {@code false}.
+    *
+    * @param self a collection which might contain all elements in {@code c}
+    * @param c a collection whose elements might be contained by {@code self}
+    */
+   static boolean containsAllImpl(Collection<?> self, Collection<?> c) {
+     for (Object o : c) {
+       if (!self.contains(o)) {
+         return false;
+       }
+     }

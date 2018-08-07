@@ -1,0 +1,129 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+index 4c3f07a2f..b5564c6cc 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocTypeCheck.java
+@@ -109,118 +109,118 @@ public class JavadocTypeCheck
+     public void setScope(String from) {
+         scope = Scope.getInstance(from);
+     }
+ 
+     /**
+      * Set the excludeScope.
+      * @param excludeScope a {@code String} value
+      */
+     public void setExcludeScope(String excludeScope) {
+         this.excludeScope = Scope.getInstance(excludeScope);
+     }
+ 
+     /**
+      * Set the author tag pattern.
+      * @param format a {@code String} value
+      */
+     public void setAuthorFormat(String format) {
+         authorFormat = format;
+         authorFormatPattern = Utils.createPattern(format);
+     }
+ 
+     /**
+      * Set the version format pattern.
+      * @param format a {@code String} value
+      */
+     public void setVersionFormat(String format) {
+         versionFormat = format;
+         versionFormatPattern = Utils.createPattern(format);
+     }
+ 
+     /**
+      * Controls whether to allow a type which has type parameters to
+      * omit matching param tags in the javadoc. Defaults to false.
+      *
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowMissingParamTags(boolean flag) {
+         allowMissingParamTags = flag;
+     }
+ 
+     /**
+      * Controls whether to flag errors for unknown tags. Defaults to false.
+      * @param flag a {@code Boolean} value
+      */
+     public void setAllowUnknownTags(boolean flag) {
+         allowUnknownTags = flag;
+     }
+ 
+     @Override
+     public int[] getDefaultTokens() {
+-        return new int[] {
+-            TokenTypes.INTERFACE_DEF,
+-            TokenTypes.CLASS_DEF,
+-            TokenTypes.ENUM_DEF,
+-            TokenTypes.ANNOTATION_DEF,
+-        };
++        return getAcceptableTokens();
+     }
+ 
+     @Override
+     public int[] getAcceptableTokens() {
+         return new int[] {
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.CLASS_DEF,
+             TokenTypes.ENUM_DEF,
+             TokenTypes.ANNOTATION_DEF,
+         };
+     }
+ 
++    @Override
++    public int[] getRequiredTokens() {
++        return getAcceptableTokens();
++    }
++
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (shouldCheck(ast)) {
+             final FileContents contents = getFileContents();
+             final int lineNo = ast.getLineNo();
+             final TextBlock cmt = contents.getJavadocBefore(lineNo);
+             if (cmt == null) {
+                 log(lineNo, JAVADOC_MISSING);
+             }
+             else {
+                 final List<JavadocTag> tags = getJavadocTags(cmt);
+                 if (ScopeUtils.isOuterMostType(ast)) {
+                     // don't check author/version for inner classes
+                     checkTag(lineNo, tags, JavadocTagInfo.AUTHOR.getName(),
+                             authorFormatPattern, authorFormat);
+                     checkTag(lineNo, tags, JavadocTagInfo.VERSION.getName(),
+                             versionFormatPattern, versionFormat);
+                 }
+ 
+                 final List<String> typeParamNames =
+                     CheckUtils.getTypeParameterNames(ast);
+ 
+                 if (!allowMissingParamTags) {
+                     //Check type parameters that should exist, do
+                     for (final String typeParamName : typeParamNames) {
+                         checkTypeParamTag(
+                             lineNo, tags, typeParamName);
+                     }
+                 }
+ 
+                 checkUnusedTypeParamTags(tags, typeParamNames);
+             }
+         }
+     }
+ 
+     /**
+      * Whether we should check this node.
+      * @param ast a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST ast) {
+         final DetailAST mods = ast.findFirstToken(TokenTypes.MODIFIERS);
+         final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
+         final Scope customScope =
+             ScopeUtils.inInterfaceOrAnnotationBlock(ast)
+                 ? Scope.PUBLIC : declaredScope;
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(ast);
+ 
+         return customScope.isIn(scope)
+             && (surroundingScope == null || surroundingScope.isIn(scope))

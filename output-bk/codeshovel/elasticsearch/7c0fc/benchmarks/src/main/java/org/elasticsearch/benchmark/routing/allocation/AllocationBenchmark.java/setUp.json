@@ -1,0 +1,75 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "elasticsearch",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/elasticsearch/.git",
+  "startCommitName": "7c0fc209bf78e4824ca1f232b84a1dab22bc2dfa",
+  "sourceFileName": "AllocationBenchmark.java",
+  "functionName": "setUp",
+  "functionId": "setUp",
+  "sourceFilePath": "benchmarks/src/main/java/org/elasticsearch/benchmark/routing/allocation/AllocationBenchmark.java",
+  "functionStartLine": 119,
+  "functionEndLine": 152,
+  "changeHistory": [
+    "087a931cb2ecbae34c4fc87924400c9b6bbd8a41",
+    "609a199bd49efb6542fd167f0591c9d6a2847727",
+    "bdb6dcea3ae53e7dea8ce060c46100ed8f25385e",
+    "2c467fd9c21cc2f79a58b6c1d412a87b83be94f3"
+  ],
+  "changeHistoryShort": {
+    "087a931cb2ecbae34c4fc87924400c9b6bbd8a41": "Ybodychange",
+    "609a199bd49efb6542fd167f0591c9d6a2847727": "Ybodychange",
+    "bdb6dcea3ae53e7dea8ce060c46100ed8f25385e": "Ybodychange",
+    "2c467fd9c21cc2f79a58b6c1d412a87b83be94f3": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "087a931cb2ecbae34c4fc87924400c9b6bbd8a41": {
+      "type": "Ybodychange",
+      "commitMessage": "Use \u0027pipe\u0027 instead of of \u0027comma\u0027 to separate benchmark params\n\nWith this commit we separate benchmark parameters with pipe symbols\ninstead of commas as JMH has a special formatting logic for comma-separated\nstring which messes up the JSON output of microbenchmarks.\n",
+      "commitDate": 1476104204000,
+      "commitName": "087a931cb2ecbae34c4fc87924400c9b6bbd8a41",
+      "commitAuthor": "Daniel Mitterdorfer",
+      "commitDateOld": 1474286075000,
+      "commitNameOld": "2ee9ab25d9055cc8355921a0f94612c0a1bb4d65",
+      "commitAuthorOld": "Boaz Leskes",
+      "daysBetweenCommits": 21.04,
+      "commitsBetweenForRepo": 183,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,34 +1,34 @@\n     public void setUp() throws Exception {\n-        final String[] params \u003d indicesShardsReplicasNodes.split(\",\");\n+        final String[] params \u003d indicesShardsReplicasNodes.split(\"\\\\|\");\n \n         int numIndices \u003d toInt(params[0]);\n         int numShards \u003d toInt(params[1]);\n         int numReplicas \u003d toInt(params[2]);\n         int numNodes \u003d toInt(params[3]);\n \n         strategy \u003d Allocators.createAllocationService(Settings.builder()\n                 .put(\"cluster.routing.allocation.awareness.attributes\", \"tag\")\n                 .build());\n \n         MetaData.Builder mb \u003d MetaData.builder();\n         for (int i \u003d 1; i \u003c\u003d numIndices; i++) {\n             mb.put(IndexMetaData.builder(\"test_\" + i)\n                     .settings(Settings.builder().put(\"index.version.created\", Version.CURRENT))\n                     .numberOfShards(numShards)\n                     .numberOfReplicas(numReplicas)\n             );\n         }\n         MetaData metaData \u003d mb.build();\n         RoutingTable.Builder rb \u003d RoutingTable.builder();\n         for (int i \u003d 1; i \u003c\u003d numIndices; i++) {\n             rb.addAsNew(metaData.index(\"test_\" + i));\n         }\n         RoutingTable routingTable \u003d rb.build();\n         DiscoveryNodes.Builder nb \u003d DiscoveryNodes.builder();\n         for (int i \u003d 1; i \u003c\u003d numNodes; i++) {\n             nb.add(Allocators.newNode(\"node\" + i, Collections.singletonMap(\"tag\", \"tag_\" + (i % numTags))));\n         }\n         initialClusterState \u003d ClusterState.builder(ClusterName.CLUSTER_NAME_SETTING.getDefault(Settings.EMPTY))\n             .metaData(metaData).routingTable(routingTable).nodes\n                 (nb).build();\n     }\n\\ No newline at end of file\n"
+    },
+    "609a199bd49efb6542fd167f0591c9d6a2847727": {
+      "type": "Ybodychange",
+      "commitMessage": "Upon being elected as master, prefer joins\u0027 node info to existing cluster state (#19743)\n\nWhen we introduces [persistent node ids](https://github.com/elastic/elasticsearch/pull/19140) we were concerned that people may copy data folders from one to another resulting in two nodes competing for the same id in the cluster. To solve this we elected to not allow an incoming join if a different with same id already exists in the cluster, or if some other node already has the same transport address as the incoming join. The rationeel there was that it is better to prefer existing nodes and that we can rely on node fault detection to remove any node from the cluster that isn\u0027t correct any more, making room for the node that wants to join (and will keep trying).\r\n\r\nSadly there were two problems with this:\r\n1) One minor and easy to fix - we didn\u0027t allow for the case where the existing node can have the same network address as the incoming one, but have a different ephemeral id (after node restart). This confused the logic in `AllocationService`, in this rare cases. The cluster is good enough to detect this and recover later on, but it\u0027s not clean.\r\n2) The assumption that Node Fault Detection will clean up is *wrong* when the node just won an election (it wasn\u0027t master before) and needs to process the incoming joins in order to commit the cluster state and assume it\u0027s mastership. In those cases, the Node Fault Detection isn\u0027t active. \r\n\r\nThis PR fixes these two and prefers incoming nodes to existing node when finishing an election. \r\nOn top of the, on request by @ywelsch , `AllocationService` synchronization between the nodes of the cluster and it\u0027s routing table is now explicit rather than something we do all the time. The same goes for promotion of replicas to primaries.",
+      "commitDate": 1470380283000,
+      "commitName": "609a199bd49efb6542fd167f0591c9d6a2847727",
+      "commitAuthor": "Boaz Leskes",
+      "commitDateOld": 1466176039000,
+      "commitNameOld": "bdb6dcea3ae53e7dea8ce060c46100ed8f25385e",
+      "commitAuthorOld": "Simon Willnauer",
+      "daysBetweenCommits": 48.66,
+      "commitsBetweenForRepo": 793,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,34 +1,34 @@\n     public void setUp() throws Exception {\n         final String[] params \u003d indicesShardsReplicasNodes.split(\",\");\n \n         int numIndices \u003d toInt(params[0]);\n         int numShards \u003d toInt(params[1]);\n         int numReplicas \u003d toInt(params[2]);\n         int numNodes \u003d toInt(params[3]);\n \n         strategy \u003d Allocators.createAllocationService(Settings.builder()\n                 .put(\"cluster.routing.allocation.awareness.attributes\", \"tag\")\n                 .build());\n \n         MetaData.Builder mb \u003d MetaData.builder();\n         for (int i \u003d 1; i \u003c\u003d numIndices; i++) {\n             mb.put(IndexMetaData.builder(\"test_\" + i)\n                     .settings(Settings.builder().put(\"index.version.created\", Version.CURRENT))\n                     .numberOfShards(numShards)\n                     .numberOfReplicas(numReplicas)\n             );\n         }\n         MetaData metaData \u003d mb.build();\n         RoutingTable.Builder rb \u003d RoutingTable.builder();\n         for (int i \u003d 1; i \u003c\u003d numIndices; i++) {\n             rb.addAsNew(metaData.index(\"test_\" + i));\n         }\n         RoutingTable routingTable \u003d rb.build();\n         DiscoveryNodes.Builder nb \u003d DiscoveryNodes.builder();\n         for (int i \u003d 1; i \u003c\u003d numNodes; i++) {\n-            nb.put(Allocators.newNode(\"node\" + i, Collections.singletonMap(\"tag\", \"tag_\" + (i % numTags))));\n+            nb.add(Allocators.newNode(\"node\" + i, Collections.singletonMap(\"tag\", \"tag_\" + (i % numTags))));\n         }\n         initialClusterState \u003d ClusterState.builder(ClusterName.CLUSTER_NAME_SETTING.getDefault(Settings.EMPTY))\n             .metaData(metaData).routingTable(routingTable).nodes\n                 (nb).build();\n     }\n\\ No newline at end of file\n"
+    },
+    "bdb6dcea3ae53e7dea8ce060c46100ed8f25385e": {
+      "type": "Ybodychange",
+      "commitMessage": "Cleanup ClusterService dependencies and detached from Guice (#18941)\n\nThis change removes some unnecessary dependencies from ClusterService\r\nand cleans up ClusterName creation. ClusterService is now not created\r\nby guice anymore.",
+      "commitDate": 1466176039000,
+      "commitName": "bdb6dcea3ae53e7dea8ce060c46100ed8f25385e",
+      "commitAuthor": "Simon Willnauer",
+      "commitDateOld": 1466002082000,
+      "commitNameOld": "2c467fd9c21cc2f79a58b6c1d412a87b83be94f3",
+      "commitAuthorOld": "Daniel Mitterdorfer",
+      "daysBetweenCommits": 2.01,
+      "commitsBetweenForRepo": 59,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,33 +1,34 @@\n     public void setUp() throws Exception {\n         final String[] params \u003d indicesShardsReplicasNodes.split(\",\");\n \n         int numIndices \u003d toInt(params[0]);\n         int numShards \u003d toInt(params[1]);\n         int numReplicas \u003d toInt(params[2]);\n         int numNodes \u003d toInt(params[3]);\n \n         strategy \u003d Allocators.createAllocationService(Settings.builder()\n                 .put(\"cluster.routing.allocation.awareness.attributes\", \"tag\")\n                 .build());\n \n         MetaData.Builder mb \u003d MetaData.builder();\n         for (int i \u003d 1; i \u003c\u003d numIndices; i++) {\n             mb.put(IndexMetaData.builder(\"test_\" + i)\n                     .settings(Settings.builder().put(\"index.version.created\", Version.CURRENT))\n                     .numberOfShards(numShards)\n                     .numberOfReplicas(numReplicas)\n             );\n         }\n         MetaData metaData \u003d mb.build();\n         RoutingTable.Builder rb \u003d RoutingTable.builder();\n         for (int i \u003d 1; i \u003c\u003d numIndices; i++) {\n             rb.addAsNew(metaData.index(\"test_\" + i));\n         }\n         RoutingTable routingTable \u003d rb.build();\n         DiscoveryNodes.Builder nb \u003d DiscoveryNodes.builder();\n         for (int i \u003d 1; i \u003c\u003d numNodes; i++) {\n             nb.put(Allocators.newNode(\"node\" + i, Collections.singletonMap(\"tag\", \"tag_\" + (i % numTags))));\n         }\n-        initialClusterState \u003d ClusterState.builder(ClusterName.DEFAULT).metaData(metaData).routingTable(routingTable).nodes\n+        initialClusterState \u003d ClusterState.builder(ClusterName.CLUSTER_NAME_SETTING.getDefault(Settings.EMPTY))\n+            .metaData(metaData).routingTable(routingTable).nodes\n                 (nb).build();\n     }\n\\ No newline at end of file\n"
+    },
+    "2c467fd9c21cc2f79a58b6c1d412a87b83be94f3": {
+      "type": "Yintroduced",
+      "commitMessage": "Add microbenchmarking infrastructure (#18891)\n\nWith this commit we add a benchmarks project that contains the necessary build\r\ninfrastructure and an example benchmark. It is added as a separate project to avoid\r\ninterfering with the regular build too much (especially sanity checks) and to keep\r\nthe microbenchmarks isolated.\r\n\r\nMicrobenchmarks are generated with `gradle :benchmarks:jmhJar` and can be run with\r\n` gradle :benchmarks:jmh`.\r\n\r\nWe intentionally do not use the\r\n[jmh-gradle-plugin](https://github.com/melix/jmh-gradle-plugin) as it causes all\r\nsorts of problems (dependencies are not properly excluded, not all JMH parameters\r\ncan be set) and it adds another abstraction layer that is not needed.\r\n\r\nCloses #18242",
+      "commitDate": 1466002082000,
+      "commitName": "2c467fd9c21cc2f79a58b6c1d412a87b83be94f3",
+      "commitAuthor": "Daniel Mitterdorfer"
+    }
+  }
+}

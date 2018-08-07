@@ -1,0 +1,111 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationLocationCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationLocationCheck.java
+index 1fa51f2d8..58c09d479 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationLocationCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/annotation/AnnotationLocationCheck.java
+@@ -206,103 +206,103 @@ public class AnnotationLocationCheck extends Check {
+         return ArrayUtils.EMPTY_INT_ARRAY;
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         final DetailAST modifiersNode = ast.findFirstToken(TokenTypes.MODIFIERS);
+ 
+         if (hasAnnotations(modifiersNode)) {
+             checkAnnotations(modifiersNode, getAnnotationLevel(modifiersNode));
+         }
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param modifierNode Some javadoc.
+      * @param correctLevel Some javadoc.
+      */
+     private void checkAnnotations(DetailAST modifierNode, int correctLevel) {
+         DetailAST annotation = modifierNode.getFirstChild();
+ 
+         while (annotation != null && annotation.getType() == TokenTypes.ANNOTATION) {
+             final boolean hasParameters = isParameterized(annotation);
+ 
+             if (!isCorrectLocation(annotation, hasParameters)) {
+                 log(annotation.getLineNo(),
+                         MSG_KEY_ANNOTATION_LOCATION_ALONE, getAnnotationName(annotation));
+             }
+             else if (annotation.getColumnNo() != correctLevel && !hasNodeBefore(annotation)) {
+                 log(annotation.getLineNo(), MSG_KEY_ANNOTATION_LOCATION,
+                     getAnnotationName(annotation), annotation.getColumnNo(), correctLevel);
+             }
+             annotation = annotation.getNextSibling();
+         }
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param annotation Some javadoc.
+      * @param hasParams Some javadoc.
+      * @return Some javadoc.
+      */
+     private boolean isCorrectLocation(DetailAST annotation, boolean hasParams) {
+         final boolean allowingCondition;
+ 
+         if (hasParams) {
+             allowingCondition = allowSamelineParameterizedAnnotation;
+         }
+         else {
+             allowingCondition = allowSamelineSingleParameterlessAnnotation;
+         }
+-        return allowingCondition && !hasNodeBefore(annotation)
+-            || !allowingCondition && !hasNodeBeside(annotation)
+-            || allowSamelineMultipleAnnotations;
++        return allowSamelineMultipleAnnotations
++            || allowingCondition && !hasNodeBefore(annotation)
++            || !allowingCondition && !hasNodeBeside(annotation);
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param annotation Some javadoc.
+      * @return Some javadoc.
+      */
+     private static String getAnnotationName(DetailAST annotation) {
+         DetailAST identNode = annotation.findFirstToken(TokenTypes.IDENT);
+         if (identNode == null) {
+             identNode = annotation.findFirstToken(TokenTypes.DOT).findFirstToken(TokenTypes.IDENT);
+         }
+         return identNode.getText();
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param annotation Some javadoc.
+      * @return Some javadoc.
+      */
+     private static boolean hasNodeAfter(DetailAST annotation) {
+         final int annotationLineNo = annotation.getLineNo();
+         DetailAST nextNode = annotation.getNextSibling();
+ 
+         if (nextNode == null) {
+             nextNode = annotation.getParent().getNextSibling();
+         }
+ 
+         return annotationLineNo == nextNode.getLineNo();
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param annotation Some javadoc.
+      * @return Some javadoc.
+      */
+     private static boolean hasNodeBefore(DetailAST annotation) {
+         final int annotationLineNo = annotation.getLineNo();
+         final DetailAST previousNode = annotation.getPreviousSibling();
+ 
+         return previousNode != null && annotationLineNo == previousNode.getLineNo();
+     }
+ 
+     /**
+      * Some javadoc.
+      * @param annotation Some javadoc.
+      * @return Some javadoc.
+      */
+     private static boolean hasNodeBeside(DetailAST annotation) {
+         return hasNodeBefore(annotation) || hasNodeAfter(annotation);

@@ -1,0 +1,335 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+index 22215ace4..ca869bb07 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/Main.java
+@@ -1,99 +1,100 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2017 the original author or authors.
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ package com.puppycrawl.tools.checkstyle;
+ 
+ import java.io.File;
+ import java.io.FileInputStream;
+ import java.io.FileNotFoundException;
+ import java.io.FileOutputStream;
+ import java.io.IOException;
+ import java.io.OutputStream;
+ import java.util.ArrayList;
+ import java.util.LinkedList;
+ import java.util.List;
+ import java.util.Properties;
+ import java.util.logging.ConsoleHandler;
+ import java.util.logging.Filter;
+ import java.util.logging.Level;
+ import java.util.logging.LogRecord;
+ import java.util.logging.Logger;
+ import java.util.regex.Pattern;
+ 
+ import org.apache.commons.cli.CommandLine;
+ import org.apache.commons.cli.CommandLineParser;
+ import org.apache.commons.cli.DefaultParser;
+ import org.apache.commons.cli.HelpFormatter;
+ import org.apache.commons.cli.Options;
+ import org.apache.commons.cli.ParseException;
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+ 
+ import com.google.common.io.Closeables;
+ import com.puppycrawl.tools.checkstyle.api.AuditListener;
++import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
+ import com.puppycrawl.tools.checkstyle.api.RootModule;
+ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+ 
+ /**
+  * Wrapper command line program for the Checker.
+  * @author the original author or authors.
+  * @noinspection UseOfSystemOutOrSystemErr
+  **/
+ public final class Main {
+     /**
+      * A key pointing to the error counter
+      * message in the "messages.properties" file.
+      */
+     public static final String ERROR_COUNTER = "Main.errorCounter";
+     /**
+      * A key pointing to the load properties exception
+      * message in the "messages.properties" file.
+      */
+     public static final String LOAD_PROPERTIES_EXCEPTION = "Main.loadProperties";
+     /**
+      * A key pointing to the create listener exception
+      * message in the "messages.properties" file.
+      */
+     public static final String CREATE_LISTENER_EXCEPTION = "Main.createListener";
+     /** Logger for Main. */
+     private static final Log LOG = LogFactory.getLog(Main.class);
+ 
+     /** Width of CLI help option. */
+     private static final int HELP_WIDTH = 100;
+ 
+     /** Exit code returned when execution finishes with {@link CheckstyleException}. */
+     private static final int EXIT_WITH_CHECKSTYLE_EXCEPTION_CODE = -2;
+ 
+     /** Name for the option 'v'. */
+     private static final String OPTION_V_NAME = "v";
+ 
+     /** Name for the option 'c'. */
+     private static final String OPTION_C_NAME = "c";
+ 
+     /** Name for the option 'f'. */
+     private static final String OPTION_F_NAME = "f";
+ 
+     /** Name for the option 'p'. */
+     private static final String OPTION_P_NAME = "p";
+ 
+     /** Name for the option 'o'. */
+     private static final String OPTION_O_NAME = "o";
+@@ -444,213 +445,223 @@ public final class Main {
+      * @param cmdLine command line object
+      * @param filesToProcess List of files to process found from the command line.
+      * @return command line option as POJO object
+      */
+     private static CliOptions convertCliToPojo(CommandLine cmdLine, List<File> filesToProcess) {
+         final CliOptions conf = new CliOptions();
+         conf.format = cmdLine.getOptionValue(OPTION_F_NAME);
+         if (conf.format == null) {
+             conf.format = PLAIN_FORMAT_NAME;
+         }
+         conf.outputLocation = cmdLine.getOptionValue(OPTION_O_NAME);
+         conf.configLocation = cmdLine.getOptionValue(OPTION_C_NAME);
+         conf.propertiesLocation = cmdLine.getOptionValue(OPTION_P_NAME);
+         conf.files = filesToProcess;
+         conf.executeIgnoredModules = cmdLine.hasOption(OPTION_EXECUTE_IGNORED_MODULES_NAME);
+         final String checkerThreadsNumber = cmdLine.getOptionValue(
+                 OPTION_CAPITAL_C_NAME, ONE_STRING_VALUE);
+         conf.checkerThreadsNumber = Integer.parseInt(checkerThreadsNumber);
+         final String treeWalkerThreadsNumber = cmdLine.getOptionValue(
+                 OPTION_CAPITAL_W_NAME, ONE_STRING_VALUE);
+         conf.treeWalkerThreadsNumber = Integer.parseInt(treeWalkerThreadsNumber);
+         return conf;
+     }
+ 
+     /**
+      * Executes required Checkstyle actions based on passed parameters.
+      * @param cliOptions
+      *        pojo object that contains all options
+      * @return number of violations of ERROR level
+      * @throws FileNotFoundException
+      *         when output file could not be found
+      * @throws CheckstyleException
+      *         when properties file could not be loaded
+      */
+     private static int runCheckstyle(CliOptions cliOptions)
+             throws CheckstyleException, FileNotFoundException {
+         // setup the properties
+         final Properties props;
+ 
+         if (cliOptions.propertiesLocation == null) {
+             props = System.getProperties();
+         }
+         else {
+             props = loadProperties(new File(cliOptions.propertiesLocation));
+         }
+ 
+         // create a configuration
+         final ThreadModeSettings multiThreadModeSettings =
+                 new ThreadModeSettings(
+                         cliOptions.checkerThreadsNumber, cliOptions.treeWalkerThreadsNumber);
++
++        final ConfigurationLoader.IgnoredModulesOptions ignoredModulesOptions;
++        if (cliOptions.executeIgnoredModules) {
++            ignoredModulesOptions = ConfigurationLoader.IgnoredModulesOptions.EXECUTE;
++        }
++        else {
++            ignoredModulesOptions = ConfigurationLoader.IgnoredModulesOptions.OMIT;
++        }
++
+         final Configuration config = ConfigurationLoader.loadConfiguration(
+                 cliOptions.configLocation, new PropertiesExpander(props),
+-                !cliOptions.executeIgnoredModules, multiThreadModeSettings);
++                ignoredModulesOptions, multiThreadModeSettings);
+ 
+         // create a listener for output
+         final AuditListener listener = createListener(cliOptions.format, cliOptions.outputLocation);
+ 
+         // create RootModule object and run it
+         final int errorCounter;
+         final ClassLoader moduleClassLoader = Checker.class.getClassLoader();
+         final RootModule rootModule = getRootModule(config.getName(), moduleClassLoader);
+ 
+         try {
+ 
+             rootModule.setModuleClassLoader(moduleClassLoader);
+             rootModule.configure(config);
+             rootModule.addListener(listener);
+ 
+             // run RootModule
+             errorCounter = rootModule.process(cliOptions.files);
+ 
+         }
+         finally {
+             rootModule.destroy();
+         }
+ 
+         return errorCounter;
+     }
+ 
+     /**
+      * Creates a new instance of the root module that will control and run
+      * Checkstyle.
+      * @param name The name of the module. This will either be a short name that
+      *        will have to be found or the complete package name.
+      * @param moduleClassLoader Class loader used to load the root module.
+      * @return The new instance of the root module.
+      * @throws CheckstyleException if no module can be instantiated from name
+      */
+     private static RootModule getRootModule(String name, ClassLoader moduleClassLoader)
+             throws CheckstyleException {
+         final ModuleFactory factory = new PackageObjectFactory(
+                 Checker.class.getPackage().getName(), moduleClassLoader);
+ 
+         return (RootModule) factory.createModule(name);
+     }
+ 
+     /**
+      * Loads properties from a File.
+      * @param file
+      *        the properties file
+      * @return the properties in file
+      * @throws CheckstyleException
+      *         when could not load properties file
+      */
+     private static Properties loadProperties(File file)
+             throws CheckstyleException {
+         final Properties properties = new Properties();
+ 
+         FileInputStream fis = null;
+         try {
+             fis = new FileInputStream(file);
+             properties.load(fis);
+         }
+         catch (final IOException ex) {
+             final LocalizedMessage loadPropertiesExceptionMessage = new LocalizedMessage(0,
+                     Definitions.CHECKSTYLE_BUNDLE, LOAD_PROPERTIES_EXCEPTION,
+                     new String[] {file.getAbsolutePath()}, null, Main.class, null);
+             throw new CheckstyleException(loadPropertiesExceptionMessage.getMessage(), ex);
+         }
+         finally {
+             Closeables.closeQuietly(fis);
+         }
+ 
+         return properties;
+     }
+ 
+     /**
+      * Creates the audit listener.
+      *
+      * @param format format of the audit listener
+      * @param outputLocation the location of output
+      * @return a fresh new {@code AuditListener}
+      * @exception FileNotFoundException when provided output location is not found
+      * @noinspection IOResourceOpenedButNotSafelyClosed
+      */
+     private static AuditListener createListener(String format,
+                                                 String outputLocation)
+             throws FileNotFoundException {
+ 
+         // setup the output stream
+         final OutputStream out;
+-        final boolean closeOutputStream;
++        final AutomaticBean.OutputStreamOptions closeOutputStream;
+         if (outputLocation == null) {
+             out = System.out;
+-            closeOutputStream = false;
++            closeOutputStream = AutomaticBean.OutputStreamOptions.NONE;
+         }
+         else {
+             out = new FileOutputStream(outputLocation);
+-            closeOutputStream = true;
++            closeOutputStream = AutomaticBean.OutputStreamOptions.CLOSE;
+         }
+ 
+         // setup a listener
+         final AuditListener listener;
+         if (XML_FORMAT_NAME.equals(format)) {
+             listener = new XMLLogger(out, closeOutputStream);
+ 
+         }
+         else if (PLAIN_FORMAT_NAME.equals(format)) {
+-            listener = new DefaultLogger(out, closeOutputStream, out, false);
++            listener = new DefaultLogger(out, closeOutputStream, out,
++                    AutomaticBean.OutputStreamOptions.NONE);
+ 
+         }
+         else {
+-            if (closeOutputStream) {
++            if (closeOutputStream == AutomaticBean.OutputStreamOptions.CLOSE) {
+                 CommonUtils.close(out);
+             }
+             final LocalizedMessage outputFormatExceptionMessage = new LocalizedMessage(0,
+                     Definitions.CHECKSTYLE_BUNDLE, CREATE_LISTENER_EXCEPTION,
+                     new String[] {format, PLAIN_FORMAT_NAME, XML_FORMAT_NAME}, null,
+                     Main.class, null);
+             throw new IllegalStateException(outputFormatExceptionMessage.getMessage());
+         }
+ 
+         return listener;
+     }
+ 
+     /**
+      * Determines the files to process.
+      * @param patternsToExclude The list of directory patterns to exclude from searching.
+      * @param filesToProcess
+      *        arguments that were not processed yet but shall be
+      * @return list of files to process
+      */
+     private static List<File> getFilesToProcess(List<Pattern> patternsToExclude,
+             String... filesToProcess) {
+         final List<File> files = new LinkedList<>();
+         for (String element : filesToProcess) {
+             files.addAll(listFiles(new File(element), patternsToExclude));
+         }
+ 
+         return files;
+     }
+ 
+     /**
+      * Traverses a specified node looking for files to check. Found files are added to a specified
+      * list. Subdirectories are also traversed.
+      * @param node
+      *        the node to process
+      * @param patternsToExclude The list of directory patterns to exclude from searching.
+      * @return found files
+      */
+     private static List<File> listFiles(File node, List<Pattern> patternsToExclude) {
+         // could be replaced with org.apache.commons.io.FileUtils.list() method
+         // if only we add commons-io library
+         final List<File> result = new LinkedList<>();
+ 
+         if (node.canRead()) {
+             if (node.isDirectory()) {
+                 if (!isDirectoryExcluded(node.getAbsolutePath(), patternsToExclude)) {
+                     final File[] files = node.listFiles();
+                     // listFiles() can return null, so we need to check it
+                     if (files != null) {
+                         for (File element : files) {
+                             result.addAll(listFiles(element, patternsToExclude));

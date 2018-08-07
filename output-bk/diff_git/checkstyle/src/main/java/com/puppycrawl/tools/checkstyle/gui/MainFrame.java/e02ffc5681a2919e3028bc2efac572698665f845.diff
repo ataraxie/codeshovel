@@ -1,0 +1,125 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/gui/MainFrame.java b/src/main/java/com/puppycrawl/tools/checkstyle/gui/MainFrame.java
+index b8d7ab326..77f2e8a1d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/gui/MainFrame.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/gui/MainFrame.java
+@@ -66,111 +66,109 @@ public class MainFrame extends JFrame {
+     /** Create content of this MainFrame. */
+     private void createContent() {
+         setLayout(new BorderLayout());
+ 
+         textArea = new JTextArea(20, 15);
+         textArea.setEditable(false);
+         final JScrollPane textAreaScrollPane = new JScrollPane(textArea);
+ 
+         treeTable = new JTreeTable(model.getParseTreeTableModel());
+         treeTable.setEditor(textArea);
+         treeTable.setLinePositionMap(model.getLinesToPosition());
+         final JScrollPane treeTableScrollPane = new JScrollPane(treeTable);
+ 
+         final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, treeTableScrollPane,
+             textAreaScrollPane);
+         add(splitPane, BorderLayout.CENTER);
+         splitPane.setResizeWeight(0.7);
+ 
+         add(createButtonsPanel(), BorderLayout.PAGE_END);
+ 
+         pack();
+     }
+ 
+     /**
+      * Create buttons panel.
+      * @return buttons panel.
+      */
+     private JPanel createButtonsPanel() {
+         final JButton openFileButton = new JButton(new FileSelectionAction());
+         openFileButton.setMnemonic(KeyEvent.VK_S);
+         openFileButton.setText("Open File");
+ 
+         reloadAction.setEnabled(false);
+         final JButton reloadFileButton = new JButton(reloadAction);
+         reloadFileButton.setMnemonic(KeyEvent.VK_R);
+         reloadFileButton.setText("Reload File");
+ 
+         final JPanel buttonPanel = new JPanel();
+         buttonPanel.setLayout(new GridLayout(1, 2));
+         buttonPanel.add(openFileButton);
+         buttonPanel.add(reloadFileButton);
+ 
+         return buttonPanel;
+     }
+ 
+     /**
+      * Open file and load it.
+      * @param sourceFile the file to open.
+      */
+     public void openFile(File sourceFile) {
+-        if (sourceFile != null) {
+-            try {
+-                setTitle("Checkstyle GUI : " + sourceFile.getName());
+-                model.openFile(sourceFile);
+-                reloadAction.setEnabled(true);
+-                textArea.setText(model.getText());
+-                treeTable.setLinePositionMap(model.getLinesToPosition());
+-            }
+-            catch (final CheckstyleException ex) {
+-                JOptionPane.showMessageDialog(this, ex.getMessage());
+-            }
++        try {
++            model.openFile(sourceFile);
++            setTitle(model.getTitle());
++            reloadAction.setEnabled(model.isReloadActionEnabled());
++            textArea.setText(model.getText());
++            treeTable.setLinePositionMap(model.getLinesToPosition());
++        }
++        catch (final CheckstyleException ex) {
++            JOptionPane.showMessageDialog(this, ex.getMessage());
+         }
+     }
+ 
+     /**
+      * Handler for file selection action events.
+      */
+     private class FileSelectionAction extends AbstractAction {
+         private static final long serialVersionUID = 1762396148873280589L;
+ 
+         @Override
+         public void actionPerformed(ActionEvent event) {
+             final JFileChooser fileChooser = new JFileChooser(model.getLastDirectory());
+             final FileFilter filter = new JavaFileFilter();
+             fileChooser.setFileFilter(filter);
+ 
+             final int returnCode = fileChooser.showOpenDialog(MainFrame.this);
+             if (returnCode == JFileChooser.APPROVE_OPTION) {
+                 final File file = fileChooser.getSelectedFile();
+                 openFile(file);
+             }
+         }
+     }
+ 
+     /**
+      * Handler for reload action events.
+      */
+     private class ReloadAction extends AbstractAction {
+         private static final long serialVersionUID = -890320994114628011L;
+ 
+         @Override
+         public void actionPerformed(ActionEvent event) {
+             openFile(model.getCurrentFile());
+         }
+     }
+ 
+     /**
+      * Filter for Java files.
+      */
+     private static class JavaFileFilter extends FileFilter {
+         @Override
+         public boolean accept(File file) {
+             return MainFrameModel.shouldAcceptFile(file);
+         }
+ 
+         @Override
+         public String getDescription() {
+             return "Java Source File";
+         }
+     }
+ }

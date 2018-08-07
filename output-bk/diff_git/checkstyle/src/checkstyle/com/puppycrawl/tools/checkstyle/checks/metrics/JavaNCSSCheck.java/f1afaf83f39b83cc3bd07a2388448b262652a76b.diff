@@ -1,0 +1,280 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+index ec2ff48ec..f6302382f 100755
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/metrics/JavaNCSSCheck.java
+@@ -1,262 +1,267 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2007  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.metrics;
+ 
+-import java.util.Stack;
+-
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
++import java.util.Stack;
+ 
+ /**
+  * This check calculates the Non Commenting Source Statements (NCSS) metric for
+  * java source files and methods. The check adheres to the <a
+  * href="http://www.kclee.com/clemens/java/javancss/">JavaNCSS specification
+  * </a> and gives the same results as the JavaNCSS tool.
+  *
+  * The NCSS-metric tries to determine complexity of methods, classes and files
+  * by counting the non commenting lines. Roughly said this is (nearly)
+  * equivalent to counting the semicolons and opening curly braces.
+  *
+  * @author Lars K�dderitzsch
+  */
+ public class JavaNCSSCheck extends Check
+ {
+     /** default constant for max file ncss */
+     private static final int FILE_MAX_NCSS = 2000;
+ 
+     /** default constant for max file ncss */
+     private static final int CLASS_MAX_NCSS = 1500;
+ 
+     /** default constant for max method ncss */
+     private static final int METHOD_MAX_NCSS = 50;
+ 
+     /** maximum ncss for a complete source file */
+     private int mFileMax = FILE_MAX_NCSS;
+ 
+     /** maximum ncss for a class */
+     private int mClassMax = CLASS_MAX_NCSS;
+ 
+     /** maximum ncss for a method */
+     private int mMethodMax = METHOD_MAX_NCSS;
+ 
+     /** list containing the stacked counters */
+-    private Stack mCounters;
++    private Stack<Counter> mCounters;
+ 
+     /**
+      * {@inheritDoc}
+      */
++    @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[]{
+             TokenTypes.CLASS_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.IMPORT,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.CTOR_CALL,
+             TokenTypes.SUPER_CTOR_CALL,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.LITERAL_BREAK,
+             TokenTypes.LITERAL_CONTINUE,
+             TokenTypes.LITERAL_RETURN,
+             TokenTypes.LITERAL_THROW,
+             TokenTypes.LITERAL_SYNCHRONIZED,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.EXPR,
+             TokenTypes.LABELED_STAT,
+             TokenTypes.LITERAL_CASE,
+             TokenTypes.LITERAL_DEFAULT,
+         };
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
++    @Override
+     public int[] getRequiredTokens()
+     {
+         return new int[]{
+             TokenTypes.CLASS_DEF,
+             TokenTypes.INTERFACE_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.CTOR_DEF,
+             TokenTypes.INSTANCE_INIT,
+             TokenTypes.STATIC_INIT,
+             TokenTypes.PACKAGE_DEF,
+             TokenTypes.IMPORT,
+             TokenTypes.VARIABLE_DEF,
+             TokenTypes.CTOR_CALL,
+             TokenTypes.SUPER_CTOR_CALL,
+             TokenTypes.LITERAL_IF,
+             TokenTypes.LITERAL_ELSE,
+             TokenTypes.LITERAL_WHILE,
+             TokenTypes.LITERAL_DO,
+             TokenTypes.LITERAL_FOR,
+             TokenTypes.LITERAL_SWITCH,
+             TokenTypes.LITERAL_BREAK,
+             TokenTypes.LITERAL_CONTINUE,
+             TokenTypes.LITERAL_RETURN,
+             TokenTypes.LITERAL_THROW,
+             TokenTypes.LITERAL_SYNCHRONIZED,
+             TokenTypes.LITERAL_CATCH,
+             TokenTypes.LITERAL_FINALLY,
+             TokenTypes.EXPR,
+             TokenTypes.LABELED_STAT,
+             TokenTypes.LITERAL_CASE,
+             TokenTypes.LITERAL_DEFAULT,
+         };
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
++    @Override
+     public void beginTree(DetailAST aRootAST)
+     {
+-        mCounters = new Stack();
++        mCounters = new Stack<Counter>();
+ 
+         //add a counter for the file
+         mCounters.push(new Counter());
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
++    @Override
+     public void visitToken(DetailAST aAST)
+     {
+         final int tokenType = aAST.getType();
+ 
+         if ((TokenTypes.CLASS_DEF == tokenType)
+             || (TokenTypes.METHOD_DEF == tokenType)
+             || (TokenTypes.CTOR_DEF == tokenType)
+             || (TokenTypes.STATIC_INIT == tokenType)
+             || (TokenTypes.INSTANCE_INIT == tokenType))
+         {
+             //add a counter for this class/method
+             mCounters.push(new Counter());
+         }
+ 
+         //check if token is countable
+         if (isCountable(aAST)) {
+             //increment the stacked counters
+             final int size = mCounters.size();
+             for (int i = 0; i < size; i++) {
+-                ((Counter) mCounters.get(i)).increment();
++                (mCounters.get(i)).increment();
+             }
+         }
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
++    @Override
+     public void leaveToken(DetailAST aAST)
+     {
+         final int tokenType = aAST.getType();
+         if ((TokenTypes.METHOD_DEF == tokenType)
+             || (TokenTypes.CTOR_DEF == tokenType)
+             || (TokenTypes.STATIC_INIT == tokenType)
+             || (TokenTypes.INSTANCE_INIT == tokenType))
+         {
+             //pop counter from the stack
+-            final Counter counter = (Counter) mCounters.pop();
++            final Counter counter = mCounters.pop();
+ 
+             final int count = counter.getCount();
+             if (count > mMethodMax) {
+                 log(aAST.getLineNo(), aAST.getColumnNo(), "ncss.method",
+                         new Integer(count), new Integer(mMethodMax));
+             }
+         }
+         else if (TokenTypes.CLASS_DEF == tokenType) {
+             //pop counter from the stack
+-            final Counter counter = (Counter) mCounters.pop();
++            final Counter counter = mCounters.pop();
+ 
+             final int count = counter.getCount();
+             if (count > mClassMax) {
+                 log(aAST.getLineNo(), aAST.getColumnNo(), "ncss.class",
+                         new Integer(count), new Integer(mClassMax));
+             }
+         }
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
++    @Override
+     public void finishTree(DetailAST aRootAST)
+     {
+         //pop counter from the stack
+-        final Counter counter = (Counter) mCounters.pop();
++        final Counter counter = mCounters.pop();
+ 
+         final int count = counter.getCount();
+         if (count > mFileMax) {
+             log(aRootAST.getLineNo(), aRootAST.getColumnNo(), "ncss.file",
+                     new Integer(count), new Integer(mMethodMax));
+         }
+     }
+ 
+     /**
+      * Sets the maximum ncss for a file.
+      *
+      * @param aFileMax
+      *            the maximum ncss
+      */
+     public void setFileMaximum(int aFileMax)
+     {
+         mFileMax = aFileMax;
+     }
+ 
+     /**
+      * Sets the maximum ncss for a class.
+      *
+      * @param aClassMax
+      *            the maximum ncss
+      */
+     public void setClassMaximum(int aClassMax)
+     {
+         mClassMax = aClassMax;
+     }
+ 
+     /**
+      * Sets the maximum ncss for a method.
+      *
+      * @param aMethodMax
+      *            the maximum ncss
+      */
+     public void setMethodMaximum(int aMethodMax)
+     {
+         mMethodMax = aMethodMax;
+     }
+ 
+     /**
+      * Checks if a token is countable for the ncss metric
+      *
+      * @param aAST
+      *            the AST
+      * @return true if the token is countable
+      */
+     private boolean isCountable(DetailAST aAST)
+     {

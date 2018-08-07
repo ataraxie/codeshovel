@@ -1,0 +1,91 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+index d615dcfbb..adf31fcee 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/filters/SuppressWithNearbyCommentFilter.java
+@@ -437,83 +437,82 @@ public class SuppressWithNearbyCommentFilter
+         final FileContents currentContents = FileContentsHolder.getContents();
+         if (currentContents == null) {
+             // we have no contents, so we can not filter.
+             // TODO: perhaps we should notify user somehow?
+             return true;
+         }
+         if (getFileContents() != currentContents) {
+             setFileContents(currentContents);
+             tagSuppressions();
+         }
+         for (final Iterator<Tag> iter = mTags.iterator(); iter.hasNext();) {
+             final Tag tag = iter.next();
+             if (tag.isMatch(aEvent)) {
+                 return false;
+             }
+         }
+         return true;
+     }
+ 
+     /**
+      * Collects all the suppression tags for all comments into a list and
+      * sorts the list.
+      */
+     private void tagSuppressions()
+     {
+         mTags.clear();
+         final FileContents contents = getFileContents();
+         if (mCheckCPP) {
+             tagSuppressions(contents.getCppComments().values());
+         }
+         if (mCheckC) {
+             final Collection<List<TextBlock>> cComments =
+                 contents.getCComments().values();
+             for (final List<TextBlock> element : cComments) {
+                 tagSuppressions(element);
+             }
+         }
+         Collections.sort(mTags);
+     }
+ 
+     /**
+      * Appends the suppressions in a collection of comments to the full
+      * set of suppression tags.
+      * @param aComments the set of comments.
+      */
+     private void tagSuppressions(Collection<TextBlock> aComments)
+     {
+         for (final TextBlock comment : aComments) {
+             final int startLineNo = comment.getStartLineNo();
+             final String[] text = comment.getText();
+-            tagCommentLine(text[0], startLineNo, comment.getStartColNo());
++            tagCommentLine(text[0], startLineNo);
+             for (int i = 1; i < text.length; i++) {
+-                tagCommentLine(text[i], startLineNo + i, 0);
++                tagCommentLine(text[i], startLineNo + i);
+             }
+         }
+     }
+ 
+     /**
+      * Tags a string if it matches the format for turning
+      * checkstyle reporting on or the format for turning reporting off.
+      * @param aText the string to tag.
+      * @param aLine the line number of aText.
+-     * @param aColumn the column number of aText.
+      */
+-    private void tagCommentLine(String aText, int aLine, int aColumn)
++    private void tagCommentLine(String aText, int aLine)
+     {
+         final Matcher matcher = mCommentRegexp.matcher(aText);
+         if (matcher.find()) {
+             addTag(matcher.group(0), aLine);
+         }
+     }
+ 
+     /**
+      * Adds a comment suppression <code>Tag</code> to the list of all tags.
+      * @param aText the text of the tag.
+      * @param aLine the line number of the tag.
+      */
+     private void addTag(String aText, int aLine)
+     {
+         final Tag tag = new Tag(aText, aLine);
+         mTags.add(tag);
+     }
+ }

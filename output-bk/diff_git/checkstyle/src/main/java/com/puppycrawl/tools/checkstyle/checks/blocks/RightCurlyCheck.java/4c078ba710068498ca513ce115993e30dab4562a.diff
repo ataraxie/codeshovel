@@ -1,0 +1,203 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+index abec47f45..6f1c65a03 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/blocks/RightCurlyCheck.java
+@@ -157,194 +157,194 @@ public class RightCurlyCheck extends AbstractOptionCheck<RightCurlyOption> {
+ 
+         validate(details, rcurly, lcurly);
+ 
+         if (!shouldStartLine) {
+             return;
+         }
+         final boolean startsLine =
+                 Utils.whitespaceBefore(rcurly.getColumnNo(),
+                         getLines()[rcurly.getLineNo() - 1]);
+ 
+         if (!startsLine && lcurly.getLineNo() != rcurly.getLineNo()) {
+             log(rcurly, MSG_KEY_LINE_NEW, "}");
+         }
+     }
+ 
+     /**
+      * do general validation
+      * @param details details
+      * @param rcurly right curly token
+      * @param lcurly left curly token
+      */
+     private void validate(Details details, DetailAST rcurly, DetailAST lcurly) {
+         final DetailAST nextToken = details.nextToken;
+         final boolean shouldCheckLastRcurly = details.shouldCheckLastRcurly;
+ 
+         if (getAbstractOption() == RightCurlyOption.SAME && !hasLineBreakBefore(rcurly)) {
+             log(rcurly, MSG_KEY_LINE_BREAK_BEFORE);
+         }
+ 
+         if (shouldCheckLastRcurly) {
+             if (rcurly.getLineNo() == nextToken.getLineNo()) {
+                 log(rcurly, MSG_KEY_LINE_ALONE, "}");
+             }
+         }
+         else if (getAbstractOption() == RightCurlyOption.SAME
+                 && rcurly.getLineNo() != nextToken.getLineNo()) {
+             log(rcurly, MSG_KEY_LINE_SAME, "}");
+         }
+         else if (getAbstractOption() == RightCurlyOption.ALONE
+                 && rcurly.getLineNo() == nextToken.getLineNo()
+                 && !isEmptyBody(lcurly)) {
+             log(rcurly, MSG_KEY_LINE_ALONE, "}");
+         }
+     }
+ 
+     /**
+      * Collect validation details
+      * @param ast detail ast.
+      * @return object that contain all details to make a validation.
+      */
+-    private Details getDetails(DetailAST ast) {
++    private static Details getDetails(DetailAST ast) {
+         // Attempt to locate the tokens to do the check
+         boolean shouldCheckLastRcurly = false;
+         DetailAST rcurly = null;
+         DetailAST lcurly = null;
+         DetailAST nextToken = null;
+ 
+         switch (ast.getType()) {
+             case TokenTypes.LITERAL_TRY:
+                 lcurly = ast.getFirstChild();
+                 nextToken = lcurly.getNextSibling();
+                 rcurly = lcurly.getLastChild();
+                 break;
+             case TokenTypes.LITERAL_CATCH:
+                 nextToken = ast.getNextSibling();
+                 lcurly = ast.getLastChild();
+                 rcurly = lcurly.getLastChild();
+                 if (nextToken == null) {
+                     shouldCheckLastRcurly = true;
+                     nextToken = getNextToken(ast);
+                 }
+                 break;
+             case TokenTypes.LITERAL_IF:
+                 nextToken = ast.findFirstToken(TokenTypes.LITERAL_ELSE);
+                 if (nextToken != null) {
+                     lcurly = nextToken.getPreviousSibling();
+                     rcurly = lcurly.getLastChild();
+                 }
+                 else {
+                     shouldCheckLastRcurly = true;
+                     nextToken = getNextToken(ast);
+                     lcurly = ast.getLastChild();
+                     rcurly = lcurly.getLastChild();
+                 }
+                 break;
+             case TokenTypes.LITERAL_ELSE:
+             case TokenTypes.LITERAL_FINALLY:
+                 shouldCheckLastRcurly = true;
+                 nextToken = getNextToken(ast);
+                 lcurly = ast.getFirstChild();
+                 rcurly = lcurly.getLastChild();
+                 break;
+             case TokenTypes.CLASS_DEF:
+                 final DetailAST child = ast.getLastChild();
+                 lcurly = child.getFirstChild();
+                 rcurly = child.getLastChild();
+                 nextToken = ast;
+                 break;
+             case TokenTypes.CTOR_DEF:
+             case TokenTypes.STATIC_INIT:
+             case TokenTypes.INSTANCE_INIT:
+                 lcurly = ast.findFirstToken(TokenTypes.SLIST);
+                 rcurly = lcurly.getLastChild();
+                 nextToken = ast;
+                 break;
+             case TokenTypes.METHOD_DEF:
+             case TokenTypes.LITERAL_FOR:
+             case TokenTypes.LITERAL_WHILE:
+             case TokenTypes.LITERAL_DO:
+                 lcurly = ast.findFirstToken(TokenTypes.SLIST);
+                 if (lcurly != null) {
+                     //SLIST could be absent if method is abstract, and code like "while(true);"
+                     rcurly = lcurly.getLastChild();
+                 }
+                 nextToken = lcurly;
+                 break;
+             default:
+                 throw new IllegalStateException("Unexpected token type ("
+                         + Utils.getTokenName(ast.getType()) + ")");
+         }
+ 
+         final Details details = new Details();
+         details.rcurly = rcurly;
+         details.lcurly = lcurly;
+         details.nextToken = nextToken;
+         details.shouldCheckLastRcurly = shouldCheckLastRcurly;
+ 
+         return details;
+     }
+ 
+     /**
+      * Checks if definition body is empty.
+      * @param lcurly left curly.
+      * @return true if definition body is empty.
+      */
+-    private boolean isEmptyBody(DetailAST lcurly) {
++    private static boolean isEmptyBody(DetailAST lcurly) {
+         boolean result = false;
+         if (lcurly.getParent().getType() == TokenTypes.OBJBLOCK) {
+             if (lcurly.getNextSibling().getType() == TokenTypes.RCURLY) {
+                 result = true;
+             }
+         }
+         else if (lcurly.getFirstChild().getType() == TokenTypes.RCURLY) {
+             result = true;
+         }
+         return result;
+     }
+ 
+     /**
+      * Finds next token after the given one.
+      * @param ast the given node.
+      * @return the token which represents next lexical item.
+      */
+-    private DetailAST getNextToken(DetailAST ast) {
++    private static DetailAST getNextToken(DetailAST ast) {
+         DetailAST next = null;
+         DetailAST parent = ast;
+         while (parent != null && next == null) {
+             next = parent.getNextSibling();
+             parent = parent.getParent();
+         }
+         return CheckUtils.getFirstNode(next);
+     }
+ 
+     /**
+      * Checks if right curly has line break before.
+      * @param rightCurly
+      *        Right curly token.
+      * @return
+      *        True, if right curly has line break before.
+      */
+-    private boolean hasLineBreakBefore(DetailAST rightCurly) {
++    private static boolean hasLineBreakBefore(DetailAST rightCurly) {
+         if (rightCurly != null) {
+             final DetailAST previousToken = rightCurly.getPreviousSibling();
+             if (previousToken != null && rightCurly.getLineNo() == previousToken.getLineNo()) {
+                 return false;
+             }
+         }
+         return true;
+     }
+ 
+     /**
+      * Structure that contains all details for validation
+      */
+     static class Details {
+         /** right curly */
+         private DetailAST rcurly;
+         /** left curly */
+         private DetailAST lcurly;
+         /** next Token */
+         private DetailAST nextToken;
+         /** should Check Last Rcurly */
+         private boolean shouldCheckLastRcurly;
+     }
+ }

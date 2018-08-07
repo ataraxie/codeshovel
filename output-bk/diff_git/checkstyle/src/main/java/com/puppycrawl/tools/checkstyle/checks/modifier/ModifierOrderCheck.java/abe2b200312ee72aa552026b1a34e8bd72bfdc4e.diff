@@ -1,0 +1,111 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java
+index f740fcab6..cb82cf41d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/modifier/ModifierOrderCheck.java
+@@ -34,100 +34,106 @@ import java.util.List;
+  * The correct order is:</p>
+ 
+ <ol>
+   <li><span class="code">public</span></li>
+   <li><span class="code">protected</span></li>
+ 
+   <li><span class="code">private</span></li>
+   <li><span class="code">abstract</span></li>
+   <li><span class="code">static</span></li>
+   <li><span class="code">final</span></li>
+   <li><span class="code">transient</span></li>
+   <li><span class="code">volatile</span></li>
+ 
+   <li><span class="code">synchronized</span></li>
+   <li><span class="code">native</span></li>
+   <li><span class="code">strictfp</span></li>
+ </ol>
+  * In additional, modifiers are checked to ensure all annotations
+  * are declared before all other modifiers.
+  * <p>
+  * Rationale: Code is easier to read if everybody follows
+  * a standard.
+  * </p>
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="ModifierOrder"/&gt;
+  * </pre>
+  * @author Lars Kühne
+  */
+ public class ModifierOrderCheck
+     extends Check
+ {
+     /**
+      * The order of modifiers as suggested in sections 8.1.1,
+      * 8.3.1 and 8.4.3 of the JLS.
+      */
+     private static final String[] JLS_ORDER =
+     {
+         "public", "protected", "private", "abstract", "static", "final",
+         "transient", "volatile", "synchronized", "native", "strictfp", "default",
+     };
+ 
+     @Override
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.MODIFIERS};
+     }
+ 
++    @Override
++    public int[] getAcceptableTokens()
++    {
++        return new int[] {TokenTypes.MODIFIERS};
++    }
++
+     @Override
+     public void visitToken(DetailAST ast)
+     {
+         final List<DetailAST> mods = Lists.newArrayList();
+         DetailAST modifier = ast.getFirstChild();
+         while (modifier != null) {
+             mods.add(modifier);
+             modifier = modifier.getNextSibling();
+         }
+ 
+         if (!mods.isEmpty()) {
+             final DetailAST error = checkOrderSuggestedByJLS(mods);
+             if (error != null) {
+                 if (error.getType() == TokenTypes.ANNOTATION) {
+                     log(error.getLineNo(), error.getColumnNo(),
+                             "annotation.order",
+                              error.getFirstChild().getText()
+                              + error.getFirstChild().getNextSibling()
+                                 .getText());
+                 }
+                 else {
+                     log(error.getLineNo(), error.getColumnNo(),
+                             "mod.order", error.getText());
+                 }
+             }
+         }
+     }
+ 
+ 
+     /**
+      * Checks if the modifiers were added in the order suggested
+      * in the Java language specification.
+      *
+      * @param modifiers list of modifier AST tokens
+      * @return null if the order is correct, otherwise returns the offending
+      * *       modifier AST.
+      */
+     DetailAST checkOrderSuggestedByJLS(List<DetailAST> modifiers)
+     {
+         int i = 0;
+         DetailAST modifier;
+         final Iterator<DetailAST> it = modifiers.iterator();
+         //No modifiers, no problems
+         if (!it.hasNext()) {
+             return null;
+         }
+ 
+         //Speed past all initial annotations
+         do {
+             modifier = it.next();

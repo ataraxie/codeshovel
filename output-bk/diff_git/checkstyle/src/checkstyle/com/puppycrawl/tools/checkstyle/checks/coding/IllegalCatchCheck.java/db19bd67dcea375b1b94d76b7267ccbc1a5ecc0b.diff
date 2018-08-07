@@ -1,0 +1,90 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalCatchCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalCatchCheck.java
+index eff31eaf3..d844b3895 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalCatchCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/IllegalCatchCheck.java
+@@ -24,84 +24,82 @@ import com.puppycrawl.tools.checkstyle.api.FullIdent;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
+ 
+ import java.util.HashSet;
+ import java.util.Set;
+ 
+ /**
+  * Catching java.lang.Exception, java.lang.Error or java.lang.RuntimeException
+  * is almost never acceptable.
+  * @author <a href="mailto:simon@redhillconsulting.com.au">Simon Harris</a>
+  * TODO: Merge some code and make a base class with IllegalThrowsCheck
+  */
+ public final class IllegalCatchCheck extends Check
+ {
+     /** Illegal class names */
+     private final Set mIllegalClassNames = new HashSet();
+ 
+     /** Creates new instance of the check. */
+     public IllegalCatchCheck()
+     {
+         setIllegalClassNames(new String[] {"Exception", "Error",
+                                            "RuntimeException", "Throwable",
+                                            "java.lang.Error",
+                                            "java.lang.Exception",
+                                            "java.lang.RuntimeException",
+                                            "java.lang.Throwable",
+         });
+     }
+ 
+     /** @see Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {TokenTypes.LITERAL_CATCH};
+     }
+ 
+     /** @see Check */
+     public int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
+     /** @see Check */
+     public void visitToken(DetailAST aDetailAST)
+     {
+         DetailAST paramDef =
+             aDetailAST.findFirstToken(TokenTypes.PARAMETER_DEF);
+         DetailAST excType = paramDef.findFirstToken(TokenTypes.TYPE);
+         FullIdent ident = CheckUtils.createFullType(excType);
+ 
+         if (isIllegalClassName(ident.getText())) {
+-            log(aDetailAST.getLineNo(),
+-                aDetailAST.getColumnNo(),
+-                "illegal.catch", ident.getText());
++            log(aDetailAST, "illegal.catch", ident.getText());
+         }
+     }
+ 
+     /**
+      * Checks if given exception class is illegal.
+      * @param aIdent ident to check.
+      * @return true if given ident is illegal.
+      */
+     private boolean isIllegalClassName(String aIdent)
+     {
+         return mIllegalClassNames.contains(aIdent);
+     }
+ 
+     /**
+      * Set the list of illegal exception classes.
+      * @param aClassNames array of illegal exception classes
+      */
+     public void setIllegalClassNames(String[] aClassNames)
+     {
+         mIllegalClassNames.clear();
+         for (int i = 0; i < aClassNames.length; i++) {
+             String name = aClassNames[i];
+             mIllegalClassNames.add(name);
+             int lastDot = name.lastIndexOf(".");
+             if (lastDot > 0 && lastDot < (name.length() - 1)) {
+                 String shortName = name.substring(name.lastIndexOf(".") + 1);
+                 mIllegalClassNames.add(shortName);
+             }
+         }
+     }
+ }

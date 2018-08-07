@@ -1,0 +1,69 @@
+=== COMPARE FUNCTION ===
+
+COMMIT: 7a4ec11d123dc0bbf7db943af715d19814d2e332
+NAME: verify
+PATH: verify___checker-Checker__processedFiles-File[]__messageFileName-String__expected-String[]__warnsExpected-Integer
+BODY:
+{
+    stream.flush();
+    final List<File> theFiles = Lists.newArrayList();
+    Collections.addAll(theFiles, processedFiles);
+    final List<Integer> theWarnings = Lists.newArrayList();
+    Collections.addAll(theWarnings, warnsExpected);
+    final int errs = checker.process(theFiles);
+    // process each of the lines
+    final ByteArrayInputStream inputStream = new ByteArrayInputStream(stream.toByteArray());
+    try (final LineNumberReader lnr = new LineNumberReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+        for (int i = 0; i < expected.length; i++) {
+            final String expectedResult = messageFileName + ":" + expected[i];
+            final String actual = lnr.readLine();
+            assertEquals("error message " + i, expectedResult, actual);
+            String parseInt = removeDeviceFromPathOnWindows(actual);
+            parseInt = parseInt.substring(parseInt.indexOf(':') + 1);
+            parseInt = parseInt.substring(0, parseInt.indexOf(':'));
+            final int lineNumber = Integer.parseInt(parseInt);
+            assertNotNull("expected input file to have warning comment on line number " + lineNumber, theWarnings.remove((Integer) lineNumber));
+        }
+        assertEquals("unexpected output: " + lnr.readLine(), expected.length, errs);
+        assertTrue("unexpected warnings " + theWarnings, theWarnings.size() == 0);
+    }
+    checker.destroy();
+}
+
+
+=== MOST SIMILAR FUNCTION ===
+
+COMMIT: 344ea5c012d1814441b5758013a2b035c6e1613a
+NAME: verify
+PATH: verify___aC-Checker__aProcessedFiles-File[]__aMessageFileName-String__aExpected-String[]__aWarnsExpected-Integer
+BODY:
+{
+    stream.flush();
+    final List<File> theFiles = Lists.newArrayList();
+    Collections.addAll(theFiles, aProcessedFiles);
+    final int errs = aC.process(theFiles);
+    // process each of the lines
+    final ByteArrayInputStream localStream = new ByteArrayInputStream(stream.toByteArray());
+    try (final LineNumberReader lnr = new LineNumberReader(new InputStreamReader(localStream, StandardCharsets.UTF_8))) {
+        for (int i = 0; i < aExpected.length; i++) {
+            final String expected = aMessageFileName + ":" + aExpected[i];
+            final String actual = lnr.readLine();
+            assertEquals("error message " + i, expected, actual);
+            String parseInt = removeDeviceFromPathOnWindows(actual);
+            parseInt = parseInt.substring(parseInt.indexOf(':') + 1);
+            parseInt = parseInt.substring(0, parseInt.indexOf(':'));
+            final int lineNumber = Integer.parseInt(parseInt);
+            Integer integer = 0;
+            if (Arrays.asList(aWarnsExpected).contains(lineNumber)) {
+                integer = lineNumber;
+            }
+            assertEquals("error message " + i, (long) integer, lineNumber);
+        }
+        assertEquals("unexpected output: " + lnr.readLine(), aExpected.length, errs);
+    }
+    aC.destroy();
+}
+
+
+=== SIMILARITY ===
+BodySimilarity: 0.8283713433358001; ScopeSimilarity: 1.0; NameSimilarity: 1.0; LineNumberSimilarity: 0.9831932773109243 --- Overall: 0.70709283583395

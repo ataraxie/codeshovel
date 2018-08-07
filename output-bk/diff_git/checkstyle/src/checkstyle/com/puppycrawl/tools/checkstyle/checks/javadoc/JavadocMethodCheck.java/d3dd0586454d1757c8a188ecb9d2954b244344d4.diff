@@ -1,0 +1,223 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+index d6a8c3478..502428942 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/javadoc/JavadocMethodCheck.java
+@@ -232,104 +232,101 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck
+      * false.
+      *
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingJavadoc(boolean aFlag)
+     {
+         mAllowMissingJavadoc = aFlag;
+     }
+ 
+     /**
+      * Controls whether to ignore errors when there is no javadoc for a
+      * property accessor (setter/getter methods). Defaults to false.
+      *
+      * @param aFlag a <code>Boolean</code> value
+      */
+     public void setAllowMissingPropertyJavadoc(final boolean aFlag)
+     {
+         mAllowMissingPropertyJavadoc = aFlag;
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.PACKAGE_DEF, TokenTypes.IMPORT,
+             TokenTypes.CLASS_DEF, TokenTypes.ENUM_DEF,
+             TokenTypes.METHOD_DEF, TokenTypes.CTOR_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF, };
+     }
+ 
+     /** @see com.puppycrawl.tools.checkstyle.api.Check */
+     public int[] getAcceptableTokens()
+     {
+         return new int[] {
+             TokenTypes.METHOD_DEF, TokenTypes.CTOR_DEF,
+             TokenTypes.ANNOTATION_FIELD_DEF, };
+     }
+ 
+     /**
+      * Checks Javadoc comments for a method or constructor.
+      *
+      * @param aAST the tree node for the method or constructor.
+      */
+     protected final void processAST(DetailAST aAST)
+     {
+         if (shouldCheck(aAST)) {
+             final FileContents contents = getFileContents();
+             final TextBlock cmt = contents.getJavadocBefore(aAST.getLineNo());
+ 
+             if (cmt == null) {
+-                if (!mAllowMissingJavadoc
+-                    && !(mAllowMissingPropertyJavadoc
+-                         && (isSetterMethod(aAST) || isGetterMethod(aAST))))
+-                {
++                if (!isMissingJavadocAllowed(aAST)) {
+                     log(aAST, "javadoc.missing");
+                 }
+             }
+             else {
+                 checkComment(aAST, cmt);
+             }
+         }
+     }
+ 
+     /**
+      * Logs error if unable to load class information.
+      *
+      * @param aIdent class name for which we can no load class.
+      */
+     protected final void logLoadError(Token aIdent)
+     {
+         logLoadErrorImpl(aIdent.getLineNo(), aIdent.getColumnNo(),
+                          "javadoc.classInfo",
+                          new Object[] {"@throws", aIdent.getText()});
+     }
+ 
+     /**
+      * Whether we should check this node.
+      *
+      * @param aAST a given node.
+      * @return whether we should check a given node.
+      */
+     private boolean shouldCheck(final DetailAST aAST)
+     {
+         final DetailAST mods = aAST.findFirstToken(TokenTypes.MODIFIERS);
+         final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
+         final Scope scope = ScopeUtils.inInterfaceOrAnnotationBlock(aAST)
+             ? Scope.PUBLIC
+             : declaredScope;
+         final Scope surroundingScope = ScopeUtils.getSurroundingScope(aAST);
+ 
+         return scope.isIn(mScope)
+             && surroundingScope.isIn(mScope)
+             && ((mExcludeScope == null) || !scope.isIn(mExcludeScope)
+                 || !surroundingScope.isIn(mExcludeScope));
+     }
+ 
+     /**
+      * Checks the Javadoc for a method.
+      *
+      * @param aAST the token for the method
+      * @param aComment the Javadoc comment
+      */
+     private void checkComment(DetailAST aAST, TextBlock aComment)
+     {
+@@ -802,94 +799,112 @@ public class JavadocMethodCheck extends AbstractTypeAwareCheck
+     private boolean isGetterMethod(final DetailAST aAST)
+     {
+         // Check have a method with exactly 7 children which are all that
+         // is allowed in a proper getter method which does not throw any
+         // exceptions.
+         if ((aAST.getType() != TokenTypes.METHOD_DEF)
+             || (aAST.getChildCount() != 7))
+         {
+             return false;
+         }
+ 
+         // Check the name matches format of getX or isX. Technically I should
+         // check that the format isX is only used with a boolean type.
+         final DetailAST type = aAST.findFirstToken(TokenTypes.TYPE);
+         final String name = type.getNextSibling().getText();
+         if (!name.matches("^(is|get)[A-Z].*")) { // Depends on JDK 1.4
+             return false;
+         }
+ 
+         // Check the return type is void
+         if (type.getChildCount(TokenTypes.LITERAL_VOID) > 0) {
+             return false;
+         }
+ 
+         // Check that is had only one parameter
+         final DetailAST params = aAST.findFirstToken(TokenTypes.PARAMETERS);
+         if ((params == null)
+             || (params.getChildCount(TokenTypes.PARAMETER_DEF) > 0))
+         {
+             return false;
+         }
+ 
+         // Now verify that the body consists of:
+         // SLIST -> RETURN
+         // RCURLY
+         final DetailAST slist = aAST.findFirstToken(TokenTypes.SLIST);
+         if ((slist == null) || (slist.getChildCount() != 2)) {
+             return false;
+         }
+ 
+         final AST expr = slist.getFirstChild();
+         if ((expr.getType() != TokenTypes.LITERAL_RETURN)
+             || (expr.getFirstChild().getType() != TokenTypes.EXPR))
+         {
+             return false;
+         }
+ 
+         return true;
+     }
+ 
++     /**
++      * The JavadocMethodCheck is about to report a missing Javadoc.
++      * This hook can be used by derived classes to allow a missing javadoc
++      * in some situations.  The default implementation checks
++      * <code>allowMissingJavadoc</code> and
++      * <code>allowMissingPropertyJavadoc</code> properties, do not forget
++      * to call <code>super.isMissingJavadocAllowed(aAST)</code> in case
++      * you want to keep this logic.
++      * @param aAST the tree node for the method or constructor.
++      * @return True if this method or constructor doesn't need Javadoc.
++      */
++    protected boolean isMissingJavadocAllowed(DetailAST aAST)
++    {
++        return mAllowMissingJavadoc
++            || (mAllowMissingPropertyJavadoc
++                && (isSetterMethod(aAST) || isGetterMethod(aAST)));
++    }
++
+     /** Stores useful information about declared exception. */
+     private class ExceptionInfo
+     {
+         /** does the exception have throws tag associated with. */
+         private boolean mFound;
+         /** class information associated with this exception. */
+         private ClassInfo mClassInfo;
+ 
+         /**
+          * Creates new instance for <code>FullIdent</code>.
+          *
+          * @param aIdent the exception
+          * @param aCurrentClass name of current class.
+          */
+         ExceptionInfo(Token aIdent, String aCurrentClass)
+         {
+             mClassInfo = createClassInfo(aIdent, aCurrentClass);
+         }
+ 
+         /** Mark that the exception has associated throws tag */
+         final void setFound()
+         {
+             mFound = true;
+         }
+ 
+         /** @return whether the exception has throws tag associated with */
+         final boolean isFound()
+         {
+             return mFound;
+         }
+ 
+         /** @return exception's name */
+         final Token getName()
+         {
+             return mClassInfo.getName();
+         }
+ 
+         /** @return class for this exception */
+         final Class getClazz()
+         {
+             return mClassInfo.getClazz();
+         }
+     }
+ }

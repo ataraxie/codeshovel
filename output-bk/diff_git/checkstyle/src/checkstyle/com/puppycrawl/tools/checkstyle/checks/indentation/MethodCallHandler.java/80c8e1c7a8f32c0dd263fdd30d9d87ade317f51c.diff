@@ -1,0 +1,147 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
+index c127a7e77..834efea38 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/indentation/MethodCallHandler.java
+@@ -53,136 +53,132 @@ public class MethodCallHandler extends ExpressionHandler
+     {
+         DetailAST lparen = getMainAst();
+         int columnNo = expandedTabsColumnNo(lparen);
+ 
+         if (getLevel().accept(columnNo)) {
+             return;
+         }
+ 
+         if (!startsLine(lparen)) {
+             return;
+         }
+ 
+         logError(lparen, "lparen", columnNo);
+     }
+ 
+     /**
+      * Check the indentation of the right parenthesis.
+      */
+     private void checkRParen()
+     {
+         // the rparen can either be at the correct indentation, or on
+         // the same line as the lparen
+         DetailAST rparen = getMainAst().findFirstToken(TokenTypes.RPAREN);
+         int columnNo = expandedTabsColumnNo(rparen);
+ 
+         if (getLevel().accept(columnNo)) {
+             return;
+         }
+ 
+         if (!startsLine(rparen)) {
+             return;
+         }
+         logError(rparen, "rparen", columnNo);
+     }
+ 
+     /**
+      * Compute the indentation amount for this handler.
+      *
+      * @return the expected indentation amount
+      */
+     public IndentLevel getLevelImpl()
+     {
+         // if inside a method call's params, this could be part of
+         // an expression, so get the previous line's start
+         if (getParent() instanceof MethodCallHandler) {
+             MethodCallHandler container = ((MethodCallHandler) getParent());
+             if (container != null) {
+                 if (areOnSameLine(container.getMainAst(), getMainAst())) {
+                     return container.getLevel();
+                 }
+-                else {
+-                    return new IndentLevel(container.getLevel(),
+-                                           getBasicOffset());
+-                }
++                return new IndentLevel(container.getLevel(), getBasicOffset());
+             }
+ 
+             // if we get here, we are the child of the left hand side (name
+             //  side) of a method call with no "containing" call, use
+             //  the first non-method call parent
+ 
+             ExpressionHandler p = getParent();
+             while (p instanceof MethodCallHandler) {
+                 p = p.getParent();
+             }
+             return p.suggestedChildLevel(this);
+         }
+ 
+         // if our expression isn't first on the line, just use the start
+         // of the line
+         LineSet lines = new LineSet();
+         findSubtreeLines(lines, (DetailAST) getMainAst().getFirstChild(), true);
+         int firstCol = lines.firstLineCol();
+         int lineStart = getLineStart(getFirstAst(getMainAst()));
+         if (lineStart != firstCol) {
+             return new IndentLevel(lineStart);
+         }
+-        else {
+-            return super.getLevelImpl();
+-        }
++        return super.getLevelImpl();
+     }
+ 
+     /**
+      * Get the first AST of the specified method call.
+-     *
+-     * @param aAst   the method call
+-     *
++     * 
++     * @param aAst
++     *            the method call
++     * 
+      * @return the first AST of the specified method call
+      */
+     private DetailAST getFirstAst(DetailAST aAst)
+     {
+         // walk down the first child part of the dots that make up a method
+         // call name
+ 
+         DetailAST ast = (DetailAST) aAst.getFirstChild();
+         while (ast != null && ast.getType() == TokenTypes.DOT) {
+             ast = (DetailAST) ast.getFirstChild();
+         }
+ 
+         if (ast == null) {
+             ast = aAst;
+         }
+ 
+         return ast;
+     }
+ 
+     /**
+      * Indentation level suggested for a child element. Children don't have
+      * to respect this, but most do.
+      *
+      * @param aChild  child AST (so suggestion level can differ based on child
+      *                  type)
+      *
+      * @return suggested indentation for child
+      */
+     public IndentLevel suggestedChildLevel(ExpressionHandler aChild)
+     {
+         // for whatever reason a method that crosses lines, like asList
+         // here:
+         //            System.out.println("methods are: " + Arrays.asList(
+         //                new String[] {"method"}).toString());
+         // will not have the right line num, so just get the child name
+ 
+         DetailAST first = (DetailAST) getMainAst().getFirstChild();
+         int indentLevel = getLineStart(first);
+         if (aChild instanceof MethodCallHandler) {
+             if (!areOnSameLine((DetailAST) aChild.getMainAst().getFirstChild(),
+                 (DetailAST) getMainAst().getFirstChild()))
+             {
+                 indentLevel += getBasicOffset();
+             }
+         }
+         return new IndentLevel(indentLevel);
+     }
+ 
+     /**
+      * Check the indentation of the expression we are handling.

@@ -1,0 +1,83 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/DefaultConfiguration.java b/src/main/java/com/puppycrawl/tools/checkstyle/DefaultConfiguration.java
+index 56caabd47..7ad444c85 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/DefaultConfiguration.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/DefaultConfiguration.java
+@@ -63,77 +63,77 @@ public final class DefaultConfiguration implements Configuration {
+         final Set<String> keySet = attributeMap.keySet();
+         return keySet.toArray(new String[keySet.size()]);
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public String getAttribute(String name) throws CheckstyleException {
+         if (!attributeMap.containsKey(name)) {
+             throw new CheckstyleException(
+                     "missing key '" + name + "' in " + getName());
+         }
+         return attributeMap.get(name);
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public Configuration[] getChildren() {
+         return children.toArray(
+             new Configuration[children.size()]);
+     }
+ 
+     /** {@inheritDoc} */
+     @Override
+     public String getName() {
+         return name;
+     }
+ 
+     /**
+      * Makes a configuration a child of this configuration.
+      * @param configuration the child configuration.
+      */
+     public void addChild(Configuration configuration) {
+         children.add(configuration);
+     }
+ 
+     /**
+      * Removes a child of this configuration.
+      * @param configuration the child configuration to remove.
+      */
+     public void removeChild(final Configuration configuration) {
+         children.remove(configuration);
+     }
+ 
+     /**
+      * Adds an attribute to this configuration.
+      * @param name the name of the attribute.
+      * @param value the value of the attribute.
+      */
+     public void addAttribute(String name, String value) {
+         final String current = attributeMap.put(name, value);
+-        if (null == current) {
++        if (current == null) {
+             attributeMap.put(name, value);
+         }
+         else {
+             attributeMap.put(name, current + "," + value);
+         }
+     }
+ 
+     /**
+      * Adds a custom message to this configuration.
+      * @param key the message key
+      * @param value the custom message pattern
+      */
+     public void addMessage(String key, String value) {
+         messages.put(key, value);
+     }
+ 
+     /**
+      * Returns an unmodifiable map instance containing the custom messages
+      * for this configuration.
+      * @return unmodifiable map containing custom messages
+      */
+     @Override
+     public ImmutableMap<String, String> getMessages() {
+         return ImmutableMap.copyOf(messages);
+     }
+ }

@@ -1,0 +1,111 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+index 75f271023..a7e567942 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/filters/SuppressionCommentFilter.java
+@@ -135,104 +135,104 @@ public class SuppressionCommentFilter
+                 }
+             }
+             catch (final PatternSyntaxException e) {
+                 throw new ConversionException(
+                     "unable to parse expanded comment " + format,
+                     e);
+             }
+         }
+ 
+         /** @return the text of the tag. */
+         public String getText() {
+             return text;
+         }
+ 
+         /** @return the line number of the tag in the source file. */
+         public int getLine() {
+             return line;
+         }
+ 
+         /**
+          * Determines the column number of the tag in the source file.
+          * Will be 0 for all lines of multiline comment, except the
+          * first line.
+          * @return the column number of the tag in the source file.
+          */
+         public int getColumn() {
+             return column;
+         }
+ 
+         /**
+          * Determines whether the suppression turns checkstyle reporting on or
+          * off.
+          * @return <code>true</code>if the suppression turns reporting on.
+          */
+         public boolean isOn() {
+             return on;
+         }
+ 
+         /**
+          * Compares the position of this tag in the file
+          * with the position of another tag.
+          * @param object the tag to compare with this one.
+          * @return a negative number if this tag is before the other tag,
+          * 0 if they are at the same position, and a positive number if this
+          * tag is after the other tag.
+          * @see Comparable#compareTo(Object)
+          */
+         @Override
+         public int compareTo(Tag object) {
+             if (line == object.line) {
+-                return column - object.column;
++                return Integer.compare(column, object.column);
+             }
+ 
+-            return line - object.line;
++            return Integer.compare(line, object.line);
+         }
+ 
+         /** {@inheritDoc} */
+         @Override
+         public boolean equals(Object o) {
+             if (this == o) {
+                 return true;
+             }
+             if (o == null || getClass() != o.getClass()) {
+                 return false;
+             }
+             final Tag tag = (Tag) o;
+             return Objects.equals(line, tag.line)
+                     && Objects.equals(column, tag.column)
+                     && Objects.equals(on, tag.on)
+                     && Objects.equals(text, tag.text);
+         }
+ 
+         /** {@inheritDoc} */
+         @Override
+         public int hashCode() {
+             return Objects.hash(text, line, column, on);
+         }
+ 
+         /**
+          * Determines whether the source of an audit event
+          * matches the text of this tag.
+          * @param event the <code>AuditEvent</code> to check.
+          * @return true if the source of event matches the text of this tag.
+          */
+         public boolean isMatch(AuditEvent event) {
+             final Matcher tagMatcher =
+                 tagCheckRegexp.matcher(event.getSourceName());
+             if (tagMatcher.find()) {
+                 if (tagMessageRegexp != null) {
+                     final Matcher messageMatcher =
+                             tagMessageRegexp.matcher(event.getMessage());
+                     return messageMatcher.find();
+                 }
+                 return true;
+             }
+             return false;
+         }
+ 
+         /**
+          * Expand based on a matching comment.
+          * @param comment the comment.
+          * @param string the string to expand.
+          * @param regexp the parsed expander.
+          * @return the expanded string

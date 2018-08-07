@@ -1,0 +1,107 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+index a85c5e722..839a3ba62 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/Checker.java
+@@ -113,101 +113,101 @@ public class Checker extends AutomaticBean
+ 
+         if (mModuleFactory == null) {
+             mModuleFactory = PackageNamesLoader.loadModuleFactory(Thread
+                     .currentThread().getContextClassLoader());
+         }
+ 
+         final DefaultContext context = new DefaultContext();
+         context.add("classLoader", mLoader);
+         context.add("moduleFactory", mModuleFactory);
+         context.add("severity", mSeverityLevel.getName());
+         context.add("basedir", mBasedir);
+         mChildContext = context;
+     }
+ 
+     /**
+      * Instantiates, configures and registers a child AbstractFilter
+      * or FileSetCheck
+      * that is specified in the provided configuration.
+      * @param aChildConf {@inheritDoc}
+      * @throws CheckstyleException {@inheritDoc}
+      * @see com.puppycrawl.tools.checkstyle.api.AutomaticBean
+      */
+     protected void setupChild(Configuration aChildConf)
+         throws CheckstyleException
+     {
+         final String name = aChildConf.getName();
+         try {
+             final Object child = mModuleFactory.createModule(name);
+             if (child instanceof AutomaticBean) {
+                 final AutomaticBean bean = (AutomaticBean) child;
+                 bean.contextualize(mChildContext);
+                 bean.configure(aChildConf);
+             }
+             if (child instanceof FileSetCheck) {
+                 final FileSetCheck fsc = (FileSetCheck) child;
+                 addFileSetCheck(fsc);
+             }
+             else if (child instanceof Filter) {
+                 final Filter filter = (Filter) child;
+                 addFilter(filter);
+             }
+             else if (child instanceof AuditListener) {
+                 final AuditListener listener = (AuditListener) child;
+                 addListener(listener);
+             }
+             else {
+                 throw new CheckstyleException(name
+                     + " is not allowed as a child in Checker");
+             }
+         }
+-        catch (Exception ex) {
++        catch (final Exception ex) {
+             // TODO i18n
+             throw new CheckstyleException(
+                     "cannot initialize module "
+                     + name + " - " + ex.getMessage(), ex);
+         }
+     }
+ 
+     /**
+      * Adds a FileSetCheck to the list of FileSetChecks
+      * that is executed in process().
+      * @param aFileSetCheck the additional FileSetCheck
+      */
+     public void addFileSetCheck(FileSetCheck aFileSetCheck)
+     {
+         aFileSetCheck.setMessageDispatcher(this);
+         mFileSetChecks.add(aFileSetCheck);
+     }
+ 
+     /**
+      * Adds a filter to the end of the audit event filter chain.
+      * @param aFilter the additional filter
+      */
+     public void addFilter(Filter aFilter)
+     {
+         mFilters.addFilter(aFilter);
+     }
+ 
+     /**
+      * Removes filter.
+      * @param aFilter filter to remove.
+      */
+     public void removeFilter(Filter aFilter)
+     {
+         mFilters.removeFilter(aFilter);
+     }
+ 
+     /** Cleans up the object. **/
+     public void destroy()
+     {
+         mListeners.clear();
+         mFilters.clear();
+     }
+ 
+     /**
+      * Add the listener that will be used to receive events from the audit.
+      * @param aListener the nosy thing
+      */
+     public void addListener(AuditListener aListener)
+     {
+         mListeners.add(aListener);

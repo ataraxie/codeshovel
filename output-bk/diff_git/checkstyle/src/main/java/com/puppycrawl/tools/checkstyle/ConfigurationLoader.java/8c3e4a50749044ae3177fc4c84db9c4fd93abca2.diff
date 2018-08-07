@@ -1,0 +1,285 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java b/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+index ae8513ace..55691c717 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/ConfigurationLoader.java
+@@ -42,100 +42,107 @@ import org.xml.sax.SAXException;
+ import org.xml.sax.SAXParseException;
+ 
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.Maps;
+ import com.puppycrawl.tools.checkstyle.api.AbstractLoader;
+ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+ import com.puppycrawl.tools.checkstyle.api.Configuration;
+ import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
+ 
+ /**
+  * Loads a configuration from a standard configuration XML file.
+  *
+  * @author Oliver Burn
+  */
+ public final class ConfigurationLoader {
+     /** Logger for ConfigurationLoader. */
+     private static final Log LOG = LogFactory.getLog(ConfigurationLoader.class);
+ 
+     /** The public ID for version 1_0 of the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_0 =
+         "-//Puppy Crawl//DTD Check Configuration 1.0//EN";
+ 
+     /** The resource for version 1_0 of the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_0 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_0.dtd";
+ 
+     /** The public ID for version 1_1 of the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_1 =
+         "-//Puppy Crawl//DTD Check Configuration 1.1//EN";
+ 
+     /** The resource for version 1_1 of the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_1 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_1.dtd";
+ 
+     /** The public ID for version 1_2 of the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_2 =
+         "-//Puppy Crawl//DTD Check Configuration 1.2//EN";
+ 
+     /** The resource for version 1_2 of the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_2 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_2.dtd";
+ 
+     /** The public ID for version 1_3 of the configuration dtd */
+     private static final String DTD_PUBLIC_ID_1_3 =
+         "-//Puppy Crawl//DTD Check Configuration 1.3//EN";
+ 
+     /** The resource for version 1_3 of the configuration dtd */
+     private static final String DTD_RESOURCE_NAME_1_3 =
+         "com/puppycrawl/tools/checkstyle/configuration_1_3.dtd";
+ 
++    /** Prefix for the exception when unable to find resource. */
++    private static final String UNABLE_TO_FIND_EXCEPTION_PREFIX = "unable to find ";
++
++    /** Prefix for the exception when unable to parse resource. */
++    private static final String UNABLE_TO_PARSE_EXCEPTION_PREFIX = "unable to parse"
++            + " configuration stream";
++
+     /** The SAX document handler */
+     private final InternalLoader saxHandler;
+ 
+     /** Property resolver **/
+     private final PropertyResolver overridePropsResolver;
+     /** The loaded configurations **/
+     private final Deque<DefaultConfiguration> configStack = new ArrayDeque<>();
+     /** The Configuration that is being built */
+     private Configuration configuration;
+ 
+     /** Flags if modules with the severity 'ignore' should be omitted. */
+     private final boolean omitIgnoredModules;
+ 
+     /**
+      * Creates a new {@code ConfigurationLoader} instance.
+      * @param overrideProps resolver for overriding properties
+      * @param omitIgnoredModules {@code true} if ignored modules should be
+      *         omitted
+      * @throws ParserConfigurationException if an error occurs
+      * @throws SAXException if an error occurs
+      */
+     private ConfigurationLoader(final PropertyResolver overrideProps,
+                                 final boolean omitIgnoredModules)
+         throws ParserConfigurationException, SAXException {
+         saxHandler = new InternalLoader();
+         overridePropsResolver = overrideProps;
+         this.omitIgnoredModules = omitIgnoredModules;
+     }
+ 
+     /**
+      * Creates mapping between local resources and dtd ids.
+      * @return map between local resources and dtd ids.
+      */
+     private static Map<String, String> createIdToResourceNameMap() {
+         final Map<String, String> map = Maps.newHashMap();
+         map.put(DTD_PUBLIC_ID_1_0, DTD_RESOURCE_NAME_1_0);
+         map.put(DTD_PUBLIC_ID_1_1, DTD_RESOURCE_NAME_1_1);
+         map.put(DTD_PUBLIC_ID_1_2, DTD_RESOURCE_NAME_1_2);
+         map.put(DTD_PUBLIC_ID_1_3, DTD_RESOURCE_NAME_1_3);
+         return map;
+     }
+ 
+     /**
+      * Parses the specified input source loading the configuration information.
+      * The stream wrapped inside the source, if any, is NOT
+      * explicitely closed after parsing, it is the responsibility of
+      * the caller to close the stream.
+      *
+      * @param source the source that contains the configuration data
+      * @throws IOException if an error occurs
+@@ -145,168 +152,168 @@ public final class ConfigurationLoader {
+         throws IOException, SAXException {
+         saxHandler.parseInputSource(source);
+     }
+ 
+     /**
+      * Returns the module configurations in a specified file.
+      * @param config location of config file, can be either a URL or a filename
+      * @param overridePropsResolver overriding properties
+      * @return the check configurations
+      * @throws CheckstyleException if an error occurs
+      */
+     public static Configuration loadConfiguration(String config,
+             PropertyResolver overridePropsResolver) throws CheckstyleException {
+         return loadConfiguration(config, overridePropsResolver, false);
+     }
+ 
+     /**
+      * Returns the module configurations in a specified file.
+      *
+      * @param config location of config file, can be either a URL or a filename
+      * @param overridePropsResolver overriding properties
+      * @param omitIgnoredModules {@code true} if modules with severity
+      *            'ignore' should be omitted, {@code false} otherwise
+      * @return the check configurations
+      * @throws CheckstyleException if an error occurs
+      */
+     public static Configuration loadConfiguration(String config,
+         PropertyResolver overridePropsResolver, boolean omitIgnoredModules)
+         throws CheckstyleException {
+         // figure out if this is a File or a URL
+         URI uri;
+         try {
+             final URL url = new URL(config);
+             uri = url.toURI();
+         }
+         catch (final URISyntaxException | MalformedURLException ignored) {
+             uri = null;
+         }
+ 
+         if (uri == null) {
+             final File file = new File(config);
+             if (file.exists()) {
+                 uri = file.toURI();
+             }
+             else {
+                 // check to see if the file is in the classpath
+                 try {
+                     final URL configUrl = ConfigurationLoader.class
+                             .getResource(config);
+                     if (configUrl == null) {
+-                        throw new CheckstyleException("unable to find " + config);
++                        throw new CheckstyleException(UNABLE_TO_FIND_EXCEPTION_PREFIX + config);
+                     }
+                     uri = configUrl.toURI();
+                 }
+                 catch (final URISyntaxException e) {
+-                    throw new CheckstyleException("unable to find " + config, e);
++                    throw new CheckstyleException(UNABLE_TO_FIND_EXCEPTION_PREFIX + config, e);
+                 }
+             }
+         }
+         final InputSource source = new InputSource(uri.toString());
+         return loadConfiguration(source, overridePropsResolver,
+                 omitIgnoredModules);
+     }
+ 
+     /**
+      * Returns the module configurations from a specified input stream.
+      * Note that clients are required to close the given stream by themselves
+      *
+      * @param configStream the input stream to the Checkstyle configuration
+      * @param overridePropsResolver overriding properties
+      * @param omitIgnoredModules {@code true} if modules with severity
+      *            'ignore' should be omitted, {@code false} otherwise
+      * @return the check configurations
+      * @throws CheckstyleException if an error occurs
+      *
+      * @deprecated As this method does not provide a valid system ID,
+      *   preventing resolution of external entities, a
+      *   {@link #loadConfiguration(InputSource,PropertyResolver,boolean)
+      *          version using an InputSource}
+      *   should be used instead
+      */
+     @Deprecated
+     public static Configuration loadConfiguration(InputStream configStream,
+         PropertyResolver overridePropsResolver, boolean omitIgnoredModules)
+         throws CheckstyleException {
+         return loadConfiguration(new InputSource(configStream),
+                                  overridePropsResolver, omitIgnoredModules);
+     }
+ 
+     /**
+      * Returns the module configurations from a specified input source.
+      * Note that if the source does wrap an open byte or character
+      * stream, clients are required to close that stream by themselves
+      *
+      * @param configSource the input stream to the Checkstyle configuration
+      * @param overridePropsResolver overriding properties
+      * @param omitIgnoredModules {@code true} if modules with severity
+      *            'ignore' should be omitted, {@code false} otherwise
+      * @return the check configurations
+      * @throws CheckstyleException if an error occurs
+      */
+     public static Configuration loadConfiguration(InputSource configSource,
+         PropertyResolver overridePropsResolver, boolean omitIgnoredModules)
+         throws CheckstyleException {
+         try {
+             final ConfigurationLoader loader =
+                 new ConfigurationLoader(overridePropsResolver,
+                                         omitIgnoredModules);
+             loader.parseInputSource(configSource);
+             return loader.configuration;
+         }
+         catch (final SAXParseException e) {
+-            throw new CheckstyleException("unable to parse configuration stream"
++            throw new CheckstyleException(UNABLE_TO_PARSE_EXCEPTION_PREFIX
+                     + " - " + e.getMessage() + ":" + e.getLineNumber()
+                     + ":" + e.getColumnNumber(), e);
+         }
+         catch (final ParserConfigurationException | IOException | SAXException e) {
+-            throw new CheckstyleException("unable to parse configuration stream", e);
++            throw new CheckstyleException(UNABLE_TO_PARSE_EXCEPTION_PREFIX, e);
+         }
+     }
+ 
+     /**
+      * Replaces {@code ${xxx}} style constructions in the given value
+      * with the string value of the corresponding data types.
+      *
+      * The method is package visible to facilitate testing.
+      *
+      * @param value The string to be scanned for property references.
+      *              May be {@code null}, in which case this
+      *              method returns immediately with no effect.
+      * @param props Mapping (String to String) of property names to their
+      *              values. Must not be {@code null}.
+      * @param defaultValue default to use if one of the properties in value
+      *              cannot be resolved from props.
+      *
+      * @return the original string with the properties replaced, or
+      *         {@code null} if the original string is {@code null}.
+      * @throws CheckstyleException if the string contains an opening
+      *                           {@code ${} without a closing
+      *                           {@code }}
+      *
+      * Code copied from ant -
+      * http://cvs.apache.org/viewcvs/jakarta-ant/src/main/org/apache/tools/ant/ProjectHelper.java
+      */
+     // Package visible for testing purposes
+     static String replaceProperties(
+             String value, PropertyResolver props, String defaultValue)
+         throws CheckstyleException {
+         if (value == null) {
+             return null;
+         }
+ 
+         final List<String> fragments = Lists.newArrayList();
+         final List<String> propertyRefs = Lists.newArrayList();
+         parsePropertyString(value, fragments, propertyRefs);
+ 
+         final StringBuilder sb = new StringBuilder();
+         final Iterator<String> fragmentsIterator = fragments.iterator();
+         final Iterator<String> propertyRefsIterator = propertyRefs.iterator();
+         while (fragmentsIterator.hasNext()) {
+             String fragment = fragmentsIterator.next();
+             if (fragment == null) {
+                 final String propertyName = propertyRefsIterator.next();
+                 fragment = props.resolve(propertyName);
+                 if (fragment == null) {
+                     if (defaultValue != null) {
+                         return defaultValue;
+                     }

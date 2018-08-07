@@ -1,0 +1,303 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java
+index bd40a012f..975bc5081 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/EqualsAvoidNullCheck.java
+@@ -230,232 +230,273 @@ public class EqualsAvoidNullCheck extends Check {
+             final String methodName = dot.getLastChild().getText();
+             if (EQUALS.equals(methodName)
+                     || !ignoreEqualsIgnoreCase && "equalsIgnoreCase".equals(methodName)) {
+                 currentFrame.addMethodCall(methodCall);
+             }
+         }
+     }
+ 
+     /**
+      * Determine whether LITERAL_NEW is an anonymous class definition and add it as
+      * a frame in this case.
+      * @param ast LITERAL_NEW ast.
+      */
+     private void processLiteralNew(DetailAST ast) {
+         if (ast.branchContains(TokenTypes.LCURLY)) {
+             final FieldFrame frame = new FieldFrame(currentFrame);
+             currentFrame.addChild(frame);
+             currentFrame = frame;
+         }
+     }
+ 
+     /**
+      * Traverse the tree of the field frames to check all equals method calls.
+      * @param frame to check method calls in.
+      */
+     private void traverseFieldFrameTree(FieldFrame frame) {
+         for (FieldFrame child: frame.getChildren()) {
+             if (!child.getChildren().isEmpty()) {
+                 traverseFieldFrameTree(child);
+             }
+             currentFrame = child;
+             for (DetailAST methodCall: child.getMethodCalls()) {
+                 checkMethodCall(methodCall);
+             }
+         }
+     }
+ 
+     /**
+      * Check whether the method call should be violated.
+      * @param methodCall method call to check.
+      */
+     private void checkMethodCall(DetailAST methodCall) {
+         DetailAST objCalledOn = methodCall.getFirstChild().getFirstChild();
+         if (objCalledOn.getType() == TokenTypes.DOT) {
+             objCalledOn = objCalledOn.getLastChild();
+         }
+         final DetailAST expr = methodCall.findFirstToken(TokenTypes.ELIST).getFirstChild();
+         if (isObjectValid(objCalledOn)
+                 && containsOneArgument(methodCall)
+                 && containsAllSafeTokens(expr)
+-                && isCalledOnStringField(objCalledOn)) {
++                && isCalledOnStringFieldOrVariable(objCalledOn)) {
+             final String methodName = methodCall.getFirstChild().getLastChild().getText();
+             if (EQUALS.equals(methodName)) {
+                 log(methodCall.getLineNo(), methodCall.getColumnNo(),
+                     MSG_EQUALS_AVOID_NULL);
+             }
+             else {
+                 log(methodCall.getLineNo(), methodCall.getColumnNo(),
+                     MSG_EQUALS_IGNORE_CASE_AVOID_NULL);
+             }
+         }
+     }
+ 
+     /**
+      * Check whether the object equals method is called on is not a String literal
+      * and not too complex.
+      * @param objCalledOn the object equals method is called on ast.
+      * @return true if the object is valid.
+      */
+     private static boolean isObjectValid(DetailAST objCalledOn) {
+         boolean result = true;
+         final DetailAST previousSibling = objCalledOn.getPreviousSibling();
+         if (previousSibling != null
+                 && previousSibling.getType() == TokenTypes.DOT) {
+             result = false;
+         }
+         if (isStringLiteral(objCalledOn)) {
+             result = false;
+         }
+         return result;
+     }
+ 
+     /**
+      * Checks for calling equals on String literal and
+      * anon object which cannot be null.
+      * @param objCalledOn object AST
+      * @return if it is string literal
+      */
+     private static boolean isStringLiteral(DetailAST objCalledOn) {
+         return objCalledOn.getType() == TokenTypes.STRING_LITERAL
+                 || objCalledOn.getType() == TokenTypes.LITERAL_NEW;
+     }
+ 
+     /**
+      * Verify that method call has one argument.
+      *
+      * @param methodCall METHOD_CALL DetailAST
+      * @return true if method call has one argument.
+      */
+     private static boolean containsOneArgument(DetailAST methodCall) {
+         final DetailAST elist = methodCall.findFirstToken(TokenTypes.ELIST);
+         return elist.getChildCount() == 1;
+     }
+ 
+     /**
+      * Looks for all "safe" Token combinations in the argument
+      * expression branch.
+      * @param expr the argument expression
+      * @return - true if any child matches the set of tokens, false if not
+      */
+     private static boolean containsAllSafeTokens(final DetailAST expr) {
+         DetailAST arg = expr.getFirstChild();
+         if (arg.branchContains(TokenTypes.METHOD_CALL)) {
+             return false;
+         }
+         arg = skipVariableAssign(arg);
+ 
+         //Plus assignment can have ill affects
+         //do not want to recommend moving expression
+         //See example:
+         //String s = "SweetString";
+         //s.equals(s += "SweetString"); //false
+         //s = "SweetString";
+         //(s += "SweetString").equals(s); //true
+ 
+         return !arg.branchContains(TokenTypes.PLUS_ASSIGN)
+                 && !arg.branchContains(TokenTypes.IDENT)
+                 && !arg.branchContains(TokenTypes.LITERAL_NULL);
+     }
+ 
+     /**
+      * Skips over an inner assign portion of an argument expression.
+      * @param currentAST current token in the argument expression
+      * @return the next relevant token
+      */
+     private static DetailAST skipVariableAssign(final DetailAST currentAST) {
+         if (currentAST.getType() == TokenTypes.ASSIGN
+                 && currentAST.getFirstChild().getType() == TokenTypes.IDENT) {
+             return currentAST.getFirstChild().getNextSibling();
+         }
+         return currentAST;
+     }
+ 
+     /**
+      * Determine, whether equals method is called on a field of String type.
+      * @param objCalledOn object ast.
+      * @return true if the object is of String type.
+      */
+-    private boolean isCalledOnStringField(DetailAST objCalledOn) {
+-        boolean result = false;
++    private boolean isCalledOnStringFieldOrVariable(DetailAST objCalledOn) {
++        boolean result;
+         final DetailAST previousSiblingAst = objCalledOn.getPreviousSibling();
+-        final String name = objCalledOn.getText();
+         if (previousSiblingAst == null) {
+-            FieldFrame frame = currentFrame;
+-            while (frame != null) {
+-                final DetailAST field = frame.findField(name);
+-                if (field != null
+-                        && (frame.isClassOrEnumOrEnumConstDef()
+-                                || checkLineNo(field, objCalledOn))) {
+-                    result = STRING.equals(getFieldType(field));
+-                    break;
+-                }
+-                frame = frame.getParent();
+-            }
++            result = isStringFieldOrVariable(objCalledOn);
+         }
+         else {
+             if (previousSiblingAst.getType() == TokenTypes.LITERAL_THIS) {
+-                final DetailAST field = getObjectFrame(currentFrame).findField(name);
+-                result = STRING.equals(getFieldType(field));
++                result = isStringFieldOrVariableFromThisInstance(objCalledOn);
+             }
+             else {
+                 final String className = previousSiblingAst.getText();
+-                FieldFrame frame = getObjectFrame(currentFrame);
+-                while (frame != null) {
+-                    if (className.equals(frame.getFrameName())) {
+-                        final DetailAST field = frame.findField(name);
+-                        result = STRING.equals(getFieldType(field));
+-                        break;
+-                    }
+-                    frame = getObjectFrame(frame.getParent());
++                result = isStringFieldOrVariableFromClass(objCalledOn, className);
++            }
++        }
++        return result;
++    }
++
++    /**
++     * Whether the field or the variable is of String type.
++     * @param objCalledOn the field or the variable to check.
++     * @return true if the field or the variable is of String type.
++     */
++    private boolean isStringFieldOrVariable(DetailAST objCalledOn) {
++        boolean result = false;
++        final String name = objCalledOn.getText();
++        FieldFrame frame = currentFrame;
++        while (frame != null) {
++            final DetailAST field = frame.findField(name);
++            if (field != null
++                    && (frame.isClassOrEnumOrEnumConstDef()
++                            || checkLineNo(field, objCalledOn))) {
++                result = STRING.equals(getFieldType(field));
++                break;
++            }
++            frame = frame.getParent();
++        }
++        return result;
++    }
++
++    /**
++     * Whether the field or the variable from THIS instance is of String type.
++     * @param objCalledOn the field or the variable from THIS instance to check.
++     * @return true if the field or the variable from THIS instance is of String type.
++     */
++    private boolean isStringFieldOrVariableFromThisInstance(DetailAST objCalledOn) {
++        boolean result = false;
++        final String name = objCalledOn.getText();
++        final DetailAST field = getObjectFrame(currentFrame).findField(name);
++        if (field != null) {
++            result = STRING.equals(getFieldType(field));
++        }
++        return result;
++    }
++
++    /**
++     * Whether the field or the variable from the specified class is of String type.
++     * @param objCalledOn the field or the variable from the specified class to check.
++     * @param className the name of the class to check in.
++     * @return true if the field or the variable from the specified class is of String type.
++     */
++    private boolean isStringFieldOrVariableFromClass(DetailAST objCalledOn,
++            final String className) {
++        boolean result = false;
++        final String name = objCalledOn.getText();
++        FieldFrame frame = getObjectFrame(currentFrame);
++        while (frame != null) {
++            if (className.equals(frame.getFrameName())) {
++                final DetailAST field = frame.findField(name);
++                if (field != null) {
++                    result = STRING.equals(getFieldType(field));
+                 }
++                break;
+             }
++            frame = getObjectFrame(frame.getParent());
+         }
+         return result;
+     }
+ 
+     /**
+      * Get the nearest parent frame which is CLASS_DEF, ENUM_DEF or ENUM_CONST_DEF.
+      * @param frame to start the search from.
+      * @return the nearest parent frame which is CLASS_DEF, ENUM_DEF or ENUM_CONST_DEF.
+      */
+     private static FieldFrame getObjectFrame(FieldFrame frame) {
+         FieldFrame objectFrame = frame;
+         while (objectFrame != null && !objectFrame.isClassOrEnumOrEnumConstDef()) {
+             objectFrame = objectFrame.getParent();
+         }
+         return objectFrame;
+     }
+ 
+     /**
+      * Check whether the field is declared before the method call in case of
+      * methods and initialization blocks.
+      * @param field field to check.
+      * @param objCalledOn object equals method called on.
+      * @return true if the field is declared before the method call.
+      */
+     private static boolean checkLineNo(DetailAST field, DetailAST objCalledOn) {
+         boolean result = false;
+         if (field.getLineNo() < objCalledOn.getLineNo()
+                 || field.getLineNo() == objCalledOn.getLineNo()
+                     && field.getColumnNo() < objCalledOn.getColumnNo()) {
+             result = true;
+         }
+         return result;
+     }
+ 
+     /**
+      * Get field type.
+      * @param field to get the type from.
+      * @return type of the field.
+      */
+     private static String getFieldType(DetailAST field) {
+         String fieldType = null;
+         final DetailAST identAst = field.findFirstToken(TokenTypes.TYPE)
+                 .findFirstToken(TokenTypes.IDENT);
+         if (identAst != null) {
+             fieldType = identAst.getText();
+         }
+         return fieldType;
+     }
+ 
+     /**

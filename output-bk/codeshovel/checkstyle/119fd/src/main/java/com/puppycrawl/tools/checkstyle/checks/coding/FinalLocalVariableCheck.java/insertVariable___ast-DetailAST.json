@@ -1,0 +1,120 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "FinalLocalVariableCheck.java",
+  "functionName": "insertVariable",
+  "functionId": "insertVariable___ast-DetailAST",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/FinalLocalVariableCheck.java",
+  "functionStartLine": 474,
+  "functionEndLine": 481,
+  "changeHistory": [
+    "55aa50d8f09d28521f0d0004ce475fa09082faea",
+    "36b91a59d62c9505b835717f00f470c499cf9b30",
+    "11ff590ba5cc717cbe00d88eb0b578e805572bc8",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+    "08638b5f739d9929698860048c052da2d5f80209",
+    "0c717ef2abd068366612d44280633a1c7ac9efac"
+  ],
+  "changeHistoryShort": {
+    "55aa50d8f09d28521f0d0004ce475fa09082faea": "Ybodychange",
+    "36b91a59d62c9505b835717f00f470c499cf9b30": "Ybodychange",
+    "11ff590ba5cc717cbe00d88eb0b578e805572bc8": "Ybodychange",
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": "Ymultichange(Yparameterchange,Ybodychange)",
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
+    "08638b5f739d9929698860048c052da2d5f80209": "Ybodychange",
+    "0c717ef2abd068366612d44280633a1c7ac9efac": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "55aa50d8f09d28521f0d0004ce475fa09082faea": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #3006: Fix false positive when variable is assigned multiple times\n",
+      "commitDate": 1459291651000,
+      "commitName": "55aa50d8f09d28521f0d0004ce475fa09082faea",
+      "commitAuthor": "Andrei Selkin",
+      "commitDateOld": 1459291651000,
+      "commitNameOld": "11210350f58660d96012cea051f0fbc3bc462cb1",
+      "commitAuthorOld": "Andrei Selkin",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private void insertVariable(DetailAST ast) {\n-        final Map\u003cString, DetailAST\u003e scope \u003d scopeStack.peek().scope;\n+        final Map\u003cString, FinalVariableCandidate\u003e scope \u003d scopeStack.peek().scope;\n         final DetailAST astNode \u003d ast.findFirstToken(TokenTypes.IDENT);\n-        scope.put(astNode.getText(), astNode);\n+        scope.put(astNode.getText(), new FinalVariableCandidate(astNode));\n         if (!isInitialized(astNode)) {\n             scopeStack.peek().uninitializedVariables.add(astNode);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "36b91a59d62c9505b835717f00f470c499cf9b30": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1551: Fix FinalLocalVariable false-negative",
+      "commitDate": 1446385289000,
+      "commitName": "36b91a59d62c9505b835717f00f470c499cf9b30",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1443185729000,
+      "commitNameOld": "fbd04a537a209f84407fd3695171213f4e011e33",
+      "commitAuthorOld": "rnveach",
+      "daysBetweenCommits": 37.03,
+      "commitsBetweenForRepo": 258,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,8 @@\n     private void insertVariable(DetailAST ast) {\n-        final Map\u003cString, DetailAST\u003e state \u003d scopeStack.peek();\n+        final Map\u003cString, DetailAST\u003e scope \u003d scopeStack.peek().scope;\n         final DetailAST astNode \u003d ast.findFirstToken(TokenTypes.IDENT);\n-        state.put(astNode.getText(), astNode);\n+        scope.put(astNode.getText(), astNode);\n+        if (!isInitialized(astNode)) {\n+            scopeStack.peek().uninitializedVariables.add(astNode);\n+        }\n     }\n\\ No newline at end of file\n"
+    },
+    "11ff590ba5cc717cbe00d88eb0b578e805572bc8": {
+      "type": "Ybodychange",
+      "commitMessage": "Solution to wrong variable reported because of name shadowing in FinalLocalVariableCheck. solves #1142\n",
+      "commitDate": 1434663736000,
+      "commitName": "11ff590ba5cc717cbe00d88eb0b578e805572bc8",
+      "commitAuthor": "Bhavik Patel",
+      "commitDateOld": 1434261690000,
+      "commitNameOld": "3831aa913e25d2bd424ccbeb239bd06439867a58",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 4.65,
+      "commitsBetweenForRepo": 42,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,5 @@\n     private void insertVariable(DetailAST ast) {\n-        if (!ast.branchContains(TokenTypes.FINAL)) {\n-            final Map\u003cString, DetailAST\u003e state \u003d scopeStack.peek();\n-            final DetailAST astNode \u003d ast.findFirstToken(TokenTypes.IDENT);\n-            state.put(astNode.getText(), astNode);\n-        }\n+        final Map\u003cString, DetailAST\u003e state \u003d scopeStack.peek();\n+        final DetailAST astNode \u003d ast.findFirstToken(TokenTypes.IDENT);\n+        state.put(astNode.getText(), astNode);\n     }\n\\ No newline at end of file\n"
+    },
+    "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "Prefixes, coding, #512\n",
+      "commitDate": 1421677214000,
+      "commitName": "bb1b29851f14bf7eaf5656e01c285c0f5f3b9000",
+      "commitAuthor": "alexkravin",
+      "subchanges": [
+        "Yparameterchange",
+        "Ybodychange"
+      ]
+    },
+    "f1efb27670a93690577f1bae17fc9dcbd88a795d": {
+      "type": "Yfilerename",
+      "commitMessage": "moving to standard directory layout\n",
+      "commitDate": 1393953491000,
+      "commitName": "f1efb27670a93690577f1bae17fc9dcbd88a795d",
+      "commitAuthor": "Ivan Sopov",
+      "commitDateOld": 1393482905000,
+      "commitNameOld": "1cdaeaaa4fbf02a7388f1fcbea1c86ef0ea32fed",
+      "commitAuthorOld": "Andrew Gaul",
+      "daysBetweenCommits": 5.45,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": ""
+    },
+    "08638b5f739d9929698860048c052da2d5f80209": {
+      "type": "Ybodychange",
+      "commitMessage": "Start of adding generics.\n",
+      "commitDate": 1197700618000,
+      "commitName": "08638b5f739d9929698860048c052da2d5f80209",
+      "commitAuthor": "Oliver Burn",
+      "commitDateOld": 1169909494000,
+      "commitNameOld": "1efc394250b8f1c79bd7f8344b738a7d13396ed3",
+      "commitAuthorOld": "Lars Kühne",
+      "daysBetweenCommits": 321.66,
+      "commitsBetweenForRepo": 32,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     private void insertVariable(DetailAST aAST)\n     {\n         if (!aAST.branchContains(TokenTypes.FINAL)) {\n-            final HashMap state \u003d (HashMap) mScopeStack.peek();\n+            final Map\u003cString, DetailAST\u003e state \u003d mScopeStack.peek();\n             final DetailAST ast \u003d aAST.findFirstToken(TokenTypes.IDENT);\n             state.put(ast.getText(), ast);\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "0c717ef2abd068366612d44280633a1c7ac9efac": {
+      "type": "Yintroduced",
+      "commitMessage": "Added FinalLocalVariable check from Roland Auckenthaler and Kevin Gibbs.\n",
+      "commitDate": 1063281707000,
+      "commitName": "0c717ef2abd068366612d44280633a1c7ac9efac",
+      "commitAuthor": "Rick Giles"
+    }
+  }
+}

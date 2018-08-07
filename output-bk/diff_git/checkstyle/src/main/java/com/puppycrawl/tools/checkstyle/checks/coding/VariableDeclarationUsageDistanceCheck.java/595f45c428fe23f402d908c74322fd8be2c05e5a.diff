@@ -1,0 +1,108 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+index df97e5c13..c66733e7d 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/coding/VariableDeclarationUsageDistanceCheck.java
+@@ -518,102 +518,101 @@ public class VariableDeclarationUsageDistanceCheck extends Check {
+                 }
+             }
+             // If variable usage exists in different scopes, then distance =
+             // distance until variable first usage.
+             else if (variableUsageExpressions.size() > 1) {
+                 dist++;
+                 variableUsageAst = variableUsageExpressions.get(0);
+             }
+             // If there's no any variable usage, then distance = 0.
+             else {
+                 variableUsageAst = null;
+             }
+         }
+         return new SimpleEntry<>(variableUsageAst, dist);
+     }
+ 
+     /**
+      * Gets first Ast node inside FOR, WHILE or DO-WHILE blocks if variable
+      * usage is met only inside the block (not in its declaration!).
+      * @param block
+      *        Ast node represents FOR, WHILE or DO-WHILE block.
+      * @param variable
+      *        Variable which is checked for content in block.
+      * @return If variable usage is met only inside the block
+      *         (not in its declaration!) than return the first Ast node
+      *         of this block, otherwise - null.
+      */
+     private static DetailAST getFirstNodeInsideForWhileDoWhileBlocks(
+             DetailAST block, DetailAST variable) {
+         DetailAST firstNodeInsideBlock = null;
+ 
+         if (!isVariableInOperatorExpr(block, variable)) {
+             DetailAST currentNode;
+ 
+             // Find currentNode for DO-WHILE block.
+             if (block.getType() == TokenTypes.LITERAL_DO) {
+                 currentNode = block.getFirstChild();
+             }
+             // Find currentNode for FOR or WHILE block.
+             else {
+                 // Looking for RPAREN ( ')' ) token to mark the end of operator
+                 // expression.
+                 currentNode = block.findFirstToken(TokenTypes.RPAREN).getNextSibling();
+             }
+ 
+             final int currentNodeType = currentNode.getType();
+ 
+             if (currentNodeType == TokenTypes.SLIST) {
+                 firstNodeInsideBlock = currentNode.getFirstChild();
+             }
+-            else if (currentNodeType != TokenTypes.VARIABLE_DEF
+-                    && currentNodeType != TokenTypes.EXPR) {
++            else if (currentNodeType != TokenTypes.EXPR) {
+                 firstNodeInsideBlock = currentNode;
+             }
+         }
+ 
+         return firstNodeInsideBlock;
+     }
+ 
+     /**
+      * Gets first Ast node inside IF block if variable usage is met
+      * only inside the block (not in its declaration!).
+      * @param block
+      *        Ast node represents IF block.
+      * @param variable
+      *        Variable which is checked for content in block.
+      * @return If variable usage is met only inside the block
+      *         (not in its declaration!) than return the first Ast node
+      *         of this block, otherwise - null.
+      */
+     private static DetailAST getFirstNodeInsideIfBlock(
+             DetailAST block, DetailAST variable) {
+         DetailAST firstNodeInsideBlock = null;
+ 
+         if (!isVariableInOperatorExpr(block, variable)) {
+             DetailAST currentNode = block.getLastChild();
+             final List<DetailAST> variableUsageExpressions =
+                     new ArrayList<>();
+ 
+             while (currentNode != null
+                     && currentNode.getType() == TokenTypes.LITERAL_ELSE) {
+                 final DetailAST previousNode =
+                         currentNode.getPreviousSibling();
+ 
+                 // Checking variable usage inside IF block.
+                 if (isChild(previousNode, variable)) {
+                     variableUsageExpressions.add(previousNode);
+                 }
+ 
+                 // Looking into ELSE block, get its first child and analyze it.
+                 currentNode = currentNode.getFirstChild();
+ 
+                 if (currentNode.getType() == TokenTypes.LITERAL_IF) {
+                     currentNode = currentNode.getLastChild();
+                 }
+                 else if (isChild(currentNode, variable)) {
+                     variableUsageExpressions.add(currentNode);
+                     currentNode = null;
+                 }
+             }
+ 
+             // If IF block doesn't include ELSE than analyze variable usage

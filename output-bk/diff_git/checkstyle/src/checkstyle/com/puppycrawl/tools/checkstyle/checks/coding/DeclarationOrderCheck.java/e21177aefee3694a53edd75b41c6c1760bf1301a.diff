@@ -1,0 +1,144 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java
+index 08ad8063d..54b18b4b4 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/DeclarationOrderCheck.java
+@@ -66,133 +66,133 @@ public class DeclarationOrderCheck extends Check
+     /** State for the METHOD_DEF */
+     private static final int STATE_METHOD_DEF = 4;
+ 
+     /**
+      * List of Declaration States. This is necessary due to
+      * inner classes that have their own state
+      */
+     private Stack mScopeStates = new Stack();
+ 
+     /**
+      * private class to encapsulate the state
+      */
+     private class ScopeState
+     {
+         /** The state the check is in */
+         private int mScopeState = STATE_STATIC_VARIABLE_DEF;
+ 
+         /** The sub-state the check is in */
+         private Scope mDeclarationAccess = Scope.PUBLIC;
+     }
+ 
+     /** @see Check#getDefaultTokens() */
+     public int[] getDefaultTokens()
+     {
+         return new int[] {
+             TokenTypes.CTOR_DEF,
+             TokenTypes.METHOD_DEF,
+             TokenTypes.MODIFIERS,
+             TokenTypes.OBJBLOCK,
+         };
+     }
+ 
+     /** @see Check#visitToken(DetailAST) */
+     public void visitToken(DetailAST aAST)
+     {
+         final int parentType = aAST.getParent().getType();
+         ScopeState state;
+ 
+         switch(aAST.getType()) {
+         case TokenTypes.OBJBLOCK:
+             mScopeStates.push(new ScopeState());
+             break;
+ 
+         case TokenTypes.CTOR_DEF:
+             if (parentType != TokenTypes.OBJBLOCK) {
+                 return;
+             }
+ 
+             state = (ScopeState) mScopeStates.peek();
+             if (state.mScopeState > STATE_CTOR_DEF) {
+-                log(aAST, "Constructor");
++                log(aAST, "declaration.order.constructor");
+             }
+             else {
+                 state.mScopeState = STATE_CTOR_DEF;
+             }
+             break;
+ 
+         case TokenTypes.METHOD_DEF:
+             state = (ScopeState) mScopeStates.peek();
+             if (parentType != TokenTypes.OBJBLOCK) {
+                 return;
+             }
+ 
+             if (state.mScopeState > STATE_METHOD_DEF) {
+-                log(aAST, "Method");
++                log(aAST, "declarationorder.method");
+             }
+             else {
+                 state.mScopeState = STATE_METHOD_DEF;
+             }
+             break;
+ 
+         case TokenTypes.MODIFIERS:
+             if ((parentType != TokenTypes.VARIABLE_DEF)
+                 || (aAST.getParent().getParent().getType()
+                     != TokenTypes.OBJBLOCK))
+             {
+                 return;
+             }
+ 
+             state = (ScopeState) mScopeStates.peek();
+             if (aAST.findFirstToken(TokenTypes.LITERAL_STATIC) != null) {
+                 if (state.mScopeState > STATE_STATIC_VARIABLE_DEF) {
+-                    log(aAST, "Static variable");
++                    log(aAST, "declaration.order.static");
+                 }
+                 else {
+                     state.mScopeState = STATE_STATIC_VARIABLE_DEF;
+                 }
+             }
+             else {
+                 if (state.mScopeState > STATE_INSTANCE_VARIABLE_DEF) {
+-                    log(aAST, "Instance variable");
++                    log(aAST, "declaration.order.instance");
+                 }
+                 else if (state.mScopeState == STATE_STATIC_VARIABLE_DEF) {
+                     state.mDeclarationAccess = Scope.PUBLIC;
+                     state.mScopeState = STATE_INSTANCE_VARIABLE_DEF;
+                 }
+             }
+ 
+             final Scope access = ScopeUtils.getScopeFromMods(aAST);
+             if (state.mDeclarationAccess.compareTo(access) > 0) {
+-                log(aAST, "Variable access");
++                log(aAST, "declaration.order.access");
+             }
+             else {
+                 state.mDeclarationAccess = access;
+             }
+             break;
+ 
+         default:
+         }
+     }
+ 
+     /** @see Check#leaveToken(DetailAST) */
+     public void leaveToken(DetailAST aAST)
+     {
+         switch(aAST.getType()) {
+         case TokenTypes.OBJBLOCK:
+             mScopeStates.pop();
+             break;
+ 
+         default:
+         }
+     }
+ 
+     /**
+      * Our own logging method
+      * @param aAST The AST to log
+      * @param aError The type of error to log
+      */
+     private void log(DetailAST aAST, String aError)
+     {
+-        log(aAST.getLineNo(), aAST.getColumnNo(), "declaration.order", aError);
++        log(aAST.getLineNo(), aAST.getColumnNo(), aError);
+     }
+ }

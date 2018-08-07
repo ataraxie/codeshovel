@@ -1,0 +1,73 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "FilterUtils.java",
+  "functionName": "isFileExists",
+  "functionId": "isFileExists___fileName-String",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/utils/FilterUtils.java",
+  "functionStartLine": 45,
+  "functionEndLine": 60,
+  "changeHistory": [
+    "83656b1fe7c6c31484ffb1cdc6680cf894c4de5c",
+    "c9fa456fc32d35c303d6bf66e5d0443fe4076128",
+    "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec",
+    "c22cc5801ef1a80bddc6c13f2bfa19b03f27e820"
+  ],
+  "changeHistoryShort": {
+    "83656b1fe7c6c31484ffb1cdc6680cf894c4de5c": "Ybodychange",
+    "c9fa456fc32d35c303d6bf66e5d0443fe4076128": "Ybodychange",
+    "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec": "Ymultichange(Ymovefromfile,Ymodifierchange,Yrename)",
+    "c22cc5801ef1a80bddc6c13f2bfa19b03f27e820": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "83656b1fe7c6c31484ffb1cdc6680cf894c4de5c": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5283: resolve problem with pitest caused by previous commit\n",
+      "commitDate": 1511452865000,
+      "commitName": "83656b1fe7c6c31484ffb1cdc6680cf894c4de5c",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1511399434000,
+      "commitNameOld": "c9fa456fc32d35c303d6bf66e5d0443fe4076128",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 0.62,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,17 +1,16 @@\n     public static boolean isFileExists(String fileName) {\n         boolean suppressionSourceExists \u003d true;\n         InputStream sourceInput \u003d null;\n         try {\n             final URI uriByFilename \u003d CommonUtils.getUriByFilename(fileName);\n             final URL url \u003d uriByFilename.toURL();\n             sourceInput \u003d url.openStream();\n         }\n         catch (CheckstyleException | IOException ignored) {\n             suppressionSourceExists \u003d false;\n         }\n         finally {\n-            final boolean closed \u003d closeQuietlyWithResult(sourceInput);\n-            suppressionSourceExists \u003d suppressionSourceExists \u0026\u0026 closed;\n+            suppressionSourceExists \u003d closeQuietlyWithResult(sourceInput, suppressionSourceExists);\n         }\n         return suppressionSourceExists;\n     }\n\\ No newline at end of file\n"
+    },
+    "c9fa456fc32d35c303d6bf66e5d0443fe4076128": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #5283: resolve problem with covbertura on appveyor\n",
+      "commitDate": 1511399434000,
+      "commitName": "c9fa456fc32d35c303d6bf66e5d0443fe4076128",
+      "commitAuthor": "Roman Ivanov",
+      "commitDateOld": 1506566816000,
+      "commitNameOld": "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec",
+      "commitAuthorOld": "Timur",
+      "daysBetweenCommits": 55.93,
+      "commitsBetweenForRepo": 90,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,17 @@\n     public static boolean isFileExists(String fileName) {\n         boolean suppressionSourceExists \u003d true;\n         InputStream sourceInput \u003d null;\n         try {\n             final URI uriByFilename \u003d CommonUtils.getUriByFilename(fileName);\n             final URL url \u003d uriByFilename.toURL();\n             sourceInput \u003d url.openStream();\n         }\n         catch (CheckstyleException | IOException ignored) {\n             suppressionSourceExists \u003d false;\n         }\n         finally {\n-            if (sourceInput !\u003d null) {\n-                try {\n-                    sourceInput.close();\n-                }\n-                catch (IOException ignored) {\n-                    suppressionSourceExists \u003d false;\n-                }\n-            }\n+            final boolean closed \u003d closeQuietlyWithResult(sourceInput);\n+            suppressionSourceExists \u003d suppressionSourceExists \u0026\u0026 closed;\n         }\n         return suppressionSourceExists;\n     }\n\\ No newline at end of file\n"
+    },
+    "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec": {
+      "type": "Ymultichange(Ymovefromfile,Ymodifierchange,Yrename)",
+      "commitMessage": "Issue #4421: Support suppression-xpath element in SuppressionLoader\n",
+      "commitDate": 1506566816000,
+      "commitName": "9c43a1d1663746b7cd2357e03bfede9f6cedf9ec",
+      "commitAuthor": "Timur",
+      "subchanges": [
+        "Ymovefromfile",
+        "Ymodifierchange",
+        "Yrename"
+      ]
+    },
+    "c22cc5801ef1a80bddc6c13f2bfa19b03f27e820": {
+      "type": "Yintroduced",
+      "commitMessage": "Issue #1002: Add optional attribute to suppression filter\n",
+      "commitDate": 1453757690000,
+      "commitName": "c22cc5801ef1a80bddc6c13f2bfa19b03f27e820",
+      "commitAuthor": "liscju"
+    }
+  }
+}

@@ -1,0 +1,151 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+index b54c24e9c..788e8f354 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/imports/CustomImportOrderCheck.java
+@@ -420,134 +420,134 @@ public class CustomImportOrderCheck extends Check {
+             TokenTypes.STATIC_IMPORT,
+             TokenTypes.PACKAGE_DEF,
+         };
+     }
+ 
+     @Override
+     public int[] getRequiredTokens() {
+         return getAcceptableTokens();
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST) {
+         importToGroupList.clear();
+     }
+ 
+     @Override
+     public void visitToken(DetailAST ast) {
+         if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+             if (customImportOrderRules.contains(SAME_PACKAGE_RULE_GROUP)) {
+                 samePackageDomainsRegExp = createSamePackageRegexp(
+                         samePackageMatchingDepth, ast);
+             }
+         }
+         else {
+             final String importFullPath = getFullImportIdent(ast);
+             final int lineNo = ast.getLineNo();
+             final boolean isStatic = ast.getType() == TokenTypes.STATIC_IMPORT;
+             importToGroupList.add(new ImportDetails(importFullPath,
+                     lineNo, getImportGroup(isStatic, importFullPath),
+                     isStatic));
+         }
+     }
+ 
+     @Override
+     public void finishTree(DetailAST rootAST) {
+ 
+         if (importToGroupList.isEmpty()) {
+             return;
+         }
+ 
+         final ImportDetails firstImport = importToGroupList.get(0);
+         String currentGroup = getImportGroup(firstImport.isStaticImport(),
+                 firstImport.getImportFullPath());
+         int currentGroupNumber = customImportOrderRules.indexOf(currentGroup);
+         String previousImportFromCurrentGroup = null;
+ 
+         for (ImportDetails importObject : importToGroupList) {
+             final String importGroup = importObject.getImportGroup();
+             final String fullImportIdent = importObject.getImportFullPath();
+ 
+-            if (!importGroup.equals(currentGroup)) {
++            if (importGroup.equals(currentGroup)) {
++                if (sortImportsInGroupAlphabetically
++                        && previousImportFromCurrentGroup != null
++                        && compareImports(fullImportIdent, previousImportFromCurrentGroup) < 0) {
++                    log(importObject.getLineNumber(), MSG_LEX,
++                            fullImportIdent, previousImportFromCurrentGroup);
++                }
++                else {
++                    previousImportFromCurrentGroup = fullImportIdent;
++                }
++            }
++            else {
+                 //not the last group, last one is always NON_GROUP
+                 if (customImportOrderRules.size() > currentGroupNumber + 1) {
+                     final String nextGroup = getNextImportGroup(currentGroupNumber + 1);
+                     if (importGroup.equals(nextGroup)) {
+                         if (separateLineBetweenGroups
+                                 && !hasEmptyLineBefore(importObject.getLineNumber())) {
+                             log(importObject.getLineNumber(), MSG_LINE_SEPARATOR, fullImportIdent);
+                         }
+                         currentGroup = nextGroup;
+                         currentGroupNumber = customImportOrderRules.indexOf(nextGroup);
+                         previousImportFromCurrentGroup = fullImportIdent;
+                     }
+                     else {
+                         logWrongImportGroupOrder(importObject.getLineNumber(),
+                                 importGroup, nextGroup, fullImportIdent);
+                     }
+                 }
+                 else {
+                     logWrongImportGroupOrder(importObject.getLineNumber(),
+                             importGroup, currentGroup, fullImportIdent);
+                 }
+             }
+-            else {
+-                if (sortImportsInGroupAlphabetically
+-                    && previousImportFromCurrentGroup != null
+-                    && compareImports(fullImportIdent, previousImportFromCurrentGroup) < 0) {
+-                    log(importObject.getLineNumber(), MSG_LEX,
+-                            fullImportIdent, previousImportFromCurrentGroup);
+-                }
+-                else {
+-                    previousImportFromCurrentGroup = fullImportIdent;
+-                }
+-            }
+         }
+     }
+ 
+     /**
+      * Log wrong import group order.
+      * @param currentImportLine
+      *        line number of current import current import.
+      * @param importGroup
+      *        import group.
+      * @param currentGroupNumber
+      *        current group number we are checking.
+      * @param fullImportIdent
+      *        full import name.
+      */
+     private void logWrongImportGroupOrder(int currentImportLine, String importGroup,
+             String currentGroupNumber, String fullImportIdent) {
+         if (NON_GROUP_RULE_GROUP.equals(importGroup)) {
+             log(currentImportLine, MSG_NONGROUP_IMPORT, fullImportIdent);
+         }
+         else if (NON_GROUP_RULE_GROUP.equals(currentGroupNumber)) {
+             log(currentImportLine, MSG_NONGROUP_EXPECTED, importGroup, fullImportIdent);
+         }
+         else {
+             log(currentImportLine, MSG_ORDER, importGroup, currentGroupNumber, fullImportIdent);
+         }
+     }
+ 
+     /**
+      * Get next import group.
+      * @param currentGroupNumber
+      *        current group number.
+      * @return
+      *        next import group.
+      */
+     private String getNextImportGroup(int currentGroupNumber) {
+         int nextGroupNumber = currentGroupNumber;
+ 
+         while (customImportOrderRules.size() > nextGroupNumber + 1) {
+             if (hasAnyImportInCurrentGroup(customImportOrderRules.get(nextGroupNumber))) {
+                 break;
+             }
+             nextGroupNumber++;
+         }
+         return customImportOrderRules.get(nextGroupNumber);
+     }
+ 
+     /**
+      * Checks if current group contains any import.
+      * @param currentGroup
+      *        current group.

@@ -1,0 +1,110 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+index 0418e6728..a5942ca70 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/TreeWalker.java
+@@ -210,100 +210,105 @@ public final class TreeWalker
+         }
+         final Check c = (Check) module;
+         c.contextualize(mChildContext);
+         c.configure(aChildConf);
+         c.init();
+ 
+         registerCheck(c);
+     }
+ 
+     /**
+      * Processes a specified file and reports all errors found.
+      * @param aFile the file to process
+      **/
+     private void process(File aFile)
+     {
+         // check if already checked and passed the file
+         final String fileName = aFile.getPath();
+         final long timestamp = aFile.lastModified();
+         if (mCache.alreadyChecked(fileName, timestamp)) {
+             return;
+         }
+ 
+         mMessages.reset();
+         try {
+             getMessageDispatcher().fireFileStarted(fileName);
+             final String[] lines = Utils.getLines(fileName);
+             final FileContents contents = new FileContents(fileName, lines);
+             final DetailAST rootAST = TreeWalker.parse(contents);
+             walk(rootAST, contents);
+         }
+         catch (FileNotFoundException fnfe) {
+             mMessages.add(new LocalizedMessage(0, Defn.CHECKSTYLE_BUNDLE,
+                                                "general.fileNotFound", null));
+         }
+         catch (IOException ioe) {
+             mMessages.add(new LocalizedMessage(
+                               0, Defn.CHECKSTYLE_BUNDLE,
+                               "general.exception",
+                               new String[] {ioe.getMessage()}));
+         }
+         catch (RecognitionException re) {
+             mMessages.add(new LocalizedMessage(0, Defn.CHECKSTYLE_BUNDLE,
+                                                "general.exception",
+                                                new String[] {re.getMessage()}));
+         }
+         catch (TokenStreamException te) {
+             mMessages.add(new LocalizedMessage(0, Defn.CHECKSTYLE_BUNDLE,
+                                                "general.exception",
+                                                new String[] {te.getMessage()}));
+         }
++        catch (Throwable err) {
++            mMessages.add(new LocalizedMessage(0, Defn.CHECKSTYLE_BUNDLE,
++                                               "general.exception",
++                                               new String[] {"" + err}));
++        }
+ 
+         if (mMessages.size() == 0) {
+             mCache.checkedOk(fileName, timestamp);
+         }
+         else {
+             getMessageDispatcher().fireErrors(
+                 fileName, mMessages.getMessages());
+         }
+ 
+         getMessageDispatcher().fireFileFinished(fileName);
+     }
+ 
+     /**
+      * Register a check for a given configuration.
+      * @param aCheck the check to register
+      * @throws CheckstyleException if an error occurs
+      */
+     private void registerCheck(Check aCheck)
+         throws CheckstyleException
+     {
+         int[] tokens = new int[] {}; //safety initialization
+         final Set checkTokens = aCheck.getTokenNames();
+         if (!checkTokens.isEmpty()) {
+             tokens = aCheck.getRequiredTokens();
+ 
+             //register configured tokens
+             final int acceptableTokens[] = aCheck.getAcceptableTokens();
+             Arrays.sort(acceptableTokens);
+             final Iterator it = checkTokens.iterator();
+             while (it.hasNext()) {
+                 final String token = (String) it.next();
+                 try {
+                     final int tokenId = TokenTypes.getTokenId(token);
+                     if (Arrays.binarySearch(acceptableTokens, tokenId) >= 0) {
+                         registerCheck(token, aCheck);
+                     }
+                     // TODO: else log warning
+                 }
+                 catch (IllegalArgumentException ex) {
+                     throw new CheckstyleException("illegal token \""
+                         + token + "\" in check " + aCheck, ex);
+                 }
+             }
+         }
+         else {
+             tokens = aCheck.getDefaultTokens();
+         }
+         for (int i = 0; i < tokens.length; i++) {
+             registerCheck(tokens[i], aCheck);
+         }

@@ -1,0 +1,74 @@
+diff --git a/android/guava/src/com/google/common/collect/ImmutableMapEntrySet.java b/android/guava/src/com/google/common/collect/ImmutableMapEntrySet.java
+index 10b347d7b..8ef227fbc 100644
+--- a/android/guava/src/com/google/common/collect/ImmutableMapEntrySet.java
++++ b/android/guava/src/com/google/common/collect/ImmutableMapEntrySet.java
+@@ -47,68 +47,68 @@ abstract class ImmutableMapEntrySet<K, V> extends ImmutableSet<Entry<K, V>> {
+ 
+     @Override
+     public UnmodifiableIterator<Entry<K, V>> iterator() {
+       return Iterators.forArray(entries);
+     }
+ 
+     @Override
+     ImmutableList<Entry<K, V>> createAsList() {
+       return ImmutableList.asImmutableList(entries);
+     }
+   }
+ 
+   ImmutableMapEntrySet() {}
+ 
+   abstract ImmutableMap<K, V> map();
+ 
+   @Override
+   public int size() {
+     return map().size();
+   }
+ 
+   @Override
+   public boolean contains(@Nullable Object object) {
+     if (object instanceof Entry) {
+       Entry<?, ?> entry = (Entry<?, ?>) object;
+       V value = map().get(entry.getKey());
+       return value != null && value.equals(entry.getValue());
+     }
+     return false;
+   }
+ 
+   @Override
+   boolean isPartialView() {
+     return map().isPartialView();
+   }
+ 
+   @Override
+   @GwtIncompatible // not used in GWT
+   boolean isHashCodeFast() {
+     return map().isHashCodeFast();
+   }
+ 
+   @Override
+   public int hashCode() {
+     return map().hashCode();
+   }
+ 
+   @GwtIncompatible // serialization
+   @Override
+   Object writeReplace() {
+-    return new EntrySetSerializedForm<K, V>(map());
++    return new EntrySetSerializedForm<>(map());
+   }
+ 
+   @GwtIncompatible // serialization
+   private static class EntrySetSerializedForm<K, V> implements Serializable {
+     final ImmutableMap<K, V> map;
+ 
+     EntrySetSerializedForm(ImmutableMap<K, V> map) {
+       this.map = map;
+     }
+ 
+     Object readResolve() {
+       return map.entrySet();
+     }
+ 
+     private static final long serialVersionUID = 0;
+   }
+ }

@@ -1,0 +1,148 @@
+diff --git a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
+index 5a5e85056..3f523c4ea 100644
+--- a/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
++++ b/src/checkstyle/com/puppycrawl/tools/checkstyle/checks/coding/FallThroughCheck.java
+@@ -1,121 +1,140 @@
+ ////////////////////////////////////////////////////////////////////////////////
+ // checkstyle: Checks Java source code for adherence to a set of rules.
+ // Copyright (C) 2001-2005  Oliver Burn
+ //
+ // This library is free software; you can redistribute it and/or
+ // modify it under the terms of the GNU Lesser General Public
+ // License as published by the Free Software Foundation; either
+ // version 2.1 of the License, or (at your option) any later version.
+ //
+ // This library is distributed in the hope that it will be useful,
+ // but WITHOUT ANY WARRANTY; without even the implied warranty of
+ // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ // Lesser General Public License for more details.
+ //
+ // You should have received a copy of the GNU Lesser General Public
+ // License along with this library; if not, write to the Free Software
+ // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ ////////////////////////////////////////////////////////////////////////////////
+ package com.puppycrawl.tools.checkstyle.checks.coding;
+ 
+ import com.puppycrawl.tools.checkstyle.api.Check;
+ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ import com.puppycrawl.tools.checkstyle.api.DetailAST;
+ 
+ /**
+  * Checks for fall through in switch statements
+  * Finds locations where a case contains Java code -
+  * but lacks a break, return, throw or continue statement.
+  *
+  * <p>
+  * An example of how to configure the check is:
+  * </p>
+  * <pre>
+  * &lt;module name="FallThrough"/&gt;
+  * </pre>
+  *
+  * @author o_sukhodolsky
+  */
+ public class FallThroughCheck extends Check
+ {
++    /** Do we need to check last case group. */
++    private boolean mCheckLastGroup;
++
+     /** Creates new instance of the check. */
+     public FallThroughCheck()
+     {
+         // do nothing
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getDefaultTokens()
+     {
+         return new int[]{TokenTypes.CASE_GROUP};
+     }
+ 
+     /** {@inheritDoc} */
+     public int[] getRequiredTokens()
+     {
+         return getDefaultTokens();
+     }
+ 
++    /**
++     * Configures whether we need to check last case group or not.
++     * @param aValue new value of the property.
++     */
++    public void setCheckLastCaseGroup(boolean aValue)
++    {
++        mCheckLastGroup = aValue;
++    }
++
+     /** {@inheritDoc} */
+     public void visitToken(DetailAST aAST)
+     {
+         final DetailAST nextGroup = (DetailAST) aAST.getNextSibling();
+-        if (nextGroup == null || nextGroup.getType() != TokenTypes.CASE_GROUP) {
+-            // last group we shouldn't check it
++        final boolean isLastGroup =
++            (nextGroup == null || nextGroup.getType() != TokenTypes.CASE_GROUP);
++        if (isLastGroup && !mCheckLastGroup) {
++            // we do not need to check last group
+             return;
+         }
+ 
+         final DetailAST slist = aAST.findFirstToken(TokenTypes.SLIST);
+ 
+         if (!isTerminated(slist, true, true)) {
+-            log(nextGroup, "fall.through");
++            if (!isLastGroup) {
++                log(nextGroup, "fall.through");
++            }
++            else {
++                log(aAST, "fall.through.last");
++            }
+         }
+     }
+ 
+     /**
+      * Checks if a given subtree terminated by return, throw or,
+      * if allowed break, continue.
+      * @param aAST root of given subtree
+      * @param aUseBreak should we consider break as terminator.
+      * @param aUseContinue should we consider continue as terminator.
+      * @return true if the subtree is terminated.
+      */
+     private boolean isTerminated(final DetailAST aAST, boolean aUseBreak,
+                                  boolean aUseContinue)
+     {
+         switch (aAST.getType()) {
+         case TokenTypes.LITERAL_RETURN:
+         case TokenTypes.LITERAL_THROW:
+             return true;
+         case TokenTypes.LITERAL_BREAK:
+             return aUseBreak;
+         case TokenTypes.LITERAL_CONTINUE:
+             return aUseContinue;
+         case TokenTypes.SLIST:
+             return checkSlist(aAST, aUseBreak, aUseContinue);
+         case TokenTypes.LITERAL_IF:
+             return checkIf(aAST, aUseBreak, aUseContinue);
+         case TokenTypes.LITERAL_FOR:
+         case TokenTypes.LITERAL_WHILE:
+         case TokenTypes.LITERAL_DO:
+             return checkLoop(aAST);
+         case TokenTypes.LITERAL_TRY:
+             return checkTry(aAST, aUseBreak, aUseContinue);
+         case TokenTypes.LITERAL_SWITCH:
+             return checkSwitch(aAST, aUseContinue);
+         default:
+             return false;
+         }
+     }
+ 
+     /**
+      * Checks if a given SLIST terminated by return, throw or,
+      * if allowed break, continue.
+      * @param aAST SLIST to check
+      * @param aUseBreak should we consider break as terminator.
+      * @param aUseContinue should we consider continue as terminator.
+      * @return true if SLIST is terminated.
+      */
+     private boolean checkSlist(final DetailAST aAST, boolean aUseBreak,
+                                boolean aUseContinue)
+     {

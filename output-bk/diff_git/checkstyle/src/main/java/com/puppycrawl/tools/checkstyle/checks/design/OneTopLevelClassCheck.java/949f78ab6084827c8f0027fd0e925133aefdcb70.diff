@@ -1,0 +1,147 @@
+diff --git a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/OneTopLevelClassCheck.java b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/OneTopLevelClassCheck.java
+index 81e4eb88e..3a1969ce4 100644
+--- a/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/OneTopLevelClassCheck.java
++++ b/src/main/java/com/puppycrawl/tools/checkstyle/checks/design/OneTopLevelClassCheck.java
+@@ -29,129 +29,138 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+ /**
+  *
+  * Checks that each top-level class, interface
+  * or enum resides in a source file of its own.
+  * <p>
+  * Official description of a 'top-level' term:<a
+  * href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-7.html#jls-7.6">
+  * 7.6. Top Level Type Declarations</a>. If file doesn't contains
+  * public class, enum or interface, top-level type is the first type in file.
+  * </p>
+  * <p>
+  * An example of code with violations:
+  * </p>
+  * <pre><code>
+  * public class Foo{
+  *     //methods
+  * }
+  *
+  * class Foo2{
+  *     //methods
+  * }
+  * </code></pre>
+  * <p>
+  * An example of code without top-level public type:
+  * </p>
+  * <pre><code>
+  * class Foo{ //top-level class
+  *     //methods
+  * }
+  *
+  * class Foo2{
+  *     //methods
+  * }
+  * </code></pre>
+  * <p>
+  * An example of check's configuration:
+  * </p>
+  * <pre>
+  * &lt;module name="OneTopLevelClass"/&gt;
+  * </pre>
+  *
+  * <p>
+  * An example of code without violations:
+  * </p>
+  * <pre><code>
+  * public class Foo{
+  *     //methods
+  * }
+  * </code></pre>
+  *
++ * ATTENTION: This Check does support customization of validated token
++ *
+  * @author maxvetrenko
+  */
+ public class OneTopLevelClassCheck extends Check
+ {
+ 
+     /**
+      * A key is pointing to the warning message text in "messages.properties"
+      * file.
+      */
+     public static final String MSG_KEY = "one.top.level.class";
+ 
+     /**
+      * True if a java source file contains a type
+      * with a public access level modifier.
+      */
+     private boolean publicTypeFound;
+ 
+     /** Mapping between type names and line numbers of the type declarations.*/
+     private SortedMap<Integer, String> lineNumberTypeMap = new TreeMap<>();
+ 
+     @Override
+     public int[] getDefaultTokens()
++    {
++        return getAcceptableTokens();
++    }
++
++    // ZERO tokens as Check do Traverse of Tree himself, he does not need to subscribed to Tokens
++    @Override
++    public int[] getAcceptableTokens()
+     {
+         return new int[] {};
+     }
+ 
+     @Override
+     public void beginTree(DetailAST rootAST)
+     {
++        publicTypeFound = false;
++        lineNumberTypeMap.clear();
++
+         DetailAST currentNode = rootAST;
+         while (currentNode != null) {
+             if (currentNode.getType() == TokenTypes.CLASS_DEF
+                     || currentNode.getType() == TokenTypes.ENUM_DEF
+                     || currentNode.getType() == TokenTypes.INTERFACE_DEF)
+             {
+                 if (isPublic(currentNode)) {
+                     publicTypeFound = true;
+                 }
+-
+                 else {
+                     final String typeName = currentNode.
+                             findFirstToken(TokenTypes.IDENT).getText();
+                     lineNumberTypeMap.put(currentNode.getLineNo(), typeName);
+                 }
+             }
+             currentNode = currentNode.getNextSibling();
+         }
+     }
+ 
+     @Override
+     public void finishTree(DetailAST rootAST)
+     {
+-        if (!publicTypeFound && !lineNumberTypeMap.isEmpty()) {
++        if (!publicTypeFound) {
+             // skip first top-level type.
+             lineNumberTypeMap.remove(lineNumberTypeMap.firstKey());
+         }
+ 
+         for (Map.Entry<Integer, String> entry
+                 : lineNumberTypeMap.entrySet())
+         {
+             log(entry.getKey(), MSG_KEY, entry.getValue());
+         }
+ 
+-        lineNumberTypeMap.clear();
+-        publicTypeFound = false;
+     }
+ 
+     /**
+      * Checks if a type is public.
+      * @param typeDef type definition node.
+      * @return true if a type has a public access level modifier.
+      */
+     private boolean isPublic(DetailAST typeDef)
+     {
+         final DetailAST modifiers =
+                 typeDef.findFirstToken(TokenTypes.MODIFIERS);
+         return modifiers.findFirstToken(TokenTypes.LITERAL_PUBLIC) != null;
+     }
+ }

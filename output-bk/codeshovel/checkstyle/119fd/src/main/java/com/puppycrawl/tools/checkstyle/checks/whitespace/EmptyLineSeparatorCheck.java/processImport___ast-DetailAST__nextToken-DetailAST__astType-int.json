@@ -1,0 +1,59 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "checkstyle",
+  "repositoryPath": "/home/ncbradley/codeshovel-repos/checkstyle/.git",
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  "sourceFileName": "EmptyLineSeparatorCheck.java",
+  "functionName": "processImport",
+  "functionId": "processImport___ast-DetailAST__nextToken-DetailAST__astType-int",
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/checks/whitespace/EmptyLineSeparatorCheck.java",
+  "functionStartLine": 441,
+  "functionEndLine": 445,
+  "changeHistory": [
+    "3b26b571a8dae611366c481aa1fce606ca1f1cfa",
+    "28e8f33dfdccf2d34d44bea42c28567776313628",
+    "fb5cf249885869256567d41798e14f2964a26192"
+  ],
+  "changeHistoryShort": {
+    "3b26b571a8dae611366c481aa1fce606ca1f1cfa": "Ybodychange",
+    "28e8f33dfdccf2d34d44bea42c28567776313628": "Ybodychange",
+    "fb5cf249885869256567d41798e14f2964a26192": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "3b26b571a8dae611366c481aa1fce606ca1f1cfa": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #2067: Fix false-negatives in EmptyLineSeparatorCheck\n",
+      "commitDate": 1447274797000,
+      "commitName": "3b26b571a8dae611366c481aa1fce606ca1f1cfa",
+      "commitAuthor": "Vladislav Lisetskiy",
+      "commitDateOld": 1445172696000,
+      "commitNameOld": "caa58734b9891ec51a113f861f6f1225ae6b499d",
+      "commitAuthorOld": "Pavel Baranchikov",
+      "daysBetweenCommits": 24.33,
+      "commitsBetweenForRepo": 176,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,5 @@\n     private void processImport(DetailAST ast, DetailAST nextToken, int astType) {\n         if (astType !\u003d nextToken.getType() \u0026\u0026 !hasEmptyLineAfter(ast)) {\n             log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED, nextToken.getText());\n         }\n-        if (hasNotAllowedTwoEmptyLinesBefore(ast)) {\n-            log(ast.getLineNo(), MSG_MULTIPLE_LINES, ast.getText());\n-        }\n     }\n\\ No newline at end of file\n"
+    },
+    "28e8f33dfdccf2d34d44bea42c28567776313628": {
+      "type": "Ybodychange",
+      "commitMessage": "Issue #1289: \u0027EmptyLineSeparatorCheck\u0027 refactored, UT coverage improved\n",
+      "commitDate": 1436991722000,
+      "commitName": "28e8f33dfdccf2d34d44bea42c28567776313628",
+      "commitAuthor": "Ruslan Diachenko",
+      "commitDateOld": 1434344165000,
+      "commitNameOld": "fb5cf249885869256567d41798e14f2964a26192",
+      "commitAuthorOld": "Roman Ivanov",
+      "daysBetweenCommits": 30.64,
+      "commitsBetweenForRepo": 212,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,8 @@\n     private void processImport(DetailAST ast, DetailAST nextToken, int astType) {\n-        if (astType !\u003d nextToken.getType() \u0026\u0026 !hasEmptyLineAfter(ast)\n-            || ast.getLineNo() \u003e 1 \u0026\u0026 !hasEmptyLineBefore(ast)\n-                \u0026\u0026 ast.getPreviousSibling() \u003d\u003d null) {\n+        if (astType !\u003d nextToken.getType() \u0026\u0026 !hasEmptyLineAfter(ast)) {\n             log(nextToken.getLineNo(), MSG_SHOULD_BE_SEPARATED, nextToken.getText());\n         }\n         if (hasNotAllowedTwoEmptyLinesBefore(ast)) {\n             log(ast.getLineNo(), MSG_MULTIPLE_LINES, ast.getText());\n         }\n     }\n\\ No newline at end of file\n"
+    },
+    "fb5cf249885869256567d41798e14f2964a26192": {
+      "type": "Yintroduced",
+      "commitMessage": "EmptyLineSeparator updated to follow Cyclomatic Complexity rule. #954\n",
+      "commitDate": 1434344165000,
+      "commitName": "fb5cf249885869256567d41798e14f2964a26192",
+      "commitAuthor": "Roman Ivanov"
+    }
+  }
+}
