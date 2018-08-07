@@ -3,7 +3,6 @@ package com.felixgrund.codeshovel.wrappers;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,7 +21,7 @@ public class StartEnvironment {
 	private String startCommitName;
 	private String functionName;
 	private int functionStartLine;
-	private RevCommit startCommit;
+	private Commit startCommit;
 
 	private LinkedHashMap<String, String> expectedResult;
 	private List<String> baseline;
@@ -81,11 +80,11 @@ public class StartEnvironment {
 		this.functionName = functionName;
 	}
 
-	public RevCommit getStartCommit() {
+	public Commit getStartCommit() {
 		return startCommit;
 	}
 
-	public void setStartCommit(RevCommit startCommit) {
+	public void setStartCommit(Commit startCommit) {
 		this.startCommit = startCommit;
 	}
 

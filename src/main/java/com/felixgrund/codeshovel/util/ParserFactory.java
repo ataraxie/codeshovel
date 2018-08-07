@@ -6,11 +6,11 @@ import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.parser.impl.JavaParser;
 import com.felixgrund.codeshovel.parser.impl.JsParser;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 public class ParserFactory {
 
-	public static Yparser getParser(StartEnvironment startEnv, String filePath, String fileContent, RevCommit commit) throws NoParserFoundException, ParseException {
+	public static Yparser getParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws NoParserFoundException, ParseException {
 		if (filePath.endsWith(JsParser.ACCEPTED_FILE_EXTENSION)) {
 			return new JsParser(startEnv, filePath, fileContent, commit);
 		} else if (filePath.endsWith(JavaParser.ACCEPTED_FILE_EXTENSION)) {

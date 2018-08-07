@@ -4,9 +4,8 @@ import com.felixgrund.codeshovel.entities.Yexceptions;
 import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.entities.Yreturn;
-import com.felixgrund.codeshovel.entities.*;
+import com.felixgrund.codeshovel.wrappers.Commit;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ public interface Yfunction {
 	String getCommitName();
 	String getCommitNameShort();
 
-	RevCommit getCommit();
+	Commit getCommit();
 
 	String getId();
 

@@ -13,7 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
@@ -68,7 +68,7 @@ public class AnalysisTaskTest {
 
 			RepositoryService repositoryService = new CachingRepositoryService(git, repository, repositoryName, repositoryPath);
 
-			RevCommit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
+			Commit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
 
 			startEnv.setRepositoryService(repositoryService);
 			startEnv.setRepositoryPath(repositoryPath);

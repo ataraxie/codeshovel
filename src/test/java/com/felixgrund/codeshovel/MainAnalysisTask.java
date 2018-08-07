@@ -9,9 +9,10 @@ import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.io.File;
+import java.util.Date;
 
 public class MainAnalysisTask {
 
@@ -23,7 +24,10 @@ public class MainAnalysisTask {
 	private static final String CODESTORY_REPO_DIR = System.getenv("codeshovel.repo.dir");
 
 	public static void main(String[] args) throws Exception {
+		long start = new Date().getTime();
 		execute();
+		long end = new Date().getTime();
+		System.out.println("Time taken: " + (end - start) / 1000 + "sec");
 	}
 
 	public static void execute() throws Exception {
@@ -41,7 +45,7 @@ public class MainAnalysisTask {
 		Repository repository = Utl.createRepository(repositoryPath);
 		Git git = new Git(repository);
 		RepositoryService repositoryService = new CachingRepositoryService(git, repository, repositoryName, repositoryPath);
-		RevCommit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
+		Commit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
 
 		startEnv.setRepositoryService(repositoryService);
 		startEnv.setStartCommit(startCommit);

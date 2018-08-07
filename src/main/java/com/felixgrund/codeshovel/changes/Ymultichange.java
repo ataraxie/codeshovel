@@ -2,7 +2,7 @@ package com.felixgrund.codeshovel.changes;
 
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ public class Ymultichange extends Ychange {
 
 	private List<Ychange> changes;
 
-	public Ymultichange(StartEnvironment startEnv, RevCommit commit, List<Ychange> changes) {
+	public Ymultichange(StartEnvironment startEnv, Commit commit, List<Ychange> changes) {
 		super(startEnv, commit);
 		this.changes = changes;
 	}

@@ -1,12 +1,13 @@
 package com.felixgrund.codeshovel.services;
 
+import com.felixgrund.codeshovel.changes.Yhistory;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
+import com.felixgrund.codeshovel.wrappers.Commit;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public interface RepositoryService {
@@ -16,23 +17,22 @@ public interface RepositoryService {
 	String getRepositoryPath();
 	Git getGit();
 
-	List<RevCommit> getCommitsBetween(RevCommit oldCommit, RevCommit newCommit, String filePath);
+	List<Commit> getCommitsBetween(Commit oldCommit, Commit newCommit, String filePath);
 
-	LinkedHashMap<String, RevCommit> getHistory(RevCommit startCommit, String filePath);
+	Yhistory getHistory(Commit startCommit, String filePath);
 
-	String findFileContent(RevCommit commit, String filePath) throws IOException;
+	String findFileContent(Commit commit, String filePath) throws IOException;
 
-	List<String> findFilesByExtension(RevCommit commit, String fileExtension) throws Exception;
+	List<String> findFilesByExtension(Commit commit, String fileExtension) throws Exception;
 
 	String getFileContentByObjectId(ObjectId objectId) throws IOException;
 
-	RevCommit findCommitByName(String commitName) throws IOException;
+	Commit findCommitByName(String commitName) throws IOException;
 
-	RevCommit findHeadCommit(String branchName) throws IOException;
-
-	List<RevCommit> findCommitsForBranch(String branchName) throws IOException;
-
-	RevCommit getPrevCommitNeglectingFile(RevCommit commit) throws IOException;
+	Commit getPrevCommitNeglectingFile(Commit commit) throws IOException;
 
 	List<String> gitLogRange(String startCommitName, int rangeStart, int rangeEnd, String filePath) throws Exception;
+
+	RevCommit findRevCommitById(ObjectId id) throws IOException;
+
 }

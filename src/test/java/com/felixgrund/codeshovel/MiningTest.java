@@ -7,7 +7,7 @@ import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 class MiningTest {
 
@@ -26,7 +26,7 @@ class MiningTest {
 
 		RepositoryService repositoryService = new CachingRepositoryService(git, repository, REPO, repositoryPath);
 
-		RevCommit startCommit = repositoryService.findCommitByName(START_COMMIT);
+		Commit startCommit = repositoryService.findCommitByName(START_COMMIT);
 
 		StartEnvironment env = new StartEnvironment(repositoryService);
 		env.setFilePath(TARGET_FILE_PATH);

@@ -7,7 +7,7 @@ import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +86,7 @@ public class InFileInterpreter extends AbstractInterpreter {
 						} else {
 							Ycommit prevCommit = ycommit.getPrev();
 							if (prevCommit != null) {
-								RevCommit prev = prevCommit.getCommit();
+								Commit prev = prevCommit.getCommit();
 								List<Yfunction> removedFunctions = getRemovedFunctions(
 										this.ycommit.getCommit(), prev, ycommit.getFilePath());
 								ret = parser.getMostSimilarFunction(removedFunctions, functionB, false, false);

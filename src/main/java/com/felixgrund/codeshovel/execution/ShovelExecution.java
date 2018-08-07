@@ -183,18 +183,21 @@ public class ShovelExecution {
 
 	private static void printMiningEnd(StartEnvironment startEnv) {
 		System.out.println("FINISHED MINING ANALYSIS");
+		System.out.println(new Date());
 		System.out.println("#########################################################################");
 	}
 
 	private static void printMiningStart(StartEnvironment startEnv) {
 		System.out.println("#########################################################################");
 		System.out.println("STARTING MINING ANALYSIS FOR REPO AND PATH: " + startEnv.getRepositoryName() + " - " + startEnv.getFilePath());
+		System.out.println(new Date());
 	}
 
 	private static void printProgress(int index, int numFilePaths) {
 		System.err.println("");
 		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 		System.err.println("%%%%%%%%%%%%%%%%%%%%%% FILE " + index + " / " + numFilePaths + " %%%%%%%%%%%%%%%%%%%%%");
+		System.err.println("%%%%%%%%%%%%%%%%%%%%%% " + new Date() + " %%%%%%%%%%");
 		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 		System.err.println("");
 	}

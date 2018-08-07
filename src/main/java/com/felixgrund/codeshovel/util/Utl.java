@@ -3,7 +3,7 @@ package com.felixgrund.codeshovel.util;
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.json.JsonSimilarity;
-import com.felixgrund.codeshovel.wrappers.CommitWrap;
+import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.FunctionSimilarity;
 import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
 import com.felixgrund.codeshovel.json.JsonResult;
@@ -13,7 +13,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +23,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Utl {
 
@@ -126,7 +125,7 @@ public class Utl {
 	public static void writeOutputFile(String subdir, String commitName, String filePath,
 				String functionId, String repoName, String content, String fileExtension) {
 
-		String baseDir = System.getProperty("user.dir") + "/output/" + subdir;
+		String baseDir = Optional.ofNullable( System.getenv("OUTPUT_DIR") ).orElse( System.getProperty("user.dir") + "/output" ) + "/" + subdir;
 		String commitNameShort = commitName.substring(0, 5);
 		String targetDirPath = baseDir + "/" + repoName;
 		if (functionId != null) {
@@ -231,17 +230,13 @@ public class Utl {
 		return getLines(string).size();
 	}
 
-	public static Date getCommitDate(RevCommit revCommit) {
-		return new Date((long) 1000 * revCommit.getCommitTime());
-	}
-
-	public static long getMsBetweenCommits(RevCommit oldCommit, RevCommit newCommit) {
-		long newCommitTime = new CommitWrap(newCommit).getCommitDate().getTime();
-		long oldCommitTime = new CommitWrap(oldCommit).getCommitDate().getTime();
+	public static long getMsBetweenCommits(Commit oldCommit, Commit newCommit) {
+		long newCommitTime = newCommit.getCommitDate().getTime();
+		long oldCommitTime = oldCommit.getCommitDate().getTime();
 		return newCommitTime - oldCommitTime;
 	}
 
-	public static double getDaysBetweenCommits(RevCommit oldCommit, RevCommit newCommit) {
+	public static double getDaysBetweenCommits(Commit oldCommit, Commit newCommit) {
 		long msBetweenCommits = getMsBetweenCommits(oldCommit, newCommit);
 		double daysBetweenNotRounded = (double) msBetweenCommits / (1000*60*60*24);
 		BigDecimal decimal = new BigDecimal(daysBetweenNotRounded);
@@ -262,10 +257,6 @@ public class Utl {
 		double lineNumberDistance = getLineNumberDistance(aFunction, bFunction);
 		double similarity = (maxLines - lineNumberDistance) / maxLines;
 		return similarity;
-	}
-
-	public static String getCommitNameShort(RevCommit commit) {
-		return commit.getName().substring(0, 6);
 	}
 
 	public static String getFileExtensionWithoutDot(String filePath) {
