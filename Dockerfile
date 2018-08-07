@@ -18,6 +18,8 @@ ENV FILE_EXT ${FILE_EXT:-.java}
 # A space-separated list of relative (from REPO_NAME) paths to search files with FILE_EXT. Defaults to all subdirectories
 ENV SEARCH_PATHS ${SEARCH_PATHS:-.}
 
+ENV OUTPUT_DIR /var/opt/codeshovel/output
+
 RUN apt-get update && apt-get -y install maven
 
 WORKDIR /opt/codeshovel
@@ -26,5 +28,5 @@ RUN mvn verify
 
 CMD cd "/repos/${REPO_NAME}" && \
     find ${SEARCH_PATHS} -type f -name "*${FILE_EXT}" \
-           -exec bash -c 'timeout 15m java -classpath "/opt/codeshovel/target/*" com.felixgrund.codeshovel.DockerTask ${1:2} ${START_COMMIT}' - {} \; -quit
+           -exec bash -c 'timeout 15m java -classpath "/opt/codeshovel/target/*" com.felixgrund.codeshovel.DockerTask ${1:2} ${START_COMMIT}' - {} \;
 
