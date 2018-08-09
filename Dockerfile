@@ -1,22 +1,32 @@
 FROM openjdk:8u171
 
-ARG REPO_DIR=/codeshovel-repos
-ARG OUTPUT_DIR=/usr/codeshovel/output
+# Mount host directory containing repositories to analyze here
+VOLUME /repos
 
-VOLUME ["${REPO_DIR}", "${OUTPUT_DIR}"]
+# Mount host output directory here
+VOLUME /var/opt/codeshovel/output
 
-# Do NOT override these values
-# You can set where the files are stored on the host using --volume (-v) parameters
-ENV REPO_DIR "${REPO_DIR}"
-ENV OUTPUT_DIR "${OUTPUT_DIR}"
+# Last commit to start running the analysis from
+ENV START_COMMIT ${START_COMMIT}
+
+# The name of the repository directory in the /repos directory
+ENV REPO_NAME ${REPO_NAME}
+
+# The file extension to search for. Defaults to .java
+ENV FILE_EXT ${FILE_EXT:-.java}
+
+# A space-separated list of relative (from REPO_NAME) paths to search files with FILE_EXT. Defaults to all subdirectories
+ENV SEARCH_PATHS ${SEARCH_PATHS:-.}
+
+ENV OUTPUT_DIR /var/opt/codeshovel/output
 
 RUN apt-get update && apt-get -y install maven
 
-COPY . /usr/codeshovel
-WORKDIR /usr/codeshovel
+WORKDIR /opt/codeshovel
+COPY ./ ./
 RUN mvn verify
 
-CMD cd "${REPO_DIR}/${REPO}" && find . -type f -name "*.java" -exec bash -c 'export TARGET_FILE_PATH="${1:2}" && timeout 15m java -classpath "/usr/codeshovel/target/*" com.felixgrund.codeshovel.MiningTestJava' - {} \;
+CMD cd "/repos/${REPO_NAME}" && \
+    find ${SEARCH_PATHS} -type f -name "*${FILE_EXT}" \
+           -exec bash -c 'timeout 15m java -classpath "/opt/codeshovel/target/*" com.felixgrund.codeshovel.DockerTask ${1#./} ${START_COMMIT}' - {} \;
 
-# WORKDIR /usr/codeshovel/target/
-# CMD ["java", "-classpath", "*", "com.felixgrund.codeshovel.MiningTestJava"]
