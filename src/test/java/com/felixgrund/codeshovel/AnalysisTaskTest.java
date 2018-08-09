@@ -35,7 +35,7 @@ public class AnalysisTaskTest {
 	// Specify file name (without file extension) if you want to run only a single test.
 	// e.g. "checkstyle-Checker-fireErrors";
 //	private static final String RUN_ONLY_TEST = "flink-LocatableInputSplitAssigner-getNextInputSplit";
-	private static final String RUN_ONLY_TEST = "flink-FileSystem-getUnguardedFileSystem";
+	private static final String RUN_ONLY_TEST = "flink-ContinuousFileMonitoringFunction-close";
 
 	private static List<StartEnvironment> startEnvs = new ArrayList<>();
 

@@ -4,7 +4,6 @@ import com.felixgrund.codeshovel.entities.Yhistory;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.util.CmdUtil;
 import com.felixgrund.codeshovel.wrappers.Commit;
-import org.jetbrains.annotations.Nullable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
@@ -17,9 +16,16 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
