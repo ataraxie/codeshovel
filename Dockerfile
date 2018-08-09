@@ -28,5 +28,5 @@ RUN mvn verify
 
 CMD cd "/repos/${REPO_NAME}" && \
     find ${SEARCH_PATHS} -type f -name "*${FILE_EXT}" \
-           -exec bash -c 'timeout 15m java -classpath "/opt/codeshovel/target/*" com.felixgrund.codeshovel.DockerTask ${1:2} ${START_COMMIT}' - {} \;
+           -exec bash -c 'timeout 15m java -classpath "/opt/codeshovel/target/*" com.felixgrund.codeshovel.DockerTask ${1#./} ${START_COMMIT}' - {} \;
 
