@@ -69,9 +69,12 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 	private Yfunction getCompareFunctionFromMultipleFiles(Ydiff ydiff, Commit prevCommit) throws Exception {
 		Yfunction ret = null;
 		List<Yfunction> allFunctions = new ArrayList<>();
-		for (String path : ydiff.getOldPaths()) {
-			if (path.endsWith(this.startParser.getAcceptedFileExtension())) {
-				List<Yfunction> removedFunctions = getRemovedFunctions(this.ycommit.getCommit(), prevCommit, path);
+		String acceptedFileExtension = this.startParser.getAcceptedFileExtension();
+		Map<String, String> pathMapping = ydiff.getPathMapping();
+		for (String oldPath : pathMapping.keySet()) {
+			if (oldPath.endsWith(acceptedFileExtension)) {
+				String newPath = pathMapping.get(oldPath);
+				List<Yfunction> removedFunctions = getRemovedFunctions(this.ycommit.getCommit(), prevCommit, oldPath, newPath);
 				allFunctions.addAll(removedFunctions);
 			}
 		}

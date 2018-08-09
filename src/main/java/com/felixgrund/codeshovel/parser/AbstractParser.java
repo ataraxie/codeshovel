@@ -201,8 +201,8 @@ public abstract class AbstractParser implements Yparser {
 			return mostSimilarFunction;
 		}
 
-		if (candidatesWithSameName.size() == 1 && mostSimilarFunctionSimilarity > 0.7) {
-			log.trace("Highest similarity was < 0.85. But found single candidate with same function name and similarity > 0.7. Done.");
+		if (candidatesWithSameName.size() == 1 && mostSimilarFunctionSimilarity > 0.6) {
+			log.trace("Highest similarity was < 0.85. But found single candidate with same function name and similarity > 0.6. Done.");
 			return candidatesWithSameName.get(0);
 		}
 

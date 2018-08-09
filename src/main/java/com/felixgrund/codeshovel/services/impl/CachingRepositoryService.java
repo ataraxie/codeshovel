@@ -1,6 +1,6 @@
 package com.felixgrund.codeshovel.services.impl;
 
-import com.felixgrund.codeshovel.changes.Yhistory;
+import com.felixgrund.codeshovel.entities.Yhistory;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.util.CmdUtil;
 import com.felixgrund.codeshovel.wrappers.Commit;

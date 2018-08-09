@@ -43,10 +43,10 @@ public abstract class AbstractInterpreter {
 		return ret;
 	}
 
-	protected List<Yfunction> getRemovedFunctions(Commit commitNew, Commit commitOld, String filePath) throws Exception {
+	protected List<Yfunction> getRemovedFunctions(Commit commitNew, Commit commitOld, String oldFilePath, String newFilePath) throws Exception {
 		List<Yfunction> ret = new ArrayList<>();
-		Yparser parserOld = createParserForCommitAndFile(commitOld, filePath);
-		Yparser parserNew = createParserForCommitAndFile(commitNew, filePath);
+		Yparser parserOld = createParserForCommitAndFile(commitOld, oldFilePath);
+		Yparser parserNew = createParserForCommitAndFile(commitNew, newFilePath);
 		if (parserNew == null) {
 			ret = parserOld.getAllFunctions();
 		} else {
