@@ -41,7 +41,12 @@ public class ShovelExecution {
 		int index = 1;
 		for (String filePath : filePathsToConsider) {
 			printProgress(index, numFilePaths);
-			runSingle(startEnv, filePath, false);
+			try {
+				runSingle(startEnv, filePath, false);
+			} catch (Exception e) {
+				log.error("Could run Shovel execution for Env {{}} with path {{}}. Skipping.", startEnv.getEnvName(), filePath, e);
+			}
+
 			index++;
 		}
 
