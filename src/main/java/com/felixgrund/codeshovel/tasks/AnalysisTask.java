@@ -118,7 +118,7 @@ public class AnalysisTask {
 					this.lastMajorChange = ychange;
 				}
 			} catch (Exception e) {
-				log.error("Exception occurred interpreting commit {{}}. Ending analysis.", ycommit.getShortName(), e);
+				log.error("Exception occurred interpreting commit {{}}. Ending analysis.", ycommit.getShortName());
 				System.err.println("Error interpreting commit " + ycommit.getShortName() + ". Ending analysis.");
 				break;
 			}

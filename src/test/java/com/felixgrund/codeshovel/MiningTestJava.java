@@ -22,7 +22,7 @@ public class MiningTestJava extends MiningTest {
 
 		// Specify a method line number if you want to use only methods with name TARGET_METHOD *and* TARGET_METHOD_STARTLINE.
 		// If the start line doesn't matter (which will be most cases for mining), use `0`.
-//		TARGET_METHOD_STARTLINE = 341;
+		TARGET_METHOD_STARTLINE = 369;
 	}
 
 
