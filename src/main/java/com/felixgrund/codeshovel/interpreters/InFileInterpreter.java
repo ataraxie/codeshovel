@@ -10,7 +10,9 @@ import org.eclipse.jgit.diff.EditList;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InFileInterpreter extends AbstractInterpreter {
 
@@ -78,17 +80,26 @@ public class InFileInterpreter extends AbstractInterpreter {
 					int beginB = edit.getBeginB();
 					int endB = edit.getEndB();
 					if (beginB <= lineNumberB && endB >= lineNumberB) {
-						List<Yfunction> candidates = parentCommitParser.findFunctionsByLineRange(beginA, endA);
 						String filePathOldAndNew = ycommit.getFilePath(); // FIXME: I'm not too sure if this is ok
-						List<Yfunction> removedFunctions = getRemovedFunctions(
+						List<Yfunction> candidates = getRemovedFunctions(
 								ycommit.getCommit(), parentCommit.getCommit(), filePathOldAndNew, filePathOldAndNew);
-						candidates.addAll(removedFunctions);
+						List<Yfunction> candidatesLineRange = parentCommitParser.findFunctionsByLineRange(beginA, endA);
+						candidates.addAll(candidatesLineRange);
+						candidates = removeDuplicates(candidates);
 						ret = parentCommitParser.getMostSimilarFunction(candidates, functionB, false, false);
 					}
 				}
 			}
 		}
 		return ret;
+	}
+
+	private List<Yfunction> removeDuplicates(List<Yfunction> functions) {
+		Map<String, Yfunction> functionsMap = new HashMap<>();
+		for (Yfunction function : functions) {
+			functionsMap.put(function.getId(), function);
+		}
+		return new ArrayList<Yfunction>(functionsMap.values());
 	}
 
 	private boolean isFirstFunctionOccurrence() {

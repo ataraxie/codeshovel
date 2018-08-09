@@ -67,7 +67,7 @@ public class ShovelExecution {
 					}
 				}
 			} catch (Exception e) {
-				log.error("SHOVEL_ERR: Error occurred running mining for method {} in file {}. Skipping.", method.getName(), filePath);
+				log.error("SHOVEL_ERR: Error occurred running mining for method {} in file {}. Skipping.", method.getName(), filePath, e);
 				e.printStackTrace();
 			}
 

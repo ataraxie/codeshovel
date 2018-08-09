@@ -69,7 +69,15 @@ public class Commit {
 	}
 
 	public void setCommitMessage(RevCommit revCommit) {
-		this.commitMessage = revCommit.getFullMessage();
+		try {
+			this.commitMessage = revCommit.getFullMessage();
+		} catch (NullPointerException e) {
+			// It's bad style to catch a NullPointerException but I haven't found out why exactly jGit's getFullMessage
+			// would throw a NullPointer. We need to ignore this because we don't want the whole Shovel run for the
+			// method to fail just because there's no commit message on a commit.
+			this.commitMessage = "[could not be extracted]";
+		}
+
 	}
 
 	public void setName(RevCommit revCommit) {

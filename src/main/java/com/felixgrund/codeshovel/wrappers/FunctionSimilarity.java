@@ -57,6 +57,7 @@ public class FunctionSimilarity {
 
 	public void setLineNumberSimilarity(double lineNumberSimilarity) {
 		this.lineNumberSimilarity = lineNumberSimilarity;
+		computeOverallSimilarity();
 	}
 
 	public double getOverallSimilarity() {

@@ -27,9 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class AnalysisTask {
 
@@ -179,7 +177,14 @@ public class AnalysisTask {
 		Yhistory yhistory = repositoryService.getHistory(this.startCommit.getCommit(), this.filePath);
 
 		Ycommit lastConsideredCommit = null;
-		for (String commitName : yhistory.getCommits().keySet()) {
+		Map<String, Commit> allCommits = yhistory.getCommits();
+		Set<String> commitNames = allCommits.keySet();
+		int numCommits = commitNames.size();
+		log.trace("Creating commit collection for all {{}} commits...", commitNames.size());
+		int status = 0;
+		for (String commitName : commitNames) {
+			status++;
+			log.trace(status + " / " + numCommits);
 			Commit commit = yhistory.getCommits().get(commitName);
 			try {
 				RevCommit revCommit = yhistory.getRevCommits().get(commit.getName());
