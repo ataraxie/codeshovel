@@ -34,7 +34,8 @@ public class AnalysisTaskTest {
 
 	// Specify file name (without file extension) if you want to run only a single test.
 	// e.g. "checkstyle-Checker-fireErrors";
-	private static final String RUN_ONLY_TEST = "okcurl-Main-protocols";
+//	private static final String RUN_ONLY_TEST = "flink-LocatableInputSplitAssigner-getNextInputSplit";
+	private static final String RUN_ONLY_TEST = "flink-ContinuousFileMonitoringFunction-close";
 
 	private static List<StartEnvironment> startEnvs = new ArrayList<>();
 
@@ -95,7 +96,6 @@ public class AnalysisTaskTest {
 	}
 
 	private static boolean compareResults(LinkedHashMap<String, String> expectedResult, Yresult actualResult) {
-		boolean ret = true;
 		if (expectedResult.size() != actualResult.size()) {
 			System.err.println(String.format("Result size did not match. Expected: %s, actual: %s",
 					expectedResult.size(), actualResult.size()));

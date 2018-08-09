@@ -3,11 +3,13 @@ package com.felixgrund.codeshovel.tasks;
 import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Ydiff;
+import com.felixgrund.codeshovel.entities.Yhistory;
 import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.exceptions.NoParserFoundException;
 import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.interpreters.CrossFileInterpreter;
 import com.felixgrund.codeshovel.interpreters.InFileInterpreter;
+import com.felixgrund.codeshovel.parser.AbstractParser;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.services.RepositoryService;
@@ -21,6 +23,8 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class AnalysisTask {
+
+	private static final Logger log = LoggerFactory.getLogger(AnalysisTask.class);
 
 	private StartEnvironment startEnv;
 	private RepositoryService repositoryService;
@@ -92,24 +98,31 @@ public class AnalysisTask {
 		this.createResult();
 	}
 
-	private void createResult() throws Exception {
+	private void createResult() {
 		this.yresult = new Yresult();
 		for (Ycommit ycommit : this.taskSpecificHistory) {
-			InFileInterpreter ifi = new InFileInterpreter(this.startEnv, ycommit);
-			Ychange ychange = ifi.interpret();
-			if (!(ychange instanceof Ynochange)) {
-				if (ychange instanceof Yintroduced) {
-					CrossFileInterpreter cfi = new CrossFileInterpreter(this.startEnv, ycommit);
-					Ychange crossFileChange = cfi.interpret();
-					if (crossFileChange != null) {
-						ychange = crossFileChange;
+			try {
+				InFileInterpreter ifi = new InFileInterpreter(this.startEnv, ycommit);
+				Ychange ychange = ifi.interpret();
+				if (!(ychange instanceof Ynochange)) {
+					if (ychange instanceof Yintroduced) {
+						CrossFileInterpreter cfi = new CrossFileInterpreter(this.startEnv, ycommit);
+						Ychange crossFileChange = cfi.interpret();
+						if (crossFileChange != null) {
+							ychange = crossFileChange;
+						}
 					}
+					this.yresult.put(ycommit, ychange);
 				}
-				this.yresult.put(ycommit, ychange);
+				if (hasMajorChange(ychange)) {
+					this.lastMajorChange = ychange;
+				}
+			} catch (Exception e) {
+				log.error("Exception occurred interpreting commit {{}}. Ending analysis.", ycommit.getShortName());
+				System.err.println("Error interpreting commit " + ycommit.getShortName() + ". Ending analysis.");
+				break;
 			}
-			if (hasMajorChange(ychange)) {
-				this.lastMajorChange = ychange;
-			}
+
 		}
 	}
 

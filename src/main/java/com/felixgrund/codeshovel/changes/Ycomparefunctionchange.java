@@ -4,6 +4,7 @@ import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.parser.Yfunction;
+import com.google.gson.JsonObject;
 import org.eclipse.jgit.diff.*;
 
 import java.io.ByteArrayOutputStream;
@@ -36,15 +37,17 @@ public abstract class Ycomparefunctionchange extends Ychange {
 
 	@Override
 	public String toString() {
-		String baseTemplate = "%s(%s:%s:%s => %s:%s:%s)";
+		String baseTemplate = "%s(%s:%s:%s:%s => %s:%s:%s:%s)";
 		String baseString = String.format(baseTemplate,
 				getClass().getSimpleName(),
 				oldFunction.getCommitNameShort(),
 				oldFunction.getName(),
 				oldFunction.getNameLineNumber(),
-				oldFunction.getCommitNameShort(),
-				oldFunction.getName(),
-				oldFunction.getNameLineNumber()
+				oldFunction.getSourceFilePath(),
+				newFunction.getCommitNameShort(),
+				newFunction.getName(),
+				newFunction.getNameLineNumber(),
+				newFunction.getSourceFilePath()
 		);
 
 		if (INCLUDE_META_DATA) {
@@ -58,6 +61,24 @@ public abstract class Ycomparefunctionchange extends Ychange {
 
 		return baseString;
 
+	}
+
+	@Override
+	public JsonObject toJsonObject() {
+		JsonObject obj = super.toJsonObject();
+		obj.addProperty("commitDateOld", oldCommit.getCommitDate().getTime());
+		obj.addProperty("commitNameOld", oldCommit.getName());
+		obj.addProperty("commitAuthorOld", oldCommit.getAuthorName());
+		obj.addProperty("daysBetweenCommits", getDaysBetweenCommits());
+		obj.addProperty("commitsBetweenForRepo", getCommitsBetweenForRepo().size());
+		obj.addProperty("commitsBetweenForFile", getCommitsBetweenForFile().size());
+		obj.addProperty("diff", getDiffAsString());
+		obj.add("extendedDetails", getExtendedDetailsJsonObject());
+		return obj;
+	}
+
+	public JsonObject getExtendedDetailsJsonObject() {
+		return new JsonObject();
 	}
 
 	public Yfunction getNewFunction() {

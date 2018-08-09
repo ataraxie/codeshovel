@@ -29,7 +29,7 @@ public class Ydiff {
 	private Map<String, DiffEntry> diff;
 	private DiffFormatter diffFormatter;
 
-	private List<String> oldPaths;
+	private Map<String, String> pathMapping;
 
 	public Ydiff(RepositoryService repositoryService, Commit commit, Commit prevCommit, boolean detectRenames) throws IOException {
 		this.repositoryService = repositoryService;
@@ -85,17 +85,18 @@ public class Ydiff {
 		return diff;
 	}
 
-	public List<String> getOldPaths() {
-		if (this.oldPaths == null) {
-			this.oldPaths = new ArrayList<>();
+	public Map<String, String> getPathMapping() {
+		if (this.pathMapping == null) {
+			this.pathMapping = new HashMap<>();
 			for (DiffEntry diffEntry : this.diffEntries) {
 				String oldPath = diffEntry.getOldPath();
+				String newPath = diffEntry.getNewPath();
 				if (!NULL_PATH.equals(oldPath)) {
-					this.oldPaths.add(oldPath);
+					this.pathMapping.put(oldPath, newPath);
 				}
 			}
 		}
-		return this.oldPaths;
+		return this.pathMapping;
 	}
 
 }

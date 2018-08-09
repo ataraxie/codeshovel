@@ -201,9 +201,23 @@ public abstract class AbstractParser implements Yparser {
 			return mostSimilarFunction;
 		}
 
-		if (candidatesWithSameName.size() == 1 && mostSimilarFunctionSimilarity > 0.7) {
-			log.trace("Highest similarity was < 0.85. But found single candidate with same function name and similarity > 0.7. Done.");
-			return candidatesWithSameName.get(0);
+		if (candidatesWithSameName.size() == 1) {
+			Yfunction candidateWithSameName = candidatesWithSameName.get(0);
+			FunctionSimilarity candidateSimilarity = similarities.get(candidateWithSameName);
+			log.trace("Highest similarity was < 0.85. But found single candidate with same function name. Using lower similarity threshold");
+
+			// TODO: this is temporary! We need to make our similarity algorithm much smarter!
+			// Use return statement, parameters, signature in general and other things! This should all go into
+			// FunctionSimilarity.
+			// If this is cross-file, we need to be more strict: it's much more likely that a method with the same
+			// name was removed that is completely independent.
+			if (crossFile & candidateSimilarity.getBodySimilarity() > 0.8) {
+				log.trace("Cross-file comparison and body similarity > 0.8. Accepting function.");
+				return candidateWithSameName;
+			} else if (!crossFile && candidateSimilarity.getOverallSimilarity() > 0.5) {
+				log.trace("In-file comparison and overall similarity > 0.5. Accepting function.");
+				return candidateWithSameName;
+			}
 		}
 
 		log.trace("Highest similarity was < 0.85 and did not find single candidate with same name. Unable to find matching candidate.");
