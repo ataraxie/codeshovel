@@ -143,12 +143,10 @@ public class ShovelExecution {
 		List<String> onlyInBaseline = new ArrayList<>(baselineHistory);
 		onlyInBaseline.removeAll(codeshovelHistory);
 
-		if (onlyInCodeshovel.size() > 0 || onlyInBaseline.size() > 0) {
-			log.trace("Found difference in change history. Writing files.");
-			JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codeshovelHistory, baselineHistory,
-					onlyInCodeshovel, onlyInBaseline);
-			Utl.writeSemanticDiff(baselineName, result, diff);
-		}
+		log.trace("Found difference in change history. Writing files.");
+		JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codeshovelHistory, baselineHistory,
+				onlyInCodeshovel, onlyInBaseline);
+		Utl.writeSemanticDiff(baselineName, result, diff);
 	}
 
 	private static void printAsJson(Map<String, String> changeHistoryShort) {
