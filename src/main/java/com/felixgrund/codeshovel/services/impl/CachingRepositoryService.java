@@ -16,7 +16,6 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -82,7 +81,7 @@ public class CachingRepositoryService implements RepositoryService {
 		return commits;
 	}
 
-	private String getCacheKey(Commit startCommit, @Nullable String filePath) {
+	private String getCacheKey(Commit startCommit, String filePath) {
 		String cacheKeyInput = startCommit.getName();
 		if (filePath != null) {
 			cacheKeyInput += filePath;
@@ -91,7 +90,7 @@ public class CachingRepositoryService implements RepositoryService {
 	}
 
 	@Override
-	public Yhistory getHistory(Commit startCommit, @Nullable String filePath) {
+	public Yhistory getHistory(Commit startCommit, String filePath) {
 
 		LinkedHashMap<String, Commit> commits = new LinkedHashMap<>();
 		LinkedHashMap<String, RevCommit> revCommits = new LinkedHashMap<>();
