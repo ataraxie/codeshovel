@@ -17,10 +17,7 @@ import java.util.Date;
 public class MainAnalysisTask {
 
 	private static final String LANG = "java";
-//	private static final String TEST_CONFIG = "checkstyle-Checker-fireErrors";
-//	private static final String TEST_CONFIG = "checkstyle-CommonUtils-createPattern";
-	private static final String TEST_CONFIG = "flink-ContinuousFileMonitoringFunction-close";
-
+	private static final String TEST_CONFIG = System.getenv("codeshovel.env.name");
 	private static final String CODESTORY_REPO_DIR = System.getenv("codeshovel.repo.dir");
 
 	public static void main(String[] args) throws Exception {
