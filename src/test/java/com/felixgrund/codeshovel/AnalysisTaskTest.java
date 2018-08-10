@@ -18,6 +18,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AnalysisTaskTest {
 
+	private static Logger log = LoggerFactory.getLogger(AnalysisTaskTest.class);
+
 	private static final String CODESTORY_REPO_DIR = System.getenv("codeshovel.repo.dir");
 	private static final String STUBS_DIR = "stubs/java";
 
@@ -34,7 +38,8 @@ public class AnalysisTaskTest {
 
 	// Specify file name (without file extension) if you want to run only a single test.
 	// e.g. "checkstyle-Checker-fireErrors";
-	private static final String RUN_ONLY_TEST = "okcurl-Main-protocols";
+//	private static final String RUN_ONLY_TEST = "flink-LocatableInputSplitAssigner-getNextInputSplit";
+	private static final String RUN_ONLY_TEST = System.getenv("codeshovel.env.name");
 
 	private static List<StartEnvironment> startEnvs = new ArrayList<>();
 
@@ -46,7 +51,7 @@ public class AnalysisTaskTest {
 			String json = FileUtils.readFileToString(file, "utf-8");
 			StartEnvironment startEnv = GSON.fromJson(json, StartEnvironment.class);
 			startEnv.setEnvName(file.getName().replace(".json", ""));
-			if (RUN_ONLY_TEST == null || startEnv.getEnvName().equals(RUN_ONLY_TEST)) {
+			if (RUN_ONLY_TEST == null || startEnv.getEnvName().startsWith(RUN_ONLY_TEST)) {
 				startEnvs.add(startEnv);
 			}
 		}
@@ -75,10 +80,14 @@ public class AnalysisTaskTest {
 			startEnv.setStartCommit(startCommit);
 			startEnv.setFileName(Utl.getFileName(filePath));
 
-			Yresult yresult = ShovelExecution.runSingle(startEnv, startEnv.getFilePath(), true);
+			try {
+				Yresult yresult = ShovelExecution.runSingle(startEnv, startEnv.getFilePath(), true);
+				DynamicTest test = createDynamicTest(startEnv, yresult);
+				dynamicTests.add(test);
+			} catch (Exception e) {
+				log.error("Could run Shovel execution for Env: {{}}. Skipping.", startEnv.getEnvName(), e);
+			}
 
-			DynamicTest test = createDynamicTest(startEnv, yresult);
-			dynamicTests.add(test);
 		}
 
 		return dynamicTests;
@@ -95,7 +104,6 @@ public class AnalysisTaskTest {
 	}
 
 	private static boolean compareResults(LinkedHashMap<String, String> expectedResult, Yresult actualResult) {
-		boolean ret = true;
 		if (expectedResult.size() != actualResult.size()) {
 			System.err.println(String.format("Result size did not match. Expected: %s, actual: %s",
 					expectedResult.size(), actualResult.size()));

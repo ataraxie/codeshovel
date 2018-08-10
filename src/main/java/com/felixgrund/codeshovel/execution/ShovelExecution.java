@@ -41,7 +41,12 @@ public class ShovelExecution {
 		int index = 1;
 		for (String filePath : filePathsToConsider) {
 			printProgress(index, numFilePaths);
-			runSingle(startEnv, filePath, false);
+			try {
+				runSingle(startEnv, filePath, false);
+			} catch (Exception e) {
+				log.error("Could run Shovel execution for Env {{}} with path {{}}. Skipping.", startEnv.getEnvName(), filePath, e);
+			}
+
 			index++;
 		}
 
@@ -67,7 +72,7 @@ public class ShovelExecution {
 					}
 				}
 			} catch (Exception e) {
-				log.error("SHOVEL_ERR: Error occurred running mining for method {} in file {}. Skipping.", method.getName(), filePath);
+				log.error("SHOVEL_ERR: Error occurred running mining for method {} in file {}. Skipping.", method.getName(), filePath, e);
 				e.printStackTrace();
 			}
 
@@ -143,12 +148,10 @@ public class ShovelExecution {
 		List<String> onlyInBaseline = new ArrayList<>(baselineHistory);
 		onlyInBaseline.removeAll(codeshovelHistory);
 
-		if (onlyInCodeshovel.size() > 0 || onlyInBaseline.size() > 0) {
-			log.trace("Found difference in change history. Writing files.");
-			JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codeshovelHistory, baselineHistory,
-					onlyInCodeshovel, onlyInBaseline);
-			Utl.writeSemanticDiff(baselineName, result, diff);
-		}
+		log.trace("Found difference in change history. Writing files.");
+		JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codeshovelHistory, baselineHistory,
+				onlyInCodeshovel, onlyInBaseline);
+		Utl.writeSemanticDiff(baselineName, result, diff);
 	}
 
 	private static void printAsJson(Map<String, String> changeHistoryShort) {

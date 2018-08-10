@@ -1,6 +1,6 @@
 package com.felixgrund.codeshovel.services;
 
-import com.felixgrund.codeshovel.changes.Yhistory;
+import com.felixgrund.codeshovel.entities.Yhistory;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;

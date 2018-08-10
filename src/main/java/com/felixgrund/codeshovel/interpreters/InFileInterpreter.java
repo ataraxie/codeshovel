@@ -10,7 +10,9 @@ import org.eclipse.jgit.diff.EditList;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InFileInterpreter extends AbstractInterpreter {
 
@@ -71,33 +73,33 @@ public class InFileInterpreter extends AbstractInterpreter {
 			int lineNumberB = functionB.getNameLineNumber();
 			EditList editList = ycommit.getYdiff().getSingleEditList(ycommit.getFilePath());
 			if (editList != null) {
+				Yparser parentCommitParser = parentCommit.getParser();
 				for (Edit edit : editList) {
 					int beginA = edit.getBeginA();
 					int endA = edit.getEndA();
 					int beginB = edit.getBeginB();
 					int endB = edit.getEndB();
 					if (beginB <= lineNumberB && endB >= lineNumberB) {
-						Yparser parser = parentCommit.getParser();
-						List<Yfunction> functionsInRange = parser.findFunctionsByLineRange(beginA, endA);
-						if (functionsInRange.size() == 1) {
-							ret = functionsInRange.get(0);
-						} else if (functionsInRange.size() > 1) {
-							ret = parser.getMostSimilarFunction(functionsInRange, functionB, false, true);
-						} else {
-							Ycommit prevCommit = ycommit.getPrev();
-							if (prevCommit != null) {
-								Commit prev = prevCommit.getCommit();
-								List<Yfunction> removedFunctions = getRemovedFunctions(
-										this.ycommit.getCommit(), prev, ycommit.getFilePath());
-								ret = parser.getMostSimilarFunction(removedFunctions, functionB, false, false);
-							}
-						}
-						// TODO: else { check with all removed functions }
+						String filePathOldAndNew = ycommit.getFilePath(); // FIXME: I'm not too sure if this is ok
+						List<Yfunction> candidates = getRemovedFunctions(
+								ycommit.getCommit(), parentCommit.getCommit(), filePathOldAndNew, filePathOldAndNew);
+						List<Yfunction> candidatesLineRange = parentCommitParser.findFunctionsByLineRange(beginA, endA);
+						candidates.addAll(candidatesLineRange);
+						candidates = removeDuplicates(candidates);
+						ret = parentCommitParser.getMostSimilarFunction(candidates, functionB, false, false);
 					}
 				}
 			}
 		}
 		return ret;
+	}
+
+	private List<Yfunction> removeDuplicates(List<Yfunction> functions) {
+		Map<String, Yfunction> functionsMap = new HashMap<>();
+		for (Yfunction function : functions) {
+			functionsMap.put(function.getId(), function);
+		}
+		return new ArrayList<Yfunction>(functionsMap.values());
 	}
 
 	private boolean isFirstFunctionOccurrence() {

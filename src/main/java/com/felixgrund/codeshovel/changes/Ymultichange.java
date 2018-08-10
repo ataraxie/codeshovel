@@ -1,6 +1,8 @@
 package com.felixgrund.codeshovel.changes;
 
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
@@ -27,6 +29,18 @@ public class Ymultichange extends Ychange {
 			substrings.add(change.toString());
 		}
 		return "Ymultichange(\n- "+StringUtils.join(substrings, "\n- ")+"\n)";
+	}
+
+	@Override
+	public JsonObject toJsonObject() {
+		JsonObject obj = super.toJsonObject();
+		JsonArray subchanges = new JsonArray();
+		for (Ychange change : this.changes) {
+			subchanges.add(change.toJsonObject());
+		}
+
+		obj.add("subchanges", subchanges);
+		return obj;
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package com.felixgrund.codeshovel.changes;
+package com.felixgrund.codeshovel.entities;
 
 import com.felixgrund.codeshovel.wrappers.Commit;
 import org.eclipse.jgit.revwalk.RevCommit;
