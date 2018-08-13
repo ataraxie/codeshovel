@@ -32,6 +32,9 @@ public class Utl {
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy, HH:mm");
 
+	private static final String OUTPUT_BASE_DIR = Optional.ofNullable(
+			System.getenv("OUTPUT_DIR")).orElse(System.getProperty("user.dir") + "/output");
+
 	private static final Logger log = LoggerFactory.getLogger(Utl.class);
 
 	public static Repository createRepository(String repositoryPath) throws IOException {
@@ -127,7 +130,7 @@ public class Utl {
 				String functionId, String repoName, String content, String fileExtension) {
 
 		try {
-			String baseDir = Optional.ofNullable( System.getenv("OUTPUT_DIR") ).orElse( System.getProperty("user.dir") + "/output" ) + "/" + subdir;
+			String baseDir = OUTPUT_BASE_DIR + "/" + subdir;
 			String commitNameShort = commitName.substring(0, 5);
 			String targetDirPath = baseDir + "/" + repoName;
 			if (functionId != null) {
@@ -164,7 +167,7 @@ public class Utl {
 			String filePath = jsonResult.getSourceFilePath();
 			String[] filePathSplit = filePath.split("/");
 			String className = filePathSplit[filePathSplit.length-1].replace(".java", "");
-			String baseDir = Optional.ofNullable( System.getenv("OUTPUT_DIR") ).orElse( System.getProperty("user.dir") + "/output" ) + "/" + "stubs";
+			String baseDir = OUTPUT_BASE_DIR + "/stubs";
 			File file = new File(baseDir + "/" + jsonResult.getRepositoryName() + "-" + className + "-" + jsonResult.getFunctionName() + ".json");
 			JsonStub stub = new JsonStub(jsonResult);
 			FileUtils.writeStringToFile(file, stub.toJson(), "utf-8");
