@@ -48,15 +48,18 @@ public class Yparameter {
 		return metadataString;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
+	public boolean equalsIgnoreMetadata(Object obj) {
 		boolean ret = false;
 		if (obj instanceof Yparameter) {
 			Yparameter otherParameter = (Yparameter) obj;
 			ret = this.name.equals(otherParameter.getName())
-					&& this.type.equals(otherParameter.getType())
-					&& this.metadataString.equals(otherParameter.getMetadataString());
+					&& this.type.equals(otherParameter.getType());
 		}
 		return ret;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return this.equalsIgnoreMetadata(obj) && this.metadataString.equals(((Yparameter) obj).getMetadataString());
 	}
 }

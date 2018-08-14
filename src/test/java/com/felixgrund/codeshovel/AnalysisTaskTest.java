@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AnalysisTaskTest {
@@ -95,16 +96,29 @@ public class AnalysisTaskTest {
 	}
 
 	private DynamicTest createDynamicTest(StartEnvironment startEnv, Yresult yresult) {
-		String message = String.format("%s - expecting %s changes", startEnv.getEnvName(), startEnv.getExpectedResult().size());
+		Map<String, String> expectedResult = startEnv.getExpectedResult();
+		String message = String.format("%s - expecting %s changes", startEnv.getEnvName(), expectedResult.size());
+
+		StringBuilder actualResultBuilder = new StringBuilder();
+		for (Ycommit commit : yresult.keySet()) {
+			actualResultBuilder.append("\n").append(commit.getName()).append(":").append(yresult.get(commit).getTypeAsString());
+		}
+
+		StringBuilder expectedResultBuilder = new StringBuilder();
+		for (String commitName : expectedResult.keySet()) {
+			expectedResultBuilder.append("\n").append(commitName).append(":").append(expectedResult.get(commitName));
+		}
+
 		return DynamicTest.dynamicTest(
 				message,
 				() -> {
-					assertTrue(compareResults(startEnv.getExpectedResult(), yresult), "results should be the same");
+					assertEquals(expectedResultBuilder.toString(), actualResultBuilder.toString(), "stringified result should be the same");
+					assertTrue(compareResults(expectedResult, yresult), "results should be the same");
 				}
 		);
 	}
 
-	private static boolean compareResults(LinkedHashMap<String, String> expectedResult, Yresult actualResult) {
+	private static boolean compareResults(Map<String, String> expectedResult, Yresult actualResult) {
 		if (expectedResult.size() != actualResult.size()) {
 			System.err.println(String.format("Result size did not match. Expected: %s, actual: %s",
 					expectedResult.size(), actualResult.size()));

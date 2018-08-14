@@ -1,5 +1,7 @@
 package com.felixgrund.codeshovel.util;
 
+import com.felixgrund.codeshovel.entities.Yparameter;
+import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.json.JsonSimilarity;
 import com.felixgrund.codeshovel.json.JsonStub;
 import com.felixgrund.codeshovel.wrappers.Commit;
@@ -284,4 +286,29 @@ public class Utl {
 	public static String sanitizeFunctionId(String ident) {
 		return ident.replaceAll(":", "__").replaceAll("#", "__").replaceAll("<", "__").replaceAll(">", "__");
 	}
+
+	public static String resultMapToString(Map<String, String> result) {
+		StringBuilder builder = new StringBuilder();
+		for (String commitName : result.keySet()) {
+			builder.append("\n").append(commitName).append(":").append(result.get(commitName));
+		}
+
+		return builder.toString();
+	}
+
+	public static boolean parametersEqualIgnoreMetadata(List<Yparameter> parametersA, List<Yparameter> parametersB) {
+		int parametersASize = parametersA.size();
+		if (parametersASize != parametersB.size()) {
+			return false;
+		}
+
+		for (int i = 0; i < parametersASize; i++) {
+			if (!parametersA.get(i).equalsIgnoreMetadata(parametersB.get(i))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 }

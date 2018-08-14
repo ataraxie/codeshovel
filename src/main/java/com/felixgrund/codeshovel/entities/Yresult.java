@@ -1,6 +1,7 @@
 package com.felixgrund.codeshovel.entities;
 
 import com.felixgrund.codeshovel.changes.Ychange;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedHashMap;
 
@@ -10,7 +11,7 @@ public class Yresult extends LinkedHashMap<Ycommit, Ychange> {
 
 	@Override
 	public Ychange put(Ycommit commit, Ychange change) {
-		builder.append("\n").append(commit.getShortName()).append(": ").append(change.toString());
+		builder.append("\n").append(commit.getName()).append(":").append(change.toString());
 		return super.put(commit, change);
 	}
 
