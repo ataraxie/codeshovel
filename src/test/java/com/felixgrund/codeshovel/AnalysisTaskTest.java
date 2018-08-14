@@ -7,6 +7,7 @@ import com.felixgrund.codeshovel.execution.ShovelExecution;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.services.impl.CachingRepositoryService;
 import com.felixgrund.codeshovel.util.Utl;
+import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
@@ -31,15 +32,12 @@ public class AnalysisTaskTest {
 
 	private static Logger log = LoggerFactory.getLogger(AnalysisTaskTest.class);
 
-	private static final String CODESTORY_REPO_DIR = System.getenv("REPO_DIR");
-	private static final String STUBS_DIR = "stubs/java";
+	private static final String CODESTORY_REPO_DIR = GlobalEnv.REPO_DIR;
+	private static final String STUBS_DIR = "stubs/java"; // TODO
 
 	private static final Gson GSON = new Gson();
 
-	// Specify file name (without file extension) if you want to run only a single test.
-	// e.g. "checkstyle-Checker-fireErrors";
-//	private static final String RUN_ONLY_TEST = "flink-LocatableInputSplitAssigner-getNextInputSplit";
-	private static final String RUN_ONLY_TEST = System.getenv("ENV_NAME");
+	private static final String RUN_ONLY_TEST = GlobalEnv.ENV_NAME;
 
 	private static List<StartEnvironment> startEnvs = new ArrayList<>();
 

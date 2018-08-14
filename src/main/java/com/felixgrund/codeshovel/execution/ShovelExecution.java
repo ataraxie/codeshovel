@@ -13,7 +13,6 @@ import com.felixgrund.codeshovel.tasks.GitRangeLogTask;
 import com.felixgrund.codeshovel.tasks.RecursiveAnalysisTask;
 import com.felixgrund.codeshovel.util.ParserFactory;
 import com.felixgrund.codeshovel.util.Utl;
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +117,7 @@ public class ShovelExecution {
 		printAsJson(changeHistoryShort);
 
 		JsonResult jsonResultCodeshovel = new JsonResult("codeshovel", task, codeshovelHistory, changeHistoryDetails, changeHistoryShort);
-		Utl.writeJsonResultToFile(jsonResultCodeshovel);
+		Utl.writeShovelResultFile(jsonResultCodeshovel);
 		Utl.writeJsonStubToFile(jsonResultCodeshovel);
 
 		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
@@ -127,7 +126,7 @@ public class ShovelExecution {
 
 		JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, gitLogHistory, null, null);
 		Utl.printMethodHistory(gitLogHistory);
-		Utl.writeJsonResultToFile(jsonResultLogCommand);
+		Utl.writeGitLogFile(jsonResultLogCommand);
 
 		createAndWriteSemanticDiff("gitlog", jsonResultCodeshovel, codeshovelHistory, gitLogHistory);
 

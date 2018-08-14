@@ -1,8 +1,5 @@
 package com.felixgrund.codeshovel.util;
 
-import com.felixgrund.codeshovel.changes.Ychange;
-import com.felixgrund.codeshovel.entities.Ycommit;
-import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.json.JsonSimilarity;
 import com.felixgrund.codeshovel.json.JsonStub;
 import com.felixgrund.codeshovel.wrappers.Commit;
@@ -11,6 +8,7 @@ import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
 import com.felixgrund.codeshovel.json.JsonResult;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.tasks.AnalysisTask;
+import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
@@ -29,11 +27,6 @@ import java.util.*;
 public class Utl {
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy, HH:mm");
-
-	private static final String OUTPUT_BASE_DIR = Optional.ofNullable(
-			System.getenv("OUTPUT_DIR")).orElse(System.getProperty("user.dir") + "/output");
-
-	private static final boolean PRINT_DISABLED = Boolean.valueOf(System.getenv("PRINT_DISABLED"));
 
 	private static final Logger log = LoggerFactory.getLogger(Utl.class);
 
@@ -69,33 +62,6 @@ public class Utl {
 		return System.getProperty("user.dir");
 	}
 
-	private static String cacheFilePath(String hash) {
-		return projectDir() + "/cache/" + hash + ".codeshovel";
-	}
-
-//	public static Yhistory loadFromCache(String hash) {
-//		Yhistory ret = null;
-//		Kryo kryo = new Kryo();
-//		kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
-//		Input input = null;
-//		try {
-//			input = new Input(new FileInputStream(cacheFilePath(hash)));
-//			ret = kryo.readObject(input, Yhistory.class);
-//			input.close();
-//		} catch (FileNotFoundException e) {
-//			// return null
-//		}
-//		return ret;
-//	}
-
-//	public static void saveToCache(String hash, Yhistory collection) throws FileNotFoundException {
-//		Kryo kryo = new Kryo();
-//		kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
-//		Output output = new Output(new FileOutputStream(cacheFilePath(hash)));
-//		kryo.writeObject(output, collection);
-//		output.close();
-//	}
-
 	public static double getBodySimilarity(Yfunction aFunction, Yfunction bFunction) {
 		return new JaroWinklerDistance().apply(aFunction.getBody(), bFunction.getBody());
 	}
@@ -125,12 +91,12 @@ public class Utl {
 	public static void writeOutputFile(String subdir, String commitName, String filePath,
 				String functionId, String repoName, String content, String fileExtension) {
 
-		if (PRINT_DISABLED) {
+		if (GlobalEnv.DISABLE_ALL_OUTPUTS) {
 			return;
 		}
 
 		try {
-			String baseDir = OUTPUT_BASE_DIR + "/" + subdir;
+			String baseDir = GlobalEnv.OUTPUT_DIR + "/" + subdir;
 			String commitNameShort = commitName.substring(0, 5);
 			String targetDirPath = baseDir + "/" + repoName;
 			if (functionId != null) {
@@ -155,15 +121,28 @@ public class Utl {
 		}
 	}
 
-	public static void writeJsonResultToFile(JsonResult jsonResult) {
+	public static void writeShovelResultFile(JsonResult jsonResult) {
+		if (GlobalEnv.DISABLE_ALL_OUTPUTS || !GlobalEnv.WRITE_RESULTS) {
+			return;
+		}
 		writeOutputFile(
-				jsonResult.getOrigin(), jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
+				"codeshovel", jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
+				jsonResult.getFunctionId(), jsonResult.getRepositoryName(), jsonResult.toJson(), ".json"
+		);
+	}
+
+	public static void writeGitLogFile(JsonResult jsonResult) {
+		if (GlobalEnv.DISABLE_ALL_OUTPUTS || !GlobalEnv.WRITE_GITLOG) {
+			return;
+		}
+		writeOutputFile(
+				"logcommand", jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
 				jsonResult.getFunctionId(), jsonResult.getRepositoryName(), jsonResult.toJson(), ".json"
 		);
 	}
 
 	public static void writeJsonStubToFile(JsonResult jsonResult) {
-		if (PRINT_DISABLED) {
+		if (GlobalEnv.DISABLE_ALL_OUTPUTS || !GlobalEnv.WRITE_STUBS) {
 			return;
 		}
 
@@ -171,7 +150,7 @@ public class Utl {
 			String filePath = jsonResult.getSourceFilePath();
 			String[] filePathSplit = filePath.split("/");
 			String className = filePathSplit[filePathSplit.length-1].replace(".java", "");
-			String baseDir = OUTPUT_BASE_DIR + "/stubs";
+			String baseDir = GlobalEnv.OUTPUT_DIR + "/stubs";
 			File file = new File(baseDir + "/" + jsonResult.getRepositoryName() + "-" + className + "-" + jsonResult.getFunctionName() + ".json");
 			JsonStub stub = new JsonStub(jsonResult);
 			FileUtils.writeStringToFile(file, stub.toJson(), "utf-8");
@@ -185,6 +164,10 @@ public class Utl {
 			String functionId,
 			String repoName,
 			String filePath) {
+
+		if (GlobalEnv.DISABLE_ALL_OUTPUTS || !GlobalEnv.WRITE_SIMILARITIES) {
+			return;
+		}
 
 		writeOutputFile(
 				"similarity", jsonSimilarity.getCommitName(), filePath, functionId,
@@ -206,6 +189,9 @@ public class Utl {
 	}
 
 	public static void writeSemanticDiff(String baselineName, JsonResult originalJsonResult, JsonChangeHistoryDiff diff) {
+		if (GlobalEnv.DISABLE_ALL_OUTPUTS || !GlobalEnv.WRITE_SEMANTIC_DIFFS) {
+			return;
+		}
 		writeOutputFile(
 				"diff_semantic_" + baselineName, originalJsonResult.getStartCommitName(), originalJsonResult.getSourceFilePath(),
 				originalJsonResult.getFunctionId(), originalJsonResult.getRepositoryName(), diff.toJson(), ".json"
@@ -214,14 +200,18 @@ public class Utl {
 
 	public static void writeGitDiff(String commitName, String filePath, Repository repository,
 									String repositoryName) throws Exception {
-
+		if (GlobalEnv.DISABLE_ALL_OUTPUTS || !GlobalEnv.WRITE_GIT_DIFFS) {
+			return;
+		}
 		String diff = CmdUtil.gitDiffParent(commitName, filePath, repository.getDirectory().getParentFile());
 		writeOutputFile("diff_git", commitName, filePath, null, repositoryName , diff, ".diff");
 	}
 
 	public static void writeJsonSimilarity(String repoName, String filePath, Yfunction compareFunction,
 										   Yfunction mostSimilarFunction, FunctionSimilarity similarity) {
-
+		if (GlobalEnv.DISABLE_ALL_OUTPUTS || !GlobalEnv.WRITE_SIMILARITIES) {
+			return;
+		}
 		JsonSimilarity.FunctionEntry compareEntry = new JsonSimilarity.FunctionEntry(
 				compareFunction.getCommitName(),
 				compareFunction.getName(),

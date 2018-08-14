@@ -1,5 +1,7 @@
 package com.felixgrund.codeshovel;
 
+import com.felixgrund.codeshovel.wrappers.GlobalEnv;
+
 public class MiningTestJs extends MiningTest {
 
 	private static final boolean METHOD_MODE = false;
@@ -7,7 +9,7 @@ public class MiningTestJs extends MiningTest {
 	static {
 		TARGET_FILE_EXTENSION = ".js";
 		TARGET_FILE_PATH = "src/css.js";
-		CODESTORY_REPO_DIR = System.getenv("REPO_DIR");
+		CODESTORY_REPO_DIR = GlobalEnv.REPO_DIR;
 		REPO = "jquery";
 		START_COMMIT = "45f085882597016e521436f01a8459daf3e4000e";
 

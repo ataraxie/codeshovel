@@ -4,6 +4,7 @@ import com.felixgrund.codeshovel.execution.ShovelExecution;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.services.impl.CachingRepositoryService;
 import com.felixgrund.codeshovel.util.Utl;
+import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
@@ -17,8 +18,6 @@ import java.util.Date;
 public class MainAnalysisTask {
 
 	private static final String LANG = "java";
-	private static final String TEST_CONFIG = System.getenv("ENV_NAME");
-	private static final String CODESTORY_REPO_DIR = System.getenv("REPO_DIR");
 
 	public static void main(String[] args) throws Exception {
 		long start = new Date().getTime();
@@ -28,7 +27,7 @@ public class MainAnalysisTask {
 	}
 
 	public static void execute() throws Exception {
-		String configName = TEST_CONFIG;
+		String configName = GlobalEnv.ENV_NAME;
 		ClassLoader classLoader = MainAnalysisTask.class.getClassLoader();
 		File file = new File(classLoader.getResource("stubs/" + LANG + "/" + configName + ".json").getFile());
 		String json = FileUtils.readFileToString(file, "utf-8");
@@ -36,7 +35,7 @@ public class MainAnalysisTask {
 
 		StartEnvironment startEnv = gson.fromJson(json, StartEnvironment.class);
 		String repositoryName = startEnv.getRepositoryName();
-		String repositoryPath = CODESTORY_REPO_DIR + "/" + repositoryName + "/.git";
+		String repositoryPath = GlobalEnv.REPO_DIR + "/" + repositoryName + "/.git";
 		startEnv.setRepositoryPath(repositoryPath);
 
 		Repository repository = Utl.createRepository(repositoryPath);
