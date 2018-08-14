@@ -74,6 +74,18 @@ public abstract class AbstractParser implements Yparser {
 		return ret;
 	}
 
+
+	protected Yparametermetachange getParametersMetaChange(Ycommit commit, Yfunction compareFunction) {
+		Yparametermetachange ret = null;
+		List<Yparameter> parametersA = compareFunction.getParameters();
+		List<Yparameter> parametersB = commit.getMatchedFunction().getParameters();
+		if (!Utl.parametersMetadataEqual(parametersA, parametersB)) {
+			ret = new Yparametermetachange(this.startEnv, commit.getMatchedFunction(), compareFunction);
+		}
+		return ret;
+	}
+
+
 	protected Yexceptionschange getExceptionsChange(Ycommit commit, Yfunction compareFunction) {
 		Yexceptionschange ret = null;
 		Yexceptions exceptionsA = compareFunction.getExceptions();

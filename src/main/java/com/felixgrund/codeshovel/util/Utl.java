@@ -1,5 +1,6 @@
 package com.felixgrund.codeshovel.util;
 
+import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.json.JsonSimilarity;
@@ -296,19 +297,20 @@ public class Utl {
 		return builder.toString();
 	}
 
-	public static boolean parametersEqualIgnoreMetadata(List<Yparameter> parametersA, List<Yparameter> parametersB) {
-		int parametersASize = parametersA.size();
-		if (parametersASize != parametersB.size()) {
-			return false;
+	public static boolean parametersMetadataEqual(List<Yparameter> parametersA, List<Yparameter> parametersB) {
+		Map<String, Yparameter> parameterMapA = new HashMap<>();
+		for (Yparameter parameter : parametersA) {
+			parameterMapA.put(parameter.toString(), parameter);
 		}
 
-		for (int i = 0; i < parametersASize; i++) {
-			if (!parametersA.get(i).equalsIgnoreMetadata(parametersB.get(i))) {
+		for (Yparameter paramB : parametersB) {
+			String paramString = paramB.toString();
+			Yparameter paramA = parameterMapA.get(paramString);
+			if (paramA != null && !paramA.getMetadataString().equals(paramB.getMetadataString())) {
 				return false;
 			}
 		}
 
 		return true;
 	}
-
 }

@@ -22,4 +22,17 @@ public class GlobalEnv {
 	public static final String REPO = System.getenv("REPO");
 	public static final String START_COMMIT = System.getenv("START_COMMIT");
 
+	// For mining and testing
+	public static int MAX_RUNS = -1;
+	public static int BEGIN_INDEX = -1;
+	static {
+		try {
+			MAX_RUNS = Integer.parseInt(System.getenv("MAX_RUNS"));
+			BEGIN_INDEX = Integer.parseInt(System.getenv("BEGIN_INDEX"));
+		} catch (NumberFormatException e) {
+			// leave -1
+		}
+	}
+
+
 }

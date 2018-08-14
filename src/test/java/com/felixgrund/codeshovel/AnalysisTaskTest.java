@@ -57,6 +57,12 @@ public class AnalysisTaskTest {
 				startEnvs.add(startEnv);
 			}
 		}
+		Collections.sort(startEnvs, new Comparator<StartEnvironment>() {
+			@Override
+			public int compare(StartEnvironment o1, StartEnvironment o2) {
+				return o1.getEnvName().compareTo(o2.getEnvName());
+			}
+		});
 	}
 
 	@TestFactory
@@ -64,7 +70,22 @@ public class AnalysisTaskTest {
 	public Collection<DynamicTest> createDynamicTests() throws Exception {
 
 		Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		int index = 0;
+		int numTestsRun = 0;
 		for (StartEnvironment startEnv : startEnvs) {
+			index++;
+			if (GlobalEnv.BEGIN_INDEX >= 0 && GlobalEnv.MAX_RUNS >= 0) {
+				if (index < GlobalEnv.BEGIN_INDEX) {
+					System.out.println("index < GlobalEnv.BEGIN_INDEX; skip.");
+					continue;
+				}
+				if (numTestsRun >= GlobalEnv.MAX_RUNS) {
+					System.out.println("numTestsRun < GlobalEnv.MAX_RUNS; skip.");
+					continue;
+				}
+			}
+
+			numTestsRun++;
 			System.out.println("Running dynamic test for config :" + startEnv.getEnvName());
 
 			String repositoryName = startEnv.getRepositoryName();

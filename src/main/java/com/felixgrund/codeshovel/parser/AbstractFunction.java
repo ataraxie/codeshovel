@@ -26,11 +26,7 @@ public abstract class AbstractFunction implements Yfunction {
 	public String getIdParameterString() {
 		List<String> parts = new ArrayList<>();
 		for (Yparameter parameter : getParameters()) {
-			String part = parameter.getName();
-			if (StringUtils.isNotBlank(parameter.getType())) {
-				part += "-" + parameter.getType();
-			}
-			parts.add(part);
+			parts.add(parameter.toString());
 		}
 		return StringUtils.join(parts, "__");
 	}
