@@ -119,6 +119,7 @@ public class ShovelExecution {
 
 		JsonResult jsonResultCodeshovel = new JsonResult("codeshovel", task, codeshovelHistory, changeHistoryDetails, changeHistoryShort);
 		Utl.writeJsonResultToFile(jsonResultCodeshovel);
+		Utl.writeJsonStubToFile(jsonResultCodeshovel);
 
 		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
 		gitRangeLogTask.run();

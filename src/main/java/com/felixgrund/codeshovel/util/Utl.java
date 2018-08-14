@@ -3,6 +3,7 @@ package com.felixgrund.codeshovel.util;
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.json.JsonSimilarity;
+import com.felixgrund.codeshovel.json.JsonStub;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.FunctionSimilarity;
 import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
@@ -30,6 +31,9 @@ import java.util.Optional;
 public class Utl {
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy, HH:mm");
+
+	private static final String OUTPUT_BASE_DIR = Optional.ofNullable(
+			System.getenv("OUTPUT_DIR")).orElse(System.getProperty("user.dir") + "/output");
 
 	private static final Logger log = LoggerFactory.getLogger(Utl.class);
 
@@ -125,29 +129,29 @@ public class Utl {
 	public static void writeOutputFile(String subdir, String commitName, String filePath,
 				String functionId, String repoName, String content, String fileExtension) {
 
-		String baseDir = Optional.ofNullable( System.getenv("OUTPUT_DIR") ).orElse( System.getProperty("user.dir") + "/output" ) + "/" + subdir;
-		String commitNameShort = commitName.substring(0, 5);
-		String targetDirPath = baseDir + "/" + repoName;
-		if (functionId != null) {
-			targetDirPath +=  "/" + commitNameShort + "/" + filePath;
-		} else {
-			targetDirPath +=  "/" + filePath;
-		}
-
-		File targetDir = new File(targetDirPath);
-		targetDir.mkdirs();
-
-		File file;
-		if (functionId != null) {
-			file = new File(targetDirPath + "/" + functionId + fileExtension);
-		} else {
-			file = new File(targetDirPath + "/" + commitName + fileExtension);
-		}
-
 		try {
+			String baseDir = OUTPUT_BASE_DIR + "/" + subdir;
+			String commitNameShort = commitName.substring(0, 5);
+			String targetDirPath = baseDir + "/" + repoName;
+			if (functionId != null) {
+				targetDirPath +=  "/" + commitNameShort + "/" + filePath;
+			} else {
+				targetDirPath +=  "/" + filePath;
+			}
+
+			File targetDir = new File(targetDirPath);
+			targetDir.mkdirs();
+
+			File file;
+			if (functionId != null) {
+				file = new File(targetDirPath + "/" + functionId + fileExtension);
+			} else {
+				file = new File(targetDirPath + "/" + commitName + fileExtension);
+			}
+
 			FileUtils.writeStringToFile(file, content, "utf-8");
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			log.error("Could not write stub file for function {{}}. Skipping.", functionId, e);
 		}
 	}
 
@@ -156,6 +160,20 @@ public class Utl {
 				jsonResult.getOrigin(), jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
 				jsonResult.getFunctionId(), jsonResult.getRepositoryName(), jsonResult.toJson(), ".json"
 		);
+	}
+
+	public static void writeJsonStubToFile(JsonResult jsonResult) {
+		try {
+			String filePath = jsonResult.getSourceFilePath();
+			String[] filePathSplit = filePath.split("/");
+			String className = filePathSplit[filePathSplit.length-1].replace(".java", "");
+			String baseDir = OUTPUT_BASE_DIR + "/stubs";
+			File file = new File(baseDir + "/" + jsonResult.getRepositoryName() + "-" + className + "-" + jsonResult.getFunctionName() + ".json");
+			JsonStub stub = new JsonStub(jsonResult);
+			FileUtils.writeStringToFile(file, stub.toJson(), "utf-8");
+		} catch (Exception e) {
+			log.error("Could not write stub file for function {{}}. Skipping.", jsonResult.getFunctionId(), e);
+		}
 	}
 
 	public static void writeSimilarityToFile(
