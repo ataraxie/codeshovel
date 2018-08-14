@@ -8,6 +8,7 @@ import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.util.Utl;
 import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.type.ReferenceType;
@@ -16,7 +17,9 @@ import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JavaFunction extends AbstractFunction implements Yfunction {
 
@@ -77,9 +80,48 @@ public class JavaFunction extends AbstractFunction implements Yfunction {
 		List<Parameter> parameterElements = this.node.getParameters();
 		for (Parameter parameterElement : parameterElements) {
 			Yparameter parameter = new Yparameter(parameterElement.getNameAsString(), parameterElement.getTypeAsString());
+			Map<String, String> metadata = createParameterMetadataMap(parameterElement);
+			parameter.setMetadata(metadata);
 			parameters.add(parameter);
 		}
 		return parameters;
+	}
+
+	private Map<String,String> createParameterMetadataMap(Parameter parameterElement) {
+		Map<String, String> metadata = new HashMap<>();
+		String modifiersString = createParameterModifiersString(parameterElement);
+		if (modifiersString != null) {
+			metadata.put("modifiers", modifiersString);
+		}
+		String annotationsString = createParameterAnnotationsString(parameterElement);
+		if (annotationsString != null) {
+			metadata.put("annotations", annotationsString);
+		}
+		return metadata;
+	}
+
+	private String createParameterModifiersString(Parameter parameterElement) {
+		String ret = null;
+		List<String> modifiers = new ArrayList<String>();
+		for (Modifier modifier : parameterElement.getModifiers()) {
+			modifiers.add(modifier.asString());
+		}
+		if (modifiers.size() > 0) {
+			ret = StringUtils.join(modifiers, "-");
+		}
+		return ret;
+	}
+
+	private String createParameterAnnotationsString(Parameter parameterElement) {
+		String ret = null;
+		List<String> annotations = new ArrayList<String>();
+		for (Node node : parameterElement.getAnnotations()) {
+			annotations.add(node.toString());
+		}
+		if (annotations.size() > 0) {
+			ret = StringUtils.join(annotations, "-");
+		}
+		return ret;
 	}
 
 	@Override

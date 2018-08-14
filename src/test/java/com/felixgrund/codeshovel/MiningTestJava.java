@@ -5,7 +5,7 @@ public class MiningTestJava extends MiningTest {
 // Sample run
 	static {
 		TARGET_FILE_EXTENSION = ".java";
-		CODESTORY_REPO_DIR = System.getenv("codeshovel.repo.dir");
+		CODESTORY_REPO_DIR = System.getenv("REPO_DIR");
 
 //		TARGET_FILE_PATH = "flink-core/src/main/java/org/apache/flink/api/java/typeutils/runtime/PojoSerializer.java";
 		TARGET_FILE_PATH = "src/main/java/com/puppycrawl/tools/checkstyle/TreeWalker.java";

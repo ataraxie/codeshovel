@@ -17,8 +17,8 @@ import java.util.Date;
 public class MainAnalysisTask {
 
 	private static final String LANG = "java";
-	private static final String TEST_CONFIG = System.getenv("codeshovel.env.name");
-	private static final String CODESTORY_REPO_DIR = System.getenv("codeshovel.repo.dir");
+	private static final String TEST_CONFIG = System.getenv("ENV_NAME");
+	private static final String CODESTORY_REPO_DIR = System.getenv("REPO_DIR");
 
 	public static void main(String[] args) throws Exception {
 		long start = new Date().getTime();

@@ -106,13 +106,13 @@ public class ShovelExecution {
 			Ychange change = yresult.get(ycommit);
 			changeHistoryDetails.put(commitName, change);
 			changeHistoryShort.put(commitName, change.getTypeAsString());
-			Yfunction matchedFunction = ycommit.getMatchedFunction();
-			String diffFilepath = ycommit.getFilePath();
-			if (matchedFunction != null) {
-				diffFilepath = ycommit.getMatchedFunction().getSourceFilePath();
-			}
-
-			Utl.writeGitDiff(commitName, diffFilepath, startEnv.getRepository(), startEnv.getRepositoryName());
+//			Yfunction matchedFunction = ycommit.getMatchedFunction();
+//			String diffFilepath = ycommit.getFilePath();
+//			if (matchedFunction != null) {
+//				diffFilepath = ycommit.getMatchedFunction().getSourceFilePath();
+//			}
+//
+//			Utl.writeGitDiff(commitName, diffFilepath, startEnv.getRepository(), startEnv.getRepositoryName());
 		}
 
 		printAsJson(changeHistoryShort);
