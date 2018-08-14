@@ -1,5 +1,6 @@
 package com.felixgrund.codeshovel.util;
 
+import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.json.JsonSimilarity;
@@ -23,10 +24,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class Utl {
 
@@ -34,6 +32,8 @@ public class Utl {
 
 	private static final String OUTPUT_BASE_DIR = Optional.ofNullable(
 			System.getenv("OUTPUT_DIR")).orElse(System.getProperty("user.dir") + "/output");
+
+	private static final boolean PRINT_DISABLED = Boolean.valueOf(System.getenv("PRINT_DISABLED"));
 
 	private static final Logger log = LoggerFactory.getLogger(Utl.class);
 
@@ -105,11 +105,7 @@ public class Utl {
 	}
 
 	public static void printMethodHistory(AnalysisTask task) {
-		Yresult yresult = task.getYresult();
-		System.out.println("\nCodeShovel Change History:");
-		for (Ycommit ycommit : yresult.keySet()) {
-			System.out.println(ycommit.getShortName() + ": " + yresult.get(ycommit));
-		}
+		System.out.println("\nCodeShovel Change History: " + task.getYresult().toString());
 	}
 
 	public static void printMethodHistory(List<String> commitNames) {
@@ -128,6 +124,10 @@ public class Utl {
 
 	public static void writeOutputFile(String subdir, String commitName, String filePath,
 				String functionId, String repoName, String content, String fileExtension) {
+
+		if (PRINT_DISABLED) {
+			return;
+		}
 
 		try {
 			String baseDir = OUTPUT_BASE_DIR + "/" + subdir;
@@ -163,6 +163,10 @@ public class Utl {
 	}
 
 	public static void writeJsonStubToFile(JsonResult jsonResult) {
+		if (PRINT_DISABLED) {
+			return;
+		}
+
 		try {
 			String filePath = jsonResult.getSourceFilePath();
 			String[] filePathSplit = filePath.split("/");

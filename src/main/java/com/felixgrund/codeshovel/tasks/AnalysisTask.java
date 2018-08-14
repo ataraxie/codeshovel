@@ -98,8 +98,13 @@ public class AnalysisTask {
 
 	private void createResult() {
 		this.yresult = new Yresult();
+		int numResults = this.taskSpecificHistory.size();
+		log.trace("Creating result of size {{}}...", numResults);
+		int status = 0;
 		for (Ycommit ycommit : this.taskSpecificHistory) {
 			try {
+				status++;
+				log.trace(status + " / " + numResults);
 				InFileInterpreter ifi = new InFileInterpreter(this.startEnv, ycommit);
 				Ychange ychange = ifi.interpret();
 				if (!(ychange instanceof Ynochange)) {

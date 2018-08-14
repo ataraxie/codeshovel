@@ -31,7 +31,7 @@ public class AnalysisTaskTest {
 
 	private static Logger log = LoggerFactory.getLogger(AnalysisTaskTest.class);
 
-	private static final String CODESTORY_REPO_DIR = System.getenv("codeshovel.repo.dir");
+	private static final String CODESTORY_REPO_DIR = System.getenv("REPO_DIR");
 	private static final String STUBS_DIR = "stubs/java";
 
 	private static final Gson GSON = new Gson();
@@ -39,7 +39,7 @@ public class AnalysisTaskTest {
 	// Specify file name (without file extension) if you want to run only a single test.
 	// e.g. "checkstyle-Checker-fireErrors";
 //	private static final String RUN_ONLY_TEST = "flink-LocatableInputSplitAssigner-getNextInputSplit";
-	private static final String RUN_ONLY_TEST = System.getenv("codeshovel.env.name");
+	private static final String RUN_ONLY_TEST = System.getenv("ENV_NAME");
 
 	private static List<StartEnvironment> startEnvs = new ArrayList<>();
 
@@ -134,8 +134,8 @@ public class AnalysisTaskTest {
 			}
 			String actualChangeType = ychange.getTypeAsString();
 			if (!expectedChangeType.equals(actualChangeType)) {
-				System.err.println(String.format("Type of change was not expected. Expected: %s, actual: %s",
-						expectedChangeType, actualChangeType));
+				System.err.println(String.format("Type of change was not expected for commit %s. Expected: %s, actual: %s",
+						commitName, expectedChangeType, actualChangeType));
 				return false;
 			}
 		}

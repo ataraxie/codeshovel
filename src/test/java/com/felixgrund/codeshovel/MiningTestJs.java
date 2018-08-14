@@ -7,7 +7,7 @@ public class MiningTestJs extends MiningTest {
 	static {
 		TARGET_FILE_EXTENSION = ".js";
 		TARGET_FILE_PATH = "src/css.js";
-		CODESTORY_REPO_DIR = System.getenv("codeshovel.repo.dir");
+		CODESTORY_REPO_DIR = System.getenv("REPO_DIR");
 		REPO = "jquery";
 		START_COMMIT = "45f085882597016e521436f01a8459daf3e4000e";
 
