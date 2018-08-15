@@ -19,6 +19,8 @@ ENV FILE_EXT ${FILE_EXT:-.java}
 ENV SEARCH_PATHS ${SEARCH_PATHS:-.}
 
 ENV OUTPUT_DIR /var/opt/codeshovel/output
+ENV WRITE_RESULTS true
+ENV WRITE_SEMANTIC_DIFFS true
 
 RUN apt-get update && apt-get -y install maven
 
