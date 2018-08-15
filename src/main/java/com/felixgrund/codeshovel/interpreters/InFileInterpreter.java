@@ -69,29 +69,39 @@ public class InFileInterpreter extends AbstractInterpreter {
 		Yfunction ret = null;
 		Ycommit parentCommit = ycommit.getPrev();
 		if (parentCommit != null) {
-			Yfunction functionB = ycommit.getMatchedFunction();
-			int lineNumberB = functionB.getNameLineNumber();
+			Yfunction matchedFunction = ycommit.getMatchedFunction();
 			EditList editList = ycommit.getYdiff().getSingleEditList(ycommit.getFilePath());
 			if (editList != null) {
 				Yparser parentCommitParser = parentCommit.getParser();
 				for (Edit edit : editList) {
 					int beginA = edit.getBeginA();
 					int endA = edit.getEndA();
-					int beginB = edit.getBeginB();
-					int endB = edit.getEndB();
-					if (beginB <= lineNumberB && endB >= lineNumberB) {
-						String filePathOldAndNew = ycommit.getFilePath(); // FIXME: I'm not too sure if this is ok
+					if (isEditInMethod(matchedFunction, edit)) {
+						String filePathOldAndNew = ycommit.getFilePath();
 						List<Yfunction> candidates = getRemovedFunctions(
-								ycommit.getCommit(), parentCommit.getCommit(), filePathOldAndNew, filePathOldAndNew);
+								ycommit.getCommit(), parentCommit.getCommit(), filePathOldAndNew, filePathOldAndNew, false);
 						List<Yfunction> candidatesLineRange = parentCommitParser.findFunctionsByLineRange(beginA, endA);
 						candidates.addAll(candidatesLineRange);
 						candidates = removeDuplicates(candidates);
-						ret = parentCommitParser.getMostSimilarFunction(candidates, functionB, false, false);
+						ret = parentCommitParser.getMostSimilarFunction(candidates, matchedFunction, false, false);
+						if (ret != null) {
+							break; // found it an we can exit the loop
+						}
 					}
 				}
 			}
 		}
 		return ret;
+	}
+
+	private boolean isEditInMethod(Yfunction method, Edit edit) {
+		int methodStart = method.getNameLineNumber();
+		int methodEnd = method.getEndLineNumber();
+		int editBegin = edit.getBeginB();
+		int editEnd = edit.getEndB();
+		return (editBegin >= methodStart && editBegin <= methodEnd) // edit begin is within method line range
+				|| (editEnd >= methodStart && editEnd <= methodEnd) // edit end is within method line range
+				|| (editBegin <= methodStart && editEnd >= methodEnd); // full method is within edit line range
 	}
 
 	private List<Yfunction> removeDuplicates(List<Yfunction> functions) {

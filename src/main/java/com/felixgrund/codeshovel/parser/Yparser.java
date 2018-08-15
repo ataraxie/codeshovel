@@ -12,7 +12,7 @@ public interface Yparser {
 	Yfunction findFunctionByNameAndLine(String name, int line);
 	List<Yfunction> findFunctionsByLineRange(int beginLine, int endLine);
 	List<Yfunction> getAllFunctions();
-	Map<String, Yfunction> getAllFunctionsAsMap();
+	Map<String, Yfunction> getAllFunctionsCount();
 	Yfunction findFunctionByOtherFunction(Yfunction otherFunction);
 	boolean functionNamesConsideredEqual(String aName, String bName);
 

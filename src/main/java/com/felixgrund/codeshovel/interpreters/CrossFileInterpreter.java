@@ -3,6 +3,7 @@ package com.felixgrund.codeshovel.interpreters;
 import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Ydiff;
+import com.felixgrund.codeshovel.util.ParserFactory;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
@@ -74,7 +75,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 		for (String oldPath : pathMapping.keySet()) {
 			if (oldPath.endsWith(acceptedFileExtension)) {
 				String newPath = pathMapping.get(oldPath);
-				List<Yfunction> removedFunctions = getRemovedFunctions(this.ycommit.getCommit(), prevCommit, oldPath, newPath);
+				List<Yfunction> removedFunctions = getRemovedFunctions(this.ycommit.getCommit(), prevCommit, oldPath, newPath, true);
 				allFunctions.addAll(removedFunctions);
 			}
 		}

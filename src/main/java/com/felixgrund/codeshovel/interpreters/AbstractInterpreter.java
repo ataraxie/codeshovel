@@ -10,10 +10,7 @@ import com.felixgrund.codeshovel.util.ParserFactory;
 import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class AbstractInterpreter {
 
@@ -43,23 +40,55 @@ public abstract class AbstractInterpreter {
 		return ret;
 	}
 
-	protected List<Yfunction> getRemovedFunctions(Commit commitNew, Commit commitOld, String oldFilePath, String newFilePath) throws Exception {
+	protected List<Yfunction> getRemovedFunctions(Commit commitNew, Commit commitOld, String oldFilePath, String newFilePath, boolean strictMode)
+			throws Exception {
+
 		List<Yfunction> ret = new ArrayList<>();
+		// TODO: this shouldn't be done here because we already have these parsers!
 		Yparser parserOld = createParserForCommitAndFile(commitOld, oldFilePath);
 		Yparser parserNew = createParserForCommitAndFile(commitNew, newFilePath);
 		if (parserNew == null) {
 			ret = parserOld.getAllFunctions();
 		} else {
-			Map<String, Yfunction> functionsNew = parserNew.getAllFunctionsAsMap();
-			Map<String, Yfunction> functionsOld = parserOld.getAllFunctionsAsMap();
+			Map<String, Yfunction> functionsNew = parserNew.getAllFunctionsCount();
+			Map<String, Yfunction> functionsOld = parserOld.getAllFunctionsCount();
+			Map<String, Integer> nameCountNew = getFunctionNameCount(functionsNew);
+			Map<String, Integer> nameCountOld = getFunctionNameCount(functionsOld);
+
 			Set<String> newFunctionIds = functionsNew.keySet();
+
 			for (String functionId : functionsOld.keySet()) {
-				if (!newFunctionIds.contains(functionId)) {
-					ret.add(functionsOld.get(functionId));
+				boolean functionIdLost = !newFunctionIds.contains(functionId);
+				if (functionIdLost) {
+					if (strictMode) {
+						Yfunction functionOld = functionsOld.get(functionId);
+						String functionName = functionOld.getName();
+						Integer countOld = nameCountOld.get(functionName);
+						Integer countNew = nameCountNew.get(functionName);
+						if (countNew == null || countNew < countOld) {
+							ret.add(functionsOld.get(functionId));
+						}
+					} else {
+						ret.add(functionsOld.get(functionId));
+					}
 				}
 			}
 		}
 
+		return ret;
+	}
+
+	private Map<String, Integer> getFunctionNameCount(Map<String, Yfunction> functions) {
+		Map<String, Integer> ret = new HashMap<>();
+		for (Yfunction function : functions.values()) {
+			String name = function.getName();
+			Integer oldValue = ret.get(name);
+			if (oldValue == null) {
+				ret.put(name, 1);
+			} else {
+				ret.put(name, oldValue + 1);
+			}
+		}
 		return ret;
 	}
 

@@ -47,12 +47,13 @@ public class AnalysisTaskTest {
 		ClassLoader classLoader = AnalysisTaskTest.class.getClassLoader();
 		File directory = new File(classLoader.getResource(STUBS_DIR).getFile());
 		for (File file : directory.listFiles()) {
-			if (file.getName().equals("checkstyle-Main-main")) { // TODO: produces OutOfMemoryError
+			String envName = file.getName().replace(".json", "");
+			if (GlobalEnv.SKIP_ENVS.contains(envName)) {
 				continue;
 			}
 			String json = FileUtils.readFileToString(file, "utf-8");
 			StartEnvironment startEnv = GSON.fromJson(json, StartEnvironment.class);
-			startEnv.setEnvName(file.getName().replace(".json", ""));
+			startEnv.setEnvName(envName);
 			if (RUN_ONLY_TEST == null || startEnv.getEnvName().startsWith(RUN_ONLY_TEST)) {
 				startEnvs.add(startEnv);
 			}

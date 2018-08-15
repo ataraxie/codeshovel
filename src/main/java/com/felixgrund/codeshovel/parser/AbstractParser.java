@@ -208,8 +208,8 @@ public abstract class AbstractParser implements Yparser {
 			Utl.writeJsonSimilarity(this.repositoryName, this.filePath, compareFunction, mostSimilarFunction, similarity);
 		}
 
-		if (mostSimilarFunctionSimilarity > 0.85) {
-			log.trace("Highest similarity is > 0.85. Accepting function.");
+		if (mostSimilarFunctionSimilarity > 0.83) {
+			log.trace("Highest similarity is > 0.83. Accepting function.");
 			return mostSimilarFunction;
 		}
 

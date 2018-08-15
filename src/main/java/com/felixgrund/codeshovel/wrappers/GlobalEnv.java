@@ -1,5 +1,10 @@
 package com.felixgrund.codeshovel.wrappers;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class GlobalEnv {
@@ -31,6 +36,17 @@ public class GlobalEnv {
 			BEGIN_INDEX = Integer.parseInt(System.getenv("BEGIN_INDEX"));
 		} catch (NumberFormatException e) {
 			// leave -1
+		}
+	}
+
+	public static List<String> SKIP_ENVS = new ArrayList<>();
+	static {
+		String skipString = System.getenv("SKIP_ENVS");
+		if (StringUtils.isNotBlank(skipString)) {
+			String[] commaSplit = StringUtils.split(skipString, ",");
+			if (commaSplit.length > 0) {
+				SKIP_ENVS = Arrays.asList(commaSplit);
+			}
 		}
 	}
 
