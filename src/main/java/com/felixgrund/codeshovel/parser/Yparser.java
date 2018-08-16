@@ -16,7 +16,7 @@ public interface Yparser {
 	Yfunction findFunctionByOtherFunction(Yfunction otherFunction);
 	boolean functionNamesConsideredEqual(String aName, String bName);
 
-	Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile, boolean writeOutputFile);
+	Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile);
 	double getScopeSimilarity(Yfunction function, Yfunction compareFunction);
 
 	List<Ysignaturechange> getMajorChanges(Ycommit commit, Yfunction compareFunction) throws Exception;

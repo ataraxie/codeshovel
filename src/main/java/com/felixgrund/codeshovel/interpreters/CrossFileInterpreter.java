@@ -81,7 +81,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 		}
 
 		if (!allFunctions.isEmpty()) {
-			ret = this.startParser.getMostSimilarFunction(allFunctions, this.startFunction, true, false);
+			ret = this.startParser.getMostSimilarFunction(allFunctions, this.startFunction, true);
 		}
 		return ret;
 	}
@@ -89,7 +89,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 	private Yfunction getCompareFunctionFromFile(String filePath, Commit commit) throws Exception {
 		Yparser parser = createParserForCommitAndFile(commit, filePath);
 		List<Yfunction> allFunctions = parser.getAllFunctions();
-		Yfunction ret = this.startParser.getMostSimilarFunction(allFunctions, this.startFunction, false, false);
+		Yfunction ret = this.startParser.getMostSimilarFunction(allFunctions, this.startFunction, false);
 		return ret;
 	}
 

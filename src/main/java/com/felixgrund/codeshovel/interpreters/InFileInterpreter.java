@@ -83,7 +83,7 @@ public class InFileInterpreter extends AbstractInterpreter {
 						List<Yfunction> candidatesLineRange = parentCommitParser.findFunctionsByLineRange(beginA, endA);
 						candidates.addAll(candidatesLineRange);
 						candidates = removeDuplicates(candidates);
-						ret = parentCommitParser.getMostSimilarFunction(candidates, matchedFunction, false, false);
+						ret = parentCommitParser.getMostSimilarFunction(candidates, matchedFunction, false);
 						if (ret != null) {
 							break; // found it an we can exit the loop
 						}
