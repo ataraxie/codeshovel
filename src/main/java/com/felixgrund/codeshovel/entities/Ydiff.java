@@ -20,7 +20,7 @@ public class Ydiff {
 
 	private static final String NULL_PATH = "/dev/null";
 
-	private static final int RENAME_SCORE = 60;
+	private static final int RENAME_SCORE = 50;
 
 	private RepositoryService repositoryService;
 	private Repository repository;

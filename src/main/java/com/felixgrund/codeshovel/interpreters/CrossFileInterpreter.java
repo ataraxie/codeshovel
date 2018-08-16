@@ -35,7 +35,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 			DiffEntry diffEntry = diffEntries.get(startFunction.getSourceFilePath());
 			if (diffEntry != null) {
 				String oldFilePath = diffEntry.getOldPath();
-				Yfunction compareFunction = null;
+ 				Yfunction compareFunction = null;
 				Ycrossfilechange crossFileChange = null;
 				if (diffEntry.getChangeType() == DiffEntry.ChangeType.RENAME) {
 					compareFunction = getCompareFunctionFromFile(oldFilePath, prevCommit);
