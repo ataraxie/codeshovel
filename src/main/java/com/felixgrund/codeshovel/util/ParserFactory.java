@@ -17,7 +17,7 @@ public class ParserFactory {
 	private static Map<String, Yparser> parserCache = new HashMap<>();
 
 	public static Yparser getParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws NoParserFoundException, ParseException {
-		String cacheKey = commit.getName() + "-" + DigestUtils.md5Hex(fileContent);
+		String cacheKey = commit.getName() + "-" + DigestUtils.md5Hex(filePath);
 		Yparser parser = parserCache.get(cacheKey);
 		if (parser == null) {
 			if (filePath.endsWith(JsParser.ACCEPTED_FILE_EXTENSION)) {

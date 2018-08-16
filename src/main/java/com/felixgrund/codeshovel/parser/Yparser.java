@@ -12,11 +12,11 @@ public interface Yparser {
 	Yfunction findFunctionByNameAndLine(String name, int line);
 	List<Yfunction> findFunctionsByLineRange(int beginLine, int endLine);
 	List<Yfunction> getAllFunctions();
-	Map<String, Yfunction> getAllFunctionsAsMap();
+	Map<String, Yfunction> getAllFunctionsCount();
 	Yfunction findFunctionByOtherFunction(Yfunction otherFunction);
 	boolean functionNamesConsideredEqual(String aName, String bName);
 
-	Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile, boolean writeOutputFile);
+	Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile);
 	double getScopeSimilarity(Yfunction function, Yfunction compareFunction);
 
 	List<Ysignaturechange> getMajorChanges(Ycommit commit, Yfunction compareFunction) throws Exception;

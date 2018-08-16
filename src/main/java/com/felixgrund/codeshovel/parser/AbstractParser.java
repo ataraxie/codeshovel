@@ -5,6 +5,7 @@ import com.felixgrund.codeshovel.entities.*;
 import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.FunctionSimilarity;
+import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.Commit;
@@ -130,7 +131,7 @@ public abstract class AbstractParser implements Yparser {
 	}
 
 	@Override
-	public Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile, boolean writeOutputFile) {
+	public Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile) {
 		log.trace("Trying to find most similar function");
 		Map<Yfunction, FunctionSimilarity> similarities = new HashMap<>();
 		List<Yfunction> candidatesWithSameName = new ArrayList<>();
@@ -204,13 +205,16 @@ public abstract class AbstractParser implements Yparser {
 		FunctionSimilarity similarity = similarities.get(mostSimilarFunction);
 		log.trace("Highest similarity with overall similarity of {}: {}", similarity);
 
-		if (writeOutputFile) {
+		if (GlobalEnv.WRITE_SIMILARITIES && compareFunction != null && mostSimilarFunction != null) {
 			Utl.writeJsonSimilarity(this.repositoryName, this.filePath, compareFunction, mostSimilarFunction, similarity);
 		}
 
-		if (mostSimilarFunctionSimilarity > 0.85) {
-			log.trace("Highest similarity is > 0.85. Accepting function.");
-			return mostSimilarFunction;
+		if (mostSimilarFunctionSimilarity > 0.8) {
+			int numBodyLines = Utl.countLineNumbers(mostSimilarFunction.getBody());
+			if (numBodyLines > 3 || mostSimilarFunctionSimilarity > 0.95) {
+				log.trace("Highest similarity is high enough. Accepting function.");
+				return mostSimilarFunction;
+			}
 		}
 
 		if (candidatesWithSameName.size() == 1) {

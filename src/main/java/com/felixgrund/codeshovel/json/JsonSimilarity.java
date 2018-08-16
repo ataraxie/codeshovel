@@ -42,13 +42,13 @@ public class JsonSimilarity {
 		private String commitName;
 		private String name;
 		private String path;
-		private String body;
+		private String source;
 
-		public FunctionEntry(String commitName, String name, String path, String body) {
+		public FunctionEntry(String commitName, String name, String path, String source) {
 			this.commitName = commitName;
 			this.name = name;
 			this.path = path;
-			this.body = body;
+			this.source = source;
 		}
 
 		public String getCommitName() {
@@ -63,14 +63,14 @@ public class JsonSimilarity {
 			return path;
 		}
 
-		public String getBody() {
-			return body;
+		public String getSource() {
+			return source;
 		}
 
 		@Override
 		public String toString() {
-			String template = "COMMIT: %s\nNAME: %s\nPATH: %s\nBODY:\n%s\n";
-			return String.format(template, this.commitName, this.name, this.path, this.body);
+			String template = "COMMIT: %s\nNAME: %s\nPATH: %s\nSOURCE:\n%s\n";
+			return String.format(template, this.commitName, this.name, this.path, this.source);
 		}
 	}
 

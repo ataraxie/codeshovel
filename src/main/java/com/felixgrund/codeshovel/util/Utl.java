@@ -219,12 +219,12 @@ public class Utl {
 				compareFunction.getCommitName(),
 				compareFunction.getName(),
 				compareFunction.getId(),
-				compareFunction.getBody());
+				compareFunction.getSourceFragment());
 		JsonSimilarity.FunctionEntry mostSimilarEntry = new JsonSimilarity.FunctionEntry(
 				mostSimilarFunction.getCommitName(),
 				mostSimilarFunction.getName(),
 				mostSimilarFunction.getId(),
-				mostSimilarFunction.getBody());
+				mostSimilarFunction.getSourceFragment());
 
 
 		JsonSimilarity jsonSimilarity = new JsonSimilarity(compareEntry, mostSimilarEntry, similarity);
