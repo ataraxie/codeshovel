@@ -210,11 +210,15 @@ public abstract class AbstractParser implements Yparser {
 			Utl.writeJsonSimilarity(this.repositoryName, this.filePath, compareFunction, mostSimilarFunction, similarity);
 		}
 
-		if (mostSimilarFunctionSimilarity > 0.8) {
-			int numBodyLines = Utl.countLineNumbers(mostSimilarFunction.getBody());
-			if (numBodyLines > 3 || mostSimilarFunctionSimilarity > 0.95) {
-				log.trace("Highest similarity is high enough. Accepting function.");
-				return mostSimilarFunction;
+		if (mostSimilarFunctionSimilarity > 0.82) {
+			String newBody = mostSimilarFunction.getBody();
+			if (newBody != null) {
+				int numChars = newBody.length();
+				int numLines = Utl.countLineNumbers(newBody);
+				if ((numLines > 3 || numChars > 70) || mostSimilarFunctionSimilarity > 0.95) {
+					log.trace("Highest similarity is high enough. Accepting function.");
+					return mostSimilarFunction;
+				}
 			}
 		}
 
