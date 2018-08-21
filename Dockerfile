@@ -1,7 +1,7 @@
 FROM openjdk:8u171
 
 # Mount host directory containing repositories to analyze here
-VOLUME /repos
+VOLUME /var/opt/codeshovel/repos
 
 # Mount host output directory here
 VOLUME /var/opt/codeshovel/output
@@ -24,7 +24,7 @@ ENV WRITE_SEMANTIC_DIFFS true
 
 RUN apt-get update && apt-get -y install maven
 
-WORKDIR /opt/codeshovel
+WORKDIR /var/opt/codeshovel/codeshovel
 COPY ./ ./
 RUN mvn verify
 
