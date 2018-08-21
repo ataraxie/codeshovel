@@ -22,6 +22,9 @@ public class GlobalEnv {
 	public static final boolean WRITE_STUBS = Boolean.valueOf(System.getenv("WRITE_STUBS"));
 	public static final boolean WRITE_SIMILARITIES = Boolean.valueOf(System.getenv("WRITE_SIMILARITIES"));
 
+	// Getters/Setters skipping
+	public static final boolean SKIP_GETTERS_AND_SETTERS = Boolean.valueOf(System.getenv("SKIP_GETTERS_AND_SETTERS"));
+
 	// Only for mining:
 	public static final String TARGET_FILE_PATH = System.getenv("TARGET_FILE_PATH");
 	public static final String REPO = System.getenv("REPO");

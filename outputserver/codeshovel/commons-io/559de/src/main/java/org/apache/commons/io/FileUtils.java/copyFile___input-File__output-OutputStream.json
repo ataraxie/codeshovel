@@ -1,0 +1,61 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileUtils.java",
+  "functionName": "copyFile",
+  "functionId": "copyFile___input-File__output-OutputStream",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileUtils.java",
+  "functionStartLine": 1102,
+  "functionEndLine": 1106,
+  "changeHistory": [
+    "51f13c846dae950e1d27693c9e23c1063945210f",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "6ada74347e26f1d94e391bb41e3873b8739cc99a"
+  ],
+  "changeHistoryShort": {
+    "51f13c846dae950e1d27693c9e23c1063945210f": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Yparametermetachange",
+    "6ada74347e26f1d94e391bb41e3873b8739cc99a": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "51f13c846dae950e1d27693c9e23c1063945210f": {
+      "type": "Ybodychange",
+      "commitMessage": "Updated for Java7 features\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1746593 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1464881775000,
+      "commitName": "51f13c846dae950e1d27693c9e23c1063945210f",
+      "commitAuthor": "Kristian Rosenvold",
+      "commitDateOld": 1462579617000,
+      "commitNameOld": "4dc97b64005f0083b2facaa70f661138a4fa3fc0",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 26.65,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,5 @@\n     public static long copyFile(final File input, final OutputStream output) throws IOException {\n-        final FileInputStream fis \u003d new FileInputStream(input);\n-        try {\n+        try (FileInputStream fis \u003d new FileInputStream(input)) {\n             return IOUtils.copyLarge(fis, output);\n-        } finally {\n-            fis.close();\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Yparametermetachange",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1351082444000,
+      "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 37.34,
+      "commitsBetweenForRepo": 34,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n-    public static long copyFile(File input, OutputStream output) throws IOException {\n+    public static long copyFile(final File input, final OutputStream output) throws IOException {\n         final FileInputStream fis \u003d new FileInputStream(input);\n         try {\n             return IOUtils.copyLarge(fis, output);\n         } finally {\n             fis.close();\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6ada74347e26f1d94e391bb41e3873b8739cc99a": {
+      "type": "Yintroduced",
+      "commitMessage": "[IO-282] Add API FileUtils.copyFile(File input, OutputStream output)\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1163295 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1314724958000,
+      "commitName": "6ada74347e26f1d94e391bb41e3873b8739cc99a",
+      "commitAuthor": "Gary D. Gregory"
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "CountingInputStream.java",
+  "functionName": "resetByteCount",
+  "functionId": "resetByteCount",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/input/CountingInputStream.java",
+  "functionStartLine": 138,
+  "functionEndLine": 142,
+  "changeHistory": [
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "1cd7e93ab1fbd610a3b552d8295d8e565adeecb2",
+    "4ab6a3f499d70834f72309ae4a9145b2da24d4d0"
+  ],
+  "changeHistoryShort": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ybodychange",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "1cd7e93ab1fbd610a3b552d8295d8e565adeecb2": "Ymultichange(Yrename,Yreturntypechange,Ybodychange)",
+    "4ab6a3f499d70834f72309ae4a9145b2da24d4d0": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ybodychange",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1332449729000,
+      "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 253.0,
+      "commitsBetweenForRepo": 182,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,5 +1,5 @@\n     public synchronized long resetByteCount() {\n-        long tmp \u003d this.count;\n+        final long tmp \u003d this.count;\n         this.count \u003d 0;\n         return tmp;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/input/CountingInputStream.java",
+        "newPath": "src/main/java/org/apache/commons/io/input/CountingInputStream.java"
+      }
+    },
+    "1cd7e93ab1fbd610a3b552d8295d8e565adeecb2": {
+      "type": "Ymultichange(Yrename,Yreturntypechange,Ybodychange)",
+      "commitMessage": "Fix for IO-84 - Files over 2GB will result in an incorrect count being returned by the getCount() and resetCount() methods (as they return an integer). These methods have been deprecated and new getByteCount() and resetByteCount() methods have been added which return a long.\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@454217 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1160343345000,
+      "commitName": "1cd7e93ab1fbd610a3b552d8295d8e565adeecb2",
+      "commitAuthor": "Niall Pemberton",
+      "subchanges": [
+        {
+          "type": "Yrename",
+          "commitMessage": "Fix for IO-84 - Files over 2GB will result in an incorrect count being returned by the getCount() and resetCount() methods (as they return an integer). These methods have been deprecated and new getByteCount() and resetByteCount() methods have been added which return a long.\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@454217 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1160343345000,
+          "commitName": "1cd7e93ab1fbd610a3b552d8295d8e565adeecb2",
+          "commitAuthor": "Niall Pemberton",
+          "commitDateOld": 1160329491000,
+          "commitNameOld": "f63be2b6e74a8e8e6e7f721bd563850ec292aad3",
+          "commitAuthorOld": "Henri Yandell",
+          "daysBetweenCommits": 0.16,
+          "commitsBetweenForRepo": 1,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,5 +1,5 @@\n-    public synchronized int resetCount() {\n-        int tmp \u003d this.count;\n+    public synchronized long resetByteCount() {\n+        long tmp \u003d this.count;\n         this.count \u003d 0;\n         return tmp;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {
+            "oldMethodName": "resetCount",
+            "newMethodName": "resetByteCount"
+          }
+        },
+        {
+          "type": "Yreturntypechange",
+          "commitMessage": "Fix for IO-84 - Files over 2GB will result in an incorrect count being returned by the getCount() and resetCount() methods (as they return an integer). These methods have been deprecated and new getByteCount() and resetByteCount() methods have been added which return a long.\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@454217 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1160343345000,
+          "commitName": "1cd7e93ab1fbd610a3b552d8295d8e565adeecb2",
+          "commitAuthor": "Niall Pemberton",
+          "commitDateOld": 1160329491000,
+          "commitNameOld": "f63be2b6e74a8e8e6e7f721bd563850ec292aad3",
+          "commitAuthorOld": "Henri Yandell",
+          "daysBetweenCommits": 0.16,
+          "commitsBetweenForRepo": 1,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,5 +1,5 @@\n-    public synchronized int resetCount() {\n-        int tmp \u003d this.count;\n+    public synchronized long resetByteCount() {\n+        long tmp \u003d this.count;\n         this.count \u003d 0;\n         return tmp;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Fix for IO-84 - Files over 2GB will result in an incorrect count being returned by the getCount() and resetCount() methods (as they return an integer). These methods have been deprecated and new getByteCount() and resetByteCount() methods have been added which return a long.\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@454217 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1160343345000,
+          "commitName": "1cd7e93ab1fbd610a3b552d8295d8e565adeecb2",
+          "commitAuthor": "Niall Pemberton",
+          "commitDateOld": 1160329491000,
+          "commitNameOld": "f63be2b6e74a8e8e6e7f721bd563850ec292aad3",
+          "commitAuthorOld": "Henri Yandell",
+          "daysBetweenCommits": 0.16,
+          "commitsBetweenForRepo": 1,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,5 +1,5 @@\n-    public synchronized int resetCount() {\n-        int tmp \u003d this.count;\n+    public synchronized long resetByteCount() {\n+        long tmp \u003d this.count;\n         this.count \u003d 0;\n         return tmp;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "4ab6a3f499d70834f72309ae4a9145b2da24d4d0": {
+      "type": "Yintroduced",
+      "commitMessage": "reset feature added to counting classes as requested by Lars Beuster\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140583 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1087104944000,
+      "commitName": "4ab6a3f499d70834f72309ae4a9145b2da24d4d0",
+      "commitAuthor": "Henri Yandell"
+    }
+  }
+}

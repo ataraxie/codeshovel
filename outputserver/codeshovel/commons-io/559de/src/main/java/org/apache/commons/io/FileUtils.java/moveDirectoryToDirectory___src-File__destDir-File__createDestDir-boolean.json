@@ -1,0 +1,132 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileUtils.java",
+  "functionName": "moveDirectoryToDirectory",
+  "functionId": "moveDirectoryToDirectory___src-File__destDir-File__createDestDir-boolean",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileUtils.java",
+  "functionStartLine": 2949,
+  "functionEndLine": 2963,
+  "changeHistory": [
+    "f0751b65cf680456557aa1bf5c56b12f5c1a0fe0",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "660b89f08ab6469d548800b83619e4207c78381b",
+    "7f075b8e754037cb7c2fd396086ca3d6a955675f",
+    "b2342719e8abf75edf3bbdda6c84d3c55726626f",
+    "ee30084cc1f81f9440a05b8eb16fbbe12d210d20"
+  ],
+  "changeHistoryShort": {
+    "f0751b65cf680456557aa1bf5c56b12f5c1a0fe0": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Yparametermetachange",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "660b89f08ab6469d548800b83619e4207c78381b": "Ybodychange",
+    "7f075b8e754037cb7c2fd396086ca3d6a955675f": "Ybodychange",
+    "b2342719e8abf75edf3bbdda6c84d3c55726626f": "Ybodychange",
+    "ee30084cc1f81f9440a05b8eb16fbbe12d210d20": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "f0751b65cf680456557aa1bf5c56b12f5c1a0fe0": {
+      "type": "Ybodychange",
+      "commitMessage": "[IO-572] Refactor duplicate code in org.apache.commons.io.FileUtils.",
+      "commitDate": 1520694577000,
+      "commitName": "f0751b65cf680456557aa1bf5c56b12f5c1a0fe0",
+      "commitAuthor": "Gary Gregory",
+      "commitDateOld": 1520538761000,
+      "commitNameOld": "71fc2c4c817a8c9bb41650d5b27a89e207a68c39",
+      "commitAuthorOld": "Gary Gregory",
+      "daysBetweenCommits": 1.8,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,15 @@\n     public static void moveDirectoryToDirectory(final File src, final File destDir, final boolean createDestDir)\n             throws IOException {\n-        if (src \u003d\u003d null) {\n-            throw new NullPointerException(\"Source must not be null\");\n-        }\n-        if (destDir \u003d\u003d null) {\n-            throw new NullPointerException(\"Destination directory must not be null\");\n-        }\n+        validateMoveParameters(src, destDir);\n         if (!destDir.exists() \u0026\u0026 createDestDir) {\n             destDir.mkdirs();\n         }\n         if (!destDir.exists()) {\n             throw new FileNotFoundException(\"Destination directory \u0027\" + destDir +\n                     \"\u0027 does not exist [createDestDir\u003d\" + createDestDir + \"]\");\n         }\n         if (!destDir.isDirectory()) {\n             throw new IOException(\"Destination \u0027\" + destDir + \"\u0027 is not a directory\");\n         }\n         moveDirectory(src, new File(destDir, src.getName()));\n-\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Yparametermetachange",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1351082444000,
+      "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 37.34,
+      "commitsBetweenForRepo": 34,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n-    public static void moveDirectoryToDirectory(File src, File destDir, boolean createDestDir) throws IOException {\n+    public static void moveDirectoryToDirectory(final File src, final File destDir, final boolean createDestDir) throws IOException {\n         if (src \u003d\u003d null) {\n             throw new NullPointerException(\"Source must not be null\");\n         }\n         if (destDir \u003d\u003d null) {\n             throw new NullPointerException(\"Destination directory must not be null\");\n         }\n         if (!destDir.exists() \u0026\u0026 createDestDir) {\n             destDir.mkdirs();\n         }\n         if (!destDir.exists()) {\n             throw new FileNotFoundException(\"Destination directory \u0027\" + destDir +\n                     \"\u0027 does not exist [createDestDir\u003d\" + createDestDir +\"]\");\n         }\n         if (!destDir.isDirectory()) {\n             throw new IOException(\"Destination \u0027\" + destDir + \"\u0027 is not a directory\");\n         }\n         moveDirectory(src, new File(destDir, src.getName()));\n     \n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/FileUtils.java",
+        "newPath": "src/main/java/org/apache/commons/io/FileUtils.java"
+      }
+    },
+    "660b89f08ab6469d548800b83619e4207c78381b": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-77 revert to throwing NullPointerException rather than IllegalArgumentException\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@610810 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1199977489000,
+      "commitName": "660b89f08ab6469d548800b83619e4207c78381b",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1199901279000,
+      "commitNameOld": "cffe620e13b6a180e0347f6c12a12876e76534c4",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 0.88,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     public static void moveDirectoryToDirectory(File src, File destDir, boolean createDestDir) throws IOException {\n         if (src \u003d\u003d null) {\n-            throw new IllegalArgumentException( \"Source must not be null\" );\n+            throw new NullPointerException(\"Source must not be null\");\n         }\n         if (destDir \u003d\u003d null) {\n-            throw new IllegalArgumentException(\"Destination directory must not be null\");\n+            throw new NullPointerException(\"Destination directory must not be null\");\n         }\n         if (!destDir.exists() \u0026\u0026 createDestDir) {\n             destDir.mkdirs();\n         }\n         if (!destDir.exists()) {\n             throw new FileNotFoundException(\"Destination directory \u0027\" + destDir +\n                     \"\u0027 does not exist [createDestDir\u003d\" + createDestDir +\"]\");\n         }\n         if (!destDir.isDirectory()) {\n             throw new IOException(\"Destination \u0027\" + destDir + \"\u0027 is not a directory\");\n         }\n         moveDirectory(src, new File(destDir, src.getName()));\n     \n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "7f075b8e754037cb7c2fd396086ca3d6a955675f": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-77 - change moveDirectory/moveFile mehtods to throw IllegalArgumentException rather than NullPointerException - thanks to Holger Hoffstätte\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@609683 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1199724655000,
+      "commitName": "7f075b8e754037cb7c2fd396086ca3d6a955675f",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1199718888000,
+      "commitNameOld": "b2342719e8abf75edf3bbdda6c84d3c55726626f",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.07,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n     public static void moveDirectoryToDirectory(File src, File destDir, boolean createDestDir) throws IOException {\n         if (src \u003d\u003d null) {\n-            throw new NullPointerException( \"Source must not be null\" );\n+            throw new IllegalArgumentException( \"Source must not be null\" );\n         }\n         if (destDir \u003d\u003d null) {\n-            throw new NullPointerException(\"Destination directory must not be null\");\n+            throw new IllegalArgumentException(\"Destination directory must not be null\");\n         }\n         if (!destDir.exists() \u0026\u0026 createDestDir) {\n             destDir.mkdirs();\n         }\n         if (!destDir.exists()) {\n             throw new FileNotFoundException(\"Destination directory \u0027\" + destDir +\n                     \"\u0027 does not exist [createDestDir\u003d\" + createDestDir +\"]\");\n         }\n         if (!destDir.isDirectory()) {\n             throw new IOException(\"Destination \u0027\" + destDir + \"\u0027 is not a directory\");\n         }\n         moveDirectory(src, new File(destDir, src.getName()));\n     \n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "b2342719e8abf75edf3bbdda6c84d3c55726626f": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-77 improve error message\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@609633 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1199718888000,
+      "commitName": "b2342719e8abf75edf3bbdda6c84d3c55726626f",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1199717647000,
+      "commitNameOld": "ee30084cc1f81f9440a05b8eb16fbbe12d210d20",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,20 @@\n     public static void moveDirectoryToDirectory(File src, File destDir, boolean createDestDir) throws IOException {\n         if (src \u003d\u003d null) {\n             throw new NullPointerException( \"Source must not be null\" );\n         }\n         if (destDir \u003d\u003d null) {\n             throw new NullPointerException(\"Destination directory must not be null\");\n         }\n         if (!destDir.exists() \u0026\u0026 createDestDir) {\n             destDir.mkdirs();\n         }\n         if (!destDir.exists()) {\n-            throw new IOException(\"Destination directory does not exist\");\n+            throw new FileNotFoundException(\"Destination directory \u0027\" + destDir +\n+                    \"\u0027 does not exist [createDestDir\u003d\" + createDestDir +\"]\");\n         }\n         if (!destDir.isDirectory()) {\n             throw new IOException(\"Destination \u0027\" + destDir + \"\u0027 is not a directory\");\n         }\n         moveDirectory(src, new File(destDir, src.getName()));\n     \n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "ee30084cc1f81f9440a05b8eb16fbbe12d210d20": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-77 add moveFile() and moveDirectory() methods to FileUtils - thanks to Nicolas de Loof for the patch\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@609622 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1199717647000,
+      "commitName": "ee30084cc1f81f9440a05b8eb16fbbe12d210d20",
+      "commitAuthor": "Niall Pemberton"
+    }
+  }
+}

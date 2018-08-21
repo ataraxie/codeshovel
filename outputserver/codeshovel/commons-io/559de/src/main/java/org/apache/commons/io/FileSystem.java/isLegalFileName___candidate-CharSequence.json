@@ -1,0 +1,44 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileSystem.java",
+  "functionName": "isLegalFileName",
+  "functionId": "isLegalFileName___candidate-CharSequence",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileSystem.java",
+  "functionStartLine": 300,
+  "functionEndLine": 313,
+  "changeHistory": [
+    "4f50c37506de036bb34094095aaa6d4d831bfbb7",
+    "84a0d90783b095775b5d14b2a807497862d80db5"
+  ],
+  "changeHistoryShort": {
+    "4f50c37506de036bb34094095aaa6d4d831bfbb7": "Ybodychange",
+    "84a0d90783b095775b5d14b2a807497862d80db5": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4f50c37506de036bb34094095aaa6d4d831bfbb7": {
+      "type": "Ybodychange",
+      "commitMessage": "[IO-555] Add reserved file names. Impl for Windows only for now.",
+      "commitDate": 1510960677000,
+      "commitName": "4f50c37506de036bb34094095aaa6d4d831bfbb7",
+      "commitAuthor": "Gary Gregory",
+      "commitDateOld": 1510958872000,
+      "commitNameOld": "2bacf63927effbe494ea8888191b950037d4606f",
+      "commitAuthorOld": "Gary Gregory",
+      "daysBetweenCommits": 0.02,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,14 @@\n     public boolean isLegalFileName(final CharSequence candidate) {\n         if (candidate \u003d\u003d null || candidate.length() \u003d\u003d 0 || candidate.length() \u003e maxFileNameLength) {\n             return false;\n         }\n+        if (isReservedFileName(candidate)) {\n+            return false;\n+        }\n         for (int i \u003d 0; i \u003c candidate.length(); i++) {\n             if (isIllegalFileNameChar(candidate.charAt(i))) {\n                 return false;\n             }\n         }\n         return true;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "84a0d90783b095775b5d14b2a807497862d80db5": {
+      "type": "Yintroduced",
+      "commitMessage": "+\u003d isLegalFile(CharSequence)",
+      "commitDate": 1510836250000,
+      "commitName": "84a0d90783b095775b5d14b2a807497862d80db5",
+      "commitAuthor": "Sebb"
+    }
+  }
+}

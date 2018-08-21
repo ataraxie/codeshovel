@@ -1,0 +1,44 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "CharSequenceInputStream.java",
+  "functionName": "available",
+  "functionId": "available",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/input/CharSequenceInputStream.java",
+  "functionStartLine": 202,
+  "functionEndLine": 208,
+  "changeHistory": [
+    "a1f4d43253ac11abe8cf3ed53876dabc885d7b30",
+    "50a7fdcaf8fb9a684a96568ceeb8643b4941c475"
+  ],
+  "changeHistoryShort": {
+    "a1f4d43253ac11abe8cf3ed53876dabc885d7b30": "Ybodychange",
+    "50a7fdcaf8fb9a684a96568ceeb8643b4941c475": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "a1f4d43253ac11abe8cf3ed53876dabc885d7b30": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-379   CharSequenceInputStream - add tests for available()\n         Fix code so it really does reflect a minimum available.\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1470725 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1366666255000,
+      "commitName": "a1f4d43253ac11abe8cf3ed53876dabc885d7b30",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1366651451000,
+      "commitNameOld": "9c38fde99627d7d8cd7ffe3c7bd704824bab0960",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 0.17,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,7 @@\n     public int available() throws IOException {\n-        return this.cbuf.remaining();\n+        // The cached entries are in bbuf; since encoding always creates at least one byte\n+        // per character, we can add the two to get a better estimate (e.g. if bbuf is empty)\n+        // Note that the previous implementation (2.4) could return zero even though there were\n+        // encoded bytes still available.\n+        return this.bbuf.remaining() + this.cbuf.remaining();\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "50a7fdcaf8fb9a684a96568ceeb8643b4941c475": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-297 CharSequenceInputStream to efficiently stream content of a CharSequence\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1295643 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1330617632000,
+      "commitName": "50a7fdcaf8fb9a684a96568ceeb8643b4941c475",
+      "commitAuthor": "Sebastian Bazley"
+    }
+  }
+}

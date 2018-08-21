@@ -1,0 +1,102 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileUtils.java",
+  "functionName": "sizeOfDirectoryAsBigInteger",
+  "functionId": "sizeOfDirectoryAsBigInteger___directory-File",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileUtils.java",
+  "functionStartLine": 2661,
+  "functionEndLine": 2664,
+  "changeHistory": [
+    "7ae7af989df7c0754f92b54c5f6470bf2d234c9c",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "6573ce704ba1a14388a7431d48f84d304f9f98b9",
+    "27830ee8c22d74464fd3cae4e662bf0ba97e887b"
+  ],
+  "changeHistoryShort": {
+    "7ae7af989df7c0754f92b54c5f6470bf2d234c9c": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "6573ce704ba1a14388a7431d48f84d304f9f98b9": "Ybodychange",
+    "27830ee8c22d74464fd3cae4e662bf0ba97e887b": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7ae7af989df7c0754f92b54c5f6470bf2d234c9c": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-390 \nFileUtils.sizeOfDirectoryAsBigInteger can overflow.\nEnsure that recursive calls all use BigInteger\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1501735 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1373456917000,
+      "commitName": "7ae7af989df7c0754f92b54c5f6470bf2d234c9c",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1370293145000,
+      "commitNameOld": "32d58f94667615eabe93258d0ba38048f75ba148",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 36.62,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,4 @@\n     public static BigInteger sizeOfDirectoryAsBigInteger(final File directory) {\n         checkDirectory(directory);\n-\n-        final File[] files \u003d directory.listFiles();\n-        if (files \u003d\u003d null) {  // null if security restricted\n-            return BigInteger.ZERO;\n-        }\n-        BigInteger size \u003d BigInteger.ZERO;\n-\n-        for (final File file : files) {\n-            try {\n-                if (!isSymlink(file)) {\n-                    size \u003d size.add(BigInteger.valueOf(sizeOf(file)));\n-                }\n-            } catch (final IOException ioe) {\n-                // Ignore exceptions caught when asking if a File is a symlink.\n-            }\n-        }\n-\n-        return size;\n+        return sizeOfDirectoryBig0(directory);\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1351082444000,
+          "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 37.34,
+          "commitsBetweenForRepo": 34,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,21 +1,21 @@\n-    public static BigInteger sizeOfDirectoryAsBigInteger(File directory) {\n+    public static BigInteger sizeOfDirectoryAsBigInteger(final File directory) {\n         checkDirectory(directory);\n \n         final File[] files \u003d directory.listFiles();\n         if (files \u003d\u003d null) {  // null if security restricted\n             return BigInteger.ZERO;\n         }\n         BigInteger size \u003d BigInteger.ZERO;\n \n         for (final File file : files) {\n             try {\n                 if (!isSymlink(file)) {\n                     size \u003d size.add(BigInteger.valueOf(sizeOf(file)));\n                 }\n-            } catch (IOException ioe) {\n+            } catch (final IOException ioe) {\n                 // Ignore exceptions caught when asking if a File is a symlink.\n             }\n         }\n \n         return size;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1351082444000,
+          "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 37.34,
+          "commitsBetweenForRepo": 34,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,21 +1,21 @@\n-    public static BigInteger sizeOfDirectoryAsBigInteger(File directory) {\n+    public static BigInteger sizeOfDirectoryAsBigInteger(final File directory) {\n         checkDirectory(directory);\n \n         final File[] files \u003d directory.listFiles();\n         if (files \u003d\u003d null) {  // null if security restricted\n             return BigInteger.ZERO;\n         }\n         BigInteger size \u003d BigInteger.ZERO;\n \n         for (final File file : files) {\n             try {\n                 if (!isSymlink(file)) {\n                     size \u003d size.add(BigInteger.valueOf(sizeOf(file)));\n                 }\n-            } catch (IOException ioe) {\n+            } catch (final IOException ioe) {\n                 // Ignore exceptions caught when asking if a File is a symlink.\n             }\n         }\n \n         return size;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "6573ce704ba1a14388a7431d48f84d304f9f98b9": {
+      "type": "Ybodychange",
+      "commitMessage": "[IO-326] Add new FileUtils.sizeOf[Directory] APIs to return BigInteger. Thanks to Bruno P. Kinoshita for the fix and test case.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1349488 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1339529362000,
+      "commitName": "6573ce704ba1a14388a7431d48f84d304f9f98b9",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1339505636000,
+      "commitNameOld": "7c18f2d39d6d34b9781b647350760f8cab0d76d5",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 0.27,
+      "commitsBetweenForRepo": 11,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,21 @@\n     public static BigInteger sizeOfDirectoryAsBigInteger(File directory) {\n         checkDirectory(directory);\n \n         final File[] files \u003d directory.listFiles();\n         if (files \u003d\u003d null) {  // null if security restricted\n             return BigInteger.ZERO;\n         }\n         BigInteger size \u003d BigInteger.ZERO;\n \n         for (final File file : files) {\n             try {\n                 if (!isSymlink(file)) {\n-                    size.add(BigInteger.valueOf(sizeOf(file)));\n+                    size \u003d size.add(BigInteger.valueOf(sizeOf(file)));\n                 }\n             } catch (IOException ioe) {\n                 // Ignore exceptions caught when asking if a File is a symlink.\n             }\n         }\n \n         return size;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "27830ee8c22d74464fd3cae4e662bf0ba97e887b": {
+      "type": "Yintroduced",
+      "commitMessage": "First cut at [IO-326] Add new FileUtils.sizeOf[Directory] APIs to return BigInteger.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1326785 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1334608637000,
+      "commitName": "27830ee8c22d74464fd3cae4e662bf0ba97e887b",
+      "commitAuthor": "Gary D. Gregory"
+    }
+  }
+}

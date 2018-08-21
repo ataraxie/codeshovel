@@ -1,0 +1,156 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "ReaderInputStream.java",
+  "functionName": "read",
+  "functionId": "read___b-byte[]__off-int__len-int",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/input/ReaderInputStream.java",
+  "functionStartLine": 226,
+  "functionEndLine": 253,
+  "changeHistory": [
+    "0986e7970561a77ade9bdaaf701e14017d105464",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "55c1430fc712e4b64fd4ba08660c0c8b4931486b",
+    "c4251acef1beb1f164413b94ba526f399b8838d6",
+    "6ab5843928a7c3dfd7093e2d2d33cdc44b43ea67",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "4c83c48a2a6b5fae5eaf2279ce1a20bc0c3edee7"
+  ],
+  "changeHistoryShort": {
+    "0986e7970561a77ade9bdaaf701e14017d105464": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "55c1430fc712e4b64fd4ba08660c0c8b4931486b": "Ybodychange",
+    "c4251acef1beb1f164413b94ba526f399b8838d6": "Ybodychange",
+    "6ab5843928a7c3dfd7093e2d2d33cdc44b43ea67": "Ybodychange",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "4c83c48a2a6b5fae5eaf2279ce1a20bc0c3edee7": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0986e7970561a77ade9bdaaf701e14017d105464": {
+      "type": "Ybodychange",
+      "commitMessage": "\u003caction issue\u003d\"IO-437\" dev\u003d\"ggregory\" type\u003d\"add\"\u003e\n  Make IOUtils.EOF public and reuse it in various classes.\n\u003c/action\u003e\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1586350 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1397145440000,
+      "commitName": "0986e7970561a77ade9bdaaf701e14017d105464",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1366845859000,
+      "commitNameOld": "effe551657921069b871519156a934e4ef3ae916",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 350.69,
+      "commitsBetweenForRepo": 64,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,28 +1,28 @@\n     public int read(final byte[] b, int off, int len) throws IOException {\n         if (b \u003d\u003d null) {\n             throw new NullPointerException(\"Byte array must not be null\");\n         }\n         if (len \u003c 0 || off \u003c 0 || (off + len) \u003e b.length) {\n             throw new IndexOutOfBoundsException(\"Array Size\u003d\" + b.length +\n                     \", offset\u003d\" + off + \", length\u003d\" + len);\n         }\n         int read \u003d 0;\n         if (len \u003d\u003d 0) {\n             return 0; // Always return 0 if len \u003d\u003d 0\n         }\n         while (len \u003e 0) {\n             if (encoderOut.hasRemaining()) {\n                 final int c \u003d Math.min(encoderOut.remaining(), len);\n                 encoderOut.get(b, off, c);\n                 off +\u003d c;\n                 len -\u003d c;\n                 read +\u003d c;\n             } else {\n                 fillBuffer();\n                 if (endOfInput \u0026\u0026 !encoderOut.hasRemaining()) {\n                     break;\n                 }\n             }\n         }\n-        return read \u003d\u003d 0 \u0026\u0026 endOfInput ? -1 : read;\n+        return read \u003d\u003d 0 \u0026\u0026 endOfInput ? EOF : read;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1332449729000,
+          "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 253.0,
+          "commitsBetweenForRepo": 182,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,28 +1,28 @@\n-    public int read(byte[] b, int off, int len) throws IOException {\n+    public int read(final byte[] b, int off, int len) throws IOException {\n         if (b \u003d\u003d null) {\n             throw new NullPointerException(\"Byte array must not be null\");\n         }\n         if (len \u003c 0 || off \u003c 0 || (off + len) \u003e b.length) {\n             throw new IndexOutOfBoundsException(\"Array Size\u003d\" + b.length +\n                     \", offset\u003d\" + off + \", length\u003d\" + len);\n         }\n         int read \u003d 0;\n         if (len \u003d\u003d 0) {\n             return 0; // Always return 0 if len \u003d\u003d 0\n         }\n         while (len \u003e 0) {\n             if (encoderOut.hasRemaining()) {\n-                int c \u003d Math.min(encoderOut.remaining(), len);\n+                final int c \u003d Math.min(encoderOut.remaining(), len);\n                 encoderOut.get(b, off, c);\n                 off +\u003d c;\n                 len -\u003d c;\n                 read +\u003d c;\n             } else {\n                 fillBuffer();\n                 if (endOfInput \u0026\u0026 !encoderOut.hasRemaining()) {\n                     break;\n                 }\n             }\n         }\n         return read \u003d\u003d 0 \u0026\u0026 endOfInput ? -1 : read;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1332449729000,
+          "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 253.0,
+          "commitsBetweenForRepo": 182,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,28 +1,28 @@\n-    public int read(byte[] b, int off, int len) throws IOException {\n+    public int read(final byte[] b, int off, int len) throws IOException {\n         if (b \u003d\u003d null) {\n             throw new NullPointerException(\"Byte array must not be null\");\n         }\n         if (len \u003c 0 || off \u003c 0 || (off + len) \u003e b.length) {\n             throw new IndexOutOfBoundsException(\"Array Size\u003d\" + b.length +\n                     \", offset\u003d\" + off + \", length\u003d\" + len);\n         }\n         int read \u003d 0;\n         if (len \u003d\u003d 0) {\n             return 0; // Always return 0 if len \u003d\u003d 0\n         }\n         while (len \u003e 0) {\n             if (encoderOut.hasRemaining()) {\n-                int c \u003d Math.min(encoderOut.remaining(), len);\n+                final int c \u003d Math.min(encoderOut.remaining(), len);\n                 encoderOut.get(b, off, c);\n                 off +\u003d c;\n                 len -\u003d c;\n                 read +\u003d c;\n             } else {\n                 fillBuffer();\n                 if (endOfInput \u0026\u0026 !encoderOut.hasRemaining()) {\n                     break;\n                 }\n             }\n         }\n         return read \u003d\u003d 0 \u0026\u0026 endOfInput ? -1 : read;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "55c1430fc712e4b64fd4ba08660c0c8b4931486b": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-307 ReaderInputStream#read(byte[] b, int off, int len) should check for valid parameters\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1300443 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1331690981000,
+      "commitName": "55c1430fc712e4b64fd4ba08660c0c8b4931486b",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1331659779000,
+      "commitNameOld": "c4251acef1beb1f164413b94ba526f399b8838d6",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 0.36,
+      "commitsBetweenForRepo": 13,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,28 @@\n     public int read(byte[] b, int off, int len) throws IOException {\n+        if (b \u003d\u003d null) {\n+            throw new NullPointerException(\"Byte array must not be null\");\n+        }\n+        if (len \u003c 0 || off \u003c 0 || (off + len) \u003e b.length) {\n+            throw new IndexOutOfBoundsException(\"Array Size\u003d\" + b.length +\n+                    \", offset\u003d\" + off + \", length\u003d\" + len);\n+        }\n         int read \u003d 0;\n         if (len \u003d\u003d 0) {\n             return 0; // Always return 0 if len \u003d\u003d 0\n         }\n         while (len \u003e 0) {\n             if (encoderOut.hasRemaining()) {\n                 int c \u003d Math.min(encoderOut.remaining(), len);\n                 encoderOut.get(b, off, c);\n                 off +\u003d c;\n                 len -\u003d c;\n                 read +\u003d c;\n             } else {\n                 fillBuffer();\n                 if (endOfInput \u0026\u0026 !encoderOut.hasRemaining()) {\n                     break;\n                 }\n             }\n         }\n         return read \u003d\u003d 0 \u0026\u0026 endOfInput ? -1 : read;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "c4251acef1beb1f164413b94ba526f399b8838d6": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-306 ReaderInputStream#read(byte[] b, int off, int len) should always return 0 for length \u003d\u003d 0\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1300249 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1331659779000,
+      "commitName": "c4251acef1beb1f164413b94ba526f399b8838d6",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1331582626000,
+      "commitNameOld": "027d941954b6e81af5ba8acb7d8e5399dc6232d4",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 0.89,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,21 @@\n     public int read(byte[] b, int off, int len) throws IOException {\n         int read \u003d 0;\n+        if (len \u003d\u003d 0) {\n+            return 0; // Always return 0 if len \u003d\u003d 0\n+        }\n         while (len \u003e 0) {\n             if (encoderOut.hasRemaining()) {\n                 int c \u003d Math.min(encoderOut.remaining(), len);\n                 encoderOut.get(b, off, c);\n                 off +\u003d c;\n                 len -\u003d c;\n                 read +\u003d c;\n             } else {\n                 fillBuffer();\n                 if (endOfInput \u0026\u0026 !encoderOut.hasRemaining()) {\n                     break;\n                 }\n             }\n         }\n         return read \u003d\u003d 0 \u0026\u0026 endOfInput ? -1 : read;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6ab5843928a7c3dfd7093e2d2d33cdc44b43ea67": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-296 ReaderInputStream optimization: more efficient reading of small chunks of data\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1295622 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1330616186000,
+      "commitName": "6ab5843928a7c3dfd7093e2d2d33cdc44b43ea67",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1315265683000,
+      "commitNameOld": "2e11ed7e7e2d3532b51ae22421d2f78017f5b50f",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 177.67,
+      "commitsBetweenForRepo": 74,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,34 +1,18 @@\n     public int read(byte[] b, int off, int len) throws IOException {\n         int read \u003d 0;\n         while (len \u003e 0) {\n-            if (encoderOut.position() \u003e 0) {\n-                encoderOut.flip();\n+            if (encoderOut.hasRemaining()) {\n                 int c \u003d Math.min(encoderOut.remaining(), len);\n                 encoderOut.get(b, off, c);\n                 off +\u003d c;\n                 len -\u003d c;\n                 read +\u003d c;\n-                encoderOut.compact();\n             } else {\n-                if (!endOfInput \u0026\u0026 (lastCoderResult \u003d\u003d null || lastCoderResult.isUnderflow())) {\n-                    encoderIn.compact();\n-                    int position \u003d encoderIn.position();\n-                    // We don\u0027t use Reader#read(CharBuffer) here because it is more efficient\n-                    // to write directly to the underlying char array (the default implementation\n-                    // copies data to a temporary char array).\n-                    int c \u003d reader.read(encoderIn.array(), position, encoderIn.remaining());\n-                    if (c \u003d\u003d -1) {\n-                        endOfInput \u003d true;\n-                    } else {\n-                        encoderIn.position(position+c);\n-                    }\n-                    encoderIn.flip();\n-                }\n-                lastCoderResult \u003d encoder.encode(encoderIn, encoderOut, endOfInput);\n-                if (endOfInput \u0026\u0026 encoderOut.position() \u003d\u003d 0) {\n+                fillBuffer();\n+                if (endOfInput \u0026\u0026 !encoderOut.hasRemaining()) {\n                     break;\n                 }\n             }\n         }\n         return read \u003d\u003d 0 \u0026\u0026 endOfInput ? -1 : read;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/input/ReaderInputStream.java",
+        "newPath": "src/main/java/org/apache/commons/io/input/ReaderInputStream.java"
+      }
+    },
+    "4c83c48a2a6b5fae5eaf2279ce1a20bc0c3edee7": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-158 New ReaderInputStream and WriterOutputStream implementations - thanks to Andreas Veithen for the patch\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@723912 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1228516954000,
+      "commitName": "4c83c48a2a6b5fae5eaf2279ce1a20bc0c3edee7",
+      "commitAuthor": "Niall Pemberton"
+    }
+  }
+}

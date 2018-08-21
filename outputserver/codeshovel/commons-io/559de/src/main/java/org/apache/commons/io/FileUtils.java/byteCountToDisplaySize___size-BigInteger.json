@@ -1,0 +1,156 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileUtils.java",
+  "functionName": "byteCountToDisplaySize",
+  "functionId": "byteCountToDisplaySize___size-BigInteger",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileUtils.java",
+  "functionStartLine": 384,
+  "functionEndLine": 403,
+  "changeHistory": [
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "d731b2b8aabeb860f67246c9d7710a820fac1651",
+    "ec04894a074afd40e7074c83c9e3c27f4b20b3eb",
+    "f7c09b93c2386c6928a082e96d1ddd0925a19092",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "3e4ec2a42b3118266deada58dbee39db2a48677b",
+    "29119dead7ff12541a3f5c154d2128573f740a78"
+  ],
+  "changeHistoryShort": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Yparametermetachange",
+    "d731b2b8aabeb860f67246c9d7710a820fac1651": "Ymultichange(Yparameterchange,Ybodychange)",
+    "ec04894a074afd40e7074c83c9e3c27f4b20b3eb": "Ybodychange",
+    "f7c09b93c2386c6928a082e96d1ddd0925a19092": "Ybodychange",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "3e4ec2a42b3118266deada58dbee39db2a48677b": "Yparameterchange",
+    "29119dead7ff12541a3f5c154d2128573f740a78": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Yparametermetachange",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1351082444000,
+      "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 37.34,
+      "commitsBetweenForRepo": 34,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,20 +1,20 @@\n-    public static String byteCountToDisplaySize(BigInteger size) {\n+    public static String byteCountToDisplaySize(final BigInteger size) {\n         String displaySize;\n \n         if (size.divide(ONE_EB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n             displaySize \u003d String.valueOf(size.divide(ONE_EB_BI)) + \" EB\";\n         } else if (size.divide(ONE_PB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n             displaySize \u003d String.valueOf(size.divide(ONE_PB_BI)) + \" PB\";\n         } else if (size.divide(ONE_TB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n             displaySize \u003d String.valueOf(size.divide(ONE_TB_BI)) + \" TB\";\n         } else if (size.divide(ONE_GB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n             displaySize \u003d String.valueOf(size.divide(ONE_GB_BI)) + \" GB\";\n         } else if (size.divide(ONE_MB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n             displaySize \u003d String.valueOf(size.divide(ONE_MB_BI)) + \" MB\";\n         } else if (size.divide(ONE_KB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n             displaySize \u003d String.valueOf(size.divide(ONE_KB_BI)) + \" KB\";\n         } else {\n             displaySize \u003d String.valueOf(size) + \" bytes\";\n         }\n         return displaySize;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "d731b2b8aabeb860f67246c9d7710a820fac1651": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "[IO-327] Add byteCountToDisplaySize(BigInteger)\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1327496 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1334754380000,
+      "commitName": "d731b2b8aabeb860f67246c9d7710a820fac1651",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Yparameterchange",
+          "commitMessage": "[IO-327] Add byteCountToDisplaySize(BigInteger)\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1327496 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1334754380000,
+          "commitName": "d731b2b8aabeb860f67246c9d7710a820fac1651",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1334608637000,
+          "commitNameOld": "27830ee8c22d74464fd3cae4e662bf0ba97e887b",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 1.69,
+          "commitsBetweenForRepo": 2,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,20 +1,20 @@\n-    public static String byteCountToDisplaySize(long size) {\n+    public static String byteCountToDisplaySize(BigInteger size) {\n         String displaySize;\n \n-        if (size / ONE_EB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_EB) + \" EB\";\n-        } else if (size / ONE_PB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_PB) + \" PB\";\n-        } else if (size / ONE_TB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_TB) + \" TB\";\n-        } else if (size / ONE_GB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_GB) + \" GB\";\n-        } else if (size / ONE_MB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_MB) + \" MB\";\n-        } else if (size / ONE_KB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_KB) + \" KB\";\n+        if (size.divide(ONE_EB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_EB_BI)) + \" EB\";\n+        } else if (size.divide(ONE_PB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_PB_BI)) + \" PB\";\n+        } else if (size.divide(ONE_TB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_TB_BI)) + \" TB\";\n+        } else if (size.divide(ONE_GB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_GB_BI)) + \" GB\";\n+        } else if (size.divide(ONE_MB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_MB_BI)) + \" MB\";\n+        } else if (size.divide(ONE_KB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_KB_BI)) + \" KB\";\n         } else {\n             displaySize \u003d String.valueOf(size) + \" bytes\";\n         }\n         return displaySize;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Ybodychange",
+          "commitMessage": "[IO-327] Add byteCountToDisplaySize(BigInteger)\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1327496 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1334754380000,
+          "commitName": "d731b2b8aabeb860f67246c9d7710a820fac1651",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1334608637000,
+          "commitNameOld": "27830ee8c22d74464fd3cae4e662bf0ba97e887b",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 1.69,
+          "commitsBetweenForRepo": 2,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,20 +1,20 @@\n-    public static String byteCountToDisplaySize(long size) {\n+    public static String byteCountToDisplaySize(BigInteger size) {\n         String displaySize;\n \n-        if (size / ONE_EB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_EB) + \" EB\";\n-        } else if (size / ONE_PB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_PB) + \" PB\";\n-        } else if (size / ONE_TB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_TB) + \" TB\";\n-        } else if (size / ONE_GB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_GB) + \" GB\";\n-        } else if (size / ONE_MB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_MB) + \" MB\";\n-        } else if (size / ONE_KB \u003e 0) {\n-            displaySize \u003d String.valueOf(size / ONE_KB) + \" KB\";\n+        if (size.divide(ONE_EB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_EB_BI)) + \" EB\";\n+        } else if (size.divide(ONE_PB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_PB_BI)) + \" PB\";\n+        } else if (size.divide(ONE_TB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_TB_BI)) + \" TB\";\n+        } else if (size.divide(ONE_GB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_GB_BI)) + \" GB\";\n+        } else if (size.divide(ONE_MB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_MB_BI)) + \" MB\";\n+        } else if (size.divide(ONE_KB_BI).compareTo(BigInteger.ZERO) \u003e 0) {\n+            displaySize \u003d String.valueOf(size.divide(ONE_KB_BI)) + \" KB\";\n         } else {\n             displaySize \u003d String.valueOf(size) + \" bytes\";\n         }\n         return displaySize;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "ec04894a074afd40e7074c83c9e3c27f4b20b3eb": {
+      "type": "Ybodychange",
+      "commitMessage": "Adding EB/PB/TB per IO-287 and Ron Kuris\u0027 patch\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1201022 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1321037153000,
+      "commitName": "ec04894a074afd40e7074c83c9e3c27f4b20b3eb",
+      "commitAuthor": "Henri Yandell",
+      "commitDateOld": 1320977639000,
+      "commitNameOld": "a2cf54639b1655d9059d416e6a6cb80931940a7d",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 0.69,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,20 @@\n     public static String byteCountToDisplaySize(long size) {\n         String displaySize;\n \n-//        if (size / ONE_EB \u003e 0) {\n-//            displaySize \u003d String.valueOf(size / ONE_EB) + \" EB\";\n-//        } else if (size / ONE_PB \u003e 0) {\n-//            displaySize \u003d String.valueOf(size / ONE_PB) + \" PB\";\n-//        } else if (size / ONE_TB \u003e 0) {\n-//            displaySize \u003d String.valueOf(size / ONE_TB) + \" TB\";\n-//        } else \n-        if (size / ONE_GB \u003e 0) {\n+        if (size / ONE_EB \u003e 0) {\n+            displaySize \u003d String.valueOf(size / ONE_EB) + \" EB\";\n+        } else if (size / ONE_PB \u003e 0) {\n+            displaySize \u003d String.valueOf(size / ONE_PB) + \" PB\";\n+        } else if (size / ONE_TB \u003e 0) {\n+            displaySize \u003d String.valueOf(size / ONE_TB) + \" TB\";\n+        } else if (size / ONE_GB \u003e 0) {\n             displaySize \u003d String.valueOf(size / ONE_GB) + \" GB\";\n         } else if (size / ONE_MB \u003e 0) {\n             displaySize \u003d String.valueOf(size / ONE_MB) + \" MB\";\n         } else if (size / ONE_KB \u003e 0) {\n             displaySize \u003d String.valueOf(size / ONE_KB) + \" KB\";\n         } else {\n             displaySize \u003d String.valueOf(size) + \" bytes\";\n         }\n         return displaySize;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "f7c09b93c2386c6928a082e96d1ddd0925a19092": {
+      "type": "Ybodychange",
+      "commitMessage": "[IO-226] question with byteCountToDisplaySize(long size). Add more tests. Add commented out code for processing terabyte, petabyte and exabyte. Add constants for terabyte, petabyte and exabyte, zettabyte, and yottabyte.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1153952 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1312480044000,
+      "commitName": "f7c09b93c2386c6928a082e96d1ddd0925a19092",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1304961656000,
+      "commitNameOld": "0e035427fb7efb8892e15594810687a3d327a651",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 87.02,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,21 @@\n     public static String byteCountToDisplaySize(long size) {\n         String displaySize;\n \n+//        if (size / ONE_EB \u003e 0) {\n+//            displaySize \u003d String.valueOf(size / ONE_EB) + \" EB\";\n+//        } else if (size / ONE_PB \u003e 0) {\n+//            displaySize \u003d String.valueOf(size / ONE_PB) + \" PB\";\n+//        } else if (size / ONE_TB \u003e 0) {\n+//            displaySize \u003d String.valueOf(size / ONE_TB) + \" TB\";\n+//        } else \n         if (size / ONE_GB \u003e 0) {\n             displaySize \u003d String.valueOf(size / ONE_GB) + \" GB\";\n         } else if (size / ONE_MB \u003e 0) {\n             displaySize \u003d String.valueOf(size / ONE_MB) + \" MB\";\n         } else if (size / ONE_KB \u003e 0) {\n             displaySize \u003d String.valueOf(size / ONE_KB) + \" KB\";\n         } else {\n             displaySize \u003d String.valueOf(size) + \" bytes\";\n         }\n         return displaySize;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/FileUtils.java",
+        "newPath": "src/main/java/org/apache/commons/io/FileUtils.java"
+      }
+    },
+    "3e4ec2a42b3118266deada58dbee39db2a48677b": {
+      "type": "Yparameterchange",
+      "commitMessage": "I\u0027ve moved some methods around while cleaning up, so, sorry for the big diff. I moved up the methods I checked through. There\u0027s a marker in the lower half of the file indicating where I progressed. Everything below that marker still has to be sorted out. I consider the stuff above that marker cleaned up and reviewed to a certain degree.\n\nReal changes are:\n- new method: touch(File)\n- some method signatures rewritten to use java.io.File instead of String, because it\u0027s this class\u0027 policy. This might break dependant projects.\n- updated some javadocs\n- Removed getFilesFromExtension (this method wants to do too much). This might break dependant projects.\n- Replacement for getFilesFromExtension, new method(s): listFiles which is implemented using the filefilter package. The CVS filter functionality of getFilesFromExtension can be achieved by using FileFilterUtils.makeCVSAware.\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140405 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1069533888000,
+      "commitName": "3e4ec2a42b3118266deada58dbee39db2a48677b",
+      "commitAuthor": "Jeremias Maerki",
+      "commitDateOld": 1066421778000,
+      "commitNameOld": "d9224439fc7c437a665ae4b5d9f91e3676b90496",
+      "commitAuthorOld": "Matthew Hawthorne",
+      "daysBetweenCommits": 36.02,
+      "commitsBetweenForRepo": 11,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,15 +1,15 @@\n-    public static String byteCountToDisplaySize(int size) {\n+    public static String byteCountToDisplaySize(long size) {\n         String displaySize;\n \n         if (size / ONE_GB \u003e 0) {\n             displaySize \u003d String.valueOf(size / ONE_GB) + \" GB\";\n         } else if (size / ONE_MB \u003e 0) {\n             displaySize \u003d String.valueOf(size / ONE_MB) + \" MB\";\n         } else if (size / ONE_KB \u003e 0) {\n             displaySize \u003d String.valueOf(size / ONE_KB) + \" KB\";\n         } else {\n             displaySize \u003d String.valueOf(size) + \" bytes\";\n         }\n \n         return displaySize;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "29119dead7ff12541a3f5c154d2128573f740a78": {
+      "type": "Yintroduced",
+      "commitMessage": "Savepoint.  Does not compile or work yet.  More work this weekend.\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140288 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1012013262000,
+      "commitName": "29119dead7ff12541a3f5c154d2128573f740a78",
+      "commitAuthor": "Scott Sanders"
+    }
+  }
+}

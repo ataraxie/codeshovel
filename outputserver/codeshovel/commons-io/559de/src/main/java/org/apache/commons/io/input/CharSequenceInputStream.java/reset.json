@@ -1,0 +1,112 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "CharSequenceInputStream.java",
+  "functionName": "reset",
+  "functionId": "reset",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/input/CharSequenceInputStream.java",
+  "functionStartLine": 229,
+  "functionEndLine": 262,
+  "changeHistory": [
+    "7c58d8a9919c5c9dbc1485a21d56bb3f37444060",
+    "cbc5a146154ada255d491d6509497d0d57bad336",
+    "750d338864a92521f4daec993af7ef0aba9d609b",
+    "61bfd7be89e97e204caea839e37c67c6f837a710",
+    "5c8a6f44016a12aee9e485d94fc295fcd27375a6",
+    "50a7fdcaf8fb9a684a96568ceeb8643b4941c475"
+  ],
+  "changeHistoryShort": {
+    "7c58d8a9919c5c9dbc1485a21d56bb3f37444060": "Ybodychange",
+    "cbc5a146154ada255d491d6509497d0d57bad336": "Ybodychange",
+    "750d338864a92521f4daec993af7ef0aba9d609b": "Ybodychange",
+    "61bfd7be89e97e204caea839e37c67c6f837a710": "Ybodychange",
+    "5c8a6f44016a12aee9e485d94fc295fcd27375a6": "Ymodifierchange",
+    "50a7fdcaf8fb9a684a96568ceeb8643b4941c475": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7c58d8a9919c5c9dbc1485a21d56bb3f37444060": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed all checkstyle errors and a findbugs error\n\nFindbugs error was:\norg.apache.commons.io.output.DeferredFileOutputStream#thresholdReached\npossible file handle leak upon exception\n\nAlso contains fix for IO-446, submitted by Jeffrey Barrus\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1686747 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1434912289000,
+      "commitName": "7c58d8a9919c5c9dbc1485a21d56bb3f37444060",
+      "commitAuthor": "Kristian Rosenvold",
+      "commitDateOld": 1397145440000,
+      "commitNameOld": "0986e7970561a77ade9bdaaf701e14017d105464",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 437.12,
+      "commitsBetweenForRepo": 84,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,32 +1,34 @@\n     public synchronized void reset() throws IOException {\n         /*\n          * This is not the most efficient implementation, as it re-encodes from the beginning.\n          *\n          * Since the bbuf is re-used, in general it\u0027s necessary to re-encode the data.\n          *\n          * It should be possible to apply some optimisations however:\n-         * + use mark/reset on the cbuf and bbuf. This would only work if the buffer had not been (re)filled since the mark.\n-         * The code would have to catch InvalidMarkException - does not seem possible to check if mark is valid otherwise.\n-         * + Try saving the state of the cbuf before each fillBuffer; it might be possible to restart from there.\n+         * + use mark/reset on the cbuf and bbuf. This would only work if the buffer had not been (re)filled since\n+         * the mark. The code would have to catch InvalidMarkException - does not seem possible to check if mark is\n+         * valid otherwise. + Try saving the state of the cbuf before each fillBuffer; it might be possible to\n+         * restart from there.\n          */\n         if (this.mark_cbuf !\u003d NO_MARK) {\n             // if cbuf is at 0, we have not started reading anything, so skip re-encoding\n             if (this.cbuf.position() !\u003d 0) {\n                 this.encoder.reset();\n                 this.cbuf.rewind();\n                 this.bbuf.rewind();\n                 this.bbuf.limit(0); // rewind does not clear the buffer\n                 while(this.cbuf.position() \u003c this.mark_cbuf) {\n                     this.bbuf.rewind(); // empty the buffer (we only refill when empty during normal processing)\n                     this.bbuf.limit(0);\n                     fillBuffer();\n                 }\n             }\n             if (this.cbuf.position() !\u003d this.mark_cbuf) {\n-                throw new IllegalStateException(\"Unexpected CharBuffer postion: actual\u003d\"+cbuf.position() + \" expected\u003d\" + this.mark_cbuf);\n+                throw new IllegalStateException(\"Unexpected CharBuffer postion: actual\u003d\" + cbuf.position() + \" \" +\n+                        \"expected\u003d\" + this.mark_cbuf);\n             }\n             this.bbuf.position(this.mark_bbuf);\n             this.mark_cbuf \u003d NO_MARK;\n             this.mark_bbuf \u003d NO_MARK;\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "cbc5a146154ada255d491d6509497d0d57bad336": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-356 CharSequenceInputStream#reset() behaves incorrectly in case when buffer size is not dividable by data size.\n       Fix code so skip relates to the encoded bytes; reset now re-encodes the data up to the point of the mark\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1471209 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1366762246000,
+      "commitName": "cbc5a146154ada255d491d6509497d0d57bad336",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1366666255000,
+      "commitNameOld": "a1f4d43253ac11abe8cf3ed53876dabc885d7b30",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 1.11,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,32 @@\n     public synchronized void reset() throws IOException {\n-        if (this.mark !\u003d NO_MARK) {\n-            this.cbuf.position(this.mark);\n-            this.mark \u003d NO_MARK;\n-            this.bbuf.limit(0);\n-            this.encoder.reset();\n+        /*\n+         * This is not the most efficient implementation, as it re-encodes from the beginning.\n+         *\n+         * Since the bbuf is re-used, in general it\u0027s necessary to re-encode the data.\n+         *\n+         * It should be possible to apply some optimisations however:\n+         * + use mark/reset on the cbuf and bbuf. This would only work if the buffer had not been (re)filled since the mark.\n+         * The code would have to catch InvalidMarkException - does not seem possible to check if mark is valid otherwise.\n+         * + Try saving the state of the cbuf before each fillBuffer; it might be possible to restart from there.\n+         */\n+        if (this.mark_cbuf !\u003d NO_MARK) {\n+            // if cbuf is at 0, we have not started reading anything, so skip re-encoding\n+            if (this.cbuf.position() !\u003d 0) {\n+                this.encoder.reset();\n+                this.cbuf.rewind();\n+                this.bbuf.rewind();\n+                this.bbuf.limit(0); // rewind does not clear the buffer\n+                while(this.cbuf.position() \u003c this.mark_cbuf) {\n+                    this.bbuf.rewind(); // empty the buffer (we only refill when empty during normal processing)\n+                    this.bbuf.limit(0);\n+                    fillBuffer();\n+                }\n+            }\n+            if (this.cbuf.position() !\u003d this.mark_cbuf) {\n+                throw new IllegalStateException(\"Unexpected CharBuffer postion: actual\u003d\"+cbuf.position() + \" expected\u003d\" + this.mark_cbuf);\n+            }\n+            this.bbuf.position(this.mark_bbuf);                \n+            this.mark_cbuf \u003d NO_MARK;\n+            this.mark_bbuf \u003d NO_MARK;\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "750d338864a92521f4daec993af7ef0aba9d609b": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-356 Fix failures in testIO_356_Loop_UTF16 and testIO_356_Loop_UTF8\nReset the byte buffer and the encoder together\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1470353 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1366581251000,
+      "commitName": "750d338864a92521f4daec993af7ef0aba9d609b",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1366579961000,
+      "commitNameOld": "a39385a500fc0e8993d967a8025b931d3337ea04",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,8 @@\n     public synchronized void reset() throws IOException {\n         if (this.mark !\u003d NO_MARK) {\n             this.cbuf.position(this.mark);\n             this.mark \u003d NO_MARK;\n+            this.bbuf.limit(0);\n+            this.encoder.reset();\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "61bfd7be89e97e204caea839e37c67c6f837a710": {
+      "type": "Ybodychange",
+      "commitMessage": "Replace magic number with private constant NO_MARK.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415700 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354289885000,
+      "commitName": "61bfd7be89e97e204caea839e37c67c6f837a710",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1354289729000,
+      "commitNameOld": "6386350306daf5f5fbc3fc15ad291804c9349f94",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n     public synchronized void reset() throws IOException {\n-        if (this.mark !\u003d -1) {\n+        if (this.mark !\u003d NO_MARK) {\n             this.cbuf.position(this.mark);\n-            this.mark \u003d -1;\n+            this.mark \u003d NO_MARK;\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "5c8a6f44016a12aee9e485d94fc295fcd27375a6": {
+      "type": "Ymodifierchange",
+      "commitMessage": "IO-312 CharSequenceInputStream(CharSequence s, Charset charset, int bufferSize) ignores bufferSize\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1304055 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1332449881000,
+      "commitName": "5c8a6f44016a12aee9e485d94fc295fcd27375a6",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1332448861000,
+      "commitNameOld": "2413cf3c607371a7b7aa9d37a9e5d916814a4799",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 0.01,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,6 +1,6 @@\n-    public void reset() throws IOException {\n+    public synchronized void reset() throws IOException {\n         if (this.mark !\u003d -1) {\n             this.cbuf.position(this.mark);\n             this.mark \u003d -1;\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "50a7fdcaf8fb9a684a96568ceeb8643b4941c475": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-297 CharSequenceInputStream to efficiently stream content of a CharSequence\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1295643 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1330617632000,
+      "commitName": "50a7fdcaf8fb9a684a96568ceeb8643b4941c475",
+      "commitAuthor": "Sebastian Bazley"
+    }
+  }
+}

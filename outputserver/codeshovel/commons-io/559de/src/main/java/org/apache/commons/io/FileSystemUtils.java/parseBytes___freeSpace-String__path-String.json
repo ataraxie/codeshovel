@@ -1,0 +1,156 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileSystemUtils.java",
+  "functionName": "parseBytes",
+  "functionId": "parseBytes___freeSpace-String__path-String",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileSystemUtils.java",
+  "functionStartLine": 455,
+  "functionEndLine": 470,
+  "changeHistory": [
+    "5a62c007b8b791c025cf2d4d60bb6da1aad86589",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "0e7c3a88a727f307e2d38701f8117ae59e019e93",
+    "c3b706ab8852c57446064031067dcbb92380502d",
+    "6512f64a02c7d7c6b7c247a0f538e135132c9aae",
+    "0a03609ddc6380dd7c9053eb8cb04072baa476a1"
+  ],
+  "changeHistoryShort": {
+    "5a62c007b8b791c025cf2d4d60bb6da1aad86589": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "0e7c3a88a727f307e2d38701f8117ae59e019e93": "Ybodychange",
+    "c3b706ab8852c57446064031067dcbb92380502d": "Ybodychange",
+    "6512f64a02c7d7c6b7c247a0f538e135132c9aae": "Ybodychange",
+    "0a03609ddc6380dd7c9053eb8cb04072baa476a1": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "5a62c007b8b791c025cf2d4d60bb6da1aad86589": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-462 IOExceptionWithCause no longer needed\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1642799 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1417488939000,
+      "commitName": "5a62c007b8b791c025cf2d4d60bb6da1aad86589",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1401832064000,
+      "commitNameOld": "9b24a71e9930d7e929f9413c769ecd412fe830e9",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 181.21,
+      "commitsBetweenForRepo": 24,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     long parseBytes(final String freeSpace, final String path) throws IOException {\n         try {\n             final long bytes \u003d Long.parseLong(freeSpace);\n             if (bytes \u003c 0) {\n                 throw new IOException(\n                         \"Command line \u0027\" + DF + \"\u0027 did not find free space in response \" +\n                         \"for path \u0027\" + path + \"\u0027- check path is valid\");\n             }\n             return bytes;\n \n         } catch (final NumberFormatException ex) {\n-            throw new IOExceptionWithCause(\n+            throw new IOException(\n                     \"Command line \u0027\" + DF + \"\u0027 did not return numeric data as expected \" +\n                     \"for path \u0027\" + path + \"\u0027- check path is valid\", ex);\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1332449729000,
+          "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 253.0,
+          "commitsBetweenForRepo": 182,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,16 +1,16 @@\n-    long parseBytes(String freeSpace, String path) throws IOException {\n+    long parseBytes(final String freeSpace, final String path) throws IOException {\n         try {\n-            long bytes \u003d Long.parseLong(freeSpace);\n+            final long bytes \u003d Long.parseLong(freeSpace);\n             if (bytes \u003c 0) {\n                 throw new IOException(\n                         \"Command line \u0027\" + DF + \"\u0027 did not find free space in response \" +\n                         \"for path \u0027\" + path + \"\u0027- check path is valid\");\n             }\n             return bytes;\n             \n-        } catch (NumberFormatException ex) {\n+        } catch (final NumberFormatException ex) {\n             throw new IOExceptionWithCause(\n                     \"Command line \u0027\" + DF + \"\u0027 did not return numeric data as expected \" +\n                     \"for path \u0027\" + path + \"\u0027- check path is valid\", ex);\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1332449729000,
+          "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 253.0,
+          "commitsBetweenForRepo": 182,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,16 +1,16 @@\n-    long parseBytes(String freeSpace, String path) throws IOException {\n+    long parseBytes(final String freeSpace, final String path) throws IOException {\n         try {\n-            long bytes \u003d Long.parseLong(freeSpace);\n+            final long bytes \u003d Long.parseLong(freeSpace);\n             if (bytes \u003c 0) {\n                 throw new IOException(\n                         \"Command line \u0027\" + DF + \"\u0027 did not find free space in response \" +\n                         \"for path \u0027\" + path + \"\u0027- check path is valid\");\n             }\n             return bytes;\n             \n-        } catch (NumberFormatException ex) {\n+        } catch (final NumberFormatException ex) {\n             throw new IOExceptionWithCause(\n                     \"Command line \u0027\" + DF + \"\u0027 did not return numeric data as expected \" +\n                     \"for path \u0027\" + path + \"\u0027- check path is valid\", ex);\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/FileSystemUtils.java",
+        "newPath": "src/main/java/org/apache/commons/io/FileSystemUtils.java"
+      }
+    },
+    "0e7c3a88a727f307e2d38701f8117ae59e019e93": {
+      "type": "Ybodychange",
+      "commitMessage": "Include \u0027cause\u0027 in re-thrown exceptions\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1002698 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1285775331000,
+      "commitName": "0e7c3a88a727f307e2d38701f8117ae59e019e93",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1285775028000,
+      "commitNameOld": "ab42367cc639fa3b18786d13afdc17a3394f229f",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     long parseBytes(String freeSpace, String path) throws IOException {\n         try {\n             long bytes \u003d Long.parseLong(freeSpace);\n             if (bytes \u003c 0) {\n                 throw new IOException(\n                         \"Command line \u0027\" + DF + \"\u0027 did not find free space in response \" +\n                         \"for path \u0027\" + path + \"\u0027- check path is valid\");\n             }\n             return bytes;\n             \n         } catch (NumberFormatException ex) {\n-            throw new IOException(\n+            throw new IOExceptionWithCause(\n                     \"Command line \u0027\" + DF + \"\u0027 did not return numeric data as expected \" +\n-                    \"for path \u0027\" + path + \"\u0027- check path is valid\");\n+                    \"for path \u0027\" + path + \"\u0027- check path is valid\", ex);\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "c3b706ab8852c57446064031067dcbb92380502d": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-160 Make DF path final\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@645828 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1207650459000,
+      "commitName": "c3b706ab8852c57446064031067dcbb92380502d",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1207642588000,
+      "commitNameOld": "6512f64a02c7d7c6b7c247a0f538e135132c9aae",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.09,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     long parseBytes(String freeSpace, String path) throws IOException {\n         try {\n             long bytes \u003d Long.parseLong(freeSpace);\n             if (bytes \u003c 0) {\n                 throw new IOException(\n-                        \"Command line \u0027\" + dfPath + \"\u0027 did not find free space in response \" +\n+                        \"Command line \u0027\" + DF + \"\u0027 did not find free space in response \" +\n                         \"for path \u0027\" + path + \"\u0027- check path is valid\");\n             }\n             return bytes;\n             \n         } catch (NumberFormatException ex) {\n             throw new IOException(\n-                    \"Command line \u0027\" + dfPath + \"\u0027 did not return numeric data as expected \" +\n+                    \"Command line \u0027\" + DF + \"\u0027 did not return numeric data as expected \" +\n                     \"for path \u0027\" + path + \"\u0027- check path is valid\");\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6512f64a02c7d7c6b7c247a0f538e135132c9aae": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-160 FileSystemUtils.freeSpace fails on solaris - thanks to Mike Bristow for the patch\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@645787 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1207642588000,
+      "commitName": "6512f64a02c7d7c6b7c247a0f538e135132c9aae",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1204851016000,
+      "commitNameOld": "efe745c047c6f63eb85ee0b2b4d93c3544c31e97",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 32.31,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     long parseBytes(String freeSpace, String path) throws IOException {\n         try {\n             long bytes \u003d Long.parseLong(freeSpace);\n             if (bytes \u003c 0) {\n                 throw new IOException(\n-                        \"Command line \u0027df\u0027 did not find free space in response \" +\n+                        \"Command line \u0027\" + dfPath + \"\u0027 did not find free space in response \" +\n                         \"for path \u0027\" + path + \"\u0027- check path is valid\");\n             }\n             return bytes;\n             \n         } catch (NumberFormatException ex) {\n             throw new IOException(\n-                    \"Command line \u0027df\u0027 did not return numeric data as expected \" +\n+                    \"Command line \u0027\" + dfPath + \"\u0027 did not return numeric data as expected \" +\n                     \"for path \u0027\" + path + \"\u0027- check path is valid\");\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "0a03609ddc6380dd7c9053eb8cb04072baa476a1": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-90 - Fix freeSpace to avoid infinite loops and other errors\nincludes some code from Thomas Ledoux\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@437031 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1156550888000,
+      "commitName": "0a03609ddc6380dd7c9053eb8cb04072baa476a1",
+      "commitAuthor": "Stephen Colebourne"
+    }
+  }
+}

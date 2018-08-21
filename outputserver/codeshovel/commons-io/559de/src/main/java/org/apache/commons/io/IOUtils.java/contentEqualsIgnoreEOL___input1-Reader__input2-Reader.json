@@ -1,0 +1,119 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "IOUtils.java",
+  "functionName": "contentEqualsIgnoreEOL",
+  "functionId": "contentEqualsIgnoreEOL___input1-Reader__input2-Reader",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/IOUtils.java",
+  "functionStartLine": 2794,
+  "functionEndLine": 2809,
+  "changeHistory": [
+    "0cee0fe1d42f73933d8fdfedfe91bff8013f0bb3",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "1d6feac910975c5d22b66b7f2a46ec87dd844d66",
+    "1170279dc85c2bbdea594b053c56b379a72a2104",
+    "a2cf54639b1655d9059d416e6a6cb80931940a7d"
+  ],
+  "changeHistoryShort": {
+    "0cee0fe1d42f73933d8fdfedfe91bff8013f0bb3": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "1d6feac910975c5d22b66b7f2a46ec87dd844d66": "Ybodychange",
+    "1170279dc85c2bbdea594b053c56b379a72a2104": "Ybodychange",
+    "a2cf54639b1655d9059d416e6a6cb80931940a7d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0cee0fe1d42f73933d8fdfedfe91bff8013f0bb3": {
+      "type": "Ybodychange",
+      "commitMessage": "[IO-362] IOUtils.contentEquals* methods returns false if input1 \u003d\u003d input2, should return true.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1428941 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1357315030000,
+      "commitName": "0cee0fe1d42f73933d8fdfedfe91bff8013f0bb3",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1354308699000,
+      "commitNameOld": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 34.8,
+      "commitsBetweenForRepo": 5,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,16 @@\n     public static boolean contentEqualsIgnoreEOL(final Reader input1, final Reader input2)\n             throws IOException {\n+        if (input1 \u003d\u003d input2) {\n+            return true;\n+        }\n         final BufferedReader br1 \u003d toBufferedReader(input1);\n         final BufferedReader br2 \u003d toBufferedReader(input2);\n \n         String line1 \u003d br1.readLine();\n         String line2 \u003d br2.readLine();\n         while (line1 !\u003d null \u0026\u0026 line2 !\u003d null \u0026\u0026 line1.equals(line2)) {\n             line1 \u003d br1.readLine();\n             line2 \u003d br2.readLine();\n         }\n         return line1 \u003d\u003d null ? line2 \u003d\u003d null ? true : false : line1.equals(line2);\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1354302626000,
+          "commitNameOld": "efca1657258b7555b80bbee207a3221489b9ffed",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 0.07,
+          "commitsBetweenForRepo": 1,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,13 +1,13 @@\n-    public static boolean contentEqualsIgnoreEOL(Reader input1, Reader input2)\n+    public static boolean contentEqualsIgnoreEOL(final Reader input1, final Reader input2)\n             throws IOException {\n-        BufferedReader br1 \u003d toBufferedReader(input1);\n-        BufferedReader br2 \u003d toBufferedReader(input2);\n+        final BufferedReader br1 \u003d toBufferedReader(input1);\n+        final BufferedReader br2 \u003d toBufferedReader(input2);\n \n         String line1 \u003d br1.readLine();\n         String line2 \u003d br2.readLine();\n         while (line1 !\u003d null \u0026\u0026 line2 !\u003d null \u0026\u0026 line1.equals(line2)) {\n             line1 \u003d br1.readLine();\n             line2 \u003d br2.readLine();\n         }\n         return line1 \u003d\u003d null ? line2 \u003d\u003d null ? true : false : line1.equals(line2);\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1354302626000,
+          "commitNameOld": "efca1657258b7555b80bbee207a3221489b9ffed",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 0.07,
+          "commitsBetweenForRepo": 1,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,13 +1,13 @@\n-    public static boolean contentEqualsIgnoreEOL(Reader input1, Reader input2)\n+    public static boolean contentEqualsIgnoreEOL(final Reader input1, final Reader input2)\n             throws IOException {\n-        BufferedReader br1 \u003d toBufferedReader(input1);\n-        BufferedReader br2 \u003d toBufferedReader(input2);\n+        final BufferedReader br1 \u003d toBufferedReader(input1);\n+        final BufferedReader br2 \u003d toBufferedReader(input2);\n \n         String line1 \u003d br1.readLine();\n         String line2 \u003d br2.readLine();\n         while (line1 !\u003d null \u0026\u0026 line2 !\u003d null \u0026\u0026 line1.equals(line2)) {\n             line1 \u003d br1.readLine();\n             line2 \u003d br2.readLine();\n         }\n         return line1 \u003d\u003d null ? line2 \u003d\u003d null ? true : false : line1.equals(line2);\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "1d6feac910975c5d22b66b7f2a46ec87dd844d66": {
+      "type": "Ybodychange",
+      "commitMessage": "Add missing tests as discovered with Cobertura. Add a new method IOUTils.toBufferedReader(Reader).\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1304177 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1332473804000,
+      "commitName": "1d6feac910975c5d22b66b7f2a46ec87dd844d66",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1332452951000,
+      "commitNameOld": "62dd09687a08f660efbab7adc9f82ae501fd840f",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 0.24,
+      "commitsBetweenForRepo": 9,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,13 @@\n     public static boolean contentEqualsIgnoreEOL(Reader input1, Reader input2)\n             throws IOException {\n-        BufferedReader br1;\n-        if (input1 instanceof BufferedReader) {\n-            br1 \u003d (BufferedReader) input1;\n-        } else {\n-            br1 \u003d new BufferedReader(input1);\n-        }\n-        BufferedReader br2;\n-        if (input2 instanceof BufferedReader) {\n-            br2 \u003d (BufferedReader) input2;\n-        } else {\n-            br2 \u003d new BufferedReader(input2);\n-        }\n+        BufferedReader br1 \u003d toBufferedReader(input1);\n+        BufferedReader br2 \u003d toBufferedReader(input2);\n \n         String line1 \u003d br1.readLine();\n         String line2 \u003d br2.readLine();\n         while (line1 !\u003d null \u0026\u0026 line2 !\u003d null \u0026\u0026 line1.equals(line2)) {\n             line1 \u003d br1.readLine();\n             line2 \u003d br2.readLine();\n         }\n         return line1 \u003d\u003d null ? line2 \u003d\u003d null ? true : false : line1.equals(line2);\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "1170279dc85c2bbdea594b053c56b379a72a2104": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove noisy and unnecessary parens. Especially painful in return statements: \"return (foo + bar);\" vs. \"return foo + bar;\"\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1302748 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1332207332000,
+      "commitName": "1170279dc85c2bbdea594b053c56b379a72a2104",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1331947271000,
+      "commitNameOld": "0031a91ba7b5b580b28fab5cb60d683c93e9fae8",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 3.01,
+      "commitsBetweenForRepo": 14,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,23 +1,23 @@\n     public static boolean contentEqualsIgnoreEOL(Reader input1, Reader input2)\n             throws IOException {\n         BufferedReader br1;\n         if (input1 instanceof BufferedReader) {\n             br1 \u003d (BufferedReader) input1;\n         } else {\n             br1 \u003d new BufferedReader(input1);\n         }\n         BufferedReader br2;\n         if (input2 instanceof BufferedReader) {\n             br2 \u003d (BufferedReader) input2;\n         } else {\n             br2 \u003d new BufferedReader(input2);\n         }\n \n         String line1 \u003d br1.readLine();\n         String line2 \u003d br2.readLine();\n         while (line1 !\u003d null \u0026\u0026 line2 !\u003d null \u0026\u0026 line1.equals(line2)) {\n             line1 \u003d br1.readLine();\n             line2 \u003d br2.readLine();\n         }\n-        return line1 \u003d\u003d null ? (line2 \u003d\u003d null ? true : false) : line1.equals(line2);\n+        return line1 \u003d\u003d null ? line2 \u003d\u003d null ? true : false : line1.equals(line2);\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "a2cf54639b1655d9059d416e6a6cb80931940a7d": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-275 FileUtils.contentEquals/IOUtils.contentEquals - Add option to ignore \"line endings\"\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1200693 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1320977639000,
+      "commitName": "a2cf54639b1655d9059d416e6a6cb80931940a7d",
+      "commitAuthor": "Sebastian Bazley"
+    }
+  }
+}

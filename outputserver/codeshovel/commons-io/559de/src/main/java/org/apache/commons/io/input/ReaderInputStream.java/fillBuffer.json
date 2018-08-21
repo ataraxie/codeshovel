@@ -1,0 +1,61 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "ReaderInputStream.java",
+  "functionName": "fillBuffer",
+  "functionId": "fillBuffer",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/input/ReaderInputStream.java",
+  "functionStartLine": 195,
+  "functionEndLine": 213,
+  "changeHistory": [
+    "0986e7970561a77ade9bdaaf701e14017d105464",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "6ab5843928a7c3dfd7093e2d2d33cdc44b43ea67"
+  ],
+  "changeHistoryShort": {
+    "0986e7970561a77ade9bdaaf701e14017d105464": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ybodychange",
+    "6ab5843928a7c3dfd7093e2d2d33cdc44b43ea67": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "0986e7970561a77ade9bdaaf701e14017d105464": {
+      "type": "Ybodychange",
+      "commitMessage": "\u003caction issue\u003d\"IO-437\" dev\u003d\"ggregory\" type\u003d\"add\"\u003e\n  Make IOUtils.EOF public and reuse it in various classes.\n\u003c/action\u003e\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1586350 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1397145440000,
+      "commitName": "0986e7970561a77ade9bdaaf701e14017d105464",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1366845859000,
+      "commitNameOld": "effe551657921069b871519156a934e4ef3ae916",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 350.69,
+      "commitsBetweenForRepo": 64,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     private void fillBuffer() throws IOException {\n         if (!endOfInput \u0026\u0026 (lastCoderResult \u003d\u003d null || lastCoderResult.isUnderflow())) {\n             encoderIn.compact();\n             final int position \u003d encoderIn.position();\n             // We don\u0027t use Reader#read(CharBuffer) here because it is more efficient\n             // to write directly to the underlying char array (the default implementation\n             // copies data to a temporary char array).\n             final int c \u003d reader.read(encoderIn.array(), position, encoderIn.remaining());\n-            if (c \u003d\u003d -1) {\n+            if (c \u003d\u003d EOF) {\n                 endOfInput \u003d true;\n             } else {\n                 encoderIn.position(position+c);\n             }\n             encoderIn.flip();\n         }\n         encoderOut.compact();\n         lastCoderResult \u003d encoder.encode(encoderIn, encoderOut, endOfInput);\n         encoderOut.flip();\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ybodychange",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1332449729000,
+      "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 253.0,
+      "commitsBetweenForRepo": 182,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,19 +1,19 @@\n     private void fillBuffer() throws IOException {\n         if (!endOfInput \u0026\u0026 (lastCoderResult \u003d\u003d null || lastCoderResult.isUnderflow())) {\n             encoderIn.compact();\n-            int position \u003d encoderIn.position();\n+            final int position \u003d encoderIn.position();\n             // We don\u0027t use Reader#read(CharBuffer) here because it is more efficient\n             // to write directly to the underlying char array (the default implementation\n             // copies data to a temporary char array).\n-            int c \u003d reader.read(encoderIn.array(), position, encoderIn.remaining());\n+            final int c \u003d reader.read(encoderIn.array(), position, encoderIn.remaining());\n             if (c \u003d\u003d -1) {\n                 endOfInput \u003d true;\n             } else {\n                 encoderIn.position(position+c);\n             }\n             encoderIn.flip();\n         }\n         encoderOut.compact();\n         lastCoderResult \u003d encoder.encode(encoderIn, encoderOut, endOfInput);\n         encoderOut.flip();\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6ab5843928a7c3dfd7093e2d2d33cdc44b43ea67": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-296 ReaderInputStream optimization: more efficient reading of small chunks of data\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1295622 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1330616186000,
+      "commitName": "6ab5843928a7c3dfd7093e2d2d33cdc44b43ea67",
+      "commitAuthor": "Sebastian Bazley"
+    }
+  }
+}

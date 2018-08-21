@@ -1,0 +1,310 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileUtils.java",
+  "functionName": "innerListFiles",
+  "functionId": "innerListFiles___files-Collection__File____directory-File__filter-IOFileFilter__includeSubDirectories-boolean",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileUtils.java",
+  "functionStartLine": 470,
+  "functionEndLine": 486,
+  "changeHistory": [
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "642d6594b461bff2adb58fc4ca88a86a7ddbf8d4",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "d4c5044c7b7697d944a444470a296dcd15911595",
+    "a74a5a0c6ff41a4ca0a08caf740ebce1dc3c6d10",
+    "f0bd3788ad59aaf70fb170a2cb753afea15bf382",
+    "3e4ec2a42b3118266deada58dbee39db2a48677b",
+    "fdaa056d5ee2546596310d0c72315ab0ca6a6c30",
+    "29119dead7ff12541a3f5c154d2128573f740a78"
+  ],
+  "changeHistoryShort": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "642d6594b461bff2adb58fc4ca88a86a7ddbf8d4": "Ymultichange(Yparameterchange,Ybodychange)",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "d4c5044c7b7697d944a444470a296dcd15911595": "Ybodychange",
+    "a74a5a0c6ff41a4ca0a08caf740ebce1dc3c6d10": "Yparameterchange",
+    "f0bd3788ad59aaf70fb170a2cb753afea15bf382": "Ybodychange",
+    "3e4ec2a42b3118266deada58dbee39db2a48677b": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Yexceptionschange,Ybodychange)",
+    "fdaa056d5ee2546596310d0c72315ab0ca6a6c30": "Ymultichange(Yexceptionschange,Ybodychange)",
+    "29119dead7ff12541a3f5c154d2128573f740a78": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1351082444000,
+          "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 37.34,
+          "commitsBetweenForRepo": 34,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,17 +1,17 @@\n-    private static void innerListFiles(Collection\u003cFile\u003e files, File directory,\n-            IOFileFilter filter, boolean includeSubDirectories) {\n-        File[] found \u003d directory.listFiles((FileFilter) filter);\n+    private static void innerListFiles(final Collection\u003cFile\u003e files, final File directory,\n+            final IOFileFilter filter, final boolean includeSubDirectories) {\n+        final File[] found \u003d directory.listFiles((FileFilter) filter);\n         \n         if (found !\u003d null) {\n-            for (File file : found) {\n+            for (final File file : found) {\n                 if (file.isDirectory()) {\n                     if (includeSubDirectories) {\n                         files.add(file);\n                     }\n                     innerListFiles(files, file, filter, includeSubDirectories);\n                 } else {\n                     files.add(file);\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1351082444000,
+          "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 37.34,
+          "commitsBetweenForRepo": 34,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,17 +1,17 @@\n-    private static void innerListFiles(Collection\u003cFile\u003e files, File directory,\n-            IOFileFilter filter, boolean includeSubDirectories) {\n-        File[] found \u003d directory.listFiles((FileFilter) filter);\n+    private static void innerListFiles(final Collection\u003cFile\u003e files, final File directory,\n+            final IOFileFilter filter, final boolean includeSubDirectories) {\n+        final File[] found \u003d directory.listFiles((FileFilter) filter);\n         \n         if (found !\u003d null) {\n-            for (File file : found) {\n+            for (final File file : found) {\n                 if (file.isDirectory()) {\n                     if (includeSubDirectories) {\n                         files.add(file);\n                     }\n                     innerListFiles(files, file, filter, includeSubDirectories);\n                 } else {\n                     files.add(file);\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "642d6594b461bff2adb58fc4ca88a86a7ddbf8d4": {
+      "type": "Ymultichange(Yparameterchange,Ybodychange)",
+      "commitMessage": "IO-173 FileUtils.listFiles() doesn\u0027t return directories\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1295700 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1330623911000,
+      "commitName": "642d6594b461bff2adb58fc4ca88a86a7ddbf8d4",
+      "commitAuthor": "Sebastian Bazley",
+      "subchanges": [
+        {
+          "type": "Yparameterchange",
+          "commitMessage": "IO-173 FileUtils.listFiles() doesn\u0027t return directories\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1295700 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1330623911000,
+          "commitName": "642d6594b461bff2adb58fc4ca88a86a7ddbf8d4",
+          "commitAuthor": "Sebastian Bazley",
+          "commitDateOld": 1330622280000,
+          "commitNameOld": "4cef5296135cf1a056f44158b00977239e4fc3ae",
+          "commitAuthorOld": "Sebastian Bazley",
+          "daysBetweenCommits": 0.02,
+          "commitsBetweenForRepo": 1,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,13 +1,17 @@\n     private static void innerListFiles(Collection\u003cFile\u003e files, File directory,\n-            IOFileFilter filter) {\n+            IOFileFilter filter, boolean includeSubDirectories) {\n         File[] found \u003d directory.listFiles((FileFilter) filter);\n+        \n         if (found !\u003d null) {\n             for (File file : found) {\n                 if (file.isDirectory()) {\n-                    innerListFiles(files, file, filter);\n+                    if (includeSubDirectories) {\n+                        files.add(file);\n+                    }\n+                    innerListFiles(files, file, filter, includeSubDirectories);\n                 } else {\n                     files.add(file);\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Ybodychange",
+          "commitMessage": "IO-173 FileUtils.listFiles() doesn\u0027t return directories\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1295700 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1330623911000,
+          "commitName": "642d6594b461bff2adb58fc4ca88a86a7ddbf8d4",
+          "commitAuthor": "Sebastian Bazley",
+          "commitDateOld": 1330622280000,
+          "commitNameOld": "4cef5296135cf1a056f44158b00977239e4fc3ae",
+          "commitAuthorOld": "Sebastian Bazley",
+          "daysBetweenCommits": 0.02,
+          "commitsBetweenForRepo": 1,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,13 +1,17 @@\n     private static void innerListFiles(Collection\u003cFile\u003e files, File directory,\n-            IOFileFilter filter) {\n+            IOFileFilter filter, boolean includeSubDirectories) {\n         File[] found \u003d directory.listFiles((FileFilter) filter);\n+        \n         if (found !\u003d null) {\n             for (File file : found) {\n                 if (file.isDirectory()) {\n-                    innerListFiles(files, file, filter);\n+                    if (includeSubDirectories) {\n+                        files.add(file);\n+                    }\n+                    innerListFiles(files, file, filter, includeSubDirectories);\n                 } else {\n                     files.add(file);\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/FileUtils.java",
+        "newPath": "src/main/java/org/apache/commons/io/FileUtils.java"
+      }
+    },
+    "d4c5044c7b7697d944a444470a296dcd15911595": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-191 - Possible improvements using static analysis - patch from Peter Lawrey\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@736890 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1232676142000,
+      "commitName": "d4c5044c7b7697d944a444470a296dcd15911595",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1228361423000,
+      "commitNameOld": "63213c888b3a47036105bfa9caddf63f73cd695d",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 49.94,
+      "commitsBetweenForRepo": 7,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private static void innerListFiles(Collection\u003cFile\u003e files, File directory,\n             IOFileFilter filter) {\n         File[] found \u003d directory.listFiles((FileFilter) filter);\n         if (found !\u003d null) {\n-            for (int i \u003d 0; i \u003c found.length; i++) {\n-                if (found[i].isDirectory()) {\n-                    innerListFiles(files, found[i], filter);\n+            for (File file : found) {\n+                if (file.isDirectory()) {\n+                    innerListFiles(files, file, filter);\n                 } else {\n-                    files.add(found[i]);\n+                    files.add(file);\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "a74a5a0c6ff41a4ca0a08caf740ebce1dc3c6d10": {
+      "type": "Yparameterchange",
+      "commitMessage": "IO-140 JDK 1.5 changes: Use generics\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@619103 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1202324477000,
+      "commitName": "a74a5a0c6ff41a4ca0a08caf740ebce1dc3c6d10",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1199977489000,
+      "commitNameOld": "660b89f08ab6469d548800b83619e4207c78381b",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 27.16,
+      "commitsBetweenForRepo": 25,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n-    private static void innerListFiles(Collection files, File directory,\n+    private static void innerListFiles(Collection\u003cFile\u003e files, File directory,\n             IOFileFilter filter) {\n         File[] found \u003d directory.listFiles((FileFilter) filter);\n         if (found !\u003d null) {\n             for (int i \u003d 0; i \u003c found.length; i++) {\n                 if (found[i].isDirectory()) {\n                     innerListFiles(files, found[i], filter);\n                 } else {\n                     files.add(found[i]);\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "f0bd3788ad59aaf70fb170a2cb753afea15bf382": {
+      "type": "Ybodychange",
+      "commitMessage": "Bugfix for listFiles for directories where the current user has no rights.\n\nReestablish JDK 1.3 compatibility for touch().\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140589 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1089882977000,
+      "commitName": "f0bd3788ad59aaf70fb170a2cb753afea15bf382",
+      "commitAuthor": "Jeremias Maerki",
+      "commitDateOld": 1089879674000,
+      "commitNameOld": "b31de97f620c9c16d54c6b1e145f155744536eeb",
+      "commitAuthorOld": "Stephen Colebourne",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,12 @@\n     private static void innerListFiles(Collection files, File directory, IOFileFilter filter) {\n         File[] found \u003d directory.listFiles((FileFilter)filter);\n-        for (int i \u003d 0; i \u003c found.length; i++) {\n-            if (found[i].isDirectory()) {\n-                innerListFiles(files, found[i], filter);\n-            } else {\n-                files.add(found[i]);\n+        if (found !\u003d null) { \n+            for (int i \u003d 0; i \u003c found.length; i++) {\n+                if (found[i].isDirectory()) {\n+                    innerListFiles(files, found[i], filter);\n+                } else {\n+                    files.add(found[i]);\n+                }\n             }\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "3e4ec2a42b3118266deada58dbee39db2a48677b": {
+      "type": "Ymultichange(Yrename,Yparameterchange,Ymodifierchange,Yexceptionschange,Ybodychange)",
+      "commitMessage": "I\u0027ve moved some methods around while cleaning up, so, sorry for the big diff. I moved up the methods I checked through. There\u0027s a marker in the lower half of the file indicating where I progressed. Everything below that marker still has to be sorted out. I consider the stuff above that marker cleaned up and reviewed to a certain degree.\n\nReal changes are:\n- new method: touch(File)\n- some method signatures rewritten to use java.io.File instead of String, because it\u0027s this class\u0027 policy. This might break dependant projects.\n- updated some javadocs\n- Removed getFilesFromExtension (this method wants to do too much). This might break dependant projects.\n- Replacement for getFilesFromExtension, new method(s): listFiles which is implemented using the filefilter package. The CVS filter functionality of getFilesFromExtension can be achieved by using FileFilterUtils.makeCVSAware.\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140405 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1069533888000,
+      "commitName": "3e4ec2a42b3118266deada58dbee39db2a48677b",
+      "commitAuthor": "Jeremias Maerki",
+      "subchanges": [
+        {
+          "type": "Yrename",
+          "commitMessage": "I\u0027ve moved some methods around while cleaning up, so, sorry for the big diff. I moved up the methods I checked through. There\u0027s a marker in the lower half of the file indicating where I progressed. Everything below that marker still has to be sorted out. I consider the stuff above that marker cleaned up and reviewed to a certain degree.\n\nReal changes are:\n- new method: touch(File)\n- some method signatures rewritten to use java.io.File instead of String, because it\u0027s this class\u0027 policy. This might break dependant projects.\n- updated some javadocs\n- Removed getFilesFromExtension (this method wants to do too much). This might break dependant projects.\n- Replacement for getFilesFromExtension, new method(s): listFiles which is implemented using the filefilter package. The CVS filter functionality of getFilesFromExtension can be achieved by using FileFilterUtils.makeCVSAware.\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140405 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1069533888000,
+          "commitName": "3e4ec2a42b3118266deada58dbee39db2a48677b",
+          "commitAuthor": "Jeremias Maerki",
+          "commitDateOld": 1066421778000,
+          "commitNameOld": "d9224439fc7c437a665ae4b5d9f91e3676b90496",
+          "commitAuthorOld": "Matthew Hawthorne",
+          "daysBetweenCommits": 36.02,
+          "commitsBetweenForRepo": 11,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,9 +1,10 @@\n-    public static void fileWrite(String fileName, String data)\n-        throws IOException {\n-        FileOutputStream out \u003d new FileOutputStream(fileName);\n-        try {\n-            out.write(data.getBytes());\n-        } finally {\n-            IOUtils.shutdownStream(out);\n+    private static void innerListFiles(Collection files, File directory, IOFileFilter filter) {\n+        File[] found \u003d directory.listFiles((FileFilter)filter);\n+        for (int i \u003d 0; i \u003c found.length; i++) {\n+            if (found[i].isDirectory()) {\n+                innerListFiles(files, found[i], filter);\n+            } else {\n+                files.add(found[i]);\n+            }\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {
+            "oldMethodName": "fileWrite",
+            "newMethodName": "innerListFiles"
+          }
+        },
+        {
+          "type": "Yparameterchange",
+          "commitMessage": "I\u0027ve moved some methods around while cleaning up, so, sorry for the big diff. I moved up the methods I checked through. There\u0027s a marker in the lower half of the file indicating where I progressed. Everything below that marker still has to be sorted out. I consider the stuff above that marker cleaned up and reviewed to a certain degree.\n\nReal changes are:\n- new method: touch(File)\n- some method signatures rewritten to use java.io.File instead of String, because it\u0027s this class\u0027 policy. This might break dependant projects.\n- updated some javadocs\n- Removed getFilesFromExtension (this method wants to do too much). This might break dependant projects.\n- Replacement for getFilesFromExtension, new method(s): listFiles which is implemented using the filefilter package. The CVS filter functionality of getFilesFromExtension can be achieved by using FileFilterUtils.makeCVSAware.\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140405 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1069533888000,
+          "commitName": "3e4ec2a42b3118266deada58dbee39db2a48677b",
+          "commitAuthor": "Jeremias Maerki",
+          "commitDateOld": 1066421778000,
+          "commitNameOld": "d9224439fc7c437a665ae4b5d9f91e3676b90496",
+          "commitAuthorOld": "Matthew Hawthorne",
+          "daysBetweenCommits": 36.02,
+          "commitsBetweenForRepo": 11,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,9 +1,10 @@\n-    public static void fileWrite(String fileName, String data)\n-        throws IOException {\n-        FileOutputStream out \u003d new FileOutputStream(fileName);\n-        try {\n-            out.write(data.getBytes());\n-        } finally {\n-            IOUtils.shutdownStream(out);\n+    private static void innerListFiles(Collection files, File directory, IOFileFilter filter) {\n+        File[] found \u003d directory.listFiles((FileFilter)filter);\n+        for (int i \u003d 0; i \u003c found.length; i++) {\n+            if (found[i].isDirectory()) {\n+                innerListFiles(files, found[i], filter);\n+            } else {\n+                files.add(found[i]);\n+            }\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Ymodifierchange",
+          "commitMessage": "I\u0027ve moved some methods around while cleaning up, so, sorry for the big diff. I moved up the methods I checked through. There\u0027s a marker in the lower half of the file indicating where I progressed. Everything below that marker still has to be sorted out. I consider the stuff above that marker cleaned up and reviewed to a certain degree.\n\nReal changes are:\n- new method: touch(File)\n- some method signatures rewritten to use java.io.File instead of String, because it\u0027s this class\u0027 policy. This might break dependant projects.\n- updated some javadocs\n- Removed getFilesFromExtension (this method wants to do too much). This might break dependant projects.\n- Replacement for getFilesFromExtension, new method(s): listFiles which is implemented using the filefilter package. The CVS filter functionality of getFilesFromExtension can be achieved by using FileFilterUtils.makeCVSAware.\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140405 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1069533888000,
+          "commitName": "3e4ec2a42b3118266deada58dbee39db2a48677b",
+          "commitAuthor": "Jeremias Maerki",
+          "commitDateOld": 1066421778000,
+          "commitNameOld": "d9224439fc7c437a665ae4b5d9f91e3676b90496",
+          "commitAuthorOld": "Matthew Hawthorne",
+          "daysBetweenCommits": 36.02,
+          "commitsBetweenForRepo": 11,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,9 +1,10 @@\n-    public static void fileWrite(String fileName, String data)\n-        throws IOException {\n-        FileOutputStream out \u003d new FileOutputStream(fileName);\n-        try {\n-            out.write(data.getBytes());\n-        } finally {\n-            IOUtils.shutdownStream(out);\n+    private static void innerListFiles(Collection files, File directory, IOFileFilter filter) {\n+        File[] found \u003d directory.listFiles((FileFilter)filter);\n+        for (int i \u003d 0; i \u003c found.length; i++) {\n+            if (found[i].isDirectory()) {\n+                innerListFiles(files, found[i], filter);\n+            } else {\n+                files.add(found[i]);\n+            }\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yexceptionschange",
+          "commitMessage": "I\u0027ve moved some methods around while cleaning up, so, sorry for the big diff. I moved up the methods I checked through. There\u0027s a marker in the lower half of the file indicating where I progressed. Everything below that marker still has to be sorted out. I consider the stuff above that marker cleaned up and reviewed to a certain degree.\n\nReal changes are:\n- new method: touch(File)\n- some method signatures rewritten to use java.io.File instead of String, because it\u0027s this class\u0027 policy. This might break dependant projects.\n- updated some javadocs\n- Removed getFilesFromExtension (this method wants to do too much). This might break dependant projects.\n- Replacement for getFilesFromExtension, new method(s): listFiles which is implemented using the filefilter package. The CVS filter functionality of getFilesFromExtension can be achieved by using FileFilterUtils.makeCVSAware.\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140405 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1069533888000,
+          "commitName": "3e4ec2a42b3118266deada58dbee39db2a48677b",
+          "commitAuthor": "Jeremias Maerki",
+          "commitDateOld": 1066421778000,
+          "commitNameOld": "d9224439fc7c437a665ae4b5d9f91e3676b90496",
+          "commitAuthorOld": "Matthew Hawthorne",
+          "daysBetweenCommits": 36.02,
+          "commitsBetweenForRepo": 11,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,9 +1,10 @@\n-    public static void fileWrite(String fileName, String data)\n-        throws IOException {\n-        FileOutputStream out \u003d new FileOutputStream(fileName);\n-        try {\n-            out.write(data.getBytes());\n-        } finally {\n-            IOUtils.shutdownStream(out);\n+    private static void innerListFiles(Collection files, File directory, IOFileFilter filter) {\n+        File[] found \u003d directory.listFiles((FileFilter)filter);\n+        for (int i \u003d 0; i \u003c found.length; i++) {\n+            if (found[i].isDirectory()) {\n+                innerListFiles(files, found[i], filter);\n+            } else {\n+                files.add(found[i]);\n+            }\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Ybodychange",
+          "commitMessage": "I\u0027ve moved some methods around while cleaning up, so, sorry for the big diff. I moved up the methods I checked through. There\u0027s a marker in the lower half of the file indicating where I progressed. Everything below that marker still has to be sorted out. I consider the stuff above that marker cleaned up and reviewed to a certain degree.\n\nReal changes are:\n- new method: touch(File)\n- some method signatures rewritten to use java.io.File instead of String, because it\u0027s this class\u0027 policy. This might break dependant projects.\n- updated some javadocs\n- Removed getFilesFromExtension (this method wants to do too much). This might break dependant projects.\n- Replacement for getFilesFromExtension, new method(s): listFiles which is implemented using the filefilter package. The CVS filter functionality of getFilesFromExtension can be achieved by using FileFilterUtils.makeCVSAware.\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140405 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1069533888000,
+          "commitName": "3e4ec2a42b3118266deada58dbee39db2a48677b",
+          "commitAuthor": "Jeremias Maerki",
+          "commitDateOld": 1066421778000,
+          "commitNameOld": "d9224439fc7c437a665ae4b5d9f91e3676b90496",
+          "commitAuthorOld": "Matthew Hawthorne",
+          "daysBetweenCommits": 36.02,
+          "commitsBetweenForRepo": 11,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,9 +1,10 @@\n-    public static void fileWrite(String fileName, String data)\n-        throws IOException {\n-        FileOutputStream out \u003d new FileOutputStream(fileName);\n-        try {\n-            out.write(data.getBytes());\n-        } finally {\n-            IOUtils.shutdownStream(out);\n+    private static void innerListFiles(Collection files, File directory, IOFileFilter filter) {\n+        File[] found \u003d directory.listFiles((FileFilter)filter);\n+        for (int i \u003d 0; i \u003c found.length; i++) {\n+            if (found[i].isDirectory()) {\n+                innerListFiles(files, found[i], filter);\n+            } else {\n+                files.add(found[i]);\n+            }\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "fdaa056d5ee2546596310d0c72315ab0ca6a6c30": {
+      "type": "Ymultichange(Yexceptionschange,Ybodychange)",
+      "commitMessage": "Javadocs\nRewrite some methods to leverage off methods from IOUtils.\nAdded some TODO items (methods not making sense...)\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140377 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1059326423000,
+      "commitName": "fdaa056d5ee2546596310d0c72315ab0ca6a6c30",
+      "commitAuthor": "Jeremias Maerki",
+      "subchanges": [
+        {
+          "type": "Yexceptionschange",
+          "commitMessage": "Javadocs\nRewrite some methods to leverage off methods from IOUtils.\nAdded some TODO items (methods not making sense...)\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140377 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1059326423000,
+          "commitName": "fdaa056d5ee2546596310d0c72315ab0ca6a6c30",
+          "commitAuthor": "Jeremias Maerki",
+          "commitDateOld": 1059119486000,
+          "commitNameOld": "7748ed36401ea37104ae313be804f81f2526cd6d",
+          "commitAuthorOld": "Jeremias Maerki",
+          "daysBetweenCommits": 2.4,
+          "commitsBetweenForRepo": 12,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,5 +1,8 @@\n-    public static void fileWrite(String fileName, String data) throws Exception {\n+    public static void fileWrite(String fileName, String data) throws IOException {\n         FileOutputStream out \u003d new FileOutputStream(fileName);\n-        out.write(data.getBytes());\n-        out.close();\n+        try {\n+            out.write(data.getBytes());\n+        } finally {\n+            IOUtils.shutdownStream(out);\n+        }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Javadocs\nRewrite some methods to leverage off methods from IOUtils.\nAdded some TODO items (methods not making sense...)\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140377 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1059326423000,
+          "commitName": "fdaa056d5ee2546596310d0c72315ab0ca6a6c30",
+          "commitAuthor": "Jeremias Maerki",
+          "commitDateOld": 1059119486000,
+          "commitNameOld": "7748ed36401ea37104ae313be804f81f2526cd6d",
+          "commitAuthorOld": "Jeremias Maerki",
+          "daysBetweenCommits": 2.4,
+          "commitsBetweenForRepo": 12,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,5 +1,8 @@\n-    public static void fileWrite(String fileName, String data) throws Exception {\n+    public static void fileWrite(String fileName, String data) throws IOException {\n         FileOutputStream out \u003d new FileOutputStream(fileName);\n-        out.write(data.getBytes());\n-        out.close();\n+        try {\n+            out.write(data.getBytes());\n+        } finally {\n+            IOUtils.shutdownStream(out);\n+        }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "29119dead7ff12541a3f5c154d2128573f740a78": {
+      "type": "Yintroduced",
+      "commitMessage": "Savepoint.  Does not compile or work yet.  More work this weekend.\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@140288 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1012013262000,
+      "commitName": "29119dead7ff12541a3f5c154d2128573f740a78",
+      "commitAuthor": "Scott Sanders"
+    }
+  }
+}

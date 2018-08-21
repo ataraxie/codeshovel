@@ -1,0 +1,78 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "BoundedReader.java",
+  "functionName": "read",
+  "functionId": "read___cbuf-char[]__off-int__len-int",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/input/BoundedReader.java",
+  "functionStartLine": 141,
+  "functionEndLine": 151,
+  "changeHistory": [
+    "14b52eb4f630f32c66122977331bd894b9474978",
+    "81210eb267181b766acaf201a424a80d96bb5bed",
+    "c6edda83ce73bd42f5dbdb92eba7f9e4a9264d58",
+    "55d3cf0ae5dc7b6f5f9f60bae65c1c5abf196b18"
+  ],
+  "changeHistoryShort": {
+    "14b52eb4f630f32c66122977331bd894b9474978": "Yparametermetachange",
+    "81210eb267181b766acaf201a424a80d96bb5bed": "Ybodychange",
+    "c6edda83ce73bd42f5dbdb92eba7f9e4a9264d58": "Ybodychange",
+    "55d3cf0ae5dc7b6f5f9f60bae65c1c5abf196b18": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "14b52eb4f630f32c66122977331bd894b9474978": {
+      "type": "Yparametermetachange",
+      "commitMessage": "Use final for parameters.",
+      "commitDate": 1506540583000,
+      "commitName": "14b52eb4f630f32c66122977331bd894b9474978",
+      "commitAuthor": "Gary Gregory",
+      "commitDateOld": 1487183873000,
+      "commitNameOld": "8b9fe1b01ce21003f6a6ff8391ad2a64f4d21030",
+      "commitAuthorOld": "Sebastian Kürten",
+      "daysBetweenCommits": 224.04,
+      "commitsBetweenForRepo": 56,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n-    public int read( char[] cbuf, int off, int len ) throws IOException {\n+    public int read( final char[] cbuf, final int off, final int len ) throws IOException {\n         int c;\n         for ( int i \u003d 0; i \u003c len; i++ ) {\n             c \u003d read();\n             if ( c \u003d\u003d -1 ) {\n                 return i \u003d\u003d 0 ? -1 : i;\n             }\n             cbuf[off + i] \u003d (char) c;\n         }\n         return len;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "81210eb267181b766acaf201a424a80d96bb5bed": {
+      "type": "Ybodychange",
+      "commitMessage": "Update BoundedReader.java\nhttps://docs.oracle.com/javase/8/docs/api/java/io/Reader.html\nAdd read bytes EOF test\n\nPatch by zhanhb \u003czhanhb88@gmail.com\u003e, applied unmodified\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1746612 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1464891304000,
+      "commitName": "81210eb267181b766acaf201a424a80d96bb5bed",
+      "commitAuthor": "Kristian Rosenvold",
+      "commitDateOld": 1434754686000,
+      "commitNameOld": "1ef212e0629d8b19a3b974cbb428a1f000f1c540",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 348.8,
+      "commitsBetweenForRepo": 134,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,11 +1,11 @@\n     public int read( char[] cbuf, int off, int len ) throws IOException {\n         int c;\n         for ( int i \u003d 0; i \u003c len; i++ ) {\n             c \u003d read();\n             if ( c \u003d\u003d -1 ) {\n-                return i;\n+                return i \u003d\u003d 0 ? -1 : i;\n             }\n             cbuf[off + i] \u003d (char) c;\n         }\n         return len;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "c6edda83ce73bd42f5dbdb92eba7f9e4a9264d58": {
+      "type": "Ybodychange",
+      "commitMessage": "use spaces not tabs\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1634744 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1414453730000,
+      "commitName": "c6edda83ce73bd42f5dbdb92eba7f9e4a9264d58",
+      "commitAuthor": "Olivier Lamy",
+      "commitDateOld": 1414451389000,
+      "commitNameOld": "55d3cf0ae5dc7b6f5f9f60bae65c1c5abf196b18",
+      "commitAuthorOld": "Olivier Lamy",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,11 @@\n-\tpublic int read(char[] cbuf, int off, int len) throws IOException {\n-\t\tint c;\n-\t\tfor (int i \u003d 0; i \u003c len; i++){\n-\t\t\tc \u003d read();\n-\t\t\tif (c \u003d\u003d -1) return i;\n-\t\t\tcbuf[off + i] \u003d (char) c;\n-\t\t}\n-\t\treturn len;\n-\t}\n\\ No newline at end of file\n+    public int read( char[] cbuf, int off, int len ) throws IOException {\n+        int c;\n+        for ( int i \u003d 0; i \u003c len; i++ ) {\n+            c \u003d read();\n+            if ( c \u003d\u003d -1 ) {\n+                return i;\n+            }\n+            cbuf[off + i] \u003d (char) c;\n+        }\n+        return len;\n+    }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "55d3cf0ae5dc7b6f5f9f60bae65c1c5abf196b18": {
+      "type": "Yintroduced",
+      "commitMessage": "[IO-457] Add BoundedReader\nSubmitted by Kristian Rosenvold\n\n\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1634731 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1414451389000,
+      "commitName": "55d3cf0ae5dc7b6f5f9f60bae65c1c5abf196b18",
+      "commitAuthor": "Olivier Lamy"
+    }
+  }
+}

@@ -120,7 +120,7 @@ public class Utl {
 
 			FileUtils.writeStringToFile(file, content, "utf-8");
 		} catch (Exception e) {
-			log.error("Could not write stub file for function {{}}. Skipping.", functionId, e);
+			log.error("Could not write file for function {{}}. Skipping.", functionId, e);
 		}
 	}
 

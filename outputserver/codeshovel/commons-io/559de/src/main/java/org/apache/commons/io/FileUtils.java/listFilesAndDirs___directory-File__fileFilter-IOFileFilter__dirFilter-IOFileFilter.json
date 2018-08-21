@@ -1,0 +1,153 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileUtils.java",
+  "functionName": "listFilesAndDirs",
+  "functionId": "listFilesAndDirs___directory-File__fileFilter-IOFileFilter__dirFilter-IOFileFilter",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileUtils.java",
+  "functionStartLine": 578,
+  "functionEndLine": 581,
+  "changeHistory": [
+    "f0751b65cf680456557aa1bf5c56b12f5c1a0fe0",
+    "71fc2c4c817a8c9bb41650d5b27a89e207a68c39",
+    "51f13c846dae950e1d27693c9e23c1063945210f",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "508f46640417b3be3e4e58e751f51020979d1ffe",
+    "2fc63ef30b8846c693469dbe7dab9855a3fee102",
+    "642d6594b461bff2adb58fc4ca88a86a7ddbf8d4"
+  ],
+  "changeHistoryShort": {
+    "f0751b65cf680456557aa1bf5c56b12f5c1a0fe0": "Ybodychange",
+    "71fc2c4c817a8c9bb41650d5b27a89e207a68c39": "Ybodychange",
+    "51f13c846dae950e1d27693c9e23c1063945210f": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "508f46640417b3be3e4e58e751f51020979d1ffe": "Ybodychange",
+    "2fc63ef30b8846c693469dbe7dab9855a3fee102": "Ybodychange",
+    "642d6594b461bff2adb58fc4ca88a86a7ddbf8d4": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "f0751b65cf680456557aa1bf5c56b12f5c1a0fe0": {
+      "type": "Ybodychange",
+      "commitMessage": "[IO-572] Refactor duplicate code in org.apache.commons.io.FileUtils.",
+      "commitDate": 1520694577000,
+      "commitName": "f0751b65cf680456557aa1bf5c56b12f5c1a0fe0",
+      "commitAuthor": "Gary Gregory",
+      "commitDateOld": 1520538761000,
+      "commitNameOld": "71fc2c4c817a8c9bb41650d5b27a89e207a68c39",
+      "commitAuthorOld": "Gary Gregory",
+      "daysBetweenCommits": 1.8,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,14 +1,4 @@\n     public static Collection\u003cFile\u003e listFilesAndDirs(\n             final File directory, final IOFileFilter fileFilter, final IOFileFilter dirFilter) {\n-        validateListFilesParameters(directory, fileFilter);\n-\n-        final IOFileFilter effFileFilter \u003d setUpEffectiveFileFilter(fileFilter);\n-        final IOFileFilter effDirFilter \u003d setUpEffectiveDirFilter(dirFilter);\n-\n-        //Find files\n-        final Collection\u003cFile\u003e files \u003d new java.util.LinkedList\u003c\u003e();\n-        files.add(directory);\n-        innerListFiles(files, directory,\n-                FileFilterUtils.or(effFileFilter, effDirFilter), true);\n-        return files;\n+        return innerListFilesOrDirectories(directory, fileFilter, dirFilter, true);\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "71fc2c4c817a8c9bb41650d5b27a89e207a68c39": {
+      "type": "Ybodychange",
+      "commitMessage": "[IO-571] Remove redundant isDirectory() check in\norg.apache.commons.io.FileUtils.listFilesAndDirs(File, IOFileFilter,\nIOFileFilter).",
+      "commitDate": 1520538761000,
+      "commitName": "71fc2c4c817a8c9bb41650d5b27a89e207a68c39",
+      "commitAuthor": "Gary Gregory",
+      "commitDateOld": 1520355642000,
+      "commitNameOld": "8993c0060e4eb2d5bca20e3529a829a9dd90efdf",
+      "commitAuthorOld": "Gary Gregory",
+      "daysBetweenCommits": 2.12,
+      "commitsBetweenForRepo": 11,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,14 @@\n     public static Collection\u003cFile\u003e listFilesAndDirs(\n             final File directory, final IOFileFilter fileFilter, final IOFileFilter dirFilter) {\n         validateListFilesParameters(directory, fileFilter);\n \n         final IOFileFilter effFileFilter \u003d setUpEffectiveFileFilter(fileFilter);\n         final IOFileFilter effDirFilter \u003d setUpEffectiveDirFilter(dirFilter);\n \n         //Find files\n         final Collection\u003cFile\u003e files \u003d new java.util.LinkedList\u003c\u003e();\n-        if (directory.isDirectory()) {\n-            files.add(directory);\n-        }\n+        files.add(directory);\n         innerListFiles(files, directory,\n                 FileFilterUtils.or(effFileFilter, effDirFilter), true);\n         return files;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "51f13c846dae950e1d27693c9e23c1063945210f": {
+      "type": "Ybodychange",
+      "commitMessage": "Updated for Java7 features\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1746593 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1464881775000,
+      "commitName": "51f13c846dae950e1d27693c9e23c1063945210f",
+      "commitAuthor": "Kristian Rosenvold",
+      "commitDateOld": 1462579617000,
+      "commitNameOld": "4dc97b64005f0083b2facaa70f661138a4fa3fc0",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 26.65,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     public static Collection\u003cFile\u003e listFilesAndDirs(\n             final File directory, final IOFileFilter fileFilter, final IOFileFilter dirFilter) {\n         validateListFilesParameters(directory, fileFilter);\n \n         final IOFileFilter effFileFilter \u003d setUpEffectiveFileFilter(fileFilter);\n         final IOFileFilter effDirFilter \u003d setUpEffectiveDirFilter(dirFilter);\n \n         //Find files\n-        final Collection\u003cFile\u003e files \u003d new java.util.LinkedList\u003cFile\u003e();\n+        final Collection\u003cFile\u003e files \u003d new java.util.LinkedList\u003c\u003e();\n         if (directory.isDirectory()) {\n             files.add(directory);\n         }\n         innerListFiles(files, directory,\n                 FileFilterUtils.or(effFileFilter, effDirFilter), true);\n         return files;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1351082444000,
+          "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 37.34,
+          "commitsBetweenForRepo": 34,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,16 +1,16 @@\n     public static Collection\u003cFile\u003e listFilesAndDirs(\n-            File directory, IOFileFilter fileFilter, IOFileFilter dirFilter) {\n+            final File directory, final IOFileFilter fileFilter, final IOFileFilter dirFilter) {\n         validateListFilesParameters(directory, fileFilter);\n \n-        IOFileFilter effFileFilter \u003d setUpEffectiveFileFilter(fileFilter);\n-        IOFileFilter effDirFilter \u003d setUpEffectiveDirFilter(dirFilter);\n+        final IOFileFilter effFileFilter \u003d setUpEffectiveFileFilter(fileFilter);\n+        final IOFileFilter effDirFilter \u003d setUpEffectiveDirFilter(dirFilter);\n \n         //Find files\n-        Collection\u003cFile\u003e files \u003d new java.util.LinkedList\u003cFile\u003e();\n+        final Collection\u003cFile\u003e files \u003d new java.util.LinkedList\u003cFile\u003e();\n         if (directory.isDirectory()) {\n             files.add(directory);\n         }\n         innerListFiles(files, directory,\n             FileFilterUtils.or(effFileFilter, effDirFilter), true);\n         return files;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1351082444000,
+          "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 37.34,
+          "commitsBetweenForRepo": 34,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,16 +1,16 @@\n     public static Collection\u003cFile\u003e listFilesAndDirs(\n-            File directory, IOFileFilter fileFilter, IOFileFilter dirFilter) {\n+            final File directory, final IOFileFilter fileFilter, final IOFileFilter dirFilter) {\n         validateListFilesParameters(directory, fileFilter);\n \n-        IOFileFilter effFileFilter \u003d setUpEffectiveFileFilter(fileFilter);\n-        IOFileFilter effDirFilter \u003d setUpEffectiveDirFilter(dirFilter);\n+        final IOFileFilter effFileFilter \u003d setUpEffectiveFileFilter(fileFilter);\n+        final IOFileFilter effDirFilter \u003d setUpEffectiveDirFilter(dirFilter);\n \n         //Find files\n-        Collection\u003cFile\u003e files \u003d new java.util.LinkedList\u003cFile\u003e();\n+        final Collection\u003cFile\u003e files \u003d new java.util.LinkedList\u003cFile\u003e();\n         if (directory.isDirectory()) {\n             files.add(directory);\n         }\n         innerListFiles(files, directory,\n             FileFilterUtils.or(effFileFilter, effDirFilter), true);\n         return files;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "508f46640417b3be3e4e58e751f51020979d1ffe": {
+      "type": "Ybodychange",
+      "commitMessage": "Rename private method setupEffectiveDirFilter to setUpEffectiveDirFilter\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1299790 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1331578965000,
+      "commitName": "508f46640417b3be3e4e58e751f51020979d1ffe",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1331578926000,
+      "commitNameOld": "2fc63ef30b8846c693469dbe7dab9855a3fee102",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     public static Collection\u003cFile\u003e listFilesAndDirs(\n             File directory, IOFileFilter fileFilter, IOFileFilter dirFilter) {\n         validateListFilesParameters(directory, fileFilter);\n \n         IOFileFilter effFileFilter \u003d setUpEffectiveFileFilter(fileFilter);\n-        IOFileFilter effDirFilter \u003d setupEffectiveDirFilter(dirFilter);\n+        IOFileFilter effDirFilter \u003d setUpEffectiveDirFilter(dirFilter);\n \n         //Find files\n         Collection\u003cFile\u003e files \u003d new java.util.LinkedList\u003cFile\u003e();\n         if (directory.isDirectory()) {\n             files.add(directory);\n         }\n         innerListFiles(files, directory,\n             FileFilterUtils.or(effFileFilter, effDirFilter), true);\n         return files;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "2fc63ef30b8846c693469dbe7dab9855a3fee102": {
+      "type": "Ybodychange",
+      "commitMessage": "Rename private method setupEfectiveFileFilter to setUpEffectiveFileFilter\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1299789 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1331578926000,
+      "commitName": "2fc63ef30b8846c693469dbe7dab9855a3fee102",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1331066265000,
+      "commitNameOld": "e3daec3bb2ff25c8eb5be128f102d7acccea2cfc",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 5.93,
+      "commitsBetweenForRepo": 8,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,16 +1,16 @@\n     public static Collection\u003cFile\u003e listFilesAndDirs(\n             File directory, IOFileFilter fileFilter, IOFileFilter dirFilter) {\n         validateListFilesParameters(directory, fileFilter);\n \n-        IOFileFilter effFileFilter \u003d setupEfectiveFileFilter(fileFilter);\n+        IOFileFilter effFileFilter \u003d setUpEffectiveFileFilter(fileFilter);\n         IOFileFilter effDirFilter \u003d setupEffectiveDirFilter(dirFilter);\n \n         //Find files\n         Collection\u003cFile\u003e files \u003d new java.util.LinkedList\u003cFile\u003e();\n         if (directory.isDirectory()) {\n             files.add(directory);\n         }\n         innerListFiles(files, directory,\n             FileFilterUtils.or(effFileFilter, effDirFilter), true);\n         return files;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "642d6594b461bff2adb58fc4ca88a86a7ddbf8d4": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-173 FileUtils.listFiles() doesn\u0027t return directories\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1295700 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1330623911000,
+      "commitName": "642d6594b461bff2adb58fc4ca88a86a7ddbf8d4",
+      "commitAuthor": "Sebastian Bazley"
+    }
+  }
+}

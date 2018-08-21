@@ -1,0 +1,105 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileFilterUtils.java",
+  "functionName": "filter",
+  "functionId": "filter___filter-IOFileFilter__files-File",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/filefilter/FileFilterUtils.java",
+  "functionStartLine": 76,
+  "functionEndLine": 93,
+  "changeHistory": [
+    "51f13c846dae950e1d27693c9e23c1063945210f",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "58db1d1a55827a211865f0bc73a529e1b1d0ffdc"
+  ],
+  "changeHistoryShort": {
+    "51f13c846dae950e1d27693c9e23c1063945210f": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "58db1d1a55827a211865f0bc73a529e1b1d0ffdc": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "51f13c846dae950e1d27693c9e23c1063945210f": {
+      "type": "Ybodychange",
+      "commitMessage": "Updated for Java7 features\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1746593 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1464881775000,
+      "commitName": "51f13c846dae950e1d27693c9e23c1063945210f",
+      "commitAuthor": "Kristian Rosenvold",
+      "commitDateOld": 1366845859000,
+      "commitNameOld": "effe551657921069b871519156a934e4ef3ae916",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 1134.67,
+      "commitsBetweenForRepo": 271,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,18 @@\n     public static File[] filter(final IOFileFilter filter, final File... files) {\n         if (filter \u003d\u003d null) {\n             throw new IllegalArgumentException(\"file filter is null\");\n         }\n         if (files \u003d\u003d null) {\n             return new File[0];\n         }\n-        final List\u003cFile\u003e acceptedFiles \u003d new ArrayList\u003cFile\u003e();\n+        final List\u003cFile\u003e acceptedFiles \u003d new ArrayList\u003c\u003e();\n         for (final File file : files) {\n             if (file \u003d\u003d null) {\n                 throw new IllegalArgumentException(\"file array contains null\");\n             }\n             if (filter.accept(file)) {\n                 acceptedFiles.add(file);\n             }\n         }\n         return acceptedFiles.toArray(new File[acceptedFiles.size()]);\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1333120304000,
+          "commitNameOld": "a8b943e8e4fcd4f21426c37e44bef85dedc20f49",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 245.24,
+          "commitsBetweenForRepo": 145,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,18 +1,18 @@\n-    public static File[] filter(IOFileFilter filter, File... files) {\n+    public static File[] filter(final IOFileFilter filter, final File... files) {\n         if (filter \u003d\u003d null) {\n             throw new IllegalArgumentException(\"file filter is null\");\n         }\n         if (files \u003d\u003d null) {\n             return new File[0];\n         }\n-        List\u003cFile\u003e acceptedFiles \u003d new ArrayList\u003cFile\u003e();\n-        for (File file : files) {\n+        final List\u003cFile\u003e acceptedFiles \u003d new ArrayList\u003cFile\u003e();\n+        for (final File file : files) {\n             if (file \u003d\u003d null) {\n                 throw new IllegalArgumentException(\"file array contains null\");\n             }\n             if (filter.accept(file)) {\n                 acceptedFiles.add(file);\n             }\n         }\n         return acceptedFiles.toArray(new File[acceptedFiles.size()]);\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1333120304000,
+          "commitNameOld": "a8b943e8e4fcd4f21426c37e44bef85dedc20f49",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 245.24,
+          "commitsBetweenForRepo": 145,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,18 +1,18 @@\n-    public static File[] filter(IOFileFilter filter, File... files) {\n+    public static File[] filter(final IOFileFilter filter, final File... files) {\n         if (filter \u003d\u003d null) {\n             throw new IllegalArgumentException(\"file filter is null\");\n         }\n         if (files \u003d\u003d null) {\n             return new File[0];\n         }\n-        List\u003cFile\u003e acceptedFiles \u003d new ArrayList\u003cFile\u003e();\n-        for (File file : files) {\n+        final List\u003cFile\u003e acceptedFiles \u003d new ArrayList\u003cFile\u003e();\n+        for (final File file : files) {\n             if (file \u003d\u003d null) {\n                 throw new IllegalArgumentException(\"file array contains null\");\n             }\n             if (filter.accept(file)) {\n                 acceptedFiles.add(file);\n             }\n         }\n         return acceptedFiles.toArray(new File[acceptedFiles.size()]);\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/filefilter/FileFilterUtils.java",
+        "newPath": "src/main/java/org/apache/commons/io/filefilter/FileFilterUtils.java"
+      }
+    },
+    "58db1d1a55827a211865f0bc73a529e1b1d0ffdc": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-198 FileFilterUtils - add ability to apply file filters to collections and arrays - thanks to Michael Wooten for the patch\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1002454 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1285730576000,
+      "commitName": "58db1d1a55827a211865f0bc73a529e1b1d0ffdc",
+      "commitAuthor": "Niall Pemberton"
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "LineIterator.java",
+  "functionName": "close",
+  "functionId": "close",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/LineIterator.java",
+  "functionStartLine": 162,
+  "functionEndLine": 168,
+  "changeHistory": [
+    "c1d92d87157b7d5a27aa989eff14e302e15f96d7",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "62ae9ca81916868ea2408c335b6585d3c384fa76",
+    "22db7febb9fedfd8e8a92c6def23e0fc3d7da0ed"
+  ],
+  "changeHistoryShort": {
+    "c1d92d87157b7d5a27aa989eff14e302e15f96d7": "Ymultichange(Yexceptionschange,Ybodychange)",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "62ae9ca81916868ea2408c335b6585d3c384fa76": "Ybodychange",
+    "22db7febb9fedfd8e8a92c6def23e0fc3d7da0ed": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "c1d92d87157b7d5a27aa989eff14e302e15f96d7": {
+      "type": "Ymultichange(Yexceptionschange,Ybodychange)",
+      "commitMessage": "[IO-505] Make LineIterator implement Closeable to support try-with-resources statements.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1742672 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1462577903000,
+      "commitName": "c1d92d87157b7d5a27aa989eff14e302e15f96d7",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Yexceptionschange",
+          "commitMessage": "[IO-505] Make LineIterator implement Closeable to support try-with-resources statements.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1742672 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1462577903000,
+          "commitName": "c1d92d87157b7d5a27aa989eff14e302e15f96d7",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1366845859000,
+          "commitNameOld": "effe551657921069b871519156a934e4ef3ae916",
+          "commitAuthorOld": "Sebastian Bazley",
+          "daysBetweenCommits": 1108.01,
+          "commitsBetweenForRepo": 263,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,5 +1,7 @@\n-    public void close() {\n+    public void close() throws IOException {\n         finished \u003d true;\n-        IOUtils.closeQuietly(bufferedReader);\n         cachedLine \u003d null;\n+        if (this.bufferedReader !\u003d null) {\n+            this.bufferedReader.close();\n+        }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Ybodychange",
+          "commitMessage": "[IO-505] Make LineIterator implement Closeable to support try-with-resources statements.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1742672 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1462577903000,
+          "commitName": "c1d92d87157b7d5a27aa989eff14e302e15f96d7",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1366845859000,
+          "commitNameOld": "effe551657921069b871519156a934e4ef3ae916",
+          "commitAuthorOld": "Sebastian Bazley",
+          "daysBetweenCommits": 1108.01,
+          "commitsBetweenForRepo": 263,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,5 +1,7 @@\n-    public void close() {\n+    public void close() throws IOException {\n         finished \u003d true;\n-        IOUtils.closeQuietly(bufferedReader);\n         cachedLine \u003d null;\n+        if (this.bufferedReader !\u003d null) {\n+            this.bufferedReader.close();\n+        }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/LineIterator.java",
+        "newPath": "src/main/java/org/apache/commons/io/LineIterator.java"
+      }
+    },
+    "62ae9ca81916868ea2408c335b6585d3c384fa76": {
+      "type": "Ybodychange",
+      "commitMessage": "Cleaned up LineIterator changes include:\n* Removed the IOIterator interface, it can be added back later when there is more than one\nIterator implementations with a close method.\n* Doesn\u0027t automatically close the Reader at EOF.\n* made LineIterator final because the hasNext method isn\u0027t implemented in a subclassable way.\n* constructor throws an IllegaArgumentException, not a NPE when the argument is bogus.\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@383730 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1141692558000,
+      "commitName": "62ae9ca81916868ea2408c335b6585d3c384fa76",
+      "commitAuthor": "Sandy McArthur Jr",
+      "commitDateOld": 1141589934000,
+      "commitNameOld": "4fb9946cf2af3076f2a8f17682cbb16752dc1446",
+      "commitAuthorOld": "Stephen Colebourne",
+      "daysBetweenCommits": 1.19,
+      "commitsBetweenForRepo": 3,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,7 +1,5 @@\n     public void close() {\n-        if (!finished) {\n-            IOUtils.closeQuietly(bufferedReader);\n-            finished \u003d true;\n-            cachedLine \u003d null;\n-        }\n+        finished \u003d true;\n+        IOUtils.closeQuietly(bufferedReader);\n+        cachedLine \u003d null;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "22db7febb9fedfd8e8a92c6def23e0fc3d7da0ed": {
+      "type": "Yintroduced",
+      "commitMessage": "Implement a LineIterator over the lines in a file or reader\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@366364 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1136508298000,
+      "commitName": "22db7febb9fedfd8e8a92c6def23e0fc3d7da0ed",
+      "commitAuthor": "Stephen Colebourne"
+    }
+  }
+}

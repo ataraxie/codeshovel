@@ -1,0 +1,122 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "MagicNumberFileFilter.java",
+  "functionName": "accept",
+  "functionId": "accept___file-File",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/filefilter/MagicNumberFileFilter.java",
+  "functionStartLine": 233,
+  "functionEndLine": 252,
+  "changeHistory": [
+    "4dc97b64005f0083b2facaa70f661138a4fa3fc0",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "79c97ab6a11d8c67914982bf2efdc82009de977b",
+    "d8cc4c9981d797f55c05e309050d788fa356da01"
+  ],
+  "changeHistoryShort": {
+    "4dc97b64005f0083b2facaa70f661138a4fa3fc0": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "79c97ab6a11d8c67914982bf2efdc82009de977b": "Ybodychange",
+    "d8cc4c9981d797f55c05e309050d788fa356da01": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "4dc97b64005f0083b2facaa70f661138a4fa3fc0": {
+      "type": "Ybodychange",
+      "commitMessage": "[IO-505] Deprecated of all IOUtils.closeQuietly() methods and use try-with-resources internally.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1742675 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1462579617000,
+      "commitName": "4dc97b64005f0083b2facaa70f661138a4fa3fc0",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1434912289000,
+      "commitNameOld": "7c58d8a9919c5c9dbc1485a21d56bb3f37444060",
+      "commitAuthorOld": "Kristian Rosenvold",
+      "daysBetweenCommits": 320.22,
+      "commitsBetweenForRepo": 117,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,20 @@\n     public boolean accept(final File file) {\n         if (file !\u003d null \u0026\u0026 file.isFile() \u0026\u0026 file.canRead()) {\n-            RandomAccessFile randomAccessFile \u003d null;\n             try {\n-                final byte[] fileBytes \u003d new byte[this.magicNumbers.length];\n-                randomAccessFile \u003d new RandomAccessFile(file, \"r\");\n-                randomAccessFile.seek(byteOffset);\n-                final int read \u003d randomAccessFile.read(fileBytes);\n-                if (read !\u003d magicNumbers.length) {\n-                    return false;\n+                try (RandomAccessFile randomAccessFile \u003d new RandomAccessFile(file, \"r\")) {\n+                    final byte[] fileBytes \u003d new byte[this.magicNumbers.length];\n+                    randomAccessFile.seek(byteOffset);\n+                    final int read \u003d randomAccessFile.read(fileBytes);\n+                    if (read !\u003d magicNumbers.length) {\n+                        return false;\n+                    }\n+                    return Arrays.equals(this.magicNumbers, fileBytes);\n                 }\n-                return Arrays.equals(this.magicNumbers, fileBytes);\n-            } catch (final IOException ioe) {\n+            }\n+            catch (final IOException ioe) {\n                 // Do nothing, fall through and do not accept file\n-            } finally {\n-                IOUtils.closeQuietly(randomAccessFile);\n             }\n         }\n \n         return false;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1333120391000,
+          "commitNameOld": "3ef56378e33ed5ccc296806e4ad6b8c463e5979f",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 245.24,
+          "commitsBetweenForRepo": 143,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,21 +1,21 @@\n-    public boolean accept(File file) {\n+    public boolean accept(final File file) {\n         if (file !\u003d null \u0026\u0026 file.isFile() \u0026\u0026 file.canRead()) {\n             RandomAccessFile randomAccessFile \u003d null;\n             try {\n-                byte[] fileBytes \u003d new byte[this.magicNumbers.length]; \n+                final byte[] fileBytes \u003d new byte[this.magicNumbers.length]; \n                 randomAccessFile \u003d new RandomAccessFile(file, \"r\");\n                 randomAccessFile.seek(byteOffset);\n-                int read \u003d randomAccessFile.read(fileBytes);\n+                final int read \u003d randomAccessFile.read(fileBytes);\n                 if (read !\u003d magicNumbers.length) {\n                     return false;\n                 }\n                 return Arrays.equals(this.magicNumbers, fileBytes);\n-            } catch (IOException ioe) {\n+            } catch (final IOException ioe) {\n                 // Do nothing, fall through and do not accept file\n             } finally {\n                 IOUtils.closeQuietly(randomAccessFile);\n             }\n         }\n         \n         return false;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1333120391000,
+          "commitNameOld": "3ef56378e33ed5ccc296806e4ad6b8c463e5979f",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 245.24,
+          "commitsBetweenForRepo": 143,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,21 +1,21 @@\n-    public boolean accept(File file) {\n+    public boolean accept(final File file) {\n         if (file !\u003d null \u0026\u0026 file.isFile() \u0026\u0026 file.canRead()) {\n             RandomAccessFile randomAccessFile \u003d null;\n             try {\n-                byte[] fileBytes \u003d new byte[this.magicNumbers.length]; \n+                final byte[] fileBytes \u003d new byte[this.magicNumbers.length]; \n                 randomAccessFile \u003d new RandomAccessFile(file, \"r\");\n                 randomAccessFile.seek(byteOffset);\n-                int read \u003d randomAccessFile.read(fileBytes);\n+                final int read \u003d randomAccessFile.read(fileBytes);\n                 if (read !\u003d magicNumbers.length) {\n                     return false;\n                 }\n                 return Arrays.equals(this.magicNumbers, fileBytes);\n-            } catch (IOException ioe) {\n+            } catch (final IOException ioe) {\n                 // Do nothing, fall through and do not accept file\n             } finally {\n                 IOUtils.closeQuietly(randomAccessFile);\n             }\n         }\n         \n         return false;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/filefilter/MagicNumberFileFilter.java",
+        "newPath": "src/main/java/org/apache/commons/io/filefilter/MagicNumberFileFilter.java"
+      }
+    },
+    "79c97ab6a11d8c67914982bf2efdc82009de977b": {
+      "type": "Ybodychange",
+      "commitMessage": "Fix some issues identified by FindBugs\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004077 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286153922000,
+      "commitName": "79c97ab6a11d8c67914982bf2efdc82009de977b",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1285966439000,
+      "commitNameOld": "724d798408a98141d537976a6c924ed8f5501fce",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 2.17,
+      "commitsBetweenForRepo": 14,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,21 @@\n     public boolean accept(File file) {\n         if (file !\u003d null \u0026\u0026 file.isFile() \u0026\u0026 file.canRead()) {\n             RandomAccessFile randomAccessFile \u003d null;\n             try {\n                 byte[] fileBytes \u003d new byte[this.magicNumbers.length]; \n                 randomAccessFile \u003d new RandomAccessFile(file, \"r\");\n                 randomAccessFile.seek(byteOffset);\n-                randomAccessFile.read(fileBytes);\n+                int read \u003d randomAccessFile.read(fileBytes);\n+                if (read !\u003d magicNumbers.length) {\n+                    return false;\n+                }\n                 return Arrays.equals(this.magicNumbers, fileBytes);\n             } catch (IOException ioe) {\n                 // Do nothing, fall through and do not accept file\n             } finally {\n                 IOUtils.closeQuietly(randomAccessFile);\n             }\n         }\n         \n         return false;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "d8cc4c9981d797f55c05e309050d788fa356da01": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-210 Create MagicNumberFileFilter\nApplied patch, with following fixes:\n- remove additional null checks in FileFilterUtils static methods; leave the checks to the ctors\n- close RandomAcessFile in MagicNumberFileFilter.accept()\n- close streams in test cases\n- Javadoc fix (wrap \u003c in {@code})\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@919682 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1267838765000,
+      "commitName": "d8cc4c9981d797f55c05e309050d788fa356da01",
+      "commitAuthor": "Sebastian Bazley"
+    }
+  }
+}

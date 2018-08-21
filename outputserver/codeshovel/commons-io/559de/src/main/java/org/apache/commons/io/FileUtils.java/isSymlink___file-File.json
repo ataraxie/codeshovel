@@ -1,0 +1,139 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileUtils.java",
+  "functionName": "isSymlink",
+  "functionId": "isSymlink___file-File",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileUtils.java",
+  "functionStartLine": 3097,
+  "functionEndLine": 3102,
+  "changeHistory": [
+    "9d432121e1c60557da3e159252a88885944e5f00",
+    "0bfb0f2b5ec98b5fd85dd5ab58c6a4dd3c0a821a",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "4353d481a16f046a19be7995e99bbc6edc18ddad",
+    "7bfef476d8a9e08223ec4bff31054ff23655da4c"
+  ],
+  "changeHistoryShort": {
+    "9d432121e1c60557da3e159252a88885944e5f00": "Ybodychange",
+    "0bfb0f2b5ec98b5fd85dd5ab58c6a4dd3c0a821a": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "4353d481a16f046a19be7995e99bbc6edc18ddad": "Ybodychange",
+    "7bfef476d8a9e08223ec4bff31054ff23655da4c": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "9d432121e1c60557da3e159252a88885944e5f00": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-514: Remove org.apache.commons.io.Java7Support\n",
+      "commitDate": 1478730779000,
+      "commitName": "9d432121e1c60557da3e159252a88885944e5f00",
+      "commitAuthor": "Pascal Schumacher",
+      "commitDateOld": 1465312548000,
+      "commitNameOld": "cf402c948b2144ea83c40edb00163b74505335d1",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 155.3,
+      "commitsBetweenForRepo": 24,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,26 +1,6 @@\n     public static boolean isSymlink(final File file) throws IOException {\n-        if ( Java7Support.isAtLeastJava7() )\n-        {\n-            return Java7Support.isSymLink( file );\n-        }\n-\n         if (file \u003d\u003d null) {\n             throw new NullPointerException(\"File must not be null\");\n         }\n-        if (FilenameUtils.isSystemWindows()) {\n-            return false;\n-        }\n-        File fileInCanonicalDir \u003d null;\n-        if (file.getParent() \u003d\u003d null) {\n-            fileInCanonicalDir \u003d file;\n-        } else {\n-            final File canonicalDir \u003d file.getParentFile().getCanonicalFile();\n-            fileInCanonicalDir \u003d new File(canonicalDir, file.getName());\n-        }\n-\n-        if (fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile())) {\n-            return isBrokenSymlink(file);\n-        } else {\n-            return true;\n-        }\n+        return Files.isSymbolicLink(file.toPath());\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "0bfb0f2b5ec98b5fd85dd5ab58c6a4dd3c0a821a": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-452 broken symlink support\n\nPatch by David Standish.\n\nAlso added reflection-based java7 symlink support from maven code (original author is me)\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1686472 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1434736844000,
+      "commitName": "0bfb0f2b5ec98b5fd85dd5ab58c6a4dd3c0a821a",
+      "commitAuthor": "Kristian Rosenvold",
+      "commitDateOld": 1434732228000,
+      "commitNameOld": "d4e1ad171208fc1a63de63b4a7e4c08e43edc41a",
+      "commitAuthorOld": "Kristian Rosenvold",
+      "daysBetweenCommits": 0.05,
+      "commitsBetweenForRepo": 4,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,21 +1,26 @@\n     public static boolean isSymlink(final File file) throws IOException {\n+        if ( Java7Support.isAtLeastJava7() )\n+        {\n+            return Java7Support.isSymLink( file );\n+        }\n+\n         if (file \u003d\u003d null) {\n             throw new NullPointerException(\"File must not be null\");\n         }\n         if (FilenameUtils.isSystemWindows()) {\n             return false;\n         }\n         File fileInCanonicalDir \u003d null;\n         if (file.getParent() \u003d\u003d null) {\n             fileInCanonicalDir \u003d file;\n         } else {\n             final File canonicalDir \u003d file.getParentFile().getCanonicalFile();\n             fileInCanonicalDir \u003d new File(canonicalDir, file.getName());\n         }\n \n         if (fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile())) {\n-            return false;\n+            return isBrokenSymlink(file);\n         } else {\n             return true;\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1351082444000,
+          "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 37.34,
+          "commitsBetweenForRepo": 34,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,21 +1,21 @@\n-    public static boolean isSymlink(File file) throws IOException {\n+    public static boolean isSymlink(final File file) throws IOException {\n         if (file \u003d\u003d null) {\n             throw new NullPointerException(\"File must not be null\");\n         }\n         if (FilenameUtils.isSystemWindows()) {\n             return false;\n         }\n         File fileInCanonicalDir \u003d null;\n         if (file.getParent() \u003d\u003d null) {\n             fileInCanonicalDir \u003d file;\n         } else {\n-            File canonicalDir \u003d file.getParentFile().getCanonicalFile();\n+            final File canonicalDir \u003d file.getParentFile().getCanonicalFile();\n             fileInCanonicalDir \u003d new File(canonicalDir, file.getName());\n         }\n         \n         if (fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile())) {\n             return false;\n         } else {\n             return true;\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1351082444000,
+          "commitNameOld": "965f66687351e0abd445925d0497f96e5656ff13",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 37.34,
+          "commitsBetweenForRepo": 34,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,21 +1,21 @@\n-    public static boolean isSymlink(File file) throws IOException {\n+    public static boolean isSymlink(final File file) throws IOException {\n         if (file \u003d\u003d null) {\n             throw new NullPointerException(\"File must not be null\");\n         }\n         if (FilenameUtils.isSystemWindows()) {\n             return false;\n         }\n         File fileInCanonicalDir \u003d null;\n         if (file.getParent() \u003d\u003d null) {\n             fileInCanonicalDir \u003d file;\n         } else {\n-            File canonicalDir \u003d file.getParentFile().getCanonicalFile();\n+            final File canonicalDir \u003d file.getParentFile().getCanonicalFile();\n             fileInCanonicalDir \u003d new File(canonicalDir, file.getName());\n         }\n         \n         if (fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile())) {\n             return false;\n         } else {\n             return true;\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/FileUtils.java",
+        "newPath": "src/main/java/org/apache/commons/io/FileUtils.java"
+      }
+    },
+    "4353d481a16f046a19be7995e99bbc6edc18ddad": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-168 Always return false from isSymlink() for windows\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1002416 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1285716412000,
+      "commitName": "4353d481a16f046a19be7995e99bbc6edc18ddad",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1285710564000,
+      "commitNameOld": "57686b62dba65d1dffb4ad472df93f920dbcf489",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.07,
+      "commitsBetweenForRepo": 2,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,21 @@\n     public static boolean isSymlink(File file) throws IOException {\n         if (file \u003d\u003d null) {\n             throw new NullPointerException(\"File must not be null\");\n         }\n+        if (FilenameUtils.isSystemWindows()) {\n+            return false;\n+        }\n         File fileInCanonicalDir \u003d null;\n         if (file.getParent() \u003d\u003d null) {\n             fileInCanonicalDir \u003d file;\n         } else {\n             File canonicalDir \u003d file.getParentFile().getCanonicalFile();\n             fileInCanonicalDir \u003d new File(canonicalDir, file.getName());\n         }\n         \n         if (fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile())) {\n             return false;\n         } else {\n             return true;\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "7bfef476d8a9e08223ec4bff31054ff23655da4c": {
+      "type": "Yintroduced",
+      "commitMessage": "Fix IO-168 Symbolic links (symlinks) followed when deleting directory - reported by Apostolos Lerios, thanks to Attila Szegedi for the solution and Brydie McCoy for the patch\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@684715 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1218453698000,
+      "commitName": "7bfef476d8a9e08223ec4bff31054ff23655da4c",
+      "commitAuthor": "Niall Pemberton"
+    }
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileAlterationObserver.java",
+  "functionName": "listFiles",
+  "functionId": "listFiles___file-File",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/monitor/FileAlterationObserver.java",
+  "functionStartLine": 438,
+  "functionEndLine": 450,
+  "changeHistory": [
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "1170279dc85c2bbdea594b053c56b379a72a2104",
+    "2abfa999f08533349b7067edb4c5d368f5b3612c",
+    "f2c7194deeaf66ef3c83e24cb3a13236efe68261",
+    "2ee073f3eb5da25c88e184ea78581b297f168a06",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "81eef5ded4684a1f4edea06e038894520fe72bc2"
+  ],
+  "changeHistoryShort": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Yparametermetachange",
+    "1170279dc85c2bbdea594b053c56b379a72a2104": "Ybodychange",
+    "2abfa999f08533349b7067edb4c5d368f5b3612c": "Ybodychange",
+    "f2c7194deeaf66ef3c83e24cb3a13236efe68261": "Yfilerename",
+    "2ee073f3eb5da25c88e184ea78581b297f168a06": "Yfilerename",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "81eef5ded4684a1f4edea06e038894520fe72bc2": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Yparametermetachange",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1332449729000,
+      "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 253.0,
+      "commitsBetweenForRepo": 182,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n-    private File[] listFiles(File file) {\n+    private File[] listFiles(final File file) {\n         File[] children \u003d null;\n         if (file.isDirectory()) {\n             children \u003d fileFilter \u003d\u003d null ? file.listFiles() : file.listFiles(fileFilter);\n         }\n         if (children \u003d\u003d null) {\n             children \u003d FileUtils.EMPTY_FILE_ARRAY;\n         }\n         if (comparator !\u003d null \u0026\u0026 children.length \u003e 1) {\n             Arrays.sort(children, comparator);\n         }\n         return children;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "1170279dc85c2bbdea594b053c56b379a72a2104": {
+      "type": "Ybodychange",
+      "commitMessage": "Remove noisy and unnecessary parens. Especially painful in return statements: \"return (foo + bar);\" vs. \"return foo + bar;\"\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1302748 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1332207332000,
+      "commitName": "1170279dc85c2bbdea594b053c56b379a72a2104",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1299890034000,
+      "commitNameOld": "c7a7418920656c7fc1e42cdd4fb8760ccb1ce5f7",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 374.04,
+      "commitsBetweenForRepo": 178,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private File[] listFiles(File file) {\n         File[] children \u003d null;\n         if (file.isDirectory()) {\n-            children \u003d (fileFilter \u003d\u003d null) ? file.listFiles() : file.listFiles(fileFilter);\n+            children \u003d fileFilter \u003d\u003d null ? file.listFiles() : file.listFiles(fileFilter);\n         }\n         if (children \u003d\u003d null) {\n             children \u003d FileUtils.EMPTY_FILE_ARRAY;\n         }\n         if (comparator !\u003d null \u0026\u0026 children.length \u003e 1) {\n             Arrays.sort(children, comparator);\n         }\n         return children;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "2abfa999f08533349b7067edb4c5d368f5b3612c": {
+      "type": "Ybodychange",
+      "commitMessage": "Move/reuse static empty arrays\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1022723 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1287091287000,
+      "commitName": "2abfa999f08533349b7067edb4c5d368f5b3612c",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1287007736000,
+      "commitNameOld": "f2c7194deeaf66ef3c83e24cb3a13236efe68261",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.97,
+      "commitsBetweenForRepo": 6,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,13 +1,13 @@\n     private File[] listFiles(File file) {\n         File[] children \u003d null;\n         if (file.isDirectory()) {\n             children \u003d (fileFilter \u003d\u003d null) ? file.listFiles() : file.listFiles(fileFilter);\n         }\n         if (children \u003d\u003d null) {\n-            children \u003d EMPTY_FILES;\n+            children \u003d FileUtils.EMPTY_FILE_ARRAY;\n         }\n         if (comparator !\u003d null \u0026\u0026 children.length \u003e 1) {\n             Arrays.sort(children, comparator);\n         }\n         return children;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "f2c7194deeaf66ef3c83e24cb3a13236efe68261": {
+      "type": "Yfilerename",
+      "commitMessage": "Rename to FilerAlteration*\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1022311 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1287007736000,
+      "commitName": "f2c7194deeaf66ef3c83e24cb3a13236efe68261",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286987869000,
+      "commitNameOld": "9a1f3f7593406baba3a7fb5a01b2f3b622d53931",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 0.23,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/main/java/org/apache/commons/io/monitor/FileObserver.java",
+        "newPath": "src/main/java/org/apache/commons/io/monitor/FileAlterationObserver.java"
+      }
+    },
+    "2ee073f3eb5da25c88e184ea78581b297f168a06": {
+      "type": "Yfilerename",
+      "commitMessage": "IO-132 Rename FilesystemEntry/Listener/Observer to FilesEntry/Listener/Observer\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1021892 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286911660000,
+      "commitName": "2ee073f3eb5da25c88e184ea78581b297f168a06",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286909356000,
+      "commitNameOld": "f04a6d47557933a7fb855c1646c350c856def37d",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 0.03,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/main/java/org/apache/commons/io/monitor/FilesystemObserver.java",
+        "newPath": "src/main/java/org/apache/commons/io/monitor/FileObserver.java"
+      }
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/monitor/FilesystemObserver.java",
+        "newPath": "src/main/java/org/apache/commons/io/monitor/FilesystemObserver.java"
+      }
+    },
+    "81eef5ded4684a1f4edea06e038894520fe72bc2": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-132 - add File Listener/Monitor\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@645221 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1207475792000,
+      "commitName": "81eef5ded4684a1f4edea06e038894520fe72bc2",
+      "commitAuthor": "Niall Pemberton"
+    }
+  }
+}

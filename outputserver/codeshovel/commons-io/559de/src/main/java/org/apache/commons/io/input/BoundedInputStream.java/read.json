@@ -1,0 +1,98 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "BoundedInputStream.java",
+  "functionName": "read",
+  "functionId": "read",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/input/BoundedInputStream.java",
+  "functionStartLine": 86,
+  "functionEndLine": 93,
+  "changeHistory": [
+    "50402e2c494d0b88f13f80cc76c914dadf350ab9",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "b1dede03147ca84376b4c3a26010229b2b20c105",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "c88a865299f2abb21082cf8ff24cf5e8f97126d2"
+  ],
+  "changeHistoryShort": {
+    "50402e2c494d0b88f13f80cc76c914dadf350ab9": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ybodychange",
+    "b1dede03147ca84376b4c3a26010229b2b20c105": "Ybodychange",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "c88a865299f2abb21082cf8ff24cf5e8f97126d2": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "50402e2c494d0b88f13f80cc76c914dadf350ab9": {
+      "type": "Ybodychange",
+      "commitMessage": "Refactor magic number into constant.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1586308 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1397138785000,
+      "commitName": "50402e2c494d0b88f13f80cc76c914dadf350ab9",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1354308699000,
+      "commitNameOld": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 495.72,
+      "commitsBetweenForRepo": 156,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     public int read() throws IOException {\n         if (max \u003e\u003d 0 \u0026\u0026 pos \u003e\u003d max) {\n-            return -1;\n+            return EOF;\n         }\n         final int result \u003d in.read();\n         pos++;\n         return result;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ybodychange",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1333120391000,
+      "commitNameOld": "3ef56378e33ed5ccc296806e4ad6b8c463e5979f",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 245.24,
+      "commitsBetweenForRepo": 143,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     public int read() throws IOException {\n         if (max \u003e\u003d 0 \u0026\u0026 pos \u003e\u003d max) {\n             return -1;\n         }\n-        int result \u003d in.read();\n+        final int result \u003d in.read();\n         pos++;\n         return result;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "b1dede03147ca84376b4c3a26010229b2b20c105": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-273 BoundedInputStream.read() treats max differently from BoundedInputStream.read(byte[]...)\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1295645 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1330617833000,
+      "commitName": "b1dede03147ca84376b4c3a26010229b2b20c105",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1286218476000,
+      "commitNameOld": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 513.88,
+      "commitsBetweenForRepo": 212,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,8 +1,8 @@\n     public int read() throws IOException {\n-        if (max\u003e\u003d0 \u0026\u0026 pos\u003d\u003dmax) {\n+        if (max \u003e\u003d 0 \u0026\u0026 pos \u003e\u003d max) {\n             return -1;\n         }\n         int result \u003d in.read();\n         pos++;\n         return result;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/input/BoundedInputStream.java",
+        "newPath": "src/main/java/org/apache/commons/io/input/BoundedInputStream.java"
+      }
+    },
+    "c88a865299f2abb21082cf8ff24cf5e8f97126d2": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-197 Copy BoundedInputStream from Apache JackRabbit\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1002430 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1285720537000,
+      "commitName": "c88a865299f2abb21082cf8ff24cf5e8f97126d2",
+      "commitAuthor": "Niall Pemberton"
+    }
+  }
+}

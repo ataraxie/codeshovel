@@ -1,0 +1,98 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "MagicNumberFileFilter.java",
+  "functionName": "toString",
+  "functionId": "toString",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/filefilter/MagicNumberFileFilter.java",
+  "functionStartLine": 261,
+  "functionEndLine": 270,
+  "changeHistory": [
+    "7c58d8a9919c5c9dbc1485a21d56bb3f37444060",
+    "5d982c5fab42e707bb0b97b4a35ac966cb5aef42",
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "d8cc4c9981d797f55c05e309050d788fa356da01"
+  ],
+  "changeHistoryShort": {
+    "7c58d8a9919c5c9dbc1485a21d56bb3f37444060": "Ybodychange",
+    "5d982c5fab42e707bb0b97b4a35ac966cb5aef42": "Ybodychange",
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ybodychange",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "d8cc4c9981d797f55c05e309050d788fa356da01": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "7c58d8a9919c5c9dbc1485a21d56bb3f37444060": {
+      "type": "Ybodychange",
+      "commitMessage": "Fixed all checkstyle errors and a findbugs error\n\nFindbugs error was:\norg.apache.commons.io.output.DeferredFileOutputStream#thresholdReached\npossible file handle leak upon exception\n\nAlso contains fix for IO-446, submitted by Jeffrey Barrus\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1686747 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1434912289000,
+      "commitName": "7c58d8a9919c5c9dbc1485a21d56bb3f37444060",
+      "commitAuthor": "Kristian Rosenvold",
+      "commitDateOld": 1397172877000,
+      "commitNameOld": "39acf07bc85fb77c2eb287d05302948597ccc0d9",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 436.8,
+      "commitsBetweenForRepo": 83,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,10 @@\n     public String toString() {\n         final StringBuilder builder \u003d new StringBuilder(super.toString());\n         builder.append(\"(\");\n-        builder.append(new String(magicNumbers, Charset.defaultCharset()));// TODO perhaps use hex if value is not printable\n+        builder.append(new String(magicNumbers, Charset.defaultCharset()));// TODO perhaps use hex if value is not\n+                                                                           // printable\n         builder.append(\",\");\n         builder.append(this.byteOffset);\n         builder.append(\")\");\n         return builder.toString();\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "5d982c5fab42e707bb0b97b4a35ac966cb5aef42": {
+      "type": "Ybodychange",
+      "commitMessage": "Make explicit where the default platform encoding is being used\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1468885 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1366203792000,
+      "commitName": "5d982c5fab42e707bb0b97b4a35ac966cb5aef42",
+      "commitAuthor": "Sebastian Bazley",
+      "commitDateOld": 1354308699000,
+      "commitNameOld": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 137.67,
+      "commitsBetweenForRepo": 53,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public String toString() {\n         final StringBuilder builder \u003d new StringBuilder(super.toString());\n         builder.append(\"(\");\n-        builder.append(new String(magicNumbers));// TODO perhaps use hex if value is not printable\n+        builder.append(new String(magicNumbers, Charset.defaultCharset()));// TODO perhaps use hex if value is not printable\n         builder.append(\",\");\n         builder.append(this.byteOffset);\n         builder.append(\")\");\n         return builder.toString();\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ybodychange",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1333120391000,
+      "commitNameOld": "3ef56378e33ed5ccc296806e4ad6b8c463e5979f",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 245.24,
+      "commitsBetweenForRepo": 143,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,9 +1,9 @@\n     public String toString() {\n-        StringBuilder builder \u003d new StringBuilder(super.toString());\n+        final StringBuilder builder \u003d new StringBuilder(super.toString());\n         builder.append(\"(\");\n         builder.append(new String(magicNumbers));// TODO perhaps use hex if value is not printable\n         builder.append(\",\");\n         builder.append(this.byteOffset);\n         builder.append(\")\");\n         return builder.toString();\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/filefilter/MagicNumberFileFilter.java",
+        "newPath": "src/main/java/org/apache/commons/io/filefilter/MagicNumberFileFilter.java"
+      }
+    },
+    "d8cc4c9981d797f55c05e309050d788fa356da01": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-210 Create MagicNumberFileFilter\nApplied patch, with following fixes:\n- remove additional null checks in FileFilterUtils static methods; leave the checks to the ctors\n- close RandomAcessFile in MagicNumberFileFilter.accept()\n- close streams in test cases\n- Javadoc fix (wrap \u003c in {@code})\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@919682 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1267838765000,
+      "commitName": "d8cc4c9981d797f55c05e309050d788fa356da01",
+      "commitAuthor": "Sebastian Bazley"
+    }
+  }
+}

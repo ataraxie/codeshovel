@@ -1,0 +1,78 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "CharSequenceInputStream.java",
+  "functionName": "read",
+  "functionId": "read",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/input/CharSequenceInputStream.java",
+  "functionStartLine": 164,
+  "functionEndLine": 174,
+  "changeHistory": [
+    "24df623ed69f86a13a2ec453f480a4e3f93b04ff",
+    "0986e7970561a77ade9bdaaf701e14017d105464",
+    "11c95251bc5923b32fe3b8e9fd9f0fb51c563c57",
+    "50a7fdcaf8fb9a684a96568ceeb8643b4941c475"
+  ],
+  "changeHistoryShort": {
+    "24df623ed69f86a13a2ec453f480a4e3f93b04ff": "Ybodychange",
+    "0986e7970561a77ade9bdaaf701e14017d105464": "Ybodychange",
+    "11c95251bc5923b32fe3b8e9fd9f0fb51c563c57": "Ybodychange",
+    "50a7fdcaf8fb9a684a96568ceeb8643b4941c475": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "24df623ed69f86a13a2ec453f480a4e3f93b04ff": {
+      "type": "Ybodychange",
+      "commitMessage": "Statement unnecessarily nested within else clause.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1737902 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1459902323000,
+      "commitName": "24df623ed69f86a13a2ec453f480a4e3f93b04ff",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1434912289000,
+      "commitNameOld": "7c58d8a9919c5c9dbc1485a21d56bb3f37444060",
+      "commitAuthorOld": "Kristian Rosenvold",
+      "daysBetweenCommits": 289.24,
+      "commitsBetweenForRepo": 89,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,11 @@\n     public int read() throws IOException {\n         for (;;) {\n             if (this.bbuf.hasRemaining()) {\n                 return this.bbuf.get() \u0026 0xFF;\n-            } else {\n-                fillBuffer();\n-                if (!this.bbuf.hasRemaining() \u0026\u0026 !this.cbuf.hasRemaining()) {\n-                    return EOF;\n-                }\n+            }\n+            fillBuffer();\n+            if (!this.bbuf.hasRemaining() \u0026\u0026 !this.cbuf.hasRemaining()) {\n+                return EOF;\n             }\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "0986e7970561a77ade9bdaaf701e14017d105464": {
+      "type": "Ybodychange",
+      "commitMessage": "\u003caction issue\u003d\"IO-437\" dev\u003d\"ggregory\" type\u003d\"add\"\u003e\n  Make IOUtils.EOF public and reuse it in various classes.\n\u003c/action\u003e\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1586350 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1397145440000,
+      "commitName": "0986e7970561a77ade9bdaaf701e14017d105464",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1366847501000,
+      "commitNameOld": "586d223e8049873dfa350e5f575e3c03e714dbcf",
+      "commitAuthorOld": "Sebastian Bazley",
+      "daysBetweenCommits": 350.67,
+      "commitsBetweenForRepo": 63,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     public int read() throws IOException {\n         for (;;) {\n             if (this.bbuf.hasRemaining()) {\n                 return this.bbuf.get() \u0026 0xFF;\n             } else {\n                 fillBuffer();\n                 if (!this.bbuf.hasRemaining() \u0026\u0026 !this.cbuf.hasRemaining()) {\n-                    return EOS;\n+                    return EOF;\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "11c95251bc5923b32fe3b8e9fd9f0fb51c563c57": {
+      "type": "Ybodychange",
+      "commitMessage": "Replace magic number with private constant EOS (End Of Stream).\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415701 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354289952000,
+      "commitName": "11c95251bc5923b32fe3b8e9fd9f0fb51c563c57",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1354289885000,
+      "commitNameOld": "61bfd7be89e97e204caea839e37c67c6f837a710",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,12 +1,12 @@\n     public int read() throws IOException {\n         for (;;) {\n             if (this.bbuf.hasRemaining()) {\n                 return this.bbuf.get() \u0026 0xFF;\n             } else {\n                 fillBuffer();\n                 if (!this.bbuf.hasRemaining() \u0026\u0026 !this.cbuf.hasRemaining()) {\n-                    return -1;\n+                    return EOS;\n                 }\n             }\n         }\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "50a7fdcaf8fb9a684a96568ceeb8643b4941c475": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-297 CharSequenceInputStream to efficiently stream content of a CharSequence\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1295643 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1330617632000,
+      "commitName": "50a7fdcaf8fb9a684a96568ceeb8643b4941c475",
+      "commitAuthor": "Sebastian Bazley"
+    }
+  }
+}

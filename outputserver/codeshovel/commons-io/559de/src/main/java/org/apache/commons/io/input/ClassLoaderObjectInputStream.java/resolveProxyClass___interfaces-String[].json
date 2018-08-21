@@ -1,0 +1,68 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "ClassLoaderObjectInputStream.java",
+  "functionName": "resolveProxyClass",
+  "functionId": "resolveProxyClass___interfaces-String[]",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/input/ClassLoaderObjectInputStream.java",
+  "functionStartLine": 87,
+  "functionEndLine": 98,
+  "changeHistory": [
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "8ff60c3e444c84396c54eb5621c829067954f66d"
+  ],
+  "changeHistoryShort": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "8ff60c3e444c84396c54eb5621c829067954f66d": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1332449729000,
+          "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 253.0,
+          "commitsBetweenForRepo": 182,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,12 +1,12 @@\n-    protected Class\u003c?\u003e resolveProxyClass(String[] interfaces) throws IOException,\n+    protected Class\u003c?\u003e resolveProxyClass(final String[] interfaces) throws IOException,\n             ClassNotFoundException {\n-        Class\u003c?\u003e[] interfaceClasses \u003d new Class[interfaces.length];\n+        final Class\u003c?\u003e[] interfaceClasses \u003d new Class[interfaces.length];\n         for (int i \u003d 0; i \u003c interfaces.length; i++) {\n             interfaceClasses[i] \u003d Class.forName(interfaces[i], false, classLoader);\n         }\n         try {\n             return Proxy.getProxyClass(classLoader, interfaceClasses);\n-        } catch (IllegalArgumentException e) {\n+        } catch (final IllegalArgumentException e) {\n             return super.resolveProxyClass(interfaces);\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1332449729000,
+          "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 253.0,
+          "commitsBetweenForRepo": 182,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,12 +1,12 @@\n-    protected Class\u003c?\u003e resolveProxyClass(String[] interfaces) throws IOException,\n+    protected Class\u003c?\u003e resolveProxyClass(final String[] interfaces) throws IOException,\n             ClassNotFoundException {\n-        Class\u003c?\u003e[] interfaceClasses \u003d new Class[interfaces.length];\n+        final Class\u003c?\u003e[] interfaceClasses \u003d new Class[interfaces.length];\n         for (int i \u003d 0; i \u003c interfaces.length; i++) {\n             interfaceClasses[i] \u003d Class.forName(interfaces[i], false, classLoader);\n         }\n         try {\n             return Proxy.getProxyClass(classLoader, interfaceClasses);\n-        } catch (IllegalArgumentException e) {\n+        } catch (final IllegalArgumentException e) {\n             return super.resolveProxyClass(interfaces);\n         }\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "8ff60c3e444c84396c54eb5621c829067954f66d": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-260 Fix ClassLoaderObjectInputStream does not handle Proxy classes - thanks to John Carrino\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1080833 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1299892418000,
+      "commitName": "8ff60c3e444c84396c54eb5621c829067954f66d",
+      "commitAuthor": "Niall Pemberton"
+    }
+  }
+}

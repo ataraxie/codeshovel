@@ -3,53 +3,22 @@ const path = require('path');
 
 
 // /home/ncbradley/cs-output/diff_semantic_gitlog/checkstyle/119fd/src/it/java/com/google/checkstyle/test/base/AbstractIndentationTestSupport.java/isCommentConsistent___comment-String.json
-const outputDir = "/home/ncbradley/cs-output/diff_semantic_gitlog";
-const repo = "checkstyle";  // set to null to run against all repos
-const commit = ""; // set to null to run against all commits
+const outputDir = "/Users/felix/CODESTORY/codeshovel/outputserver";
+const repo = "commons-io";  // set to null to run against all repos
+const commit = "559de"; // set to null to run against all commits
 
-let baseDir = outputDir;
+const dirCodeshovel = outputDir + "/codeshovel/" + repo;
+const dirDiff = outputDir + "/diff_semantic_gitlog/" + repo;
 
-if (repo) {
-    if (commit) {
-        baseDir += "/" + repo + "/" + commit;
-    }
-    else {
-        baseDir += "/" + repo
-    }
+https://jonlabelle.com/snippets/view/javascript/calculate-mean-median-mode-and-range-in-javascript
+function median(values) {
+    debugger;
+    values.sort((a, b) => a - b);
+	let lowMiddle = Math.floor((values.length - 1) / 2);
+	let highMiddle = Math.ceil((values.length - 1) / 2);
+	let median = (values[lowMiddle] + values[highMiddle]) / 2;
+	return median;
 }
-
-
-
-// function walker(dir) {
-//     const results = [];
-//     return new Promise((resolve, reject) => {
-//         fs.readdir(dir, (err, files) => {
-//             if (err) {
-//                 reject(err);
-//             }
-
-//             const pending = files.length;
-
-//             if (!pending) {
-//                 return resolve(results);
-//             }
-
-//             const promises = [];
-//             for (let file of files) {
-//                 file = path.resolve(dir, file);
-//                 fs.stat(file, function(err, stats) {
-//                     if (stats && stats.isDirectory()) {
-//                         promises.push(walker(file));
-//                     } else {
-//                         results.push(file);
-//                     }
-//                 });
-//             }
-//             promises.then(r => resolve(results.concat(r))).catch(err => reject(err));
-//         });
-//     });
-// }
-
 
 /**
  * Explores recursively a directory and returns all the filepaths and folderpaths in the callback.
@@ -91,50 +60,143 @@ function filewalker(dir, done) {
     });
 };
 
-filewalker(baseDir, (error, results) => {
+let fullResult = {};
+
+filewalker(dirDiff, (error, results) => {
     if (error) {
         console.log(error);
         throw error;
     }
 
-    // do something with files
+	// do something with files
     // how many "extra" commits did we find?
-    let totalOnlyCodeShovel = 0;
-    let totalOnlyBaseLine = 0;
-    let totalIntersection = 0;
-    let totalCommits = 0;
+    let totalShovel = 0;
+    let totalBase = 0;
+    let totalOnlyShovel = 0;
+    let totalOnlyBase = 0;
+    let methodDetails = {};
+    let shovelResultsArr = [];
+    let baseResultsArr = [];
+
+	fullResult.totalMethods = results.length;
+    fullResult.totalHistoryEquals1 = 0;
+    fullResult.totalHistory2To5 = 0;
+	fullResult.totalHistory6To10 = 0;
+	fullResult.totalHistoryGt10 = 0;
+	fullResult.totalHistoryCount = {};
+
     for (const file of results) {
         try {
-            const semanticMethodDiff = JSON.parse(fs.readFileSync(file));
-            const cs = new Set(semanticMethodDiff.codeshovelHistory);
-            const bl = new Set(semanticMethodDiff.baselineHistory);
+            const diffObj = JSON.parse(fs.readFileSync(file));
+	        const methodId = file.split("/diff_semantic_gitlog/")[1].replace(".json", "");
+	        let singleMethodResult = {};
 
-            totalCommits += union(cs, bl).size;
-            totalOnlyCodeShovel += semanticMethodDiff.onlyInCodeshovel.length;
-            totalOnlyBaseLine += semanticMethodDiff.onlyInBaseline.length;
-            totalIntersection += intersection(cs, bl).size;
+	        let numShovel = diffObj.codeshovelHistory.length;
+	        shovelResultsArr.push(numShovel);
+	        totalShovel += numShovel;
+	        singleMethodResult.sizeShovel = numShovel;
+	        if (numShovel === 1) fullResult.totalHistoryEquals1 += 1;
+	        else if (numShovel <= 5) fullResult.totalHistory2To5 += 1;
+	        else if (numShovel <= 10) fullResult.totalHistory6To10 += 1;
+	        else if (numShovel > 10) fullResult.totalHistoryGt10 += 1;
+
+	        if (!fullResult.totalHistoryCount[numShovel]) {
+		        fullResult.totalHistoryCount[numShovel] = 1;
+            } else {
+		        fullResult.totalHistoryCount[numShovel] += 1;
+            }
+
+	        let numBase = diffObj.baselineHistory.length;
+	        totalBase += numBase;
+	        singleMethodResult.sizeBase = numBase;
+	        baseResultsArr.push(numBase);
+
+            let numOnlyShovel = diffObj.onlyInCodeshovel.length;
+            totalOnlyShovel += numOnlyShovel;
+	        singleMethodResult.sizeOnlyShovel = numOnlyShovel;
+
+            let numOnlyBase = diffObj.onlyInBaseline.length;
+            totalOnlyBase += numBase;
+	        singleMethodResult.sizeOnlyBase = numOnlyBase;
+
+	        methodDetails[methodId] = singleMethodResult;
+
+
         } catch (err) {
             console.log(`ERROR processing ${file}. ${err}`);
         }
     }
-    console.log(`Both: ${totalIntersection}, Baseline: ${totalOnlyBaseLine}, Codeshovel: ${totalOnlyCodeShovel}; Total: ${totalCommits}`);
 
+    fullResult.avgSizeShovel = totalShovel / fullResult.totalMethods;
+    fullResult.avgSizeBase = totalBase / fullResult.totalMethods;
+    fullResult.medianSizeShovel = median(shovelResultsArr);
+    fullResult.medianSizeBase = median(baseResultsArr);
+    // fullResult.methodDetails = methodDetails;
 
-    // const methodCommitCount = [];
-    // for (const file of results) {
-    //     try {
-    //         const method = JSON.parse(fs.readFileSync(file));
-    //         const numCommits = method.changeHistory.length;
-    //         if (numCommits > 1) {
-    //             methodCommitCount.push(numCommits);
-    //         }
-    //     } catch (err) {
-    //         console.log(`ERROR processing ${file}.`);
-    //     }
-    // }
-    // fs.writeFileSync("methodCommitCount.csv", methodCommitCount.join(",\n"));
-    // console.log("Number methods analyzed:", methodCommitCount.length);
+    try {
+	    collectShovel();
+    } catch (err) {
+        console.err("Could not collect shovel stats");
+    }
+
 });
+
+function addStats(statsObj, changeType) {
+    let doAdd = function(changeType) {
+	    if (!statsObj[changeType]) {
+		    statsObj[changeType] = 1;
+	    } else {
+		    statsObj[changeType] += 1;
+	    }
+    };
+
+    if (changeType.startsWith("Ymultichange")) {
+        let subchangesString = changeType.split("Ymultichange(")[1].replace(")", "");
+        let subchangesArr = subchangesString.split(",");
+        for (let subchange of subchangesArr) {
+            doAdd(subchange);
+        }
+    } else {
+        doAdd(changeType);
+    }
+
+}
+
+function collectShovel() {
+	filewalker(dirCodeshovel, (error, results) => {
+		if (error) {
+			console.log(error);
+			throw error;
+		}
+
+		// do something with files
+		// how many "extra" commits did we find?
+		let changeStats = {};
+
+		for (const file of results) {
+			try {
+				const shovelObj = JSON.parse(fs.readFileSync(file));
+				const methodId = file.split(outputDir + "/codeshovel/")[1].replace(".json", "");
+				for (let commitName in shovelObj.changeHistoryShort) {
+					let changeType = shovelObj.changeHistoryShort[commitName];
+                    addStats(changeStats, changeType);
+				}
+
+
+			} catch (err) {
+				console.log(`ERROR processing ${file}. ${err}`);
+			}
+		}
+
+		fullResult.changeStats = changeStats;
+
+        console.log(fullResult);
+	});
+}
+
+
+
+
 
 //http://2ality.com/2015/01/es6-set-operations.html
 function union(a, b) {

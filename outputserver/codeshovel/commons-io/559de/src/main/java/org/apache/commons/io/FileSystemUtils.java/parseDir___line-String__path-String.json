@@ -1,0 +1,105 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileSystemUtils.java",
+  "functionName": "parseDir",
+  "functionId": "parseDir___line-String__path-String",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileSystemUtils.java",
+  "functionStartLine": 342,
+  "functionEndLine": 384,
+  "changeHistory": [
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "6d6a73a689ce734d094f71723752cde23a1d9259",
+    "0a03609ddc6380dd7c9053eb8cb04072baa476a1"
+  ],
+  "changeHistoryShort": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "6d6a73a689ce734d094f71723752cde23a1d9259": "Ybodychange",
+    "0a03609ddc6380dd7c9053eb8cb04072baa476a1": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1332449729000,
+          "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 253.0,
+          "commitsBetweenForRepo": 182,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,43 +1,43 @@\n-    long parseDir(String line, String path) throws IOException {\n+    long parseDir(final String line, final String path) throws IOException {\n         // read from the end of the line to find the last numeric\n         // character on the line, then continue until we find the first\n         // non-numeric character, and everything between that and the last\n         // numeric character inclusive is our free space bytes count\n         int bytesStart \u003d 0;\n         int bytesEnd \u003d 0;\n         int j \u003d line.length() - 1;\n         innerLoop1: while (j \u003e\u003d 0) {\n-            char c \u003d line.charAt(j);\n+            final char c \u003d line.charAt(j);\n             if (Character.isDigit(c)) {\n               // found the last numeric character, this is the end of\n               // the free space bytes count\n               bytesEnd \u003d j + 1;\n               break innerLoop1;\n             }\n             j--;\n         }\n         innerLoop2: while (j \u003e\u003d 0) {\n-            char c \u003d line.charAt(j);\n+            final char c \u003d line.charAt(j);\n             if (!Character.isDigit(c) \u0026\u0026 c !\u003d \u0027,\u0027 \u0026\u0026 c !\u003d \u0027.\u0027) {\n               // found the next non-numeric character, this is the\n               // beginning of the free space bytes count\n               bytesStart \u003d j + 1;\n               break innerLoop2;\n             }\n             j--;\n         }\n         if (j \u003c 0) {\n             throw new IOException(\n                     \"Command line \u0027dir /-c\u0027 did not return valid info \" +\n                     \"for path \u0027\" + path + \"\u0027\");\n         }\n         \n         // remove commas and dots in the bytes count\n-        StringBuilder buf \u003d new StringBuilder(line.substring(bytesStart, bytesEnd));\n+        final StringBuilder buf \u003d new StringBuilder(line.substring(bytesStart, bytesEnd));\n         for (int k \u003d 0; k \u003c buf.length(); k++) {\n             if (buf.charAt(k) \u003d\u003d \u0027,\u0027 || buf.charAt(k) \u003d\u003d \u0027.\u0027) {\n                 buf.deleteCharAt(k--);\n             }\n         }\n         return parseBytes(buf.toString(), path);\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+          "commitDate": 1354308699000,
+          "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+          "commitAuthor": "Gary D. Gregory",
+          "commitDateOld": 1332449729000,
+          "commitNameOld": "cf5c462807a137b823a3155dfe9800b3cbf2303d",
+          "commitAuthorOld": "Gary D. Gregory",
+          "daysBetweenCommits": 253.0,
+          "commitsBetweenForRepo": 182,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,43 +1,43 @@\n-    long parseDir(String line, String path) throws IOException {\n+    long parseDir(final String line, final String path) throws IOException {\n         // read from the end of the line to find the last numeric\n         // character on the line, then continue until we find the first\n         // non-numeric character, and everything between that and the last\n         // numeric character inclusive is our free space bytes count\n         int bytesStart \u003d 0;\n         int bytesEnd \u003d 0;\n         int j \u003d line.length() - 1;\n         innerLoop1: while (j \u003e\u003d 0) {\n-            char c \u003d line.charAt(j);\n+            final char c \u003d line.charAt(j);\n             if (Character.isDigit(c)) {\n               // found the last numeric character, this is the end of\n               // the free space bytes count\n               bytesEnd \u003d j + 1;\n               break innerLoop1;\n             }\n             j--;\n         }\n         innerLoop2: while (j \u003e\u003d 0) {\n-            char c \u003d line.charAt(j);\n+            final char c \u003d line.charAt(j);\n             if (!Character.isDigit(c) \u0026\u0026 c !\u003d \u0027,\u0027 \u0026\u0026 c !\u003d \u0027.\u0027) {\n               // found the next non-numeric character, this is the\n               // beginning of the free space bytes count\n               bytesStart \u003d j + 1;\n               break innerLoop2;\n             }\n             j--;\n         }\n         if (j \u003c 0) {\n             throw new IOException(\n                     \"Command line \u0027dir /-c\u0027 did not return valid info \" +\n                     \"for path \u0027\" + path + \"\u0027\");\n         }\n         \n         // remove commas and dots in the bytes count\n-        StringBuilder buf \u003d new StringBuilder(line.substring(bytesStart, bytesEnd));\n+        final StringBuilder buf \u003d new StringBuilder(line.substring(bytesStart, bytesEnd));\n         for (int k \u003d 0; k \u003c buf.length(); k++) {\n             if (buf.charAt(k) \u003d\u003d \u0027,\u0027 || buf.charAt(k) \u003d\u003d \u0027.\u0027) {\n                 buf.deleteCharAt(k--);\n             }\n         }\n         return parseBytes(buf.toString(), path);\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/FileSystemUtils.java",
+        "newPath": "src/main/java/org/apache/commons/io/FileSystemUtils.java"
+      }
+    },
+    "6d6a73a689ce734d094f71723752cde23a1d9259": {
+      "type": "Ybodychange",
+      "commitMessage": "IO-140 JDK 1.5 changes: Use StringBuilder (not-sync) instead of StringBuffer\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@619112 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1202325947000,
+      "commitName": "6d6a73a689ce734d094f71723752cde23a1d9259",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1202324477000,
+      "commitNameOld": "a74a5a0c6ff41a4ca0a08caf740ebce1dc3c6d10",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.02,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,43 +1,43 @@\n     long parseDir(String line, String path) throws IOException {\n         // read from the end of the line to find the last numeric\n         // character on the line, then continue until we find the first\n         // non-numeric character, and everything between that and the last\n         // numeric character inclusive is our free space bytes count\n         int bytesStart \u003d 0;\n         int bytesEnd \u003d 0;\n         int j \u003d line.length() - 1;\n         innerLoop1: while (j \u003e\u003d 0) {\n             char c \u003d line.charAt(j);\n             if (Character.isDigit(c)) {\n               // found the last numeric character, this is the end of\n               // the free space bytes count\n               bytesEnd \u003d j + 1;\n               break innerLoop1;\n             }\n             j--;\n         }\n         innerLoop2: while (j \u003e\u003d 0) {\n             char c \u003d line.charAt(j);\n             if (!Character.isDigit(c) \u0026\u0026 c !\u003d \u0027,\u0027 \u0026\u0026 c !\u003d \u0027.\u0027) {\n               // found the next non-numeric character, this is the\n               // beginning of the free space bytes count\n               bytesStart \u003d j + 1;\n               break innerLoop2;\n             }\n             j--;\n         }\n         if (j \u003c 0) {\n             throw new IOException(\n                     \"Command line \u0027dir /-c\u0027 did not return valid info \" +\n                     \"for path \u0027\" + path + \"\u0027\");\n         }\n         \n         // remove commas and dots in the bytes count\n-        StringBuffer buf \u003d new StringBuffer(line.substring(bytesStart, bytesEnd));\n+        StringBuilder buf \u003d new StringBuilder(line.substring(bytesStart, bytesEnd));\n         for (int k \u003d 0; k \u003c buf.length(); k++) {\n             if (buf.charAt(k) \u003d\u003d \u0027,\u0027 || buf.charAt(k) \u003d\u003d \u0027.\u0027) {\n                 buf.deleteCharAt(k--);\n             }\n         }\n         return parseBytes(buf.toString(), path);\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "0a03609ddc6380dd7c9053eb8cb04072baa476a1": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-90 - Fix freeSpace to avoid infinite loops and other errors\nincludes some code from Thomas Ledoux\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@437031 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1156550888000,
+      "commitName": "0a03609ddc6380dd7c9053eb8cb04072baa476a1",
+      "commitAuthor": "Stephen Colebourne"
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FilenameUtils.java",
+  "functionName": "isIPv4Address",
+  "functionId": "isIPv4Address___name-String",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FilenameUtils.java",
+  "functionStartLine": 1526,
+  "functionEndLine": 1547,
+  "changeHistory": [
+    "44c5c5618d924a06fb9adae7856f31e75228d987",
+    "fe38f8892a2e99cfb6b941c48a57e1415d7ab223",
+    "2736b6fe0b3fa22ec8e2b4184897ecadb021fc78"
+  ],
+  "changeHistoryShort": {
+    "44c5c5618d924a06fb9adae7856f31e75228d987": "Ymultichange(Ybodychange,Yparametermetachange)",
+    "fe38f8892a2e99cfb6b941c48a57e1415d7ab223": "Ybodychange",
+    "2736b6fe0b3fa22ec8e2b4184897ecadb021fc78": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "44c5c5618d924a06fb9adae7856f31e75228d987": {
+      "type": "Ymultichange(Ybodychange,Yparametermetachange)",
+      "commitMessage": "Use final.",
+      "commitDate": 1528840970000,
+      "commitName": "44c5c5618d924a06fb9adae7856f31e75228d987",
+      "commitAuthor": "Gary Gregory",
+      "subchanges": [
+        {
+          "type": "Ybodychange",
+          "commitMessage": "Use final.",
+          "commitDate": 1528840970000,
+          "commitName": "44c5c5618d924a06fb9adae7856f31e75228d987",
+          "commitAuthor": "Gary Gregory",
+          "commitDateOld": 1528477423000,
+          "commitNameOld": "9ba69d7b9af1ab71e0ca2d0044f464261ae6a199",
+          "commitAuthorOld": "Gary Gregory",
+          "daysBetweenCommits": 4.21,
+          "commitsBetweenForRepo": 7,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,22 +1,22 @@\n-    private static boolean isIPv4Address(String name) {\n-        Matcher m \u003d IPV4_PATTERN.matcher(name);\n+    private static boolean isIPv4Address(final String name) {\n+        final Matcher m \u003d IPV4_PATTERN.matcher(name);\n         if (!m.matches() || m.groupCount() !\u003d 4) {\n             return false;\n         }\n \n         // verify that address subgroups are legal\n         for (int i \u003d 1; i \u003c\u003d 4; i++) {\n-            String ipSegment \u003d m.group(i);\n-            int iIpSegment \u003d Integer.parseInt(ipSegment);\n+            final String ipSegment \u003d m.group(i);\n+            final int iIpSegment \u003d Integer.parseInt(ipSegment);\n             if (iIpSegment \u003e IPV4_MAX_OCTET_VALUE) {\n                 return false;\n             }\n \n             if (ipSegment.length() \u003e 1 \u0026\u0026 ipSegment.startsWith(\"0\")) {\n                 return false;\n             }\n \n         }\n \n         return true;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        },
+        {
+          "type": "Yparametermetachange",
+          "commitMessage": "Use final.",
+          "commitDate": 1528840970000,
+          "commitName": "44c5c5618d924a06fb9adae7856f31e75228d987",
+          "commitAuthor": "Gary Gregory",
+          "commitDateOld": 1528477423000,
+          "commitNameOld": "9ba69d7b9af1ab71e0ca2d0044f464261ae6a199",
+          "commitAuthorOld": "Gary Gregory",
+          "daysBetweenCommits": 4.21,
+          "commitsBetweenForRepo": 7,
+          "commitsBetweenForFile": 1,
+          "diff": "@@ -1,22 +1,22 @@\n-    private static boolean isIPv4Address(String name) {\n-        Matcher m \u003d IPV4_PATTERN.matcher(name);\n+    private static boolean isIPv4Address(final String name) {\n+        final Matcher m \u003d IPV4_PATTERN.matcher(name);\n         if (!m.matches() || m.groupCount() !\u003d 4) {\n             return false;\n         }\n \n         // verify that address subgroups are legal\n         for (int i \u003d 1; i \u003c\u003d 4; i++) {\n-            String ipSegment \u003d m.group(i);\n-            int iIpSegment \u003d Integer.parseInt(ipSegment);\n+            final String ipSegment \u003d m.group(i);\n+            final int iIpSegment \u003d Integer.parseInt(ipSegment);\n             if (iIpSegment \u003e IPV4_MAX_OCTET_VALUE) {\n                 return false;\n             }\n \n             if (ipSegment.length() \u003e 1 \u0026\u0026 ipSegment.startsWith(\"0\")) {\n                 return false;\n             }\n \n         }\n \n         return true;\n     }\n\\ No newline at end of file\n",
+          "extendedDetails": {}
+        }
+      ]
+    },
+    "fe38f8892a2e99cfb6b941c48a57e1415d7ab223": {
+      "type": "Ybodychange",
+      "commitMessage": "remove IPv4 checks that are unnnecessary due to matching regex\n",
+      "commitDate": 1527667567000,
+      "commitName": "fe38f8892a2e99cfb6b941c48a57e1415d7ab223",
+      "commitAuthor": "Stefan Bodewig",
+      "commitDateOld": 1527667567000,
+      "commitNameOld": "0aeeb46737c5e4a5d8c21c26e6793956b0296cda",
+      "commitAuthorOld": "Stefan Bodewig",
+      "daysBetweenCommits": 0.0,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,33 +1,22 @@\n     private static boolean isIPv4Address(String name) {\n         Matcher m \u003d IPV4_PATTERN.matcher(name);\n         if (!m.matches() || m.groupCount() !\u003d 4) {\n             return false;\n         }\n \n         // verify that address subgroups are legal\n-        for (int i \u003d 1; i \u003c 5; i++) {\n+        for (int i \u003d 1; i \u003c\u003d 4; i++) {\n             String ipSegment \u003d m.group(i);\n-            if (ipSegment \u003d\u003d null || ipSegment.length() \u003d\u003d 0) {\n-                return false;\n-            }\n-\n-            int iIpSegment \u003d 0;\n-\n-            try {\n-                iIpSegment \u003d Integer.parseInt(ipSegment);\n-            } catch(NumberFormatException e) {\n-                return false;\n-            }\n-\n+            int iIpSegment \u003d Integer.parseInt(ipSegment);\n             if (iIpSegment \u003e IPV4_MAX_OCTET_VALUE) {\n                 return false;\n             }\n \n             if (ipSegment.length() \u003e 1 \u0026\u0026 ipSegment.startsWith(\"0\")) {\n                 return false;\n             }\n \n         }\n \n         return true;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "2736b6fe0b3fa22ec8e2b4184897ecadb021fc78": {
+      "type": "Yintroduced",
+      "commitMessage": "IO-559 verify hostname part of suspected UNC paths in FileNameUtils\n",
+      "commitDate": 1527667567000,
+      "commitName": "2736b6fe0b3fa22ec8e2b4184897ecadb021fc78",
+      "commitAuthor": "Stefan Bodewig"
+    }
+  }
+}

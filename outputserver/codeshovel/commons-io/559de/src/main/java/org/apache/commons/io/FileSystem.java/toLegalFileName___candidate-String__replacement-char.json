@@ -1,0 +1,44 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "FileSystem.java",
+  "functionName": "toLegalFileName",
+  "functionId": "toLegalFileName___candidate-String__replacement-char",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/FileSystem.java",
+  "functionStartLine": 338,
+  "functionEndLine": 356,
+  "changeHistory": [
+    "10c8db1b1ae0fd9be8b661dbf24643c0a9012d68",
+    "6e2ac190ce379fb19acb8b5cf06c0a1b25d19059"
+  ],
+  "changeHistoryShort": {
+    "10c8db1b1ae0fd9be8b661dbf24643c0a9012d68": "Ybodychange",
+    "6e2ac190ce379fb19acb8b5cf06c0a1b25d19059": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "10c8db1b1ae0fd9be8b661dbf24643c0a9012d68": {
+      "type": "Ybodychange",
+      "commitMessage": "Add test of illegal replacement char",
+      "commitDate": 1510846438000,
+      "commitName": "10c8db1b1ae0fd9be8b661dbf24643c0a9012d68",
+      "commitAuthor": "Sebb",
+      "commitDateOld": 1510836250000,
+      "commitNameOld": "84a0d90783b095775b5d14b2a807497862d80db5",
+      "commitAuthorOld": "Sebb",
+      "daysBetweenCommits": 0.12,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,18 +1,19 @@\n     public String toLegalFileName(final String candidate, final char replacement) {\n         if (isIllegalFileNameChar(replacement)) {\n             throw new IllegalArgumentException(\n                     String.format(\"The replacement character \u0027%s\u0027 cannot be one of the %s illegal characters: %s\",\n-                            replacement, name(), Arrays.toString(illegalFileNameChars)));\n+                            // %s does not work properly with NUL\n+                            replacement \u003d\u003d \u0027\\0\u0027 ? \"\\\\0\" : replacement, name(), Arrays.toString(illegalFileNameChars)));\n         }\n         final String truncated \u003d candidate.length() \u003e maxFileNameLength ? candidate.substring(0, maxFileNameLength)\n                 : candidate;\n         boolean changed \u003d false;\n         final char[] charArray \u003d truncated.toCharArray();\n         for (int i \u003d 0; i \u003c charArray.length; i++) {\n             if (isIllegalFileNameChar(charArray[i])) {\n                 charArray[i] \u003d replacement;\n                 changed \u003d true;\n             }\n         }\n         return changed ? String.valueOf(charArray) : truncated;\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "6e2ac190ce379fb19acb8b5cf06c0a1b25d19059": {
+      "type": "Yintroduced",
+      "commitMessage": "[IO-555] Recasting this issue away from a new method in FilenameUtils to\na solution to convert Strings to legal files names with the new enum\nFileSystem.",
+      "commitDate": 1510806390000,
+      "commitName": "6e2ac190ce379fb19acb8b5cf06c0a1b25d19059",
+      "commitAuthor": "Gary Gregory"
+    }
+  }
+}

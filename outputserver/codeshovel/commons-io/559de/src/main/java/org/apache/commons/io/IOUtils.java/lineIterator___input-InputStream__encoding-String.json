@@ -1,0 +1,115 @@
+{
+  "origin": "codeshovel",
+  "repositoryName": "commons-io",
+  "repositoryPath": "/repos/commons-io/.git",
+  "startCommitName": "559de2c461e94ab636c959149c775bb27111fb48",
+  "sourceFileName": "IOUtils.java",
+  "functionName": "lineIterator",
+  "functionId": "lineIterator___input-InputStream__encoding-String",
+  "sourceFilePath": "src/main/java/org/apache/commons/io/IOUtils.java",
+  "functionStartLine": 1567,
+  "functionEndLine": 1569,
+  "changeHistory": [
+    "6aa00766b9103d75c763160280429af8e1f0549e",
+    "55bae88d398feed4a3008ec5e97eb8b85c983b1e",
+    "34f049caaa1f9048cc7385e0224136110bfc75f9",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+    "62ae9ca81916868ea2408c335b6585d3c384fa76",
+    "22db7febb9fedfd8e8a92c6def23e0fc3d7da0ed"
+  ],
+  "changeHistoryShort": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": "Yparametermetachange",
+    "55bae88d398feed4a3008ec5e97eb8b85c983b1e": "Ybodychange",
+    "34f049caaa1f9048cc7385e0224136110bfc75f9": "Ybodychange",
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": "Yfilerename",
+    "62ae9ca81916868ea2408c335b6585d3c384fa76": "Ybodychange",
+    "22db7febb9fedfd8e8a92c6def23e0fc3d7da0ed": "Yintroduced"
+  },
+  "changeHistoryDetails": {
+    "6aa00766b9103d75c763160280429af8e1f0549e": {
+      "type": "Yparametermetachange",
+      "commitMessage": "Use final where possible.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1415850 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1354308699000,
+      "commitName": "6aa00766b9103d75c763160280429af8e1f0549e",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1354302626000,
+      "commitNameOld": "efca1657258b7555b80bbee207a3221489b9ffed",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 0.07,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n-    public static LineIterator lineIterator(InputStream input, String encoding) throws IOException {\n+    public static LineIterator lineIterator(final InputStream input, final String encoding) throws IOException {\n         return lineIterator(input, Charsets.toCharset(encoding));\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "55bae88d398feed4a3008ec5e97eb8b85c983b1e": {
+      "type": "Ybodychange",
+      "commitMessage": "[IO-318] Add Charset sister APIs to method that take a String charset name. FileUtils.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1307412 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1333114831000,
+      "commitName": "55bae88d398feed4a3008ec5e97eb8b85c983b1e",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1333113136000,
+      "commitNameOld": "34f049caaa1f9048cc7385e0224136110bfc75f9",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 0.02,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,3 +1,3 @@\n     public static LineIterator lineIterator(InputStream input, String encoding) throws IOException {\n-        return lineIterator(input, toCharset(encoding));\n+        return lineIterator(input, Charsets.toCharset(encoding));\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "34f049caaa1f9048cc7385e0224136110bfc75f9": {
+      "type": "Ybodychange",
+      "commitMessage": "[IO-318] Add Charset sister APIs to method that take a String charset name.\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1307397 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1333113136000,
+      "commitName": "34f049caaa1f9048cc7385e0224136110bfc75f9",
+      "commitAuthor": "Gary D. Gregory",
+      "commitDateOld": 1332473804000,
+      "commitNameOld": "1d6feac910975c5d22b66b7f2a46ec87dd844d66",
+      "commitAuthorOld": "Gary D. Gregory",
+      "daysBetweenCommits": 7.4,
+      "commitsBetweenForRepo": 12,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,3 @@\n-    public static LineIterator lineIterator(InputStream input, String encoding) \n-                     throws IOException {\n-        Reader reader \u003d null;\n-        if (encoding \u003d\u003d null) {\n-            reader \u003d new InputStreamReader(input);\n-        } else {\n-            reader \u003d new InputStreamReader(input, encoding);\n-        }\n-        return new LineIterator(reader);\n+    public static LineIterator lineIterator(InputStream input, String encoding) throws IOException {\n+        return lineIterator(input, toCharset(encoding));\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a": {
+      "type": "Yfilerename",
+      "commitMessage": "Build changes - re-organize to standard m2 layout, remove useless JIRA report and fix some Ant issues\n\ngit-svn-id: https://svn.apache.org/repos/asf/commons/proper/io/trunk@1004358 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1286218476000,
+      "commitName": "83f7246c3e9fe1d3f1ad6cf7ea0715a573fe2f2a",
+      "commitAuthor": "Niall Pemberton",
+      "commitDateOld": 1286214840000,
+      "commitNameOld": "19f48eb1711427a43a5e10c84bbbf1218a08bdd2",
+      "commitAuthorOld": "Niall Pemberton",
+      "daysBetweenCommits": 0.04,
+      "commitsBetweenForRepo": 1,
+      "commitsBetweenForFile": 1,
+      "diff": "",
+      "extendedDetails": {
+        "oldPath": "src/java/org/apache/commons/io/IOUtils.java",
+        "newPath": "src/main/java/org/apache/commons/io/IOUtils.java"
+      }
+    },
+    "62ae9ca81916868ea2408c335b6585d3c384fa76": {
+      "type": "Ybodychange",
+      "commitMessage": "Cleaned up LineIterator changes include:\n* Removed the IOIterator interface, it can be added back later when there is more than one\nIterator implementations with a close method.\n* Doesn\u0027t automatically close the Reader at EOF.\n* made LineIterator final because the hasNext method isn\u0027t implemented in a subclassable way.\n* constructor throws an IllegaArgumentException, not a NPE when the argument is bogus.\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@383730 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1141692558000,
+      "commitName": "62ae9ca81916868ea2408c335b6585d3c384fa76",
+      "commitAuthor": "Sandy McArthur Jr",
+      "commitDateOld": 1141514342000,
+      "commitNameOld": "41461b85a7aa58e3a392b0824cbdd2a76e9b843c",
+      "commitAuthorOld": "Stephen Colebourne",
+      "daysBetweenCommits": 2.06,
+      "commitsBetweenForRepo": 11,
+      "commitsBetweenForFile": 1,
+      "diff": "@@ -1,10 +1,10 @@\n     public static LineIterator lineIterator(InputStream input, String encoding) \n                      throws IOException {\n-        InputStreamReader reader \u003d null;\n+        Reader reader \u003d null;\n         if (encoding \u003d\u003d null) {\n             reader \u003d new InputStreamReader(input);\n         } else {\n             reader \u003d new InputStreamReader(input, encoding);\n         }\n         return new LineIterator(reader);\n     }\n\\ No newline at end of file\n",
+      "extendedDetails": {}
+    },
+    "22db7febb9fedfd8e8a92c6def23e0fc3d7da0ed": {
+      "type": "Yintroduced",
+      "commitMessage": "Implement a LineIterator over the lines in a file or reader\n\ngit-svn-id: https://svn.apache.org/repos/asf/jakarta/commons/proper/io/trunk@366364 13f79535-47bb-0310-9956-ffa450edef68\n",
+      "commitDate": 1136508298000,
+      "commitName": "22db7febb9fedfd8e8a92c6def23e0fc3d7da0ed",
+      "commitAuthor": "Stephen Colebourne"
+    }
+  }
+}
