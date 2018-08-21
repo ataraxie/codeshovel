@@ -135,25 +135,24 @@ public abstract class AbstractParser implements Yparser {
 		log.trace("Trying to find most similar function");
 		Map<Yfunction, FunctionSimilarity> similarities = new HashMap<>();
 		List<Yfunction> candidatesWithSameName = new ArrayList<>();
-		Map<String, Yfunction> functionIdMap = Utl.functionsToIdMap(candidates);
-
-		Yfunction sameIdFunction = functionIdMap.get(compareFunction.getId());
-		if (sameIdFunction != null) {
-			Double bodySimilarity = null;
-			if (crossFile) {
-				bodySimilarity = Utl.getBodySimilarity(compareFunction, sameIdFunction);
-			}
-			// If we are in-file just return because the ID will exist only once.
-			// If we are cross-file, take bodySimilarity as an additional measure.
-			if (!crossFile || bodySimilarity > 0.8) {
-				log.trace("Found function with same ID and bodySimilarity > 0.8. Done.");
-				return sameIdFunction;
-			}
-		}
-
-
 		for (Yfunction candidate : candidates) {
-			Double bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
+
+			Double bodySimilarity = null;
+			if (candidate.getId().equals(compareFunction.getId())) {
+				if (crossFile) {
+					bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
+				}
+				// If we are in-file just return because the ID will exist only once.
+				// If we are cross-file, take bodySimilarity as an additional measure.
+				if (!crossFile || bodySimilarity > 0.8) {
+					log.trace("Found function with same ID and bodySimilarity > 0.8. Done.");
+					return candidate;
+				}
+			}
+
+			if (bodySimilarity == null) { // Don't do it twice.
+				bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
+			}
 
 			// If the body is 100% equal we assume it's the correct candidate.
 			if (bodySimilarity == 1) {

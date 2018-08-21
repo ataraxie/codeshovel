@@ -313,12 +313,4 @@ public class Utl {
 
 		return true;
 	}
-
-	public static Map<String, Yfunction> functionsToIdMap(List<Yfunction> functions) {
-		Map<String, Yfunction> ret = new HashMap<>();
-		for (Yfunction function : functions) {
-			ret.put(function.getId(), function);
-		}
-		return ret;
-	}
 }

@@ -143,8 +143,7 @@ public class AnalysisTask {
 	}
 
 	private boolean isMajorChange(Ychange ychange) {
-		return (ychange instanceof Yparameterchange && !(ychange instanceof Yparametermetachange))
-				|| ychange instanceof Yrename
+		return ychange instanceof Yparameterchange || ychange instanceof Yrename
 				|| ychange instanceof Ycrossfilechange;
 	}
 
