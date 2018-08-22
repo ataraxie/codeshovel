@@ -87,6 +87,7 @@ public class ShovelExecution {
 	}
 
 	private static Yresult runOnlyBaseline(StartEnvironment startEnv, AnalysisTask startTask, Yfunction method) throws Exception {
+		System.out.println("======== RUNNING ONLY BASELINE =======");
 		startTask.setFunctionEndLine(method.getEndLineNumber());
 		startTask.setFilePath(method.getSourceFilePath());
 

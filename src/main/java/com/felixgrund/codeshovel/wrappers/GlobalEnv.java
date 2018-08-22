@@ -23,7 +23,7 @@ public class GlobalEnv {
 	public static final boolean WRITE_SIMILARITIES = Boolean.valueOf(System.getenv("WRITE_SIMILARITIES"));
 
 	// Only Baseline or only Shovel?
-	public static final boolean ONLY_BASELINE = Boolean.valueOf(System.getenv("ONLY_BASELINE"));
+	public static final boolean ONLY_BASELINE = true; // TODO ////Boolean.valueOf(System.getenv("ONLY_BASELINE"));
 	public static final boolean ONLY_SHOVEL = Boolean.valueOf(System.getenv("ONLY_SHOVEL"));
 
 	// Getters/Setters skipping
