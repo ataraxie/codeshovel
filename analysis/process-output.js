@@ -1,22 +1,28 @@
-const fs = require('fs');
-const path = require('path');
+if (!String.prototype.startsWith) {
+	String.prototype.startsWith = function(searchString, position) {
+		position = position || 0;
+		return this.indexOf(searchString, position) === position;
+	};
+}
+
+var fs = require('fs');
+var path = require('path');
 
 
-// /home/ncbradley/cs-output/diff_semantic_gitlog/checkstyle/119fd/src/it/java/com/google/checkstyle/test/base/AbstractIndentationTestSupport.java/isCommentConsistent___comment-String.json
-const outputDir = process.env.OUTPUT_DIR;
-const repo = process.env.REPO_NAME;  // set to null to run against all repos
+var outputDir = process.env.OUTPUT_DIR;
+var repo = process.env.REPO_NAME;  // set to null to run against all repos
 
-const dirCodeshovel = outputDir + "/codeshovel/" + repo;
-const dirDiff = outputDir + "/diff_semantic_gitlog/" + repo;
+var dirCodeshovel = outputDir + "/codeshovel/" + repo;
+var dirDiff = outputDir + "/diff_semantic_gitlog/" + repo;
 
-https://jonlabelle.com/snippets/view/javascript/calculate-mean-median-mode-and-range-in-javascript
+
 function median(values) {
     values.sort(function(a, b) {
     	return a - b;
     });
-	let lowMiddle = Math.floor((values.length - 1) / 2);
-	let highMiddle = Math.ceil((values.length - 1) / 2);
-	let median = (values[lowMiddle] + values[highMiddle]) / 2;
+	var lowMiddle = Math.floor((values.length - 1) / 2);
+	var highMiddle = Math.ceil((values.length - 1) / 2);
+	var median = (values[lowMiddle] + values[highMiddle]) / 2;
 	return median;
 }
 
@@ -28,7 +34,7 @@ function median(values) {
  * @param {Function} done 
  */
 function filewalker(dir, done) {
-    let results = [];
+    var results = [];
 
     fs.readdir(dir, function(err, list) {
         if (err) return done(err);
@@ -60,9 +66,9 @@ function filewalker(dir, done) {
     });
 };
 
-let fullResult = {};
+var fullResult = {};
 
-filewalker(dirDiff, (error, results) => {
+filewalker(dirDiff, function(error, results) {
     if (error) {
         console.log(error);
         throw error;
@@ -70,13 +76,13 @@ filewalker(dirDiff, (error, results) => {
 
 	// do something with files
     // how many "extra" commits did we find?
-    let totalShovel = 0;
-    let totalBase = 0;
-    let totalOnlyShovel = 0;
-    let totalOnlyBase = 0;
-    let methodDetails = {};
-    let shovelResultsArr = [];
-    let baseResultsArr = [];
+    var totalShovel = 0;
+    var totalBase = 0;
+    var totalOnlyShovel = 0;
+    var totalOnlyBase = 0;
+    var methodDetails = {};
+    var shovelResultsArr = [];
+    var baseResultsArr = [];
 
 	fullResult.totalMethods = results.length;
     fullResult.totalHistoryEquals1 = 0;
@@ -85,13 +91,13 @@ filewalker(dirDiff, (error, results) => {
 	fullResult.totalHistoryGt10 = 0;
 	fullResult.totalHistoryCount = {};
 
-    for (const file of results) {
+    results.forEach(function(file) {
         try {
-            const diffObj = JSON.parse(fs.readFileSync(file));
-	        const methodId = file.split("/diff_semantic_gitlog/")[1].replace(".json", "");
-	        let singleMethodResult = {};
+            var diffObj = JSON.parse(fs.readFileSync(file));
+	        var methodId = file.split("/diff_semantic_gitlog/")[1].replace(".json", "");
+	        var singleMethodResult = {};
 
-	        let numShovel = diffObj.codeshovelHistory.length;
+	        var numShovel = diffObj.codeshovelHistory.length;
 	        shovelResultsArr.push(numShovel);
 	        totalShovel += numShovel;
 	        singleMethodResult.sizeShovel = numShovel;
@@ -108,16 +114,16 @@ filewalker(dirDiff, (error, results) => {
 		        fullResult.totalHistoryCount[numShovel] += 1;
             }
 
-	        let numBase = diffObj.baselineHistory.length;
+	        var numBase = diffObj.baselineHistory.length;
 	        totalBase += numBase;
 	        singleMethodResult.sizeBase = numBase;
 	        baseResultsArr.push(numBase);
 
-            let numOnlyShovel = diffObj.onlyInCodeshovel.length;
+            var numOnlyShovel = diffObj.onlyInCodeshovel.length;
             totalOnlyShovel += numOnlyShovel;
 	        singleMethodResult.sizeOnlyShovel = numOnlyShovel;
 
-            let numOnlyBase = diffObj.onlyInBaseline.length;
+            var numOnlyBase = diffObj.onlyInBaseline.length;
             totalOnlyBase += numBase;
 	        singleMethodResult.sizeOnlyBase = numOnlyBase;
 
@@ -125,9 +131,9 @@ filewalker(dirDiff, (error, results) => {
 
 
         } catch (err) {
-            console.log(`ERROR processing ${file}. ${err}`);
+            console.log("ERROR processing file: " + file + " -- " + err);
         }
-    }
+    });
 
     fullResult.avgSizeShovel = totalShovel / fullResult.totalMethods;
     fullResult.avgSizeBase = totalBase / fullResult.totalMethods;
@@ -144,7 +150,7 @@ filewalker(dirDiff, (error, results) => {
 });
 
 function addStats(statsObj, changeType) {
-    let doAdd = function(changeType) {
+    var doAdd = function(changeType) {
 	    if (!statsObj[changeType]) {
 		    statsObj[changeType] = 1;
 	    } else {
@@ -153,11 +159,11 @@ function addStats(statsObj, changeType) {
     };
 
     if (changeType.startsWith("Ymultichange")) {
-        let subchangesString = changeType.split("Ymultichange(")[1].replace(")", "");
-        let subchangesArr = subchangesString.split(",");
-        for (let subchange of subchangesArr) {
-            doAdd(subchange);
-        }
+        var subchangesString = changeType.split("Ymultichange(")[1].replace(")", "");
+        var subchangesArr = subchangesString.split(",");
+	    subchangesArr.forEach(function(subchange) {
+		    doAdd(subchange);
+	    });
     } else {
         doAdd(changeType);
     }
@@ -165,7 +171,7 @@ function addStats(statsObj, changeType) {
 }
 
 function collectShovel() {
-	filewalker(dirCodeshovel, (error, results) => {
+	filewalker(dirCodeshovel, function(error, results) {
 		if (error) {
 			console.log(error);
 			throw error;
@@ -173,28 +179,28 @@ function collectShovel() {
 
 		// do something with files
 		// how many "extra" commits did we find?
-		let changeStats = {};
-		let methodSizeStats = {};
-		let statsMethodsOneChange = {
+		var changeStats = {};
+		var methodSizeStats = {};
+		var statsMethodsOneChange = {
 			setters: 0,
 			getters: 0,
 			tests: 0
 		};
-		let countSmallMethodsForOneChange = 0;
-		let countSmallMethodsForMoreThanOneChange = 0;
+		var countSmallMethodsForOneChange = 0;
+		var countSmallMethodsForMoreThanOneChange = 0;
 
-		for (const file of results) {
+		results.forEach(function(file) {
 			try {
-				const shovelObj = JSON.parse(fs.readFileSync(file));
-				const methodId = file.split(outputDir + "/codeshovel/")[1].replace(".json", "");
-				const methodName = shovelObj.functionName;
+				var shovelObj = JSON.parse(fs.readFileSync(file));
+				var methodId = file.split(outputDir + "/codeshovel/")[1].replace(".json", "");
+				var methodName = shovelObj.functionName;
 
-				let numChanges = Object.keys(shovelObj.changeHistoryShort).length;
+				var numChanges = Object.keys(shovelObj.changeHistoryShort).length;
 				if (!methodSizeStats[numChanges]) {
 					methodSizeStats[numChanges] = {};
 				}
 
-				let numMethodLines = 1 + (shovelObj.functionEndLine - shovelObj.functionStartLine);
+				var numMethodLines = 1 + (shovelObj.functionEndLine - shovelObj.functionStartLine);
 				if (!methodSizeStats[numChanges][numMethodLines]) {
 					methodSizeStats[numChanges][numMethodLines] = 1;
 				} else {
@@ -222,14 +228,14 @@ function collectShovel() {
 					}
 				}
 
-				for (let commitName in shovelObj.changeHistoryShort) {
-					let changeType = shovelObj.changeHistoryShort[commitName];
+				for (var commitName in shovelObj.changeHistoryShort) {
+					var changeType = shovelObj.changeHistoryShort[commitName];
                     addStats(changeStats, changeType);
 				}
 			} catch (err) {
-				console.log(`ERROR processing ${file}. ${err}`);
+				console.log("ERROR processing file: " + file + "  --  " + err);
 			}
-		}
+		});
 
 		fullResult.changeStatsLeft = changeStats;
 		fullResult.methodSizeStatsLeftNumChangesRightNumLinesNumMethods = methodSizeStats;
@@ -242,21 +248,6 @@ function collectShovel() {
 }
 
 
-
-
-
-//http://2ality.com/2015/01/es6-set-operations.html
-function union(a, b) {
-    return new Set([...a, ...b]);
-}
-
-function intersection(a, b) {
-    return new Set([...a].filter(x => b.has(x)));
-}
-
-function diff(a, b) {
-    return new Set([...a].filter(x => !b.has(x)));
-}
 
 // {
 //     "origin": "codeshovel",
