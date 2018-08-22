@@ -238,12 +238,12 @@ function collectShovel() {
 		});
 
 		fullResult.changeStats = changeStats;
-		fullResult.methodSizeStatsLeftNumChangesRightNumLinesNumMethods = methodSizeStats;
 		fullResult.countSmallMethodsForOneChange = countSmallMethodsForOneChange;
 		fullResult.countSmallMethodsForMoreThanOneChange = countSmallMethodsForMoreThanOneChange;
 		fullResult.statsMethodsOneChange = statsMethodsOneChange;
+		fullResult.methodSizeStatsLeftNumChangesRightNumLinesNumMethods = methodSizeStats;
 
-        console.log(fullResult);
+        console.log(JSON.stringify(fullResult, null, 2));
 	});
 }
 
