@@ -1,55 +1,30 @@
-const fs = require('fs');
-const path = require('path');
-
-
-// /home/ncbradley/cs-output/diff_semantic_gitlog/checkstyle/119fd/src/it/java/com/google/checkstyle/test/base/AbstractIndentationTestSupport.java/isCommentConsistent___comment-String.json
-const outputDir = "/home/ncbradley/cs-output/diff_semantic_gitlog";
-const repo = "checkstyle";  // set to null to run against all repos
-const commit = ""; // set to null to run against all commits
-
-let baseDir = outputDir;
-
-if (repo) {
-    if (commit) {
-        baseDir += "/" + repo + "/" + commit;
-    }
-    else {
-        baseDir += "/" + repo
-    }
+if (!String.prototype.startsWith) {
+	String.prototype.startsWith = function(searchString, position) {
+		position = position || 0;
+		return this.indexOf(searchString, position) === position;
+	};
 }
 
+var fs = require('fs');
+var path = require('path');
 
 
-// function walker(dir) {
-//     const results = [];
-//     return new Promise((resolve, reject) => {
-//         fs.readdir(dir, (err, files) => {
-//             if (err) {
-//                 reject(err);
-//             }
+var outputDir = process.env.OUTPUT_DIR;
+var repo = process.env.REPO_NAME;  // set to null to run against all repos
 
-//             const pending = files.length;
+var dirCodeshovel = outputDir + "/codeshovel/" + repo;
+var dirDiff = outputDir + "/diff_semantic_gitlog/" + repo;
 
-//             if (!pending) {
-//                 return resolve(results);
-//             }
 
-//             const promises = [];
-//             for (let file of files) {
-//                 file = path.resolve(dir, file);
-//                 fs.stat(file, function(err, stats) {
-//                     if (stats && stats.isDirectory()) {
-//                         promises.push(walker(file));
-//                     } else {
-//                         results.push(file);
-//                     }
-//                 });
-//             }
-//             promises.then(r => resolve(results.concat(r))).catch(err => reject(err));
-//         });
-//     });
-// }
-
+function median(values) {
+    values.sort(function(a, b) {
+    	return a - b;
+    });
+	var lowMiddle = Math.floor((values.length - 1) / 2);
+	var highMiddle = Math.ceil((values.length - 1) / 2);
+	var median = (values[lowMiddle] + values[highMiddle]) / 2;
+	return median;
+}
 
 /**
  * Explores recursively a directory and returns all the filepaths and folderpaths in the callback.
@@ -59,7 +34,7 @@ if (repo) {
  * @param {Function} done 
  */
 function filewalker(dir, done) {
-    let results = [];
+    var results = [];
 
     fs.readdir(dir, function(err, list) {
         if (err) return done(err);
@@ -91,63 +66,200 @@ function filewalker(dir, done) {
     });
 };
 
-filewalker(baseDir, (error, results) => {
+var fullResult = {};
+
+filewalker(dirDiff, function(error, results) {
     if (error) {
         console.log(error);
         throw error;
     }
 
-    // do something with files
+	// do something with files
     // how many "extra" commits did we find?
-    let totalOnlyCodeShovel = 0;
-    let totalOnlyBaseLine = 0;
-    let totalIntersection = 0;
-    let totalCommits = 0;
-    for (const file of results) {
+    var totalShovel = 0;
+    var totalBase = 0;
+    var totalOnlyShovel = 0;
+    var totalOnlyBase = 0;
+    var methodDetails = {};
+    var shovelResultsArr = [];
+    var baseResultsArr = [];
+
+	fullResult.totalMethods = results.length;
+    fullResult.totalHistoryEquals1 = 0;
+    fullResult.totalHistory2To5 = 0;
+	fullResult.totalHistory6To10 = 0;
+	fullResult.totalHistoryGt10 = 0;
+	fullResult.totalHistoryCount = {};
+
+    results.forEach(function(file) {
         try {
-            const semanticMethodDiff = JSON.parse(fs.readFileSync(file));
-            const cs = new Set(semanticMethodDiff.codeshovelHistory);
-            const bl = new Set(semanticMethodDiff.baselineHistory);
+            var diffObj = JSON.parse(fs.readFileSync(file));
+	        var methodId = file.split("/diff_semantic_gitlog/")[1].replace(".json", "");
+	        var singleMethodResult = {};
 
-            totalCommits += union(cs, bl).size;
-            totalOnlyCodeShovel += semanticMethodDiff.onlyInCodeshovel.length;
-            totalOnlyBaseLine += semanticMethodDiff.onlyInBaseline.length;
-            totalIntersection += intersection(cs, bl).size;
+	        var numShovel = diffObj.codeshovelHistory.length;
+	        shovelResultsArr.push(numShovel);
+	        totalShovel += numShovel;
+	        singleMethodResult.sizeShovel = numShovel;
+	        if (numShovel === 1) {
+		        fullResult.totalHistoryEquals1 += 1;
+	        }
+	        else if (numShovel <= 5) fullResult.totalHistory2To5 += 1;
+	        else if (numShovel <= 10) fullResult.totalHistory6To10 += 1;
+	        else if (numShovel > 10) fullResult.totalHistoryGt10 += 1;
+
+	        if (!fullResult.totalHistoryCount[numShovel]) {
+		        fullResult.totalHistoryCount[numShovel] = 1;
+            } else {
+		        fullResult.totalHistoryCount[numShovel] += 1;
+            }
+
+	        var numBase = diffObj.baselineHistory.length;
+	        totalBase += numBase;
+	        singleMethodResult.sizeBase = numBase;
+	        baseResultsArr.push(numBase);
+
+            var numOnlyShovel = diffObj.onlyInCodeshovel.length;
+            totalOnlyShovel += numOnlyShovel;
+	        singleMethodResult.sizeOnlyShovel = numOnlyShovel;
+
+            var numOnlyBase = diffObj.onlyInBaseline.length;
+            totalOnlyBase += numBase;
+	        singleMethodResult.sizeOnlyBase = numOnlyBase;
+
+	        methodDetails[methodId] = singleMethodResult;
+
+
         } catch (err) {
-            console.log(`ERROR processing ${file}. ${err}`);
+            console.log("ERROR processing file: " + file + " -- " + err);
         }
+    });
+
+    fullResult.avgSizeShovel = totalShovel / fullResult.totalMethods;
+    fullResult.avgSizeBase = totalBase / fullResult.totalMethods;
+    fullResult.medianSizeShovel = median(shovelResultsArr);
+    fullResult.medianSizeBase = median(baseResultsArr);
+    // fullResult.methodDetails = methodDetails;
+
+    try {
+	    collectShovel();
+    } catch (err) {
+        console.err("Could not collect shovel stats");
     }
-    console.log(`Both: ${totalIntersection}, Baseline: ${totalOnlyBaseLine}, Codeshovel: ${totalOnlyCodeShovel}; Total: ${totalCommits}`);
 
-
-    // const methodCommitCount = [];
-    // for (const file of results) {
-    //     try {
-    //         const method = JSON.parse(fs.readFileSync(file));
-    //         const numCommits = method.changeHistory.length;
-    //         if (numCommits > 1) {
-    //             methodCommitCount.push(numCommits);
-    //         }
-    //     } catch (err) {
-    //         console.log(`ERROR processing ${file}.`);
-    //     }
-    // }
-    // fs.writeFileSync("methodCommitCount.csv", methodCommitCount.join(",\n"));
-    // console.log("Number methods analyzed:", methodCommitCount.length);
 });
 
-//http://2ality.com/2015/01/es6-set-operations.html
-function union(a, b) {
-    return new Set([...a, ...b]);
+function addStats(statsObj, changeType) {
+    var doAdd = function(changeType) {
+	    if (!statsObj[changeType]) {
+		    statsObj[changeType] = 1;
+	    } else {
+		    statsObj[changeType] += 1;
+	    }
+    };
+
+    if (changeType.startsWith("Ymultichange")) {
+        var subchangesString = changeType.split("Ymultichange(")[1].replace(")", "");
+        var subchangesArr = subchangesString.split(",");
+	    subchangesArr.forEach(function(subchange) {
+		    doAdd(subchange);
+	    });
+    } else {
+        doAdd(changeType);
+    }
+
 }
 
-function intersection(a, b) {
-    return new Set([...a].filter(x => b.has(x)));
+function collectShovel() {
+	filewalker(dirCodeshovel, function(error, results) {
+		if (error) {
+			console.log(error);
+			throw error;
+		}
+
+		// do something with files
+		// how many "extra" commits did we find?
+		var changeStats = {};
+		var methodSizeStats = {};
+		var statsMethodsOneChange = {
+			setters: 0,
+			getters: 0,
+			tests: 0
+		};
+		var countSmallMethodsForOneChange = 0;
+		var countSmallMethodsForMoreThanOneChange = 0;
+
+		var sumLineLengthOneChange = 0;
+		var sumLineLengthMoreThanOneChange = 0;
+
+		results.forEach(function(file) {
+			try {
+				var shovelObj = JSON.parse(fs.readFileSync(file));
+				var methodId = file.split(outputDir + "/codeshovel/")[1].replace(".json", "");
+				var methodName = shovelObj.functionName;
+
+				var numChanges = Object.keys(shovelObj.changeHistoryShort).length;
+				if (!methodSizeStats[numChanges]) {
+					methodSizeStats[numChanges] = {};
+				}
+
+				var numMethodLines = 1 + (shovelObj.functionEndLine - shovelObj.functionStartLine);
+				if (!methodSizeStats[numChanges][numMethodLines]) {
+					methodSizeStats[numChanges][numMethodLines] = 1;
+				} else {
+					methodSizeStats[numChanges][numMethodLines] += 1;
+				}
+
+				if (numMethodLines <= 3) {
+					if (numChanges <= 1) {
+						countSmallMethodsForOneChange += 1;
+					} else {
+						countSmallMethodsForMoreThanOneChange += 1;
+					}
+				}
+
+				if (numChanges === 1) {
+					sumLineLengthOneChange += numMethodLines;
+					if (numMethodLines <= 3) {
+						if (methodName.startsWith("get") || methodName.startsWith("is")) {
+							statsMethodsOneChange.getters += 1;
+						} else if (methodName.startsWith("set")) {
+							statsMethodsOneChange.setters += 1;
+						}
+					}
+					if (methodName.startsWith("test")) {
+						statsMethodsOneChange.tests += 1;
+					}
+				} else {
+					sumLineLengthMoreThanOneChange += numMethodLines;
+				}
+
+				for (var commitName in shovelObj.changeHistoryShort) {
+					var changeType = shovelObj.changeHistoryShort[commitName];
+                    addStats(changeStats, changeType);
+				}
+			} catch (err) {
+				console.log("ERROR processing file: " + file + "  --  " + err);
+			}
+		});
+
+		fullResult.changeStats = changeStats;
+		fullResult.countSmallMethodsForOneChange = countSmallMethodsForOneChange;
+		fullResult.countSmallMethodsForMoreThanOneChange = countSmallMethodsForMoreThanOneChange;
+
+		var numMethodsOneChange = fullResult.totalHistoryCount["1"];
+		var numMethodsMoreThanOneChange = fullResult.totalMethods - numMethodsOneChange;
+		fullResult.avgMethodSizeOneChange = sumLineLengthOneChange / numMethodsOneChange;
+		fullResult.avgMethodsMoreThanOneChange = sumLineLengthMoreThanOneChange / numMethodsMoreThanOneChange;
+
+		fullResult.statsMethodsOneChange = statsMethodsOneChange;
+		fullResult.methodSizeStatsLeftNumChangesRightNumLinesNumMethods = methodSizeStats;
+
+        console.log(JSON.stringify(fullResult, null, 2));
+	});
 }
 
-function diff(a, b) {
-    return new Set([...a].filter(x => !b.has(x)));
-}
+
 
 // {
 //     "origin": "codeshovel",
