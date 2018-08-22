@@ -3,16 +3,14 @@ const path = require('path');
 
 
 // /home/ncbradley/cs-output/diff_semantic_gitlog/checkstyle/119fd/src/it/java/com/google/checkstyle/test/base/AbstractIndentationTestSupport.java/isCommentConsistent___comment-String.json
-const outputDir = "/Users/felix/CODESTORY/codeshovel/outputserver";
-const repo = "commons-io";  // set to null to run against all repos
-const commit = "559de"; // set to null to run against all commits
+const outputDir = process.env.OUTPUT_DIR;
+const repo = process.env.REPO_NAME;  // set to null to run against all repos
 
 const dirCodeshovel = outputDir + "/codeshovel/" + repo;
 const dirDiff = outputDir + "/diff_semantic_gitlog/" + repo;
 
 https://jonlabelle.com/snippets/view/javascript/calculate-mean-median-mode-and-range-in-javascript
 function median(values) {
-    debugger;
     values.sort((a, b) => a - b);
 	let lowMiddle = Math.floor((values.length - 1) / 2);
 	let highMiddle = Math.ceil((values.length - 1) / 2);
@@ -95,7 +93,9 @@ filewalker(dirDiff, (error, results) => {
 	        shovelResultsArr.push(numShovel);
 	        totalShovel += numShovel;
 	        singleMethodResult.sizeShovel = numShovel;
-	        if (numShovel === 1) fullResult.totalHistoryEquals1 += 1;
+	        if (numShovel === 1) {
+		        fullResult.totalHistoryEquals1 += 1;
+	        }
 	        else if (numShovel <= 5) fullResult.totalHistory2To5 += 1;
 	        else if (numShovel <= 10) fullResult.totalHistory6To10 += 1;
 	        else if (numShovel > 10) fullResult.totalHistoryGt10 += 1;
@@ -172,23 +172,68 @@ function collectShovel() {
 		// do something with files
 		// how many "extra" commits did we find?
 		let changeStats = {};
+		let methodSizeStats = {};
+		let statsMethodsOneChange = {
+			setters: 0,
+			getters: 0,
+			tests: 0
+		};
+		let countSmallMethodsForOneChange = 0;
+		let countSmallMethodsForMoreThanOneChange = 0;
 
 		for (const file of results) {
 			try {
 				const shovelObj = JSON.parse(fs.readFileSync(file));
 				const methodId = file.split(outputDir + "/codeshovel/")[1].replace(".json", "");
+				const methodName = shovelObj.functionName;
+
+				let numChanges = Object.keys(shovelObj.changeHistoryShort).length;
+				if (!methodSizeStats[numChanges]) {
+					methodSizeStats[numChanges] = {};
+				}
+
+				let numMethodLines = 1 + (shovelObj.functionEndLine - shovelObj.functionStartLine);
+				if (!methodSizeStats[numChanges][numMethodLines]) {
+					methodSizeStats[numChanges][numMethodLines] = 1;
+				} else {
+					methodSizeStats[numChanges][numMethodLines] += 1;
+				}
+
+				if (numMethodLines <= 3) {
+					if (numChanges <= 1) {
+						countSmallMethodsForOneChange += 1;
+					} else {
+						countSmallMethodsForMoreThanOneChange += 1;
+					}
+				}
+
+				if (numChanges === 1) {
+					if (numMethodLines <= 3) {
+						if (methodName.startsWith("get") || methodName.startsWith("is")) {
+							statsMethodsOneChange.getters += 1;
+						} else if (methodName.startsWith("set")) {
+							statsMethodsOneChange.setters += 1;
+						}
+					}
+					if (methodName.startsWith("test")) {
+						statsMethodsOneChange.tests += 1;
+					}
+				}
+
 				for (let commitName in shovelObj.changeHistoryShort) {
 					let changeType = shovelObj.changeHistoryShort[commitName];
                     addStats(changeStats, changeType);
 				}
-
-
 			} catch (err) {
 				console.log(`ERROR processing ${file}. ${err}`);
 			}
 		}
 
-		fullResult.changeStats = changeStats;
+		fullResult.changeStatsLeft = changeStats;
+		fullResult.methodSizeStatsLeftNumChangesRightNumLinesNumMethods = methodSizeStats;
+		fullResult.countSmallMethodsForOneChange = countSmallMethodsForOneChange;
+		fullResult.countSmallMethodsForMoreThanOneChange = countSmallMethodsForMoreThanOneChange;
+		fullResult.statsMethodsOneChange = statsMethodsOneChange;
 
         console.log(fullResult);
 	});
