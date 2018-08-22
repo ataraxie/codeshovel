@@ -1,6 +1,8 @@
 package com.felixgrund.codeshovel.interpreters;
 
 import com.felixgrund.codeshovel.entities.Ycommit;
+import com.felixgrund.codeshovel.exceptions.NoParserFoundException;
+import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.parser.Yfunction;
@@ -10,6 +12,7 @@ import com.felixgrund.codeshovel.util.ParserFactory;
 import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
+import java.io.IOException;
 import java.util.*;
 
 public abstract class AbstractInterpreter {
@@ -31,7 +34,8 @@ public abstract class AbstractInterpreter {
 		this.ycommit = ycommit;
 	}
 
-	protected Yparser createParserForCommitAndFile(Commit commit, String filePath) throws Exception {
+	protected Yparser createParserForCommitAndFile(Commit commit, String filePath)
+			throws IOException, ParseException, NoParserFoundException {
 		Yparser ret = null;
 		String fileContent = repositoryService.findFileContent(commit, filePath);
 		if (fileContent != null) {
@@ -40,39 +44,42 @@ public abstract class AbstractInterpreter {
 		return ret;
 	}
 
-	protected List<Yfunction> getRemovedFunctions(Commit commitNew, Commit commitOld, String oldFilePath, String newFilePath, boolean strictMode)
-			throws Exception {
+	protected List<Yfunction> getRemovedFunctions(Commit commitNew, Commit commitOld, String oldFilePath, String newFilePath, boolean strictMode) {
 
 		List<Yfunction> ret = new ArrayList<>();
 		// TODO: this shouldn't be done here because we already have these parsers!
-		Yparser parserOld = createParserForCommitAndFile(commitOld, oldFilePath);
-		Yparser parserNew = createParserForCommitAndFile(commitNew, newFilePath);
-		if (parserNew == null) {
-			ret = parserOld.getAllFunctions();
-		} else {
-			Map<String, Yfunction> functionsNew = parserNew.getAllFunctionsCount();
-			Map<String, Yfunction> functionsOld = parserOld.getAllFunctionsCount();
-			Map<String, Integer> nameCountNew = getFunctionNameCount(functionsNew);
-			Map<String, Integer> nameCountOld = getFunctionNameCount(functionsOld);
+		try {
+			Yparser parserOld = createParserForCommitAndFile(commitOld, oldFilePath);
+			Yparser parserNew = createParserForCommitAndFile(commitNew, newFilePath);
+			if (parserNew == null) {
+				ret = parserOld.getAllFunctions();
+			} else {
+				Map<String, Yfunction> functionsNew = parserNew.getAllFunctionsCount();
+				Map<String, Yfunction> functionsOld = parserOld.getAllFunctionsCount();
+				Map<String, Integer> nameCountNew = getFunctionNameCount(functionsNew);
+				Map<String, Integer> nameCountOld = getFunctionNameCount(functionsOld);
 
-			Set<String> newFunctionIds = functionsNew.keySet();
+				Set<String> newFunctionIds = functionsNew.keySet();
 
-			for (String functionId : functionsOld.keySet()) {
-				boolean functionIdLost = !newFunctionIds.contains(functionId);
-				if (functionIdLost) {
-					if (strictMode) {
-						Yfunction functionOld = functionsOld.get(functionId);
-						String functionName = functionOld.getName();
-						Integer countOld = nameCountOld.get(functionName);
-						Integer countNew = nameCountNew.get(functionName);
-						if (countNew == null || countNew < countOld) {
+				for (String functionId : functionsOld.keySet()) {
+					boolean functionIdLost = !newFunctionIds.contains(functionId);
+					if (functionIdLost) {
+						if (strictMode) {
+							Yfunction functionOld = functionsOld.get(functionId);
+							String functionName = functionOld.getName();
+							Integer countOld = nameCountOld.get(functionName);
+							Integer countNew = nameCountNew.get(functionName);
+							if (countNew == null || countNew < countOld) {
+								ret.add(functionsOld.get(functionId));
+							}
+						} else {
 							ret.add(functionsOld.get(functionId));
 						}
-					} else {
-						ret.add(functionsOld.get(functionId));
 					}
 				}
 			}
+		} catch (ParseException | NoParserFoundException | IOException e) {
+			// return empty array
 		}
 
 		return ret;
