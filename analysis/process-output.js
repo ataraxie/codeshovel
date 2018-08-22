@@ -189,6 +189,9 @@ function collectShovel() {
 		var countSmallMethodsForOneChange = 0;
 		var countSmallMethodsForMoreThanOneChange = 0;
 
+		var sumLineLengthOneChange = 0;
+		var sumLineLengthMoreThanOneChange = 0;
+
 		results.forEach(function(file) {
 			try {
 				var shovelObj = JSON.parse(fs.readFileSync(file));
@@ -216,6 +219,7 @@ function collectShovel() {
 				}
 
 				if (numChanges === 1) {
+					sumLineLengthOneChange += numMethodLines;
 					if (numMethodLines <= 3) {
 						if (methodName.startsWith("get") || methodName.startsWith("is")) {
 							statsMethodsOneChange.getters += 1;
@@ -226,6 +230,8 @@ function collectShovel() {
 					if (methodName.startsWith("test")) {
 						statsMethodsOneChange.tests += 1;
 					}
+				} else {
+					sumLineLengthMoreThanOneChange += numMethodLines;
 				}
 
 				for (var commitName in shovelObj.changeHistoryShort) {
@@ -240,6 +246,12 @@ function collectShovel() {
 		fullResult.changeStats = changeStats;
 		fullResult.countSmallMethodsForOneChange = countSmallMethodsForOneChange;
 		fullResult.countSmallMethodsForMoreThanOneChange = countSmallMethodsForMoreThanOneChange;
+
+		var numMethodsOneChange = fullResult.totalHistoryCount["1"];
+		var numMethodsMoreThanOneChange = fullResult.totalMethods - numMethodsOneChange;
+		fullResult.avgMethodSizeOneChange = sumLineLengthOneChange / numMethodsOneChange;
+		fullResult.avgMethodsMoreThanOneChange = sumLineLengthMoreThanOneChange / numMethodsMoreThanOneChange;
+
 		fullResult.statsMethodsOneChange = statsMethodsOneChange;
 		fullResult.methodSizeStatsLeftNumChangesRightNumLinesNumMethods = methodSizeStats;
 
