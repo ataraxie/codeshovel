@@ -33,10 +33,10 @@ public class MiningTestJava extends MiningTest {
 
 	static {
 		TARGET_FILE_EXTENSION = ".java";
-		TARGET_FILE_PATH = GlobalEnv.TARGET_FILE_PATH;
-		CODESTORY_REPO_DIR = GlobalEnv.REPO_DIR;
-		REPO = GlobalEnv.REPO;
-		START_COMMIT = GlobalEnv.START_COMMIT;
+		TARGET_FILE_PATH = System.getenv("TARGET_FILE_PATH");
+		CODESTORY_REPO_DIR = System.getenv("REPO_DIR");
+		REPO = System.getenv("REPO");
+		START_COMMIT = System.getenv("START_COMMIT");
 
 		// Specify a method name if you only want to consider methods with that name.
 		// If you want to run it on all methods (which will be most cases for mining), use `null`.
@@ -45,6 +45,7 @@ public class MiningTestJava extends MiningTest {
 		// Specify a method line number if you want to use only methods with name TARGET_METHOD *and* TARGET_METHOD_STARTLINE.
 		// If the start line doesn't matter (which will be most cases for mining), use `0`.
 		TARGET_METHOD_STARTLINE = 0;
+
 	}
 
 

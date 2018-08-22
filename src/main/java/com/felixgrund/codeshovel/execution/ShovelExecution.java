@@ -2,6 +2,8 @@ package com.felixgrund.codeshovel.execution;
 
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Yresult;
+import com.felixgrund.codeshovel.json.ChangeSerializer;
+import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
@@ -13,6 +15,8 @@ import com.felixgrund.codeshovel.tasks.GitRangeLogTask;
 import com.felixgrund.codeshovel.tasks.RecursiveAnalysisTask;
 import com.felixgrund.codeshovel.util.ParserFactory;
 import com.felixgrund.codeshovel.util.Utl;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +25,8 @@ import java.util.*;
 public class ShovelExecution {
 
 	private static final Logger log = LoggerFactory.getLogger(ShovelExecution.class);
+
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	public static Yresult runMining(StartEnvironment startEnv, String acceptedFileExtension) throws Exception {
 		// We stopped gathering results for mining executions in heap space (which was crazy anyways).
@@ -80,6 +86,24 @@ public class ShovelExecution {
 		return yresult;
 	}
 
+	private static Yresult runOnlyBaseline(StartEnvironment startEnv, AnalysisTask startTask, Yfunction method) throws Exception {
+		startTask.setFunctionEndLine(method.getEndLineNumber());
+		startTask.setFilePath(method.getSourceFilePath());
+
+		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(startTask, startEnv);
+		gitRangeLogTask.run();
+		List<String> gitLogHistory = gitRangeLogTask.getResult();
+
+		Map<String, Object> jsonHistory = new HashMap<>();
+		jsonHistory.put("baseline", gitLogHistory);
+
+		String content = GSON.toJson(jsonHistory);
+
+		Utl.writeOutputFile("logonly", startTask.getStartCommitName(), startTask.getFilePath(), method.getId(),
+				startEnv.getRepositoryName(), content, ".json");
+		return new Yresult();
+	}
+
 	private static Yresult runForMethod(StartEnvironment startEnv, String filePath, Yfunction method) throws Exception {
 		printMethodStart(method);
 
@@ -89,6 +113,12 @@ public class ShovelExecution {
 		task.setFilePath(filePath);
 		task.setFunctionName(name);
 		task.setFunctionStartLine(lineNumber);
+
+		// TEMPORARY FOR CREATING ONLY BASELINE HISTORIES
+		if (GlobalEnv.ONLY_BASELINE) {
+			runOnlyBaseline(startEnv, task, method);
+			return new Yresult();
+		}
 
 		RecursiveAnalysisTask recursiveAnalysisTask = new RecursiveAnalysisTask(startEnv, task);
 		recursiveAnalysisTask.run();

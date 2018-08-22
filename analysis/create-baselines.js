@@ -1,10 +1,3 @@
-if (!String.prototype.startsWith) {
-	String.prototype.startsWith = function(searchString, position) {
-		position = position || 0;
-		return this.indexOf(searchString, position) === position;
-	};
-}
-
 var fs = require('fs');
 var path = require('path');
 
