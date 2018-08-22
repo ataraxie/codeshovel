@@ -11,7 +11,9 @@ const dirDiff = outputDir + "/diff_semantic_gitlog/" + repo;
 
 https://jonlabelle.com/snippets/view/javascript/calculate-mean-median-mode-and-range-in-javascript
 function median(values) {
-    values.sort((a, b) => a - b);
+    values.sort(function(a, b) {
+    	return a - b;
+    });
 	let lowMiddle = Math.floor((values.length - 1) / 2);
 	let highMiddle = Math.ceil((values.length - 1) / 2);
 	let median = (values[lowMiddle] + values[highMiddle]) / 2;
