@@ -237,7 +237,7 @@ function collectShovel() {
 			}
 		});
 
-		fullResult.changeStatsLeft = changeStats;
+		fullResult.changeStats = changeStats;
 		fullResult.methodSizeStatsLeftNumChangesRightNumLinesNumMethods = methodSizeStats;
 		fullResult.countSmallMethodsForOneChange = countSmallMethodsForOneChange;
 		fullResult.countSmallMethodsForMoreThanOneChange = countSmallMethodsForMoreThanOneChange;
