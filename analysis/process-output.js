@@ -19,11 +19,28 @@ var commitTimes = JSON.parse(fs.readFileSync(commitTimesFilePath));
 if (repo === "all") {
 	fs.readdir(srcDir + "/codeshovel", function(err, list) {
 		list.forEach(function(item) {
-			execute(item);
+			if (item !== "intellij-community") {
+				execute(item);
+			}
 		});
 	});
 } else {
 	execute(repo);
+}
+
+function sortResult(fullResult) {
+	var newResult = {};
+	Object.keys(fullResult).forEach(function(key) {
+		var value = fullResult[key];
+		if (typeof value !== 'object') {
+			newResult[key] = value;
+		}
+	});
+	["changeStats", "totalHistoryCountShovel", "totalHistoryCountBase", "statsMethodsOneChange",
+		"methodSizeStatsLeftNumChangesRightNumLinesNumMethods" ].forEach(function(key) {
+		newResult[key] = fullResult[key];
+	});
+	return newResult;
 }
 
 function execute(repo) {
@@ -86,6 +103,9 @@ function execute(repo) {
 	var fullResult = { repo: repo };
 	var commitTimesRepo = commitTimes[repo];
 
+	var totalHistoryCountShovel = {};
+	var totalHistoryCountBase = {};
+
 	filewalker(dirDiff, function(error, results) {
 		if (error) {
 			console.log(error);
@@ -99,8 +119,10 @@ function execute(repo) {
 		var totalOnlyShovel = 0;
 		var totalOnlyBase = 0;
 		var numBaselineHistoryGt1 = 0;
+		var numBaselineHistoryGt1InShovelRange = 0;
 		var numShovelHistoryGt1 = 0;
 		var totalCommitDurationBase = 0;
+		var totalCommitDurationBaseInShovelRange = 0;
 		var totalCommitDurationShovel = 0;
 		var methodDetails = {};
 		var shovelResultsArr = [];
@@ -111,7 +133,6 @@ function execute(repo) {
 		fullResult.totalHistory2To5 = 0;
 		fullResult.totalHistory6To10 = 0;
 		fullResult.totalHistoryGt10 = 0;
-		fullResult.totalHistoryCount = {};
 
 		console.log("Iterating semantic diff files for repo: " + repo);
 
@@ -132,16 +153,22 @@ function execute(repo) {
 				else if (numShovel <= 10) fullResult.totalHistory6To10 += 1;
 				else if (numShovel > 10) fullResult.totalHistoryGt10 += 1;
 
-				if (!fullResult.totalHistoryCount[numShovel]) {
-					fullResult.totalHistoryCount[numShovel] = 1;
+				if (!totalHistoryCountShovel[numShovel]) {
+					totalHistoryCountShovel[numShovel] = 1;
 				} else {
-					fullResult.totalHistoryCount[numShovel] += 1;
+					totalHistoryCountShovel[numShovel] += 1;
 				}
 
 				var numBase = diffObj.baselineHistory.length;
 				totalBase += numBase;
 				singleMethodResult.sizeBase = numBase;
 				baseResultsArr.push(numBase);
+
+				if (!totalHistoryCountBase[numBase]) {
+					totalHistoryCountBase[numBase] = 1;
+				} else {
+					totalHistoryCountBase[numBase] += 1;
+				}
 
 				var numOnlyShovel = diffObj.onlyInCodeshovel.length;
 				totalOnlyShovel += numOnlyShovel;
@@ -153,24 +180,39 @@ function execute(repo) {
 
 				methodDetails[methodId] = singleMethodResult;
 
-				var durationShovel, durationBase, newestCommit, oldestCommit, timestampNewest, timestampOldest;
+				var durationShovel, durationBase, newestCommitShovel, oldestCommitShovel, newestCommitBase, oldestCommitBase,
+					timestampNewestShovel, timestampOldestShovel, timestampNewestBase, timestampOldestBase;
 				if (numShovel > 1) {
 					numShovelHistoryGt1 += 1;
-					newestCommit = diffObj.codeshovelHistory[0];
-					oldestCommit = diffObj.codeshovelHistory.pop();
-					timestampNewest = commitTimesRepo[newestCommit];
-					timestampOldest = commitTimesRepo[oldestCommit];
-					durationShovel = timestampNewest - timestampOldest;
+					newestCommitShovel = diffObj.codeshovelHistory[0];
+					oldestCommitShovel = diffObj.codeshovelHistory[diffObj.codeshovelHistory.length - 1];
+					timestampNewestShovel = commitTimesRepo[newestCommitShovel];
+					timestampOldestShovel = commitTimesRepo[oldestCommitShovel];
+					durationShovel = timestampNewestShovel - timestampOldestShovel;
 					totalCommitDurationShovel += durationShovel;
 				}
 				if (numBase > 1) {
 					numBaselineHistoryGt1 += 1;
-					newestCommit = diffObj.baselineHistory[0];
-					oldestCommit = diffObj.baselineHistory.pop();
-					timestampNewest = commitTimesRepo[newestCommit];
-					timestampOldest = commitTimesRepo[oldestCommit];
-					durationBase = timestampNewest - timestampOldest;
+					newestCommitBase = diffObj.baselineHistory[0];
+					oldestCommitBase = diffObj.baselineHistory[diffObj.baselineHistory.length - 1];
+					timestampNewestBase = commitTimesRepo[newestCommitBase];
+					timestampOldestBase = commitTimesRepo[oldestCommitBase];
+					durationBase = timestampNewestBase - timestampOldestBase;
 					totalCommitDurationBase += durationBase;
+
+					if (timestampOldestBase < timestampOldestShovel) {
+						var i = diffObj.baselineHistory.length;
+						var commitName, timestamp;
+						while (i--) {
+							commitName = diffObj.baselineHistory[i];
+							timestamp = commitTimesRepo[commitName];
+							if (timestamp >= timestampOldestShovel && i > 0) { // if i === 0 there's only one commit in shovel range
+								numBaselineHistoryGt1InShovelRange += 1; // niu currently
+								totalCommitDurationBaseInShovelRange += (timestampNewestBase - timestamp);
+								break;
+							}
+						}
+					}
 				}
 
 
@@ -181,10 +223,15 @@ function execute(repo) {
 
 		fullResult.avgCommitDurationBaseInDays = (totalCommitDurationBase / numBaselineHistoryGt1) / 86400000;
 		fullResult.avgCommitDurationShovelInDays = (totalCommitDurationShovel / numShovelHistoryGt1) / 86400000;
+		fullResult.avgCommitDurationBaseInDaysFromFirstShovelCommit = (totalCommitDurationBaseInShovelRange / numBaselineHistoryGt1) / 86400000;
 		fullResult.avgSizeShovel = totalShovel / fullResult.totalMethods;
 		fullResult.avgSizeBase = totalBase / fullResult.totalMethods;
+		fullResult.avgSizeOnlyShovel = totalOnlyShovel / fullResult.totalMethods;
+		fullResult.avgSizeOnlyBase = totalOnlyShovel / fullResult.totalMethods;
 		fullResult.medianSizeShovel = median(shovelResultsArr);
 		fullResult.medianSizeBase = median(baseResultsArr);
+		fullResult.totalHistoryCountShovel = totalHistoryCountShovel;
+		fullResult.totalHistoryCountBase = totalHistoryCountBase;
 		// fullResult.methodDetails = methodDetails;
 
 		try {
@@ -296,13 +343,15 @@ function execute(repo) {
 			fullResult.countSmallMethodsForOneChange = countSmallMethodsForOneChange;
 			fullResult.countSmallMethodsForMoreThanOneChange = countSmallMethodsForMoreThanOneChange;
 
-			var numMethodsOneChange = fullResult.totalHistoryCount["1"];
+			var numMethodsOneChange = fullResult.totalHistoryCountShovel["1"];
 			var numMethodsMoreThanOneChange = fullResult.totalMethods - numMethodsOneChange;
 			fullResult.avgMethodSizeOneChange = sumLineLengthOneChange / numMethodsOneChange;
 			fullResult.avgMethodsMoreThanOneChange = sumLineLengthMoreThanOneChange / numMethodsMoreThanOneChange;
 
 			fullResult.statsMethodsOneChange = statsMethodsOneChange;
 			fullResult.methodSizeStatsLeftNumChangesRightNumLinesNumMethods = methodSizeStats;
+
+			fullResult = sortResult(fullResult);
 
 			var jsonResult = JSON.stringify(fullResult, null, 2);
 			var filePath = dstDir + "/stats-" + repo + ".json";
