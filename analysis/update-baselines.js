@@ -1,6 +1,5 @@
 var fs = require('fs');
 var path = require('path');
-var spawn = require('child_process').spawn;
 
 var srcDir = process.env.SRC_DIR;
 var dstDir = process.env.DST_DIR;

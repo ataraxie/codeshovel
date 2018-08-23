@@ -11,9 +11,10 @@ var path = require('path');
 
 var srcDir = process.env.SRC_DIR;
 var dstDir = process.env.DST_DIR;
-var repo = "all";//process.env.REPO_NAME;  // set to null to run against all repos
+var commitTimesFilePath = process.env.COMMIT_TIMES_PATH;
+var repo = process.env.REPO_NAME;  // set to null to run against all repos
 
-console.log("ENV: " + JSON.stringify(process.env));
+var commitTimes = JSON.parse(fs.readFileSync(commitTimesFilePath));
 
 if (repo === "all") {
 	fs.readdir(srcDir + "/codeshovel", function(err, list) {
@@ -83,6 +84,7 @@ function execute(repo) {
 	};
 
 	var fullResult = { repo: repo };
+	var commitTimesRepo = commitTimes[repo];
 
 	filewalker(dirDiff, function(error, results) {
 		if (error) {
@@ -96,6 +98,10 @@ function execute(repo) {
 		var totalBase = 0;
 		var totalOnlyShovel = 0;
 		var totalOnlyBase = 0;
+		var numBaselineHistoryGt1 = 0;
+		var numShovelHistoryGt1 = 0;
+		var totalCommitDurationBase = 0;
+		var totalCommitDurationShovel = 0;
 		var methodDetails = {};
 		var shovelResultsArr = [];
 		var baseResultsArr = [];
@@ -147,12 +153,34 @@ function execute(repo) {
 
 				methodDetails[methodId] = singleMethodResult;
 
+				var durationShovel, durationBase, newestCommit, oldestCommit, timestampNewest, timestampOldest;
+				if (numShovel > 1) {
+					numShovelHistoryGt1 += 1;
+					newestCommit = diffObj.codeshovelHistory[0];
+					oldestCommit = diffObj.codeshovelHistory.pop();
+					timestampNewest = commitTimesRepo[newestCommit];
+					timestampOldest = commitTimesRepo[oldestCommit];
+					durationShovel = timestampNewest - timestampOldest;
+					totalCommitDurationShovel += durationShovel;
+				}
+				if (numBase > 1) {
+					numBaselineHistoryGt1 += 1;
+					newestCommit = diffObj.baselineHistory[0];
+					oldestCommit = diffObj.baselineHistory.pop();
+					timestampNewest = commitTimesRepo[newestCommit];
+					timestampOldest = commitTimesRepo[oldestCommit];
+					durationBase = timestampNewest - timestampOldest;
+					totalCommitDurationBase += durationBase;
+				}
+
 
 			} catch (err) {
 				console.log("ERROR processing file: " + file + " -- " + err);
 			}
 		});
 
+		fullResult.avgCommitDurationBaseInDays = (totalCommitDurationBase / numBaselineHistoryGt1) / 86400000;
+		fullResult.avgCommitDurationShovelInDays = (totalCommitDurationShovel / numShovelHistoryGt1) / 86400000;
 		fullResult.avgSizeShovel = totalShovel / fullResult.totalMethods;
 		fullResult.avgSizeBase = totalBase / fullResult.totalMethods;
 		fullResult.medianSizeShovel = median(shovelResultsArr);
