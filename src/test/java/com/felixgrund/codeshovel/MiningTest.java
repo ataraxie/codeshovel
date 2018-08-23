@@ -29,11 +29,8 @@ class MiningTest {
 		Commit startCommit = repositoryService.findCommitByName(START_COMMIT);
 
 		StartEnvironment env = new StartEnvironment(repositoryService);
-		if (TARGET_FILE_PATH != null) {
-			env.setFilePath(TARGET_FILE_PATH);
-			env.setFileName(Utl.getFileName(TARGET_FILE_PATH));
-		}
-
+		env.setFilePath(TARGET_FILE_PATH);
+		env.setFileName(Utl.getFileName(TARGET_FILE_PATH));
 		env.setStartCommitName(START_COMMIT);
 		env.setStartCommit(startCommit);
 
