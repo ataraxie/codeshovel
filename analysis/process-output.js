@@ -19,9 +19,7 @@ var commitTimes = JSON.parse(fs.readFileSync(commitTimesFilePath));
 if (repo === "all") {
 	fs.readdir(srcDir + "/codeshovel", function(err, list) {
 		list.forEach(function(item) {
-			if (item !== "intellij-community") {
-				execute(item);
-			}
+			execute(item);
 		});
 	});
 } else {
@@ -50,7 +48,7 @@ function execute(repo) {
 	var dirCodeshovel = srcDir + "/codeshovel/" + repo;
 	var dirDiff = srcDir + "/diff_semantic_gitlog/" + repo;
 
-	function median(values) {
+	var median = function(values) {
 		values.sort(function(a, b) {
 			return a - b;
 		});
@@ -106,6 +104,30 @@ function execute(repo) {
 	var totalHistoryCountShovel = {};
 	var totalHistoryCountBase = {};
 
+
+	var getBaselineInShovelRange = function(diffObj) {
+		var arr = [];
+		var newestShovelCommit = diffObj.codeshovelHistory[0];
+		var newestShovelCommitTime = commitTimesRepo[newestShovelCommit];
+		var oldestShovelCommit = diffObj.codeshovelHistory[diffObj.codeshovelHistory.length - 1];
+		var oldestShovelCommitTime = commitTimesRepo[oldestShovelCommit];
+		diffObj.baselineHistory.forEach(function(commitName) {
+			var timestamp = commitTimesRepo[commitName];
+			if (timestamp >= oldestShovelCommitTime && timestamp <= newestShovelCommitTime) {
+				arr.push(commitName);
+			}
+		});
+		return arr;
+	};
+
+	var getDuration = function(commitArr) {
+		var newestCommit = commitArr[0];
+		var oldestCommit = commitArr[commitArr.length - 1];
+		var timestampNewest = commitTimesRepo[newestCommit];
+		var timestampOldest = commitTimesRepo[oldestCommit];
+		return timestampNewest - timestampOldest;
+	};
+
 	filewalker(dirDiff, function(error, results) {
 		if (error) {
 			console.log(error);
@@ -124,6 +146,7 @@ function execute(repo) {
 		var totalCommitDurationBase = 0;
 		var totalCommitDurationBaseInShovelRange = 0;
 		var totalCommitDurationShovel = 0;
+		var totalCommitDurationShovelBaseInShovel = 0;
 		var methodDetails = {};
 		var shovelResultsArr = [];
 		var baseResultsArr = [];
@@ -180,50 +203,35 @@ function execute(repo) {
 
 				methodDetails[methodId] = singleMethodResult;
 
-				var durationShovel, durationBase, newestCommitShovel, oldestCommitShovel, newestCommitBase, oldestCommitBase,
-					timestampNewestShovel, timestampOldestShovel, timestampNewestBase, timestampOldestBase;
 				if (numShovel > 1) {
 					numShovelHistoryGt1 += 1;
-					newestCommitShovel = diffObj.codeshovelHistory[0];
-					oldestCommitShovel = diffObj.codeshovelHistory[diffObj.codeshovelHistory.length - 1];
-					timestampNewestShovel = commitTimesRepo[newestCommitShovel];
-					timestampOldestShovel = commitTimesRepo[oldestCommitShovel];
-					durationShovel = timestampNewestShovel - timestampOldestShovel;
-					totalCommitDurationShovel += durationShovel;
+					totalCommitDurationShovel += getDuration(diffObj.codeshovelHistory);
 				}
 				if (numBase > 1) {
 					numBaselineHistoryGt1 += 1;
-					newestCommitBase = diffObj.baselineHistory[0];
-					oldestCommitBase = diffObj.baselineHistory[diffObj.baselineHistory.length - 1];
-					timestampNewestBase = commitTimesRepo[newestCommitBase];
-					timestampOldestBase = commitTimesRepo[oldestCommitBase];
-					durationBase = timestampNewestBase - timestampOldestBase;
-					totalCommitDurationBase += durationBase;
-
-					if (timestampOldestBase < timestampOldestShovel) {
-						var i = diffObj.baselineHistory.length;
-						var commitName, timestamp;
-						while (i--) {
-							commitName = diffObj.baselineHistory[i];
-							timestamp = commitTimesRepo[commitName];
-							if (timestamp >= timestampOldestShovel && i > 0) { // if i === 0 there's only one commit in shovel range
-								numBaselineHistoryGt1InShovelRange += 1; // niu currently
-								totalCommitDurationBaseInShovelRange += (timestampNewestBase - timestamp);
-								break;
-							}
-						}
-					}
+					totalCommitDurationBase += getDuration(diffObj.baselineHistory);
 				}
 
+				if (numBase > 1 && numShovel > 1) {
+					var baselineInShovelRange = getBaselineInShovelRange(diffObj, commitTimesRepo);
+					if (baselineInShovelRange.length > 1) {
+						numBaselineHistoryGt1InShovelRange += 1;
+						totalCommitDurationBaseInShovelRange += getDuration(baselineInShovelRange);
+						totalCommitDurationShovelBaseInShovel += getDuration(diffObj.codeshovelHistory);
+					}
+				}
 
 			} catch (err) {
 				console.log("ERROR processing file: " + file + " -- " + err);
 			}
 		});
 
+		fullResult.totalChangesShovel = totalShovel;
+		fullResult.totalChangesBase = totalBase;
 		fullResult.avgCommitDurationBaseInDays = (totalCommitDurationBase / numBaselineHistoryGt1) / 86400000;
 		fullResult.avgCommitDurationShovelInDays = (totalCommitDurationShovel / numShovelHistoryGt1) / 86400000;
-		fullResult.avgCommitDurationBaseInDaysFromFirstShovelCommit = (totalCommitDurationBaseInShovelRange / numBaselineHistoryGt1) / 86400000;
+		fullResult.avgCommitDurationBaseInDaysOnlyShovelRange = (totalCommitDurationBaseInShovelRange / numBaselineHistoryGt1InShovelRange) / 86400000;
+		fullResult.avgCommitDurationShovelWithBaseInShovel = (totalCommitDurationShovelBaseInShovel / numBaselineHistoryGt1InShovelRange) / 86400000;
 		fullResult.avgSizeShovel = totalShovel / fullResult.totalMethods;
 		fullResult.avgSizeBase = totalBase / fullResult.totalMethods;
 		fullResult.avgSizeOnlyShovel = totalOnlyShovel / fullResult.totalMethods;

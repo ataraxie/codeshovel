@@ -20,10 +20,11 @@ public class GetCommitTimestamps {
 	static final String OUTPUT_FILE = System.getenv("OUTPUT_FILE");
 
 	public static void main(String[] args) throws Exception {
-		log("START");
+		log("START. Reading repos in " + REPO_DIR);
 		List<String> repoNames = getSubdirectories(REPO_DIR);
 		Map<String, Map<String, Long>> commitDates = new HashMap<>();
 		for (String repoName : repoNames) {
+			log("Repo: " + repoName);
 			try {
 				Map<String, Long> repoCommitDates = new HashMap<>();
 				String repoPath = REPO_DIR + "/" + repoName;
@@ -46,7 +47,7 @@ public class GetCommitTimestamps {
 
 		String json = new Gson().toJson(commitDates);
 		FileUtils.writeStringToFile(new File(OUTPUT_FILE), json, "utf-8");
-		log("DONE");
+		log("DONE. File written to " + OUTPUT_FILE);
 	}
 
 	private static List<String> getSubdirectories(String repoDir) {
