@@ -150,8 +150,9 @@ function execute(repo) {
 		var methodDetails = {};
 		var shovelResultsArr = [];
 		var baseResultsArr = [];
+		var totalMethods = results.length;
 
-		fullResult.totalMethods = results.length;
+		fullResult.totalMethods = totalMethods;
 		fullResult.totalHistoryEquals1 = 0;
 		fullResult.totalHistory2To5 = 0;
 		fullResult.totalHistory6To10 = 0;
@@ -294,6 +295,9 @@ function execute(repo) {
 			var sumLineLengthMoreThanOneChange = 0;
 			var totalHistoryTime = 0;
 
+			var numMethodsWithCrossFileChanges = 0;
+			var totalMethods = results.length;
+
 			console.log("Iterating codeshovel results for repo: " + repo);
 
 			results.forEach(function(file) {
@@ -338,9 +342,16 @@ function execute(repo) {
 						sumLineLengthMoreThanOneChange += numMethodLines;
 					}
 
+					var methodChangeTypes = {};
 					for (var commitName in shovelObj.changeHistoryShort) {
 						var changeType = shovelObj.changeHistoryShort[commitName];
 						addStats(changeStats, changeType);
+						addStats(methodChangeTypes, changeType);
+					}
+
+					var changeTypesForMethod = Object.keys(methodChangeTypes);
+					if (changeTypesForMethod.indexOf("Yfilerename") >= 0 || changeTypesForMethod.indexOf("Ymovefromfile") >= 0) {
+						numMethodsWithCrossFileChanges += 1;
 					}
 				} catch (err) {
 					console.log("ERROR processing file: " + file + "  --  " + err);
@@ -350,6 +361,8 @@ function execute(repo) {
 			fullResult.changeStats = changeStats;
 			fullResult.countSmallMethodsForOneChange = countSmallMethodsForOneChange;
 			fullResult.countSmallMethodsForMoreThanOneChange = countSmallMethodsForMoreThanOneChange;
+			fullResult.numMethodsWithCrossFileChanges = numMethodsWithCrossFileChanges;
+			fullResult.fragmentMethodsWithCrossFileChanges = numMethodsWithCrossFileChanges / totalMethods;
 
 			var numMethodsOneChange = fullResult.totalHistoryCountShovel["1"];
 			var numMethodsMoreThanOneChange = fullResult.totalMethods - numMethodsOneChange;
