@@ -99,12 +99,12 @@ public class AnalysisTask {
 	private void createResult() {
 		this.yresult = new Yresult();
 		int numResults = this.taskSpecificHistory.size();
-		log.trace("Creating result of size {{}}...", numResults);
+		log.info("Creating result of size {{}}...", numResults);
 		int status = 0;
 		for (Ycommit ycommit : this.taskSpecificHistory) {
 			try {
 				status++;
-				log.trace(status + " / " + numResults);
+				log.info(status + " / " + numResults);
 				InFileInterpreter ifi = new InFileInterpreter(this.startEnv, ycommit);
 				Ychange ychange = ifi.interpret();
 				if (!(ychange instanceof Ynochange)) {
@@ -185,11 +185,11 @@ public class AnalysisTask {
 		Map<String, Commit> allCommits = yhistory.getCommits();
 		Set<String> commitNames = allCommits.keySet();
 		int numCommits = commitNames.size();
-		log.trace("Creating commit collection for all {{}} commits...", commitNames.size());
+		log.info("Creating commit collection for all {{}} commits...", commitNames.size());
 		int status = 0;
 		for (String commitName : commitNames) {
 			status++;
-			log.trace(status + " / " + numCommits);
+			log.info(status + " / " + numCommits);
 			Commit commit = yhistory.getCommits().get(commitName);
 			try {
 				RevCommit revCommit = yhistory.getRevCommits().get(commit.getName());
@@ -202,8 +202,6 @@ public class AnalysisTask {
 					Commit parentCommit = new Commit(parentRevCommit);
 					Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
 					ycommit.setPrev(parentYcommit);
-					Ydiff ydiff = new Ydiff(repositoryService, commit, parentCommit, false);
-					ycommit.setYdiff(ydiff);
 				}
 				lastConsideredCommit = ycommit;
 				this.taskSpecificHistory.add(ycommit);

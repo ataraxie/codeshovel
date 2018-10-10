@@ -19,7 +19,6 @@ public interface Yfunction {
 	Yexceptions getExceptions();
 	int getNameLineNumber();
 	int getEndLineNumber();
-	Object getRawFunction();
 
 	String getCommitName();
 	String getCommitNameShort();
@@ -27,12 +26,14 @@ public interface Yfunction {
 	Commit getCommit();
 
 	String getId();
+	String getFunctionPath();
 
 	String getSourceFileContent();
 	String getSourceFilePath();
 
 	String getSourceFragment();
 
-	Repository getRepository();
+	String getParentName();
+	String getParentType();
 
 }

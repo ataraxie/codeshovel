@@ -43,7 +43,6 @@ public class MainAnalysisTask {
 		RepositoryService repositoryService = new CachingRepositoryService(git, repository, repositoryName, repositoryPath);
 		Commit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
 
-		startEnv.setRepositoryService(repositoryService);
 		startEnv.setStartCommit(startCommit);
 		startEnv.setEnvName(configName);
 		startEnv.setStartCommit(startCommit);

@@ -98,7 +98,7 @@ public class ShovelExecution {
 		Map<String, Ychange> changeHistoryDetails = new LinkedHashMap<>();
 		Map<String, String> changeHistoryShort = new LinkedHashMap<>();
 
-		log.trace("Creating method history and writing git diffs for result history...");
+		log.info("Creating method history and writing git diffs for result history...");
 		for (Ycommit ycommit : yresult.keySet()) {
 			String commitName = ycommit.getName();
 			codeshovelHistory.add(commitName);
@@ -148,7 +148,7 @@ public class ShovelExecution {
 		List<String> onlyInBaseline = new ArrayList<>(baselineHistory);
 		onlyInBaseline.removeAll(codeshovelHistory);
 
-		log.trace("Found difference in change history. Writing files.");
+		log.info("Found difference in change history. Writing files.");
 		JsonChangeHistoryDiff diff = new JsonChangeHistoryDiff(codeshovelHistory, baselineHistory,
 				onlyInCodeshovel, onlyInBaseline);
 		Utl.writeSemanticDiff(baselineName, result, diff);

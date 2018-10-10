@@ -22,27 +22,26 @@ public class Ydiff {
 
 	private static final int RENAME_SCORE = 50;
 
-	private RepositoryService repositoryService;
-	private Repository repository;
-
 	private List<DiffEntry> diffEntries;
 	private Map<String, DiffEntry> diff;
 	private DiffFormatter diffFormatter;
 
 	private Map<String, String> pathMapping;
 
+	private RepositoryService repositoryService;
+
 	public Ydiff(RepositoryService repositoryService, Commit commit, Commit prevCommit, boolean detectRenames) throws IOException {
 		this.repositoryService = repositoryService;
-		this.repository = repositoryService.getRepository();
 		init(commit, prevCommit, detectRenames);
 	}
 
 	private void init(Commit commit, Commit prevCommit, boolean detectRenames) throws IOException {
-		ObjectReader objectReader = this.repository.newObjectReader();
+		Repository repository = repositoryService.getRepository();
+		ObjectReader objectReader = repository.newObjectReader();
 		CanonicalTreeParser treeParserNew = new CanonicalTreeParser();
 		OutputStream outputStream = System.out;
 		this.diffFormatter = new DiffFormatter(outputStream);
-		this.diffFormatter.setRepository(this.repository);
+		this.diffFormatter.setRepository(repositoryService.getRepository());
 		this.diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
 		RevCommit revCommit = repositoryService.findRevCommitById(commit.getId());
 		RevCommit prevRevCommit = repositoryService.findRevCommitById(prevCommit.getId());
@@ -51,7 +50,7 @@ public class Ydiff {
 		treeParserOld.reset(objectReader, prevRevCommit.getTree());
 		this.diffEntries = this.diffFormatter.scan(treeParserOld, treeParserNew);
 		if (detectRenames) {
-			RenameDetector rd = new RenameDetector(repository);
+			RenameDetector rd = new RenameDetector(repositoryService.getRepository());
 			rd.addAll(diffEntries);
 			rd.setRenameScore(RENAME_SCORE);
 			diffEntries = rd.compute();
