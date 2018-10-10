@@ -120,8 +120,8 @@ public class AnalysisTaskTest {
 		String message = String.format("%s - expecting %s changes", startEnv.getEnvName(), expectedResult.size());
 
 		StringBuilder actualResultBuilder = new StringBuilder();
-		for (Ycommit commit : yresult.keySet()) {
-			actualResultBuilder.append("\n").append(commit.getName()).append(":").append(yresult.get(commit).getTypeAsString());
+		for (String commitName : yresult.keySet()) {
+			actualResultBuilder.append("\n").append(commitName).append(":").append(yresult.get(commitName).getTypeAsString());
 		}
 
 		StringBuilder expectedResultBuilder = new StringBuilder();
@@ -145,8 +145,8 @@ public class AnalysisTaskTest {
 
 			Set<String> expectedKeys = expectedResult.keySet();
 			Set<String> actualKeys = new HashSet<>();
-			for (Ycommit ycommit : actualResult.keySet()) {
-				actualKeys.add(ycommit.getCommit().getName());
+			for (String commitName : actualResult.keySet()) {
+				actualKeys.add(commitName);
 			}
 			Set<String> onlyInExpected = new HashSet<>(expectedKeys);
 			onlyInExpected.removeAll(actualKeys);
@@ -156,9 +156,8 @@ public class AnalysisTaskTest {
 			System.err.println("\nOnly in actual:\n" + StringUtils.join(onlyInActual, "\n"));
 			return false;
 		}
-		for (Ycommit ycommit : actualResult.keySet()) {
-			Ychange ychange = actualResult.get(ycommit);
-			String commitName = ycommit.getCommit().getName();
+		for (String commitName : actualResult.keySet()) {
+			Ychange ychange = actualResult.get(commitName);
 			String expectedChangeType = expectedResult.get(commitName);
 			if (expectedChangeType == null) {
 				System.err.println(String.format("Expected result does not contain commit with name %s", commitName));

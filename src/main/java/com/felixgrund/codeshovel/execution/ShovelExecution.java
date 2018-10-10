@@ -99,10 +99,9 @@ public class ShovelExecution {
 		Map<String, String> changeHistoryShort = new LinkedHashMap<>();
 
 		log.info("Creating method history and writing git diffs for result history...");
-		for (Ycommit ycommit : yresult.keySet()) {
-			String commitName = ycommit.getName();
+		for (String commitName : yresult.keySet()) {
 			codeshovelHistory.add(commitName);
-			Ychange change = yresult.get(ycommit);
+			Ychange change = yresult.get(commitName);
 			changeHistoryDetails.put(commitName, change);
 			changeHistoryShort.put(commitName, change.getTypeAsString());
 //			Yfunction matchedFunction = ycommit.getMatchedFunction();

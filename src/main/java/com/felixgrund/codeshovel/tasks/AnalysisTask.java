@@ -115,7 +115,7 @@ public class AnalysisTask {
 							ychange = crossFileChange;
 						}
 					}
-					this.yresult.put(ycommit, ychange);
+					this.yresult.put(ycommit.getName(), ychange);
 				}
 				if (hasMajorChange(ychange)) {
 					this.lastMajorChange = ychange;
