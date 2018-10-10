@@ -96,8 +96,4 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 		return null;
 	}
 
-	@Override
-	public String getParentType() {
-		return null;
-	}
 }

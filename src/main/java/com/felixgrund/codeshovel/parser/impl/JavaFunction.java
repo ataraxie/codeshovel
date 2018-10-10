@@ -12,6 +12,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
+import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.type.ReferenceType;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
@@ -32,31 +33,29 @@ public class JavaFunction extends AbstractFunction implements Yfunction {
 	private String body;
 	private int beginLine;
 	private int endLine;
-	private int functionPath;
 	private String parentName;
-	private String parentType;
 
-	public JavaFunction(MethodDeclaration node, Commit commit, String sourceFilePath, String sourceFileContent) {
+	public JavaFunction(MethodDeclaration method, Commit commit, String sourceFilePath, String sourceFileContent) {
 		super(commit, sourceFilePath, sourceFileContent);
-		this.name = node.getNameAsString();
-		this.type = node.getTypeAsString();
+		this.name = method.getNameAsString();
+		this.type = method.getTypeAsString();
 		List<String> modifiers = new ArrayList<>();
-		for (Modifier modifier : node.getModifiers()) {
+		for (Modifier modifier : method.getModifiers()) {
 			modifiers.add(modifier.asString());
 		}
 		this.modifiers = new Ymodifiers(modifiers);
 		List<String> exceptions = new ArrayList<>();
-		for (ReferenceType type : node.getThrownExceptions()) {
+		for (ReferenceType type : method.getThrownExceptions()) {
 			exceptions.add(type.asString());
 		}
 		this.exceptions = new Yexceptions(exceptions);
 
-		if (node.getBody().isPresent()) {
-			this.body = node.getBody().get().toString();
+		if (method.getBody().isPresent()) {
+			this.body = method.getBody().get().toString();
 		}
 
 		List<Yparameter> parametersList = new ArrayList<>();
-		List<Parameter> parameterElements = node.getParameters();
+		List<Parameter> parameterElements = method.getParameters();
 		for (Parameter parameterElement : parameterElements) {
 			Yparameter parameter = new Yparameter(parameterElement.getNameAsString(), parameterElement.getTypeAsString());
 			Map<String, String> metadata = createParameterMetadataMap(parameterElement);
@@ -65,17 +64,21 @@ public class JavaFunction extends AbstractFunction implements Yfunction {
 		}
 		this.parameters = parametersList;
 
-		if (node.getName().getBegin().isPresent()) {
-			this.beginLine = node.getName().getBegin().get().line;
+		if (method.getName().getBegin().isPresent()) {
+			this.beginLine = method.getName().getBegin().get().line;
 		}
 
-		if (node.getEnd().isPresent()) {
-			this.endLine = node.getEnd().get().line;
+		if (method.getEnd().isPresent()) {
+			this.endLine = method.getEnd().get().line;
 		}
 
-		if (node.getParentNode().isPresent() && node.getParentNode().get() instanceof NodeWithName) {
-			this.parentType = node.getParentNode().getClass().getSimpleName();
-			this.parentName = ((NodeWithName) node.getParentNode().get()).getNameAsString();
+		if (method.getParentNode().isPresent()) {
+			Node node = method.getParentNode().get();
+			if (node instanceof NodeWithName) {
+				this.parentName = ((NodeWithName) method.getParentNode().get()).getNameAsString();
+			} else if (node instanceof NodeWithSimpleName) {
+				this.parentName = ((NodeWithSimpleName) method.getParentNode().get()).getNameAsString();
+			}
 		}
 
 	}
@@ -98,11 +101,6 @@ public class JavaFunction extends AbstractFunction implements Yfunction {
 	@Override
 	public String getParentName() {
 		return this.parentName;
-	}
-
-	@Override
-	public String getParentType() {
-		return this.parentType;
 	}
 
 	@Override

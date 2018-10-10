@@ -34,6 +34,5 @@ public interface Yfunction {
 	String getSourceFragment();
 
 	String getParentName();
-	String getParentType();
 
 }
