@@ -129,7 +129,7 @@ public abstract class AbstractParser implements Yparser {
 
 	@Override
 	public Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile) {
-		log.info("Trying to find most similar function");
+		log.trace("Trying to find most similar function");
 		Map<Yfunction, FunctionSimilarity> similarities = new HashMap<>();
 		List<Yfunction> candidatesWithSameName = new ArrayList<>();
 		for (Yfunction candidate : candidates) {
@@ -142,7 +142,7 @@ public abstract class AbstractParser implements Yparser {
 				// If we are in-file just return because the ID will exist only once.
 				// If we are cross-file, take bodySimilarity as an additional measure.
 				if (!crossFile || bodySimilarity > 0.8) {
-					log.info("Found function with same ID and bodySimilarity > 0.8. Done.");
+					log.trace("Found function with same ID and bodySimilarity > 0.8. Done.");
 					return candidate;
 				}
 			}
@@ -153,7 +153,7 @@ public abstract class AbstractParser implements Yparser {
 
 			// If the body is 100% equal we assume it's the correct candidate.
 			if (bodySimilarity == 1) {
-				log.info("Found function with body similarity of 1. Done.");
+				log.trace("Found function with body similarity of 1. Done.");
 				return candidate;
 			}
 
@@ -165,7 +165,7 @@ public abstract class AbstractParser implements Yparser {
 					lineNumberDistance = Utl.getLineNumberDistance(candidate, compareFunction);
 				}
 				if (crossFile || lineNumberDistance < 10) {
-					log.info("Found function with body similarity > 0.9 and line distance < 10 and scope similarity of 1. Done.");
+					log.trace("Found function with body similarity > 0.9 and line distance < 10 and scope similarity of 1. Done.");
 					return candidate;
 				}
 			}
@@ -200,7 +200,7 @@ public abstract class AbstractParser implements Yparser {
 		}
 
 		FunctionSimilarity similarity = similarities.get(mostSimilarFunction);
-		log.info("Highest similarity with overall similarity of {}: {}", similarity);
+		log.trace("Highest similarity with overall similarity of {}: {}", similarity);
 
 		if (GlobalEnv.WRITE_SIMILARITIES && compareFunction != null && mostSimilarFunction != null) {
 			Utl.writeJsonSimilarity(this.repositoryName, this.filePath, compareFunction, mostSimilarFunction, similarity);
@@ -209,7 +209,7 @@ public abstract class AbstractParser implements Yparser {
 		if (mostSimilarFunctionSimilarity > 0.8) {
 			int numBodyLines = Utl.countLineNumbers(mostSimilarFunction.getBody());
 			if (numBodyLines > 3 || mostSimilarFunctionSimilarity > 0.95) {
-				log.info("Highest similarity is high enough. Accepting function.");
+				log.trace("Highest similarity is high enough. Accepting function.");
 				return mostSimilarFunction;
 			}
 		}
@@ -217,7 +217,7 @@ public abstract class AbstractParser implements Yparser {
 		if (candidatesWithSameName.size() == 1) {
 			Yfunction candidateWithSameName = candidatesWithSameName.get(0);
 			FunctionSimilarity candidateSimilarity = similarities.get(candidateWithSameName);
-			log.info("Highest similarity was < 0.85. But found single candidate with same function name. Using lower similarity threshold");
+			log.trace("Highest similarity was < 0.85. But found single candidate with same function name. Using lower similarity threshold");
 
 			// TODO: this is temporary! We need to make our similarity algorithm much smarter!
 			// Use return statement, parameters, signature in general and other things! This should all go into
@@ -225,15 +225,15 @@ public abstract class AbstractParser implements Yparser {
 			// If this is cross-file, we need to be more strict: it's much more likely that a method with the same
 			// name was removed that is completely independent.
 			if (crossFile & candidateSimilarity.getBodySimilarity() > 0.8) {
-				log.info("Cross-file comparison and body similarity > 0.8. Accepting function.");
+				log.trace("Cross-file comparison and body similarity > 0.8. Accepting function.");
 				return candidateWithSameName;
 			} else if (!crossFile && candidateSimilarity.getOverallSimilarity() > 0.5) {
-				log.info("In-file comparison and overall similarity > 0.5. Accepting function.");
+				log.trace("In-file comparison and overall similarity > 0.5. Accepting function.");
 				return candidateWithSameName;
 			}
 		}
 
-		log.info("Highest similarity was < 0.85 and did not find single candidate with same name. Unable to find matching candidate.");
+		log.trace("Highest similarity was < 0.85 and did not find single candidate with same name. Unable to find matching candidate.");
 		return null;
 	}
 }

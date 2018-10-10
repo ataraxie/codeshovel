@@ -99,12 +99,12 @@ public class AnalysisTask {
 	private void createResult() {
 		this.yresult = new Yresult();
 		int numResults = this.taskSpecificHistory.size();
-		log.info("Creating result of size {{}}...", numResults);
+		log.trace("Creating result of size {{}}...", numResults);
 		int status = 0;
 		for (Ycommit ycommit : this.taskSpecificHistory) {
 			try {
 				status++;
-				log.info(status + " / " + numResults);
+				log.trace(status + " / " + numResults);
 				InFileInterpreter ifi = new InFileInterpreter(this.startEnv, ycommit);
 				Ychange ychange = ifi.interpret();
 				if (!(ychange instanceof Ynochange)) {
@@ -185,11 +185,11 @@ public class AnalysisTask {
 		Map<String, Commit> allCommits = yhistory.getCommits();
 		Set<String> commitNames = allCommits.keySet();
 		int numCommits = commitNames.size();
-		log.info("Creating commit collection for all {{}} commits...", commitNames.size());
+		log.trace("Creating commit collection for all {{}} commits...", commitNames.size());
 		int status = 0;
 		for (String commitName : commitNames) {
 			status++;
-			log.info(status + " / " + numCommits);
+			log.trace(status + " / " + numCommits);
 			Commit commit = yhistory.getCommits().get(commitName);
 			try {
 				RevCommit revCommit = yhistory.getRevCommits().get(commit.getName());
