@@ -207,13 +207,6 @@ public abstract class AbstractParser implements Yparser {
 			Utl.writeJsonSimilarity(this.repositoryName, this.filePath, compareFunction, mostSimilarFunction, similarity);
 		}
 
-		if (mostSimilarFunctionSimilarity > 0.82) {
-			if (!shouldBodyBeVerySimilar(compareFunction, mostSimilarFunction)|| mostSimilarFunctionSimilarity > 0.95) {
-				log.trace("Highest similarity is high enough. Accepting function.");
-				return mostSimilarFunction;
-			}
-		}
-
 		if (candidatesWithSameName.size() == 1) {
 			Yfunction candidateWithSameName = candidatesWithSameName.get(0);
 			FunctionSimilarity candidateSimilarity = similarities.get(candidateWithSameName);
@@ -230,6 +223,13 @@ public abstract class AbstractParser implements Yparser {
 			} else if (!crossFile && candidateSimilarity.getOverallSimilarity() > 0.5) {
 				log.trace("In-file comparison and overall similarity > 0.5. Accepting function.");
 				return candidateWithSameName;
+			}
+		}
+
+		if (mostSimilarFunctionSimilarity > 0.82) {
+			if (!shouldBodyBeVerySimilar(compareFunction, mostSimilarFunction)|| mostSimilarFunctionSimilarity > 0.95) {
+				log.trace("Highest similarity is high enough. Accepting function.");
+				return mostSimilarFunction;
 			}
 		}
 

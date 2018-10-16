@@ -64,7 +64,10 @@ public class AnalysisTaskTest {
 			String json = FileUtils.readFileToString(file, "utf-8");
 			StartEnvironment startEnv = GSON.fromJson(json, StartEnvironment.class);
 			startEnv.setEnvName(envName);
-			if (RUN_ONLY_TEST == null || startEnv.getEnvName().startsWith(RUN_ONLY_TEST)) {
+			boolean stubWhitelisted = envName.startsWith(RUN_ONLY_TEST);
+			boolean isBlacklist = RUN_ONLY_TEST.startsWith("!");
+			boolean stubBlacklisted = isBlacklist && envName.startsWith(RUN_ONLY_TEST.substring(1));
+			if (RUN_ONLY_TEST == null || stubWhitelisted || (isBlacklist && !stubBlacklisted)) {
 				index++;
 				if (GlobalEnv.BEGIN_INDEX >= 0 && GlobalEnv.MAX_RUNS >= 0) {
 					if (index < GlobalEnv.BEGIN_INDEX) {

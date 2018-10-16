@@ -130,7 +130,7 @@ public class ShovelExecution {
 		Utl.writeShovelResultFile(jsonResultCodeshovel);
 		Utl.writeJsonStubToFile(jsonResultCodeshovel);
 
-		if (!GlobalEnv.DISABLE_ALL_OUTPUTS && (GlobalEnv.WRITE_GITLOG || GlobalEnv.WRITE_GIT_DIFFS)) {
+		if (!GlobalEnv.DISABLE_ALL_OUTPUTS && (GlobalEnv.WRITE_GITLOG || GlobalEnv.WRITE_SEMANTIC_DIFFS)) {
 			GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
 			gitRangeLogTask.run();
 			List<String> gitLogHistory = gitRangeLogTask.getResult();
