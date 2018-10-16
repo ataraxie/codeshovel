@@ -87,7 +87,7 @@ public class ShovelExecution {
 		}
 		printFileEnd(filePath);
 		duration += (new Date().getTime() - now);
-		System.err.println("Time Taken: " + duration);
+		System.err.println("Total duration: " + duration);
 		return yresult;
 	}
 
