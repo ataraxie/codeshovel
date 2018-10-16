@@ -2,6 +2,7 @@ package com.felixgrund.codeshovel.execution;
 
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Yresult;
+import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
@@ -86,7 +87,7 @@ public class ShovelExecution {
 		}
 		printFileEnd(filePath);
 		duration += (new Date().getTime() - now);
-		System.err.println("Time Taken: " + duration);
+		System.err.println("Total duration: " + duration);
 		return yresult;
 	}
 
@@ -129,19 +130,21 @@ public class ShovelExecution {
 		Utl.writeShovelResultFile(jsonResultCodeshovel);
 		Utl.writeJsonStubToFile(jsonResultCodeshovel);
 
-		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
-		gitRangeLogTask.run();
-		List<String> gitLogHistory = gitRangeLogTask.getResult();
+		if (!GlobalEnv.DISABLE_ALL_OUTPUTS && (GlobalEnv.WRITE_GITLOG || GlobalEnv.WRITE_SEMANTIC_DIFFS)) {
+			GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
+			gitRangeLogTask.run();
+			List<String> gitLogHistory = gitRangeLogTask.getResult();
 
-		JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, gitLogHistory, null, null);
-		Utl.printMethodHistory(gitLogHistory);
-		Utl.writeGitLogFile(jsonResultLogCommand);
+			JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, gitLogHistory, null, null);
+			Utl.printMethodHistory(gitLogHistory);
+			Utl.writeGitLogFile(jsonResultLogCommand);
 
-		createAndWriteSemanticDiff("gitlog", jsonResultCodeshovel, codeshovelHistory, gitLogHistory);
+			createAndWriteSemanticDiff("gitlog", jsonResultCodeshovel, codeshovelHistory, gitLogHistory);
 
-		List<String> customBaselineHistory = startEnv.getBaseline();
-		if (customBaselineHistory != null) {
-			createAndWriteSemanticDiff("custom", jsonResultCodeshovel, codeshovelHistory, customBaselineHistory);
+			List<String> customBaselineHistory = startEnv.getBaseline();
+			if (customBaselineHistory != null) {
+				createAndWriteSemanticDiff("custom", jsonResultCodeshovel, codeshovelHistory, customBaselineHistory);
+			}
 		}
 
 		printMethodEnd(method);
