@@ -47,9 +47,6 @@ public class CachingRepositoryService implements RepositoryService {
 	private Map<String, RevCommit> cacheObjectIdCommit = new HashMap<>();
 	private LinkedList<String> cacheObjectIdCommitKeys = new LinkedList<>();
 
-
-	private int cacheHits = 0;
-
 	public CachingRepositoryService(Git git, Repository repository, String repositoryName, String repositoryPath) {
 		this.git = git;
 		this.repository = repository;
@@ -147,9 +144,6 @@ public class CachingRepositoryService implements RepositoryService {
 					fileContent = this.getFileContentByObjectId(objectId);
 					handleCacheAdd(this.cacheCommitFileContent, this.cacheCommitFileContentKeys, cacheKey, fileContent, CACHE_SIZE_FILE_CONTENT);
 				}
-			} else {
-				System.err.println("HIT 1");
-				int a = 1;
 			}
 		}
 
@@ -202,9 +196,6 @@ public class CachingRepositoryService implements RepositoryService {
 			loader.copyTo(output);
 			fileContent = output.toString();
 			handleCacheAdd(this.cacheObjectIdFileContent, this.cacheObjectIdFileContentKeys, cacheKey, fileContent, CACHE_SIZE_FILE_CONTENT);
-		} else {
-			System.err.println("HIT 2");
-			int a = 1;
 		}
 
 		return fileContent;
@@ -271,10 +262,8 @@ public class CachingRepositoryService implements RepositoryService {
 			RevWalk revWalk = new RevWalk(this.repository);
 			revCommit = revWalk.parseCommit(revWalk.lookupCommit(id));
 			handleCacheAdd(this.cacheObjectIdCommit, this.cacheObjectIdCommitKeys, cacheKey, revCommit, CACHE_SIZE_COMMITS);
-		} else {
-			System.err.println("HIT 3");
-			int a = 1;
 		}
+
 		return revCommit;
 	}
 

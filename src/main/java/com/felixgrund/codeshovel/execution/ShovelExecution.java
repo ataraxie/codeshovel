@@ -22,6 +22,8 @@ import java.util.*;
 
 public class ShovelExecution {
 
+	private static long duration;
+
 	private static final Logger log = LoggerFactory.getLogger(ShovelExecution.class);
 	static {
 		com.github.javaparser.JavaParser.setStaticConfiguration(
@@ -84,7 +86,8 @@ public class ShovelExecution {
 
 		}
 		printFileEnd(filePath);
-		System.err.println(new Date().getTime() - now);
+		duration += (new Date().getTime() - now);
+		System.err.println("Time Taken: " + duration);
 		return yresult;
 	}
 
