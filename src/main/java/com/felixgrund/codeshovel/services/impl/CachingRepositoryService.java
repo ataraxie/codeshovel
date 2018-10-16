@@ -1,5 +1,6 @@
 package com.felixgrund.codeshovel.services.impl;
 
+import com.felixgrund.codeshovel.entities.Ydiff;
 import com.felixgrund.codeshovel.entities.Yhistory;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.util.CmdUtil;
@@ -21,14 +22,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CachingRepositoryService implements RepositoryService {
+
+	private static final int CACHE_SIZE_FILE_CONTENT = 50;
+	private static final int CACHE_SIZE_COMMITS = 30;
 
 	private static final Pattern COMMIT_NAME_PATTERN = Pattern.compile(".*([a-z0-9]{40}).*");
 
@@ -36,6 +37,18 @@ public class CachingRepositoryService implements RepositoryService {
 	private Repository repository;
 	private String repositoryName;
 	private String repositoryPath;
+
+	private Map<String, String> cacheCommitFileContent = new HashMap<>();
+	private LinkedList<String> cacheCommitFileContentKeys = new LinkedList<>();
+
+	private Map<String, String> cacheObjectIdFileContent = new HashMap<>();
+	private LinkedList<String> cacheObjectIdFileContentKeys = new LinkedList<>();
+
+	private Map<String, RevCommit> cacheObjectIdCommit = new HashMap<>();
+	private LinkedList<String> cacheObjectIdCommitKeys = new LinkedList<>();
+
+
+	private int cacheHits = 0;
 
 	public CachingRepositoryService(Git git, Repository repository, String repositoryName, String repositoryPath) {
 		this.git = git;
@@ -118,18 +131,39 @@ public class CachingRepositoryService implements RepositoryService {
 
 	@Override
 	public String findFileContent(Commit commit, String filePath) throws IOException {
-		String ret = null;
-		RevCommit revCommit = findRevCommitById(commit.getId());
-		RevTree tree = revCommit.getTree();
-		TreeWalk treeWalk = new TreeWalk(this.repository);
-		treeWalk.addTree(tree);
-		treeWalk.setRecursive(true);
-		treeWalk.setFilter(PathFilter.create(filePath));
-		if (treeWalk.next()) {
-			ObjectId objectId = treeWalk.getObjectId(0);
-			ret = this.getFileContentByObjectId(objectId);
+		String fileContent = null;
+		if (!Ydiff.NULL_PATH.equals(filePath)) {
+			String cacheKey = getCacheKey(commit, filePath);
+			fileContent = this.cacheCommitFileContent.get(cacheKey);
+			if (fileContent == null) {
+				RevCommit revCommit = findRevCommitById(commit.getId());
+				RevTree tree = revCommit.getTree();
+				TreeWalk treeWalk = new TreeWalk(this.repository);
+				treeWalk.addTree(tree);
+				treeWalk.setRecursive(true);
+				treeWalk.setFilter(PathFilter.create(filePath));
+				if (treeWalk.next()) {
+					ObjectId objectId = treeWalk.getObjectId(0);
+					fileContent = this.getFileContentByObjectId(objectId);
+					handleCacheAdd(this.cacheCommitFileContent, this.cacheCommitFileContentKeys, cacheKey, fileContent, CACHE_SIZE_FILE_CONTENT);
+				}
+			} else {
+				System.err.println("HIT 1");
+				int a = 1;
+			}
 		}
-		return ret;
+
+		return fileContent;
+	}
+
+	private void handleCacheAdd(Map cache, LinkedList<String> cacheKeys, String cacheKey, Object value, int maxSize) {
+		if (cache.size() > CACHE_SIZE_FILE_CONTENT) {
+			String lastCacheKey = cacheKeys.getLast();
+			cache.remove(lastCacheKey);
+			cacheKeys.remove(lastCacheKey);
+		}
+		cacheKeys.add(0, cacheKey);
+		cache.put(cacheKey, value);
 	}
 
 	@Override
@@ -150,20 +184,30 @@ public class CachingRepositoryService implements RepositoryService {
 
 	@Override
 	public String getFileContentByObjectId(ObjectId objectId) throws IOException {
-		ObjectLoader loader = this.repository.open(objectId);
-		OutputStream output = new OutputStream()
-		{
-			private StringBuilder string = new StringBuilder();
-			@Override
-			public void write(int b) {
-				this.string.append((char) b);
-			}
-			public String toString(){
-				return this.string.toString();
-			}
-		};
-		loader.copyTo(output);
-		return output.toString();
+		String cacheKey = objectId.getName();
+		String fileContent = this.cacheObjectIdFileContent.get(cacheKey);
+		if (fileContent == null) {
+			ObjectLoader loader = this.repository.open(objectId);
+			OutputStream output = new OutputStream()
+			{
+				private StringBuilder string = new StringBuilder();
+				@Override
+				public void write(int b) {
+					this.string.append((char) b);
+				}
+				public String toString(){
+					return this.string.toString();
+				}
+			};
+			loader.copyTo(output);
+			fileContent = output.toString();
+			handleCacheAdd(this.cacheObjectIdFileContent, this.cacheObjectIdFileContentKeys, cacheKey, fileContent, CACHE_SIZE_FILE_CONTENT);
+		} else {
+			System.err.println("HIT 2");
+			int a = 1;
+		}
+
+		return fileContent;
 	}
 
 	@Override
@@ -221,8 +265,17 @@ public class CachingRepositoryService implements RepositoryService {
 
 	@Override
 	public RevCommit findRevCommitById(ObjectId id) throws IOException {
-		RevWalk revWalk = new RevWalk(this.repository);
-		return revWalk.parseCommit(revWalk.lookupCommit(id));
+		String cacheKey = id.getName();
+		RevCommit revCommit = this.cacheObjectIdCommit.get(cacheKey);
+		if (revCommit == null){
+			RevWalk revWalk = new RevWalk(this.repository);
+			revCommit = revWalk.parseCommit(revWalk.lookupCommit(id));
+			handleCacheAdd(this.cacheObjectIdCommit, this.cacheObjectIdCommitKeys, cacheKey, revCommit, CACHE_SIZE_COMMITS);
+		} else {
+			System.err.println("HIT 3");
+			int a = 1;
+		}
+		return revCommit;
 	}
 
 }

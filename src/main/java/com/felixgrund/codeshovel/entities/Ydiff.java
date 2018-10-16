@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class Ydiff {
 
-	private static final String NULL_PATH = "/dev/null";
+	public static final String NULL_PATH = "/dev/null";
 
 	private static final int RENAME_SCORE = 55;
 
