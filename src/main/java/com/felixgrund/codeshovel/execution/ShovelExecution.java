@@ -13,6 +13,7 @@ import com.felixgrund.codeshovel.tasks.GitRangeLogTask;
 import com.felixgrund.codeshovel.tasks.RecursiveAnalysisTask;
 import com.felixgrund.codeshovel.util.ParserFactory;
 import com.felixgrund.codeshovel.util.Utl;
+import com.github.javaparser.ParserConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,10 @@ import java.util.*;
 public class ShovelExecution {
 
 	private static final Logger log = LoggerFactory.getLogger(ShovelExecution.class);
+	static {
+		com.github.javaparser.JavaParser.setStaticConfiguration(
+				new ParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.RAW));
+	}
 
 	public static Yresult runMining(StartEnvironment startEnv, String acceptedFileExtension) throws Exception {
 		// We stopped gathering results for mining executions in heap space (which was crazy anyways).
@@ -55,6 +60,7 @@ public class ShovelExecution {
 	}
 
 	public static Yresult runSingle(StartEnvironment startEnv, String filePath, boolean accumulateResults) throws Exception {
+		long now = new Date().getTime();
 		Yresult yresult = new Yresult();
 		printFileStart(filePath);
 		String startFileContent = startEnv.getRepositoryService().findFileContent(startEnv.getStartCommit(), filePath);
@@ -77,6 +83,7 @@ public class ShovelExecution {
 
 		}
 		printFileEnd(filePath);
+		System.err.println(new Date().getTime() - now);
 		return yresult;
 	}
 
