@@ -112,11 +112,18 @@ public class Utl {
 			targetDir.mkdirs();
 
 			File file;
+			String filename;
 			if (functionId != null) {
-				file = new File(targetDirPath + "/" + functionId + fileExtension);
+				filename = functionId;
 			} else {
-				file = new File(targetDirPath + "/" + commitName + fileExtension);
+				filename = commitName;
+
 			}
+			if (filename.length() > 150) {
+				filename = filename.substring(0, 149);
+			}
+			filename += fileExtension;
+			file = new File(targetDirPath + "/" + filename);
 
 			FileUtils.writeStringToFile(file, content, "utf-8");
 		} catch (Exception e) {
