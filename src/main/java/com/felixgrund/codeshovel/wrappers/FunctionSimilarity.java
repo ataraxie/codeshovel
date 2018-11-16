@@ -20,7 +20,7 @@ public class FunctionSimilarity {
 		if (crossFile) {
 			this.overallSimilarity = (bodySimilarity + nameSimilarity) / 2;
 		} else {
-			this.overallSimilarity = (bodySimilarity + scopeSimilarity + lineNumberSimilarity + nameSimilarity) / 4;
+			this.overallSimilarity = (bodySimilarity * 1.4 + scopeSimilarity * 0.8 + lineNumberSimilarity * 0.6 + nameSimilarity * 1.2) / 4;
 		}
 	}
 

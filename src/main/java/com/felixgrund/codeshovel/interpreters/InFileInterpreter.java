@@ -2,6 +2,7 @@ package com.felixgrund.codeshovel.interpreters;
 
 import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.Ycommit;
+import com.felixgrund.codeshovel.entities.Ydiff;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
@@ -69,8 +70,9 @@ public class InFileInterpreter extends AbstractInterpreter {
 		Yfunction ret = null;
 		Ycommit parentCommit = ycommit.getPrev();
 		if (parentCommit != null) {
+			Ydiff ydiff = new Ydiff(startEnv.getRepositoryService(), ycommit.getCommit(), ycommit.getPrev().getCommit(), false);
 			Yfunction matchedFunction = ycommit.getMatchedFunction();
-			EditList editList = ycommit.getYdiff().getSingleEditList(ycommit.getFilePath());
+			EditList editList = ydiff.getSingleEditList(ycommit.getFilePath());
 			if (editList != null) {
 				Yparser parentCommitParser = parentCommit.getParser();
 				for (Edit edit : editList) {

@@ -8,11 +8,9 @@ import com.google.gson.JsonObject;
 public abstract class Ychange {
 
 	protected Commit commit;
-	protected StartEnvironment startEnv;
 	protected RepositoryService repositoryService;
 
 	public Ychange(StartEnvironment startEnv, Commit commit) {
-		this.startEnv = startEnv;
 		this.commit = commit;
 		this.repositoryService = startEnv.getRepositoryService();
 	}

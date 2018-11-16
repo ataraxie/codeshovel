@@ -2,6 +2,7 @@ package com.felixgrund.codeshovel.execution;
 
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Yresult;
+import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
@@ -13,6 +14,7 @@ import com.felixgrund.codeshovel.tasks.GitRangeLogTask;
 import com.felixgrund.codeshovel.tasks.RecursiveAnalysisTask;
 import com.felixgrund.codeshovel.util.ParserFactory;
 import com.felixgrund.codeshovel.util.Utl;
+import com.github.javaparser.ParserConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +22,13 @@ import java.util.*;
 
 public class ShovelExecution {
 
+	private static long duration;
+
 	private static final Logger log = LoggerFactory.getLogger(ShovelExecution.class);
+	static {
+		com.github.javaparser.JavaParser.setStaticConfiguration(
+				new ParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.RAW));
+	}
 
 	public static Yresult runMining(StartEnvironment startEnv, String acceptedFileExtension) throws Exception {
 		// We stopped gathering results for mining executions in heap space (which was crazy anyways).
@@ -55,6 +63,7 @@ public class ShovelExecution {
 	}
 
 	public static Yresult runSingle(StartEnvironment startEnv, String filePath, boolean accumulateResults) throws Exception {
+		long now = new Date().getTime();
 		Yresult yresult = new Yresult();
 		printFileStart(filePath);
 		String startFileContent = startEnv.getRepositoryService().findFileContent(startEnv.getStartCommit(), filePath);
@@ -77,6 +86,8 @@ public class ShovelExecution {
 
 		}
 		printFileEnd(filePath);
+		duration += (new Date().getTime() - now);
+		System.err.println("Total duration: " + duration);
 		return yresult;
 	}
 
@@ -99,10 +110,9 @@ public class ShovelExecution {
 		Map<String, String> changeHistoryShort = new LinkedHashMap<>();
 
 		log.trace("Creating method history and writing git diffs for result history...");
-		for (Ycommit ycommit : yresult.keySet()) {
-			String commitName = ycommit.getName();
+		for (String commitName : yresult.keySet()) {
 			codeshovelHistory.add(commitName);
-			Ychange change = yresult.get(ycommit);
+			Ychange change = yresult.get(commitName);
 			changeHistoryDetails.put(commitName, change);
 			changeHistoryShort.put(commitName, change.getTypeAsString());
 //			Yfunction matchedFunction = ycommit.getMatchedFunction();
@@ -120,19 +130,21 @@ public class ShovelExecution {
 		Utl.writeShovelResultFile(jsonResultCodeshovel);
 		Utl.writeJsonStubToFile(jsonResultCodeshovel);
 
-		GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
-		gitRangeLogTask.run();
-		List<String> gitLogHistory = gitRangeLogTask.getResult();
+		if (!GlobalEnv.DISABLE_ALL_OUTPUTS && (GlobalEnv.WRITE_GITLOG || GlobalEnv.WRITE_SEMANTIC_DIFFS)) {
+			GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
+			gitRangeLogTask.run();
+			List<String> gitLogHistory = gitRangeLogTask.getResult();
 
-		JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, gitLogHistory, null, null);
-		Utl.printMethodHistory(gitLogHistory);
-		Utl.writeGitLogFile(jsonResultLogCommand);
+			JsonResult jsonResultLogCommand = new JsonResult("logcommand", task, gitLogHistory, null, null);
+			Utl.printMethodHistory(gitLogHistory);
+			Utl.writeGitLogFile(jsonResultLogCommand);
 
-		createAndWriteSemanticDiff("gitlog", jsonResultCodeshovel, codeshovelHistory, gitLogHistory);
+			createAndWriteSemanticDiff("gitlog", jsonResultCodeshovel, codeshovelHistory, gitLogHistory);
 
-		List<String> customBaselineHistory = startEnv.getBaseline();
-		if (customBaselineHistory != null) {
-			createAndWriteSemanticDiff("custom", jsonResultCodeshovel, codeshovelHistory, customBaselineHistory);
+			List<String> customBaselineHistory = startEnv.getBaseline();
+			if (customBaselineHistory != null) {
+				createAndWriteSemanticDiff("custom", jsonResultCodeshovel, codeshovelHistory, customBaselineHistory);
+			}
 		}
 
 		printMethodEnd(method);

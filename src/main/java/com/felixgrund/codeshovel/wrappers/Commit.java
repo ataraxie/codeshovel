@@ -15,7 +15,6 @@ public class Commit {
 	private String name;
 	private Date commitDate;
 	private long commitTime;
-	private ObjectId id;
 
 	public Commit(RevCommit revCommit) {
 		setName(revCommit); // this must be called first!
@@ -23,15 +22,10 @@ public class Commit {
 		setAuthorEmail(revCommit);
 		setCommitMessage(revCommit);
 		setCommitDate(revCommit);
-		setId(revCommit);
 	}
 
 	public ObjectId getId() {
-		return id;
-	}
-
-	public void setId(RevCommit revCommit) {
-		this.id = revCommit.getId();
+		return ObjectId.fromString(this.name);
 	}
 
 	public long getCommitTime() {

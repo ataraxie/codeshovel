@@ -11,6 +11,8 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.nodeTypes.NodeWithName;
+import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.type.ReferenceType;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
@@ -23,11 +25,62 @@ import java.util.Map;
 
 public class JavaFunction extends AbstractFunction implements Yfunction {
 
-	private MethodDeclaration node;
+	private String name;
+	private String type;
+	private Ymodifiers modifiers;
+	private Yexceptions exceptions;
+	private List<Yparameter> parameters;
+	private String body;
+	private int beginLine;
+	private int endLine;
+	private String parentName;
 
-	public JavaFunction(MethodDeclaration node, Repository repository, Commit commit, String sourceFilePath, String sourceFileContent) {
-		super(repository, commit, sourceFilePath, sourceFileContent);
-		this.node = node;
+	public JavaFunction(MethodDeclaration method, Commit commit, String sourceFilePath, String sourceFileContent) {
+		super(commit, sourceFilePath, sourceFileContent);
+		this.name = method.getNameAsString();
+		this.type = method.getTypeAsString();
+		List<String> modifiers = new ArrayList<>();
+		for (Modifier modifier : method.getModifiers()) {
+			modifiers.add(modifier.asString());
+		}
+		this.modifiers = new Ymodifiers(modifiers);
+		List<String> exceptions = new ArrayList<>();
+		for (ReferenceType type : method.getThrownExceptions()) {
+			exceptions.add(type.asString());
+		}
+		this.exceptions = new Yexceptions(exceptions);
+
+		if (method.getBody().isPresent()) {
+			this.body = method.getBody().get().toString();
+		}
+
+		List<Yparameter> parametersList = new ArrayList<>();
+		List<Parameter> parameterElements = method.getParameters();
+		for (Parameter parameterElement : parameterElements) {
+			Yparameter parameter = new Yparameter(parameterElement.getNameAsString(), parameterElement.getTypeAsString());
+			Map<String, String> metadata = createParameterMetadataMap(parameterElement);
+			parameter.setMetadata(metadata);
+			parametersList.add(parameter);
+		}
+		this.parameters = parametersList;
+
+		if (method.getName().getBegin().isPresent()) {
+			this.beginLine = method.getName().getBegin().get().line;
+		}
+
+		if (method.getEnd().isPresent()) {
+			this.endLine = method.getEnd().get().line;
+		}
+
+		if (method.getParentNode().isPresent()) {
+			Node node = method.getParentNode().get();
+			if (node instanceof NodeWithName) {
+				this.parentName = ((NodeWithName) method.getParentNode().get()).getNameAsString();
+			} else if (node instanceof NodeWithSimpleName) {
+				this.parentName = ((NodeWithSimpleName) method.getParentNode().get()).getNameAsString();
+			}
+		}
+
 	}
 
 	@Override
@@ -41,50 +94,44 @@ public class JavaFunction extends AbstractFunction implements Yfunction {
 	}
 
 	@Override
+	public String getFunctionPath() {
+		return null;
+	}
+
+	@Override
+	public String getParentName() {
+		return this.parentName;
+	}
+
+	@Override
 	public String getName() {
-		return this.node.getNameAsString();
+		return this.name;
 	}
 
 	@Override
 	public Yreturn getReturnStmt() {
-		return new Yreturn(this.node.getTypeAsString());
+		return new Yreturn(this.type);
 	}
 
 	@Override
 	public Ymodifiers getModifiers() {
-		List<String> modifiers = new ArrayList<>();
-		for (Modifier modifier : this.node.getModifiers()) {
-			modifiers.add(modifier.asString());
-		}
-		return new Ymodifiers(modifiers);
+		return this.modifiers;
 	}
 
 	@Override
 	public Yexceptions getExceptions() {
-		List<String> exceptions = new ArrayList<>();
-		for (ReferenceType type : this.node.getThrownExceptions()) {
-			exceptions.add(type.asString());
-		}
-		return new Yexceptions(exceptions);
+		return this.exceptions;
 	}
 
 	@Override
 	public String getBody() {
-		return this.node.getBody().get().toString();
+		return this.body;
 	}
 
 
 	@Override
 	public List<Yparameter> getParameters() {
-		List<Yparameter> parameters = new ArrayList<>();
-		List<Parameter> parameterElements = this.node.getParameters();
-		for (Parameter parameterElement : parameterElements) {
-			Yparameter parameter = new Yparameter(parameterElement.getNameAsString(), parameterElement.getTypeAsString());
-			Map<String, String> metadata = createParameterMetadataMap(parameterElement);
-			parameter.setMetadata(metadata);
-			parameters.add(parameter);
-		}
-		return parameters;
+		return this.parameters;
 	}
 
 	private Map<String,String> createParameterMetadataMap(Parameter parameterElement) {
@@ -126,17 +173,12 @@ public class JavaFunction extends AbstractFunction implements Yfunction {
 
 	@Override
 	public int getNameLineNumber() {
-		return this.node.getName().getBegin().get().line;
+		return this.beginLine;
 	}
 
 	@Override
 	public int getEndLineNumber() {
-		return this.node.getEnd().get().line;
-	}
-
-	@Override
-	public Object getRawFunction() {
-		return this.node;
+		return this.endLine;
 	}
 
 }

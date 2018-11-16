@@ -14,26 +14,21 @@ import java.util.*;
 
 public abstract class AbstractInterpreter {
 
-	protected RepositoryService repositoryService;
-
 	protected StartEnvironment startEnv;
 	protected Ycommit ycommit;
-	protected Repository repository;
 	protected String repositoryName;
 
 	protected abstract Ychange interpret() throws Exception;
 
 	public AbstractInterpreter(StartEnvironment startEnv, Ycommit ycommit) {
 		this.startEnv = startEnv;
-		this.repository = startEnv.getRepository();
 		this.repositoryName = startEnv.getRepositoryName();
-		this.repositoryService = startEnv.getRepositoryService();
 		this.ycommit = ycommit;
 	}
 
 	protected Yparser createParserForCommitAndFile(Commit commit, String filePath) throws Exception {
 		Yparser ret = null;
-		String fileContent = repositoryService.findFileContent(commit, filePath);
+		String fileContent = startEnv.getRepositoryService().findFileContent(commit, filePath);
 		if (fileContent != null) {
 			ret = ParserFactory.getParser(this.startEnv, filePath, fileContent, commit);
 		}

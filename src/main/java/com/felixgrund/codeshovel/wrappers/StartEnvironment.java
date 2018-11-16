@@ -13,9 +13,6 @@ public class StartEnvironment {
 
 	private RepositoryService repositoryService;
 
-	private String repositoryName;
-	private String repositoryPath;
-
 	private String fileName;
 	private String filePath;
 	private String startCommitName;
@@ -26,26 +23,29 @@ public class StartEnvironment {
 	private LinkedHashMap<String, String> expectedResult;
 	private List<String> baseline;
 
+	private String repositoryPath;
+	private String repositoryName;
+
 	public StartEnvironment(RepositoryService repositoryService) {
 		this.repositoryService = repositoryService;
-		this.repositoryName = repositoryService.getRepositoryName();
 		this.repositoryPath = repositoryService.getRepositoryPath();
+		this.repositoryName = repositoryService.getRepositoryName();
 	}
 
 	public RepositoryService getRepositoryService() {
-		return repositoryService;
-	}
-
-	public String getRepositoryName() {
-		return repositoryName;
+		return this.repositoryService;
 	}
 
 	public String getRepositoryPath() {
 		return repositoryPath;
 	}
 
-	public void setRepositoryPath(String repositoryPath) {
-		this.repositoryPath = repositoryPath;
+	public String getRepositoryName() {
+		return repositoryName;
+	}
+
+	public void setRepositoryName(String repositoryName) {
+		this.repositoryName = repositoryName;
 	}
 
 	public Repository getRepository() {
@@ -116,14 +116,6 @@ public class StartEnvironment {
 		this.expectedResult = expectedResult;
 	}
 
-	public void setRepositoryName(String repositoryName) {
-		this.repositoryName = repositoryName;
-	}
-
-	public void setRepositoryService(RepositoryService repositoryService) {
-		this.repositoryService = repositoryService;
-	}
-
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
@@ -134,5 +126,13 @@ public class StartEnvironment {
 
 	public List<String> getBaseline() {
 		return baseline;
+	}
+
+	public void setRepositoryService(RepositoryService repositoryService) {
+		this.repositoryService = repositoryService;
+	}
+
+	public void setRepositoryPath(String repositoryPath) {
+		this.repositoryPath = repositoryPath;
 	}
 }

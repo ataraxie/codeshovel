@@ -115,7 +115,7 @@ public class AnalysisTask {
 							ychange = crossFileChange;
 						}
 					}
-					this.yresult.put(ycommit, ychange);
+					this.yresult.put(ycommit.getName(), ychange);
 				}
 				if (hasMajorChange(ychange)) {
 					this.lastMajorChange = ychange;
@@ -202,8 +202,6 @@ public class AnalysisTask {
 					Commit parentCommit = new Commit(parentRevCommit);
 					Ycommit parentYcommit = getOrCreateYcommit(parentCommit, ycommit);
 					ycommit.setPrev(parentYcommit);
-					Ydiff ydiff = new Ydiff(repositoryService, commit, parentCommit, false);
-					ycommit.setYdiff(ydiff);
 				}
 				lastConsideredCommit = ycommit;
 				this.taskSpecificHistory.add(ycommit);

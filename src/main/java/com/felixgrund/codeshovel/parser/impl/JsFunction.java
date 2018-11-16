@@ -20,6 +20,8 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 
 	private FunctionNode node;
 
+	private String functionPath;
+
 	@Override
 	public String getId() {
 		String ident = Utl.sanitizeFunctionId(this.node.getName());
@@ -30,9 +32,10 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 		return ident;
 	}
 
-	public JsFunction(FunctionNode node, Repository repository, Commit commit, String sourceFilePath, String sourceFileContent) {
-		super(repository, commit, sourceFilePath, sourceFileContent);
+	public JsFunction(FunctionNode node, Commit commit, String sourceFilePath, String sourceFileContent) {
+		super(commit, sourceFilePath, sourceFileContent);
 		this.node = node;
+		this.functionPath = node.getName();
 	}
 
 	@Override
@@ -68,11 +71,6 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 	}
 
 	@Override
-	public Object getRawFunction() {
-		return this.node;
-	}
-
-	@Override
 	public String getBody() {
 		String fileSource = this.node.getSource().getString();
 		return fileSource.substring(this.node.getStart(), this.node.getFinish());
@@ -86,6 +84,16 @@ public class JsFunction extends AbstractFunction implements Yfunction {
 			parameters.add(new Yparameter(node.getName(), Yparameter.TYPE_NONE));
 		}
 		return parameters;
+	}
+
+	@Override
+	public String getFunctionPath() {
+		return functionPath;
+	}
+
+	@Override
+	public String getParentName() {
+		return null;
 	}
 
 }

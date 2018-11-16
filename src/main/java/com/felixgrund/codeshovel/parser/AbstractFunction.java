@@ -11,13 +11,11 @@ import java.util.List;
 
 public abstract class AbstractFunction implements Yfunction {
 
-	private Repository repository;
 	private String sourceFilePath;
 	private String sourceFileContent;
 	private Commit commit;
 
-	public AbstractFunction(Repository repository, Commit commit, String sourceFilePath, String sourceFileContent) {
-		this.repository = repository;
+	public AbstractFunction(Commit commit, String sourceFilePath, String sourceFileContent) {
 		this.commit = commit;
 		this.sourceFilePath = sourceFilePath;
 		this.sourceFileContent = sourceFileContent;
@@ -37,11 +35,6 @@ public abstract class AbstractFunction implements Yfunction {
 		int endLine = getEndLineNumber();
 		String source = getSourceFileContent();
 		return Utl.getTextFragment(source, beginLine, endLine);
-	}
-
-	@Override
-	public Repository getRepository() {
-		return repository;
 	}
 
 	@Override
