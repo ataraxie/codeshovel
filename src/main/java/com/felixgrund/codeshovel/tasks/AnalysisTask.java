@@ -122,7 +122,7 @@ public class AnalysisTask {
 				}
 			} catch (Exception e) {
 				log.error("Exception occurred interpreting commit {{}}. Ending analysis.", ycommit.getShortName(), e);
-				System.err.println("Error interpreting commit " + ycommit.getShortName() + ". Ending analysis.");
+				System.out.println("Error interpreting commit " + ycommit.getShortName() + ". Ending analysis.");
 				break;
 			}
 
@@ -206,7 +206,7 @@ public class AnalysisTask {
 				lastConsideredCommit = ycommit;
 				this.taskSpecificHistory.add(ycommit);
 			} catch (ParseException e) {
-				System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getCommitNameShort());
+				System.out.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getCommitNameShort());
 			}
 		}
 	}

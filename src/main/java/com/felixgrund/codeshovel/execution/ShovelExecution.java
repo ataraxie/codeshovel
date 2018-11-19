@@ -44,7 +44,7 @@ public class ShovelExecution {
 		}
 
 		int numFilePaths = filePathsToConsider.size();
-		System.err.println("Found " +numFilePaths+ " files to analyze");
+		System.out.println("Found " +numFilePaths+ " files to analyze");
 		int index = 1;
 		for (String filePath : filePathsToConsider) {
 			printProgress(index, numFilePaths);
@@ -87,7 +87,7 @@ public class ShovelExecution {
 		}
 		printFileEnd(filePath);
 		duration += (new Date().getTime() - now);
-		System.err.println("Total duration: " + duration);
+		System.out.println("Total duration: " + duration);
 		return yresult;
 	}
 
@@ -167,12 +167,12 @@ public class ShovelExecution {
 	}
 
 	private static void printAsJson(Map<String, String> changeHistoryShort) {
-		System.err.println("");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%% RESULT %%%%%%%%%%%%%%%%%%%%%%%%");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%% RESULT %%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 		for (String commitName : changeHistoryShort.keySet()) {
-			System.err.println("\""+ commitName +"\": " + "\""+ changeHistoryShort.get(commitName) +"\",");
+			System.out.println("\""+ commitName +"\": " + "\""+ changeHistoryShort.get(commitName) +"\",");
 		}
 	}
 	
@@ -209,12 +209,12 @@ public class ShovelExecution {
 	}
 
 	private static void printProgress(int index, int numFilePaths) {
-		System.err.println("");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%% FILE " + index + " / " + numFilePaths + " %%%%%%%%%%%%%%%%%%%%%");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%% " + new Date() + " %%%%%%%%%%");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.err.println("");
+		System.out.println("");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%% FILE " + index + " / " + numFilePaths + " %%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%% " + new Date() + " %%%%%%%%%%");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("");
 	}
 
 }

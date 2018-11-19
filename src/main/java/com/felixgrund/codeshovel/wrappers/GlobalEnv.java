@@ -11,8 +11,7 @@ public class GlobalEnv {
 
 	public static final String REPO_DIR = System.getenv("REPO_DIR");
 	public static final String ENV_NAME = System.getenv("ENV_NAME");
-	public static final String OUTPUT_DIR = Optional.ofNullable(
-			System.getenv("OUTPUT_DIR")).orElse(System.getProperty("user.dir") + "/output");
+	public static final String OUTPUT_DIR = getEnvOptional("OUTPUT_DIR", System.getProperty("user.dir") + "/output");
 
 	public static final boolean DISABLE_ALL_OUTPUTS = Boolean.valueOf(System.getenv("DISABLE_ALL_OUTPUTS"));
 	public static final boolean WRITE_GIT_DIFFS = Boolean.valueOf(System.getenv("WRITE_GIT_DIFFS"));
@@ -21,6 +20,8 @@ public class GlobalEnv {
 	public static final boolean WRITE_GITLOG = Boolean.valueOf(System.getenv("WRITE_GITLOG"));
 	public static final boolean WRITE_STUBS = Boolean.valueOf(System.getenv("WRITE_STUBS"));
 	public static final boolean WRITE_SIMILARITIES = Boolean.valueOf(System.getenv("WRITE_SIMILARITIES"));
+
+	public static final String LANG = getEnvOptional("LANG", "java");
 
 	// Getters/Setters skipping
 	public static final boolean SKIP_GETTERS_AND_SETTERS = Boolean.valueOf(System.getenv("SKIP_GETTERS_AND_SETTERS"));
@@ -51,6 +52,11 @@ public class GlobalEnv {
 				SKIP_ENVS = Arrays.asList(commaSplit);
 			}
 		}
+	}
+
+	private static String getEnvOptional(String envVar, String defaultVal) {
+		return Optional.ofNullable(
+				System.getenv(envVar)).orElse(defaultVal);
 	}
 
 

@@ -34,7 +34,7 @@ public class AnalysisTaskTest {
 	private static Logger log = LoggerFactory.getLogger(AnalysisTaskTest.class);
 
 	private static final String CODESTORY_REPO_DIR = GlobalEnv.REPO_DIR;
-	private static final String STUBS_DIR = "stubs/java"; // TODO
+	private static final String STUBS_DIR = "stubs/" + GlobalEnv.LANG;
 
 	private static final Gson GSON = new Gson();
 
@@ -143,7 +143,7 @@ public class AnalysisTaskTest {
 
 	private static boolean compareResults(Map<String, String> expectedResult, Yresult actualResult) {
 		if (expectedResult.size() != actualResult.size()) {
-			System.err.println(String.format("Result size did not match. Expected: %s, actual: %s",
+			System.out.println(String.format("Result size did not match. Expected: %s, actual: %s",
 					expectedResult.size(), actualResult.size()));
 
 			Set<String> expectedKeys = expectedResult.keySet();
@@ -155,20 +155,20 @@ public class AnalysisTaskTest {
 			onlyInExpected.removeAll(actualKeys);
 			Set<String> onlyInActual = new HashSet<>(actualKeys);
 			onlyInActual.removeAll(expectedKeys);
-			System.err.println("\nOnly in expected:\n" + StringUtils.join(onlyInExpected, "\n"));
-			System.err.println("\nOnly in actual:\n" + StringUtils.join(onlyInActual, "\n"));
+			System.out.println("\nOnly in expected:\n" + StringUtils.join(onlyInExpected, "\n"));
+			System.out.println("\nOnly in actual:\n" + StringUtils.join(onlyInActual, "\n"));
 			return false;
 		}
 		for (String commitName : actualResult.keySet()) {
 			Ychange ychange = actualResult.get(commitName);
 			String expectedChangeType = expectedResult.get(commitName);
 			if (expectedChangeType == null) {
-				System.err.println(String.format("Expected result does not contain commit with name %s", commitName));
+				System.out.println(String.format("Expected result does not contain commit with name %s", commitName));
 				return false;
 			}
 			String actualChangeType = ychange.getTypeAsString();
 			if (!expectedChangeType.equals(actualChangeType)) {
-				System.err.println(String.format("Type of change was not expected for commit %s. Expected: %s, actual: %s",
+				System.out.println(String.format("Type of change was not expected for commit %s. Expected: %s, actual: %s",
 						commitName, expectedChangeType, actualChangeType));
 				return false;
 			}
