@@ -1,10 +1,7 @@
 package com.felixgrund.codeshovel.execution;
 
-import com.felixgrund.codeshovel.entities.Ycommit;
-import com.felixgrund.codeshovel.entities.Yresult;
-import com.felixgrund.codeshovel.wrappers.GlobalEnv;
-import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.changes.Ychange;
+import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
 import com.felixgrund.codeshovel.json.JsonResult;
 import com.felixgrund.codeshovel.parser.Yfunction;
@@ -14,7 +11,10 @@ import com.felixgrund.codeshovel.tasks.GitRangeLogTask;
 import com.felixgrund.codeshovel.tasks.RecursiveAnalysisTask;
 import com.felixgrund.codeshovel.util.ParserFactory;
 import com.felixgrund.codeshovel.util.Utl;
+import com.felixgrund.codeshovel.wrappers.GlobalEnv;
+import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.github.javaparser.ParserConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ public class ShovelExecution {
 		}
 
 		int numFilePaths = filePathsToConsider.size();
-		System.err.println("Found " +numFilePaths+ " files to analyze");
+		System.out.println("Found " +numFilePaths+ " files to analyze");
 		int index = 1;
 		for (String filePath : filePathsToConsider) {
 			printProgress(index, numFilePaths);
@@ -87,7 +87,7 @@ public class ShovelExecution {
 		}
 		printFileEnd(filePath);
 		duration += (new Date().getTime() - now);
-		System.err.println("Total duration: " + duration);
+		System.out.println("Total duration: " + duration);
 		return yresult;
 	}
 
@@ -115,20 +115,24 @@ public class ShovelExecution {
 			Ychange change = yresult.get(commitName);
 			changeHistoryDetails.put(commitName, change);
 			changeHistoryShort.put(commitName, change.getTypeAsString());
-//			Yfunction matchedFunction = ycommit.getMatchedFunction();
-//			String diffFilepath = ycommit.getFilePath();
-//			if (matchedFunction != null) {
-//				diffFilepath = ycommit.getMatchedFunction().getSourceFilePath();
-//			}
-//
-//			Utl.writeGitDiff(commitName, diffFilepath, startEnv.getRepository(), startEnv.getRepositoryName());
 		}
 
 		printAsJson(changeHistoryShort);
 
 		JsonResult jsonResultCodeshovel = new JsonResult("codeshovel", task, codeshovelHistory, changeHistoryDetails, changeHistoryShort);
-		Utl.writeShovelResultFile(jsonResultCodeshovel);
-		Utl.writeJsonStubToFile(jsonResultCodeshovel);
+
+		if (!GlobalEnv.DISABLE_ALL_OUTPUTS) {
+			if (StringUtils.isNotBlank(startEnv.getOutputFilePath())) {
+				Utl.writeShovelResultFile(jsonResultCodeshovel, startEnv.getOutputFilePath());
+			} else if (GlobalEnv.WRITE_RESULTS) {
+				Utl.writeShovelResultFile(jsonResultCodeshovel);
+			}
+
+			if (GlobalEnv.WRITE_STUBS) {
+				Utl.writeJsonStubToFile(jsonResultCodeshovel);
+			}
+
+		}
 
 		if (!GlobalEnv.DISABLE_ALL_OUTPUTS && (GlobalEnv.WRITE_GITLOG || GlobalEnv.WRITE_SEMANTIC_DIFFS)) {
 			GitRangeLogTask gitRangeLogTask = new GitRangeLogTask(task, startEnv);
@@ -147,7 +151,7 @@ public class ShovelExecution {
 			}
 		}
 
-		printMethodEnd(method);
+		printMethodEnd(method, startEnv.getOutputFilePath());
 
 		return yresult;
 	}
@@ -167,12 +171,12 @@ public class ShovelExecution {
 	}
 
 	private static void printAsJson(Map<String, String> changeHistoryShort) {
-		System.err.println("");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%% RESULT %%%%%%%%%%%%%%%%%%%%%%%%");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%% RESULT %%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 		for (String commitName : changeHistoryShort.keySet()) {
-			System.err.println("\""+ commitName +"\": " + "\""+ changeHistoryShort.get(commitName) +"\",");
+			System.out.println("\""+ commitName +"\": " + "\""+ changeHistoryShort.get(commitName) +"\",");
 		}
 	}
 	
@@ -191,8 +195,11 @@ public class ShovelExecution {
 		System.out.println("STARTING ANALYSIS FOR METHOD " + method.getName());
 	}
 
-	private static void printMethodEnd(Yfunction method) {
+	private static void printMethodEnd(Yfunction method, String outputFilePath) {
 		System.out.println("FINISHED ANALYSIS FOR METHOD " + method.getName());
+		if (StringUtils.isNotBlank(outputFilePath)) {
+			System.out.println("RESULT FILE WRITTEN TO " + outputFilePath);
+		}
 		System.out.println("-------------------------------------------------------------------------");
 	}
 
@@ -209,12 +216,12 @@ public class ShovelExecution {
 	}
 
 	private static void printProgress(int index, int numFilePaths) {
-		System.err.println("");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%% FILE " + index + " / " + numFilePaths + " %%%%%%%%%%%%%%%%%%%%%");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%% " + new Date() + " %%%%%%%%%%");
-		System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.err.println("");
+		System.out.println("");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%% FILE " + index + " / " + numFilePaths + " %%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%% " + new Date() + " %%%%%%%%%%");
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println("");
 	}
 
 }

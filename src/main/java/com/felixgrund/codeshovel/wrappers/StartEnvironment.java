@@ -19,6 +19,7 @@ public class StartEnvironment {
 	private String functionName;
 	private int functionStartLine;
 	private Commit startCommit;
+	private String outputFilePath;
 
 	private LinkedHashMap<String, String> expectedResult;
 	private List<String> baseline;
@@ -134,5 +135,13 @@ public class StartEnvironment {
 
 	public void setRepositoryPath(String repositoryPath) {
 		this.repositoryPath = repositoryPath;
+	}
+
+	public void setOutputFilePath(String outputFilePath) {
+		this.outputFilePath = outputFilePath;
+	}
+
+	public String getOutputFilePath() {
+		return outputFilePath;
 	}
 }
