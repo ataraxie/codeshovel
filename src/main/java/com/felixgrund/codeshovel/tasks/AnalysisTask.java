@@ -206,7 +206,8 @@ public class AnalysisTask {
 				lastConsideredCommit = ycommit;
 				this.taskSpecificHistory.add(ycommit);
 			} catch (ParseException e) {
-				System.out.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getCommitNameShort());
+				System.err.println("ParseException occurred for commit or its parent. Skipping. Commit: " + commit.getCommitNameShort());
+				System.err.println("--original message: " + e.getMessage());
 			}
 		}
 	}

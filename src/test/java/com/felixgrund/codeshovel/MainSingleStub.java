@@ -1,5 +1,6 @@
-package com.felixgrund.codeshovel.execution;
+package com.felixgrund.codeshovel;
 
+import com.felixgrund.codeshovel.execution.ShovelExecution;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.services.impl.CachingRepositoryService;
 import com.felixgrund.codeshovel.util.Utl;
@@ -16,7 +17,7 @@ import java.util.Date;
 
 public class MainSingleStub {
 
-	private static final String LANG = "java";
+	private static final String STUBS_DIR = "stubs/" + GlobalEnv.LANG;
 
 	public static void main(String[] args) throws Exception {
 		long start = new Date().getTime();
@@ -28,7 +29,7 @@ public class MainSingleStub {
 	public static void execute() throws Exception {
 		String configName = GlobalEnv.ENV_NAME;
 		ClassLoader classLoader = MainSingleStub.class.getClassLoader();
-		File file = new File(classLoader.getResource("stubs/" + LANG + "/" + configName + ".json").getFile());
+		File file = new File(classLoader.getResource(STUBS_DIR + "/" + configName + ".json").getFile());
 		String json = FileUtils.readFileToString(file, "utf-8");
 		Gson gson = new Gson();
 
@@ -42,6 +43,7 @@ public class MainSingleStub {
 		RepositoryService repositoryService = new CachingRepositoryService(git, repository, repositoryName, repositoryPath);
 		Commit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
 
+		startEnv.setRepositoryService(repositoryService);
 		startEnv.setStartCommit(startCommit);
 		startEnv.setEnvName(configName);
 		startEnv.setStartCommit(startCommit);
