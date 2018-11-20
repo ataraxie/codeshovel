@@ -131,6 +131,11 @@ public class Utl {
 		}
 	}
 
+	private static final void writeOutputFileWithPath(String filePath, String content) throws IOException {
+		File file = new File(filePath);
+		FileUtils.writeStringToFile(file, content, "utf-8");
+	}
+
 	public static void writeShovelResultFile(JsonResult jsonResult) {
 		if (GlobalEnv.DISABLE_ALL_OUTPUTS || !GlobalEnv.WRITE_RESULTS) {
 			return;
@@ -139,6 +144,11 @@ public class Utl {
 				"codeshovel", jsonResult.getStartCommitName(), jsonResult.getSourceFilePath(),
 				jsonResult.getFunctionId(), jsonResult.getRepositoryName(), jsonResult.toJson(), ".json"
 		);
+	}
+
+	public static void writeShovelResultFile(JsonResult jsonResult, String outFilePath) throws IOException {
+		File file = new File(outFilePath);
+		FileUtils.writeStringToFile(file, jsonResult.toJson(), "utf-8");
 	}
 
 	public static void writeGitLogFile(JsonResult jsonResult) {

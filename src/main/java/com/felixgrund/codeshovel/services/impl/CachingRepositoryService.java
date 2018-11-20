@@ -9,6 +9,7 @@ import com.felixgrund.codeshovel.wrappers.Commit;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
@@ -269,7 +270,13 @@ public class CachingRepositoryService implements RepositoryService {
 
 	@Override
 	public Commit findCommitByName(String commitName) throws IOException {
-		ObjectId objectId = ObjectId.fromString(commitName);
+		ObjectId objectId;
+		if (Constants.HEAD.equals(commitName)) {
+			objectId = this.repository.resolve(Constants.HEAD);
+		} else {
+			objectId = ObjectId.fromString(commitName);
+		}
+
 		return new Commit(findRevCommitById(objectId));
 	}
 

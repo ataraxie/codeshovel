@@ -1,7 +1,6 @@
 package com.felixgrund.codeshovel;
 
 import com.felixgrund.codeshovel.changes.Ychange;
-import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.execution.ShovelExecution;
 import com.felixgrund.codeshovel.services.RepositoryService;
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.TestFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.image.ImagingOpException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -29,9 +27,9 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AnalysisTaskTest {
+public class MainDynamicStubTest {
 
-	private static Logger log = LoggerFactory.getLogger(AnalysisTaskTest.class);
+	private static Logger log = LoggerFactory.getLogger(MainDynamicStubTest.class);
 
 	private static final String CODESTORY_REPO_DIR = GlobalEnv.REPO_DIR;
 	private static final String STUBS_DIR = "stubs/" + GlobalEnv.LANG;
@@ -45,7 +43,7 @@ public class AnalysisTaskTest {
 	@DisplayName("Dynamic test stubs from JSON files")
 	public Collection<DynamicTest> createDynamicTests() throws Exception {
 
-		ClassLoader classLoader = AnalysisTaskTest.class.getClassLoader();
+		ClassLoader classLoader = MainDynamicStubTest.class.getClassLoader();
 		File directory = new File(classLoader.getResource(STUBS_DIR).getFile());
 
 		Collection<DynamicTest> dynamicTests = new ArrayList<>();

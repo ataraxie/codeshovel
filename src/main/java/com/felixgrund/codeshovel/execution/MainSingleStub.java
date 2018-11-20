@@ -1,6 +1,5 @@
-package com.felixgrund.codeshovel;
+package com.felixgrund.codeshovel.execution;
 
-import com.felixgrund.codeshovel.execution.ShovelExecution;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.services.impl.CachingRepositoryService;
 import com.felixgrund.codeshovel.util.Utl;
@@ -15,7 +14,7 @@ import com.felixgrund.codeshovel.wrappers.Commit;
 import java.io.File;
 import java.util.Date;
 
-public class MainAnalysisTask {
+public class MainSingleStub {
 
 	private static final String LANG = "java";
 
@@ -28,7 +27,7 @@ public class MainAnalysisTask {
 
 	public static void execute() throws Exception {
 		String configName = GlobalEnv.ENV_NAME;
-		ClassLoader classLoader = MainAnalysisTask.class.getClassLoader();
+		ClassLoader classLoader = MainSingleStub.class.getClassLoader();
 		File file = new File(classLoader.getResource("stubs/" + LANG + "/" + configName + ".json").getFile());
 		String json = FileUtils.readFileToString(file, "utf-8");
 		Gson gson = new Gson();
