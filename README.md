@@ -159,7 +159,12 @@ but a few environment variables are required or optional:
 
 ## Contributing
 
-tbd.
+We are using the master-develop-topic Git workflow in CodeShovel. If you want to contribute, please do as follows:
+
+* Create an issue on Github
+* Create a branch from `develop` with name `ISSUE_ID-what-is-this-branch-doing`
+* Create a pull request onto `develop`
+* Assign the project owner as reviewer
 
 
 
