@@ -1,6 +1,9 @@
 package com.felixgrund.codeshovel.parser;
 
+import com.felixgrund.codeshovel.entities.Yexceptions;
+import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
+import com.felixgrund.codeshovel.entities.Yreturn;
 import com.felixgrund.codeshovel.util.Utl;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.lib.Repository;
@@ -9,24 +12,84 @@ import com.felixgrund.codeshovel.wrappers.Commit;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractFunction implements Yfunction {
+public abstract class AbstractFunction<E> implements Yfunction {
 
 	private String sourceFilePath;
 	private String sourceFileContent;
 	private Commit commit;
 
-	public AbstractFunction(Commit commit, String sourceFilePath, String sourceFileContent) {
+	private String id;
+	private String name;
+	protected abstract String getInitialName(E rawMethod);
+	private String type;
+	protected abstract String getInitialType(E rawMethod);
+	private Ymodifiers modifiers;
+	protected abstract Ymodifiers getInitialModifiers(E rawMethod);
+	private Yexceptions exceptions;
+	protected abstract Yexceptions getInitialExceptions(E rawMethod);
+	private Yreturn returnStmt;
+	private List<Yparameter> parameters;
+	protected abstract List<Yparameter> getInitialParameters(E rawMethod);
+	private String body;
+	protected abstract String getInitialBody(E rawMethod);
+	private int beginLine;
+	protected abstract int getInitialBeginLine(E rawMethod);
+	private int endLine;
+	protected abstract int getInitialEndLine(E rawMethod);
+	private String parentName;
+	protected abstract String getInitialParentName(E rawMethod);
+	private String functionPath;
+	protected abstract String getInitialFunctionPath(E rawMethod);
+
+	public AbstractFunction(E rawMethod, Commit commit, String sourceFilePath, String sourceFileContent) {
 		this.commit = commit;
 		this.sourceFilePath = sourceFilePath;
 		this.sourceFileContent = sourceFileContent;
+
+		// Assign all the values in sequence.
+		// NOTE: the order of these calls does matter!
+		this.name = getInitialName(rawMethod);
+		this.parameters = getInitialParameters(rawMethod);
+		this.id = getInitialId(rawMethod);
+		this.type = getInitialType(rawMethod);
+		this.modifiers = getInitialModifiers(rawMethod);
+		this.exceptions = getInitialExceptions(rawMethod);
+		this.body = getInitialBody(rawMethod);
+		this.beginLine = getInitialBeginLine(rawMethod);
+		this.endLine = getInitialEndLine(rawMethod);
+		this.parentName = getInitialParentName(rawMethod);
+		this.functionPath = getInitialFunctionPath(rawMethod);
+		this.returnStmt = getInitialReturnStmt(rawMethod);
 	}
 
-	public String getIdParameterString() {
+	private String getIdParameterString() {
 		List<String> parts = new ArrayList<>();
 		for (Yparameter parameter : getParameters()) {
 			parts.add(parameter.toString());
 		}
 		return StringUtils.join(parts, "__");
+	}
+
+	protected String getInitialId(E rawMethod) {
+		String ident = getName();
+		String idParameterString = this.getIdParameterString();
+		if (StringUtils.isNotBlank(idParameterString)) {
+			ident += "___" + idParameterString;
+		}
+		return Utl.sanitizeFunctionId(ident);
+	}
+
+	protected Yreturn getInitialReturnStmt(E rawMethod) {
+		if (this.type == null) {
+			return Yreturn.NONE;
+		} else {
+			return new Yreturn(this.type);
+		}
+	}
+
+	@Override
+	public String getId() {
+		return this.id;
 	}
 
 	@Override
@@ -65,5 +128,55 @@ public abstract class AbstractFunction implements Yfunction {
 	@Override
 	public Commit getCommit() {
 		return commit;
+	}
+
+	@Override
+	public String getFunctionPath() {
+		return this.functionPath;
+	}
+
+	@Override
+	public String getParentName() {
+		return this.parentName;
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public Yreturn getReturnStmt() {
+		return this.returnStmt;
+	}
+
+	@Override
+	public Ymodifiers getModifiers() {
+		return this.modifiers;
+	}
+
+	@Override
+	public Yexceptions getExceptions() {
+		return this.exceptions;
+	}
+
+	@Override
+	public String getBody() {
+		return this.body;
+	}
+
+	@Override
+	public List<Yparameter> getParameters() {
+		return this.parameters;
+	}
+
+	@Override
+	public int getNameLineNumber() {
+		return this.beginLine;
+	}
+
+	@Override
+	public int getEndLineNumber() {
+		return this.endLine;
 	}
 }

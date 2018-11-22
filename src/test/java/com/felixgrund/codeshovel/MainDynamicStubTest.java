@@ -9,6 +9,7 @@ import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.google.gson.Gson;
+import jdk.nashorn.internal.objects.Global;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
@@ -53,10 +54,13 @@ public class MainDynamicStubTest {
 		List<File> files = Arrays.asList(directory.listFiles());
 		Collections.sort(files);
 
-		for (File file : files) {
+		fileLoop: for (File file : files) {
 			String envName = file.getName().replace(".json", "");
-			if (GlobalEnv.SKIP_ENVS.contains(envName)) {
-				continue;
+			for (String skipEnv : GlobalEnv.SKIP_ENVS) {
+				if (envName.startsWith(skipEnv)) {
+					System.out.println("Skipping env due to SKIP_ENVS env var: " + envName);
+					continue fileLoop;
+				}
 			}
 
 			String json = FileUtils.readFileToString(file, "utf-8");

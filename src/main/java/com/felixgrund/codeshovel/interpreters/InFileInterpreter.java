@@ -8,7 +8,6 @@ import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
-import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,7 +81,7 @@ public class InFileInterpreter extends AbstractInterpreter {
 						String filePathOldAndNew = ycommit.getFilePath();
 						List<Yfunction> candidates = getRemovedFunctions(
 								ycommit.getCommit(), parentCommit.getCommit(), filePathOldAndNew, filePathOldAndNew, false);
-						List<Yfunction> candidatesLineRange = parentCommitParser.findFunctionsByLineRange(beginA, endA);
+						List<Yfunction> candidatesLineRange = parentCommitParser.findMethodsByLineRange(beginA, endA);
 						candidates.addAll(candidatesLineRange);
 						candidates = removeDuplicates(candidates);
 						ret = parentCommitParser.getMostSimilarFunction(candidates, matchedFunction, false);

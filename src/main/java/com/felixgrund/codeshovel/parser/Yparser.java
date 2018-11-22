@@ -10,9 +10,9 @@ import java.util.Map;
 public interface Yparser {
 
 	Yfunction findFunctionByNameAndLine(String name, int line);
-	List<Yfunction> findFunctionsByLineRange(int beginLine, int endLine);
-	List<Yfunction> getAllFunctions();
-	Map<String, Yfunction> getAllFunctionsCount();
+	List<Yfunction> findMethodsByLineRange(int beginLine, int endLine);
+	List<Yfunction> getAllMethods();
+	Map<String, Yfunction> getAllMethodsCount();
 	Yfunction findFunctionByOtherFunction(Yfunction otherFunction);
 	boolean functionNamesConsideredEqual(String aName, String bName);
 

@@ -4,6 +4,7 @@ import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.*;
 import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.util.Utl;
+import com.felixgrund.codeshovel.visitors.MethodVisitor;
 import com.felixgrund.codeshovel.wrappers.FunctionSimilarity;
 import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
@@ -20,18 +21,12 @@ import java.util.Map;
 public abstract class AbstractParser implements Yparser {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractParser.class);
-
-	private StartEnvironment startEnv;
-
 	protected String filePath;
 	protected String fileContent;
 	protected Commit commit;
 	protected String repositoryName;
-
-	public abstract boolean functionNamesConsideredEqual(String aName, String bName);
-	public abstract double getScopeSimilarity(Yfunction function, Yfunction compareFunction);
-	public abstract String getAcceptedFileExtension();
-	protected abstract void parse() throws ParseException;
+	protected List<Yfunction> allMethods;
+	private StartEnvironment startEnv;
 
 	public AbstractParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
 		this.startEnv = startEnv;
@@ -41,6 +36,12 @@ public abstract class AbstractParser implements Yparser {
 		this.commit = commit;
 		parse();
 	}
+
+	public abstract double getScopeSimilarity(Yfunction function, Yfunction compareFunction);
+
+	public abstract String getAcceptedFileExtension();
+
+	protected abstract void parse() throws ParseException;
 
 	protected Yreturntypechange getReturnTypeChange(Ycommit commit, Yfunction compareFunction) {
 		Yreturntypechange ret = null;
@@ -227,7 +228,7 @@ public abstract class AbstractParser implements Yparser {
 		}
 
 		if (mostSimilarFunctionSimilarity > 0.82) {
-			if (!shouldBodyBeVerySimilar(compareFunction, mostSimilarFunction)|| mostSimilarFunctionSimilarity > 0.95) {
+			if (!shouldBodyBeVerySimilar(compareFunction, mostSimilarFunction) || mostSimilarFunctionSimilarity > 0.95) {
 				log.trace("Highest similarity is high enough. Accepting function.");
 				return mostSimilarFunction;
 			}
@@ -246,4 +247,70 @@ public abstract class AbstractParser implements Yparser {
 		}
 		return ret;
 	}
+
+	@Override
+	public Map<String, Yfunction> getAllMethodsCount() {
+		return transformMethodsToMap(getAllMethods());
+	}
+
+	@Override
+	public List<Yfunction> getAllMethods() {
+		return this.allMethods;
+	}
+
+	@Override
+	public boolean functionNamesConsideredEqual(String aName, String bName) {
+		return aName != null && aName.equals(bName);
+	}
+
+	protected Map<String, Yfunction> transformMethodsToMap(List<Yfunction> methods) {
+		Map<String, Yfunction> ret = new HashMap<>();
+		for (Yfunction method : methods) {
+			ret.put(method.getId(), method);
+		}
+		return ret;
+	}
+
+	@Override
+	public List<Yfunction> findMethodsByLineRange(int beginLine, int endLine) {
+		return findAllMethods(new MethodVisitor(this.allMethods) {
+			@Override
+			public boolean methodMatches(Yfunction method) {
+				int lineNumber = method.getNameLineNumber();
+				return lineNumber >= beginLine && lineNumber <= endLine;
+			}
+		});
+	}
+
+	protected List<Yfunction> findAllMethods(MethodVisitor visitor) {
+		List<Yfunction> matchedMethods = new ArrayList<>();
+		for (Yfunction method : this.allMethods) {
+			if (visitor.methodMatches(method)) {
+				matchedMethods.add(method);
+			}
+		}
+		return matchedMethods;
+	}
+
+	private Yfunction findMethod(MethodVisitor visitor) {
+		Yfunction ret = null;
+		List<Yfunction> matchedNodes = findAllMethods(visitor);
+		if (matchedNodes.size() > 0) {
+			ret = matchedNodes.get(0);
+		}
+		return ret;
+	}
+
+	@Override
+	public Yfunction findFunctionByNameAndLine(String name, int line) {
+		return findMethod(new MethodVisitor(this.allMethods) {
+			@Override
+			public boolean methodMatches(Yfunction method) {
+				String methodName = method.getName();
+				int methodLineNumber = method.getNameLineNumber();
+				return name.equals(methodName) && line == methodLineNumber;
+			}
+		});
+	}
+
 }

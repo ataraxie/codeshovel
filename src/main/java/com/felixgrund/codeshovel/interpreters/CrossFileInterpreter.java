@@ -87,7 +87,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 
 	private Yfunction getCompareFunctionFromFile(String filePath, Commit commit) throws Exception {
 		Yparser parser = createParserForCommitAndFile(commit, filePath);
-		List<Yfunction> allFunctions = parser.getAllFunctions();
+		List<Yfunction> allFunctions = parser.getAllMethods();
 		return this.startParser.getMostSimilarFunction(allFunctions, this.startFunction, false);
 	}
 

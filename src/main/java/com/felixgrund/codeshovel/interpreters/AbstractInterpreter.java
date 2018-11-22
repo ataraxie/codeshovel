@@ -1,13 +1,11 @@
 package com.felixgrund.codeshovel.interpreters;
 
 import com.felixgrund.codeshovel.entities.Ycommit;
-import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.util.ParserFactory;
-import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.*;
@@ -43,10 +41,10 @@ public abstract class AbstractInterpreter {
 		Yparser parserOld = createParserForCommitAndFile(commitOld, oldFilePath);
 		Yparser parserNew = createParserForCommitAndFile(commitNew, newFilePath);
 		if (parserNew == null) {
-			ret = parserOld.getAllFunctions();
+			ret = parserOld.getAllMethods();
 		} else {
-			Map<String, Yfunction> functionsNew = parserNew.getAllFunctionsCount();
-			Map<String, Yfunction> functionsOld = parserOld.getAllFunctionsCount();
+			Map<String, Yfunction> functionsNew = parserNew.getAllMethodsCount();
+			Map<String, Yfunction> functionsOld = parserOld.getAllMethodsCount();
 			Map<String, Integer> nameCountNew = getFunctionNameCount(functionsNew);
 			Map<String, Integer> nameCountOld = getFunctionNameCount(functionsOld);
 

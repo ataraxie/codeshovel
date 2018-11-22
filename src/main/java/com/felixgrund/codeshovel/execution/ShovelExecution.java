@@ -68,7 +68,7 @@ public class ShovelExecution {
 		printFileStart(filePath);
 		String startFileContent = startEnv.getRepositoryService().findFileContent(startEnv.getStartCommit(), filePath);
 		Yparser parser = ParserFactory.getParser(startEnv, filePath, startFileContent, startEnv.getStartCommit());
-		for (Yfunction method : parser.getAllFunctions()) {
+		for (Yfunction method : parser.getAllMethods()) {
 			try {
 				if (startEnv.getFunctionName() == null || startEnv.getFunctionName().equals(method.getName())) {
 					if (startEnv.getFunctionStartLine() <= 0 || startEnv.getFunctionStartLine() == method.getNameLineNumber()) {

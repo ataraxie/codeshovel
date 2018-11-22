@@ -23,115 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JavaFunction extends AbstractFunction implements Yfunction {
-
-	private String name;
-	private String type;
-	private Ymodifiers modifiers;
-	private Yexceptions exceptions;
-	private List<Yparameter> parameters;
-	private String body;
-	private int beginLine;
-	private int endLine;
-	private String parentName;
+public class JavaFunction extends AbstractFunction<MethodDeclaration> implements Yfunction {
 
 	public JavaFunction(MethodDeclaration method, Commit commit, String sourceFilePath, String sourceFileContent) {
-		super(commit, sourceFilePath, sourceFileContent);
-		this.name = method.getNameAsString();
-		this.type = method.getTypeAsString();
-		List<String> modifiers = new ArrayList<>();
-		for (Modifier modifier : method.getModifiers()) {
-			modifiers.add(modifier.asString());
-		}
-		this.modifiers = new Ymodifiers(modifiers);
-		List<String> exceptions = new ArrayList<>();
-		for (ReferenceType type : method.getThrownExceptions()) {
-			exceptions.add(type.asString());
-		}
-		this.exceptions = new Yexceptions(exceptions);
-
-		if (method.getBody().isPresent()) {
-			this.body = method.getBody().get().toString();
-		}
-
-		List<Yparameter> parametersList = new ArrayList<>();
-		List<Parameter> parameterElements = method.getParameters();
-		for (Parameter parameterElement : parameterElements) {
-			Yparameter parameter = new Yparameter(parameterElement.getNameAsString(), parameterElement.getTypeAsString());
-			Map<String, String> metadata = createParameterMetadataMap(parameterElement);
-			parameter.setMetadata(metadata);
-			parametersList.add(parameter);
-		}
-		this.parameters = parametersList;
-
-		if (method.getName().getBegin().isPresent()) {
-			this.beginLine = method.getName().getBegin().get().line;
-		}
-
-		if (method.getEnd().isPresent()) {
-			this.endLine = method.getEnd().get().line;
-		}
-
-		if (method.getParentNode().isPresent()) {
-			Node node = method.getParentNode().get();
-			if (node instanceof NodeWithName) {
-				this.parentName = ((NodeWithName) method.getParentNode().get()).getNameAsString();
-			} else if (node instanceof NodeWithSimpleName) {
-				this.parentName = ((NodeWithSimpleName) method.getParentNode().get()).getNameAsString();
-			}
-		}
-
-	}
-
-	@Override
-	public String getId() {
-		String ident = this.getName();
-		String idParameterString = this.getIdParameterString();
-		if (StringUtils.isNotBlank(idParameterString)) {
-			ident += "___" + idParameterString;
-		}
-		return Utl.sanitizeFunctionId(ident);
-	}
-
-	@Override
-	public String getFunctionPath() {
-		return null;
-	}
-
-	@Override
-	public String getParentName() {
-		return this.parentName;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public Yreturn getReturnStmt() {
-		return new Yreturn(this.type);
-	}
-
-	@Override
-	public Ymodifiers getModifiers() {
-		return this.modifiers;
-	}
-
-	@Override
-	public Yexceptions getExceptions() {
-		return this.exceptions;
-	}
-
-	@Override
-	public String getBody() {
-		return this.body;
-	}
-
-
-	@Override
-	public List<Yparameter> getParameters() {
-		return this.parameters;
+		super(method, commit, sourceFilePath, sourceFileContent);
 	}
 
 	private Map<String,String> createParameterMetadataMap(Parameter parameterElement) {
@@ -172,13 +67,89 @@ public class JavaFunction extends AbstractFunction implements Yfunction {
 	}
 
 	@Override
-	public int getNameLineNumber() {
-		return this.beginLine;
+	protected String getInitialName(MethodDeclaration method) {
+		return method.getNameAsString();
 	}
 
 	@Override
-	public int getEndLineNumber() {
-		return this.endLine;
+	protected String getInitialType(MethodDeclaration method) {
+		return method.getTypeAsString();
 	}
 
+	@Override
+	protected Ymodifiers getInitialModifiers(MethodDeclaration method) {
+		List<String> modifiers = new ArrayList<>();
+		for (Modifier modifier : method.getModifiers()) {
+			modifiers.add(modifier.asString());
+		}
+		return new Ymodifiers(modifiers);
+	}
+
+	@Override
+	protected Yexceptions getInitialExceptions(MethodDeclaration method) {
+		List<String> exceptions = new ArrayList<>();
+		for (ReferenceType type : method.getThrownExceptions()) {
+			exceptions.add(type.asString());
+		}
+		return new Yexceptions(exceptions);
+	}
+
+	@Override
+	protected List<Yparameter> getInitialParameters(MethodDeclaration method) {
+		List<Yparameter> parametersList = new ArrayList<>();
+		List<Parameter> parameterElements = method.getParameters();
+		for (Parameter parameterElement : parameterElements) {
+			Yparameter parameter = new Yparameter(parameterElement.getNameAsString(), parameterElement.getTypeAsString());
+			Map<String, String> metadata = createParameterMetadataMap(parameterElement);
+			parameter.setMetadata(metadata);
+			parametersList.add(parameter);
+		}
+		return parametersList;
+	}
+
+	@Override
+	protected String getInitialBody(MethodDeclaration method) {
+		String body = null;
+		if (method.getBody().isPresent()) {
+			body = method.getBody().get().toString();
+		}
+		return body;
+	}
+
+	@Override
+	protected int getInitialBeginLine(MethodDeclaration method) {
+		int beginLine = 0;
+		if (method.getName().getBegin().isPresent()) {
+			beginLine = method.getName().getBegin().get().line;
+		}
+		return beginLine;
+	}
+
+	@Override
+	protected int getInitialEndLine(MethodDeclaration method) {
+		int endLine = 0;
+		if (method.getEnd().isPresent()) {
+			endLine = method.getEnd().get().line;
+		}
+		return endLine;
+	}
+
+	@Override
+	protected String getInitialParentName(MethodDeclaration method) {
+		String parentName = null;
+		if (method.getParentNode().isPresent()) {
+			Node node = method.getParentNode().get();
+			if (node instanceof NodeWithName) {
+				parentName = ((NodeWithName) method.getParentNode().get()).getNameAsString();
+			} else if (node instanceof NodeWithSimpleName) {
+				parentName = ((NodeWithSimpleName) method.getParentNode().get()).getNameAsString();
+			}
+		}
+		return parentName;
+	}
+
+	@Override
+	protected String getInitialFunctionPath(MethodDeclaration method) {
+		return null;
+	}
 }
