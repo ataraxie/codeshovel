@@ -32,14 +32,14 @@ public class RubyParser extends AbstractParser implements Yparser {
 	}
 
 	@Override
-	protected void parse() throws ParseException {
+	protected List<Yfunction> parseMethods() throws ParseException {
 		Parser rubyParser = new Parser();
 		StringReader in = new StringReader(this.fileContent);
 		CompatVersion version = CompatVersion.RUBY2_0;
 		ParserConfiguration config = new ParserConfiguration(0, version);
 		Node rootNode = rubyParser.parse(this.filePath, in, config);
 		if (rootNode == null) {
-			throw new ParseException("Could not parse root node", this.filePath, this.fileContent);
+			throw new ParseException("Could not parseMethods root node", this.filePath, this.fileContent);
 		}
 
 		MethodNodeVisitor visitor = new MethodNodeVisitor() {
@@ -49,7 +49,7 @@ public class RubyParser extends AbstractParser implements Yparser {
 			}
 		};
 		rootNode.accept(visitor);
-		this.allMethods = visitor.getMatchedNodes();
+		return visitor.getMatchedNodes();
 	}
 
 	@Override

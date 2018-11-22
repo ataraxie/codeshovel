@@ -8,7 +8,6 @@ import com.felixgrund.codeshovel.visitors.MethodVisitor;
 import com.felixgrund.codeshovel.wrappers.FunctionSimilarity;
 import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
-import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,14 +33,14 @@ public abstract class AbstractParser implements Yparser {
 		this.filePath = filePath;
 		this.fileContent = fileContent;
 		this.commit = commit;
-		parse();
+		this.allMethods = parseMethods();
 	}
 
 	public abstract double getScopeSimilarity(Yfunction function, Yfunction compareFunction);
 
 	public abstract String getAcceptedFileExtension();
 
-	protected abstract void parse() throws ParseException;
+	protected abstract List<Yfunction> parseMethods() throws ParseException;
 
 	protected Yreturntypechange getReturnTypeChange(Ycommit commit, Yfunction compareFunction) {
 		Yreturntypechange ret = null;

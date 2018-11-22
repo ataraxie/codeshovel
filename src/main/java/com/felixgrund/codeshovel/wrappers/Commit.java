@@ -46,7 +46,7 @@ public class Commit {
 			PersonIdent ident = revCommit.getAuthorIdent();
 			this.authorName = ident.getName();
 		} catch (Exception e) {
-			System.out.println("Could not parse author for commit " + getCommitNameShort());
+			System.out.println("Could not parseMethods author for commit " + getCommitNameShort());
 		}
 		return authorName;
 	}
@@ -57,7 +57,7 @@ public class Commit {
 			PersonIdent ident = revCommit.getAuthorIdent();
 			this.authorEmail = ident.getEmailAddress();
 		} catch (Exception e) {
-			System.out.println("Could not parse author for commit " + getCommitNameShort());
+			System.out.println("Could not parseMethods author for commit " + getCommitNameShort());
 		}
 		return authorEmail;
 	}
