@@ -143,12 +143,12 @@ When running CodeShovel from stub files, there are no program arguments required
 but a few environment variables are required or optional:
 * `REPO_DIR`: local repository path - path to a local directory that contains the repository.
   * (e.g. `/Users/myhome/dev/codeshovel-repos` where the repo dir `checkstyle` is inside this directory)
-* `ENV_NAME`: environment name - basically a name for the stub/s to be used.
+* `LANG`: programming language of the target method. Currently either `java` or `js`.
+* `ENV_NAME` (optional): environment name - basically a name for the stub/s to be used.
   * Must refer to the file name of the stub without the `.json` ending
   * e.g. if you have a stub file `checkstyle-Checker-fireErrors.json`, the env name should be `checkstyle-Checker-fireErrors`
   * You can address multiple stub files by providing only the beginning of the file name
     * e.g. `checkstyle-` will match all stub files starting with `checkstyle-`
-* `LANG`: programming language of the target method. Currently either `java` or `js`.
 * `BEGIN_INDEX` (optional): If you only want to start at a specific index among all the matched stub files (starts with 1, not 0!).
 * `MAX_RUNS` (optional): If you only want to run X stub files of the matched env names.
 * `SKIP_ENVS` (optional): If you want to skip certain stub files among the matched stubs you can specify a comma-separated list of env names.
