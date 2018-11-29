@@ -8,7 +8,7 @@ Important is that these method histories are created manually and NOT using CS, 
 Furthermore, two individual authors/evaluators should create the same oracle such that agreement on its correctness can be reached in advance.
 
 Creating an oracle is pretty straight-forward but very tedious.
-It is best done in phases where you need a break from more other tasks requiring brain-power and want to do something more down-to-earth workers' work.
+It is best done in phases where you need a break from other tasks requiring brain-power and want to do something more down-to-earth workers' work.
 
 The following is a step-by-step manual on creating a history for a single method.
 There are many tools and ways to create these histories; this is only one way that I found works for me.
