@@ -338,4 +338,16 @@ public class Utl {
 		}
 		return ret;
 	}
+
+	public static boolean parentNamesMatch(Yfunction function, Yfunction compareFunction) {
+		String aParentName = function.getParentName();
+		String bParentName = compareFunction.getParentName();
+		if (aParentName != null && bParentName != null) {
+			if (aParentName.equals(bParentName)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

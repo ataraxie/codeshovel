@@ -1,11 +1,12 @@
 package com.felixgrund.codeshovel.parser.impl;
 
-import com.felixgrund.codeshovel.changes.Ychange;
+import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.parser.AbstractParser;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
+import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.jrubyparser.CompatVersion;
@@ -19,13 +20,10 @@ import org.jrubyparser.util.NoopVisitor;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class RubyParser extends AbstractParser implements Yparser {
 
 	public static final String ACCEPTED_FILE_EXTENSION = ".rb";
-
-	private List<Yfunction> allMethods;
 
 	public RubyParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
 		super(startEnv, filePath, fileContent, commit);
@@ -53,71 +51,13 @@ public class RubyParser extends AbstractParser implements Yparser {
 	}
 
 	@Override
-	public Yfunction findFunctionByNameAndLine(String name, int line) {
-		return findMethod(new MethodNodeVisitor() {
-			@Override
-			public boolean methodMatches(Yfunction method) {
-				String methodName = method.getName();
-				int methodLineNumber = method.getNameLineNumber();
-				return name.equals(methodName) && line == methodLineNumber;
-			}
-		});
-	}
-
-	private Yfunction findMethod(MethodNodeVisitor visitor) {
-		Yfunction ret = null;
-		List<Yfunction> matchedNodes = findAllMethods(visitor);
-		if (matchedNodes.size() > 0) {
-			ret = matchedNodes.get(0);
-		}
-		return ret;
-	}
-
-	private List<Yfunction> findAllMethods(MethodNodeVisitor visitor) {
-		List<Yfunction> matchedMethods = new ArrayList<>();
-		for (Yfunction method : this.allMethods) {
-			if (visitor.methodMatches(method)) {
-				matchedMethods.add(method);
-			}
-		}
-		return matchedMethods;
-	}
-
-
-	@Override
-	public List<Yfunction> findMethodsByLineRange(int beginLine, int endLine) {
-		return findAllMethods(new MethodNodeVisitor() {
-			@Override
-			public boolean methodMatches(Yfunction method) {
-				int lineNumber = method.getNameLineNumber();
-				return lineNumber >= beginLine && lineNumber <= endLine;
-			}
-		});
-	}
-
-	@Override
-	public Map<String, Yfunction> getAllMethodsCount() {
-		return null;
-	}
-
-	@Override
-	public Yfunction findFunctionByOtherFunction(Yfunction otherFunction) {
-		return null;
-	}
-
-	@Override
 	public double getScopeSimilarity(Yfunction function, Yfunction compareFunction) {
-		return 0;
-	}
-
-	@Override
-	public List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) throws Exception {
-		return null;
+		return Utl.parentNamesMatch(function, compareFunction) ? 1.0 : 0.0;
 	}
 
 	@Override
 	public String getAcceptedFileExtension() {
-		return null;
+		return ACCEPTED_FILE_EXTENSION;
 	}
 
 	private Yfunction transformMethod(MethodDefNode node) {

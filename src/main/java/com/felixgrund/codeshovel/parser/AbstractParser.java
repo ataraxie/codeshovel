@@ -114,7 +114,17 @@ public abstract class AbstractParser implements Yparser {
 	}
 
 	@Override
-	public List<Ysignaturechange> getMajorChanges(Ycommit commit, Yfunction compareFunction) throws Exception {
+	public List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) {
+		List<Ychange> changes = new ArrayList<>();
+		Ybodychange ybodychange = getBodyChange(commit, compareFunction);
+		if (ybodychange != null) {
+			changes.add(ybodychange);
+		}
+		return changes;
+	}
+
+	@Override
+	public List<Ysignaturechange> getMajorChanges(Ycommit commit, Yfunction compareFunction) {
 		List<Ysignaturechange> changes = new ArrayList<>();
 		Yparameterchange yparameterchange = getParametersChange(commit, compareFunction);
 		Yrename yinfilerename = getFunctionRename(commit, compareFunction);
@@ -308,6 +318,43 @@ public abstract class AbstractParser implements Yparser {
 				String methodName = method.getName();
 				int methodLineNumber = method.getNameLineNumber();
 				return name.equals(methodName) && line == methodLineNumber;
+			}
+		});
+	}
+
+	private Yfunction getCandidateWithSameParent(List<Yfunction> candidates, Yfunction compareMethod) {
+		for (Yfunction candidateMethod : candidates) {
+			if (candidateMethod.getParentName() != null && candidateMethod.getParentName().equals(compareMethod.getParentName())) {
+				log.trace("Found correct candidate. Parent name: {}", candidateMethod.getParentName());
+				return candidateMethod;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Yfunction findFunctionByOtherFunction(Yfunction otherMethod) {
+		Yfunction function = null;
+		List<Yfunction> candidatesByNameAndParams = findFunctionsByNameAndParams(otherMethod);
+		if (candidatesByNameAndParams.size() == 1) {
+			function = candidatesByNameAndParams.get(0);
+		} else if (candidatesByNameAndParams.size() > 1) {
+			log.trace("Found more than one matches for name and parameters. Finding candidate with highest body similarity");
+			function = getMostSimilarFunction(candidatesByNameAndParams, otherMethod, false);
+		}
+
+		return function;
+	}
+
+	private List<Yfunction> findFunctionsByNameAndParams(Yfunction otherFunction) {
+		return findAllMethods(new MethodVisitor(this.allMethods) {
+			@Override
+			public boolean methodMatches(Yfunction method) {
+				List<Yparameter> parametersCurrent = method.getParameters();
+				String functionNameCurrent = method.getName();
+				boolean nameMatches = functionNamesConsideredEqual(functionNameCurrent, otherFunction.getName());
+				boolean paramsMatch = parametersCurrent.equals(otherFunction.getParameters());
+				return nameMatches && paramsMatch;
 			}
 		});
 	}
