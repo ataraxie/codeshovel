@@ -167,4 +167,53 @@ We are using the master-develop-topic Git workflow in CodeShovel. If you want to
 * Assign the project owner as reviewer
 
 
+### Developing a language-specific version
+
+All implementation logic that is specific to programming languages is implementaed in `parser/impl`. There are only two
+classes that need to be created for one version:
+- a `*Function` class that implements `Yfunction` and extends `AbstractFunction<E>`, where `E` is the class representing
+one method node in the language-specific AST class in use
+- a `*Parser` class that implements `Yparser` and extends `AbstractParser`
+
+Lots of functionality is implemented in the `Abstract*` classes that is intended to work across different programming
+languages. However, this is not guaranteed and anytime a new implementation is written the implementation of the methods
+in `Yfunction` and `Yparser` in the respective `Abstract*` classes needs to be checked in regard to the new language.
+As soon as methods need to perform differently, the versions in the `Abstract*` classes must be overriden. Please mark
+these methods with the `@override` annotation in your implementing classes.
+
+Constructors in the implementation classes must call the super constructor of the abstract class. Refer to the 
+already implemented language-specific classes for examples.
+
+
+### Testing a language-specific version
+
+For each method that is used for testing, a stub should be created in `test/resources/stubs/LANGUAGE`. The stub file names
+should be in the form `REPONAME-MODULENAME-METHODNAME.json` where `MODULENAME` is the name of the source file or class. If you
+create stubs for multiple methods with the same name, please add `-LINENUMBER` (line number where the method name appears) 
+to the file name.
+
+One way of creating these stub files is as follows:
+- Create the JSON file with all fields filled except `expectedResult`. Then, run CodeShovel with the stub as described above
+in section `Running CodeShovel with stub files`
+- Go through the resulting output and check if it is correct
+  - IF it is correct, paste the result as `expectedResult` (as valid JSON) and make sure it passes when run as unit test 
+  - ELSE, improve your implementation and repeat until it is correct
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

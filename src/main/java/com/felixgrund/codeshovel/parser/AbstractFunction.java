@@ -18,6 +18,12 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	private String sourceFileContent;
 	private Commit commit;
 
+	/**
+	 * These are the generic fields we need for methods. The getInitial* methods will be called immediately in the
+	 * constructor and set as members. The actual get* methods are then simple getters, which increases performance
+	 * immensely.
+	 */
+
 	private String id;
 	private String name;
 	protected abstract String getInitialName(E rawMethod);
