@@ -5,7 +5,11 @@ import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.google.gson.JsonObject;
 
+import java.text.SimpleDateFormat;
+
 public abstract class Ychange {
+
+	protected static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat();
 
 	protected Commit commit;
 	protected RepositoryService repositoryService;
@@ -28,7 +32,7 @@ public abstract class Ychange {
 		JsonObject obj = new JsonObject();
 		obj.addProperty("type", getTypeAsString());
 		obj.addProperty("commitMessage", commit.getCommitMessage());
-		obj.addProperty("commitDate", commit.getCommitDate().getTime());
+		obj.addProperty("commitDate", DATE_FORMATTER.format(commit.getCommitDate()));
 		obj.addProperty("commitName", commit.getName());
 		obj.addProperty("commitAuthor", commit.getAuthorName());
 		return obj;

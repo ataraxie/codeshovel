@@ -317,11 +317,11 @@ public class Utl {
 	public static boolean parametersMetadataEqual(List<Yparameter> parametersA, List<Yparameter> parametersB) {
 		Map<String, Yparameter> parameterMapA = new HashMap<>();
 		for (Yparameter parameter : parametersA) {
-			parameterMapA.put(parameter.toString(), parameter);
+			parameterMapA.put(parameter.getNameTypeString(), parameter);
 		}
 
 		for (Yparameter paramB : parametersB) {
-			String paramString = paramB.toString();
+			String paramString = paramB.getNameTypeString();
 			Yparameter paramA = parameterMapA.get(paramString);
 			if (paramA != null && !paramA.getMetadataString().equals(paramB.getMetadataString())) {
 				return false;

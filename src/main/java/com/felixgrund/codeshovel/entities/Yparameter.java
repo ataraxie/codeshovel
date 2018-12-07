@@ -59,12 +59,17 @@ public class Yparameter {
 		return ret;
 	}
 
-	@Override
-	public String toString() {
+	public String getNameTypeString() {
 		String string = this.name;
 		if (StringUtils.isNotBlank(this.type)) {
 			string += "-" + this.type;
 		}
+		return string;
+	}
+
+	@Override
+	public String toString() {
+		String string = getNameTypeString();
 		if (StringUtils.isNotEmpty(this.metadataString)) {
 			string += "("+this.metadataString+")";
 		}

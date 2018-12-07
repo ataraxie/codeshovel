@@ -66,7 +66,7 @@ public abstract class Ycomparefunctionchange extends Ychange {
 	@Override
 	public JsonObject toJsonObject() {
 		JsonObject obj = super.toJsonObject();
-		obj.addProperty("commitDateOld", oldCommit.getCommitDate().getTime());
+		obj.addProperty("commitDateOld", Ychange.DATE_FORMATTER.format(oldCommit.getCommitDate()));
 		obj.addProperty("commitNameOld", oldCommit.getName());
 		obj.addProperty("commitAuthorOld", oldCommit.getAuthorName());
 		obj.addProperty("daysBetweenCommits", getDaysBetweenCommits());
