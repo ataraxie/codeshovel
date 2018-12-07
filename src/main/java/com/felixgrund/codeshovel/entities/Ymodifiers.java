@@ -21,4 +21,9 @@ public class Ymodifiers {
 	public List<String> getModifiers() {
 		return modifiers;
 	}
+
+	@Override
+	public String toString() {
+		return this.modifiers.toString();
+	}
 }

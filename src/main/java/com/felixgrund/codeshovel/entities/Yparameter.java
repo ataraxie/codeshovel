@@ -65,6 +65,9 @@ public class Yparameter {
 		if (StringUtils.isNotBlank(this.type)) {
 			string += "-" + this.type;
 		}
+		if (StringUtils.isNotEmpty(this.metadataString)) {
+			string += "("+this.metadataString+")";
+		}
 		return string;
 	}
 }

@@ -9,4 +9,15 @@ public class Yparameterchange extends Ysignaturechange {
 		super(startEnv, newFunction, oldFunction);
 	}
 
+	@Override
+	protected Object getOldValue() {
+		return oldFunction.getParameters();
+	}
+
+	@Override
+	protected Object getNewValue() {
+		return newFunction.getParameters();
+	}
+
+
 }

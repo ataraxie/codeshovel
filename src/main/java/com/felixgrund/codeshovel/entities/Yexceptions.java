@@ -21,4 +21,9 @@ public class Yexceptions {
 	public List<String> getExceptions() {
 		return exceptions;
 	}
+
+	@Override
+	public String toString() {
+		return this.exceptions.toString();
+	}
 }

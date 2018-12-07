@@ -11,14 +11,13 @@ public class Yrename extends Ysignaturechange {
 	}
 
 	@Override
-	public JsonObject getExtendedDetailsJsonObject() {
-		JsonObject extendedObj = new JsonObject();
-		String oldMethodName = oldFunction.getName();
-		String newMethodName = newFunction.getName();
-		extendedObj.addProperty("oldMethodName", oldMethodName);
-		extendedObj.addProperty("newMethodName", newMethodName);
-		return extendedObj;
+	protected Object getOldValue() {
+		return oldFunction.getName();
 	}
 
+	@Override
+	protected Object getNewValue() {
+		return newFunction.getName();
+	}
 
 }
