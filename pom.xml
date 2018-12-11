@@ -55,47 +55,15 @@
 			<version>${junit.vintage.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- Only required to run tests in an IDE that bundles an older version -->
-		<dependency>
-			<groupId>org.junit.platform</groupId>
-			<artifactId>junit-platform-launcher</artifactId>
-			<version>${junit.platform.version}</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
 			<version>4.9.2.201712150930-r</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>19.0</version>
-		</dependency>
-		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.8.2</version>
-		</dependency>
-		<dependency>
-			<groupId>xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.esotericsoftware.kryo</groupId>
-			<artifactId>kryo</artifactId>
-			<version>2.22</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-digester</groupId>
-			<artifactId>commons-digester</artifactId>
-			<version>2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.wumpz</groupId>
-			<artifactId>diffutils</artifactId>
-			<version>2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -118,11 +86,6 @@
 			<version>3.6.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jetbrains</groupId>
-			<artifactId>annotations</artifactId>
-			<version>15.0</version>
-		</dependency>
-		<dependency>
 			<groupId>com.carrotsearch</groupId>
 			<artifactId>java-sizeof</artifactId>
 			<version>0.0.5</version>
@@ -132,20 +95,6 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.4</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.jruby</groupId>
-			<artifactId>jrubyparser</artifactId>
-			<version>0.5.3</version>
-			<!--<scope>system</scope>-->
-			<!--<systemPath>${project.basedir}/misc/jrubyparser-0.5.5-SNAPSHOT.jar</systemPath>-->
-		</dependency>
-		<dependency>
-			<groupId>org.jruby</groupId>
-			<artifactId>jruby-complete</artifactId>
-			<version>9.2.4.0</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -167,45 +116,7 @@
 					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
-			<!--<plugin>-->
-				<!--<groupId>org.apache.maven.plugins</groupId>-->
-				<!--<artifactId>maven-jar-plugin</artifactId>-->
-				<!--<version>3.0.2</version>-->
-				<!--<configuration>-->
-					<!--<archive>-->
-						<!--<manifest>-->
-							<!--<addClasspath>true</addClasspath>-->
-							<!--<mainClass>com.felixgrund.codeshovel.execution.MainCli</mainClass>-->
-							<!--<classpathPrefix>dependency-jars/</classpathPrefix>-->
-						<!--</manifest>-->
-					<!--</archive>-->
-				<!--</configuration>-->
-				<!--<executions>-->
-					<!--<execution>-->
-						<!--<goals>-->
-							<!--<goal>test-jar</goal>-->
-						<!--</goals>-->
-					<!--</execution>-->
-				<!--</executions>-->
-			<!--</plugin>-->
-			<!--<plugin>-->
-				<!--<groupId>org.apache.maven.plugins</groupId>-->
-				<!--<artifactId>maven-dependency-plugin</artifactId>-->
-				<!--<version>3.0.2</version>-->
-				<!--<executions>-->
-					<!--<execution>-->
-						<!--<id>copy-dependencies</id>-->
-						<!--<phase>package</phase>-->
-						<!--<goals>-->
-							<!--<goal>copy-dependencies</goal>-->
-						<!--</goals>-->
-						<!--<configuration>-->
-							<!--<includeGroupIds>commons-cli</includeGroupIds>-->
-							<!--<outputDirectory>${project.build.directory}/dependency-jars/</outputDirectory>-->
-						<!--</configuration>-->
-					<!--</execution>-->
-				<!--</executions>-->
-			<!--</plugin>-->
+
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -229,23 +140,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--<plugin>-->
-				<!--<groupId>org.apache.maven.plugins</groupId>-->
-				<!--<artifactId>maven-assembly-plugin</artifactId>-->
-				<!--<executions>-->
-					<!--<execution>-->
-						<!--<phase>package</phase>-->
-						<!--<goals>-->
-							<!--<goal>single</goal>-->
-						<!--</goals>-->
-					<!--</execution>-->
-				<!--</executions>-->
-				<!--<configuration>-->
-					<!--<descriptorRefs>-->
-						<!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
-					<!--</descriptorRefs>-->
-				<!--</configuration>-->
-			<!--</plugin>-->
 		</plugins>
 	</build>
 

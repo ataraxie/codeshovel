@@ -2,12 +2,11 @@ package com.felixgrund.codeshovel.util;
 
 import com.felixgrund.codeshovel.exceptions.NoParserFoundException;
 import com.felixgrund.codeshovel.exceptions.ParseException;
-import com.felixgrund.codeshovel.parser.impl.RubyParser;
-import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.parser.impl.JavaParser;
 import com.felixgrund.codeshovel.parser.impl.JsParser;
 import com.felixgrund.codeshovel.wrappers.Commit;
+import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.HashMap;
@@ -25,8 +24,6 @@ public class ParserFactory {
 				parser = new JsParser(startEnv, filePath, fileContent, commit);
 			} else if (filePath.endsWith(JavaParser.ACCEPTED_FILE_EXTENSION)) {
 				parser = new JavaParser(startEnv, filePath, fileContent, commit);
-			} else if (filePath.endsWith(RubyParser.ACCEPTED_FILE_EXTENSION)) {
-				parser = new RubyParser(startEnv, filePath, fileContent, commit);
 			} else {
 				throw new NoParserFoundException("No parser found for filename " + filePath);
 			}
