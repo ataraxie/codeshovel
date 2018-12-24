@@ -98,7 +98,26 @@ Open the CodeShovel repo as Java project. Different run/debug configurations are
 * `com.felixgrund.codeshovel.MainDynamicStubTest`
   * Run CodeShovel with many test cases from multiple stub files (see below)
   * Type of the run/debug configuration should be `JUnit`
- 
+  
+  
+Most of the project should be pre-configured upon loading into the IDE. If there appear to be errors with CodeShovel, follow the 
+setup debugging steps below:
+
+### Setting up src, test, and resource modules
+
+Open the Project Structure window from settings, and set the following options
+
+* Source folders: `src/main/java`
+* Test source folders: `src/test/java`
+* Resource folders: `src/main/resources`
+* Test resource folders: `src/test/resources`
+* Excluded folders: `target`
+
+### Resolving issues with external dependencies
+
+Make sure to have the Maven plugin installed on your IDE. Once it is installed, it should 
+prompt you to set the `pom.xml` file and recognize CodeShovel as a maven project.
+
 ### Running CodeShovel with stub files
 
 For development, it makes most to run CodeShovel from so-called *stub files*. These are located at 
