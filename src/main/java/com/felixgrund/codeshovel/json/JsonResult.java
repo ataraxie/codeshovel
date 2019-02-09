@@ -24,6 +24,8 @@ public class JsonResult {
 	private String sourceFilePath;
 	private int functionStartLine;
 	private int functionEndLine;
+	private int numCommitsSeen;
+	private long timeTaken;
 	private List<String> changeHistory;
 	private Map<String, String> changeHistoryShort;
 	private Map<String, Ychange> changeHistoryDetails;
@@ -105,5 +107,21 @@ public class JsonResult {
 
 	public Map<String, String> getChangeHistoryShort() {
 		return changeHistoryShort;
+	}
+
+	public int getNumCommitsSeen() {
+		return numCommitsSeen;
+	}
+
+	public long getTimeTaken() {
+		return timeTaken;
+	}
+
+	public void setNumCommitsSeen(int numCommitsSeen) {
+		this.numCommitsSeen = numCommitsSeen;
+	}
+
+	public void setTimeTaken(long timeTaken) {
+		this.timeTaken = timeTaken;
 	}
 }

@@ -48,6 +48,8 @@ public class AnalysisTask {
 
 	private List<Ycommit> taskSpecificHistory;
 
+	private int numCommitsTotal;
+
 	private Yfunction startFunction;
 	private Ycommit startCommit;
 
@@ -184,12 +186,12 @@ public class AnalysisTask {
 		Ycommit lastConsideredCommit = null;
 		Map<String, Commit> allCommits = yhistory.getCommits();
 		Set<String> commitNames = allCommits.keySet();
-		int numCommits = commitNames.size();
+		this.numCommitsTotal = commitNames.size();
 		log.trace("Creating commit collection for all {{}} commits...", commitNames.size());
 		int status = 0;
 		for (String commitName : commitNames) {
 			status++;
-			log.trace(status + " / " + numCommits);
+			log.trace(status + " / " + this.numCommitsTotal);
 			Commit commit = yhistory.getCommits().get(commitName);
 			try {
 				RevCommit revCommit = yhistory.getRevCommits().get(commit.getName());
@@ -277,10 +279,6 @@ public class AnalysisTask {
 		return yresult;
 	}
 
-	public void setTaskSpecificHistory(List<Ycommit> taskSpecificHistory) {
-		this.taskSpecificHistory = taskSpecificHistory;
-	}
-
 	public Ychange getLastMajorChange() {
 		return lastMajorChange;
 	}
@@ -327,5 +325,9 @@ public class AnalysisTask {
 
 	public StartEnvironment getStartEnv() {
 		return startEnv;
+	}
+
+	public int getNumCommitsTotal() {
+		return numCommitsTotal;
 	}
 }

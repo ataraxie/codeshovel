@@ -1,4 +1,4 @@
-package com.felixgrund.codeshovel;
+package com.felixgrund.codeshovel.execution;
 
 import com.felixgrund.codeshovel.execution.ShovelExecution;
 import com.felixgrund.codeshovel.services.RepositoryService;
@@ -21,7 +21,7 @@ import java.util.Date;
  * cd /path/to/repo
  * java codeshovel relative/path/to/file.java sd8i3ksd823r4sdfkls83r48
  */
-public class DockerTask {
+public class DockerExecution {
 
     private static String TARGET_FILE_PATH;
     private static String REPO_PATH;

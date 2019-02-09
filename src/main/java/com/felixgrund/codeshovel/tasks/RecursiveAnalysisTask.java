@@ -9,6 +9,7 @@ import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.util.Utl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class RecursiveAnalysisTask {
@@ -17,17 +18,22 @@ public class RecursiveAnalysisTask {
 	private AnalysisTask startTask;
 
 	private Yresult recursiveResult;
+	private int numAnalyzedCommits;
+	private long timeTaken;
 	private boolean printOutput = true;
 
 	public RecursiveAnalysisTask(StartEnvironment startEnv, AnalysisTask startTask) {
 		this.startEnv = startEnv;
 		this.startTask = startTask;
+		this.numAnalyzedCommits = 0;
 	}
 
 	public void run() throws Exception {
+		long startTime = new Date().getTime();
 		AnalysisTask task = this.startTask;
 		runAndPrintOptionally(task);
 		this.recursiveResult = this.startTask.getYresult();
+		this.numAnalyzedCommits += this.startTask.getNumCommitsTotal();
 
 		while (task.getLastMajorChange() != null) {
 			Ychange majorChange = task.getLastMajorChange();
@@ -46,10 +52,12 @@ public class RecursiveAnalysisTask {
 					task = new AnalysisTask(startEnv, oldFunction);
 					runAndPrintOptionally(task);
 					this.recursiveResult.putAll(task.getYresult());
+					this.numAnalyzedCommits += task.getNumCommitsTotal();
 				}
 			}
 		}
 
+		this.timeTaken = new Date().getTime() - startTime;
 	}
 
 	private void runAndPrintOptionally(AnalysisTask task) throws Exception {
@@ -69,5 +77,13 @@ public class RecursiveAnalysisTask {
 
 	public Yresult getResult() {
 		return recursiveResult;
+	}
+
+	public int getNumAnalyzedCommits() {
+		return numAnalyzedCommits;
+	}
+
+	public long getTimeTaken() {
+		return timeTaken;
 	}
 }

@@ -120,6 +120,8 @@ public class ShovelExecution {
 		printAsJson(changeHistoryShort);
 
 		JsonResult jsonResultCodeshovel = new JsonResult("codeshovel", task, codeshovelHistory, changeHistoryDetails, changeHistoryShort);
+		jsonResultCodeshovel.setNumCommitsSeen(recursiveAnalysisTask.getNumAnalyzedCommits());
+		jsonResultCodeshovel.setTimeTaken(recursiveAnalysisTask.getTimeTaken());
 
 		if (!GlobalEnv.DISABLE_ALL_OUTPUTS) {
 			if (StringUtils.isNotBlank(startEnv.getOutputFilePath())) {
