@@ -20,6 +20,8 @@ ENV SEARCH_PATHS ${SEARCH_PATHS:-.}
 
 ENV OUTPUT_DIR /var/opt/codeshovel/output
 ENV WRITE_RESULTS true
+ENV WRITE_GITLOG false
+ENV WRITE_SEMANTIC_DIFFS false
 
 RUN apt-get update && apt-get -y install maven
 
