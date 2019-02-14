@@ -2,6 +2,90 @@
 
 Take this shovel to dig in source code history for changes to specific methods and functions. Currently implemented for Java and JavaScript.
 
+## Statistics
+
+### Empirical analysis results
+
+* 200 methods analyzed in total
+* 15 methods with wrong introducing commit
+* 7 method histories failed due to not parsable files
+* 178 methods with correct introducing commit
+
+### Processed from outputs
+
+Note: "only one change" = "were introduced and never changed"
+
+```
+{
+  "repo": "okhttp", // Name of the repo
+  "totalMethods": 1453, // Total number of methods found in the repo
+  "failedMethods": 18, // Number of methods for which Shovel failed
+  "totalHistoryEquals1": 225, // # methods that were only introduced and never changed
+  "totalHistory2To5": 667, // # methods that were changed 2-5 times
+  "totalHistory6To10": 325, // # methods that were changed 6-10 times
+  "totalHistoryGt10": 236, // # methods that were changed > 10 times
+  "totalChanges": 8677, // sum of all changes seen for all methods
+  "avgMethodLifetimeInDays": 796.2847142762661, // average lifetime of a method (i.e. date of last change - date introduced)
+  "avgSize": 5.971782518926359, // avg number of changes of methods
+  "medianSize": 4, // median number of changes of methods
+  "totalTimeTaken": 795001, // sum of all time taken in ms for all methods
+  "totalCommitsSeen": 76841, // sum of all commits that were parsed with the AST parser (sum of all file changes seen while searching for method level changes)
+  "avgTimeTaken": 547.1445285615966, // average time taken for each method in ms
+  "avgTotalCommitsSeen": 52.88437715072264, // average # of commits seen (AST-parsed files) for each method
+  "medianTimeTaken": 387, // median time taken in ms for each method
+  "medianNumCommitsSeen": 37, // median # of commits seen (AST-parsed files) for each method
+  "countSmallMethodsForOneChange": 93, // # of methods with only one change that had 3 lines or less
+  "countSmallMethodsForMoreThanOneChange": 443, // # of methods with more than one change that had 3 lines or less
+  "numMethodsWithCrossFileChanges": 1131, // # of methods with at least one cross-file change (file renames or method moves)
+  "fragmentMethodsWithCrossFileChanges": 0.7783895388850653, // percentage of methods with at least one cross-file change (file renames or method moves)
+  "avgMethodSizeOneChange": 8.04888888888889, // average # of lines for methods with only one change
+  "avgMethodsMoreThanOneChange": 10.550488599348535, // average # of lines for methods with more than one change
+  "changeStats": { // sums of all change type occurrences in this repo
+    "Yexceptionschange": 91,
+    "Ymovefromfile": 1324,
+    "Yrename": 310,
+    "Yparameterchange": 519,
+    "Yintroduced": 1426,
+    "Ybodychange": 3359,
+    "Ymodifierchange": 369,
+    "Yreturntypechange": 245,
+    "Yfilerename": 2438,
+    "Yparametermetachange": 71
+  }, 
+  "totalHistoryCount": { // left side: # of method changes; right side: # methods in this repo with this # of changes
+    "0": 3,
+    "1": 225,
+    "2": 234,
+    "3": 180,
+    "4": 143,
+    ...
+  },
+  "statsMethodsOneChange": { // how many of the methods with only one change were getters/setters
+    "setters": 2,
+    "getters": 12,
+    "tests": 1
+  },
+  // Left side: # of changes for methods
+  // Right side: # num lines : # num methos
+  "methodSizeStatsLeftNumChangesRightNumLinesNumMethods": {
+    "0": {
+      "3": 1,
+      "4": 1,
+      "15": 1
+        ...
+    },
+    "1": {
+      "3": 22,
+      "8": 32,
+      "10": 20
+      ...
+    },
+    ...
+  }
+}
+```
+
+
 ## Getting Started
 
 ### Prerequisites

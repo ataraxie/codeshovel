@@ -34,7 +34,7 @@ function sortResult(fullResult) {
 			newResult[key] = value;
 		}
 	});
-	["changeStats", "totalHistoryCountShovel", "totalHistoryCountBase", "statsMethodsOneChange",
+	["changeStats", "totalHistoryCount", "totalHistoryCountBase", "statsMethodsOneChange",
 		"methodSizeStatsLeftNumChangesRightNumLinesNumMethods" ].forEach(function(key) {
 		newResult[key] = fullResult[key];
 	});
@@ -46,7 +46,6 @@ function execute(repo) {
 	console.log("execute(): " + repo);
 
 	var dirCodeshovel = srcDir + "/codeshovel/" + repo;
-	var dirDiff = srcDir + "/diff_semantic_gitlog/" + repo;
 
 	var median = function(values) {
 		values.sort(function(a, b) {
@@ -56,7 +55,7 @@ function execute(repo) {
 		var highMiddle = Math.ceil((values.length - 1) / 2);
 		var median = (values[lowMiddle] + values[highMiddle]) / 2;
 		return median;
-	}
+	};
 
 	/**
 	 * Explores recursively a directory and returns all the filepaths and folderpaths in the callback.
@@ -101,24 +100,7 @@ function execute(repo) {
 	var fullResult = { repo: repo };
 	var commitTimesRepo = commitTimes[repo];
 
-	var totalHistoryCountShovel = {};
-	var totalHistoryCountBase = {};
-
-
-	var getBaselineInShovelRange = function(diffObj) {
-		var arr = [];
-		var newestShovelCommit = diffObj.codeshovelHistory[0];
-		var newestShovelCommitTime = commitTimesRepo[newestShovelCommit];
-		var oldestShovelCommit = diffObj.codeshovelHistory[diffObj.codeshovelHistory.length - 1];
-		var oldestShovelCommitTime = commitTimesRepo[oldestShovelCommit];
-		diffObj.baselineHistory.forEach(function(commitName) {
-			var timestamp = commitTimesRepo[commitName];
-			if (timestamp >= oldestShovelCommitTime && timestamp <= newestShovelCommitTime) {
-				arr.push(commitName);
-			}
-		});
-		return arr;
-	};
+	var totalHistoryCount = {};
 
 	var getDuration = function(commitArr) {
 		var newestCommit = commitArr[0];
@@ -128,7 +110,7 @@ function execute(repo) {
 		return timestampNewest - timestampOldest;
 	};
 
-	filewalker(dirDiff, function(error, results) {
+	filewalker(dirCodeshovel, function(error, results) {
 		if (error) {
 			console.log(error);
 			throw error;
@@ -136,120 +118,255 @@ function execute(repo) {
 
 		// do something with files
 		// how many "extra" commits did we find?
-		var totalShovel = 0;
-		var totalBase = 0;
-		var totalOnlyShovel = 0;
-		var totalOnlyBase = 0;
-		var numBaselineHistoryGt1 = 0;
-		var numBaselineHistoryGt1InShovelRange = 0;
-		var numShovelHistoryGt1 = 0;
-		var totalCommitDurationBase = 0;
-		var totalCommitDurationBaseInShovelRange = 0;
-		var totalCommitDurationShovel = 0;
-		var totalCommitDurationShovelBaseInShovel = 0;
-		var methodDetails = {};
-		var shovelResultsArr = [];
-		var baseResultsArr = [];
+		var changeStats = {};
+		var methodSizeStats = {};
+		var statsMethodsOneChange = {
+			setters: 0,
+			getters: 0,
+			tests: 0
+		};
+		var countSmallMethodsForOneChange = 0;
+		var countSmallMethodsForMoreThanOneChange = 0;
+
+		var sumLineLengthOneChange = 0;
+		var sumLineLengthMoreThanOneChange = 0;
+		var totalCommits = 0;
+
+		var numMethodsWithCrossFileChanges = 0;
 		var totalMethods = results.length;
+		var shovelResultsArr = [];
+
+		var numShovelHistoryGt1 = 0;
+		var methodLifetime = 0;
+
+		var totalTimeTaken = 0;
+		var totalCommitsSeen = 0;
+
+		var numCommitsSeenArr = [];
+		var timeTakenArr = [];
 
 		fullResult.totalMethods = totalMethods;
+		fullResult.failedMethods = 0;
 		fullResult.totalHistoryEquals1 = 0;
 		fullResult.totalHistory2To5 = 0;
 		fullResult.totalHistory6To10 = 0;
 		fullResult.totalHistoryGt10 = 0;
 
-		console.log("Iterating semantic diff files for repo: " + repo);
+		console.log("Iterating codeshovel results for repo: " + repo);
 
 		results.forEach(function(file) {
 			try {
-				var diffObj = JSON.parse(fs.readFileSync(file));
-				var methodId = file.split("/diff_semantic_gitlog/")[1].replace(".json", "");
-				var singleMethodResult = {};
+				var shovelObj = JSON.parse(fs.readFileSync(file));
+				var methodName = shovelObj.functionName;
 
-				var numShovel = diffObj.codeshovelHistory.length;
-				shovelResultsArr.push(numShovel);
-				totalShovel += numShovel;
-				singleMethodResult.sizeShovel = numShovel;
-				if (numShovel === 1) {
+				var numMethodCommits = shovelObj.changeHistory.length;
+				if (!methodSizeStats[numMethodCommits]) {
+					methodSizeStats[numMethodCommits] = {};
+				}
+
+				var numMethodLines = 1 + (shovelObj.functionEndLine - shovelObj.functionStartLine);
+				if (!methodSizeStats[numMethodCommits][numMethodLines]) {
+					methodSizeStats[numMethodCommits][numMethodLines] = 1;
+				} else {
+					methodSizeStats[numMethodCommits][numMethodLines] += 1;
+				}
+
+				shovelResultsArr.push(numMethodCommits);
+				totalCommitsSeen += shovelObj.numCommitsSeen;
+				totalTimeTaken += shovelObj.timeTaken;
+				totalCommits += numMethodCommits;
+				timeTakenArr.push(shovelObj.timeTaken);
+				numCommitsSeenArr.push(shovelObj.numCommitsSeen);
+
+				if (numMethodCommits === 1) {
 					fullResult.totalHistoryEquals1 += 1;
 				}
-				else if (numShovel <= 5) fullResult.totalHistory2To5 += 1;
-				else if (numShovel <= 10) fullResult.totalHistory6To10 += 1;
-				else if (numShovel > 10) fullResult.totalHistoryGt10 += 1;
+				else if (numMethodCommits <= 5) fullResult.totalHistory2To5 += 1;
+				else if (numMethodCommits <= 10) fullResult.totalHistory6To10 += 1;
+				else if (numMethodCommits > 10) fullResult.totalHistoryGt10 += 1;
 
-				if (!totalHistoryCountShovel[numShovel]) {
-					totalHistoryCountShovel[numShovel] = 1;
+				if (!totalHistoryCount[numMethodCommits]) {
+					totalHistoryCount[numMethodCommits] = 1;
 				} else {
-					totalHistoryCountShovel[numShovel] += 1;
+					totalHistoryCount[numMethodCommits] += 1;
 				}
 
-				var numBase = diffObj.baselineHistory.length;
-				totalBase += numBase;
-				singleMethodResult.sizeBase = numBase;
-				baseResultsArr.push(numBase);
-
-				if (!totalHistoryCountBase[numBase]) {
-					totalHistoryCountBase[numBase] = 1;
-				} else {
-					totalHistoryCountBase[numBase] += 1;
-				}
-
-				var numOnlyShovel = diffObj.onlyInCodeshovel.length;
-				totalOnlyShovel += numOnlyShovel;
-				singleMethodResult.sizeOnlyShovel = numOnlyShovel;
-
-				var numOnlyBase = diffObj.onlyInBaseline.length;
-				totalOnlyBase += numBase;
-				singleMethodResult.sizeOnlyBase = numOnlyBase;
-
-				methodDetails[methodId] = singleMethodResult;
-
-				if (numShovel > 1) {
-					numShovelHistoryGt1 += 1;
-					totalCommitDurationShovel += getDuration(diffObj.codeshovelHistory);
-				}
-				if (numBase > 1) {
-					numBaselineHistoryGt1 += 1;
-					totalCommitDurationBase += getDuration(diffObj.baselineHistory);
-				}
-
-				if (numBase > 1 && numShovel > 1) {
-					var baselineInShovelRange = getBaselineInShovelRange(diffObj, commitTimesRepo);
-					if (baselineInShovelRange.length > 1) {
-						numBaselineHistoryGt1InShovelRange += 1;
-						totalCommitDurationBaseInShovelRange += getDuration(baselineInShovelRange);
-						totalCommitDurationShovelBaseInShovel += getDuration(diffObj.codeshovelHistory);
+				if (numMethodLines <= 3) {
+					if (numMethodCommits <= 1) {
+						countSmallMethodsForOneChange += 1;
+					} else {
+						countSmallMethodsForMoreThanOneChange += 1;
 					}
 				}
 
+				if (numMethodCommits > 1) {
+					numShovelHistoryGt1 += 1;
+					methodLifetime += getDuration(shovelObj.changeHistory);
+
+					var oldestCommitName = shovelObj.changeHistory[shovelObj.changeHistory.length-1];
+					var oldestCommitChangeType = shovelObj.changeHistoryShort[oldestCommitName];
+
+					if (oldestCommitChangeType !== "Yintroduced") {
+						fullResult.failedMethods += 1;
+					}
+				}
+
+				if (numMethodCommits === 1) {
+					sumLineLengthOneChange += numMethodLines;
+					if (numMethodLines <= 3) {
+						if (methodName.startsWith("get") || methodName.startsWith("is")) {
+							statsMethodsOneChange.getters += 1;
+						} else if (methodName.startsWith("set")) {
+							statsMethodsOneChange.setters += 1;
+						}
+					}
+					if (methodName.startsWith("test")) {
+						statsMethodsOneChange.tests += 1;
+					}
+				} else {
+					sumLineLengthMoreThanOneChange += numMethodLines;
+				}
+
+				var methodChangeTypes = {};
+				for (var commitName in shovelObj.changeHistoryShort) {
+					var changeType = shovelObj.changeHistoryShort[commitName];
+					addStats(changeStats, changeType);
+					addStats(methodChangeTypes, changeType);
+				}
+
+				var changeTypesForMethod = Object.keys(methodChangeTypes);
+				if (changeTypesForMethod.indexOf("Yfilerename") >= 0 || changeTypesForMethod.indexOf("Ymovefromfile") >= 0) {
+					numMethodsWithCrossFileChanges += 1;
+				}
 			} catch (err) {
-				console.log("ERROR processing file: " + file + " -- " + err);
+				console.log("ERROR processing file: " + file + "  --  " + err);
 			}
 		});
 
-		fullResult.totalChangesShovel = totalShovel;
-		fullResult.totalChangesBase = totalBase;
-		fullResult.avgCommitDurationBaseInDays = (totalCommitDurationBase / numBaselineHistoryGt1) / 86400000;
-		fullResult.avgCommitDurationShovelInDays = (totalCommitDurationShovel / numShovelHistoryGt1) / 86400000;
-		fullResult.avgCommitDurationBaseInDaysOnlyShovelRange = (totalCommitDurationBaseInShovelRange / numBaselineHistoryGt1InShovelRange) / 86400000;
-		fullResult.avgCommitDurationShovelWithBaseInShovel = (totalCommitDurationShovelBaseInShovel / numBaselineHistoryGt1InShovelRange) / 86400000;
-		fullResult.avgSizeShovel = totalShovel / fullResult.totalMethods;
-		fullResult.avgSizeBase = totalBase / fullResult.totalMethods;
-		fullResult.avgSizeOnlyShovel = totalOnlyShovel / fullResult.totalMethods;
-		fullResult.avgSizeOnlyBase = totalOnlyShovel / fullResult.totalMethods;
-		fullResult.medianSizeShovel = median(shovelResultsArr);
-		fullResult.medianSizeBase = median(baseResultsArr);
-		fullResult.totalHistoryCountShovel = totalHistoryCountShovel;
-		fullResult.totalHistoryCountBase = totalHistoryCountBase;
-		// fullResult.methodDetails = methodDetails;
+		fullResult.totalChanges = totalCommits;
+		fullResult.avgMethodLifetimeInDays = (methodLifetime / numShovelHistoryGt1) / 86400000;
+		fullResult.avgSize = totalCommits / fullResult.totalMethods;
+		fullResult.medianSize = median(shovelResultsArr);
+		fullResult.totalHistoryCount = totalHistoryCount;
 
-		try {
-			collectShovel();
-		} catch (err) {
-			console.err("Could not collect shovel stats");
-		}
+		fullResult.totalTimeTaken = totalTimeTaken;
+		fullResult.totalCommitsSeen = totalCommitsSeen;
+		fullResult.avgTimeTaken = totalTimeTaken / totalMethods;
+		fullResult.avgTotalCommitsSeen = totalCommitsSeen / totalMethods;
+		fullResult.medianTimeTaken = median(timeTakenArr);
+		fullResult.medianNumCommitsSeen = median(numCommitsSeenArr);
 
+		fullResult.changeStats = changeStats;
+		fullResult.countSmallMethodsForOneChange = countSmallMethodsForOneChange;
+		fullResult.countSmallMethodsForMoreThanOneChange = countSmallMethodsForMoreThanOneChange;
+		fullResult.numMethodsWithCrossFileChanges = numMethodsWithCrossFileChanges;
+		fullResult.fragmentMethodsWithCrossFileChanges = numMethodsWithCrossFileChanges / totalMethods;
+
+		var numMethodsOneChange = fullResult.totalHistoryCount["1"];
+		var numMethodsMoreThanOneChange = fullResult.totalMethods - numMethodsOneChange;
+		fullResult.avgMethodSizeOneChange = sumLineLengthOneChange / numMethodsOneChange;
+		fullResult.avgMethodsMoreThanOneChange = sumLineLengthMoreThanOneChange / numMethodsMoreThanOneChange;
+
+		fullResult.statsMethodsOneChange = statsMethodsOneChange;
+		fullResult.methodSizeStatsLeftNumChangesRightNumLinesNumMethods = methodSizeStats;
+
+		fullResult = sortResult(fullResult);
+
+		var jsonResult = JSON.stringify(fullResult, null, 2);
+		var filePath = dstDir + "/stats-" + repo + ".json";
+		fs.writeFile(filePath, jsonResult, function(err) {
+			if (err) {
+				console.log(err);
+			}
+
+			console.log("Result for repo " + repo + " saved: " + filePath);
+		});
 	});
+
+	// filewalker(dirDiff, function(error, results) {
+		// if (error) {
+		// 	console.log(error);
+		// 	throw error;
+		// }
+		//
+		// // do something with files
+		// // how many "extra" commits did we find?
+		// var totalShovel = 0;
+		// var numShovelHistoryGt1 = 0;
+		// var totalCommitDuration = 0;
+		// var methodDetails = {};
+		// var shovelResultsArr = [];
+		// var totalMethods = results.length;
+		//
+		// fullResult.totalMethods = totalMethods;
+		// fullResult.totalHistoryEquals1 = 0;
+		// fullResult.totalHistory2To5 = 0;
+		// fullResult.totalHistory6To10 = 0;
+		// fullResult.totalHistoryGt10 = 0;
+		//
+		// console.log("Iterating semantic diff files for repo: " + repo);
+
+		// results.forEach(function(file) {
+		// 	try {
+		// 		var resultObj = JSON.parse(fs.readFileSync(file));
+		// 		var methodId = file.split("/codeshovel/")[1].replace(".json", "");
+		// 		var singleMethodResult = {};
+		//
+		// 		var numHistoryCommits = resultObj.codeshovelHistory.length;
+		// 		shovelResultsArr.push(numHistoryCommits);
+		// 		totalShovel += numHistoryCommits;
+		// 		singleMethodResult.sizeShovel = numHistoryCommits;
+		// 		if (numHistoryCommits === 1) {
+		// 			fullResult.totalHistoryEquals1 += 1;
+		// 		}
+		// 		else if (numHistoryCommits <= 5) fullResult.totalHistory2To5 += 1;
+		// 		else if (numHistoryCommits <= 10) fullResult.totalHistory6To10 += 1;
+		// 		else if (numHistoryCommits > 10) fullResult.totalHistoryGt10 += 1;
+		//
+		// 		if (!totalHistoryCount[numHistoryCommits]) {
+		// 			totalHistoryCount[numHistoryCommits] = 1;
+		// 		} else {
+		// 			totalHistoryCount[numHistoryCommits] += 1;
+		// 		}
+		//
+		// 		methodDetails[methodId] = singleMethodResult;
+		//
+		// 		if (numHistoryCommits > 1) {
+		// 			numShovelHistoryGt1 += 1;
+		// 			totalCommitDuration += getDuration(resultObj.codeshovelHistory);
+		// 		}
+		// 		if (numBase > 1) {
+		// 			numBaselineHistoryGt1 += 1;
+		// 			totalCommitDurationBase += getDuration(resultObj.baselineHistory);
+		// 		}
+		//
+		// 		if (numBase > 1 && numHistoryCommits > 1) {
+		// 			var baselineInShovelRange = getBaselineInShovelRange(resultObj, commitTimesRepo);
+		// 			if (baselineInShovelRange.length > 1) {
+		// 				numBaselineHistoryGt1InShovelRange += 1;
+		// 				totalCommitDurationBaseInShovelRange += getDuration(baselineInShovelRange);
+		// 				totalCommitDurationShovelBaseInShov += getDuration(resultObj.codeshovelHistory);
+		// 			}
+		// 		}
+		//
+		// 	} catch (err) {
+		// 		console.log("ERROR processing file: " + file + " -- " + err);
+		// 	}
+		// });
+
+		// fullResult.totalChanges = totalShovel;
+		// fullResult.avgMethodLifetimeInDays = (totalCommitDuration / numShovelHistoryGt1) / 86400000;
+		// fullResult.avgSize = totalShovel / fullResult.totalMethods;
+		// fullResult.medianSize = median(shovelResultsArr);
+		// fullResult.totalHistoryCount = totalHistoryCount;
+		//
+		// try {
+		// 	collectShovel();
+		// } catch (err) {
+		// 	console.err("Could not collect shovel stats");
+		// }
+
+	// });
 
 	function addStats(statsObj, changeType) {
 		var doAdd = function(changeType) {
@@ -272,119 +389,6 @@ function execute(repo) {
 
 	}
 
-	function collectShovel() {
-		filewalker(dirCodeshovel, function(error, results) {
-			if (error) {
-				console.log(error);
-				throw error;
-			}
-
-			// do something with files
-			// how many "extra" commits did we find?
-			var changeStats = {};
-			var methodSizeStats = {};
-			var statsMethodsOneChange = {
-				setters: 0,
-				getters: 0,
-				tests: 0
-			};
-			var countSmallMethodsForOneChange = 0;
-			var countSmallMethodsForMoreThanOneChange = 0;
-
-			var sumLineLengthOneChange = 0;
-			var sumLineLengthMoreThanOneChange = 0;
-			var totalHistoryTime = 0;
-
-			var numMethodsWithCrossFileChanges = 0;
-			var totalMethods = results.length;
-
-			console.log("Iterating codeshovel results for repo: " + repo);
-
-			results.forEach(function(file) {
-				try {
-					var shovelObj = JSON.parse(fs.readFileSync(file));
-					var methodId = file.split(srcDir + "/codeshovel/")[1].replace(".json", "");
-					var methodName = shovelObj.functionName;
-
-					var numChanges = Object.keys(shovelObj.changeHistoryShort).length;
-					if (!methodSizeStats[numChanges]) {
-						methodSizeStats[numChanges] = {};
-					}
-
-					var numMethodLines = 1 + (shovelObj.functionEndLine - shovelObj.functionStartLine);
-					if (!methodSizeStats[numChanges][numMethodLines]) {
-						methodSizeStats[numChanges][numMethodLines] = 1;
-					} else {
-						methodSizeStats[numChanges][numMethodLines] += 1;
-					}
-
-					if (numMethodLines <= 3) {
-						if (numChanges <= 1) {
-							countSmallMethodsForOneChange += 1;
-						} else {
-							countSmallMethodsForMoreThanOneChange += 1;
-						}
-					}
-
-					if (numChanges === 1) {
-						sumLineLengthOneChange += numMethodLines;
-						if (numMethodLines <= 3) {
-							if (methodName.startsWith("get") || methodName.startsWith("is")) {
-								statsMethodsOneChange.getters += 1;
-							} else if (methodName.startsWith("set")) {
-								statsMethodsOneChange.setters += 1;
-							}
-						}
-						if (methodName.startsWith("test")) {
-							statsMethodsOneChange.tests += 1;
-						}
-					} else {
-						sumLineLengthMoreThanOneChange += numMethodLines;
-					}
-
-					var methodChangeTypes = {};
-					for (var commitName in shovelObj.changeHistoryShort) {
-						var changeType = shovelObj.changeHistoryShort[commitName];
-						addStats(changeStats, changeType);
-						addStats(methodChangeTypes, changeType);
-					}
-
-					var changeTypesForMethod = Object.keys(methodChangeTypes);
-					if (changeTypesForMethod.indexOf("Yfilerename") >= 0 || changeTypesForMethod.indexOf("Ymovefromfile") >= 0) {
-						numMethodsWithCrossFileChanges += 1;
-					}
-				} catch (err) {
-					console.log("ERROR processing file: " + file + "  --  " + err);
-				}
-			});
-
-			fullResult.changeStats = changeStats;
-			fullResult.countSmallMethodsForOneChange = countSmallMethodsForOneChange;
-			fullResult.countSmallMethodsForMoreThanOneChange = countSmallMethodsForMoreThanOneChange;
-			fullResult.numMethodsWithCrossFileChanges = numMethodsWithCrossFileChanges;
-			fullResult.fragmentMethodsWithCrossFileChanges = numMethodsWithCrossFileChanges / totalMethods;
-
-			var numMethodsOneChange = fullResult.totalHistoryCountShovel["1"];
-			var numMethodsMoreThanOneChange = fullResult.totalMethods - numMethodsOneChange;
-			fullResult.avgMethodSizeOneChange = sumLineLengthOneChange / numMethodsOneChange;
-			fullResult.avgMethodsMoreThanOneChange = sumLineLengthMoreThanOneChange / numMethodsMoreThanOneChange;
-
-			fullResult.statsMethodsOneChange = statsMethodsOneChange;
-			fullResult.methodSizeStatsLeftNumChangesRightNumLinesNumMethods = methodSizeStats;
-
-			fullResult = sortResult(fullResult);
-
-			var jsonResult = JSON.stringify(fullResult, null, 2);
-			var filePath = dstDir + "/stats-" + repo + ".json";
-			fs.writeFile(filePath, jsonResult, function(err) {
-				if (err) {
-					console.log(err);
-				}
-
-				console.log("Result for repo " + repo + " saved: " + filePath);
-			});
-		});
-	}
 }
 
 
