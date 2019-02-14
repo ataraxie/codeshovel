@@ -75,7 +75,7 @@ Note: "only one change" = "were introduced and never changed"
         ...
     },
     "1": {
-      "3": 22,
+      "3": 22, // 22 methods had 3 lines and were changed once
       "8": 32,
       "10": 20
       ...
