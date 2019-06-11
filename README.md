@@ -31,14 +31,13 @@ java -jar codeshovel-XXX.jar OPTIONS
 ```
 
 Minimal examples:
-```
-java -jar codeshovel-0.3.0.jar -repopath ~/checkstyle -filepath src/main/java/com/puppycrawl/tools/checkstyle/Checker.java -methodname fireErrors -startline 384
 
-java -jar codeshovel-0.3.0.jar \
--repopath ~/dev/projects/pocketquery \
--filepath src/main/java/de/scandio/confluence/plugins/pocketquery/managers/impl/delegates/SqlExternalDatabaseManager.java \
--methodname executeQuery \
--startline 106
+```
+java -jar codeshovel-X.X.X.jar \
+	-repopath ~/checkstyle \
+	-filepath src/main/java/com/puppycrawl/tools/checkstyle/Checker.java \
+	-methodname fireErrors \
+	-startline 384
 ```
 
 ### The CodeShovel result file
