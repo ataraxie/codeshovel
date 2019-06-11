@@ -141,6 +141,7 @@ For development, it makes most to run CodeShovel from so-called *stub files*. Th
 
 A stub file is a JSON file and contains data describing one method for which to run CodeShovel.
 The structure is as follows:
+
 ```
 {
   "repositoryName": "checkstyle",
@@ -159,6 +160,7 @@ There is an extra key `expectedResults` that is used for a unit test run from th
 It must contain the *exact* same object as is expected in the `changeHistoryShort` object in a result file. 
 
 Example:
+
 ```
 {
   (...),
