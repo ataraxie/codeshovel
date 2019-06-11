@@ -2,90 +2,6 @@
 
 Take this shovel to dig in source code history for changes to specific methods and functions. Currently implemented for Java and JavaScript.
 
-## Statistics
-
-### Empirical analysis results
-
-* 200 methods analyzed in total
-* 15 methods with wrong introducing commit
-* 7 method histories failed due to not parsable files
-* 178 methods with correct introducing commit
-
-### Processed from outputs
-
-Note: "only one change" = "were introduced and never changed"
-
-```
-{
-  "repo": "okhttp", // Name of the repo
-  "totalMethods": 1453, // Total number of methods found in the repo
-  "failedMethods": 18, // Number of methods for which Shovel failed
-  "totalHistoryEquals1": 225, // # methods that were only introduced and never changed
-  "totalHistory2To5": 667, // # methods that were changed 2-5 times
-  "totalHistory6To10": 325, // # methods that were changed 6-10 times
-  "totalHistoryGt10": 236, // # methods that were changed > 10 times
-  "totalChanges": 8677, // sum of all changes seen for all methods
-  "avgMethodLifetimeInDays": 796.2847142762661, // average lifetime of a method (i.e. date of last change - date introduced)
-  "avgSize": 5.971782518926359, // avg number of changes of methods
-  "medianSize": 4, // median number of changes of methods
-  "totalTimeTaken": 795001, // sum of all time taken in ms for all methods
-  "totalCommitsSeen": 76841, // sum of all commits that were parsed with the AST parser (sum of all file changes seen while searching for method level changes)
-  "avgTimeTaken": 547.1445285615966, // average time taken for each method in ms
-  "avgTotalCommitsSeen": 52.88437715072264, // average # of commits seen (AST-parsed files) for each method
-  "medianTimeTaken": 387, // median time taken in ms for each method
-  "medianNumCommitsSeen": 37, // median # of commits seen (AST-parsed files) for each method
-  "countSmallMethodsForOneChange": 93, // # of methods with only one change that had 3 lines or less
-  "countSmallMethodsForMoreThanOneChange": 443, // # of methods with more than one change that had 3 lines or less
-  "numMethodsWithCrossFileChanges": 1131, // # of methods with at least one cross-file change (file renames or method moves)
-  "fragmentMethodsWithCrossFileChanges": 0.7783895388850653, // percentage of methods with at least one cross-file change (file renames or method moves)
-  "avgMethodSizeOneChange": 8.04888888888889, // average # of lines for methods with only one change
-  "avgMethodsMoreThanOneChange": 10.550488599348535, // average # of lines for methods with more than one change
-  "changeStats": { // sums of all change type occurrences in this repo
-    "Yexceptionschange": 91,
-    "Ymovefromfile": 1324,
-    "Yrename": 310,
-    "Yparameterchange": 519,
-    "Yintroduced": 1426,
-    "Ybodychange": 3359,
-    "Ymodifierchange": 369,
-    "Yreturntypechange": 245,
-    "Yfilerename": 2438,
-    "Yparametermetachange": 71
-  }, 
-  "totalHistoryCount": { // left side: # of method changes; right side: # methods in this repo with this # of changes
-    "0": 3,
-    "1": 225,
-    "2": 234,
-    "3": 180,
-    "4": 143,
-    ...
-  },
-  "statsMethodsOneChange": { // how many of the methods with only one change were getters/setters
-    "setters": 2,
-    "getters": 12,
-    "tests": 1
-  },
-  // Left side: # of changes for methods
-  // Right side: # num lines : # num methos
-  "methodSizeStatsLeftNumChangesRightNumLinesNumMethods": {
-    "0": {
-      "3": 1,
-      "4": 1,
-      "15": 1
-        ...
-    },
-    "1": {
-      "3": 22, // 22 methods had 3 lines and were changed once
-      "8": 32,
-      "10": 20
-      ...
-    },
-    ...
-  }
-}
-```
-
-
 ## Getting Started
 
 ### Prerequisites
@@ -102,6 +18,7 @@ java -jar codeshovel-XXX.jar OPTIONS
 ```
 
 `OPTIONS` are defined as follows:
+
 ```
  -filepath <arg>      (required) path to the file containing the method
  -methodname <arg>    (required) name of the method
@@ -128,42 +45,71 @@ java -jar codeshovel-0.3.0.jar \
 
 Each run of CodeShovel will print result summaries to your console and will also produce a result file. Result files
 are in JSON and are structured as follows:
+
 ```
 {
-  "origin": "codeshovel", // Origin of the request. In our case this will always be "codeshovel".
-  "repositoryName": "checkstyle", // Name of the repository
-  "repositoryPath": "~/dev/codeshovel/repos/checkstyle/.git", // Full path to the repository
-  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3", // Start commit hash
-  "sourceFileName": "Checker.java", // File name of the source file
-  "functionName": "fireErrors", // Name of the method/function in play
-  "functionId": "fireErrors___fileName-String__errors-SortedSet__LocalizedMessage__", // ID for the method/function in play
-  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/Checker.java", // Path of the source file containing the method in play
-  "functionStartLine": 384, // Start line of the method/function
-  "functionEndLine": 399, // End line of the method/function
-  "changeHistory": [ ... ], // List of commit hashes that changed the function/method
-  "changeHistoryShort": { }, // Short description with the type of change for each commit that changed the function/method
-  "changeHistoryDetails": { } // Detailed report for each commit that changed the method
+  // Origin of the request. In our case this will always be "codeshovel"
+  "origin": "codeshovel",
+  // Name of the repository
+  "repositoryName": "checkstyle",
+  // Full path to the repository
+  "repositoryPath": "~/dev/codeshovel/repos/checkstyle/.git",
+  // Start commit hash
+  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
+  // File name of the source file
+  "sourceFileName": "Checker.java",
+  // Name of the method/function in play
+  "functionName": "fireErrors",
+  // ID for the method/function in play
+  "functionId": "fireErrors___fileName-String__errors-SortedSet__LocalizedMessage__",
+  // Path of the source file containing the method in play
+  "sourceFilePath": "src/main/java/com/puppycrawl/tools/checkstyle/Checker.java",
+  // Start line of the method/function
+  "functionStartLine": 384,
+  // End line of the method/function
+  "functionEndLine": 399,
+  // List of commit hashes that changed the function/method
+  "changeHistory": [ ... ],
+  // Short description with the type of change for each commit that changed the function/method
+  "changeHistoryShort": { },
+  // Detailed report for each commit that changed the method
+  "changeHistoryDetails": { }
 }
 ```
 
-The `changeHistoryDetails` object is structured as follows:
+The `changeHistoryDetails` array contains an object for each commit that changed the method in this format:
+
 ```
 {
-  "COMMIT_HASH": { // The keys in the object are the hashes of the commits that changed the method/function
-    "type": "Ybodychange", // Type of the change
-    "commitMessage": "Issue #3254: UT to verify all property types and values in XDocs", // Commit message
-    "commitDate": 1515029424000, // Commit date
-    "commitName": "327c0bc843612486ab4ded32a2f01038e1271fd0", // Commit hash
-    "commitAuthor": "rnveach", // Commit author name
-    "commitDateOld": 1514928265000, // Commit date of the parent/previous commit
-    "commitNameOld": "dabb75d43c7e02317565dde4c5e60f380d3b16b8", // Commit name of the parent/previous commit
-    "commitAuthorOld": "Roman Ivanov", // Author of the parent/previous commit
-    "daysBetweenCommits": 1.17, // Number of days between this commit and the parent/previous commit
-    "commitsBetweenForRepo": 4, // How many commits happened in the whole repo between these two?
-    "commitsBetweenForFile": 1, // How many commits happened in the whole file between these two?
+  // The keys in the object are the hashes of the commits that changed the method/function
+  "COMMIT_HASH": {
+    // Type of the change
+    "type": "Ybodychange",
+    // Commit message
+    "commitMessage": "Issue #3254: UT to verify all property types and values in XDocs",
+    // Commit date
+    "commitDate": 1515029424000,
+    // Commit hash
+    "commitName": "327c0bc843612486ab4ded32a2f01038e1271fd0", 
+    // Commit author name
+    "commitAuthor": "rnveach", 
+    // Commit date of the parent/previous commit
+    "commitDateOld": 1514928265000, 
+    // Commit name of the parent/previous commit
+    "commitNameOld": "dabb75d43c7e02317565dde4c5e60f380d3b16b8", 
+    // Author of the parent/previous commit
+    "commitAuthorOld": "Roman Ivanov", 
+    // Number of days between this commit and the parent/previous commit
+    "daysBetweenCommits": 1.17, 
+    // How many commits happened in the whole repo between these two?
+    "commitsBetweenForRepo": 4, 
+    // How many commits happened in the whole file between these two?
+    "commitsBetweenForFile": 1, 
     // Full diff of the method:
-    "diff": "@@ -1,16 +1,16 @@\n     public void fireErrors(String fileName, SortedSet\u003cLocalizedMessage\u003e errors) {\n         final String stripped \u003d CommonUtils.relativizeAndNormalizePath(basedir, fileName);\n         boolean hasNonFilteredViolations \u003d false;\n         for (final LocalizedMessage element : errors) {\n             final AuditEvent event \u003d new AuditEvent(this, stripped, element);\n             if (filters.accept(event)) {\n                 hasNonFilteredViolations \u003d true;\n                 for (final AuditListener listener : listeners) {\n                     listener.addError(event);\n                 }\n             }\n         }\n-        if (hasNonFilteredViolations \u0026\u0026 cache !\u003d null) {\n-            cache.remove(fileName);\n+        if (hasNonFilteredViolations \u0026\u0026 cacheFile !\u003d null) {\n+            cacheFile.remove(fileName);\n         }\n     }\n\\ No newline at end of file\n",
-    "extendedDetails": {} // In some cases, there are more details for the change (e.g. source file and target file for a method move operation
+    "diff": "@@ -1,16 +1,16 @@[GIT DIFF CODE],
+    // In some cases, there are more details for the change 
+    // (e.g. source file and target file for a method move operation
+    "extendedDetails": {}
   }
 }
 ```
@@ -288,22 +234,3 @@ in section `Running CodeShovel with stub files`
 - Go through the resulting output and check if it is correct
   - IF it is correct, paste the result as `expectedResult` (as valid JSON) and make sure it passes when run as unit test 
   - ELSE, improve your implementation and repeat until it is correct
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
