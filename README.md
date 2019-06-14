@@ -2,7 +2,9 @@
 
 Take this shovel to dig in source code history for changes to specific methods and functions. Currently implemented for Java. More languages to follow.
 
-CodeShovel is a tool for navigating dedicated method histories, across all kinds of changes that it saw throughout its life span. We are currently working on a research paper that will describe properly how it works and why it makes lots of sense.
+CodeShovel is a tool for navigating dedicated method histories, across all kinds of changes that it saw throughout its life span.
+
+*This is research!* At the Software Practices Lab at UBC/Vancouver, we are currently working on a research paper that will describe properly how it works and why it makes lots of sense.
 
 ## Getting Started
 
