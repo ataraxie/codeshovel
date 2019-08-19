@@ -5,11 +5,8 @@ import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.google.gson.JsonObject;
-import org.eclipse.jgit.diff.*;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,27 +123,16 @@ public abstract class Ycomparefunctionchange extends Ychange {
 		return commitsBetweenForFile;
 	}
 
-	public String getDiffAsString() {
+	private String getDiffAsString() {
 		if (this.diffString == null) {
 			String sourceOldString = oldFunction.getSourceFragment();
 			String sourceNewString = newFunction.getSourceFragment();
-			RawText sourceOld = new RawText(oldFunction.getSourceFragment().getBytes());
-			RawText sourceNew = new RawText(newFunction.getSourceFragment().getBytes());
-			DiffAlgorithm diffAlgorithm = new HistogramDiff();
-			RawTextComparator textComparator = RawTextComparator.DEFAULT;
-			EditList editList = diffAlgorithm.diff(textComparator, sourceOld, sourceNew);
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			DiffFormatter formatter = new DiffFormatter(out);
-
 			try {
-				int numLinesOld = Utl.getLines(sourceOldString).size();
-				int numLinesNew = Utl.getLines(sourceNewString).size();
-				formatter.setContext(1000);
-				formatter.format(editList, sourceOld, sourceNew);
-				this.diffString = out.toString(StandardCharsets.UTF_8.name());
+				this.diffString = this.getDiffAsString(sourceOldString, sourceNewString);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+
 		}
 		return diffString;
 	}
