@@ -5,6 +5,7 @@ import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.parser.impl.JavaParser;
 import com.felixgrund.codeshovel.parser.impl.JsParser;
+import com.felixgrund.codeshovel.parser.impl.PythonParser;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -24,6 +25,8 @@ public class ParserFactory {
 				parser = new JsParser(startEnv, filePath, fileContent, commit);
 			} else if (filePath.endsWith(JavaParser.ACCEPTED_FILE_EXTENSION)) {
 				parser = new JavaParser(startEnv, filePath, fileContent, commit);
+			} else if (filePath.endsWith(PythonParser.ACCEPTED_FILE_EXTENSION)) {
+				parser = new PythonParser(startEnv, filePath, fileContent, commit);
 			} else {
 				throw new NoParserFoundException("No parser found for filename " + filePath);
 			}
