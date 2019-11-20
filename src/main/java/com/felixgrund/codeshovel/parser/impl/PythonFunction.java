@@ -6,6 +6,7 @@ import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.entities.Yreturn;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
+import com.felixgrund.codeshovel.parser.antlr.python3.Python3Parser;
 import com.felixgrund.codeshovel.util.Utl;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
@@ -23,10 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PythonFunction extends AbstractFunction<MethodDeclaration> implements Yfunction {
+public class PythonFunction extends AbstractFunction<Python3Parser.FuncdefContext> implements Yfunction {
 
-    PythonFunction(MethodDeclaration method, Commit commit, String sourceFilePath, String sourceFileContent) {
-        super(method, commit, sourceFilePath, sourceFileContent);
+    PythonFunction(Python3Parser.FuncdefContext function, Commit commit, String sourceFilePath, String sourceFileContent) {
+        super(function, commit, sourceFilePath, sourceFileContent);
     }
 
     private Map<String,String> createParameterMetadataMap(Parameter parameterElement) {
@@ -42,52 +43,52 @@ public class PythonFunction extends AbstractFunction<MethodDeclaration> implemen
     }
 
     @Override
-    protected String getInitialName(MethodDeclaration method) {
-        return method.getNameAsString();
+    protected String getInitialName(Python3Parser.FuncdefContext function) {
+        return "";
     }
 
     @Override
-    protected String getInitialType(MethodDeclaration method) {
-        return method.getTypeAsString();
-    }
-
-    @Override
-    protected Ymodifiers getInitialModifiers(MethodDeclaration method) {
+    protected String getInitialType(Python3Parser.FuncdefContext function) {
         return null;
     }
 
     @Override
-    protected Yexceptions getInitialExceptions(MethodDeclaration method) {
+    protected Ymodifiers getInitialModifiers(Python3Parser.FuncdefContext function) {
         return null;
     }
 
     @Override
-    protected List<Yparameter> getInitialParameters(MethodDeclaration method) {
+    protected Yexceptions getInitialExceptions(Python3Parser.FuncdefContext function) {
+        return null;
+    }
+
+    @Override
+    protected List<Yparameter> getInitialParameters(Python3Parser.FuncdefContext function) {
         return new ArrayList<>();
     }
 
     @Override
-    protected String getInitialBody(MethodDeclaration method) {
+    protected String getInitialBody(Python3Parser.FuncdefContext function) {
         return null;
     }
 
     @Override
-    protected int getInitialBeginLine(MethodDeclaration method) {
+    protected int getInitialBeginLine(Python3Parser.FuncdefContext function) {
         return 0;
     }
 
     @Override
-    protected int getInitialEndLine(MethodDeclaration method) {
+    protected int getInitialEndLine(Python3Parser.FuncdefContext function) {
         return 0;
     }
 
     @Override
-    protected String getInitialParentName(MethodDeclaration method) {
+    protected String getInitialParentName(Python3Parser.FuncdefContext function) {
         return null;
     }
 
     @Override
-    protected String getInitialFunctionPath(MethodDeclaration method) {
+    protected String getInitialFunctionPath(Python3Parser.FuncdefContext function) {
         return null;
     }
 }

@@ -64,27 +64,31 @@ public class PythonParser extends AbstractParser implements Yparser {
         return new ArrayList<>();
     }
 
-    private Yfunction transformMethod(MethodDeclaration method) {
-        return new PythonFunction(method, this.commit, this.filePath, this.fileContent);
+    private Yfunction transformMethod(Python3Parser.FuncdefContext function) {
+        return new PythonFunction(function, this.commit, this.filePath, this.fileContent);
     }
 
-    public abstract class PythonMethodVisitor extends Python3BaseVisitor {
+    private abstract class PythonMethodVisitor extends Python3BaseVisitor<Void> {
 
         private List<Yfunction> matchedNodes = new ArrayList<>();
 
         public abstract boolean methodMatches(Yfunction method);
+        
+        // @Override
+        // public Void visitAsync_funcdef(Python3Parser.Async_funcdefContext ctx) {
+        //     return null; // TODO
+        // }
 
         @Override
-        public Object visitAsync_funcdef(Python3Parser.Async_funcdefContext ctx) {
+        public Void visitFuncdef(Python3Parser.FuncdefContext function) {
+            Yfunction yfunction = transformMethod(function);
+            if (methodMatches(yfunction)) {
+                matchedNodes.add(yfunction);
+            }
             return null;
         }
 
-        @Override
-        public Object visitFuncdef(Python3Parser.FuncdefContext ctx) {
-            return null;
-        }
-
-        public List<Yfunction> getMatchedNodes() {
+        List<Yfunction> getMatchedNodes() {
             return matchedNodes;
         }
     }
