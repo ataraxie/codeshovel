@@ -32,6 +32,7 @@ public class PythonFunction extends AbstractFunction<AntlrPythonParser.FuncdefCo
     @Override
     protected Ymodifiers getInitialModifiers(AntlrPythonParser.FuncdefContext function) {
         return null;
+        // TODO consider async
     }
 
     @Override

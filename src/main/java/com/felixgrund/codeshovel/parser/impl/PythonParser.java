@@ -86,11 +86,7 @@ public class PythonParser extends AbstractParser implements Yparser {
 
         public abstract boolean methodMatches(Yfunction method);
         
-        // @Override
-        // public Void visitAsync_funcdef(Python3Parser.Async_funcdefContext ctx) {
-        //     return null; // TODO
-        // }
-
+        // TODO consider lambdas
         @Override
         public Void visitFuncdef(AntlrPythonParser.FuncdefContext function) {
             Yfunction yfunction = transformMethod(function);
