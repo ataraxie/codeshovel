@@ -6,9 +6,9 @@ import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.parser.AbstractParser;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
-import com.felixgrund.codeshovel.parser.antlr.python3.Python3BaseVisitor;
-import com.felixgrund.codeshovel.parser.antlr.python3.Python3Lexer;
-import com.felixgrund.codeshovel.parser.antlr.python3.Python3Parser;
+import com.felixgrund.codeshovel.parser.antlr.python.PythonParserBaseVisitor;
+import com.felixgrund.codeshovel.parser.antlr.python.PythonLexer;
+import com.felixgrund.codeshovel.parser.antlr.python.AntlrPythonParser;
 import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
@@ -36,9 +36,9 @@ public class PythonParser extends AbstractParser implements Yparser {
     protected List<Yfunction> parseMethods() throws ParseException {
         try {
             CharStream input = CharStreams.fromString(this.fileContent);
-            Python3Lexer lexer = new Python3Lexer(input);
+            PythonLexer lexer = new PythonLexer(input);
             TokenStream tokenStream = new CommonTokenStream(lexer);
-            Python3Parser parser = new Python3Parser(tokenStream);
+            AntlrPythonParser parser = new AntlrPythonParser(tokenStream);
             ParseTree tree = parser.file_input();
             PythonMethodVisitor visitor = new PythonMethodVisitor() {
                 @Override
@@ -76,11 +76,11 @@ public class PythonParser extends AbstractParser implements Yparser {
         return changes;
     }
 
-    private Yfunction transformMethod(Python3Parser.FuncdefContext function) {
+    private Yfunction transformMethod(AntlrPythonParser.FuncdefContext function) {
         return new PythonFunction(function, this.commit, this.filePath, this.fileContent);
     }
 
-    private abstract class PythonMethodVisitor extends Python3BaseVisitor<Void> {
+    private abstract class PythonMethodVisitor extends PythonParserBaseVisitor<Void> {
 
         private List<Yfunction> matchedNodes = new ArrayList<>();
 
@@ -92,7 +92,7 @@ public class PythonParser extends AbstractParser implements Yparser {
         // }
 
         @Override
-        public Void visitFuncdef(Python3Parser.FuncdefContext function) {
+        public Void visitFuncdef(AntlrPythonParser.FuncdefContext function) {
             Yfunction yfunction = transformMethod(function);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
