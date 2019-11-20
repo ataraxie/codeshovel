@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PythonFunction extends AbstractFunction<Python3Parser.FuncdefContext> implements Yfunction {
+    //            TODO replace with AbstractFunction<Python3Parser.ParserRuleContext> to support async_funcdef
 
     PythonFunction(Python3Parser.FuncdefContext function, Commit commit, String sourceFilePath, String sourceFileContent) {
         super(function, commit, sourceFilePath, sourceFileContent);
