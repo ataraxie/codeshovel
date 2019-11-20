@@ -9,9 +9,9 @@ import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.parser.antlr.python3.Python3BaseVisitor;
 import com.felixgrund.codeshovel.parser.antlr.python3.Python3Lexer;
 import com.felixgrund.codeshovel.parser.antlr.python3.Python3Parser;
+import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -51,7 +51,7 @@ public class PythonParser extends AbstractParser implements Yparser {
 
     @Override
     public double getScopeSimilarity(Yfunction function, Yfunction compareFunction) {
-        return 0;
+        return Utl.parentNamesMatch(function, compareFunction) ? 1.0 : 0.0;
     }
 
     @Override
@@ -61,7 +61,15 @@ public class PythonParser extends AbstractParser implements Yparser {
 
     @Override
     public List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) {
-        return new ArrayList<>();
+        List<Ychange> changes = new ArrayList<>();
+        // Yreturntypechange yreturntypechange = getReturnTypeChange(commit, compareFunction); // TODO type hints?
+        // Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction); // TODO type hints, default values?
+
+        Ybodychange ybodychange = getBodyChange(commit, compareFunction);
+        if (ybodychange != null) {
+            changes.add(ybodychange);
+        }
+        return changes;
     }
 
     private Yfunction transformMethod(Python3Parser.FuncdefContext function) {

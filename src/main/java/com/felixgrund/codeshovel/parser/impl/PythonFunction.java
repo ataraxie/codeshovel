@@ -30,26 +30,15 @@ public class PythonFunction extends AbstractFunction<Python3Parser.FuncdefContex
         super(function, commit, sourceFilePath, sourceFileContent);
     }
 
-    private Map<String,String> createParameterMetadataMap(Parameter parameterElement) {
-        return new HashMap<>();
-    }
-
-    private String createParameterModifiersString(Parameter parameterElement) {
-        return null;
-    }
-
-    private String createParameterAnnotationsString(Parameter parameterElement) {
-        return null;
-    }
-
     @Override
     protected String getInitialName(Python3Parser.FuncdefContext function) {
-        return "";
+        return function.NAME().getText();
     }
 
     @Override
     protected String getInitialType(Python3Parser.FuncdefContext function) {
         return null;
+        // TODO consider type hints
     }
 
     @Override
@@ -64,27 +53,37 @@ public class PythonFunction extends AbstractFunction<Python3Parser.FuncdefContex
 
     @Override
     protected List<Yparameter> getInitialParameters(Python3Parser.FuncdefContext function) {
-        return new ArrayList<>();
+        List<Yparameter> parametersList = new ArrayList<>();
+        if (function.parameters().typedargslist() != null) {
+            List<Python3Parser.TfpdefContext> l = function.parameters().typedargslist().tfpdef();
+            for (Python3Parser.TfpdefContext t : l) {
+                // TODO consider default parameters
+                Yparameter parameter = new Yparameter(t.getText(), "");
+                parametersList.add(parameter);
+            }
+            // TODO consider type hints
+        }
+        return parametersList;
     }
 
     @Override
     protected String getInitialBody(Python3Parser.FuncdefContext function) {
-        return null;
+        return function.suite().getText();
     }
 
     @Override
     protected int getInitialBeginLine(Python3Parser.FuncdefContext function) {
-        return 0;
+        return function.getStart().getLine();
     }
 
     @Override
     protected int getInitialEndLine(Python3Parser.FuncdefContext function) {
-        return 0;
+        return function.getStop().getLine();
     }
 
     @Override
     protected String getInitialParentName(Python3Parser.FuncdefContext function) {
-        return null;
+        return function.getParent().getClass().getSimpleName();
     }
 
     @Override
