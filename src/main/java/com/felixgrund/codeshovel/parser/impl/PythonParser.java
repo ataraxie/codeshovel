@@ -34,19 +34,23 @@ public class PythonParser extends AbstractParser implements Yparser {
 
     @Override
     protected List<Yfunction> parseMethods() throws ParseException {
-        CharStream input = CharStreams.fromString(this.fileContent);
-        Python3Lexer lexer = new Python3Lexer(input);
-        TokenStream tokenStream = new CommonTokenStream(lexer);
-        Python3Parser parser = new Python3Parser(tokenStream);
-        ParseTree tree = parser.file_input();
-        PythonMethodVisitor visitor = new PythonMethodVisitor() {
-            @Override
-            public boolean methodMatches(Yfunction method) {
-                return method.getBody() != null;
-            }
-        };
-        visitor.visit(tree);
-        return visitor.getMatchedNodes();
+        try {
+            CharStream input = CharStreams.fromString(this.fileContent);
+            Python3Lexer lexer = new Python3Lexer(input);
+            TokenStream tokenStream = new CommonTokenStream(lexer);
+            Python3Parser parser = new Python3Parser(tokenStream);
+            ParseTree tree = parser.file_input();
+            PythonMethodVisitor visitor = new PythonMethodVisitor() {
+                @Override
+                public boolean methodMatches(Yfunction method) {
+                    return method.getBody() != null;
+                }
+            };
+            visitor.visit(tree);
+            return visitor.getMatchedNodes();
+        } catch (Exception e) {
+            throw new ParseException(e.getMessage(), this.filePath, this.fileContent);
+        }
     }
 
     @Override
