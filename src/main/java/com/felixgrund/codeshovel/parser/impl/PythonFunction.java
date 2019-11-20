@@ -9,13 +9,33 @@ import com.felixgrund.codeshovel.parser.antlr.python.AntlrPythonParser;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PythonFunction extends AbstractFunction<AntlrPythonParser.FuncdefContext> implements Yfunction {
-    //            TODO replace with AbstractFunction<Python3Parser.ParserRuleContext> to support async_funcdef
+    //            TODO replace with AbstractFunction<Python3Parser.ParserRuleContext> to support lambdas
 
     PythonFunction(AntlrPythonParser.FuncdefContext function, Commit commit, String sourceFilePath, String sourceFileContent) {
         super(function, commit, sourceFilePath, sourceFileContent);
+    }
+    
+    private Yparameter getParameter(AntlrPythonParser.Def_parameterContext param) {
+        String argumentName = param.named_parameter().name().getText();
+        String argumentType = param.named_parameter().test() == null ? "" :
+                param.named_parameter().test().getText();
+        return new Yparameter(argumentName, argumentType);
+    }
+    
+    private Map<String, String> getDefaultArguments(AntlrPythonParser.Def_parameterContext param) {
+        if (param.test() != null) {
+            Map<String, String> metadata = new HashMap<>();
+            String defaultArgument = param.test().getText();
+            metadata.put("default", defaultArgument);
+            return metadata;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -25,14 +45,16 @@ public class PythonFunction extends AbstractFunction<AntlrPythonParser.FuncdefCo
 
     @Override
     protected String getInitialType(AntlrPythonParser.FuncdefContext function) {
-        return null;
-        // TODO consider type hints
+        return function.test() == null ? null : function.test().getText();
     }
 
     @Override
     protected Ymodifiers getInitialModifiers(AntlrPythonParser.FuncdefContext function) {
-        return null;
-        // TODO consider async
+        List<String> modifiers = new ArrayList<>();
+        if (function.ASYNC() != null) {
+            modifiers.add("async");
+        }
+        return new Ymodifiers(modifiers);
     }
 
     @Override
@@ -43,14 +65,16 @@ public class PythonFunction extends AbstractFunction<AntlrPythonParser.FuncdefCo
     @Override
     protected List<Yparameter> getInitialParameters(AntlrPythonParser.FuncdefContext function) {
         List<Yparameter> parametersList = new ArrayList<>();
-        if (function.typedargslist() != null) {
-            List<AntlrPythonParser.Def_parametersContext> l = function.typedargslist().def_parameters();
-            for (AntlrPythonParser.Def_parametersContext t : l) {
-                // TODO consider default parameters
-                Yparameter parameter = new Yparameter(t.getText(), "");
+        if (function.typedargslist() != null && function.typedargslist().def_parameters(0) != null) {
+            List<AntlrPythonParser.Def_parameterContext> l = function.typedargslist().def_parameters(0).def_parameter();
+            for (AntlrPythonParser.Def_parameterContext p : l) {
+                Yparameter parameter = getParameter(p);
+                Map<String, String> metadata = getDefaultArguments(p);
+                if (metadata != null) {
+                    parameter.setMetadata(metadata);
+                }
                 parametersList.add(parameter);
             }
-            // TODO consider type hints
         }
         return parametersList;
     }

@@ -66,10 +66,13 @@ public class PythonParser extends AbstractParser implements Yparser {
     @Override
     public List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) {
         List<Ychange> changes = new ArrayList<>();
-        // Yreturntypechange yreturntypechange = getReturnTypeChange(commit, compareFunction); // TODO type hints?
-        // Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction); // TODO type hints, default values?
+        // Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction); // TODO consider default values?
 
+        Yreturntypechange yreturntypechange = getReturnTypeChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
+        if (yreturntypechange != null) {
+            changes.add(yreturntypechange);
+        }
         if (ybodychange != null) {
             changes.add(ybodychange);
         }
