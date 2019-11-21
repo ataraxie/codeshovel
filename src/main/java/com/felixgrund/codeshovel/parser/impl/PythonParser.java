@@ -99,7 +99,7 @@ public class PythonParser extends AbstractParser implements Yparser {
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
             }
-            return null;
+            return visitChildren(function);
         }
 
         List<Yfunction> getMatchedNodes() {
