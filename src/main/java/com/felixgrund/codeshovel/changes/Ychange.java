@@ -4,7 +4,11 @@ import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.google.gson.JsonObject;
+import org.eclipse.jgit.diff.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 
 public abstract class Ychange {
@@ -40,6 +44,20 @@ public abstract class Ychange {
 
 	public String getTypeAsString() {
 		return getClass().getSimpleName();
+	}
+
+	protected String getDiffAsString(String sourceOldString, String sourceNewString) throws IOException {
+		RawText sourceOld = new RawText(sourceOldString.getBytes());
+		RawText sourceNew = new RawText(sourceNewString.getBytes());
+		DiffAlgorithm diffAlgorithm = new HistogramDiff();
+		RawTextComparator textComparator = RawTextComparator.DEFAULT;
+		EditList editList = diffAlgorithm.diff(textComparator, sourceOld, sourceNew);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		DiffFormatter formatter = new DiffFormatter(out);
+		formatter.setContext(1000);
+		formatter.format(editList, sourceOld, sourceNew);
+		return out.toString(StandardCharsets.UTF_8.name());
+
 	}
 
 }
