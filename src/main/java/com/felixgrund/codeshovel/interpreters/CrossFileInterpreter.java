@@ -72,7 +72,7 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 		String acceptedFileExtension = this.startParser.getAcceptedFileExtension();
 		Map<String, String> pathMapping = ydiff.getPathMapping();
 		for (String oldPath : pathMapping.keySet()) {
-			if (oldPath.endsWith(acceptedFileExtension)) {
+			if (oldPath.matches(acceptedFileExtension)) {
 				String newPath = pathMapping.get(oldPath);
 				List<Yfunction> removedFunctions = getRemovedFunctions(this.ycommit.getCommit(), prevCommit, oldPath, newPath, true);
 				allFunctions.addAll(removedFunctions);

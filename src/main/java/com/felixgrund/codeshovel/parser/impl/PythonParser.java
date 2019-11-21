@@ -25,7 +25,7 @@ import java.util.List;
 
 public class PythonParser extends AbstractParser implements Yparser {
 
-    public static final String ACCEPTED_FILE_EXTENSION = ".py";
+    public static final String ACCEPTED_FILE_EXTENSION = ".*\\.py$";
     private Logger log = LoggerFactory.getLogger(PythonParser.class);
 
     public PythonParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
@@ -70,6 +70,7 @@ public class PythonParser extends AbstractParser implements Yparser {
         Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction);
         Yreturntypechange yreturntypechange = getReturnTypeChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
+
         if (yparametermetachange != null) {
             changes.add(yparametermetachange);
         }
@@ -91,8 +92,7 @@ public class PythonParser extends AbstractParser implements Yparser {
         private List<Yfunction> matchedNodes = new ArrayList<>();
 
         public abstract boolean methodMatches(Yfunction method);
-        
-        // TODO consider lambdas
+
         @Override
         public Void visitFuncdef(AntlrPythonParser.FuncdefContext function) {
             Yfunction yfunction = transformMethod(function);

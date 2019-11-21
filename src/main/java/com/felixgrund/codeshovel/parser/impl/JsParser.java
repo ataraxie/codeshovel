@@ -26,7 +26,7 @@ import java.util.List;
 
 public class JsParser extends AbstractParser implements Yparser {
 
-	public static final String ACCEPTED_FILE_EXTENSION = ".js";
+	public static final String ACCEPTED_FILE_EXTENSION = ".*\\.js$";
 	private Logger log = LoggerFactory.getLogger(JsParser.class);
 	private Options parserOptions;
 

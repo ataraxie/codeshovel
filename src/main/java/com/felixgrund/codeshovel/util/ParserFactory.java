@@ -21,11 +21,11 @@ public class ParserFactory {
 		String cacheKey = commit.getName() + "-" + DigestUtils.md5Hex(filePath);
 		Yparser parser = parserCache.get(cacheKey);
 		if (parser == null) {
-			if (filePath.endsWith(JsParser.ACCEPTED_FILE_EXTENSION)) {
+			if (filePath.matches(JsParser.ACCEPTED_FILE_EXTENSION)) {
 				parser = new JsParser(startEnv, filePath, fileContent, commit);
-			} else if (filePath.endsWith(JavaParser.ACCEPTED_FILE_EXTENSION)) {
+			} else if (filePath.matches(JavaParser.ACCEPTED_FILE_EXTENSION)) {
 				parser = new JavaParser(startEnv, filePath, fileContent, commit);
-			} else if (filePath.endsWith(PythonParser.ACCEPTED_FILE_EXTENSION)) {
+			} else if (filePath.matches(PythonParser.ACCEPTED_FILE_EXTENSION)) {
 				parser = new PythonParser(startEnv, filePath, fileContent, commit);
 			} else {
 				throw new NoParserFoundException("No parser found for filename " + filePath);

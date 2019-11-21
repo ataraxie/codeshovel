@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class PythonFunction extends AbstractFunction<AntlrPythonParser.FuncdefContext> implements Yfunction {
-    //            TODO replace with AbstractFunction<Python3Parser.ParserRuleContext> to support lambdas
 
     PythonFunction(AntlrPythonParser.FuncdefContext function, Commit commit, String sourceFilePath, String sourceFileContent) {
         super(function, commit, sourceFilePath, sourceFileContent);
