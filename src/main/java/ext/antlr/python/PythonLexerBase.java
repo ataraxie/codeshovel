@@ -1,4 +1,4 @@
-package com.felixgrund.codeshovel.parser.antlr.python;
+package ext.antlr.python;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonToken;
