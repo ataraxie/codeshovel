@@ -1,4 +1,4 @@
-package com.felixgrund.codeshovel.parser.antlr.python;
+package ext.antlr.python;
 
 public enum PythonVersion {
     Autodetect(0),

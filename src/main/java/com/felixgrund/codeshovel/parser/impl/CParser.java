@@ -9,8 +9,8 @@ import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
-import ext.antlr.python.PythonLexer;
-import ext.antlr.python.PythonParserBaseVisitor;
+import ext.antlr.c.CBaseVisitor;
+import ext.antlr.c.CLexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -22,12 +22,12 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PythonParser extends AbstractParser implements Yparser {
+public class CParser extends AbstractParser implements Yparser {
 
-    public static final String ACCEPTED_FILE_EXTENSION = ".*\\.py$";
-    private Logger log = LoggerFactory.getLogger(PythonParser.class);
+    public static final String ACCEPTED_FILE_EXTENSION = ".*\\.(c|h)$";
+    private Logger log = LoggerFactory.getLogger(CParser.class);
 
-    public PythonParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
+    public CParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
         super(startEnv, filePath, fileContent, commit);
     }
 
@@ -35,11 +35,11 @@ public class PythonParser extends AbstractParser implements Yparser {
     protected List<Yfunction> parseMethods() throws ParseException {
         try {
             CharStream input = CharStreams.fromString(this.fileContent);
-            PythonLexer lexer = new PythonLexer(input);
+            CLexer lexer = new CLexer(input);
             TokenStream tokenStream = new CommonTokenStream(lexer);
-            ext.antlr.python.PythonParser parser = new ext.antlr.python.PythonParser(tokenStream);
-            ParseTree tree = parser.file_input();
-            PythonMethodVisitor visitor = new PythonMethodVisitor() {
+            ext.antlr.c.CParser parser = new ext.antlr.c.CParser(tokenStream);
+            ParseTree tree = parser.translationUnit();
+            CMethodVisitor visitor = new CMethodVisitor() {
                 @Override
                 public boolean methodMatches(Yfunction method) {
                     return method.getBody() != null;
@@ -65,35 +65,41 @@ public class PythonParser extends AbstractParser implements Yparser {
     @Override
     public List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) {
         List<Ychange> changes = new ArrayList<>();
-        
-        Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction);
         Yreturntypechange yreturntypechange = getReturnTypeChange(commit, compareFunction);
+        Ymodifierchange ymodifierchange = getModifiersChange(commit, compareFunction);
+        Yexceptionschange yexceptionschange = getExceptionsChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
-
-        if (yparametermetachange != null) {
-            changes.add(yparametermetachange);
-        }
+        Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction);
         if (yreturntypechange != null) {
             changes.add(yreturntypechange);
+        }
+        if (ymodifierchange != null) {
+            changes.add(ymodifierchange);
+        }
+        if (yexceptionschange != null) {
+            changes.add(yexceptionschange);
         }
         if (ybodychange != null) {
             changes.add(ybodychange);
         }
+        if (yparametermetachange != null) {
+            changes.add(yparametermetachange);
+        }
         return changes;
     }
 
-    private Yfunction transformMethod(ext.antlr.python.PythonParser.FuncdefContext function) {
-        return new PythonFunction(function, this.commit, this.filePath, this.fileContent);
+    private Yfunction transformMethod(ext.antlr.c.CParser.FunctionDefinitionContext function) {
+        return new CFunction(function, this.commit, this.filePath, this.fileContent);
     }
 
-    private abstract class PythonMethodVisitor extends PythonParserBaseVisitor<Void> {
+    private abstract class CMethodVisitor extends CBaseVisitor<Void> {
 
         private List<Yfunction> matchedNodes = new ArrayList<>();
 
         public abstract boolean methodMatches(Yfunction method);
 
         @Override
-        public Void visitFuncdef(ext.antlr.python.PythonParser.FuncdefContext function) {
+        public Void visitFunctionDefinition(ext.antlr.c.CParser.FunctionDefinitionContext function) {
             Yfunction yfunction = transformMethod(function);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
