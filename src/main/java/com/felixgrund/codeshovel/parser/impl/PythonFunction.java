@@ -90,7 +90,7 @@ public class PythonFunction extends AbstractFunction<AntlrPythonParser.FuncdefCo
 
     @Override
     protected int getInitialEndLine(AntlrPythonParser.FuncdefContext function) {
-        return function.getStop().getLine();
+        return function.getStop().getLine() - 1;
     }
 
     @Override
