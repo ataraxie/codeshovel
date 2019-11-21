@@ -3,10 +3,14 @@ package com.felixgrund.codeshovel.changes;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class Yintroduced extends Ychange {
+
+	private static final Logger log = LoggerFactory.getLogger(Yintroduced.class);
 
 	private Yfunction newFunction;
 
@@ -40,7 +44,7 @@ public class Yintroduced extends Ychange {
 			try {
 				this.diffString = this.getDiffAsString("", newFunction.getSourceFragment());
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.warn("Failed to generate diff string: " + e.getMessage());
 			}
 
 		}
