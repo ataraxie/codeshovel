@@ -5,12 +5,16 @@ import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Ycomparefunctionchange extends Ychange {
+
+	private static final Logger log = LoggerFactory.getLogger(Ycomparefunctionchange.class);
 
 	private static final boolean INCLUDE_META_DATA = true;
 
@@ -102,7 +106,7 @@ public abstract class Ycomparefunctionchange extends Ychange {
 						this.newFunction.getCommit(),
 						null);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.warn("Failed to generate diff string: " + e.getMessage());
 			}
 		}
 		return commitsBetweenForRepo;

@@ -8,6 +8,8 @@ import org.eclipse.jgit.patch.FileHeader;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Ydiff {
+	
+	private static final Logger log = LoggerFactory.getLogger(Ydiff.class);
 
 	public static final String NULL_PATH = "/dev/null";
 
@@ -73,7 +77,7 @@ public class Ydiff {
 					break;
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.warn("Exception thrown while generating EditList: " + e.getMessage());
 			}
 
 		}
