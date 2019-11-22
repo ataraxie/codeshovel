@@ -7,6 +7,7 @@ import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import ext.antlr.python.PythonParser;
+import ext.antlr.python.PythonParserBaseVisitor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,27 +20,43 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
         super(function, commit, sourceFilePath, sourceFileContent);
     }
     
-    private Yparameter getParameter(ext.antlr.python.PythonParser.Def_parameterContext param) {
+    private Yparameter getParameter(PythonParser.Def_parameterContext param) {
         if (param.named_parameter() != null) {
             String argumentName = param.named_parameter().name().getText();
             String argumentType = param.named_parameter().test() == null ? "" :
                     param.named_parameter().test().getText();
             return new Yparameter(argumentName, argumentType);
         } else {
-            // TODO is this possible? def func(*:str): or def func(_:str):
+            // TODO is `_` included in this case?
             return new Yparameter(param.getText(), "");
         }
     }
-    
-    private Map<String, String> getDefaultArguments(ext.antlr.python.PythonParser.Def_parameterContext param) {
-        if (param.test() != null) {
-            Map<String, String> metadata = new HashMap<>();
-            String defaultArgument = param.test().getText();
-            metadata.put("default", defaultArgument);
-            return metadata;
-        } else {
-            return null;
+
+    private Yparameter getParameter(PythonParser.Named_parameterContext param) {
+        String argumentName = "";
+        if (param.getParent().getChild(0).getText().contains("*")) {
+            // OK this looks a little shaky but is meant to include *args and **kwargs
+            argumentName += param.getParent().getChild(0).getText();
         }
+        argumentName += param.name().getText();
+        String argumentType = param.test() == null ? "" : param.test().getText();
+        return new Yparameter(argumentName, argumentType);
+    }
+    
+    private Map<String, String> getDefaultArguments(PythonParser.Def_parameterContext param) {
+        return param.test() == null ? null : getDefaultArguments(param.test().getText());
+    }
+
+    private Map<String, String> getDefaultArguments(PythonParser.Named_parameterContext param) {
+        // return param.test() == null ? null : getDefaultArguments(param.test().getText());
+        // TODO is this possible?
+        return null;
+    }
+    
+    private Map<String, String> getDefaultArguments(String defaultArgument) {
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("default", defaultArgument);
+        return metadata;
     }
 
     @Override
@@ -69,17 +86,37 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     @Override
     protected List<Yparameter> getInitialParameters(ext.antlr.python.PythonParser.FuncdefContext function) {
         List<Yparameter> parametersList = new ArrayList<>();
-        if (function.typedargslist() != null && function.typedargslist().def_parameters(0) != null) {
-            List<ext.antlr.python.PythonParser.Def_parameterContext> l = function.typedargslist().def_parameters(0).def_parameter();
-            for (ext.antlr.python.PythonParser.Def_parameterContext p : l) {
-                Yparameter parameter = getParameter(p);
-                Map<String, String> metadata = getDefaultArguments(p);
+        new PythonParserBaseVisitor<Void>() {
+            @Override public Void visitDef_parameter(PythonParser.Def_parameterContext ctx) {
+                Yparameter parameter = getParameter(ctx);
+                Map<String, String> metadata = getDefaultArguments(ctx);
                 if (metadata != null) {
                     parameter.setMetadata(metadata);
                 }
                 parametersList.add(parameter);
+                return null;
             }
-        }
+            @Override public Void visitNamed_parameter(PythonParser.Named_parameterContext ctx) {
+                Yparameter parameter = getParameter(ctx);
+                Map<String, String> metadata = getDefaultArguments(ctx);
+                if (metadata != null) {
+                    parameter.setMetadata(metadata);
+                }
+                parametersList.add(parameter);
+                return null;
+            }
+        }.visit(function);
+//        if (function.typedargslist() != null && function.typedargslist().def_parameters(0) != null) {
+//            List<ext.antlr.python.PythonParser.Def_parameterContext> l = function.typedargslist().def_parameters(0).def_parameter();
+//            for (ext.antlr.python.PythonParser.Def_parameterContext p : l) {
+//                Yparameter parameter = getParameter(p);
+//                Map<String, String> metadata = getDefaultArguments(p);
+//                if (metadata != null) {
+//                    parameter.setMetadata(metadata);
+//                }
+//                parametersList.add(parameter);
+//            }
+//        }
         return parametersList;
     }
 
