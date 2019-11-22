@@ -20,10 +20,15 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     }
     
     private Yparameter getParameter(ext.antlr.python.PythonParser.Def_parameterContext param) {
-        String argumentName = param.named_parameter().name().getText();
-        String argumentType = param.named_parameter().test() == null ? "" :
-                param.named_parameter().test().getText();
-        return new Yparameter(argumentName, argumentType);
+        if (param.named_parameter() != null) {
+            String argumentName = param.named_parameter().name().getText();
+            String argumentType = param.named_parameter().test() == null ? "" :
+                    param.named_parameter().test().getText();
+            return new Yparameter(argumentName, argumentType);
+        } else {
+            // TODO is this possible? def func(*:str): or def func(_:str):
+            return new Yparameter(param.getText(), "");
+        }
     }
     
     private Map<String, String> getDefaultArguments(ext.antlr.python.PythonParser.Def_parameterContext param) {
