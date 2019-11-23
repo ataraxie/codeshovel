@@ -27,7 +27,6 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
                     param.named_parameter().test().getText();
             return new Yparameter(argumentName, argumentType);
         } else {
-            // TODO is `_` included in this case?
             return new Yparameter(param.getText(), "");
         }
     }
@@ -48,9 +47,7 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     }
 
     private Map<String, String> getDefaultArguments(PythonParser.Named_parameterContext param) {
-        // return param.test() == null ? null : getDefaultArguments(param.test().getText());
-        // TODO is this possible?
-        return null;
+        return null; // This is not possible
     }
     
     private Map<String, String> getDefaultArguments(String defaultArgument) {
@@ -137,6 +134,7 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
 
     @Override
     protected String getInitialParentName(PythonParseTree.PythonParser.FuncdefContext function) {
+        // TODO go up parent chain until finding a function, class, file input, or null ?
         return function.getParent().getClass().getSimpleName();
     }
 
