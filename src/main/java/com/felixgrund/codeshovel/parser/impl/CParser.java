@@ -9,8 +9,8 @@ import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
-import ext.antlr.c.CBaseVisitor;
-import ext.antlr.c.CLexer;
+import CParseTree.CBaseVisitor;
+import CParseTree.CLexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -37,7 +37,7 @@ public class CParser extends AbstractParser implements Yparser {
             CharStream input = CharStreams.fromString(this.fileContent);
             CLexer lexer = new CLexer(input);
             TokenStream tokenStream = new CommonTokenStream(lexer);
-            ext.antlr.c.CParser parser = new ext.antlr.c.CParser(tokenStream);
+            CParseTree.CParser parser = new CParseTree.CParser(tokenStream);
             ParseTree tree = parser.translationUnit();
             CMethodVisitor visitor = new CMethodVisitor() {
                 @Override
@@ -88,7 +88,7 @@ public class CParser extends AbstractParser implements Yparser {
         return changes;
     }
 
-    private Yfunction transformMethod(ext.antlr.c.CParser.FunctionDefinitionContext function) {
+    private Yfunction transformMethod(CParseTree.CParser.FunctionDefinitionContext function) {
         return new CFunction(function, this.commit, this.filePath, this.fileContent);
     }
 
@@ -99,7 +99,7 @@ public class CParser extends AbstractParser implements Yparser {
         public abstract boolean methodMatches(Yfunction method);
 
         @Override
-        public Void visitFunctionDefinition(ext.antlr.c.CParser.FunctionDefinitionContext function) {
+        public Void visitFunctionDefinition(CParseTree.CParser.FunctionDefinitionContext function) {
             Yfunction yfunction = transformMethod(function);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);

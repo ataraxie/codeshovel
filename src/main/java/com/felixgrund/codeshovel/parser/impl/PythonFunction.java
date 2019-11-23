@@ -6,8 +6,8 @@ import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.wrappers.Commit;
-import ext.antlr.python.PythonParser;
-import ext.antlr.python.PythonParserBaseVisitor;
+import PythonParseTree.PythonParser;
+import PythonParseTree.PythonParserBaseVisitor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext> implements Yfunction {
 
-    PythonFunction(ext.antlr.python.PythonParser.FuncdefContext function, Commit commit, String sourceFilePath, String sourceFileContent) {
+    PythonFunction(PythonParseTree.PythonParser.FuncdefContext function, Commit commit, String sourceFilePath, String sourceFileContent) {
         super(function, commit, sourceFilePath, sourceFileContent);
     }
     
@@ -60,17 +60,17 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     }
 
     @Override
-    protected String getInitialName(ext.antlr.python.PythonParser.FuncdefContext function) {
+    protected String getInitialName(PythonParseTree.PythonParser.FuncdefContext function) {
         return function.name().getText();
     }
 
     @Override
-    protected String getInitialType(ext.antlr.python.PythonParser.FuncdefContext function) {
+    protected String getInitialType(PythonParseTree.PythonParser.FuncdefContext function) {
         return function.test() == null ? null : function.test().getText();
     }
 
     @Override
-    protected Ymodifiers getInitialModifiers(ext.antlr.python.PythonParser.FuncdefContext function) {
+    protected Ymodifiers getInitialModifiers(PythonParseTree.PythonParser.FuncdefContext function) {
         List<String> modifiers = new ArrayList<>();
         if (function.ASYNC() != null) {
             modifiers.add("async");
@@ -79,12 +79,12 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     }
 
     @Override
-    protected Yexceptions getInitialExceptions(ext.antlr.python.PythonParser.FuncdefContext function) {
+    protected Yexceptions getInitialExceptions(PythonParseTree.PythonParser.FuncdefContext function) {
         return null;
     }
 
     @Override
-    protected List<Yparameter> getInitialParameters(ext.antlr.python.PythonParser.FuncdefContext function) {
+    protected List<Yparameter> getInitialParameters(PythonParseTree.PythonParser.FuncdefContext function) {
         List<Yparameter> parametersList = new ArrayList<>();
         new PythonParserBaseVisitor<Void>() {
             @Override public Void visitDef_parameter(PythonParser.Def_parameterContext ctx) {
@@ -121,27 +121,27 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     }
 
     @Override
-    protected String getInitialBody(ext.antlr.python.PythonParser.FuncdefContext function) {
+    protected String getInitialBody(PythonParseTree.PythonParser.FuncdefContext function) {
         return function.suite().getText();
     }
 
     @Override
-    protected int getInitialBeginLine(ext.antlr.python.PythonParser.FuncdefContext function) {
+    protected int getInitialBeginLine(PythonParseTree.PythonParser.FuncdefContext function) {
         return function.getStart().getLine();
     }
 
     @Override
-    protected int getInitialEndLine(ext.antlr.python.PythonParser.FuncdefContext function) {
+    protected int getInitialEndLine(PythonParseTree.PythonParser.FuncdefContext function) {
         return function.getStop().getLine() - 1;
     }
 
     @Override
-    protected String getInitialParentName(ext.antlr.python.PythonParser.FuncdefContext function) {
+    protected String getInitialParentName(PythonParseTree.PythonParser.FuncdefContext function) {
         return function.getParent().getClass().getSimpleName();
     }
 
     @Override
-    protected String getInitialFunctionPath(ext.antlr.python.PythonParser.FuncdefContext function) {
+    protected String getInitialFunctionPath(PythonParseTree.PythonParser.FuncdefContext function) {
         return null;
     }
 }

@@ -148,6 +148,87 @@
 			</plugin>
 
 			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<executions>
+					<execution>
+						<id>python-lexer-grammar</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>https://raw.githubusercontent.com/antlr/grammars-v4/8803cbe8aca1b3b6ebf73e13f5c41665f393b381/python/PythonLexer.g4</url>
+							<outputFileName>PythonLexer.g4</outputFileName>
+							<outputDirectory>src/main/antlr4/PythonParseTree/</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>python-parser-grammar</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>https://raw.githubusercontent.com/antlr/grammars-v4/8803cbe8aca1b3b6ebf73e13f5c41665f393b381/python/PythonParser.g4</url>
+							<outputFileName>PythonParser.g4</outputFileName>
+							<outputDirectory>src/main/antlr4/PythonParseTree/</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>python-lexer-base</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>https://raw.githubusercontent.com/antlr/grammars-v4/8803cbe8aca1b3b6ebf73e13f5c41665f393b381/python/Java/PythonLexerBase.java</url>
+							<outputFileName>PythonLexerBase.java</outputFileName>
+							<outputDirectory>src/main/java/PythonParseTree/</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>python-parser-base</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>https://raw.githubusercontent.com/antlr/grammars-v4/8803cbe8aca1b3b6ebf73e13f5c41665f393b381/python/Java/PythonParserBase.java</url>
+							<outputFileName>PythonParserBase.java</outputFileName>
+							<outputDirectory>src/main/java/PythonParseTree/</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>python-version</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>https://raw.githubusercontent.com/antlr/grammars-v4/8803cbe8aca1b3b6ebf73e13f5c41665f393b381/python/Java/PythonVersion.java</url>
+							<outputFileName>PythonVersion.java</outputFileName>
+							<outputDirectory>src/main/java/PythonParseTree/</outputDirectory>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>c-grammar</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>https://raw.githubusercontent.com/antlr/grammars-v4/8803cbe8aca1b3b6ebf73e13f5c41665f393b381/c/C.g4</url>
+							<outputFileName>C.g4</outputFileName>
+							<outputDirectory>src/main/antlr4/CParseTree/</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
 				<version>4.7.1</version>

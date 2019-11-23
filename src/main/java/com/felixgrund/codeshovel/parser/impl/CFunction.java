@@ -6,8 +6,8 @@ import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.wrappers.Commit;
-import ext.antlr.c.CBaseVisitor;
-import ext.antlr.c.CParser;
+import CParseTree.CBaseVisitor;
+import CParseTree.CParser;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

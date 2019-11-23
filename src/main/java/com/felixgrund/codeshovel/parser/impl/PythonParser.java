@@ -9,8 +9,8 @@ import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
-import ext.antlr.python.PythonLexer;
-import ext.antlr.python.PythonParserBaseVisitor;
+import PythonParseTree.PythonLexer;
+import PythonParseTree.PythonParserBaseVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -37,7 +37,7 @@ public class PythonParser extends AbstractParser implements Yparser {
             CharStream input = CharStreams.fromString(this.fileContent);
             PythonLexer lexer = new PythonLexer(input);
             TokenStream tokenStream = new CommonTokenStream(lexer);
-            ext.antlr.python.PythonParser parser = new ext.antlr.python.PythonParser(tokenStream);
+            PythonParseTree.PythonParser parser = new PythonParseTree.PythonParser(tokenStream);
             ParseTree tree = parser.file_input();
             PythonMethodVisitor visitor = new PythonMethodVisitor() {
                 @Override
@@ -82,7 +82,7 @@ public class PythonParser extends AbstractParser implements Yparser {
         return changes;
     }
 
-    private Yfunction transformMethod(ext.antlr.python.PythonParser.FuncdefContext function) {
+    private Yfunction transformMethod(PythonParseTree.PythonParser.FuncdefContext function) {
         return new PythonFunction(function, this.commit, this.filePath, this.fileContent);
     }
 
@@ -93,7 +93,7 @@ public class PythonParser extends AbstractParser implements Yparser {
         public abstract boolean methodMatches(Yfunction method);
 
         @Override
-        public Void visitFuncdef(ext.antlr.python.PythonParser.FuncdefContext function) {
+        public Void visitFuncdef(PythonParseTree.PythonParser.FuncdefContext function) {
             Yfunction yfunction = transformMethod(function);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
