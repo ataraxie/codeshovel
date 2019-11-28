@@ -8,6 +8,7 @@ import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import PythonParseTree.PythonParser;
 import PythonParseTree.PythonParserBaseVisitor;
+import org.antlr.v4.runtime.RuleContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,17 +104,6 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
                 return null;
             }
         }.visit(function);
-//        if (function.typedargslist() != null && function.typedargslist().def_parameters(0) != null) {
-//            List<ext.antlr.python.PythonParser.Def_parameterContext> l = function.typedargslist().def_parameters(0).def_parameter();
-//            for (ext.antlr.python.PythonParser.Def_parameterContext p : l) {
-//                Yparameter parameter = getParameter(p);
-//                Map<String, String> metadata = getDefaultArguments(p);
-//                if (metadata != null) {
-//                    parameter.setMetadata(metadata);
-//                }
-//                parametersList.add(parameter);
-//            }
-//        }
         return parametersList;
     }
 
@@ -134,8 +124,17 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
 
     @Override
     protected String getInitialParentName(PythonParseTree.PythonParser.FuncdefContext function) {
-        // TODO go up parent chain until finding a function, class, file input, or null ?
-        return function.getParent().getClass().getSimpleName();
+        RuleContext parent = function.getParent();
+        while (parent != null) {
+            if (parent instanceof PythonParseTree.PythonParser.FuncdefContext) {
+                return ((PythonParseTree.PythonParser.FuncdefContext) parent).name().getText();
+            } else if (parent instanceof PythonParseTree.PythonParser.ClassdefContext) {
+                return ((PythonParseTree.PythonParser.ClassdefContext) parent).name().getText();
+            } else {
+                parent = parent.getParent();
+            }
+        }
+        return "";
     }
 
     @Override
