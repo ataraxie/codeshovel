@@ -37,6 +37,7 @@ public class CSharpParser extends AbstractParser implements Yparser {
     @Override
     protected List<Yfunction> parseMethods() throws ParseException {
         try {
+            // TODO https://gist.github.com/KvanTTT/d95579de257531a3cc15
             CharStream input = CharStreams.fromString(this.fileContent);
             CSharpLexer lexer = new CSharpLexer(input);
             TokenStream tokenStream = new CommonTokenStream(lexer);
