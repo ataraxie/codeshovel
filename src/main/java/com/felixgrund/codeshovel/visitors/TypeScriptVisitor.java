@@ -8,12 +8,9 @@ public abstract class TypeScriptVisitor {
 	private final NodeJS nodeJS = NodeJS.createNodeJS();
 	private final V8Object ts = nodeJS.require(new File("node_modules/typescript/lib/typescript.js"));
 	private final V8Object syntaxKind = ts.getObject("SyntaxKind");
+	protected final V8Object sourceFile;
 
-	private boolean isKind(V8Object node, String kind) {
-		return node.contains("kind") && node.getInteger("kind") == syntaxKind.getInteger(kind);
-	}
-
-	public void visit(String name, String source) {
+	public TypeScriptVisitor(String name, String source) {
 		int scriptTarget = ts.getObject("ScriptTarget").getInteger("ES2015");
 		int scriptKind = ts.getObject("ScriptKind").getInteger("TS");
 		V8Array parameters = new V8Array(nodeJS.getRuntime())
@@ -22,10 +19,38 @@ public abstract class TypeScriptVisitor {
 				.push(scriptTarget)
 				.push(true)
 				.push(scriptKind);
-		V8Object sourceFile = ts.executeObjectFunction("createSourceFile", parameters);
+		sourceFile = ts.executeObjectFunction("createSourceFile", parameters);
 		parameters.release();
+	}
+
+	protected boolean isKind(V8Object node, String kind) {
+		return node.contains("kind") && node.getInteger("kind") == syntaxKind.getInteger(kind);
+	}
+
+	protected V8Object addStartAndEndLines(V8Object node) {
+		V8Array parameters = new V8Array(nodeJS.getRuntime())
+				.push(node.executeIntegerFunction("getStart", new V8Array(nodeJS.getRuntime())));
+		V8Object start = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
+		parameters.release();
+
+		parameters = new V8Array(nodeJS.getRuntime())
+				.push(node.executeIntegerFunction("getEnd", new V8Array(nodeJS.getRuntime())));
+		V8Object end = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
+		parameters.release();
+
+		int startLine = start.getInteger("line");
+		int endLine = end.getInteger("line");
+
+		start.release();
+		end.release();
+		// Add one because lines are zero indexed in ts
+		node.add("startLine", startLine + 1);
+		node.add("endLine", endLine + 1);
+		return node;
+	}
+
+	public void visit() {
 		visit(sourceFile);
-		sourceFile.release();
 	}
 
 	public void visit(V8Object node) {

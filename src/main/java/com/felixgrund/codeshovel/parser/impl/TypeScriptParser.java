@@ -32,13 +32,13 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
     @Override
     protected List<Yfunction> parseMethods() throws ParseException {
         try {
-            TypeScriptMethodVisitor visitor = new TypeScriptMethodVisitor() {
+            TypeScriptMethodVisitor visitor = new TypeScriptMethodVisitor(this.filePath, this.fileContent) {
                 @Override
                 public boolean methodMatches(Yfunction method) {
                     return method.getBody() != null;
                 }
             };
-            visitor.visit(this.filePath, this.fileContent);
+            visitor.visit();
             return visitor.getMatchedNodes();
         } catch (Exception e) {
             throw new ParseException(e.getMessage(), this.filePath, this.fileContent);
@@ -85,17 +85,19 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         public abstract boolean methodMatches(Yfunction method);
 
+        TypeScriptMethodVisitor(String name, String source) {
+            super(name, source);
+        }
+
         @Override
         public void visitArrowFunction(V8Object arrowFunction) {
-            Yfunction yfunction = transformMethod(arrowFunction);
-            if (methodMatches(yfunction)) {
-                matchedNodes.add(yfunction);
-            }
+            // TODO handle this function with no name
             visitChildren(arrowFunction);
         }
 
         @Override
         public void visitConstructor(V8Object constructor) {
+            constructor = addStartAndEndLines(constructor);
             Yfunction yfunction = transformMethod(constructor);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
@@ -105,6 +107,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         @Override
         public void visitFunctionDeclaration(V8Object function) {
+            function = addStartAndEndLines(function);
             Yfunction yfunction = transformMethod(function);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
@@ -114,15 +117,13 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         @Override
         public void visitFunctionExpression(V8Object functionExpression) {
-            Yfunction yfunction = transformMethod(functionExpression);
-            if (methodMatches(yfunction)) {
-                matchedNodes.add(yfunction);
-            }
+            // TODO handle this function with potentially no name
             visitChildren(functionExpression);
         }
 
         @Override
         public void visitMethodDeclaration(V8Object methodDeclaration) {
+            methodDeclaration = addStartAndEndLines(methodDeclaration);
             Yfunction yfunction = transformMethod(methodDeclaration);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
