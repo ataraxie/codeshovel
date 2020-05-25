@@ -1,7 +1,6 @@
 package com.felixgrund.codeshovel.parser.impl;
 
-import TypeScriptParseTree.TypeScriptLexer;
-import TypeScriptParseTree.TypeScriptParserBaseVisitor;
+import com.eclipsesource.v8.V8Object;
 import com.felixgrund.codeshovel.changes.Ybodychange;
 import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.changes.Yparametermetachange;
@@ -12,10 +11,10 @@ import com.felixgrund.codeshovel.parser.AbstractParser;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.util.Utl;
+import com.felixgrund.codeshovel.visitors.TypeScriptVisitor;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,18 +33,13 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
     @Override
     protected List<Yfunction> parseMethods() throws ParseException {
         try {
-            CharStream input = CharStreams.fromString(this.fileContent);
-            TypeScriptLexer lexer = new TypeScriptLexer(input);
-            TokenStream tokenStream = new CommonTokenStream(lexer);
-            TypeScriptParseTree.TypeScriptParser parser = new TypeScriptParseTree.TypeScriptParser(tokenStream);
-            ParseTree tree = parser.program();
             TypeScriptMethodVisitor visitor = new TypeScriptMethodVisitor() {
                 @Override
                 public boolean methodMatches(Yfunction method) {
                     return method.getBody() != null;
                 }
             };
-            visitor.visit(tree);
+            visitor.visit(this.fileContent);
             return visitor.getMatchedNodes();
         } catch (Exception e) {
             throw new ParseException(e.getMessage(), this.filePath, this.fileContent);
@@ -65,7 +59,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
     @Override
     public List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) {
         List<Ychange> changes = new ArrayList<>();
-        
+
         Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction);
         Yreturntypechange yreturntypechange = getReturnTypeChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
@@ -82,32 +76,59 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
         return changes;
     }
 
-    private Yfunction transformMethod(ParserRuleContext function) {
+    private Yfunction transformMethod(V8Object function) {
         return new TypeScriptFunction(function, this.commit, this.filePath, this.fileContent);
     }
 
-    private abstract class TypeScriptMethodVisitor extends TypeScriptParserBaseVisitor<Void> {
+    private abstract class TypeScriptMethodVisitor extends TypeScriptVisitor {
 
         private List<Yfunction> matchedNodes = new ArrayList<>();
 
         public abstract boolean methodMatches(Yfunction method);
 
         @Override
-        public Void visitFunctionDeclaration(TypeScriptParseTree.TypeScriptParser.FunctionDeclarationContext function) {
+        public void visitArrowFunction(V8Object arrowFunction) {
+            Yfunction yfunction = transformMethod(arrowFunction);
+            if (methodMatches(yfunction)) {
+                matchedNodes.add(yfunction);
+            }
+            visitChildren(arrowFunction);
+        }
+
+        @Override
+        public void visitConstructor(V8Object constructor) {
+            Yfunction yfunction = transformMethod(constructor);
+            if (methodMatches(yfunction)) {
+                matchedNodes.add(yfunction);
+            }
+            visitChildren(constructor);
+        }
+
+        @Override
+        public void visitFunctionDeclaration(V8Object function) {
             Yfunction yfunction = transformMethod(function);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
             }
-            return visitChildren(function);
+            visitChildren(function);
         }
-        
+
         @Override
-        public Void visitPropertyMemberDeclaration(TypeScriptParseTree.TypeScriptParser.PropertyMemberDeclarationContext method) {
-            Yfunction yfunction = transformMethod(method);
+        public void visitFunctionExpression(V8Object functionExpression) {
+            Yfunction yfunction = transformMethod(functionExpression);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
             }
-            return visitChildren(method);
+            visitChildren(functionExpression);
+        }
+
+        @Override
+        public void visitMethodDeclaration(V8Object methodDeclaration) {
+            Yfunction yfunction = transformMethod(methodDeclaration);
+            if (methodMatches(yfunction)) {
+                matchedNodes.add(yfunction);
+            }
+            visitChildren(methodDeclaration);
         }
 
         List<Yfunction> getMatchedNodes() {
