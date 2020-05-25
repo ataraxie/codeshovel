@@ -14,7 +14,6 @@ import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.visitors.TypeScriptVisitor;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
-import org.antlr.v4.runtime.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +38,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
                     return method.getBody() != null;
                 }
             };
-            visitor.visit(this.fileContent);
+            visitor.visit(this.filePath, this.fileContent);
             return visitor.getMatchedNodes();
         } catch (Exception e) {
             throw new ParseException(e.getMessage(), this.filePath, this.fileContent);

@@ -13,11 +13,11 @@ public abstract class TypeScriptVisitor {
 		return node.contains("kind") && node.getInteger("kind") == syntaxKind.getInteger(kind);
 	}
 
-	public void visit(String source) {
+	public void visit(String name, String source) {
 		int scriptTarget = ts.getObject("ScriptTarget").getInteger("ES2015");
 		int scriptKind = ts.getObject("ScriptKind").getInteger("TS");
 		V8Array parameters = new V8Array(nodeJS.getRuntime())
-				.push("tempt.ts")
+				.push(name)
 				.push(source)
 				.push(scriptTarget)
 				.push(true)
