@@ -2,6 +2,7 @@ package com.felixgrund.codeshovel.parser.impl;
 
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
+import com.eclipsesource.v8.V8ResultUndefined;
 import com.felixgrund.codeshovel.entities.Yexceptions;
 import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
@@ -126,8 +127,20 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
 
     @Override
     protected String getInitialParentName(V8Object function) {
-        // TODO
-        return "";
+        String sparent = "";
+        V8Object v8current = function.getObject("parent");
+        while (!v8current.isUndefined()) {
+            if (v8current.contains("name")) {
+                sparent = v8current.getObject("name").getString("escapedText");
+                break;
+            } else {
+                V8Object v8last = v8current;
+                v8current = v8current.getObject("parent");
+                v8last.release();
+            }
+        }
+        v8current.release();
+        return sparent;
     }
 
     @Override
