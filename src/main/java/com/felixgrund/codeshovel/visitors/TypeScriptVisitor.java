@@ -5,8 +5,10 @@ import com.eclipsesource.v8.*;
 import java.io.File;
 
 public abstract class TypeScriptVisitor {
+	private static final String TYPESCRIPT_PATH = "node_modules/typescript/lib/typescript.js";
 	private static final NodeJS nodeJS = NodeJS.createNodeJS();
-	private static final V8Object ts = nodeJS.require(new File("node_modules/typescript/lib/typescript.js"));
+	private static final V8Object ts = nodeJS.require(
+			new File(TypeScriptVisitor.class.getClassLoader().getResource(TYPESCRIPT_PATH).getFile()));
 	private static final V8Object syntaxKind = ts.getObject("SyntaxKind");
 
 	protected final V8Object sourceFile;
