@@ -2,7 +2,6 @@ package com.felixgrund.codeshovel.parser.impl;
 
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
-import com.eclipsesource.v8.V8ResultUndefined;
 import com.felixgrund.codeshovel.entities.Yexceptions;
 import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
@@ -105,7 +104,7 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
         String sbody;
         V8Object v8body = function.getObject("body");
         if (v8body.isUndefined()) {
-            sbody = null; // TODO is this correct?
+            sbody = null;
         } else {
             sbody = this.getSourceFileContent()
                     .substring(v8body.getInteger("pos"), v8body.getInteger("end"))
@@ -145,7 +144,17 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
 
     @Override
     protected String getInitialFunctionPath(V8Object function) {
-        // TODO
-        return null;
+        StringBuilder path = new StringBuilder();
+        V8Object v8current = function.getObject("parent");
+        while (!v8current.isUndefined()) {
+            if (v8current.contains("name")) {
+                path.insert(0, "/");
+                path.insert(0, v8current.getObject("name").getString("escapedText"));
+            }
+            V8Object v8last = v8current;
+            v8current = v8current.getObject("parent");
+            v8last.release();
+        }
+        return path.toString();
     }
 }

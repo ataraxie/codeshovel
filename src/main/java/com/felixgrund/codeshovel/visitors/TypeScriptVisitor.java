@@ -14,6 +14,7 @@ public abstract class TypeScriptVisitor {
 	protected final V8Object sourceFile;
 
 	public TypeScriptVisitor(String name, String source) {
+		// TODO are these the right parameters?
 		int scriptTarget = ts.getObject("ScriptTarget").getInteger("ES2015");
 		int scriptKind = ts.getObject("ScriptKind").getInteger("TS");
 		V8Array parameters = new V8Array(nodeJS.getRuntime())
