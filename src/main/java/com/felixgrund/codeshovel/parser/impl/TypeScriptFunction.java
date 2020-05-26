@@ -41,6 +41,7 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
     @Override
     protected String getInitialName(V8Object function) {
         // TODO remove magic number and use typescript
+        // TODO should asterisk from generator go here or somewhere else?
         if (function.getInteger("kind") == 162) {
             return "constructor";
         } else {
