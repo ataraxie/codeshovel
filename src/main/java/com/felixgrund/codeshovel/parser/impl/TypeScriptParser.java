@@ -1,10 +1,7 @@
 package com.felixgrund.codeshovel.parser.impl;
 
 import com.eclipsesource.v8.V8Object;
-import com.felixgrund.codeshovel.changes.Ybodychange;
-import com.felixgrund.codeshovel.changes.Ychange;
-import com.felixgrund.codeshovel.changes.Yparametermetachange;
-import com.felixgrund.codeshovel.changes.Yreturntypechange;
+import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.Ycommit;
 import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.parser.AbstractParser;
@@ -58,16 +55,14 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
     @Override
     public List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) {
         List<Ychange> changes = new ArrayList<>();
-
-        Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction);
         Yreturntypechange yreturntypechange = getReturnTypeChange(commit, compareFunction);
+        Ymodifierchange ymodifierchange = getModifiersChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
-
-        if (yparametermetachange != null) {
-            changes.add(yparametermetachange);
-        }
         if (yreturntypechange != null) {
             changes.add(yreturntypechange);
+        }
+        if (ymodifierchange != null) {
+            changes.add(ymodifierchange);
         }
         if (ybodychange != null) {
             changes.add(ybodychange);

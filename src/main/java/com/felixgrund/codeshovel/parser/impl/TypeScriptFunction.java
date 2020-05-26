@@ -127,11 +127,13 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
 
     @Override
     protected String getInitialParentName(V8Object function) {
+        // TODO
         return "";
     }
 
     @Override
     protected String getInitialFunctionPath(V8Object function) {
+        // TODO
         return null;
     }
 }
