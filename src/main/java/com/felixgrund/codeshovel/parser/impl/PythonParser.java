@@ -65,10 +65,11 @@ public class PythonParser extends AbstractParser implements Yparser {
     @Override
     public List<Ychange> getMinorChanges(Ycommit commit, Yfunction compareFunction) {
         List<Ychange> changes = new ArrayList<>();
-        
+
         Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction);
         Yreturntypechange yreturntypechange = getReturnTypeChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
+        Ymodifierchange ymodifierchange = getModifiersChange(commit, compareFunction);
 
         if (yparametermetachange != null) {
             changes.add(yparametermetachange);
@@ -78,6 +79,9 @@ public class PythonParser extends AbstractParser implements Yparser {
         }
         if (ybodychange != null) {
             changes.add(ybodychange);
+        }
+        if (ymodifierchange != null) {
+            changes.add(ymodifierchange);
         }
         return changes;
     }
