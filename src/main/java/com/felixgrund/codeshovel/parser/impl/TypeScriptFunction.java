@@ -65,7 +65,6 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
 
     @Override
     protected Ymodifiers getInitialModifiers(V8Object function) {
-        // export, async, static, private etc...
         List<String> ymodifiers = new ArrayList<>();
         V8Object maybeModifiers = function.getObject("modifiers");
         if (!maybeModifiers.isUndefined()) {
@@ -83,7 +82,7 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
 
     @Override
     protected Yexceptions getInitialExceptions(V8Object function) {
-        return null;
+        return Yexceptions.NONE;
     }
 
     @Override
