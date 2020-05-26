@@ -28,6 +28,7 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
                     .substring(v8type.getInteger("pos"), v8type.getInteger("end"))
                     .trim();
         }
+         v8type.release();
         return new Yparameter(param.getObject("name").getString("escapedText"), stype);
     }
 
@@ -49,14 +50,17 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
 
     @Override
     protected String getInitialType(V8Object function) {
-        V8Object type = function.getObject("type");
-        if (type.isUndefined()) {
-            return null;
+        String stype;
+        V8Object v8type = function.getObject("type");
+        if (v8type.isUndefined()) {
+            stype = null;
         } else {
-            return this.getSourceFileContent()
-                    .substring(type.getInteger("pos"), type.getInteger("end"))
+            stype = this.getSourceFileContent()
+                    .substring(v8type.getInteger("pos"), v8type.getInteger("end"))
                     .trim();
         }
+        v8type.release();
+        return stype;
     }
 
     @Override
@@ -68,9 +72,12 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
             V8Array modifiers = (V8Array) maybeModifiers;
             int length = modifiers.length();
             for (int i = 0; i < length; ++i) {
-                ymodifiers.add(getModifier(modifiers.getObject(i)));
+                V8Object mod = modifiers.getObject(i);
+                ymodifiers.add(getModifier(mod));
+                mod.release();
             }
         }
+        maybeModifiers.release();
         return new Ymodifiers(ymodifiers);
     }
 
@@ -85,21 +92,27 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
         V8Array params = function.getArray("parameters");
         int length = params.length();
         for (int i = 0; i < length; ++i) {
-            yparameters.add(getParameter(params.getObject(i)));
+            V8Object param = params.getObject(i);
+            yparameters.add(getParameter(param));
+            param.release();
         }
+        params.release();
         return yparameters;
     }
 
     @Override
     protected String getInitialBody(V8Object function) {
-        V8Object body = function.getObject("body");
-        if (body.isUndefined()) {
-            return null; // TODO is this correct?
+        String sbody;
+        V8Object v8body = function.getObject("body");
+        if (v8body.isUndefined()) {
+            sbody = null; // TODO is this correct?
         } else {
-            return this.getSourceFileContent()
-                    .substring(body.getInteger("pos"), body.getInteger("end"))
+            sbody = this.getSourceFileContent()
+                    .substring(v8body.getInteger("pos"), v8body.getInteger("end"))
                     .trim();
         }
+        v8body.release();
+        return sbody;
     }
 
     @Override

@@ -5,9 +5,10 @@ import com.eclipsesource.v8.*;
 import java.io.File;
 
 public abstract class TypeScriptVisitor {
-	private final NodeJS nodeJS = NodeJS.createNodeJS();
-	private final V8Object ts = nodeJS.require(new File("node_modules/typescript/lib/typescript.js"));
-	private final V8Object syntaxKind = ts.getObject("SyntaxKind");
+	private static final NodeJS nodeJS = NodeJS.createNodeJS();
+	private static final V8Object ts = nodeJS.require(new File("node_modules/typescript/lib/typescript.js"));
+	private static final V8Object syntaxKind = ts.getObject("SyntaxKind");
+
 	protected final V8Object sourceFile;
 
 	public TypeScriptVisitor(String name, String source) {
@@ -51,6 +52,7 @@ public abstract class TypeScriptVisitor {
 
 	public void visit() {
 		visit(sourceFile);
+		sourceFile.release();
 	}
 
 	public void visit(V8Object node) {
@@ -75,9 +77,11 @@ public abstract class TypeScriptVisitor {
 		V8Function callback = new V8Function(nodeJS.getRuntime(), (receiver, parameters) -> {
 			final V8Object child = parameters.getObject(0);
 			visit(child);
+			child.release();
 			return null;
 		});
 		ts.executeJSFunction("forEachChild", node, callback);
+		callback.release();
 	}
 
 	protected void visitArrowFunction(V8Object arrowFunction) {
