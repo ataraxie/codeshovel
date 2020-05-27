@@ -1,17 +1,35 @@
 package com.felixgrund.codeshovel.visitors;
 
 import com.eclipsesource.v8.*;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class TypeScriptVisitor {
 	private static final String TYPESCRIPT_PATH = "node_modules/typescript/lib/typescript.js";
+
 	private static final NodeJS nodeJS = NodeJS.createNodeJS();
-	private static final V8Object ts = nodeJS.require(
-			new File(TypeScriptVisitor.class.getClassLoader().getResource(TYPESCRIPT_PATH).getFile()));
+	private static final V8Object ts = initTS();
 	private static final V8Object syntaxKind = ts.getObject("SyntaxKind");
+	private static final Map<String, Integer> syntaxKindCache = new HashMap<String, Integer>();
 
 	protected final V8Object sourceFile;
+
+	private static V8Object initTS() {
+		File file;
+		try {
+			InputStream inputStream = ClassLoader.getSystemResourceAsStream(TYPESCRIPT_PATH);
+			file = File.createTempFile("typescript", null);
+			file.deleteOnExit();
+			FileUtils.copyInputStreamToFile(inputStream, file);
+		} catch (Exception e) {
+			file = new File(TypeScriptVisitor.class.getClassLoader().getResource(TYPESCRIPT_PATH).getFile());
+		}
+		return nodeJS.require(file);
+	}
 
 	public TypeScriptVisitor(String name, String source) {
 		// TODO are these the right parameters?
@@ -28,7 +46,10 @@ public abstract class TypeScriptVisitor {
 	}
 
 	protected boolean isKind(V8Object node, String kind) {
-		return node.contains("kind") && node.getInteger("kind") == syntaxKind.getInteger(kind);
+		if (!syntaxKindCache.containsKey(kind)) {
+			syntaxKindCache.put(kind, syntaxKind.getInteger(kind));
+		}
+		return node.contains("kind") && node.getInteger("kind") == syntaxKindCache.get(kind);
 	}
 
 	protected V8Object addStartAndEndLines(V8Object node) {
