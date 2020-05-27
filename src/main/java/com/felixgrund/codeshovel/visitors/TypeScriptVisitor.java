@@ -18,7 +18,7 @@ public abstract class TypeScriptVisitor {
 		private static V8Object initTS() {
 			File file;
 			try {
-				InputStream inputStream = TS.class.getResourceAsStream(TYPESCRIPT_PATH);
+				InputStream inputStream = ClassLoader.getSystemResourceAsStream(TYPESCRIPT_PATH);
 				file = File.createTempFile("typescript", null);
 				file.deleteOnExit();
 				FileUtils.copyInputStreamToFile(inputStream, file);
