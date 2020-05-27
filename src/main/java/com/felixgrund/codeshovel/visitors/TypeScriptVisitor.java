@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,11 +19,14 @@ public abstract class TypeScriptVisitor {
 		private static V8Object initTS() {
 			File file;
 			try {
-				InputStream inputStream = ClassLoader.getSystemResourceAsStream(TYPESCRIPT_PATH);
+				InputStream inputStream = TS.class.getClassLoader().getResourceAsStream(TYPESCRIPT_PATH);
+				URL url = TS.class.getClassLoader().getResource(TYPESCRIPT_PATH);
 				if (inputStream == null) {
 					System.out.println("%%%Input stream was null");
+					System.out.println(url);
 				} else {
 					System.out.println("%%%Input stream: " + inputStream.toString());
+					System.out.println(url);
 				}
 				file = File.createTempFile("typescript", null);
 				file.deleteOnExit();
