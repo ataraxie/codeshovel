@@ -9,57 +9,78 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class TypeScriptVisitor {
-	private static final String TYPESCRIPT_PATH = "node_modules/typescript/lib/typescript.js";
 
-	private static final NodeJS nodeJS = NodeJS.createNodeJS();
-	private static final V8Object ts = initTS();
-	private static final V8Object syntaxKind = ts.getObject("SyntaxKind");
+	private static class TS {
+		private static final String TYPESCRIPT_PATH = "node_modules/typescript/lib/typescript.js";
+		private static final NodeJS nodeJS = NodeJS.createNodeJS();
+		private static V8Object ts;
+		private static V8Object syntaxKind;
+
+		private static V8Object initTS() {
+			File file;
+			try {
+				InputStream inputStream = TS.class.getResourceAsStream(TYPESCRIPT_PATH);
+				file = File.createTempFile("typescript", null);
+				file.deleteOnExit();
+				FileUtils.copyInputStreamToFile(inputStream, file);
+			} catch (Exception e) {
+				file = new File(TypeScriptVisitor.class.getClassLoader().getResource(TYPESCRIPT_PATH).getFile());
+			}
+			return nodeJS.require(file);
+		}
+
+		public static V8Object getTS() {
+			if (ts == null) {
+				ts = initTS();
+			}
+			return ts;
+		}
+
+		public static V8Object getSyntaxKind() {
+			if (syntaxKind == null) {
+				syntaxKind = ts.getObject("SyntaxKind");
+			}
+			return syntaxKind;
+		}
+
+		public static NodeJS getNodeJS() {
+			return  nodeJS;
+		}
+	}
+
 	private static final Map<String, Integer> syntaxKindCache = new HashMap<String, Integer>();
 
 	protected final V8Object sourceFile;
 
-	private static V8Object initTS() {
-		File file;
-		try {
-			InputStream inputStream = ClassLoader.getSystemResourceAsStream(TYPESCRIPT_PATH);
-			file = File.createTempFile("typescript", null);
-			file.deleteOnExit();
-			FileUtils.copyInputStreamToFile(inputStream, file);
-		} catch (Exception e) {
-			file = new File(TypeScriptVisitor.class.getClassLoader().getResource(TYPESCRIPT_PATH).getFile());
-		}
-		return nodeJS.require(file);
-	}
-
 	public TypeScriptVisitor(String name, String source) {
 		// TODO are these the right parameters?
-		int scriptTarget = ts.getObject("ScriptTarget").getInteger("ES2015");
-		int scriptKind = ts.getObject("ScriptKind").getInteger("TS");
-		V8Array parameters = new V8Array(nodeJS.getRuntime())
+		int scriptTarget = TS.getTS().getObject("ScriptTarget").getInteger("ES2015");
+		int scriptKind = TS.getTS().getObject("ScriptKind").getInteger("TS");
+		V8Array parameters = new V8Array(TS.getNodeJS().getRuntime())
 				.push(name)
 				.push(source)
 				.push(scriptTarget)
 				.push(true)
 				.push(scriptKind);
-		sourceFile = ts.executeObjectFunction("createSourceFile", parameters);
+		sourceFile = TS.getTS().executeObjectFunction("createSourceFile", parameters);
 		parameters.release();
 	}
 
 	protected boolean isKind(V8Object node, String kind) {
 		if (!syntaxKindCache.containsKey(kind)) {
-			syntaxKindCache.put(kind, syntaxKind.getInteger(kind));
+			syntaxKindCache.put(kind, TS.getSyntaxKind().getInteger(kind));
 		}
 		return node.contains("kind") && node.getInteger("kind") == syntaxKindCache.get(kind);
 	}
 
 	protected V8Object addStartAndEndLines(V8Object node) {
-		V8Array parameters = new V8Array(nodeJS.getRuntime())
-				.push(node.executeIntegerFunction("getStart", new V8Array(nodeJS.getRuntime())));
+		V8Array parameters = new V8Array(TS.getNodeJS().getRuntime())
+				.push(node.executeIntegerFunction("getStart", new V8Array(TS.getNodeJS().getRuntime())));
 		V8Object start = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
 		parameters.release();
 
-		parameters = new V8Array(nodeJS.getRuntime())
-				.push(node.executeIntegerFunction("getEnd", new V8Array(nodeJS.getRuntime())));
+		parameters = new V8Array(TS.getNodeJS().getRuntime())
+				.push(node.executeIntegerFunction("getEnd", new V8Array(TS.getNodeJS().getRuntime())));
 		V8Object end = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
 		parameters.release();
 
@@ -98,13 +119,13 @@ public abstract class TypeScriptVisitor {
 	}
 
 	protected void visitChildren(V8Object node) {
-		V8Function callback = new V8Function(nodeJS.getRuntime(), (receiver, parameters) -> {
+		V8Function callback = new V8Function(TS.getNodeJS().getRuntime(), (receiver, parameters) -> {
 			final V8Object child = parameters.getObject(0);
 			visit(child);
 			child.release();
 			return null;
 		});
-		ts.executeJSFunction("forEachChild", node, callback);
+		TS.getTS().executeJSFunction("forEachChild", node, callback);
 		callback.release();
 	}
 
