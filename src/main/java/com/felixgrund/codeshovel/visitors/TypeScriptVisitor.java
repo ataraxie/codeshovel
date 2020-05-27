@@ -1,93 +1,66 @@
 package com.felixgrund.codeshovel.visitors;
 
 import com.eclipsesource.v8.*;
+import com.eclipsesource.v8.utils.MemoryManager;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class TypeScriptVisitor {
+	private static final String TYPESCRIPT_PATH = "node_modules/typescript/lib/typescript.js";
 
-	private static class TS {
-		private static final String TYPESCRIPT_PATH = "node_modules/typescript/lib/typescript.js";
-		private static V8Object ts;
-		private static V8Object syntaxKind;
+	private final V8Object ts;
+	private final V8Object syntaxKind;
+	private final MemoryManager scope;
+	private final NodeJS nodeJS;
 
-		private static V8Object initTS() {
-			File file;
-			try {
-				InputStream inputStream = TS.class.getClassLoader().getResourceAsStream(TYPESCRIPT_PATH);
-				URL url = TS.class.getClassLoader().getResource(TYPESCRIPT_PATH);
-				if (inputStream == null) {
-					System.out.println("%%%Input stream was null");
-					System.out.println(url);
-				} else {
-					System.out.println("%%%Input stream: " + inputStream.toString());
-					System.out.println(url);
-				}
-				file = File.createTempFile("typescript", null);
-				file.deleteOnExit();
-				FileUtils.copyInputStreamToFile(inputStream, file);
-			} catch (Exception e) {
-				System.out.println("%%%Input stream Exception thrown attempting to get resource: " + e.toString());
-				file = new File(TypeScriptVisitor.class.getClassLoader().getResource(TYPESCRIPT_PATH).getFile());
-			}
-			NodeJS nodeJS = NodeJS.createNodeJS();
-			return nodeJS.require(file);
-		}
-
-		public static V8Object getTS() {
-			if (ts == null) {
-				ts = initTS();
-			}
-			return ts;
-		}
-
-		public static V8Object getSyntaxKind() {
-			if (syntaxKind == null) {
-				syntaxKind = getTS().getObject("SyntaxKind");
-			}
-			return syntaxKind;
-		}
-	}
-
-	private static final Map<String, Integer> syntaxKindCache = new HashMap<String, Integer>();
+	private final Map<String, Integer> syntaxKindCache = new HashMap<String, Integer>();
 
 	protected final V8Object sourceFile;
 
-	public TypeScriptVisitor(String name, String source) {
+	public TypeScriptVisitor(String name, String source) throws IOException {
+		InputStream inputStream = TypeScriptVisitor.class.getClassLoader().getResourceAsStream(TYPESCRIPT_PATH);
+		File file = File.createTempFile("typescript", null);
+		file.deleteOnExit();
+		FileUtils.copyInputStreamToFile(inputStream, file);
+		nodeJS = NodeJS.createNodeJS();
+		scope = new MemoryManager(nodeJS.getRuntime());
+		ts = nodeJS.require(file);
+		syntaxKind = ts.getObject("SyntaxKind");
 		// TODO are these the right parameters?
-		TS.getTS().getRuntime().getLocker().acquire();
-		int scriptTarget = TS.getTS().getObject("ScriptTarget").getInteger("ES2015");
-		int scriptKind = TS.getTS().getObject("ScriptKind").getInteger("TS");
-		V8Array parameters = new V8Array(TS.getTS().getRuntime())
+		ts.getRuntime().getLocker().acquire();
+		int scriptTarget = ts.getObject("ScriptTarget").getInteger("ES2015");
+		int scriptKind = ts.getObject("ScriptKind").getInteger("TS");
+		V8Array parameters = new V8Array(ts.getRuntime())
 				.push(name)
 				.push(source)
 				.push(scriptTarget)
 				.push(true)
 				.push(scriptKind);
-		sourceFile = TS.getTS().executeObjectFunction("createSourceFile", parameters);
+		sourceFile = ts.executeObjectFunction("createSourceFile", parameters);
 		parameters.release();
 	}
 
 	protected boolean isKind(V8Object node, String kind) {
 		if (!syntaxKindCache.containsKey(kind)) {
-			syntaxKindCache.put(kind, TS.getSyntaxKind().getInteger(kind));
+			syntaxKindCache.put(kind, syntaxKind.getInteger(kind));
 		}
 		return node.contains("kind") && node.getInteger("kind") == syntaxKindCache.get(kind);
 	}
 
 	protected V8Object addStartAndEndLines(V8Object node) {
-		V8Array parameters = new V8Array(TS.getTS().getRuntime())
-				.push(node.executeIntegerFunction("getStart", new V8Array(TS.getTS().getRuntime())));
+		V8Array parameters = new V8Array(ts.getRuntime())
+				.push(node.executeIntegerFunction("getStart", new V8Array(ts.getRuntime())));
 		V8Object start = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
 		parameters.release();
 
-		parameters = new V8Array(TS.getTS().getRuntime())
-				.push(node.executeIntegerFunction("getEnd", new V8Array(TS.getTS().getRuntime())));
+		parameters = new V8Array(ts.getRuntime())
+				.push(node.executeIntegerFunction("getEnd", new V8Array(ts.getRuntime())));
 		V8Object end = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
 		parameters.release();
 
@@ -105,6 +78,9 @@ public abstract class TypeScriptVisitor {
 	public void visit() {
 		visit(sourceFile);
 		sourceFile.release();
+		V8 v8 = ts.getRuntime();
+		scope.release();
+		nodeJS.release();
 	}
 
 	public void visit(V8Object node) {
@@ -126,13 +102,13 @@ public abstract class TypeScriptVisitor {
 	}
 
 	protected void visitChildren(V8Object node) {
-		V8Function callback = new V8Function(TS.getTS().getRuntime(), (receiver, parameters) -> {
+		V8Function callback = new V8Function(ts.getRuntime(), (receiver, parameters) -> {
 			final V8Object child = parameters.getObject(0);
 			visit(child);
 			child.release();
 			return null;
 		});
-		TS.getTS().executeJSFunction("forEachChild", node, callback);
+		ts.executeJSFunction("forEachChild", node, callback);
 		callback.release();
 	}
 

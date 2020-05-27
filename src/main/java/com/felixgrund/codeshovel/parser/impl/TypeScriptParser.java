@@ -14,6 +14,7 @@ import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +81,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         public abstract boolean methodMatches(Yfunction method);
 
-        TypeScriptMethodVisitor(String name, String source) {
+        TypeScriptMethodVisitor(String name, String source) throws IOException {
             super(name, source);
         }
 
