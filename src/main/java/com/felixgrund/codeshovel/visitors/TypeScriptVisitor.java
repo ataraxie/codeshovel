@@ -19,10 +19,16 @@ public abstract class TypeScriptVisitor {
 			File file;
 			try {
 				InputStream inputStream = ClassLoader.getSystemResourceAsStream(TYPESCRIPT_PATH);
+				if (inputStream == null) {
+					System.out.println("%%%Input stream was null");
+				} else {
+					System.out.println("%%%Input stream: " + inputStream.toString());
+				}
 				file = File.createTempFile("typescript", null);
 				file.deleteOnExit();
 				FileUtils.copyInputStreamToFile(inputStream, file);
 			} catch (Exception e) {
+				System.out.println("%%%Input stream Exception thrown attempting to get resource: " + e.toString());
 				file = new File(TypeScriptVisitor.class.getClassLoader().getResource(TYPESCRIPT_PATH).getFile());
 			}
 			NodeJS nodeJS = NodeJS.createNodeJS();
