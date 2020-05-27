@@ -26,9 +26,7 @@ public abstract class TypeScriptVisitor {
 				file = new File(TypeScriptVisitor.class.getClassLoader().getResource(TYPESCRIPT_PATH).getFile());
 			}
 			NodeJS nodeJS = NodeJS.createNodeJS();
-			V8Object ts = nodeJS.require(file);
-			nodeJS.release();
-			return ts;
+			return nodeJS.require(file);
 		}
 
 		public static V8Object getTS() {
