@@ -12,7 +12,6 @@ public abstract class TypeScriptVisitor {
 
 	private static class TS {
 		private static final String TYPESCRIPT_PATH = "node_modules/typescript/lib/typescript.js";
-		private static NodeJS nodeJS;
 		private static V8Object ts;
 		private static V8Object syntaxKind;
 
@@ -26,7 +25,10 @@ public abstract class TypeScriptVisitor {
 			} catch (Exception e) {
 				file = new File(TypeScriptVisitor.class.getClassLoader().getResource(TYPESCRIPT_PATH).getFile());
 			}
-			return getNodeJS().require(file);
+			NodeJS nodeJS = NodeJS.createNodeJS();
+			V8Object ts = nodeJS.require(file);
+			nodeJS.release();
+			return ts;
 		}
 
 		public static V8Object getTS() {
@@ -42,13 +44,6 @@ public abstract class TypeScriptVisitor {
 			}
 			return syntaxKind;
 		}
-
-		public static NodeJS getNodeJS() {
-			if (nodeJS == null) {
-				nodeJS = NodeJS.createNodeJS();
-			}
-			return  nodeJS;
-		}
 	}
 
 	private static final Map<String, Integer> syntaxKindCache = new HashMap<String, Integer>();
@@ -59,7 +54,7 @@ public abstract class TypeScriptVisitor {
 		// TODO are these the right parameters?
 		int scriptTarget = TS.getTS().getObject("ScriptTarget").getInteger("ES2015");
 		int scriptKind = TS.getTS().getObject("ScriptKind").getInteger("TS");
-		V8Array parameters = new V8Array(TS.getNodeJS().getRuntime())
+		V8Array parameters = new V8Array(TS.getTS().getRuntime())
 				.push(name)
 				.push(source)
 				.push(scriptTarget)
@@ -77,13 +72,13 @@ public abstract class TypeScriptVisitor {
 	}
 
 	protected V8Object addStartAndEndLines(V8Object node) {
-		V8Array parameters = new V8Array(TS.getNodeJS().getRuntime())
-				.push(node.executeIntegerFunction("getStart", new V8Array(TS.getNodeJS().getRuntime())));
+		V8Array parameters = new V8Array(TS.getTS().getRuntime())
+				.push(node.executeIntegerFunction("getStart", new V8Array(TS.getTS().getRuntime())));
 		V8Object start = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
 		parameters.release();
 
-		parameters = new V8Array(TS.getNodeJS().getRuntime())
-				.push(node.executeIntegerFunction("getEnd", new V8Array(TS.getNodeJS().getRuntime())));
+		parameters = new V8Array(TS.getTS().getRuntime())
+				.push(node.executeIntegerFunction("getEnd", new V8Array(TS.getTS().getRuntime())));
 		V8Object end = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
 		parameters.release();
 
@@ -122,7 +117,7 @@ public abstract class TypeScriptVisitor {
 	}
 
 	protected void visitChildren(V8Object node) {
-		V8Function callback = new V8Function(TS.getNodeJS().getRuntime(), (receiver, parameters) -> {
+		V8Function callback = new V8Function(TS.getTS().getRuntime(), (receiver, parameters) -> {
 			final V8Object child = parameters.getObject(0);
 			visit(child);
 			child.release();
