@@ -78,7 +78,6 @@ public abstract class TypeScriptVisitor {
 	public void visit() {
 		visit(sourceFile);
 		sourceFile.release();
-		V8 v8 = ts.getRuntime();
 		scope.release();
 		nodeJS.release();
 	}
