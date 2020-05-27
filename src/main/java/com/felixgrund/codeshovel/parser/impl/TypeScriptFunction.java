@@ -24,18 +24,14 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
         if (v8type.isUndefined()) {
             stype = "";
         } else {
-            stype = this.getSourceFileContent()
-                    .substring(v8type.getInteger("pos"), v8type.getInteger("end"))
-                    .trim();
+            stype = v8type.executeStringFunction("getText", new V8Array(v8type.getRuntime()));
         }
          v8type.release();
-        return new Yparameter(param.getObject("name").getString("escapedText"), stype);
+        return new Yparameter(param.getObject("name").getString("escapedText").trim(), stype);
     }
 
     private String getModifier(V8Object modifier) {
-        return this.getSourceFileContent()
-                .substring(modifier.getInteger("pos"), modifier.getInteger("end"))
-                .trim();
+        return modifier.executeStringFunction("getText", new V8Array(modifier.getRuntime()));
     }
 
     @Override
@@ -56,9 +52,7 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
         if (v8type.isUndefined()) {
             stype = null;
         } else {
-            stype = this.getSourceFileContent()
-                    .substring(v8type.getInteger("pos"), v8type.getInteger("end"))
-                    .trim();
+            stype = v8type.executeStringFunction("getText", new V8Array(v8type.getRuntime()));
         }
         v8type.release();
         return stype;
@@ -107,9 +101,7 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
         if (v8body.isUndefined()) {
             sbody = null;
         } else {
-            sbody = this.getSourceFileContent()
-                    .substring(v8body.getInteger("pos"), v8body.getInteger("end"))
-                    .trim();
+            sbody = v8body.executeStringFunction("getText", new V8Array(v8body.getRuntime()));
         }
         v8body.release();
         return sbody;
