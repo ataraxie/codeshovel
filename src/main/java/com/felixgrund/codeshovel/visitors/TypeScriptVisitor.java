@@ -12,7 +12,7 @@ public abstract class TypeScriptVisitor {
 
 	private static class TS {
 		private static final String TYPESCRIPT_PATH = "node_modules/typescript/lib/typescript.js";
-		private static final NodeJS nodeJS = NodeJS.createNodeJS();
+		private static NodeJS nodeJS;
 		private static V8Object ts;
 		private static V8Object syntaxKind;
 
@@ -26,7 +26,7 @@ public abstract class TypeScriptVisitor {
 			} catch (Exception e) {
 				file = new File(TypeScriptVisitor.class.getClassLoader().getResource(TYPESCRIPT_PATH).getFile());
 			}
-			return nodeJS.require(file);
+			return getNodeJS().require(file);
 		}
 
 		public static V8Object getTS() {
@@ -38,12 +38,15 @@ public abstract class TypeScriptVisitor {
 
 		public static V8Object getSyntaxKind() {
 			if (syntaxKind == null) {
-				syntaxKind = ts.getObject("SyntaxKind");
+				syntaxKind = getTS().getObject("SyntaxKind");
 			}
 			return syntaxKind;
 		}
 
 		public static NodeJS getNodeJS() {
+			if (nodeJS == null) {
+				nodeJS = NodeJS.createNodeJS();
+			}
 			return  nodeJS;
 		}
 	}
