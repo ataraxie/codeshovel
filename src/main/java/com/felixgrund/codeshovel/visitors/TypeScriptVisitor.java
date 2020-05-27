@@ -60,6 +60,7 @@ public abstract class TypeScriptVisitor {
 
 	public TypeScriptVisitor(String name, String source) {
 		// TODO are these the right parameters?
+		TS.getTS().getRuntime().getLocker().acquire();
 		int scriptTarget = TS.getTS().getObject("ScriptTarget").getInteger("ES2015");
 		int scriptKind = TS.getTS().getObject("ScriptKind").getInteger("TS");
 		V8Array parameters = new V8Array(TS.getTS().getRuntime())
