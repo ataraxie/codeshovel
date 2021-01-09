@@ -31,9 +31,11 @@ public class JavaParser extends AbstractParser implements Yparser {
 
 	@Override
 	protected List<Yfunction> parseMethods() throws ParseException {
-		CompilationUnit rootCompilationUnit = com.github.javaparser.JavaParser.parse(this.fileContent);
-		if (rootCompilationUnit == null) {
-			throw new ParseException("Could not parseMethods root compilation unit.", this.filePath, this.fileContent);
+		CompilationUnit rootCompilationUnit =null;
+		try {
+			rootCompilationUnit = com.github.javaparser.JavaParser.parse(this.fileContent);
+		}catch (Exception e){
+			return new ArrayList<>();
 		}
 		JavaMethodVisitor visitor = new JavaMethodVisitor() {
 			@Override
