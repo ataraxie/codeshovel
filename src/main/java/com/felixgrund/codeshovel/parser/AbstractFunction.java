@@ -56,6 +56,7 @@ public abstract class AbstractFunction<E> implements Yfunction {
 		// NOTE: the order of these calls does matter!
 		this.name = getInitialName(rawMethod);
 		this.parameters = getInitialParameters(rawMethod);
+		this.parentName = getInitialParentName(rawMethod);
 		this.id = getInitialId(rawMethod);
 		this.type = getInitialType(rawMethod);
 		this.modifiers = getInitialModifiers(rawMethod);
@@ -63,7 +64,6 @@ public abstract class AbstractFunction<E> implements Yfunction {
 		this.body = getInitialBody(rawMethod);
 		this.beginLine = getInitialBeginLine(rawMethod);
 		this.endLine = getInitialEndLine(rawMethod);
-		this.parentName = getInitialParentName(rawMethod);
 		this.functionPath = getInitialFunctionPath(rawMethod);
 		this.returnStmt = getInitialReturnStmt(rawMethod);
 	}
@@ -77,7 +77,7 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	}
 
 	protected String getInitialId(E rawMethod) {
-		String ident = getName();
+		String ident = getParentName() + "#" + getName();
 		String idParameterString = this.getIdParameterString();
 		if (StringUtils.isNotBlank(idParameterString)) {
 			ident += "___" + idParameterString;
