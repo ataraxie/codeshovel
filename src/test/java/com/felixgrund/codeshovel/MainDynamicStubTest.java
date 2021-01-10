@@ -9,7 +9,6 @@ import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.google.gson.Gson;
-import jdk.nashorn.internal.objects.Global;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
