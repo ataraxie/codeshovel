@@ -25,6 +25,7 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	 */
 
 	private String id;
+	protected abstract String getInitialId(E rawMethod);
 	private String name;
 	protected abstract String getInitialName(E rawMethod);
 	private String type;
@@ -68,21 +69,12 @@ public abstract class AbstractFunction<E> implements Yfunction {
 		this.returnStmt = getInitialReturnStmt(rawMethod);
 	}
 
-	private String getIdParameterString() {
+	protected String getIdParameterString() {
 		List<String> parts = new ArrayList<>();
 		for (Yparameter parameter : getParameters()) {
 			parts.add(parameter.toString());
 		}
 		return StringUtils.join(parts, "__");
-	}
-
-	protected String getInitialId(E rawMethod) {
-		String ident = getParentName() + "#" + getName();
-		String idParameterString = this.getIdParameterString();
-		if (StringUtils.isNotBlank(idParameterString)) {
-			ident += "___" + idParameterString;
-		}
-		return Utl.sanitizeFunctionId(ident);
 	}
 
 	protected Yreturn getInitialReturnStmt(E rawMethod) {
