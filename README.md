@@ -24,7 +24,7 @@ CodeShovel can be used in three ways:
 1. Clone the repostitory: `git clone git@github.com:ataraxie/codeshovel.git`
 2. Edit the `.env` file to point to the right directories for caches.
 3. Start the web service: `docker-compose build && docker-compose up`
-4. Open the web service in your browser: `https://localhost:8000`
+4. Open the web service in your browser: `https://localhost:8080`
 
 <a name="web-service-rest"></a>
 ### Web Service REST 
