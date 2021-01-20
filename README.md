@@ -29,11 +29,11 @@ CodeShovel can be used in three ways:
 <a name="web-service-rest"></a>
 ## Web Service REST 
 
-As with the web service UI, you can either use our public web service or self-host your own (see the instructions [#web-service-ui](above). If you are using the self-hosted web service, change `https://se.cs.ubc.ca/codeshovel` to point to your own service.
+As with the web service UI, you can either use our public web service or self-host your own (see the instructions [#web-service-ui](above)). If you are using the self-hosted web service, change `https://se.cs.ubc.ca/codeshovel` to point to your own service.
 
-You can then interact with the host using the following REST endpoints. Examples are provided using `curl` syntax for ease of testing, just adapt the values as needed.
+Interacting with the CodeShovel web service is through the following REST endpoints. Examples are provided using `curl` syntax for ease of testing, just adapt the values as needed.
 
-* To get the history for a method:
+* `GET getHistory/`: Retrieves the history of a method
 
 ```
 curl TBD
@@ -41,13 +41,13 @@ curl TBD
 
 For conveinence, we also provide endpoints for listing files and methods within the repository:
 
-* To get the file list:
+* `GET listFiles/`: Retrieves the list of files in a repo at a SHA
 
 ```
 curl TBD
 ```
 
-* To get the method list:
+* `GET listMethods/`: Retrieves the list of methods for a file at a SHA
 
 ```
 curl TBD
@@ -68,11 +68,11 @@ In order to run from the command line CodeShovel for a local repository, you can
 ```
  -filepath <arg>      Path to the file containing the method (required) 
  -methodname <arg>    Method name (required)
- -outfile <arg>       Output path (optional, defaults to current working directory)
- -reponame <arg>      Name of the repository (optional, defaults to the path name) 
+ -outfile <arg>       Output path (optional: defaults to current working directory)
+ -reponame <arg>      Name of the repository (optional: defaults to the path name) 
  -repopath <arg>      Path to a local copy of the git repository (required)
- -startcommit <arg>   Hash of the commit to begin with backwards history traversal (optional, default is HEAD) 
- -startline <arg>     Start line of the method (required)
+ -startcommit <arg>   Hash of the commit to begin with backwards history traversal (optional: default is HEAD) 
+ -startline <arg>     Start line of the method (required: differentiates between overloaded methods)
 
 ```
 
