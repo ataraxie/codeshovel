@@ -56,11 +56,12 @@ curl TBD
 <a name="command-line"></a>
 ### Command Line
 
-In order to run from the command line CodeShovel for a local repository, you can simply download the most recent version from the [Releases page](https://github.com/ataraxie/codeshovel/releases) and run it as follows:
+In order to run from the command line CodeShovel for a local repository, you can clone the repo, build the tool, and then call it on the command line.
 
-```
-java -jar codeshovel-XXX.jar OPTIONS
-```
+1. Clone the repo: `git clone git@github.com:ataraxie/codeshovel.git`
+2. Switch to the appropriate branch: `cd codeshovel; git checkout research`
+2. Build the code: `mvn package`
+3. Call the code: `java -jar target/target/codeshovel-0.3.1-SNAPSHOT.jar OPTIONS`
 
 `OPTIONS` are defined as follows:
 
@@ -75,14 +76,15 @@ java -jar codeshovel-XXX.jar OPTIONS
 
 ```
 
-Minimal example:
+Minimal example (assumes [checkstyle](https://github.com/checkstyle/checkstyle) is checked out in `~/tmp/checkstyle/` and you are in `codeshovel/`):
 
 ```
-java -jar codeshovel-X.X.X.jar \
-	-repopath ~/checkstyle \
+java -jar target/codeshovel-0.3.1-SNAPSHOT.jar \
+	-repopath ~/tmp/checkstyle \
 	-filepath src/main/java/com/puppycrawl/tools/checkstyle/Checker.java \
 	-methodname fireErrors \
-	-startline 384
+	-startline 401 \ 
+	-outfile results.json
 ```
 
 ### Output file format
