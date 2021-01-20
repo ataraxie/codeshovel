@@ -1,10 +1,10 @@
 # CodeShovel - Unearthing Method Histories
 
-Take this shovel to dig in source code history for changes to specific methods and functions. Currently implemented for Java. CodeShovel is a tool for navigating dedicated method histories, across all kinds of changes that it saw throughout its life span.
+Take this shovel to dig in source code history for changes to specific methods and functions. The tool is currently implemented for software projects written in Java. CodeShovel is a tool for navigating method histories and is robust to the kinds of changes methods frequently undergo (e.g., being modified, renamed, or and moved between files and directories).
 
-*This is research!* Primairly undertaken in the [Software Practices Lab](https://spl.cs.ubc.ca) at UBC in Vancouver, Canada we have developed this project to help practicioners to more efficiently check how their methods have changed and give researchers an easier way to track method evolution for academic studies.
+*This is research!* Primairly undertaken in the [Software Practices Lab](https://spl.cs.ubc.ca) at UBC in Vancouver, Canada we have developed this project to help practicioners to more efficiently check how their methods have changed and give researchers an easier way to track method evolution for academic studies. Please do not hesitate to get in touch if you have any questions!
 
-## Getting Started
+## Pathways for Use
 
 CodeShovel can be used in three ways:
 
@@ -15,7 +15,7 @@ CodeShovel can be used in three ways:
 * ***Command Line:*** Finally, if you would prefer to interact with CodeShovel on the command line directly without using the rest interface, you can call the CodeShovel `jar` directly. [Command line instructions](#command-line) are included below.
 
 <a name="web-service-ui"></a>
-### Web Service UI 
+## Web Service UI 
 
 ***Public UI:*** The web service UI enables easy interactive exploration of a method history. The quickest way to use this is through our hosted version available at [https://se.cs.ubc.ca/codeshovel/index.html](https://se.cs.ubc.ca/codeshovel/index.html). Through this interface you can explore histories of some sample methods (these are not cached: they are dynamically computed as the underlying repositories are updated), or by providing a link to a public repository of your choosing.
 
@@ -27,7 +27,7 @@ CodeShovel can be used in three ways:
 4. Open the web service in your browser: `https://localhost:8080`
 
 <a name="web-service-rest"></a>
-### Web Service REST 
+## Web Service REST 
 
 As with the web service UI, you can either use our public web service or self-host your own (see the instructions [#web-service-ui](above). If you are using the self-hosted web service, change `https://se.cs.ubc.ca/codeshovel` to point to your own service.
 
@@ -54,7 +54,7 @@ curl TBD
 ```
 
 <a name="command-line"></a>
-### Command Line
+## Command Line
 
 In order to run from the command line CodeShovel for a local repository, you can clone the repo, build the tool, and then call it on the command line.
 
@@ -87,7 +87,7 @@ java -jar target/codeshovel-0.3.1-SNAPSHOT.jar \
 	-outfile results.json
 ```
 
-### Output file format
+## Output file format
 
 If you are using the Web Service UI, the result will be rendered for you automatically. But if you are using the REST or Command Line interfaces results will be returned as JSON so you can process them according to you needs. Each run of CodeShovel will print result summaries to your console and will also produce a result file. Result files are in JSON and are structured as follows:
 
