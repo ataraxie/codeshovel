@@ -46,11 +46,13 @@ Interacting with the CodeShovel web service is through the following REST endpoi
 curl "https://se.cs.ubc.ca/codeshovel/getHistory?gitUrl=${}&sha=${}&filePath=${}&startLine=${}&methodName=${}"
 ```
 
-```typescript
-interface History {
-    [sha: string]: Change;
-}
+e.g.,
 
+`curl "https://se.cs.ubc.ca/codeshovel/getHistory?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93&filePath=/src/main/java/org/apache/commons/math4/dfp/DfpDec.java&methodName=round&startLine=164"`
+
+Each entry in the history list conforms to the following schema:
+
+```typescript
 interface Change {
     type: string;
     commitMessage: string;
@@ -78,6 +80,12 @@ For convenience, we also provide endpoints for listing files and methods within 
 curl "https://se.cs.ubc.ca/codeshovel/listFiles?gitUrl=${}&sha=${}"
 ```
 
+e.g.,
+
+`curl "https://se.cs.ubc.ca/codeshovel/listFiles?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93"`
+
+The format for the return type is a list of strings containing the full path to every file in the repository. These can then be passed to `listMethods` to find the methods in that file.
+
 * `GET listMethods/`: Retrieves the list of methods for a file at a SHA
     * `gitUrl` should end in .git
     * `sha` (optional)
@@ -86,6 +94,12 @@ curl "https://se.cs.ubc.ca/codeshovel/listFiles?gitUrl=${}&sha=${}"
 ```
 curl "https://se.cs.ubc.ca/codeshovel/listMethods?gitUrl=${}&sha=${}&filePath=${}"
 ```
+
+e.g., 
+
+`curl "https://se.cs.ubc.ca/codeshovel/listMethods?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93&filePath=/src/main/java/org/apache/commons/math4/dfp/DfpDec.java"`
+
+Each entry in the list of methods conforms to the following schema:
 
 ```typescript
 interface Method {
