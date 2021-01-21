@@ -34,23 +34,66 @@ As with the web service UI, you can either use our public web service or self-ho
 Interacting with the CodeShovel web service is through the following REST endpoints. Examples are provided using `curl` syntax for ease of testing, just adapt the values as needed.
 
 * `GET getHistory/`: Retrieves the history of a method
+    * `gitUrl` should end in .git
+    * `sha` (optional)
+    * `filePath`
+    * `startLine`
+    * `methodName`
 
 ```
-curl TBD
+curl "https://se.cs.ubc.ca/codeshovel/getHistory?gitUrl=${}&sha=${}&filePath=${}&startLine=${}&methodName=${}"
+```
+
+```typescript
+interface History {
+    [sha: string]: Change;
+}
+
+interface Change {
+    type: string;
+    commitMessage: string;
+    commitDate: string;
+    commitName: string; // SHA
+    commitAuthor: string;
+    commitDateOld?: string;
+    commitNameOld?: string;
+    commitAuthorOld?: string;
+    daysBetweenCommits?: number;
+    commitsBetweenForRepo?: number;
+    commitsBetweenForFile?: number;
+    diff: string;
+    extendedDetails?: {[key: string]: any}
+}
 ```
 
 For convenience, we also provide endpoints for listing files and methods within the repository:
 
 * `GET listFiles/`: Retrieves the list of files in a repo at a SHA
+  * `gitUrl` should end in .git
+  * `sha` (optional)
 
 ```
-curl TBD
+curl "https://se.cs.ubc.ca/codeshovel/listFiles?gitUrl=${}&sha=${}"
 ```
 
 * `GET listMethods/`: Retrieves the list of methods for a file at a SHA
+    * `gitUrl` should end in .git
+    * `sha` (optional)
+    * `filePath`
 
 ```
-curl TBD
+curl "https://se.cs.ubc.ca/codeshovel/listMethods?gitUrl=${}&sha=${}&filePath=${}"
+```
+
+```typescript
+interface Method {
+    methodName: string; // Name of method
+    longName: string; // Method prototype
+    startLine: number;
+    isStatic: boolean;
+    isAbstract: boolean;
+    visibility: "" | "public" | "private" | "protected";
+}
 ```
 
 <a name="command-line"></a>
