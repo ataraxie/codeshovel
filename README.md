@@ -33,6 +33,7 @@ CodeShovel can be used in three ways:
 		* Tap 'Generate New Token'.
 		* Grant the 'Repo' permission scope.
 		* Copy the token generated to the `.env` file.
+	* The default hostname does not need to be changed.
 
 3. Start the web service:
 	* `docker-compose build && docker-compose up`
