@@ -10,11 +10,11 @@ A conference paper describing how CodeShovel works and how it was evaluated as b
 
 CodeShovel can be used in three ways:
 
-* ***Web Service UI***: We have built a web based user interface that you can use to interactively navigate the history of a method of interest. We host a public copy of the [web interface](https://se.cs.ubc.ca/codeshovel/index.html) if you just want to use CodeShovel without installing anything, but this repository also has [instructions for self-hosting](#web-service-ui) the web service on your own computer using Docker.
+* ***Web Service UI***: We have built a browser-based user interface that you can use to interactively navigate the history of a method of interest. We host a public copy of the [web interface](https://se.cs.ubc.ca/codeshovel/index.html) if you just want to use CodeShovel without installing anything, but this repository also has [instructions for self-hosting](#web-service-ui) the web service on your own computer using Docker.
 
-* ***Web Service REST:*** If you would prefer to programmatically interact with the history of your methods, you can also call the CodeShovel web service using standard rest commands. You can direct these against our hosted version of the web service, or against your own self-hosted copy of the web service. The [REST interface instructions](#web-service-rest) are below.
+* ***Web Service REST:*** To programmatically investigate the history of a method, you can also call the CodeShovel web service using standard rest commands. You can direct these against our hosted version of the web service, or against your own self-hosted copy of the web service. The [REST interface instructions](#web-service-rest) are below.
 
-* ***Command Line:*** Finally, if you would prefer to interact with CodeShovel on the command line directly without using the rest interface, you can call the CodeShovel `jar` directly. [Command line instructions](#command-line) are included below.
+* ***Command Line:*** Finally, if you would prefer to interact with CodeShovel on the command line directly without using the REST interface, you can call the CodeShovel `jar` directly. [Command line instructions](#command-line) are included below.
 
 <a name="web-service-ui"></a>
 ## Web Service UI 
@@ -23,10 +23,18 @@ CodeShovel can be used in three ways:
 
 ***Self-Hosted UI:*** You can also stand up a copy of the web interface on your own infrastructure. To do this, follow these steps:
 
-1. Clone the repository: `git clone git@github.com:ataraxie/codeshovel.git`
-2. Edit the `.env` file to point to the right directories for caches.
-3. Start the web service: `docker-compose build && docker-compose up`
-4. Open the web service in your browser: `https://localhost:8080`
+1. Clone the repository: 
+	* `git clone git@github.com:ataraxie/codeshovel.git`
+2. Configure the environment:
+	* Copy `.env.webservice.sample` to `.env`.
+	* Update the required two lines for log and cache path.
+	* The GitHub token in the `.env` is not required and can be left as is.
+3. Start the web service:
+	* `docker-compose build && docker-compose up`
+	* Works with Docker 2.2+.
+4. Access your server:
+	* For the UI: open the web service in your browser: `https://localhost:8080` 
+	* For the REST interface: see REST API instructions below.
 
 <a name="web-service-rest"></a>
 ## Web Service REST 
@@ -36,7 +44,7 @@ As with the web service UI, you can either use our public web service or self-ho
 Interacting with the CodeShovel web service is through the following REST endpoints. Examples are provided using `curl` syntax for ease of testing, just adapt the values as needed.
 
 * `GET getHistory/`: Retrieves the history of a method
-    * `gitUrl` should end in .git
+    * `gitUrl` (should end in `.git`)
     * `sha` (optional)
     * `filePath`
     * `startLine`
@@ -84,7 +92,7 @@ e.g.,
 
 `curl "https://se.cs.ubc.ca/codeshovel/listFiles?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93"`
 
-The format for the return type is a list of strings containing the full path to every file in the repository. These can then be passed to `listMethods` to find the methods in that file.
+Every file in the repository is included in the returned list of strings. These can then be passed to `listMethods` to find the methods in any given file.
 
 * `GET listMethods/`: Retrieves the list of methods for a file at a SHA
     * `gitUrl` should end in .git
@@ -99,7 +107,7 @@ e.g.,
 
 `curl "https://se.cs.ubc.ca/codeshovel/listMethods?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93&filePath=/src/main/java/org/apache/commons/math4/dfp/DfpDec.java"`
 
-Each entry in the list of methods conforms to the following schema:
+Each entry in the returned list describes a method conforming to the following schema:
 
 ```typescript
 interface Method {
@@ -117,10 +125,16 @@ interface Method {
 
 In order to run from the command line CodeShovel for a local repository, you can clone the repo, build the tool, and then call it on the command line.
 
-1. Clone the repo: `git clone git@github.com:ataraxie/codeshovel.git`
-2. Switch to the appropriate branch: `cd codeshovel; git checkout research`
-2. Build the code: `mvn package`
-3. Call the code: `java -jar target/target/codeshovel-0.3.1-SNAPSHOT.jar OPTIONS`
+1. Clone the repo: 
+  * `git clone git@github.com:ataraxie/codeshovel.git`
+2. Switch to the appropriate branch: 
+  * `cd codeshovel; git checkout research`
+2. Build the code: 
+  * `mvn package`
+  * Works with mvn version 3.3+.
+4. Call the code: 
+  * `java -jar target/codeshovel-0.3.1-SNAPSHOT.jar OPTIONS` 
+  * Works with Java version 8+.
 
 `OPTIONS` are defined as follows:
 
@@ -146,6 +160,8 @@ java -jar target/codeshovel-0.3.1-SNAPSHOT.jar \
 	-outfile results.json
 ```
 
+<!--
+Seems to duplicate content above in the REST API section.
 ## Output file format
 
 If you are using the Web Service UI, the result will be rendered for you automatically. But if you are using the REST or Command Line interfaces results will be returned as JSON so you can process them according to you needs. Each run of CodeShovel will print result summaries to your console and will also produce a result file. Result files are in JSON and are structured as follows:
@@ -217,6 +233,7 @@ The `changeHistoryDetails` array contains an object for each commit that changed
   }
 }
 ```
+-->
 
 ## Code Shovel Development
 
