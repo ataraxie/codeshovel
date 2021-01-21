@@ -27,8 +27,13 @@ CodeShovel can be used in three ways:
 	* `git clone git@github.com:ataraxie/codeshovel.git`
 2. Configure the environment:
 	* Copy `.env.webservice.sample` to `.env`.
-	* Update the required two lines for log and cache path.
-	* The GitHub token in the `.env` is not required and can be left as is.
+	* Update the log and cache paths in `.env`.
+	* Specify a GitHub token; to generate one:
+		* Visit: [https://github.com/settings/tokens](https://github.com/settings/tokens)
+		* Tap 'Generate New Token'.
+		* Grant the 'Repo' permission scope.
+		* Copy the token generated to the `.env` file.
+
 3. Start the web service:
 	* `docker-compose build && docker-compose up`
 	* Works with Docker 2.2+.
