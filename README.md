@@ -2,7 +2,7 @@
 
 Take this shovel to dig in source code history for changes to specific methods and functions. The tool is currently implemented for software projects written in Java. CodeShovel is a tool for navigating method histories and is robust to the kinds of changes methods frequently undergo (e.g., being modified, renamed, or and moved between files and directories).
 
-*This is research!* Primairly undertaken in the [Software Practices Lab](https://spl.cs.ubc.ca) at UBC in Vancouver, Canada we have developed this project to help practicioners to more efficiently check how their methods have changed and give researchers an easier way to track method evolution for academic studies. Please do not hesitate to get in touch if you have any questions!
+*This is research!* Primarily undertaken in the [Software Practices Lab](https://spl.cs.ubc.ca) at UBC in Vancouver, Canada we have developed this project to help practitioners to more efficiently check how their methods have changed and give researchers an easier way to track method evolution for academic studies. Please do not hesitate to get in touch if you have any questions!
 
 ## Pathways for Use
 
@@ -21,7 +21,7 @@ CodeShovel can be used in three ways:
 
 ***Self-Hosted UI:*** You can also stand up a copy of the web interface on your own infrastructure. To do this, follow these steps:
 
-1. Clone the repostitory: `git clone git@github.com:ataraxie/codeshovel.git`
+1. Clone the repository: `git clone git@github.com:ataraxie/codeshovel.git`
 2. Edit the `.env` file to point to the right directories for caches.
 3. Start the web service: `docker-compose build && docker-compose up`
 4. Open the web service in your browser: `https://localhost:8080`
@@ -39,7 +39,7 @@ Interacting with the CodeShovel web service is through the following REST endpoi
 curl TBD
 ```
 
-For conveinence, we also provide endpoints for listing files and methods within the repository:
+For convenience, we also provide endpoints for listing files and methods within the repository:
 
 * `GET listFiles/`: Retrieves the list of files in a repo at a SHA
 
@@ -161,4 +161,4 @@ The `changeHistoryDetails` array contains an object for each commit that changed
 
 ## Code Shovel Development
 
-While the vast majority of users will use the Web Service UI, Web Service REST, or Command Line interfaces, if you want to build CodeShovel yourself (for instance if you are doing development), you can follow the [Development instructions](Development.md).
+While the vast majority of users will use the Web Service UI, Web Service REST, or Command Line interfaces, if you want to build CodeShovel yourself (for instance if you are doing development), you can follow the [Development instructions](DEVELOPMENT.md).
