@@ -19,7 +19,7 @@ CodeShovel can be used in three ways:
 <a name="web-service-ui"></a>
 ## Web Service UI 
 
-***Public UI:*** The web service UI enables easy interactive exploration of a method history. The quickest way to use this is through our hosted version available at [https://se.cs.ubc.ca/codeshovel/index.html](https://se.cs.ubc.ca/codeshovel/index.html). Through this interface you can explore histories of some sample methods (these are not cached: they are dynamically computed as the underlying repositories are updated), or by providing a link to a public repository of your choosing.
+***Public UI:*** The web service UI enables easy interactive exploration of a method history. The quickest way to use this is through our hosted version available at [https://se.cs.ubc.ca/codeshovel/index.html](https://se.cs.ubc.ca/codeshovel/index.html). Through this interface you can explore histories of some sample methods (these are not cached: they are dynamically computed as the underlying repositories are updated), or by providing a link to a public repository of your choosing. **Note:** This is likely to be the least performant of all interface options as it runs on shared infrastructure with minimal resources, but is a viable way to check the results of the tool.
 
 ***Self-Hosted UI:*** You can also stand up a copy of the web interface on your own infrastructure. To do this, follow these steps:
 
@@ -39,13 +39,13 @@ CodeShovel can be used in three ways:
 	* `docker-compose build && docker-compose up`
 	* Works with Docker 2.2+.
 4. Access your server:
-	* For the UI: open the web service in your browser: `https://localhost:8080` 
+	* For the UI: open the web service in your browser (`https://localhost:8080`).
 	* For the REST interface: see REST API instructions below.
 
 <a name="web-service-rest"></a>
 ## Web Service REST 
 
-As with the web service UI, you can either use our public web service or self-host your own (see the instructions [#web-service-ui](above)). If you are using the self-hosted web service, change `https://se.cs.ubc.ca/codeshovel` to point to your own service.
+As with the web service UI, you can either use our public web service or self-host your own (see the instructions [#web-service-ui](above)). If you are using the self-hosted web service, change `https://se.cs.ubc.ca/CodeShovel` to point to your own service.
 
 Interacting with the CodeShovel web service is through the following REST endpoints. Examples are provided using `curl` syntax for ease of testing, just adapt the values as needed.
 
@@ -57,12 +57,12 @@ Interacting with the CodeShovel web service is through the following REST endpoi
     * `methodName`
 
 ```
-curl "https://se.cs.ubc.ca/codeshovel/getHistory?gitUrl=${}&sha=${}&filePath=${}&startLine=${}&methodName=${}"
+curl "https://se.cs.ubc.ca/CodeShovel/getHistory?gitUrl=${}&sha=${}&filePath=${}&startLine=${}&methodName=${}"
 ```
 
 e.g.,
 
-`curl "https://se.cs.ubc.ca/codeshovel/getHistory?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93&filePath=/src/main/java/org/apache/commons/math4/dfp/DfpDec.java&methodName=round&startLine=164"`
+`curl "https://se.cs.ubc.ca/CodeShovel/getHistory?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93&filePath=/src/main/java/org/apache/commons/math4/dfp/DfpDec.java&methodName=round&startLine=164"`
 
 Each entry in the history list conforms to the following schema:
 
@@ -91,12 +91,12 @@ For convenience, we also provide endpoints for listing files and methods within 
   * `sha` (optional)
 
 ```
-curl "https://se.cs.ubc.ca/codeshovel/listFiles?gitUrl=${}&sha=${}"
+curl "https://se.cs.ubc.ca/CodeShovel/listFiles?gitUrl=${}&sha=${}"
 ```
 
 e.g.,
 
-`curl "https://se.cs.ubc.ca/codeshovel/listFiles?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93"`
+`curl "https://se.cs.ubc.ca/CodeShovel/listFiles?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93"`
 
 Every file in the repository is included in the returned list of strings. These can then be passed to `listMethods` to find the methods in any given file.
 
@@ -106,12 +106,12 @@ Every file in the repository is included in the returned list of strings. These 
     * `filePath`
 
 ```
-curl "https://se.cs.ubc.ca/codeshovel/listMethods?gitUrl=${}&sha=${}&filePath=${}"
+curl "https://se.cs.ubc.ca/CodeShovel/listMethods?gitUrl=${}&sha=${}&filePath=${}"
 ```
 
 e.g., 
 
-`curl "https://se.cs.ubc.ca/codeshovel/listMethods?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93&filePath=/src/main/java/org/apache/commons/math4/dfp/DfpDec.java"`
+`curl "https://se.cs.ubc.ca/CodeShovel/listMethods?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93&filePath=/src/main/java/org/apache/commons/math4/dfp/DfpDec.java"`
 
 Each entry in the returned list describes a method conforming to the following schema:
 
