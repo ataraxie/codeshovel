@@ -1,0 +1,19 @@
+version: "3.5"
+
+services:
+  codeshovel:
+    build:
+      args:
+        - "SERVER_ADDRESS=${PUBLICHOSTNAME}"
+        - "PUBLIC_ADDRESS=${PUBLICHOSTNAME}"
+      context: https://${GITHUB_TOKEN}@github.com/braxtonhall/codeshovel-webservice.git
+    expose:
+      - 8080
+    restart: always
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    volumes:
+      - "${CODESHOVEL_LOG_PATH}:/requests.csv"
+      - "${CODESHOVEL_CACHE_PATH}:/cache"
+    ports:
+      - "8080:8080"
