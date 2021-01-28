@@ -1,5 +1,7 @@
 # CodeShovel - Evaluation Docs
 
+You can disregard this document unless you are considering extending the oracle included in the repository (e.g., for extending to a new language) or building a new one. 
+
 ## Creating an Oracle
 
 We need some oracles for CodeShovel evaluation purposes.

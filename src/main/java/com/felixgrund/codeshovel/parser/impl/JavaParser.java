@@ -1,14 +1,12 @@
-package com.felixgrund.codeshovel.parser.impl; 
+package com.felixgrund.codeshovel.parser.impl;
 
 import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.Ycommit;
-import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.parser.AbstractParser;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.util.Utl;
-import com.felixgrund.codeshovel.visitors.MethodVisitor;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.github.javaparser.ast.CompilationUnit;
