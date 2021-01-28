@@ -10,7 +10,7 @@ import java.util.Optional;
 public class GlobalEnv {
 
 	public static final String REPO_DIR = System.getenv("REPO_DIR");
-	public static final String ENV_NAME = getEnvOptional("ENV_NAME", ""); // = System.getenv("ENV_NAME");
+	public static final String ENV_NAME = getEnvOptional("ENV_NAME", "");
 	public static final String OUTPUT_DIR = getEnvOptional("OUTPUT_DIR", System.getProperty("user.dir") + "/output");
 
 	public static final boolean DISABLE_ALL_OUTPUTS = Boolean.valueOf(System.getenv("DISABLE_ALL_OUTPUTS"));
@@ -58,6 +58,4 @@ public class GlobalEnv {
 		return Optional.ofNullable(
 				System.getenv(envVar)).orElse(defaultVal);
 	}
-
-
 }

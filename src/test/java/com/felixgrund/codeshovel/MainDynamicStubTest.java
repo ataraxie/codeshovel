@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static com.carrotsearch.sizeof.RamUsageEstimator.sizeOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -67,6 +68,8 @@ public class MainDynamicStubTest {
         List<File> files = Arrays.asList(directory.listFiles());
         Collections.sort(files);
 
+        StartEnvironment lastEnv = null;
+
         fileLoop:
         for (File file : files) {
             String envName = file.getName().replace(".json", "");
@@ -98,8 +101,23 @@ public class MainDynamicStubTest {
                 }
 
                 numTestsRun++;
+                System.out.println("TestFactory - Starting tests for: " + startEnv.getEnvName());
                 dynamicTests.add(createDynamicTest(startEnv));
+                System.out.println("TestFactory - Finished tests for: " + startEnv.getEnvName());
+                if (lastEnv == null){
+                    lastEnv = startEnv;
+                }
+                if (!lastEnv.getRepositoryName().equals(startEnv.getRepositoryName())){
+                    System.out.println("TestFactory - Finished with repo: "+lastEnv.getRepositoryName()+"; start: "+startEnv.getRepositoryName());
+                    lastEnv = null;
+                    startEnv = null;
+                }
             }
+
+            // hypothesis: startEnv caches the repository service etc. leading to memory pressure
+            // NOTE: this is not correct
+            // startEnv.setRepositoryService(null);
+            // startEnv.setExpectedResult(null);
         }
 
         return dynamicTests;
@@ -107,11 +125,15 @@ public class MainDynamicStubTest {
 
     private DynamicTest createDynamicTest(StartEnvironment startEnv) throws IOException {
         DynamicTest test = null;
-        System.out.println("Running dynamic test for config :" + startEnv.getEnvName());
+        System.out.println("Running dynamic test for config: " + startEnv.getEnvName());
 
         String repositoryName = startEnv.getRepositoryName();
         String repositoryPath = CODESTORY_REPO_DIR + "/" + repositoryName + "/.git";
         String filePath = startEnv.getFilePath();
+
+        System.out.println("repoName: " + repositoryName);
+        System.out.println("repoPath: " + repositoryPath);
+        System.out.println("filePath: " + filePath);
 
         Repository repository = Utl.createRepository(repositoryPath);
         Git git = new Git(repository);
@@ -133,7 +155,6 @@ public class MainDynamicStubTest {
         return test;
     }
 
-
     private DynamicTest doCreateDynamicTest(StartEnvironment startEnv, Yresult yresult) {
         Map<String, String> expectedResult = startEnv.getExpectedResult();
         String message = String.format("%s - expecting %s changes", startEnv.getEnvName(), expectedResult.size());
@@ -148,9 +169,16 @@ public class MainDynamicStubTest {
             expectedResultBuilder.append("\n").append(commitName).append(":").append(expectedResult.get(commitName));
         }
 
+        System.out.println("Creating dynamic test called: "+message);
+
         return DynamicTest.dynamicTest(
                 message,
                 () -> {
+                    System.out.println("Performing test comparison: "+message);
+                    System.out.println("sizeof eRes: "+sizeOf(expectedResult));
+                    System.out.println("sizeof aRes: "+sizeOf(actualResultBuilder));
+                    // System.out.println("sizeof yRes: "+sizeOf(yresult));
+
                     assertEquals(expectedResultBuilder.toString(), actualResultBuilder.toString(), "stringified result should be the same");
                     assertTrue(compareResults(expectedResult, yresult), "results should be the same");
                 }
