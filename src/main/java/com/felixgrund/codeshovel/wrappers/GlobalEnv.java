@@ -10,7 +10,6 @@ import java.util.Optional;
 public class GlobalEnv {
 
 	public static final String REPO_DIR = System.getenv("REPO_DIR");
-	public static final String ENV_NAME = getEnvOptional("ENV_NAME", "");
 	public static final String OUTPUT_DIR = getEnvOptional("OUTPUT_DIR", System.getProperty("user.dir") + "/output");
 
 	public static final boolean DISABLE_ALL_OUTPUTS = Boolean.valueOf(System.getenv("DISABLE_ALL_OUTPUTS"));
@@ -43,6 +42,25 @@ public class GlobalEnv {
 		}
 	}
 
+	// Environment variable specifying names to include
+	// This does _NOT_ override SKIP_NAMES
+	// ENV_NAMES=foo
+	// ENV_NAMES=foo,bar,baz
+	public static List<String> ENV_NAMES = new ArrayList<>();
+	static {
+		String skipString = System.getenv("ENV_NAME");
+		if (StringUtils.isNotBlank(skipString)) {
+			String[] commaSplit = StringUtils.split(skipString, ",");
+			if (commaSplit.length > 0) {
+				ENV_NAMES = Arrays.asList(commaSplit);
+			}
+		}
+	}
+
+	// Environment variable specifying names to exclude
+	// This does DOES override ENV_NAMES
+	// SKIP_NAMES=foo
+	// SKIP_NAMES=foo,bar,baz
 	public static List<String> SKIP_ENVS = new ArrayList<>();
 	static {
 		String skipString = System.getenv("SKIP_ENVS");

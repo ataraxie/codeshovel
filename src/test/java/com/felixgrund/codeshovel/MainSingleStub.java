@@ -27,7 +27,7 @@ public class MainSingleStub {
 	}
 
 	public static void execute() throws Exception {
-		String configName = GlobalEnv.ENV_NAME;
+		String configName = GlobalEnv.ENV_NAMES.get(0);
 		ClassLoader classLoader = MainSingleStub.class.getClassLoader();
 		File file = new File(classLoader.getResource(STUBS_DIR + "/" + configName + ".json").getFile());
 		String json = FileUtils.readFileToString(file, "utf-8");

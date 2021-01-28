@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static com.carrotsearch.sizeof.RamUsageEstimator.sizeOf;
+// import static com.carrotsearch.sizeof.RamUsageEstimator.sizeOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -52,65 +52,93 @@ public class MainDynamicStubTest {
 
     // Useful for running only one oracle (e.g., for debugging)
     // If blank, all oracles are executed
-    private static final String RUN_ONLY_TEST = GlobalEnv.ENV_NAME;
+    // private static final String RUN_ONLY_TEST = GlobalEnv.ENV_NAME;
 
     @TestFactory
     @DisplayName("Dynamic test stubs from JSON files")
     public Collection<DynamicTest> createDynamicTests() throws Exception {
 
         System.out.println("Test Factory - starting");
-        System.out.println("Test Factory - STUBS_DIR: "+STUBS_DIR);
-        System.out.println("Test Factory - REPO_DIR: "+CODESTORY_REPO_DIR);
-        System.out.println("Test Factory - ENV (empty string runs all stubs): "+GlobalEnv.ENV_NAME);
-        System.out.println("Test Factory - SKIP_ENVS ([] does not skip): "+GlobalEnv.SKIP_ENVS);
+        System.out.println("Test Factory - STUBS_DIR: " + STUBS_DIR);
+        System.out.println("Test Factory - REPO_DIR: " + CODESTORY_REPO_DIR);
+        System.out.println("Test Factory - ENV_NAMES ([] runs all stubs): " + GlobalEnv.ENV_NAMES);
+        System.out.println("Test Factory - SKIP_ENVS ([] does not skip): " + GlobalEnv.SKIP_ENVS);
 
         ClassLoader classLoader = MainDynamicStubTest.class.getClassLoader();
         File directory = new File(classLoader.getResource(STUBS_DIR).getFile());
 
         ArrayList<DynamicTest> dynamicTests = new ArrayList<>();
-        int index = 0;
-        int numTestsRun = 0;
+//        int index = 0;
+//        int numTestsRun = 0;
+        int skipCount = 0;
 
         List<File> files = Arrays.asList(directory.listFiles());
         Collections.sort(files);
 
-        fileLoop:
         for (File file : files) {
             String envName = file.getName().replace(".json", "");
-            for (String skipEnv : GlobalEnv.SKIP_ENVS) {
-                if (envName.startsWith(skipEnv)) {
-                    System.out.println("Skipping env due to SKIP_ENVS env var: " + envName);
-                    continue fileLoop;
+
+            boolean shouldSkip = false;
+            // skip anything explicitly excluded
+            if (GlobalEnv.SKIP_ENVS.size() > 0) {
+                // only consider skips if there are some
+                for (String excludedEnv : GlobalEnv.SKIP_ENVS) {
+                    if (envName.startsWith(excludedEnv.trim())) {
+                        System.out.println("Skipping env due to SKIP_ENVS env var: " + envName + "; skipEnv: " + excludedEnv);
+                        shouldSkip = true;
+                    }
+                }
+            } else {
+                // no skips, keep going
+            }
+
+            boolean shouldInclude = false;
+            if (shouldSkip == false) {
+                // if includes specified, only consider those
+                if (GlobalEnv.ENV_NAMES.size() > 0) {
+                    for (String includedEnv : GlobalEnv.ENV_NAMES) {
+                        if (envName.startsWith(includedEnv.trim())) {
+                            shouldInclude = true;
+                        }
+                    }
+                } else {
+                    System.out.println("Including all envs due to ENV_NAME being empty");
+                    shouldInclude = true;
                 }
             }
 
-            String json = FileUtils.readFileToString(file, "utf-8");
-            StartEnvironment startEnv = GSON.fromJson(json, StartEnvironment.class);
-            startEnv.setEnvName(envName);
+            if (shouldInclude == false) {
+                // System.out.println("Skipping env due to ENV_NAME not containing: " + envName);
+                skipCount++;
+            } else if (shouldSkip == true) {
+                // System.out.println("Skipping env due to SKIP_NAMES containing: " + envName);
+                skipCount++;
+            } else {
+                System.out.println("Including env: " + envName);
+                String json = FileUtils.readFileToString(file, "utf-8");
+                StartEnvironment startEnv = GSON.fromJson(json, StartEnvironment.class);
+                startEnv.setEnvName(envName);
 
-            boolean stubWhitelisted = envName.startsWith(RUN_ONLY_TEST);
-            boolean isBlacklist = RUN_ONLY_TEST.startsWith("!");
-            boolean stubBlacklisted = isBlacklist && envName.startsWith(RUN_ONLY_TEST.substring(1));
-            if (RUN_ONLY_TEST == "" || stubWhitelisted || (isBlacklist && !stubBlacklisted)) {
-                index++;
-                if (GlobalEnv.BEGIN_INDEX >= 0 && GlobalEnv.MAX_RUNS >= 0) {
-                    if (index < GlobalEnv.BEGIN_INDEX) {
-                        System.out.println("index < GlobalEnv.BEGIN_INDEX; skip.");
-                        continue;
-                    }
-                    if (numTestsRun >= GlobalEnv.MAX_RUNS) {
-                        System.out.println("numTestsRun < GlobalEnv.MAX_RUNS; skip.");
-                        continue;
-                    }
-                }
+                //                index++;
+                //                if (GlobalEnv.BEGIN_INDEX >= 0 && GlobalEnv.MAX_RUNS >= 0) {
+                //                    if (index < GlobalEnv.BEGIN_INDEX) {
+                //                        System.out.println("index < GlobalEnv.BEGIN_INDEX; skip.");
+                //                        continue;
+                //                    }
+                //                    if (numTestsRun >= GlobalEnv.MAX_RUNS) {
+                //                        System.out.println("numTestsRun < GlobalEnv.MAX_RUNS; skip.");
+                //                        continue;
+                //                    }
+                //                }
+                //
+                //                numTestsRun++;
 
-                numTestsRun++;
                 System.out.println("TestFactory - Creating suite for: " + startEnv.getEnvName());
                 dynamicTests.add(createDynamicTest(startEnv));
                 System.out.println("TestFactory - Suite created for: " + startEnv.getEnvName());
             }
         }
-        System.out.println("TestFactory - All tests created; total #: " + numTestsRun);
+        System.out.println("TestFactory - All tests created; included #: " + dynamicTests.size() + "; skipped #: " + skipCount);
 
         // Sort the tests so we work through them consistently
         // Specifically, need an alph order, not lexicographic
@@ -143,7 +171,7 @@ public class MainDynamicStubTest {
         Map<String, String> expectedResult = startEnv.getExpectedResult();
         String message = String.format("%s - expecting %s changes", startEnv.getEnvName(), expectedResult.size());
 
-        System.out.println("Creating test: "+message);
+        System.out.println("Creating test: " + message);
 
         return DynamicTest.dynamicTest(
                 message,
@@ -182,7 +210,7 @@ public class MainDynamicStubTest {
                         assertTrue(compareResults(expectedResult, yresult), "results should be the same");
                         System.out.println("Test comparison complete: " + message);
                         System.out.println("Test execution complete: " + message);
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         log.error("Could run Shovel execution for Env: {{}}. Skipping.", startEnv.getEnvName(), e);
                         // clear large objects
                         startEnv.setRepositoryService(null);
