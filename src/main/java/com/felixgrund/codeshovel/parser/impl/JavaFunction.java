@@ -5,6 +5,7 @@ import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
+import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
@@ -148,5 +149,29 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 	@Override
 	protected String getInitialFunctionPath(MethodDeclaration method) {
 		return null;
+	}
+
+	@Override
+	protected String getInitialId(MethodDeclaration method) {
+		String ident = getName();
+		if (isNestedMethod(method)) {
+			ident = "$" + ident;
+		}
+		String idParameterString = super.getIdParameterString();
+		if (StringUtils.isNotBlank(idParameterString)) {
+			ident += "___" + idParameterString;
+		}
+		return Utl.sanitizeFunctionId(ident);
+	}
+
+	private boolean isNestedMethod(MethodDeclaration method) {
+		if (method.getParentNode().isPresent()) {
+			Node parentNode = method.getParentNode().get();
+			if (parentNode.getParentNode().isPresent()) {
+				Node grandParentNode = parentNode.getParentNode().get();
+				return grandParentNode instanceof NodeWithSimpleName;
+			}
+		}
+		return false;
 	}
 }
