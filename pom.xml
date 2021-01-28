@@ -136,11 +136,12 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.1</version>
 				<configuration>
-<!--					<skipTests>true</skipTests>-->
+					<!--<skipTests>true</skipTests>-->
 					<argLine>-Xmx4g</argLine>
 					<environmentVariables>
-						<ENV_NAME>javaparser</ENV_NAME>
-						<REPO_DIR>/Users/rtholmes/tmp/codeshovelRepos</REPO_DIR>
+						<REPO_DIR>/Users/rtholmes/tmp/codeshovelRepos</REPO_DIR> <!-- required -->
+						<LANG>java</LANG> <!-- required -->
+						<ENV_NAME>javaparser</ENV_NAME> <!-- optional -->
 					</environmentVariables>
 				</configuration>
 			</plugin>
@@ -170,16 +171,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<!--
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.22.0</version>
-			</plugin>
-		</plugins>
-	</reporting>
-	-->
 </project>

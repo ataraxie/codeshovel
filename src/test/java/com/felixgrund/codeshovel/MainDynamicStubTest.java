@@ -58,10 +58,16 @@ public class MainDynamicStubTest {
     @DisplayName("Dynamic test stubs from JSON files")
     public Collection<DynamicTest> createDynamicTests() throws Exception {
 
+        System.out.println("Test Factory - starting");
+        System.out.println("Test Factory - STUBS_DIR: "+STUBS_DIR);
+        System.out.println("Test Factory - REPO_DIR: "+CODESTORY_REPO_DIR);
+        System.out.println("Test Factory - ENV (empty string runs all stubs): "+GlobalEnv.ENV_NAME);
+        System.out.println("Test Factory - SKIP_ENVS ([] does not skip): "+GlobalEnv.SKIP_ENVS);
+
         ClassLoader classLoader = MainDynamicStubTest.class.getClassLoader();
         File directory = new File(classLoader.getResource(STUBS_DIR).getFile());
 
-        Collection<DynamicTest> dynamicTests = new ArrayList<>();
+        ArrayList<DynamicTest> dynamicTests = new ArrayList<>();
         int index = 0;
         int numTestsRun = 0;
 
@@ -99,12 +105,20 @@ public class MainDynamicStubTest {
                 }
 
                 numTestsRun++;
-                System.out.println("TestFactory - Creating tests for: " + startEnv.getEnvName());
+                System.out.println("TestFactory - Creating suite for: " + startEnv.getEnvName());
                 dynamicTests.add(createDynamicTest(startEnv));
-                System.out.println("TestFactory - Tests created for: " + startEnv.getEnvName());
+                System.out.println("TestFactory - Suite created for: " + startEnv.getEnvName());
             }
         }
         System.out.println("TestFactory - All tests created; total #: " + numTestsRun);
+
+        // Sort the tests so we work through them consistently
+        // Specifically, need an alph order, not lexicographic
+        // (e.g., Java sorts Z before a)
+        Collections.sort(dynamicTests, (DynamicTest t1, DynamicTest t2) ->
+                t1.getDisplayName().toLowerCase(Locale.ROOT).
+                        compareTo(t2.getDisplayName().toLowerCase(Locale.ROOT)));
+
         return dynamicTests;
     }
 

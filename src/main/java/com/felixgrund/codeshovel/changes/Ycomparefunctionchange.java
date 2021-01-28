@@ -121,7 +121,23 @@ public abstract class Ycomparefunctionchange extends Ychange {
 						this.newFunction.getCommit(),
 						this.newFunction.getSourceFilePath());
 			} catch (Exception e) {
-				e.printStackTrace();
+				// Note: this is a relatively common error and seems to be handled correctly by callers
+				System.err.println("Ycomparefunctionchange::getCommitsBetweenForFile() - failed to get commits between files");
+				if (this.oldFunction != null){
+					System.out.println("oldFunc commit: "+this.oldFunction.getCommit().getCommitNameShort());
+					System.out.println("oldFunc name: "+this.oldFunction.getName()+"; path: "+this.oldFunction.getSourceFilePath());
+				} else {
+					System.out.println("oldFunc: null");
+				}
+
+				if (this.newFunction!= null){
+					System.out.println("newFunc commit: "+this.newFunction.getCommit().getCommitNameShort());
+					System.out.println("newFunc name: "+this.newFunction.getName()+"; path: "+this.newFunction.getSourceFilePath());
+				} else {
+					System.out.println("newFunc: null");
+				}
+
+				// e.printStackTrace();
 			}
 		}
 		return commitsBetweenForFile;

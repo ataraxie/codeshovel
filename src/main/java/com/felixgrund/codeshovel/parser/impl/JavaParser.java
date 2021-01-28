@@ -43,6 +43,7 @@ public class JavaParser extends AbstractParser implements Yparser {
 			rootCompilationUnit.accept(visitor, null);
 			return visitor.getMatchedNodes();
 		} catch (Exception e) {
+			System.err.println("JavaParser::parseMethods() - parse error. path: "+this.filePath+"; content:\n"+this.fileContent);
 			throw new ParseException("Error during parsing of content", this.filePath, this.fileContent);
 		}
 	}
