@@ -27,155 +27,171 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * This is the main class for comparing the CodeShovel performance
+ * against a pre-computed oracle file. This is useful for both
+ * evaluating CodeShovel in an academic setting, but also to ensure
+ * that any development changes have not decreased CodeShovel's
+ * effectiveness.
+ */
 public class MainDynamicStubTest {
 
-	private static Logger log = LoggerFactory.getLogger(MainDynamicStubTest.class);
+    private static final Logger log = LoggerFactory.getLogger(MainDynamicStubTest.class);
+    private static final Gson GSON = new Gson();
 
-	private static final String CODESTORY_REPO_DIR = GlobalEnv.REPO_DIR;
-	private static final String STUBS_DIR = "stubs/" + GlobalEnv.LANG;
+    // These three environment variables should be set before the test
+    // suite is run. They help configure the test environment without
+    // having to recompile the code.
 
-	private static final Gson GSON = new Gson();
+    // The folder containing the repositories the oracle is evaluating
+    private static final String CODESTORY_REPO_DIR = GlobalEnv.REPO_DIR;
 
-	private static final String RUN_ONLY_TEST = GlobalEnv.ENV_NAME;
+    // The location of the oracle files (src/resources/stubs.<LANG>)
+    private static final String STUBS_DIR = "stubs/" + GlobalEnv.LANG;
+
+    // Useful for running only one oracle (e.g., for debugging)
+    // If blank, all oracles are executed
+    private static final String RUN_ONLY_TEST = GlobalEnv.ENV_NAME;
+
+    @TestFactory
+    @DisplayName("Dynamic test stubs from JSON files")
+    public Collection<DynamicTest> createDynamicTests() throws Exception {
+
+        ClassLoader classLoader = MainDynamicStubTest.class.getClassLoader();
+        File directory = new File(classLoader.getResource(STUBS_DIR).getFile());
+
+        Collection<DynamicTest> dynamicTests = new ArrayList<>();
+        int index = 0;
+        int numTestsRun = 0;
+
+        List<File> files = Arrays.asList(directory.listFiles());
+        Collections.sort(files);
+
+        fileLoop:
+        for (File file : files) {
+            String envName = file.getName().replace(".json", "");
+            for (String skipEnv : GlobalEnv.SKIP_ENVS) {
+                if (envName.startsWith(skipEnv)) {
+                    System.out.println("Skipping env due to SKIP_ENVS env var: " + envName);
+                    continue fileLoop;
+                }
+            }
+
+            String json = FileUtils.readFileToString(file, "utf-8");
+            StartEnvironment startEnv = GSON.fromJson(json, StartEnvironment.class);
+            startEnv.setEnvName(envName);
+
+            boolean stubWhitelisted = envName.startsWith(RUN_ONLY_TEST);
+            boolean isBlacklist = RUN_ONLY_TEST.startsWith("!");
+            boolean stubBlacklisted = isBlacklist && envName.startsWith(RUN_ONLY_TEST.substring(1));
+            if (RUN_ONLY_TEST == "" || stubWhitelisted || (isBlacklist && !stubBlacklisted)) {
+                index++;
+                if (GlobalEnv.BEGIN_INDEX >= 0 && GlobalEnv.MAX_RUNS >= 0) {
+                    if (index < GlobalEnv.BEGIN_INDEX) {
+                        System.out.println("index < GlobalEnv.BEGIN_INDEX; skip.");
+                        continue;
+                    }
+                    if (numTestsRun >= GlobalEnv.MAX_RUNS) {
+                        System.out.println("numTestsRun < GlobalEnv.MAX_RUNS; skip.");
+                        continue;
+                    }
+                }
+
+                numTestsRun++;
+                dynamicTests.add(createDynamicTest(startEnv));
+            }
+        }
+
+        return dynamicTests;
+    }
+
+    private DynamicTest createDynamicTest(StartEnvironment startEnv) throws IOException {
+        DynamicTest test = null;
+        System.out.println("Running dynamic test for config :" + startEnv.getEnvName());
+
+        String repositoryName = startEnv.getRepositoryName();
+        String repositoryPath = CODESTORY_REPO_DIR + "/" + repositoryName + "/.git";
+        String filePath = startEnv.getFilePath();
+
+        Repository repository = Utl.createRepository(repositoryPath);
+        Git git = new Git(repository);
+        RepositoryService repositoryService = new CachingRepositoryService(git, repository, repositoryName, repositoryPath);
+        Commit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
+
+        startEnv.setRepositoryService(repositoryService);
+        startEnv.setRepositoryPath(repositoryPath);
+        startEnv.setStartCommit(startCommit);
+        startEnv.setFileName(Utl.getFileName(filePath));
+
+        try {
+            Yresult yresult = ShovelExecution.runSingle(startEnv, startEnv.getFilePath(), true);
+            test = doCreateDynamicTest(startEnv, yresult);
+        } catch (Exception e) {
+            log.error("Could run Shovel execution for Env: {{}}. Skipping.", startEnv.getEnvName(), e);
+        }
+
+        return test;
+    }
 
 
-	@TestFactory
-	@DisplayName("Dynamic test stubs from JSON files")
-	public Collection<DynamicTest> createDynamicTests() throws Exception {
+    private DynamicTest doCreateDynamicTest(StartEnvironment startEnv, Yresult yresult) {
+        Map<String, String> expectedResult = startEnv.getExpectedResult();
+        String message = String.format("%s - expecting %s changes", startEnv.getEnvName(), expectedResult.size());
 
-		ClassLoader classLoader = MainDynamicStubTest.class.getClassLoader();
-		File directory = new File(classLoader.getResource(STUBS_DIR).getFile());
+        StringBuilder actualResultBuilder = new StringBuilder();
+        for (String commitName : yresult.keySet()) {
+            actualResultBuilder.append("\n").append(commitName).append(":").append(yresult.get(commitName).getTypeAsString());
+        }
 
-		Collection<DynamicTest> dynamicTests = new ArrayList<>();
-		int index = 0;
-		int numTestsRun = 0;
+        StringBuilder expectedResultBuilder = new StringBuilder();
+        for (String commitName : expectedResult.keySet()) {
+            expectedResultBuilder.append("\n").append(commitName).append(":").append(expectedResult.get(commitName));
+        }
 
-		List<File> files = Arrays.asList(directory.listFiles());
-		Collections.sort(files);
+        return DynamicTest.dynamicTest(
+                message,
+                () -> {
+                    assertEquals(expectedResultBuilder.toString(), actualResultBuilder.toString(), "stringified result should be the same");
+                    assertTrue(compareResults(expectedResult, yresult), "results should be the same");
+                }
+        );
+    }
 
-		fileLoop: for (File file : files) {
-			String envName = file.getName().replace(".json", "");
-			for (String skipEnv : GlobalEnv.SKIP_ENVS) {
-				if (envName.startsWith(skipEnv)) {
-					System.out.println("Skipping env due to SKIP_ENVS env var: " + envName);
-					continue fileLoop;
-				}
-			}
+    private static boolean compareResults(Map<String, String> expectedResult, Yresult actualResult) {
+        if (expectedResult.size() != actualResult.size()) {
+            System.out.println(String.format("Result size did not match. Expected: %s, actual: %s",
+                    expectedResult.size(), actualResult.size()));
 
-			String json = FileUtils.readFileToString(file, "utf-8");
-			StartEnvironment startEnv = GSON.fromJson(json, StartEnvironment.class);
-			startEnv.setEnvName(envName);
-			boolean stubWhitelisted = envName.startsWith(RUN_ONLY_TEST);
-			boolean isBlacklist = RUN_ONLY_TEST.startsWith("!");
-			boolean stubBlacklisted = isBlacklist && envName.startsWith(RUN_ONLY_TEST.substring(1));
-			if (RUN_ONLY_TEST == null || stubWhitelisted || (isBlacklist && !stubBlacklisted)) {
-				index++;
-				if (GlobalEnv.BEGIN_INDEX >= 0 && GlobalEnv.MAX_RUNS >= 0) {
-					if (index < GlobalEnv.BEGIN_INDEX) {
-						System.out.println("index < GlobalEnv.BEGIN_INDEX; skip.");
-						continue;
-					}
-					if (numTestsRun >= GlobalEnv.MAX_RUNS) {
-						System.out.println("numTestsRun < GlobalEnv.MAX_RUNS; skip.");
-						continue;
-					}
-				}
+            Set<String> expectedKeys = expectedResult.keySet();
+            Set<String> actualKeys = new HashSet<>();
+            for (String commitName : actualResult.keySet()) {
+                actualKeys.add(commitName);
+            }
+            Set<String> onlyInExpected = new HashSet<>(expectedKeys);
+            onlyInExpected.removeAll(actualKeys);
+            Set<String> onlyInActual = new HashSet<>(actualKeys);
+            onlyInActual.removeAll(expectedKeys);
+            System.out.println("\nOnly in expected:\n" + StringUtils.join(onlyInExpected, "\n"));
+            System.out.println("\nOnly in actual:\n" + StringUtils.join(onlyInActual, "\n"));
+            return false;
+        }
 
-				numTestsRun++;
-				dynamicTests.add(createDynamicTest(startEnv));
-			}
-		}
+        for (String commitName : actualResult.keySet()) {
+            Ychange ychange = actualResult.get(commitName);
+            String expectedChangeType = expectedResult.get(commitName);
+            if (expectedChangeType == null) {
+                System.out.println(String.format("Expected result does not contain commit with name %s", commitName));
+                return false;
+            }
+            String actualChangeType = ychange.getTypeAsString();
+            if (!expectedChangeType.equals(actualChangeType)) {
+                System.out.println(String.format("Type of change was not expected for commit %s. Expected: %s, actual: %s",
+                        commitName, expectedChangeType, actualChangeType));
+                return false;
+            }
+        }
 
-		return dynamicTests;
-	}
-
-	private DynamicTest createDynamicTest(StartEnvironment startEnv) throws IOException {
-		DynamicTest test = null;
-		System.out.println("Running dynamic test for config :" + startEnv.getEnvName());
-
-		String repositoryName = startEnv.getRepositoryName();
-		String repositoryPath = CODESTORY_REPO_DIR + "/" + repositoryName + "/.git";
-		String filePath = startEnv.getFilePath();
-		Repository repository = Utl.createRepository(repositoryPath);
-		Git git = new Git(repository);
-
-		RepositoryService repositoryService = new CachingRepositoryService(git, repository, repositoryName, repositoryPath);
-
-		Commit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
-
-		startEnv.setRepositoryService(repositoryService);
-		startEnv.setRepositoryPath(repositoryPath);
-		startEnv.setStartCommit(startCommit);
-		startEnv.setFileName(Utl.getFileName(filePath));
-
-		try {
-			Yresult yresult = ShovelExecution.runSingle(startEnv, startEnv.getFilePath(), true);
-			test = doCreateDynamicTest(startEnv, yresult);
-		} catch (Exception e) {
-			log.error("Could run Shovel execution for Env: {{}}. Skipping.", startEnv.getEnvName(), e);
-		}
-
-		return test;
-	}
-
-
-	private DynamicTest doCreateDynamicTest(StartEnvironment startEnv, Yresult yresult) {
-		Map<String, String> expectedResult = startEnv.getExpectedResult();
-		String message = String.format("%s - expecting %s changes", startEnv.getEnvName(), expectedResult.size());
-
-		StringBuilder actualResultBuilder = new StringBuilder();
-		for (String commitName : yresult.keySet()) {
-			actualResultBuilder.append("\n").append(commitName).append(":").append(yresult.get(commitName).getTypeAsString());
-		}
-
-		StringBuilder expectedResultBuilder = new StringBuilder();
-		for (String commitName : expectedResult.keySet()) {
-			expectedResultBuilder.append("\n").append(commitName).append(":").append(expectedResult.get(commitName));
-		}
-
-		return DynamicTest.dynamicTest(
-				message,
-				() -> {
-					assertEquals(expectedResultBuilder.toString(), actualResultBuilder.toString(), "stringified result should be the same");
-					assertTrue(compareResults(expectedResult, yresult), "results should be the same");
-				}
-		);
-	}
-
-	private static boolean compareResults(Map<String, String> expectedResult, Yresult actualResult) {
-		if (expectedResult.size() != actualResult.size()) {
-			System.out.println(String.format("Result size did not match. Expected: %s, actual: %s",
-					expectedResult.size(), actualResult.size()));
-
-			Set<String> expectedKeys = expectedResult.keySet();
-			Set<String> actualKeys = new HashSet<>();
-			for (String commitName : actualResult.keySet()) {
-				actualKeys.add(commitName);
-			}
-			Set<String> onlyInExpected = new HashSet<>(expectedKeys);
-			onlyInExpected.removeAll(actualKeys);
-			Set<String> onlyInActual = new HashSet<>(actualKeys);
-			onlyInActual.removeAll(expectedKeys);
-			System.out.println("\nOnly in expected:\n" + StringUtils.join(onlyInExpected, "\n"));
-			System.out.println("\nOnly in actual:\n" + StringUtils.join(onlyInActual, "\n"));
-			return false;
-		}
-		for (String commitName : actualResult.keySet()) {
-			Ychange ychange = actualResult.get(commitName);
-			String expectedChangeType = expectedResult.get(commitName);
-			if (expectedChangeType == null) {
-				System.out.println(String.format("Expected result does not contain commit with name %s", commitName));
-				return false;
-			}
-			String actualChangeType = ychange.getTypeAsString();
-			if (!expectedChangeType.equals(actualChangeType)) {
-				System.out.println(String.format("Type of change was not expected for commit %s. Expected: %s, actual: %s",
-						commitName, expectedChangeType, actualChangeType));
-				return false;
-			}
-		}
-
-		return true;
-	}
+        return true;
+    }
 
 }
