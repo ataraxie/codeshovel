@@ -6,6 +6,7 @@ import com.felixgrund.codeshovel.execution.ShovelExecution;
 import com.felixgrund.codeshovel.services.RepositoryService;
 import com.felixgrund.codeshovel.services.impl.CachingRepositoryService;
 import com.felixgrund.codeshovel.util.Utl;
+import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.GlobalEnv;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.google.gson.Gson;
@@ -13,7 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-import com.felixgrund.codeshovel.wrappers.Commit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-// import static com.carrotsearch.sizeof.RamUsageEstimator.sizeOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * that any development changes have not decreased CodeShovel's
  * effectiveness.
  */
+
 public class MainDynamicStubTest {
 
     private static final Logger log = LoggerFactory.getLogger(MainDynamicStubTest.class);
@@ -54,22 +54,18 @@ public class MainDynamicStubTest {
     // If blank, all oracles are executed
     // private static final String RUN_ONLY_TEST = GlobalEnv.ENV_NAME;
 
-    @TestFactory
-    @DisplayName("Dynamic test stubs from JSON files")
-    public Collection<DynamicTest> createDynamicTests() throws Exception {
+    public List<StartEnvironment> selectEnvironments() throws IOException {
+        System.out.println("Selecting Environments");
 
-        System.out.println("Test Factory - starting");
-        System.out.println("Test Factory - STUBS_DIR: " + STUBS_DIR);
-        System.out.println("Test Factory - REPO_DIR: " + CODESTORY_REPO_DIR);
-        System.out.println("Test Factory - ENV_NAMES ([] runs all stubs): " + GlobalEnv.ENV_NAMES);
-        System.out.println("Test Factory - SKIP_ENVS ([] does not skip): " + GlobalEnv.SKIP_ENVS);
+        System.out.println("selectEnvironments - STUBS_DIR: " + STUBS_DIR);
+        System.out.println("selectEnvironments - REPO_DIR: " + CODESTORY_REPO_DIR);
+        System.out.println("selectEnvironments - ENV_NAMES ([] runs all stubs): " + GlobalEnv.ENV_NAMES);
+        System.out.println("selectEnvironments - SKIP_ENVS ([] does not skip): " + GlobalEnv.SKIP_ENVS);
 
         ClassLoader classLoader = MainDynamicStubTest.class.getClassLoader();
         File directory = new File(classLoader.getResource(STUBS_DIR).getFile());
 
-        ArrayList<DynamicTest> dynamicTests = new ArrayList<>();
-//        int index = 0;
-//        int numTestsRun = 0;
+        ArrayList<StartEnvironment> selectedEnvironments = new ArrayList<>();
         int skipCount = 0;
 
         List<File> files = Arrays.asList(directory.listFiles());
@@ -114,31 +110,34 @@ public class MainDynamicStubTest {
                 // System.out.println("Skipping env due to SKIP_NAMES containing: " + envName);
                 skipCount++;
             } else {
-                System.out.println("Including env: " + envName);
+                System.out.println("Including environment: " + envName);
                 String json = FileUtils.readFileToString(file, "utf-8");
                 StartEnvironment startEnv = GSON.fromJson(json, StartEnvironment.class);
                 startEnv.setEnvName(envName);
 
-                //                index++;
-                //                if (GlobalEnv.BEGIN_INDEX >= 0 && GlobalEnv.MAX_RUNS >= 0) {
-                //                    if (index < GlobalEnv.BEGIN_INDEX) {
-                //                        System.out.println("index < GlobalEnv.BEGIN_INDEX; skip.");
-                //                        continue;
-                //                    }
-                //                    if (numTestsRun >= GlobalEnv.MAX_RUNS) {
-                //                        System.out.println("numTestsRun < GlobalEnv.MAX_RUNS; skip.");
-                //                        continue;
-                //                    }
-                //                }
-                //
-                //                numTestsRun++;
-
-                System.out.println("TestFactory - Creating suite for: " + startEnv.getEnvName());
-                dynamicTests.add(createDynamicTest(startEnv));
-                System.out.println("TestFactory - Suite created for: " + startEnv.getEnvName());
+                selectedEnvironments.add(startEnv);
             }
         }
-        System.out.println("TestFactory - All tests created; included #: " + dynamicTests.size() + "; skipped #: " + skipCount);
+
+        System.out.println("Environments Selected; # included: " +
+                selectedEnvironments.size() + "; # skipped: " + skipCount);
+
+        return selectedEnvironments;
+    }
+
+
+    @TestFactory
+    @DisplayName("Dynamic test stubs from JSON files")
+    public Collection<DynamicTest> createDynamicTests() throws Exception {
+
+        List<StartEnvironment> selectedEnvironments = this.selectEnvironments();
+
+        List<DynamicTest> dynamicTests = new ArrayList<>();
+        for (StartEnvironment env : selectedEnvironments) {
+            System.out.println("TestFactory - Creating suite for: " + env.getEnvName());
+            dynamicTests.add(createDynamicTest(env));
+            System.out.println("TestFactory - Suite created for: " + env.getEnvName());
+        }
 
         // Sort the tests so we work through them consistently
         // Specifically, need an alph order, not lexicographic
@@ -154,10 +153,6 @@ public class MainDynamicStubTest {
         DynamicTest test = null;
         System.out.println("Running dynamic test for config: " + startEnv.getEnvName());
 
-        String repositoryName = startEnv.getRepositoryName();
-        String repositoryPath = CODESTORY_REPO_DIR + "/" + repositoryName + "/.git";
-        String filePath = startEnv.getFilePath();
-
         try {
             test = doCreateDynamicTest(startEnv);
         } catch (Exception e) {
@@ -168,9 +163,9 @@ public class MainDynamicStubTest {
     }
 
     private DynamicTest doCreateDynamicTest(StartEnvironment startEnv) {
-        Map<String, String> expectedResult = startEnv.getExpectedResult();
-        String message = String.format("%s - expecting %s changes", startEnv.getEnvName(), expectedResult.size());
-
+        // Map<String, String> expectedResult = startEnv.getExpectedResult();
+        // String message = String.format("%s - expecting %s changes", startEnv.getEnvName(), expectedResult.size());
+        String message = startEnv.getEnvName();
         System.out.println("Creating test: " + message);
 
         return DynamicTest.dynamicTest(
@@ -178,36 +173,13 @@ public class MainDynamicStubTest {
                 () -> {
                     Yresult yresult = null;
                     try {
-                        System.out.println("Executing test: " + message);
-                        String repositoryName = startEnv.getRepositoryName();
-                        String repositoryPath = CODESTORY_REPO_DIR + "/" + repositoryName + "/.git";
-                        String filePath = startEnv.getFilePath();
-
-                        Repository repository = Utl.createRepository(repositoryPath);
-                        Git git = new Git(repository);
-                        RepositoryService repositoryService = new CachingRepositoryService(git, repository, repositoryName, repositoryPath);
-                        Commit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
-
-                        startEnv.setRepositoryService(repositoryService);
-                        startEnv.setRepositoryPath(repositoryPath);
-                        startEnv.setStartCommit(startCommit);
-                        startEnv.setFileName(Utl.getFileName(filePath));
-
-                        yresult = ShovelExecution.runSingle(startEnv, startEnv.getFilePath(), true);
-
                         StringBuilder actualResultBuilder = new StringBuilder();
-                        for (String commitName : yresult.keySet()) {
-                            actualResultBuilder.append("\n").append(commitName).append(":").append(yresult.get(commitName).getTypeAsString());
-                        }
-
                         StringBuilder expectedResultBuilder = new StringBuilder();
-                        for (String commitName : expectedResult.keySet()) {
-                            expectedResultBuilder.append("\n").append(commitName).append(":").append(expectedResult.get(commitName));
-                        }
+                        yresult = runEnvironment(startEnv,actualResultBuilder,expectedResultBuilder);
 
                         System.out.println("Performing test comparison: " + message);
                         assertEquals(expectedResultBuilder.toString(), actualResultBuilder.toString(), "stringified result should be the same");
-                        assertTrue(compareResults(expectedResult, yresult), "results should be the same");
+                        assertTrue(compareResults(startEnv.getExpectedResult(), yresult), "results should be the same");
                         System.out.println("Test comparison complete: " + message);
                         System.out.println("Test execution complete: " + message);
                     } catch (Exception e) {
@@ -224,6 +196,79 @@ public class MainDynamicStubTest {
         );
     }
 
+    public boolean performComparison(StartEnvironment startEnv) throws Exception{
+        Yresult yresult = null;
+        try {
+            String message = startEnv.getEnvName();
+
+            StringBuilder actualResultBuilder = new StringBuilder();
+            StringBuilder expectedResultBuilder = new StringBuilder();
+            yresult = runEnvironment(startEnv,actualResultBuilder,expectedResultBuilder);
+
+            System.out.println("Performing test comparison: " + message);
+
+            // assertEquals(expectedResultBuilder.toString(), actualResultBuilder.toString(), );
+            if (expectedResultBuilder.toString().equals(actualResultBuilder.toString())){
+                 // good
+            } else {
+                System.err.println(message+" test failed; stringified result should be the same");
+                return false;
+            }
+
+            // assertTrue(compareResults(startEnv.getExpectedResult(), yresult), "results should be the same");
+            if (compareResults(startEnv.getExpectedResult(), yresult)){
+                // good
+            } else {
+                System.err.println(message+" test failed; results should be the same");
+                return false;
+            }
+
+            System.out.println("Test succeeded: " + message);
+        } catch (Exception e) {
+            log.error("Could run Shovel execution for Env: {{}}. Skipping.", startEnv.getEnvName(), e);
+            // clear large objects
+            startEnv.setRepositoryService(null);
+            yresult = null;
+            throw e;
+        }
+        // clear large objects
+        startEnv.setRepositoryService(null);
+        yresult = null;
+        return true;
+    }
+
+    public Yresult runEnvironment(StartEnvironment startEnv, StringBuilder actualResultBuilder, StringBuilder expectedResultBuilder) throws IOException, Exception{
+        String message = startEnv.getEnvName();
+
+        System.out.println("Executing test: " + message);
+        String repositoryName = startEnv.getRepositoryName();
+        String repositoryPath = CODESTORY_REPO_DIR + "/" + repositoryName + "/.git";
+        String filePath = startEnv.getFilePath();
+
+        Repository repository = Utl.createRepository(repositoryPath);
+        Git git = new Git(repository);
+        RepositoryService repositoryService = new CachingRepositoryService(git, repository, repositoryName, repositoryPath);
+        Commit startCommit = repositoryService.findCommitByName(startEnv.getStartCommitName());
+
+        startEnv.setRepositoryService(repositoryService);
+        startEnv.setRepositoryPath(repositoryPath);
+        startEnv.setStartCommit(startCommit);
+        startEnv.setFileName(Utl.getFileName(filePath));
+
+        // compute changes
+        Yresult yresult = ShovelExecution.runSingle(startEnv, startEnv.getFilePath(), true);
+
+        for (String commitName : yresult.keySet()) {
+            actualResultBuilder.append("\n").append(commitName).append(":").append(yresult.get(commitName).getTypeAsString());
+        }
+
+        Map<String, String> expectedResult = startEnv.getExpectedResult();
+        for (String commitName : expectedResult.keySet()) {
+            expectedResultBuilder.append("\n").append(commitName).append(":").append(expectedResult.get(commitName));
+        }
+
+        return yresult;
+    }
     private static boolean compareResults(Map<String, String> expectedResult, Yresult actualResult) {
         if (expectedResult.size() != actualResult.size()) {
             System.out.println(String.format("Result size did not match. Expected: %s, actual: %s",
