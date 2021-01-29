@@ -169,15 +169,19 @@ public abstract class AbstractParser implements Yparser {
                 return candidate;
             }
 
-            Integer lineNumberDistance = null;
+//            Integer lineNumberDistance = null;
             double scopeSimilarity = getScopeSimilarity(candidate, compareFunction);
 
-            if (bodySimilarity > Thresholds.BODY_SIM_THRESHOLD.val() && scopeSimilarity == Thresholds.SCOPE_SIM_THRESHOLD.val()) {
-                if (!crossFile) {
-                    lineNumberDistance = Utl.getLineNumberDistance(candidate, compareFunction);
-                }
-                if (crossFile || lineNumberDistance < Thresholds.LINE_NUM_THRESHOLD.val()) {
-                    log.trace("Found function with body similarity > 0.9 and line distance < 10 and scope similarity of 1. Done.");
+            if (bodySimilarity > Thresholds.BODY_SIM_THRESHOLD.val() &&
+                    scopeSimilarity == Thresholds.SCOPE_SIM_THRESHOLD.val()) {
+//                if (!crossFile) {
+//                    lineNumberDistance = Utl.getLineNumberDistance(candidate, compareFunction);
+//                }
+//                if (crossFile || lineNumberDistance < Thresholds.LINE_NUM_THRESHOLD.val()) {
+//                    log.trace("Found function with body similarity > 0.9 and line distance < 10 and scope similarity of 1. Done.");
+//                    return candidate;
+//                }
+                if (crossFile) {
                     return candidate;
                 }
             }
@@ -250,15 +254,20 @@ public abstract class AbstractParser implements Yparser {
     }
 
     private boolean shouldBodyBeVerySimilar(Yfunction aFunction, Yfunction bFunction) {
-        boolean ret = false;
         String aBody = aFunction.getBody();
         String bBody = bFunction.getBody();
-        if (Utl.countLineNumbers(aBody) <= Thresholds.SHORT_METHOD_THRESHOLD.val() ||
-                Utl.countLineNumbers(bBody) <= Thresholds.SHORT_METHOD_THRESHOLD.val()) {
-            ret = aBody.length() < Thresholds.LONG_METHOD_THRESHOLD.val() ||
-                    bBody.length() < Thresholds.LONG_METHOD_THRESHOLD.val();
-        }
-        return ret;
+        int aLines = Utl.countLineNumbers(aBody);
+        int bLines = Utl.countLineNumbers(bBody);
+
+//        boolean hasFewLines = aLines <= Thresholds.SHORT_METHOD_LINE_THRESHOLD.val() ||
+//                        bLines <= Thresholds.SHORT_METHOD_LINE_THRESHOLD.val();
+
+        boolean hasFewChars = aBody.length() < Thresholds.LONG_METHOD_CHAR_THRESHOLD.val() ||
+                bBody.length() < Thresholds.LONG_METHOD_CHAR_THRESHOLD.val();
+
+//        return hasFewLines && hasFewChars;
+
+        return hasFewChars;
     }
 
     @Override

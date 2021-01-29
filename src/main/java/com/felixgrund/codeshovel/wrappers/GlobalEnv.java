@@ -48,7 +48,7 @@ public class GlobalEnv {
 	// ENV_NAMES=foo,bar,baz
 	public static List<String> ENV_NAMES = new ArrayList<>();
 	static {
-		String skipString = System.getenv("ENV_NAME");
+		String skipString = System.getenv("ENV_NAMES");
 		if (StringUtils.isNotBlank(skipString)) {
 			String[] commaSplit = StringUtils.split(skipString, ",");
 			if (commaSplit.length > 0) {
