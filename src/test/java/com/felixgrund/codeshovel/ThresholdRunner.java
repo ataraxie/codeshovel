@@ -4,6 +4,7 @@ import com.felixgrund.codeshovel.util.Thresholds;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ThresholdRunner {
@@ -21,10 +22,12 @@ public class ThresholdRunner {
      * @param msg
      */
     public void print(String msg) {
-        System.out.println("ThresholdRunner::"+msg);
+        System.out.println("ThresholdRunner::" + msg);
         messages.add(msg);
     }
+
     public void doIt() throws Exception {
+        print("START: " + new Date());
         print("doIt() - start");
 
         String result = "";
@@ -66,14 +69,25 @@ public class ThresholdRunner {
         evaluateConfig(count++);
 
         print("doIt() - ThresholdRunner::doIt() - done");
+
+        System.out.println("****");
+        System.out.println("**** Threshold Results");
+        System.out.println("****");
+        for (String msg : this.messages) {
+            System.out.println(msg);
+        }
+        System.out.println("****");
+        System.out.println("**** / Threshold Results");
+        System.out.println("****");
+        print("END: " + new Date());
     }
 
     private void evaluateConfig(int count) throws Exception {
         String result = run();
         count++;
-        print("evalConfig() - CONFIG RESULT"+count+" complete; config: ");
+        print("evalConfig() - CONFIG RESULT" + count + " complete; config: ");
         System.out.println(Thresholds.toDiffJSON());
-        print("evalConfig() - CONFIG RESULT "+count+": "+result);
+        print("evalConfig() - CONFIG RESULT " + count + ": " + result);
     }
 
     public String run() throws Exception {
@@ -84,27 +98,27 @@ public class ThresholdRunner {
 
         int successCount = 0;
         int failCount = 0;
-        for (StartEnvironment env : envs){
+        for (StartEnvironment env : envs) {
             boolean success = runner.performComparison(env);
-            if (success){
-                System.out.println("Succeeded: "+env.getEnvName());
+            if (success) {
+                System.out.println("Succeeded: " + env.getEnvName());
                 successCount++;
             } else {
-                System.err.println("Failed: "+env.getEnvName());
+                System.err.println("Failed: " + env.getEnvName());
                 failCount++;
             }
         }
-        String msg = "# success: "+successCount+"; # fail: "+failCount;
-        System.out.println("ThresholdRunner::run() - done; "+msg);
+        String msg = "# success: " + successCount + "; # fail: " + failCount;
+        System.out.println("ThresholdRunner::run() - done; " + msg);
         return msg;
     }
 
     public static void main(String[] args) {
         ThresholdRunner tr = new ThresholdRunner();
-        try{
+        try {
             tr.doIt();
-        }catch(Exception e){
-            System.err.println("ThresholdRunner - ERROR: "+e.getMessage());
+        } catch (Exception e) {
+            System.err.println("ThresholdRunner - ERROR: " + e.getMessage());
         }
 
     }
