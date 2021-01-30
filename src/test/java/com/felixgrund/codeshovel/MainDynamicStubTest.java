@@ -60,7 +60,7 @@ public class MainDynamicStubTest {
         System.out.println("selectEnvironments - STUBS_DIR: " + STUBS_DIR);
         System.out.println("selectEnvironments - REPO_DIR: " + CODESTORY_REPO_DIR);
         System.out.println("selectEnvironments - ENV_NAMES ([] runs all stubs): " + GlobalEnv.ENV_NAMES);
-        System.out.println("selectEnvironments - SKIP_ENVS ([] does not skip): " + GlobalEnv.SKIP_ENVS);
+        System.out.println("selectEnvironments - SKIP_NAMES ([] does not skip): " + GlobalEnv.SKIP_NAMES);
 
         ClassLoader classLoader = MainDynamicStubTest.class.getClassLoader();
         File directory = new File(classLoader.getResource(STUBS_DIR).getFile());
@@ -76,11 +76,11 @@ public class MainDynamicStubTest {
 
             boolean shouldSkip = false;
             // skip anything explicitly excluded
-            if (GlobalEnv.SKIP_ENVS.size() > 0) {
+            if (GlobalEnv.SKIP_NAMES.size() > 0) {
                 // only consider skips if there are some
-                for (String excludedEnv : GlobalEnv.SKIP_ENVS) {
+                for (String excludedEnv : GlobalEnv.SKIP_NAMES) {
                     if (envName.startsWith(excludedEnv.trim())) {
-                        System.out.println("Skipping env due to SKIP_ENVS env var: " + envName + "; skipEnv: " + excludedEnv);
+                        System.out.println("Skipping env due to SKIP_NAMES env var: " + envName + "; skipEnv: " + excludedEnv);
                         shouldSkip = true;
                     }
                 }
@@ -178,6 +178,8 @@ public class MainDynamicStubTest {
                         yresult = runEnvironment(startEnv,actualResultBuilder,expectedResultBuilder);
 
                         System.out.println("Performing test comparison: " + message);
+                        System.out.println("Expected: \n" + expectedResultBuilder.toString());
+                        System.out.println("Actual: \n" + actualResultBuilder.toString());
                         assertEquals(expectedResultBuilder.toString(), actualResultBuilder.toString(), "stringified result should be the same");
                         assertTrue(compareResults(startEnv.getExpectedResult(), yresult), "results should be the same");
                         System.out.println("Test comparison complete: " + message);

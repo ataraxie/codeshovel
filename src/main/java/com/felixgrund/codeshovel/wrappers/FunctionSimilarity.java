@@ -29,9 +29,9 @@ public class FunctionSimilarity {
             this.overallSimilarity = (
                     nameSimilarity * Thresholds.NAME_SIM_MULT.val() +
                             scopeSimilarity * Thresholds.SCOPE_SIM_MULT.val() +
-                            bodySimilarity * Thresholds.BODY_SIM_MULT.val() +
+                            bodySimilarity * Thresholds.BODY_SIM_MULT.val()+
                             lineNumberSimilarity * Thresholds.LINE_SIM_MULT.val()
-            ) / 4; // just make it a score 0..1
+            ) / 4;; // just make it a score 0..1
         }
     }
 
@@ -72,6 +72,7 @@ public class FunctionSimilarity {
     }
 
     public double getOverallSimilarity() {
+        computeOverallSimilarity();
         return overallSimilarity;
     }
 

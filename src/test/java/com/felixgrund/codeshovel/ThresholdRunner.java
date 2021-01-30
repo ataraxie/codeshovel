@@ -34,39 +34,19 @@ public class ThresholdRunner {
         int count = 0;
 
         Thresholds.resetAll();
+        // 1
         evaluateConfig(count++);
         print("doIt() - CONFIG RESULT BASELINE, NO CHANGES");
 
-        Thresholds.BODY_SIM_MULT.setValue(1.4f);
-        Thresholds.SCOPE_SIM_MULT.setValue(0.8f);
-        Thresholds.LINE_SIM_MULT.setValue(0.6f);
-        Thresholds.NAME_SIM_MULT.setValue(1.2f);
-        evaluateConfig(count++);
-        print("doIt() - PAPER RESULT BASELINE, NO CHANGES");
-
-        // try less specific body thresholds
-        Thresholds.resetAll();
-        Thresholds.MOST_SIM_FUNCTION.setValue(0.8f);
-        Thresholds.MOST_SIM_FUNCTION_MAX.setValue(0.9f);
-        evaluateConfig(count++);
-
-        // cross file within file
-        Thresholds.resetAll();
-        Thresholds.BODY_SIM_CROSS_FILE.setValue(0.75f);
-        Thresholds.BODY_SIM_WITHIN_FILE.setValue(0.5f);
-        evaluateConfig(count++);
-
-        // cross file within file
-        Thresholds.resetAll();
-        Thresholds.BODY_SIM_CROSS_FILE.setValue(0.5f);
-        Thresholds.BODY_SIM_WITHIN_FILE.setValue(0.5f);
-        evaluateConfig(count++);
-
-        // cross file within file
-        Thresholds.resetAll();
-        Thresholds.BODY_SIM_CROSS_FILE.setValue(0.75f);
-        Thresholds.BODY_SIM_WITHIN_FILE.setValue(0.75f);
-        evaluateConfig(count++);
+//        Thresholds.resetAll();
+//        Thresholds.MOST_SIM_FUNCTION.setValue(0.82f);
+//        // 2
+//        evaluateConfig(count++);
+//
+//        Thresholds.resetAll();
+//        Thresholds.MOST_SIM_FUNCTION.setValue(0.85f);
+//        // 3
+//        evaluateConfig(count++);
 
         print("doIt() - ThresholdRunner::doIt() - done");
 
@@ -86,7 +66,7 @@ public class ThresholdRunner {
         String result = run();
         count++;
         print("evalConfig() - CONFIG RESULT" + count + " complete; config: ");
-        System.out.println(Thresholds.toDiffJSON());
+        print(Thresholds.toDiffJSON());
         print("evalConfig() - CONFIG RESULT " + count + ": " + result);
     }
 

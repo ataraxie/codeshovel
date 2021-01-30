@@ -61,13 +61,13 @@ public class GlobalEnv {
 	// This does DOES override ENV_NAMES
 	// SKIP_NAMES=foo
 	// SKIP_NAMES=foo,bar,baz
-	public static List<String> SKIP_ENVS = new ArrayList<>();
+	public static List<String> SKIP_NAMES = new ArrayList<>();
 	static {
-		String skipString = System.getenv("SKIP_ENVS");
+		String skipString = System.getenv("SKIP_NAMES");
 		if (StringUtils.isNotBlank(skipString)) {
 			String[] commaSplit = StringUtils.split(skipString, ",");
 			if (commaSplit.length > 0) {
-				SKIP_ENVS = Arrays.asList(commaSplit);
+				SKIP_NAMES = Arrays.asList(commaSplit);
 			}
 		}
 	}
