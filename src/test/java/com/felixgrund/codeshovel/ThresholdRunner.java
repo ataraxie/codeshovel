@@ -7,6 +7,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * ThresholdRunner enables running CodeShovel oracles
+ * programmatically to evaluate different constants
+ * (Threshold)s for the CodeShovel algorithm.
+ *
+ * While right now it is configured for manually
+ * specifying and running these, this class could als
+ * be used to perform a grid search over a space of
+ * possible candidate thresholds.
+ *
+ * ThresholdRunner is parameterized with the same
+ * environment variables as MainDynamicStubTest.
+ */
 public class ThresholdRunner {
     public ThresholdRunner() {
         System.out.println("ThresholdRunner::init");

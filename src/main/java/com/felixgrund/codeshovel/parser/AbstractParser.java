@@ -21,12 +21,13 @@ import java.util.Map;
 public abstract class AbstractParser implements Yparser {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractParser.class);
-    protected String filePath;
-    protected String fileContent;
-    protected Commit commit;
+    protected final String filePath;
+    protected final String fileContent;
+    protected final Commit commit;
+    private final StartEnvironment startEnv;
+
     protected String repositoryName;
     protected List<Yfunction> allMethods;
-    private StartEnvironment startEnv;
 
     public AbstractParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
         this.startEnv = startEnv;
@@ -140,11 +141,11 @@ public abstract class AbstractParser implements Yparser {
 
     /**
      * Finds the most similar function to compareFunction from a list of candidates.
-     *
+     * <p>
      * This is used by both:
-     *  CrossFileInterpreter
-     *  InFileInterpreter
-     *
+     * CrossFileInterpreter
+     * InFileInterpreter
+     * <p>
      * Making two copies of this function, one for cross-file and one for
      * within-file would make the code simpler to understand, but might
      * cause challenges when updating in the future when changes need to be
@@ -153,13 +154,14 @@ public abstract class AbstractParser implements Yparser {
      * @param candidates      Set of candidate methods
      * @param compareFunction Similar method
      * @param crossFile       True if other files in commit should be searched, false if only in-file
-     * @return
+     * @return a match, if one is made, otherwise null
      */
     @Override
     public Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile) {
         log.trace("Trying to find most similar function");
-        Map<Yfunction, FunctionSimilarity> similarities = new HashMap<>();
+        final double EXACT_MATCH = 1;
 
+        Map<Yfunction, FunctionSimilarity> similarities = new HashMap<>();
         Map<String, Yfunction> functionSignatureMap = Utl.functionsToIdMap(candidates);
 
         // First look for a similar match with the same (exact) signature
@@ -170,7 +172,7 @@ public abstract class AbstractParser implements Yparser {
             if (crossFile == false) {
                 return sameSignatureFunction;
             } else {
-                Double bodySimilarity = Utl.getBodySimilarity(compareFunction, sameSignatureFunction);
+                double bodySimilarity = Utl.getBodySimilarity(compareFunction, sameSignatureFunction);
                 if (bodySimilarity > Thresholds.MOST_SIM_FUNCTION.val()) {
                     log.trace("Found function with same ID and high bodySimilarity. Done.");
                     return sameSignatureFunction;
@@ -183,7 +185,7 @@ public abstract class AbstractParser implements Yparser {
             // If the body is identical, assume it the same method
             for (Yfunction candidate : candidates) {
                 double bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
-                if (bodySimilarity == 1) {
+                if (bodySimilarity == EXACT_MATCH) {
                     log.trace("Found function with body similarity of 1. Done.");
                     return candidate;
                 }
@@ -194,7 +196,7 @@ public abstract class AbstractParser implements Yparser {
                 double bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
                 double scopeSimilarity = getScopeSimilarity(compareFunction, candidate);
                 // If the body is exact or the body and scope are similar
-                if (bodySimilarity == 1 ||
+                if (bodySimilarity == EXACT_MATCH ||
                         (bodySimilarity > Thresholds.BODY_SIM_THRESHOLD.val() &&
                                 scopeSimilarity == Thresholds.SCOPE_SIM_THRESHOLD.val())) {
                     return candidate;
@@ -242,10 +244,10 @@ public abstract class AbstractParser implements Yparser {
                 }
             }
 
-            // TODO: This could be much stronger:
+            // TODO: Function name matching could be much stronger:
             // Could use parameters, param types, return type, etc.
             // Easiest way would be to build them into FunctionSimilarity
-            // so that getOverallSimilarity would return them.
+            // so that getOverallSimilarity would consider them.
 
             if (crossFile == false) {
                 // Within-file similarity can be less strict
@@ -280,16 +282,17 @@ public abstract class AbstractParser implements Yparser {
         }
 
         FunctionSimilarity similarity = similarities.get(mostSimilarFunction);
-        log.trace("Highest similarity with overall similarity of {}: {}", similarity);
+        log.trace("Highest similarity with overall similarity of {}", similarity);
 
         // Write logs, if requested
-        if (GlobalEnv.WRITE_SIMILARITIES && compareFunction != null && mostSimilarFunction != null) {
-            Utl.writeJsonSimilarity(this.repositoryName, this.filePath, compareFunction, mostSimilarFunction, similarity);
+        if (GlobalEnv.WRITE_SIMILARITIES && mostSimilarFunction != null) {
+            Utl.writeJsonSimilarity(this.repositoryName, this.filePath,
+                    compareFunction, mostSimilarFunction, similarity);
         }
 
         // Finally, see if the best-matched function that remains is close enough
         if (mostSimilarFunctionSimilarity > Thresholds.MOST_SIM_FUNCTION.val()) {
-            boolean isShortFunction = shouldBodyBeVerySimilar(compareFunction, mostSimilarFunction);
+            boolean isShortFunction = isShortFunction(compareFunction, mostSimilarFunction);
             if (isShortFunction == true) {
                 // be more strict because small functions are
                 // more prone to spurious matches
@@ -307,14 +310,12 @@ public abstract class AbstractParser implements Yparser {
         return null;
     }
 
-    private boolean shouldBodyBeVerySimilar(Yfunction aFunction, Yfunction bFunction) {
+    private boolean isShortFunction(Yfunction aFunction, Yfunction bFunction) {
         String aBody = aFunction.getBody();
         String bBody = bFunction.getBody();
 
-        boolean hasFewChars = aBody.length() < Thresholds.LONG_METHOD_CHAR_THRESHOLD.val() ||
+        return aBody.length() < Thresholds.LONG_METHOD_CHAR_THRESHOLD.val() ||
                 bBody.length() < Thresholds.LONG_METHOD_CHAR_THRESHOLD.val();
-
-        return hasFewChars;
     }
 
     @Override

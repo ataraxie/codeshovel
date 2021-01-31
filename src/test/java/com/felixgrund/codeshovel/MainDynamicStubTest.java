@@ -29,10 +29,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * This is the main class for comparing the CodeShovel performance
- * against a pre-computed oracle file. This is useful for both
+ * against pre-computed oracle files. This is useful for both
  * evaluating CodeShovel in an academic setting, but also to ensure
  * that any development changes have not decreased CodeShovel's
  * effectiveness.
+ *
+ * Instead of modifying the code to change what the suite is
+ * testing, it uses environment variables. They are case sensitive:
+ *
+ * Required:
+ * REPO_DIR: The directory containing checked out repos for analysis.
+ *   * For the Java oracle these can be acquired with bin/clone-java-repositories.sh
+ * LANG: The language for the oracle being used. e.g., java
+ *   * This should correspond to the resource dir your oracles are stored in.
+ *   * Oracles are usually below src/test/resources/stubs
+ *   * So, for Java oracles: src/test/resources/stubs/java  <-- java is LANG
+ *
+ * Optional:
+ * ENV_NAMES: The prefix for oracles you want tested. e.g., checkstyle
+ *   * Can also take a list: e.g., checkstyle,jgit,ju
+ *   * Where 'ju' would run both junit4 and junit5.
+ * SKIP_NAMES: Just like ENV_NAMES but for oracles you want skipped.
+ *   * These override ENV_NAMES.
+ *
+ * Legacy:
+ * WRITE_SIMILARITIES
+ * WRITE_RESULTS
  */
 
 public class MainDynamicStubTest {
@@ -49,10 +71,6 @@ public class MainDynamicStubTest {
 
     // The location of the oracle files (src/resources/stubs.<LANG>)
     private static final String STUBS_DIR = "stubs/" + GlobalEnv.LANG;
-
-    // Useful for running only one oracle (e.g., for debugging)
-    // If blank, all oracles are executed
-    // private static final String RUN_ONLY_TEST = GlobalEnv.ENV_NAME;
 
     public List<StartEnvironment> selectEnvironments() throws IOException {
         System.out.println("Selecting Environments");
@@ -163,8 +181,6 @@ public class MainDynamicStubTest {
     }
 
     private DynamicTest doCreateDynamicTest(StartEnvironment startEnv) {
-        // Map<String, String> expectedResult = startEnv.getExpectedResult();
-        // String message = String.format("%s - expecting %s changes", startEnv.getEnvName(), expectedResult.size());
         String message = startEnv.getEnvName();
         System.out.println("Creating test: " + message);
 
@@ -208,8 +224,6 @@ public class MainDynamicStubTest {
             yresult = runEnvironment(startEnv,actualResultBuilder,expectedResultBuilder);
 
             System.out.println("Performing test comparison: " + message);
-
-            // assertEquals(expectedResultBuilder.toString(), actualResultBuilder.toString(), );
             if (expectedResultBuilder.toString().equals(actualResultBuilder.toString())){
                  // good
             } else {
@@ -217,7 +231,6 @@ public class MainDynamicStubTest {
                 return false;
             }
 
-            // assertTrue(compareResults(startEnv.getExpectedResult(), yresult), "results should be the same");
             if (compareResults(startEnv.getExpectedResult(), yresult)){
                 // good
             } else {
@@ -304,7 +317,6 @@ public class MainDynamicStubTest {
                 return false;
             }
         }
-
         return true;
     }
 

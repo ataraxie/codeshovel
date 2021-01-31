@@ -116,6 +116,4 @@ public class InFileInterpreter extends AbstractInterpreter {
 	private boolean isFirstFunctionOccurrence() {
 		return this.ycommit.getPrev() == null || this.ycommit.getPrev().getMatchedFunction() == null;
 	}
-
-
 }

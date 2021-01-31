@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * This enum captures all of the threshold values
  * used by the CodeShovel change tracking algorithm.
- * <p>
+ *
  * It is important to note that there is no one
  * _right_ set of thresholds. Many different sets of
  * thresholds can work. The set that is here has been
@@ -20,9 +20,8 @@ public enum Thresholds {
     //
     // AbstractParser thresholds
     //
-
-    BODY_SIM_THRESHOLD(0.9f),
-    SCOPE_SIM_THRESHOLD(1),
+    BODY_SIM_THRESHOLD(0.9f), // TODO: look at this with CROSS / WITHIN
+    SCOPE_SIM_THRESHOLD(1),   // TODO: do we need a threshold here? Could just be EXACT
 
     BODY_SIM_CROSS_FILE(0.75f),
     BODY_SIM_WITHIN_FILE(0.5f),
@@ -35,10 +34,10 @@ public enum Thresholds {
     //
     // FunctionSimilarity multipliers
     //
-    BODY_SIM_MULT(1.25f), // WAS: 1.4f
-    SCOPE_SIM_MULT(0.75f), // WAS: 0.8f
-    LINE_SIM_MULT(0.75f), // WAS: 0.6f
-    NAME_SIM_MULT(1.25f); // WAS: 1.2f
+    BODY_SIM_MULT(1.25f),
+    SCOPE_SIM_MULT(0.75f),
+    LINE_SIM_MULT(0.75f),
+    NAME_SIM_MULT(1.25f);
 
     private float base = 0;
     private float value = 0;
@@ -70,13 +69,13 @@ public enum Thresholds {
         return base;
     }
 
-//    public static String toJSON() {
-//        Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-//        String json = GSON.toJson(Thresholds);
-//        System.out.println("Thresholds JSON: "+json);
-//        return json;
-//    }
-
+    /**
+     * Return a JSON view of how the thresholds are different
+     * from their default (compiled) values. This is helpful
+     * if you are running a program that is permuting thresholds
+     * and you find a 'winner' and want to know what it is.
+     *
+     */
     public static String toDiffJSON() {
         ArrayList<JsonObject> arr = new ArrayList<>();
 
