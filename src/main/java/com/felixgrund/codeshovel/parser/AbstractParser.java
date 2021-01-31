@@ -138,78 +138,142 @@ public abstract class AbstractParser implements Yparser {
         return changes;
     }
 
+    /**
+     * Finds the most similar function to compareFunction from a list of candidates.
+     *
+     * This is used by both:
+     *  CrossFileInterpreter
+     *  InFileInterpreter
+     *
+     * Making two copies of this function, one for cross-file and one for
+     * within-file would make the code simpler to understand, but might
+     * cause challenges when updating in the future when changes need to be
+     * made to both.
+     *
+     * @param candidates      Set of candidate methods
+     * @param compareFunction Similar method
+     * @param crossFile       True if other files in commit should be searched, false if only in-file
+     * @return
+     */
     @Override
     public Yfunction getMostSimilarFunction(List<Yfunction> candidates, Yfunction compareFunction, boolean crossFile) {
         log.trace("Trying to find most similar function");
         Map<Yfunction, FunctionSimilarity> similarities = new HashMap<>();
-        List<Yfunction> candidatesWithSameName = new ArrayList<>();
-        Map<String, Yfunction> functionIdMap = Utl.functionsToIdMap(candidates);
 
-        Yfunction sameIdFunction = functionIdMap.get(compareFunction.getId());
-        if (sameIdFunction != null) {
-            Double bodySimilarity = null;
-            if (crossFile) {
-                bodySimilarity = Utl.getBodySimilarity(compareFunction, sameIdFunction);
-            }
-            // If we are in-file just return because the ID will exist only once.
+        Map<String, Yfunction> functionSignatureMap = Utl.functionsToIdMap(candidates);
+
+        // First look for a similar match with the same (exact) signature
+        Yfunction sameSignatureFunction = functionSignatureMap.get(compareFunction.getId());
+        if (sameSignatureFunction != null) {
+            // If we are in-file just return because the signature will exist only once.
             // If we are cross-file, take bodySimilarity as an additional measure.
-            if (!crossFile || bodySimilarity > 0.8) {
-                log.trace("Found function with same ID and bodySimilarity > 0.8. Done.");
-                return sameIdFunction;
+            if (crossFile == false) {
+                return sameSignatureFunction;
+            } else {
+                Double bodySimilarity = Utl.getBodySimilarity(compareFunction, sameSignatureFunction);
+                if (bodySimilarity > Thresholds.MOST_SIM_FUNCTION.val()) {
+                    log.trace("Found function with same ID and high bodySimilarity. Done.");
+                    return sameSignatureFunction;
+                }
             }
         }
 
-
-        for (Yfunction candidate : candidates) {
-            Double bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
-
-            // If the body is 100% equal we assume it's the correct candidate.
-            if (bodySimilarity == 1) {
-                log.trace("Found function with body similarity of 1. Done.");
-                return candidate;
-            }
-
-//            Integer lineNumberDistance = null;
-            double scopeSimilarity = getScopeSimilarity(candidate, compareFunction);
-
-            if (bodySimilarity > Thresholds.BODY_SIM_THRESHOLD.val() &&
-                    scopeSimilarity == Thresholds.SCOPE_SIM_THRESHOLD.val()) {
-//                if (!crossFile) {
-//                    lineNumberDistance = Utl.getLineNumberDistance(candidate, compareFunction);
-//                }
-//                if (crossFile || lineNumberDistance < Thresholds.LINE_NUM_THRESHOLD.val()) {
-//                    log.trace("Found function with body similarity > 0.9 and line distance < 10 and scope similarity of 1. Done.");
-//                    return candidate;
-//                }
-                if (crossFile) {
+        // Next, look for candidates that have extremely similar bodies
+        if (crossFile == false) {
+            // If the body is identical, assume it the same method
+            for (Yfunction candidate : candidates) {
+                double bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
+                if (bodySimilarity == 1) {
+                    log.trace("Found function with body similarity of 1. Done.");
                     return candidate;
                 }
             }
+        } else {
+            // If the body and scope are similar
+            for (Yfunction candidate : candidates) {
+                double bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
+                double scopeSimilarity = getScopeSimilarity(compareFunction, candidate);
+                // If the body is exact or the body and scope are similar
+                if (bodySimilarity == 1 ||
+                        (bodySimilarity > Thresholds.BODY_SIM_THRESHOLD.val() &&
+                                scopeSimilarity == Thresholds.SCOPE_SIM_THRESHOLD.val())) {
+                    return candidate;
+                }
+            }
+        }
 
+        // Generate similarity scores for all candidates
+        // Identify functions with the same name
+        // (but maybe not with the same full signature)
+        List<Yfunction> candidatesWithSameName = new ArrayList<>();
+        for (Yfunction candidate : candidates) {
             if (candidate.getName().equals(compareFunction.getName())) {
                 candidatesWithSameName.add(candidate);
             }
 
+            double bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
+            double scopeSimilarity = getScopeSimilarity(compareFunction, candidate);
             double nameSimilarity = Utl.getNameSimilarity(compareFunction, candidate);
 
             FunctionSimilarity similarity = new FunctionSimilarity(crossFile);
             similarity.setBodySimilarity(bodySimilarity);
             similarity.setScopeSimilarity(scopeSimilarity);
             similarity.setNameSimilarity(nameSimilarity);
-            similarities.put(candidate, similarity);
-        }
-
-        Yfunction mostSimilarFunction = null;
-        double mostSimilarFunctionSimilarity = 0;
-        for (Yfunction candidate : similarities.keySet()) {
-            FunctionSimilarity similarity = similarities.get(candidate);
-            if (!crossFile) {
+            if (crossFile == false) {
+                // line number similarity does not make sense cross-file
                 double lineNumberSimilarity = Utl.getLineNumberSimilarity(candidate, compareFunction);
                 similarity.setLineNumberSimilarity(lineNumberSimilarity);
             }
+            similarities.put(candidate, similarity);
+        }
+
+        // If a function does have the same name, consider it ahead of other matches
+        if (candidatesWithSameName.size() > 0) {
+            // prepopulate with first option
+            Yfunction highestCandidate = candidatesWithSameName.get(0);
+            FunctionSimilarity highestSimilarity = similarities.get(highestCandidate);
+
+            // if there are candidates with the same name, take the best
+            for (Yfunction candidate : candidatesWithSameName) {
+                FunctionSimilarity similarity = similarities.get(candidate);
+                if (similarity.getOverallSimilarity() > highestSimilarity.getOverallSimilarity()) {
+                    highestSimilarity = similarity;
+                    highestCandidate = candidate;
+                }
+            }
+
+            // TODO: This could be much stronger:
+            // Could use parameters, param types, return type, etc.
+            // Easiest way would be to build them into FunctionSimilarity
+            // so that getOverallSimilarity would return them.
+
+            if (crossFile == false) {
+                // Within-file similarity can be less strict
+                if (highestSimilarity.getOverallSimilarity() > Thresholds.BODY_SIM_WITHIN_FILE.val()) {
+                    log.trace("In-file comparison and overall similarity > 0.5. Accepting function.");
+                    return highestCandidate;
+                }
+            } else {
+                // Cross-file similarity is more strict
+                // as it's much more likely that a method with the same
+                // name was removed that is completely independent.
+                if (highestSimilarity.getBodySimilarity() > Thresholds.BODY_SIM_CROSS_FILE.val()) {
+                    log.trace("Cross-file comparison and body similarity > 0.8. Accepting function.");
+                    return highestCandidate;
+                }
+            }
+        }
+
+        // Find most similar function
+        // Does not have cross-file dependencies because this is handled
+        // by FunctionSimilarity::computeOverallSimilarity()
+        Yfunction mostSimilarFunction = null;
+        double mostSimilarFunctionSimilarity = -1;
+        for (Yfunction candidate : similarities.keySet()) {
+            FunctionSimilarity similarity = similarities.get(candidate);
 
             double overallSimilarity = similarity.getOverallSimilarity();
-            if (mostSimilarFunction == null || overallSimilarity > mostSimilarFunctionSimilarity) {
+            if (overallSimilarity > mostSimilarFunctionSimilarity) {
                 mostSimilarFunctionSimilarity = overallSimilarity;
                 mostSimilarFunction = candidate;
             }
@@ -218,33 +282,23 @@ public abstract class AbstractParser implements Yparser {
         FunctionSimilarity similarity = similarities.get(mostSimilarFunction);
         log.trace("Highest similarity with overall similarity of {}: {}", similarity);
 
+        // Write logs, if requested
         if (GlobalEnv.WRITE_SIMILARITIES && compareFunction != null && mostSimilarFunction != null) {
             Utl.writeJsonSimilarity(this.repositoryName, this.filePath, compareFunction, mostSimilarFunction, similarity);
         }
 
-        if (candidatesWithSameName.size() == 1) {
-            Yfunction candidateWithSameName = candidatesWithSameName.get(0);
-            FunctionSimilarity candidateSimilarity = similarities.get(candidateWithSameName);
-            log.trace("Highest similarity was < 0.85. But found single candidate with same function name. Using lower similarity threshold");
-
-            // TODO: this is temporary! We need to make our similarity algorithm much smarter!
-            // Use return statement, parameters, signature in general and other things! This should all go into
-            // FunctionSimilarity.
-            // If this is cross-file, we need to be more strict: it's much more likely that a method with the same
-            // name was removed that is completely independent.
-            if (crossFile & candidateSimilarity.getBodySimilarity() > Thresholds.BODY_SIM_CROSS_FILE.val()) {
-                log.trace("Cross-file comparison and body similarity > 0.8. Accepting function.");
-                return candidateWithSameName;
-            } else if (!crossFile && candidateSimilarity.getOverallSimilarity() > Thresholds.BODY_SIM_WITHIN_FILE.val()) {
-                log.trace("In-file comparison and overall similarity > 0.5. Accepting function.");
-                return candidateWithSameName;
-            }
-        }
-
+        // Finally, see if the best-matched function that remains is close enough
         if (mostSimilarFunctionSimilarity > Thresholds.MOST_SIM_FUNCTION.val()) {
-            if (!shouldBodyBeVerySimilar(compareFunction, mostSimilarFunction) ||
-                    mostSimilarFunctionSimilarity > Thresholds.MOST_SIM_FUNCTION_MAX.val()) {
-                log.trace("Highest similarity is high enough. Accepting function.");
+            boolean isShortFunction = shouldBodyBeVerySimilar(compareFunction, mostSimilarFunction);
+            if (isShortFunction == true) {
+                // be more strict because small functions are
+                // more prone to spurious matches
+                if (mostSimilarFunctionSimilarity > Thresholds.MOST_SIM_FUNCTION_MAX.val()) {
+                    log.trace("Highest similarity is high enough. Accepting function.");
+                    return mostSimilarFunction;
+                }
+            } else {
+                // initial threshold check is sufficient for long functions
                 return mostSimilarFunction;
             }
         }
@@ -256,16 +310,9 @@ public abstract class AbstractParser implements Yparser {
     private boolean shouldBodyBeVerySimilar(Yfunction aFunction, Yfunction bFunction) {
         String aBody = aFunction.getBody();
         String bBody = bFunction.getBody();
-        int aLines = Utl.countLineNumbers(aBody);
-        int bLines = Utl.countLineNumbers(bBody);
-
-//        boolean hasFewLines = aLines <= Thresholds.SHORT_METHOD_LINE_THRESHOLD.val() ||
-//                        bLines <= Thresholds.SHORT_METHOD_LINE_THRESHOLD.val();
 
         boolean hasFewChars = aBody.length() < Thresholds.LONG_METHOD_CHAR_THRESHOLD.val() ||
                 bBody.length() < Thresholds.LONG_METHOD_CHAR_THRESHOLD.val();
-
-//        return hasFewLines && hasFewChars;
 
         return hasFewChars;
     }

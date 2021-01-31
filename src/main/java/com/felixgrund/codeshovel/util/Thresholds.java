@@ -20,6 +20,7 @@ public enum Thresholds {
     //
     // AbstractParser thresholds
     //
+
     BODY_SIM_THRESHOLD(0.9f),
     SCOPE_SIM_THRESHOLD(1),
 
