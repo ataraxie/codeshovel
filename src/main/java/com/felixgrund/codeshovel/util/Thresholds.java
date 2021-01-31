@@ -20,9 +20,6 @@ public enum Thresholds {
     //
     // AbstractParser thresholds
     //
-    BODY_SIM_THRESHOLD(0.9f), // TODO: look at this with CROSS / WITHIN
-    SCOPE_SIM_THRESHOLD(1),   // TODO: do we need a threshold here? Could just be EXACT
-
     BODY_SIM_CROSS_FILE(0.75f),
     BODY_SIM_WITHIN_FILE(0.5f),
 

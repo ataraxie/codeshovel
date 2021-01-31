@@ -172,9 +172,9 @@ public abstract class AbstractParser implements Yparser {
             if (crossFile == false) {
                 return sameSignatureFunction;
             } else {
+                // use body similarity, not function similarity as the signature is already known to be identical
                 double bodySimilarity = Utl.getBodySimilarity(compareFunction, sameSignatureFunction);
-                if (bodySimilarity > Thresholds.MOST_SIM_FUNCTION.val()) {
-                    log.trace("Found function with same ID and high bodySimilarity. Done.");
+                if (isFunctionSimilar(compareFunction, sameSignatureFunction, bodySimilarity)) {
                     return sameSignatureFunction;
                 }
             }
@@ -195,10 +195,11 @@ public abstract class AbstractParser implements Yparser {
             for (Yfunction candidate : candidates) {
                 double bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
                 double scopeSimilarity = getScopeSimilarity(compareFunction, candidate);
-                // If the body is exact or the body and scope are similar
+                // If the body is identical -or-
+                // The scope is identical and the body is very close
                 if (bodySimilarity == EXACT_MATCH ||
-                        (bodySimilarity > Thresholds.BODY_SIM_THRESHOLD.val() &&
-                                scopeSimilarity == Thresholds.SCOPE_SIM_THRESHOLD.val())) {
+                        (bodySimilarity > Thresholds.MOST_SIM_FUNCTION_MAX.val() &&  // BODY_SIM_THRESHOLD
+                                scopeSimilarity == EXACT_MATCH)) {
                     return candidate;
                 }
             }
@@ -291,23 +292,35 @@ public abstract class AbstractParser implements Yparser {
         }
 
         // Finally, see if the best-matched function that remains is close enough
-        if (mostSimilarFunctionSimilarity > Thresholds.MOST_SIM_FUNCTION.val()) {
-            boolean isShortFunction = isShortFunction(compareFunction, mostSimilarFunction);
-            if (isShortFunction == true) {
-                // be more strict because small functions are
-                // more prone to spurious matches
-                if (mostSimilarFunctionSimilarity > Thresholds.MOST_SIM_FUNCTION_MAX.val()) {
-                    log.trace("Highest similarity is high enough. Accepting function.");
-                    return mostSimilarFunction;
-                }
-            } else {
-                // initial threshold check is sufficient for long functions
+        // Use Overall similarity, not body similarity
+        if (mostSimilarFunction != null) {
+            if (isFunctionSimilar(compareFunction, mostSimilarFunction, mostSimilarFunctionSimilarity)) {
                 return mostSimilarFunction;
             }
         }
 
         log.trace("Highest similarity was < 0.85 and did not find single candidate with same name. Unable to find matching candidate.");
         return null;
+    }
+
+    private boolean isFunctionSimilar(Yfunction compareFcn, Yfunction candidateFcn, double simScore) {
+        if (compareFcn == null || candidateFcn == null) {
+            return false;
+        }
+        if (isShortFunction(compareFcn, candidateFcn)) {
+            // be more strict because small functions are
+            // more prone to spurious matches
+            if (simScore > Thresholds.MOST_SIM_FUNCTION_MAX.val()) {
+                log.trace("Highest similarity is high enough. Accepting function.");
+                return true;
+            }
+        } else {
+            // initial threshold check is sufficient for long functions
+            if (simScore > Thresholds.MOST_SIM_FUNCTION.val()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isShortFunction(Yfunction aFunction, Yfunction bFunction) {

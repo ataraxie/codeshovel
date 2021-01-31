@@ -46,24 +46,41 @@ public class ThresholdRunner {
         String result = "";
         int count = 0;
 
-        Thresholds.resetAll();
         // 1
+        Thresholds.resetAll();
         evaluateConfig(count++);
         print("doIt() - CONFIG RESULT BASELINE, NO CHANGES");
 
+////        // 2
 //        Thresholds.resetAll();
-//        Thresholds.MOST_SIM_FUNCTION.setValue(0.82f);
-//        // 2
+//        Thresholds.MOST_SIM_FUNCTION.setValue(0.80f);
+//        Thresholds.MOST_SIM_FUNCTION_MAX.setValue(0.95f);
 //        evaluateConfig(count++);
+////
+////        // 3
+//        Thresholds.resetAll();
+//        Thresholds.MOST_SIM_FUNCTION.setValue(0.80f);
+//        Thresholds.MOST_SIM_FUNCTION_MAX.setValue(0.90f);
+//        evaluateConfig(count++);//
 //
+////        // 4
+////        // can we use something else?
 //        Thresholds.resetAll();
 //        Thresholds.MOST_SIM_FUNCTION.setValue(0.85f);
-//        // 3
+//        Thresholds.MOST_SIM_FUNCTION_MAX.setValue(0.95f);
+//        evaluateConfig(count++);
+//
+//
+//        //        // 5
+////        // can we use something else?
+//        Thresholds.resetAll();
+//        Thresholds.MOST_SIM_FUNCTION.setValue(0.85f);
+//        Thresholds.MOST_SIM_FUNCTION_MAX.setValue(0.90f);
 //        evaluateConfig(count++);
 
         print("doIt() - ThresholdRunner::doIt() - done");
 
-        System.out.println("****");
+        System.out.println("\n\n\n\n****");
         System.out.println("**** Threshold Results");
         System.out.println("****");
         for (String msg : this.messages) {
