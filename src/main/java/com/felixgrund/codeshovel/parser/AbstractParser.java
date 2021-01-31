@@ -170,11 +170,13 @@ public abstract class AbstractParser implements Yparser {
             // If we are in-file just return because the signature will exist only once.
             // If we are cross-file, take bodySimilarity as an additional measure.
             if (crossFile == false) {
+                log.trace("Matched same sig within file.");
                 return sameSignatureFunction;
             } else {
                 // use body similarity, not function similarity as the signature is already known to be identical
                 double bodySimilarity = Utl.getBodySimilarity(compareFunction, sameSignatureFunction);
                 if (isFunctionSimilar(compareFunction, sameSignatureFunction, bodySimilarity)) {
+                    log.trace("Matched same sig cross file.");
                     return sameSignatureFunction;
                 }
             }
@@ -186,7 +188,7 @@ public abstract class AbstractParser implements Yparser {
             for (Yfunction candidate : candidates) {
                 double bodySimilarity = Utl.getBodySimilarity(compareFunction, candidate);
                 if (bodySimilarity == EXACT_MATCH) {
-                    log.trace("Found function with body similarity of 1. Done.");
+                    log.trace("Matched same body within file.");
                     return candidate;
                 }
             }
@@ -200,6 +202,7 @@ public abstract class AbstractParser implements Yparser {
                 if (bodySimilarity == EXACT_MATCH ||
                         (bodySimilarity > Thresholds.MOST_SIM_FUNCTION_MAX.val() &&  // BODY_SIM_THRESHOLD
                                 scopeSimilarity == EXACT_MATCH)) {
+                    log.trace("Matched extremely similar body cross file.");
                     return candidate;
                 }
             }
@@ -253,7 +256,7 @@ public abstract class AbstractParser implements Yparser {
             if (crossFile == false) {
                 // Within-file similarity can be less strict
                 if (highestSimilarity.getOverallSimilarity() > Thresholds.BODY_SIM_WITHIN_FILE.val()) {
-                    log.trace("In-file comparison and overall similarity > 0.5. Accepting function.");
+                    log.trace("Matched most similar function within file.");
                     return highestCandidate;
                 }
             } else {
@@ -261,7 +264,7 @@ public abstract class AbstractParser implements Yparser {
                 // as it's much more likely that a method with the same
                 // name was removed that is completely independent.
                 if (highestSimilarity.getBodySimilarity() > Thresholds.BODY_SIM_CROSS_FILE.val()) {
-                    log.trace("Cross-file comparison and body similarity > 0.8. Accepting function.");
+                    log.trace("Matched most similar function cross file.");
                     return highestCandidate;
                 }
             }
@@ -283,7 +286,7 @@ public abstract class AbstractParser implements Yparser {
         }
 
         FunctionSimilarity similarity = similarities.get(mostSimilarFunction);
-        log.trace("Highest similarity with overall similarity of {}", similarity);
+        // log.trace("Highest similarity with overall similarity of {}", similarity);
 
         // Write logs, if requested
         if (GlobalEnv.WRITE_SIMILARITIES && mostSimilarFunction != null) {
@@ -295,11 +298,12 @@ public abstract class AbstractParser implements Yparser {
         // Use Overall similarity, not body similarity
         if (mostSimilarFunction != null) {
             if (isFunctionSimilar(compareFunction, mostSimilarFunction, mostSimilarFunctionSimilarity)) {
+                log.trace("Matched close enough function.");
                 return mostSimilarFunction;
             }
         }
 
-        log.trace("Highest similarity was < 0.85 and did not find single candidate with same name. Unable to find matching candidate.");
+        log.trace("Failed to match.");
         return null;
     }
 
@@ -311,7 +315,6 @@ public abstract class AbstractParser implements Yparser {
             // be more strict because small functions are
             // more prone to spurious matches
             if (simScore > Thresholds.MOST_SIM_FUNCTION_MAX.val()) {
-                log.trace("Highest similarity is high enough. Accepting function.");
                 return true;
             }
         } else {
