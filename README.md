@@ -244,3 +244,11 @@ The `changeHistoryDetails` array contains an object for each commit that changed
 ## Code Shovel Development
 
 While the vast majority of users will use the Web Service UI, Web Service REST, or Command Line interfaces, if you want to build CodeShovel yourself (for instance if you are doing development), you can follow the [Development instructions](DEVELOPMENT.md).
+
+## Tool comparison
+
+```
+https://github.com/ataraxie/codeshovel/blob/master/analysis/compare_100_methods.ods
+```
+The above file contains the results of tool comparison (comparing CodeShovel's accuracy with git log, intelliJ, and FinerGit). For a method, 1 means the tool successfully generated the complete history of the method, and 0 means the tool failed. This result was published in our ICSE 2021 paper.  
+
