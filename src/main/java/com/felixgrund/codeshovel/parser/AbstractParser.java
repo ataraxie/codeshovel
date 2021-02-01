@@ -164,6 +164,7 @@ public abstract class AbstractParser implements Yparser {
         Map<Yfunction, FunctionSimilarity> similarities = new HashMap<>();
         Map<String, Yfunction> functionSignatureMap = Utl.functionsToIdMap(candidates);
 
+        // Phase 1
         // First look for a similar match with the same (exact) signature
         Yfunction sameSignatureFunction = functionSignatureMap.get(compareFunction.getId());
         if (sameSignatureFunction != null) {
@@ -182,6 +183,7 @@ public abstract class AbstractParser implements Yparser {
             }
         }
 
+        // Phase 2
         // Next, look for candidates that have extremely similar bodies
         if (crossFile == false) {
             // If the body is identical, assume it the same method
@@ -233,6 +235,7 @@ public abstract class AbstractParser implements Yparser {
             similarities.put(candidate, similarity);
         }
 
+        // Phase 3
         // If a function does have the same name, consider it ahead of other matches
         if (candidatesWithSameName.size() > 0) {
             // prepopulate with first option
@@ -270,7 +273,7 @@ public abstract class AbstractParser implements Yparser {
             }
         }
 
-        // Find most similar function
+        // Phase 4: Find the most similar function
         // Does not have cross-file dependencies because this is handled
         // by FunctionSimilarity::computeOverallSimilarity()
         Yfunction mostSimilarFunction = null;
