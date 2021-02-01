@@ -103,7 +103,7 @@ public class ThresholdRunner {
     public String run() throws Exception {
         System.out.println("run() - ThresholdRunner::run() - start");
 
-        MainDynamicOracle runner = new MainDynamicOracle();
+        MainDynamicOracleTest runner = new MainDynamicOracleTest();
         List<StartEnvironment> envs = runner.selectEnvironments();
 
         int successCount = 0;

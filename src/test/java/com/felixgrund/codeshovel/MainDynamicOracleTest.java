@@ -17,6 +17,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,9 +60,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * WRITE_RESULTS
  */
 
-public class MainDynamicOracle {
+public class MainDynamicOracleTest {
 
-    private static final Logger log = LoggerFactory.getLogger(MainDynamicOracle.class);
+    private static final Logger log = LoggerFactory.getLogger(MainDynamicOracleTest.class);
     private static final Gson GSON = new Gson();
 
     // These three environment variables should be set before the test
@@ -81,7 +83,7 @@ public class MainDynamicOracle {
         System.out.println("selectEnvironments - ENV_NAMES ([] runs all oracles): " + GlobalEnv.ENV_NAMES);
         System.out.println("selectEnvironments - SKIP_NAMES ([] does not skip): " + GlobalEnv.SKIP_NAMES);
 
-        ClassLoader classLoader = MainDynamicOracle.class.getClassLoader();
+        ClassLoader classLoader = MainDynamicOracleTest.class.getClassLoader();
 
         if (REPO_DIR == null) {
             System.err.println("REPO_DIR environment variable must be specified");
@@ -156,8 +158,8 @@ public class MainDynamicOracle {
         return selectedEnvironments;
     }
 
-
     @TestFactory
+    @Execution(ExecutionMode.CONCURRENT) // NOTE: tests might only run concurrently using `mvn test`
     @DisplayName("Dynamic test oracles from JSON files")
     public Collection<DynamicTest> createDynamicTests() throws Exception {
 
@@ -269,6 +271,7 @@ public class MainDynamicOracle {
         String message = startEnv.getEnvName();
 
         System.out.println("Executing test: " + message);
+        System.err.println("Execution thread: " + Thread.currentThread().getName()); // for tracking concurrent test execution
         String repositoryName = startEnv.getRepositoryName();
         String repositoryPath = REPO_DIR + "/" + repositoryName + "/.git";
 

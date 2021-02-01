@@ -25,7 +25,7 @@ Open the CodeShovel repo as Java project. Different run/debug configurations are
 * `com.felixgrund.codeshovel.MainSingleOracle`
   * Run CodeShovel from a single oracle file (see below)
   * Type of the run/debug configuration should be `Application`
-* `com.felixgrund.codeshovel.MainDynamicOracle`
+* `com.felixgrund.codeshovel.MainDynamicOracleTest`
   * Run CodeShovel with many test cases from multiple oracle files (see below)
   * Type of the run/debug configuration should be `JUnit`
  
