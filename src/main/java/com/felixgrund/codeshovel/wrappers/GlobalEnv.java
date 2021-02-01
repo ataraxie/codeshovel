@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class GlobalEnv {
-
 	public static final String REPO_DIR = System.getenv("REPO_DIR");
 	public static final String OUTPUT_DIR = getEnvOptional("OUTPUT_DIR", System.getProperty("user.dir") + "/output");
 
@@ -17,7 +16,7 @@ public class GlobalEnv {
 	public static final boolean WRITE_SEMANTIC_DIFFS = Boolean.valueOf(System.getenv("WRITE_SEMANTIC_DIFFS"));
 	public static final boolean WRITE_RESULTS = Boolean.valueOf(System.getenv("WRITE_RESULTS"));
 	public static final boolean WRITE_GITLOG = Boolean.valueOf(System.getenv("WRITE_GITLOG"));
-	public static final boolean WRITE_STUBS = Boolean.valueOf(System.getenv("WRITE_STUBS"));
+	public static final boolean WRITE_ORACLES = Boolean.valueOf(System.getenv("WRITE_ORACLES"));
 	public static final boolean WRITE_SIMILARITIES = Boolean.valueOf(System.getenv("WRITE_SIMILARITIES"));
 
 	public static final String LANG = getEnvOptional("LANG", "java");

@@ -15,9 +15,9 @@ import com.felixgrund.codeshovel.wrappers.Commit;
 import java.io.File;
 import java.util.Date;
 
-public class MainSingleStub {
+public class MainSingleOracle {
 
-	private static final String STUBS_DIR = "stubs/" + GlobalEnv.LANG;
+	private static final String ORACLE_DIR = "oracles/" + GlobalEnv.LANG;
 
 	public static void main(String[] args) throws Exception {
 		long start = new Date().getTime();
@@ -28,8 +28,8 @@ public class MainSingleStub {
 
 	public static void execute() throws Exception {
 		String configName = GlobalEnv.ENV_NAMES.get(0);
-		ClassLoader classLoader = MainSingleStub.class.getClassLoader();
-		File file = new File(classLoader.getResource(STUBS_DIR + "/" + configName + ".json").getFile());
+		ClassLoader classLoader = MainSingleOracle.class.getClassLoader();
+		File file = new File(classLoader.getResource(ORACLE_DIR + "/" + configName + ".json").getFile());
 		String json = FileUtils.readFileToString(file, "utf-8");
 		Gson gson = new Gson();
 

@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JsonStub {
+public class JsonOracle {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -18,7 +18,7 @@ public class JsonStub {
 	private String startCommitName;
 	private List<String> expectedResult;
 
-	public JsonStub(JsonResult jsonResult) {
+	public JsonOracle(JsonResult jsonResult) {
 		this.repositoryName = jsonResult.getRepositoryName();
 		this.filePath = jsonResult.getSourceFilePath();
 		this.functionName = jsonResult.getFunctionName();

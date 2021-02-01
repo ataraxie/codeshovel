@@ -18,7 +18,7 @@ import java.util.List;
  * possible candidate thresholds.
  *
  * ThresholdRunner is parameterized with the same
- * environment variables as MainDynamicStubTest.
+ * environment variables as MainDynamicOracle.
  */
 public class ThresholdRunner {
     public ThresholdRunner() {
@@ -103,7 +103,7 @@ public class ThresholdRunner {
     public String run() throws Exception {
         System.out.println("run() - ThresholdRunner::run() - start");
 
-        MainDynamicStubTest runner = new MainDynamicStubTest();
+        MainDynamicOracle runner = new MainDynamicOracle();
         List<StartEnvironment> envs = runner.selectEnvironments();
 
         int successCount = 0;

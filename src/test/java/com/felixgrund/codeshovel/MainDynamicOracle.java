@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
@@ -33,33 +34,33 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * evaluating CodeShovel in an academic setting, but also to ensure
  * that any development changes have not decreased CodeShovel's
  * effectiveness.
- *
+ * <p>
  * Instead of modifying the code to change what the suite is
  * testing, it uses environment variables. They are case sensitive:
- *
+ * <p>
  * Required:
  * REPO_DIR: The directory containing checked out repos for analysis.
- *   * For the Java oracle these can be acquired with bin/clone-java-repositories.sh
+ * * For the Java oracle these can be acquired with bin/clone-java-repositories.sh
  * LANG: The language for the oracle being used. e.g., java
- *   * This should correspond to the resource dir your oracles are stored in.
- *   * Oracles are usually below src/test/resources/stubs
- *   * So, for Java oracles: src/test/resources/stubs/java  <-- java is LANG
- *
+ * * This should correspond to the resource dir your oracles are stored in.
+ * * Oracles are usually below src/test/resources/oracles
+ * * So, for Java oracles: src/test/resources/oracles/java  <-- java is LANG
+ * <p>
  * Optional:
  * ENV_NAMES: The prefix for oracles you want tested. e.g., checkstyle
- *   * Can also take a list: e.g., checkstyle,jgit,ju
- *   * Where 'ju' would run both junit4 and junit5.
+ * * Can also take a list: e.g., checkstyle,jgit,ju
+ * * Where 'ju' would run both junit4 and junit5.
  * SKIP_NAMES: Just like ENV_NAMES but for oracles you want skipped.
- *   * These override ENV_NAMES.
- *
+ * * These override ENV_NAMES.
+ * <p>
  * Legacy:
  * WRITE_SIMILARITIES
  * WRITE_RESULTS
  */
 
-public class MainDynamicStubTest {
+public class MainDynamicOracle {
 
-    private static final Logger log = LoggerFactory.getLogger(MainDynamicStubTest.class);
+    private static final Logger log = LoggerFactory.getLogger(MainDynamicOracle.class);
     private static final Gson GSON = new Gson();
 
     // These three environment variables should be set before the test
@@ -67,21 +68,33 @@ public class MainDynamicStubTest {
     // having to recompile the code.
 
     // The folder containing the repositories the oracle is evaluating
-    private static final String CODESTORY_REPO_DIR = GlobalEnv.REPO_DIR;
+    private static final String REPO_DIR = GlobalEnv.REPO_DIR;
 
-    // The location of the oracle files (src/resources/stubs.<LANG>)
-    private static final String STUBS_DIR = "stubs/" + GlobalEnv.LANG;
+    // The location of the oracle files (src/resources/oracles/<LANG>)
+    private static final String ORACLE_DIR = "oracles/" + GlobalEnv.LANG;
 
     public List<StartEnvironment> selectEnvironments() throws IOException {
         System.out.println("Selecting Environments");
 
-        System.out.println("selectEnvironments - STUBS_DIR: " + STUBS_DIR);
-        System.out.println("selectEnvironments - REPO_DIR: " + CODESTORY_REPO_DIR);
-        System.out.println("selectEnvironments - ENV_NAMES ([] runs all stubs): " + GlobalEnv.ENV_NAMES);
+        System.out.println("selectEnvironments - ORACLE_DIR: " + ORACLE_DIR);
+        System.out.println("selectEnvironments - REPO_DIR: " + REPO_DIR);
+        System.out.println("selectEnvironments - ENV_NAMES ([] runs all oracles): " + GlobalEnv.ENV_NAMES);
         System.out.println("selectEnvironments - SKIP_NAMES ([] does not skip): " + GlobalEnv.SKIP_NAMES);
 
-        ClassLoader classLoader = MainDynamicStubTest.class.getClassLoader();
-        File directory = new File(classLoader.getResource(STUBS_DIR).getFile());
+        ClassLoader classLoader = MainDynamicOracle.class.getClassLoader();
+
+        if (REPO_DIR == null) {
+            System.err.println("REPO_DIR environment variable must be specified");
+            System.exit(1);
+        }
+
+        File directory = null;
+        try {
+            directory = new File(classLoader.getResource(ORACLE_DIR).getFile());
+        } catch (Exception e) {
+            System.err.println("MainDynamicOracle - ORACLE_DIR is not present: " + ORACLE_DIR);
+            System.exit(1);
+        }
 
         ArrayList<StartEnvironment> selectedEnvironments = new ArrayList<>();
         int skipCount = 0;
@@ -145,7 +158,7 @@ public class MainDynamicStubTest {
 
 
     @TestFactory
-    @DisplayName("Dynamic test stubs from JSON files")
+    @DisplayName("Dynamic test oracles from JSON files")
     public Collection<DynamicTest> createDynamicTests() throws Exception {
 
         List<StartEnvironment> selectedEnvironments = this.selectEnvironments();
@@ -191,7 +204,7 @@ public class MainDynamicStubTest {
                     try {
                         StringBuilder actualResultBuilder = new StringBuilder();
                         StringBuilder expectedResultBuilder = new StringBuilder();
-                        yresult = runEnvironment(startEnv,actualResultBuilder,expectedResultBuilder);
+                        yresult = runEnvironment(startEnv, actualResultBuilder, expectedResultBuilder);
 
                         System.out.println("Performing test comparison: " + message);
                         System.out.println("Expected: \n" + expectedResultBuilder.toString());
@@ -214,27 +227,27 @@ public class MainDynamicStubTest {
         );
     }
 
-    public boolean performComparison(StartEnvironment startEnv) throws Exception{
+    public boolean performComparison(StartEnvironment startEnv) throws Exception {
         Yresult yresult = null;
         try {
             String message = startEnv.getEnvName();
 
             StringBuilder actualResultBuilder = new StringBuilder();
             StringBuilder expectedResultBuilder = new StringBuilder();
-            yresult = runEnvironment(startEnv,actualResultBuilder,expectedResultBuilder);
+            yresult = runEnvironment(startEnv, actualResultBuilder, expectedResultBuilder);
 
             System.out.println("Performing test comparison: " + message);
-            if (expectedResultBuilder.toString().equals(actualResultBuilder.toString())){
-                 // good
+            if (expectedResultBuilder.toString().equals(actualResultBuilder.toString())) {
+                // good
             } else {
-                System.err.println(message+" test failed; stringified result should be the same");
+                System.err.println(message + " test failed; stringified result should be the same");
                 return false;
             }
 
-            if (compareResults(startEnv.getExpectedResult(), yresult)){
+            if (compareResults(startEnv.getExpectedResult(), yresult)) {
                 // good
             } else {
-                System.err.println(message+" test failed; results should be the same");
+                System.err.println(message + " test failed; results should be the same");
                 return false;
             }
 
@@ -252,12 +265,24 @@ public class MainDynamicStubTest {
         return true;
     }
 
-    public Yresult runEnvironment(StartEnvironment startEnv, StringBuilder actualResultBuilder, StringBuilder expectedResultBuilder) throws IOException, Exception{
+    public Yresult runEnvironment(StartEnvironment startEnv, StringBuilder actualResultBuilder, StringBuilder expectedResultBuilder) throws IOException, Exception {
         String message = startEnv.getEnvName();
 
         System.out.println("Executing test: " + message);
         String repositoryName = startEnv.getRepositoryName();
-        String repositoryPath = CODESTORY_REPO_DIR + "/" + repositoryName + "/.git";
+        String repositoryPath = REPO_DIR + "/" + repositoryName + "/.git";
+
+        try {
+            // this isn't needed here, but is just a sanity check to make sure the repositoryPath actually exists
+            File f = new File(repositoryPath);
+            if (!f.exists()) {
+                throw new FileNotFoundException(repositoryPath);
+            }
+        } catch (Exception e) {
+            System.err.println("MainDynamicOracle - Oracle repository is not present: " + repositoryPath);
+            System.exit(1);
+        }
+
         String filePath = startEnv.getFilePath();
 
         Repository repository = Utl.createRepository(repositoryPath);
@@ -284,6 +309,7 @@ public class MainDynamicStubTest {
 
         return yresult;
     }
+
     private static boolean compareResults(Map<String, String> expectedResult, Yresult actualResult) {
         if (expectedResult.size() != actualResult.size()) {
             System.out.println(String.format("Result size did not match. Expected: %s, actual: %s",
