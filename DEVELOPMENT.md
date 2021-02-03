@@ -12,8 +12,8 @@ While the vast majority of users will use the Web Service UI, Web Service REST, 
 
 ### Building CodeShovel from the terminal
 
-In the CodeShovel project directory, run `mvn install` and `mvn package`. The result will be a `.jar` file in the `target` directory
-that can be run as described previously.
+In the CodeShovel project directory, run `mvn install` and `mvn -DskipTests=true package`. The result will be a `.jar` file in the `target` directory
+that can be run as described previously. 
 
 ### Setting up CodeShovel in the IDE
 
@@ -30,6 +30,8 @@ Open the CodeShovel repo as Java project. Different run/debug configurations are
   * Type of the run/debug configuration should be `JUnit`
  
 ### Running CodeShovel with oracle files
+
+Oracle files can be validated in the IDE by running `MainDynamicOracleTest` or on the terminal using the parallelized test suite (this will be the fastest way) using `mvn test`.
 
 For development, it makes most to run CodeShovel from so-called *oracle files*. These are located at 
 `src/test/resources/oracles/LANG` where `LANG` refers to the programming language.
@@ -90,6 +92,7 @@ but a few environment variables are required or optional:
 * `WRITE_SEMANTIC_DIFFS` (optional): Set this to true if you want comparisons to `git-log` be performed and results written to files.
 * `WRITE_RESULTS` (optional): Set this to true if you want result files  to be written (the ones described in section *The CodeShovel result file*).
 * `WRITE_SIMILARITIES` (optional): Set this to true if similarity comparisons for methods should be logged to files. This should only be set for debugging cases.
+
 
 ### Contributing
 

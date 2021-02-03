@@ -139,7 +139,7 @@ In order to run from the command line CodeShovel for a local repository, you can
   * `mvn -DskipTests=true package`
   * Works with mvn version 3.3+.
 4. Call the code: 
-  * `java -jar target/codeshovel-0.3.1-SNAPSHOT.jar OPTIONS` 
+  * `java -jar target/codeshovel-1.0.0-SNAPSHOT.jar OPTIONS` 
   * Works with Java version 8+.
 
 `OPTIONS` are defined as follows:
