@@ -73,6 +73,10 @@ public abstract class Ycomparefunctionchange extends Ychange {
 		obj.addProperty("daysBetweenCommits", getDaysBetweenCommits());
 		obj.addProperty("commitsBetweenForRepo", getCommitsBetweenForRepo().size());
 		obj.addProperty("commitsBetweenForFile", getCommitsBetweenForFile().size());
+		obj.addProperty("actualSource", newFunction.getSourceFragment());
+		obj.addProperty("path", newFunction.getSourceFilePath());
+		obj.addProperty("functionStartLine", newFunction.getNameLineNumber());
+		obj.addProperty("functionName", newFunction.getName());
 		obj.addProperty("diff", getDiffAsString());
 		obj.add("extendedDetails", getExtendedDetailsJsonObject());
 		return obj;
