@@ -47,6 +47,8 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	protected abstract String getInitialParentName(E rawMethod);
 	private String functionPath;
 	protected abstract String getInitialFunctionPath(E rawMethod);
+	private String annotation;
+	protected abstract String getMethodAnnotation(E rawMethod);
 
 	public AbstractFunction(E rawMethod, Commit commit, String sourceFilePath, String sourceFileContent) {
 		this.commit = commit;
@@ -67,6 +69,7 @@ public abstract class AbstractFunction<E> implements Yfunction {
 		this.endLine = getInitialEndLine(rawMethod);
 		this.functionPath = getInitialFunctionPath(rawMethod);
 		this.returnStmt = getInitialReturnStmt(rawMethod);
+		this.annotation = getMethodAnnotation(rawMethod);
 	}
 
 	protected String getIdParameterString() {
@@ -177,4 +180,7 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	public int getEndLineNumber() {
 		return this.endLine;
 	}
+
+	@Override
+	public String getAnnotation() { return this.annotation; }
 }

@@ -99,4 +99,9 @@ public interface Yfunction {
 	 */
 	String getParentName();
 
+	/**
+	 * @return If this method has some kind of annotation (e.g. @Test, @Override), return it. Otherwise return null
+	 */
+	String getAnnotation();
+
 }

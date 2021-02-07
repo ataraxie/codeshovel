@@ -11,6 +11,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.type.ReferenceType;
@@ -162,6 +163,23 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 			ident += "___" + idParameterString;
 		}
 		return Utl.sanitizeFunctionId(ident);
+	}
+
+	/**
+	 * @return all the annotation of a method
+	 * Source Code Example:
+	 * @Override
+	 * @Test
+	 * public void foo() {}
+	 * This will return "Override,Test" since foo has two annotations @Test and @Override
+	 * */
+	@Override
+	protected String getMethodAnnotation(MethodDeclaration method) {
+		List<String> annotationsList = new ArrayList<>();
+		for(AnnotationExpr annotation: method.getAnnotations()) {
+			annotationsList.add(annotation.getNameAsString());
+		}
+		return StringUtils.join(annotationsList, ",");
 	}
 
 	private boolean isNestedMethod(MethodDeclaration method) {

@@ -44,7 +44,8 @@ public class MainCli {
 
 		try {
 			CommandLine line = parser.parse(options, args);
-			String repositoryPath = line.getOptionValue("repopath");
+//			String repositoryPath = line.getOptionValue("repopath");
+			 String repositoryPath = "/home/ishtiaque/Desktop/projects/Research/calculator-example";
 			// Unix vs. Windows. Probably there is a better way to do this.
 			String pathDelimiter = repositoryPath.contains("\\\\") ? "\\\\" : "/";
 			// Repo paths need to reference the .git directory. We add it to the path if it's not provided.
@@ -54,15 +55,20 @@ public class MainCli {
 			}
 			// If no repo name parameter was provided we extract if from the repo path.
 			String repositoryName = line.getOptionValue("reponame");
+//			String repositoryName = line.getOptionValue("reponame");
 			if (repositoryName == null) {
 				String[] split = repositoryPath.replace(gitPathEnding, "").split(pathDelimiter);
 				repositoryName = split[split.length - 1];
 			}
-			String filePath = line.getOptionValue("filepath");
-			String functionName = line.getOptionValue("methodname");
-			int functionStartLine = Integer.parseInt(line.getOptionValue("startline"));
+//			String filePath = line.getOptionValue("filepath");
+			 String filePath = "src/test/java/com/github/stokito/unitTestExample/calculator/CalculatorTest.java";
+//			String functionName = line.getOptionValue("methodname");
+			 String functionName = "testSumagain";
+//			int functionStartLine = Integer.parseInt(line.getOptionValue("startline"));
+			 int functionStartLine = 9;
 			// If no start commit hash was provided we use HEAD.
 			String startCommitName = line.getOptionValue("startcommit");
+//			String startCommitName = "b1cfd257eb46dba42033984145134eae5880f657";
 			if (startCommitName == null) {
 				startCommitName = "HEAD";
 			}
