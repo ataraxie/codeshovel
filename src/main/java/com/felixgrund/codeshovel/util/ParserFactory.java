@@ -28,8 +28,6 @@ public class ParserFactory {
 				parser = new JavaParser(startEnv, filePath, fileContent, commit);
 			} else if (filePath.matches(PythonParser.ACCEPTED_FILE_EXTENSION)) {
 				parser = new PythonParser(startEnv, filePath, fileContent, commit);
-			} else if (filePath.matches(CParser.ACCEPTED_FILE_EXTENSION)) {
-				parser = new CParser(startEnv, filePath, fileContent, commit);
 			} else {
 				throw new NoParserFoundException("No parser found for filename " + filePath);
 			}
