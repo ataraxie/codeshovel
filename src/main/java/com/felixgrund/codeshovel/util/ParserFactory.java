@@ -4,6 +4,7 @@ import com.felixgrund.codeshovel.exceptions.NoParserFoundException;
 import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.parser.impl.JavaParser;
+import com.felixgrund.codeshovel.parser.impl.PythonParser;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.apache.commons.codec.digest.DigestUtils;
