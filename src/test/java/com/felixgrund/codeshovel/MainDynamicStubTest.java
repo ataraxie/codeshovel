@@ -65,10 +65,11 @@ public class MainDynamicStubTest {
 			String json = FileUtils.readFileToString(file, "utf-8");
 			StartEnvironment startEnv = GSON.fromJson(json, StartEnvironment.class);
 			startEnv.setEnvName(envName);
-			boolean stubWhitelisted = envName.startsWith(RUN_ONLY_TEST);
-			boolean isBlacklist = RUN_ONLY_TEST.startsWith("!");
+			boolean hasAnyIncludesOrIncludes = RUN_ONLY_TEST != null;
+			boolean stubWhitelisted = hasAnyIncludesOrIncludes && envName.startsWith(RUN_ONLY_TEST);
+			boolean isBlacklist = hasAnyIncludesOrIncludes && RUN_ONLY_TEST.startsWith("!");
 			boolean stubBlacklisted = isBlacklist && envName.startsWith(RUN_ONLY_TEST.substring(1));
-			if (RUN_ONLY_TEST == null || stubWhitelisted || (isBlacklist && !stubBlacklisted)) {
+			if (!hasAnyIncludesOrIncludes || (stubWhitelisted || (isBlacklist && !stubBlacklisted))) {
 				index++;
 				if (GlobalEnv.BEGIN_INDEX >= 0 && GlobalEnv.MAX_RUNS >= 0) {
 					if (index < GlobalEnv.BEGIN_INDEX) {
