@@ -1,14 +1,12 @@
-package com.felixgrund.codeshovel.parser.impl; 
+package com.felixgrund.codeshovel.parser.impl;
 
 import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.Ycommit;
-import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.parser.AbstractParser;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.util.Utl;
-import com.felixgrund.codeshovel.visitors.MethodVisitor;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.github.javaparser.ast.CompilationUnit;
@@ -31,18 +29,22 @@ public class JavaParser extends AbstractParser implements Yparser {
 
 	@Override
 	protected List<Yfunction> parseMethods() throws ParseException {
-		CompilationUnit rootCompilationUnit = com.github.javaparser.JavaParser.parse(this.fileContent);
-		if (rootCompilationUnit == null) {
-			throw new ParseException("Could not parseMethods root compilation unit.", this.filePath, this.fileContent);
-		}
-		JavaMethodVisitor visitor = new JavaMethodVisitor() {
-			@Override
-			public boolean methodMatches(Yfunction method) {
-				return method.getBody() != null;
+		try {
+			CompilationUnit rootCompilationUnit = com.github.javaparser.JavaParser.parse(this.fileContent);
+			if (rootCompilationUnit == null) {
+				throw new ParseException("Could not parseMethods root compilation unit.", this.filePath, this.fileContent);
 			}
-		};
-		rootCompilationUnit.accept(visitor, null);
-		return visitor.getMatchedNodes();
+			JavaMethodVisitor visitor = new JavaMethodVisitor() {
+				@Override
+				public boolean methodMatches(Yfunction method) {
+					return method.getBody() != null;
+				}
+			};
+			rootCompilationUnit.accept(visitor, null);
+			return visitor.getMatchedNodes();
+		} catch (Exception e) {
+			throw new ParseException("Error during parsing of content", this.filePath, this.fileContent);
+		}
 	}
 
 	@Override

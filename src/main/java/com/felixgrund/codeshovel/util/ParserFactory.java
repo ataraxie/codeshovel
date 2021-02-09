@@ -5,8 +5,11 @@ import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.parser.impl.CParser;
 import com.felixgrund.codeshovel.parser.impl.JavaParser;
+<<<<<<< HEAD
 import com.felixgrund.codeshovel.parser.impl.JsParser;
 import com.felixgrund.codeshovel.parser.impl.PythonParser;
+=======
+>>>>>>> master
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -22,9 +25,7 @@ public class ParserFactory {
 		String cacheKey = commit.getName() + "-" + DigestUtils.md5Hex(filePath);
 		Yparser parser = parserCache.get(cacheKey);
 		if (parser == null) {
-			if (filePath.matches(JsParser.ACCEPTED_FILE_EXTENSION)) {
-				parser = new JsParser(startEnv, filePath, fileContent, commit);
-			} else if (filePath.matches(JavaParser.ACCEPTED_FILE_EXTENSION)) {
+			if (filePath.endsWith(JavaParser.ACCEPTED_FILE_EXTENSION)) {
 				parser = new JavaParser(startEnv, filePath, fileContent, commit);
 			} else if (filePath.matches(PythonParser.ACCEPTED_FILE_EXTENSION)) {
 				parser = new PythonParser(startEnv, filePath, fileContent, commit);
