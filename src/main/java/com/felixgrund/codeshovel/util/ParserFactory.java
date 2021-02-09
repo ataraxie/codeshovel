@@ -3,13 +3,7 @@ package com.felixgrund.codeshovel.util;
 import com.felixgrund.codeshovel.exceptions.NoParserFoundException;
 import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.parser.Yparser;
-import com.felixgrund.codeshovel.parser.impl.CParser;
 import com.felixgrund.codeshovel.parser.impl.JavaParser;
-<<<<<<< HEAD
-import com.felixgrund.codeshovel.parser.impl.JsParser;
-import com.felixgrund.codeshovel.parser.impl.PythonParser;
-=======
->>>>>>> master
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.apache.commons.codec.digest.DigestUtils;
