@@ -20,7 +20,7 @@ import java.util.List;
 
 public class JavaParser extends AbstractParser implements Yparser {
 
-	public static final String ACCEPTED_FILE_EXTENSION = ".java";
+	public static final String ACCEPTED_FILE_EXTENSION = ".*\\.java$";
 	private Logger log = LoggerFactory.getLogger(JavaParser.class);
 
 	public JavaParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
