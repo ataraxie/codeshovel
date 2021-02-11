@@ -1,6 +1,8 @@
-# CodeShovel - Evaluation Docs
+# Oracle Construction
 
-You can disregard this document unless you are considering extending the oracle included in the repository (e.g., for extending to a new language) or building a new one. 
+This document describes how to construct a method history oracle. Accurately determining the full history of a method is laborous, but is necessary to check that a tool can effectively find all changes for a given method in a given language.
+
+This document is mainly intended for people considering extending the oracle included in the repository (e.g., for extending to a new language) or building a new one. 
 
 ## Creating an Oracle
 
@@ -96,21 +98,21 @@ Here's a description of how it can be done with SourceTree:
 
 3.1) Click on "File status" below "WORKSPACE" in the top left
 
-![File Status](doc/oracle/filestatus.png)
+![File Status](filestatus.png)
 
 3.2) Select "All files" in the dropdown to the right of "WORKSPACE":
 
-![All files](doc/oracle/allfiles.png)
+![All files](allfiles.png)
 
 3.3) File the file in the tree
 
-![File tree](doc/oracle/tree.png)
+![File tree](tree.png)
 
 3.4) Right-click on the file > Log selected...
 
 3.5) Check "Follow renamed files" at the bottom left
 
-![Folow renames](doc/oracle/follow.png)
+![Folow renames](follow.png)
 
 4.) The tedious part: go through each revision and check if the method has been changed
 
@@ -118,13 +120,13 @@ Here's a description of how it can be done with SourceTree:
 
 4.2) Here is a screenshot of the change `30c3a36:Ymultichange(Yparameterchange,Ybodychange)` in the previous example:
 
-![Change example](doc/oracle/changeexample.png)
+![Change example](changeexample.png)
 
 5.) Once you find the commit that seems to have introduced the message, you'll have to verify if this was "really" the introduction or if it was just a Ymethodmove, Yrename, etc.
 
 5.1) For example, this looks like a method introduction on the right-hand side:
 
-![Method move](doc/oracle/methodmove.png)
+![Method move](methodmove.png)
 
 But the commit message on the left side already indicates that this method was in fact moved (of course there's not always such an obvious commit message).
 
@@ -134,7 +136,7 @@ But the commit message on the left side already indicates that this method was i
 
 5.4) Browse through the changed files. We find that the method was removed somewhere else:
 
-![Method removed](doc/oracle/methodmove2.png)
+![Method removed](methodmove2.png)
 
 5.5) So in fact the history of the method continues here! Right-click on the file (selected item in the previous screenshot) > Log selected...
 
