@@ -12,8 +12,8 @@ While the vast majority of users will use the Web Service UI, Web Service REST, 
 
 ### Building CodeShovel from the terminal
 
-In the CodeShovel project directory, run `mvn install` and `mvn package`. The result will be a `.jar` file in the `target` directory
-that can be run as described previously.
+In the CodeShovel project directory, run `mvn install` and `mvn -DskipTests=true package`. The result will be a `.jar` file in the `target` directory
+that can be run as described previously. 
 
 ### Setting up CodeShovel in the IDE
 
@@ -22,19 +22,21 @@ Open the CodeShovel repo as Java project. Different run/debug configurations are
   * Use this if you want to run CodeShovel the same way as running the `.jar` file from the command line
   * Don't forget to configure the arguments in the configuration
   * Type of the run/debug configuration should be `Application`
-* `com.felixgrund.codeshovel.MainSingleStub`
-  * Run CodeShovel from a single stub file (see below)
+* `com.felixgrund.codeshovel.MainSingleOracle`
+  * Run CodeShovel from a single oracle file (see below)
   * Type of the run/debug configuration should be `Application`
-* `com.felixgrund.codeshovel.MainDynamicStubTest`
-  * Run CodeShovel with many test cases from multiple stub files (see below)
+* `com.felixgrund.codeshovel.MainDynamicOracleTest`
+  * Run CodeShovel with many test cases from multiple oracle files (see below)
   * Type of the run/debug configuration should be `JUnit`
  
-### Running CodeShovel with stub files
+### Running CodeShovel with oracle files
 
-For development, it makes most to run CodeShovel from so-called *stub files*. These are located at 
-`src/test/resources/stubs/LANG` where `LANG` refers to the programming language.
+Oracle files can be validated in the IDE by running `MainDynamicOracleTest` or on the terminal using the parallelized test suite (this will be the fastest way) using `mvn test`.
 
-A stub file is a JSON file and contains data describing one method for which to run CodeShovel.
+For development, it makes most to run CodeShovel from so-called *oracle files*. These are located at 
+`src/test/resources/oracles/LANG` where `LANG` refers to the programming language.
+
+An oracle file is a JSON file and contains data describing one method for which to run CodeShovel.
 The structure is as follows:
 
 ```
@@ -51,7 +53,7 @@ The structure is as follows:
 The keys mostly match the arguments for the command-line runtime semantically. Note that `startCommitName` should have
 the actual commit hash rather than `HEAD`.
 
-There is an extra key `expectedResults` that is used for a unit test run from the stub file (with the `MainDynamicStubTest` class).
+There is an extra key `expectedResults` that is used for a unit test run from the oracle file (with the `MainDynamicOracle` class).
 It must contain the *exact* same object as is expected in the `changeHistoryShort` object in a result file. 
 
 Example:
@@ -69,25 +71,28 @@ Example:
 }
 ```
 
-You can check the existing stub files in the `src/test/resources/stubs/LANG` directories for clarification.
+You can check the existing oracle files in the `src/test/resources/oracles/<LANG>` directories for clarification.
 
-When running CodeShovel from stub files, there are no program arguments required, 
+When running CodeShovel from oracle files, there are no program arguments required, 
 but a few environment variables are required or optional:
 * `REPO_DIR`: local repository path - path to a local directory that contains the repository.
   * (e.g. `/Users/myhome/dev/codeshovel-repos` where the repo dir `checkstyle` is inside this directory)
-* `LANG`: programming language of the target method. Currently either `java` or `js`.
-* `ENV_NAME` (optional): environment name - basically a name for the stub/s to be used.
-  * Must refer to the file name of the stub without the `.json` ending
-  * e.g. if you have a stub file `checkstyle-Checker-fireErrors.json`, the env name should be `checkstyle-Checker-fireErrors`
-  * You can address multiple stub files by providing only the beginning of the file name
-    * e.g. `checkstyle-` will match all stub files starting with `checkstyle-`
-* `BEGIN_INDEX` (optional): If you only want to start at a specific index among all the matched stub files (starts with 1, not 0!).
-* `MAX_RUNS` (optional): If you only want to run X stub files of the matched env names.
-* `SKIP_ENVS` (optional): If you want to skip certain stub files among the matched stubs you can specify a comma-separated list of env names.
+  * If you are working with the Java oracle, you can run `bin/clone-java-repositories.sh` to clone the Java oracle projects.
+* `LANG`: programming language of the target method. Currently only java oracle files are in the repository.
+  * These files should be in the `src/test/resources/oracles/<LANG>` folder.
+* `ENV_NAMES` (optional): environment name - basically a name for the oracle/s to be used.
+  * Must refer to the file name of the oracle without the `.json` ending
+  * e.g. if you have a oracle file `checkstyle-Checker-fireErrors.json`, the env name should be `checkstyle-Checker-fireErrors`
+  * You can address multiple oracle files by providing only the beginning of the file name
+    * e.g. `checkstyle-` will match all oracle files starting with `checkstyle-`
+* `SKIP_NAMES` (optional): If you want to skip certain oracle files among the matched oracles you can specify a comma-separated list of env names.
+* `BEGIN_INDEX` (optional): If you only want to start at a specific index among all the matched oracle files (starts with 1, not 0!).
+* `MAX_RUNS` (optional): If you only want to run X oracle files of the matched env names.
 * `DISABLE_ALL_OUTPUTS` (optional): Set this to true if you don't want any files to be written. If this is set to true, all the `WRITE_*` flags below will be ignored!
 * `WRITE_SEMANTIC_DIFFS` (optional): Set this to true if you want comparisons to `git-log` be performed and results written to files.
 * `WRITE_RESULTS` (optional): Set this to true if you want result files  to be written (the ones described in section *The CodeShovel result file*).
 * `WRITE_SIMILARITIES` (optional): Set this to true if similarity comparisons for methods should be logged to files. This should only be set for debugging cases.
+
 
 ### Contributing
 
@@ -119,14 +124,14 @@ already implemented language-specific classes for examples.
 
 ### Testing a language-specific version
 
-For each method that is used for testing, a stub should be created in `test/resources/stubs/LANGUAGE`. The stub file names
+For each method that is used for testing, a oracle should be created in `test/resources/oracles/LANGUAGE`. The oracle file names
 should be in the form `REPONAME-MODULENAME-METHODNAME.json` where `MODULENAME` is the name of the source file or class. If you
-create stubs for multiple methods with the same name, please add `-LINENUMBER` (line number where the method name appears) 
+create oracles for multiple methods with the same name, please add `-LINENUMBER` (line number where the method name appears) 
 to the file name.
 
-One way of creating these stub files is as follows:
-- Create the JSON file with all fields filled except `expectedResult`. Then, run CodeShovel with the stub as described above
-in section `Running CodeShovel with stub files`
+One way of creating these oracle files is as follows:
+- Create the JSON file with all fields filled except `expectedResult`. Then, run CodeShovel with the oracle as described above
+in section `Running CodeShovel with oracle files`
 - Go through the resulting output and check if it is correct
   - IF it is correct, paste the result as `expectedResult` (as valid JSON) and make sure it passes when run as unit test 
   - ELSE, improve your implementation and repeat until it is correct

@@ -130,8 +130,8 @@ public class ShovelExecution {
 				Utl.writeShovelResultFile(jsonResultCodeshovel);
 			}
 
-			if (GlobalEnv.WRITE_STUBS) {
-				Utl.writeJsonStubToFile(jsonResultCodeshovel);
+			if (GlobalEnv.WRITE_ORACLES) {
+				Utl.writeJsonOracleToFile(jsonResultCodeshovel);
 			}
 
 		}

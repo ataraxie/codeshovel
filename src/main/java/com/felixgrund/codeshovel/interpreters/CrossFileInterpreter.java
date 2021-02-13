@@ -66,6 +66,19 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 		return ret;
 	}
 
+	/**
+	 * Handles comparing methods that are spread across files.
+	 *
+	 * e.g., to check if a method was in a previous version of a different file.
+	 *
+	 * By looking at removed functions this specifically searches for methods
+	 * that were moved between files in a revision.
+	 *
+	 * @param ydiff
+	 * @param prevCommit
+	 * @return
+	 * @throws Exception
+	 */
 	private Yfunction getCompareFunctionFromMultipleFiles(Ydiff ydiff, Commit prevCommit) throws Exception {
 		Yfunction ret = null;
 		List<Yfunction> allFunctions = new ArrayList<>();
@@ -85,6 +98,16 @@ public class CrossFileInterpreter extends AbstractInterpreter {
 		return ret;
 	}
 
+	/**
+	 * Handles comparing methods within a file.
+	 *
+	 * e.g., to check if a method was in the previous version of the same file.
+	 *
+	 * @param filePath
+	 * @param commit
+	 * @return
+	 * @throws Exception
+	 */
 	private Yfunction getCompareFunctionFromFile(String filePath, Commit commit) throws Exception {
 		Yparser parser = createParserForCommitAndFile(commit, filePath);
 		List<Yfunction> allFunctions = parser.getAllMethods();

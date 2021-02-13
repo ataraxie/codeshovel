@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.felixgrund.codeshovel</groupId>
 	<artifactId>codeshovel</artifactId>
-	<version>0.3.1-SNAPSHOT</version>
-
+	<version>1.0.0-SNAPSHOT</version>
 	<properties>
 		<java.version>1.8</java.version>
-		<junit.version>4.13.1</junit.version>
-		<junit.jupiter.version>5.1.0</junit.jupiter.version>
-		<junit.vintage.version>5.1.0</junit.vintage.version>
-		<junit.platform.version>1.1.0</junit.platform.version>
-		<skipTests>true</skipTests>
+		<junit.jupiter.version>5.7.0</junit.jupiter.version>
+		<junit.platform.version>1.7.0</junit.platform.version>
 		<antlr.repo.sha>8803cbe8aca1b3b6ebf73e13f5c41665f393b381</antlr.repo.sha>
 	</properties>
-
-
 	<repositories>
 		<repository>
 			<snapshots>
@@ -30,21 +20,7 @@
 			<url>https://repo1.maven.org/maven2</url>
 		</repository>
 	</repositories>
-
-
 	<dependencies>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>${junit.jupiter.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
@@ -52,9 +28,15 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.junit.vintage</groupId>
-			<artifactId>junit-vintage-engine</artifactId>
-			<version>${junit.vintage.version}</version>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-runner</artifactId>
+			<version>${junit.platform.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${junit.jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -103,7 +85,6 @@
 			<version>4.7.1</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -120,10 +101,28 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.1</version>
 				<configuration>
-					<skipTests>${skipTests}</skipTests>
+					<!--<skipTests>true</skipTests>-->
+					<argLine>-Xmx6g</argLine>
+					<environmentVariables>
+						<REPO_DIR>../../tmp/codeshovelRepos</REPO_DIR>
+						<!-- required -->
+						<LANG>java</LANG>
+						<!-- required -->
+						<ENV_NAMES/>
+						<!-- optional, can be: foo or foo, bar, baz -->
+						<SKIP_NAMES/>
+						<!-- optional, can be: foo or foo, bar, baz -->
+					</environmentVariables>
+					<properties>
+						<configurationParameters>
+                            junit.jupiter.execution.parallel.enabled = true
+                            junit.jupiter.execution.parallel.mode.default = same_thread
+                            junit.jupiter.execution.parallel.config.strategy = fixed
+                            junit.jupiter.execution.parallel.config.fixed.parallelism = 6
+                        </configurationParameters>
+					</properties>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -147,7 +146,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>com.googlecode.maven-download-plugin</groupId>
 				<artifactId>download-maven-plugin</artifactId>
@@ -215,7 +213,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
@@ -234,5 +231,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
