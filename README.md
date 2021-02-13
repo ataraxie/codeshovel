@@ -4,7 +4,7 @@ Take this shovel to dig in source code history for changes to specific methods a
 
 *This is research!* Primarily undertaken in the [Software Practices Lab](https://spl.cs.ubc.ca) at UBC in Vancouver, Canada we have developed this project to help practitioners to more efficiently check how their methods have changed and give researchers an easier way to track method evolution for academic studies. Please do not hesitate to get in touch if you have any questions!
 
-A conference paper describing how CodeShovel works and how it was evaluated as been accepted for publication at the International Conference on Software Engineering 2021. A pre-print of the paper (which will be finalized in late February 2021) can be found [here](ICSE2021.pdf).
+A conference paper describing how CodeShovel works and how it was evaluated as been accepted for publication at the International Conference on Software Engineering 2021. A pre-print of the paper (which will be finalized in late February 2021) can be found [here](doc/ICSE_2021_CodeShovel.pdf).
 
 ## Pathways for Use
 
@@ -243,12 +243,4 @@ The `changeHistoryDetails` array contains an object for each commit that changed
 
 ## Code Shovel Development
 
-While the vast majority of users will use the Web Service UI, Web Service REST, or Command Line interfaces, if you want to build CodeShovel yourself (for instance if you are doing development), you can follow the [Development instructions](DEVELOPMENT.md).
-
-## Tool comparison
-
-```
-https://github.com/ataraxie/codeshovel/blob/master/analysis/compare_100_methods.ods
-```
-The above file contains the results of tool comparison (comparing CodeShovel's accuracy with git log, intelliJ, and FinerGit). For a method, 1 means the tool successfully generated the complete history of the method, and 0 means the tool failed. This result was published in our ICSE 2021 paper.  
-
+While the vast majority of users will use the Web Service UI, Web Service REST, or Command Line interfaces, if you want to build CodeShovel yourself (for instance if you are doing development), you can follow the [Development instructions](doc/DEVELOPMENT.md).

@@ -145,4 +145,11 @@ But the commit message on the left side already indicates that this method was i
 6.) At some point you'll find the commit that really introduced the method. You can finish your analysis with a `Yintroduced` change type. Congrats!
 
 
+## Tool comparison
+
+```
+https://github.com/ataraxie/codeshovel/blob/master/analysis/compare_100_methods.ods
+```
+
+The above file contains the results of tool comparison (comparing CodeShovel's accuracy with git log, intelliJ, and FinerGit). For a method, 1 means the tool successfully generated the complete history of the method, and 0 means the tool failed. This result was published in our ICSE 2021 paper.  
 
