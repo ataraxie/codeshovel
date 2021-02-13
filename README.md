@@ -10,7 +10,7 @@ A conference paper describing how CodeShovel works and how it was evaluated as b
 
 CodeShovel can be used in three ways:
 
-* ***Web Service UI***: We have built a browser-based user interface that you can use to interactively navigate the history of a method of interest. We host a public copy of the [web interface](https://se.cs.ubc.ca/codeshovel/index.html) if you just want to use CodeShovel without installing anything, but this repository also has [instructions for self-hosting](#web-service-ui) the web service on your own computer using Docker.
+* ***Web Service UI***: We have built a browser-based user interface that you can use to interactively navigate the history of a method of interest. We host a public copy of the [web interface](https://se.cs.ubc.ca/CodeShovel/index.html) if you just want to use CodeShovel without installing anything, but this repository also has [instructions for self-hosting](#web-service-ui) the web service on your own computer using Docker.
 
 * ***Web Service REST:*** To programmatically investigate the history of a method, you can also call the CodeShovel web service using standard rest commands. You can direct these against our hosted version of the web service, or against your own self-hosted copy of the web service. The [REST interface instructions](#web-service-rest) are below.
 
@@ -19,7 +19,7 @@ CodeShovel can be used in three ways:
 <a name="web-service-ui"></a>
 ## Web Service UI 
 
-***Public UI:*** The web service UI enables easy interactive exploration of a method history. The quickest way to use this is through our hosted version available at [https://se.cs.ubc.ca/codeshovel/index.html](https://se.cs.ubc.ca/codeshovel/index.html). Through this interface you can explore histories of some sample methods (these are not cached: they are dynamically computed as the underlying repositories are updated), or by providing a link to a public repository of your choosing. **Note:** This is likely to be the least performant of all interface options as it runs on shared infrastructure with minimal resources, but is a viable way to check the results of the tool.
+***Public UI:*** The web service UI enables easy interactive exploration of a method history. The quickest way to use this is through our hosted version available at [https://se.cs.ubc.ca/CodeShovel/index.html](https://se.cs.ubc.ca/CodeShovel/index.html). Through this interface you can explore histories of some sample methods (these are not cached: they are dynamically computed as the underlying repositories are updated), or by providing a link to a public repository of your choosing. **Note:** This is likely to be the least performant of all interface options as it runs on shared infrastructure with minimal resources, but is a viable way to check the results of the tool.
 
 ***Self-Hosted UI:*** You can also stand up a copy of the web interface on your own infrastructure. To do this, follow these steps:
 
