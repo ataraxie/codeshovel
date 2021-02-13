@@ -211,8 +211,10 @@ public class MainDynamicOracleTest {
                         System.out.println("Performing test comparison: " + message);
                         System.out.println("Expected: \n" + expectedResultBuilder.toString());
                         System.out.println("Actual: \n" + actualResultBuilder.toString());
+                        boolean results = compareResults(startEnv.getExpectedResult(), yresult); // prints useful data
                         assertEquals(expectedResultBuilder.toString(), actualResultBuilder.toString(), "stringified result should be the same");
-                        assertTrue(compareResults(startEnv.getExpectedResult(), yresult), "results should be the same");
+                        assertTrue(results, "results should be the same");
+
                         System.out.println("Test comparison complete: " + message);
                         System.out.println("Test execution complete: " + message);
                     } catch (Exception e) {
@@ -314,8 +316,9 @@ public class MainDynamicOracleTest {
     }
 
     private static boolean compareResults(Map<String, String> expectedResult, Yresult actualResult) {
+
         if (expectedResult.size() != actualResult.size()) {
-            System.out.println(String.format("Result size did not match. Expected: %s, actual: %s",
+            System.out.println(String.format("\nNumber of expected results: %s, actual: %s",
                     expectedResult.size(), actualResult.size()));
 
             Set<String> expectedKeys = expectedResult.keySet();
@@ -327,9 +330,16 @@ public class MainDynamicOracleTest {
             onlyInExpected.removeAll(actualKeys);
             Set<String> onlyInActual = new HashSet<>(actualKeys);
             onlyInActual.removeAll(expectedKeys);
-            System.out.println("\nOnly in expected:\n" + StringUtils.join(onlyInExpected, "\n"));
-            System.out.println("\nOnly in actual:\n" + StringUtils.join(onlyInActual, "\n"));
+            if (onlyInExpected.size() > 0) {
+                System.out.println("\nOnly in expected (missing in actual): " + onlyInExpected.size() + "\n" + StringUtils.join(onlyInExpected, "\n"));
+            }
+            if (onlyInActual.size() > 0) {
+                System.out.println("\nOnly in actual (not in expected): " + onlyInActual.size() + "\n" + StringUtils.join(onlyInActual, "\n"));
+            }
+
             return false;
+        } else {
+            System.out.println("\nNumber of expected results: " + expectedResult.size() + " (all found)");
         }
 
         for (String commitName : actualResult.keySet()) {
