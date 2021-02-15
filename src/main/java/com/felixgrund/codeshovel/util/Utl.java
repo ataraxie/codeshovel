@@ -1,10 +1,8 @@
 package com.felixgrund.codeshovel.util;
 
-import com.felixgrund.codeshovel.changes.Ychange;
 import com.felixgrund.codeshovel.entities.Yparameter;
-import com.felixgrund.codeshovel.entities.Yresult;
 import com.felixgrund.codeshovel.json.JsonSimilarity;
-import com.felixgrund.codeshovel.json.JsonStub;
+import com.felixgrund.codeshovel.json.JsonOracle;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.FunctionSimilarity;
 import com.felixgrund.codeshovel.json.JsonChangeHistoryDiff;
@@ -161,8 +159,8 @@ public class Utl {
 		);
 	}
 
-	public static void writeJsonStubToFile(JsonResult jsonResult) {
-		if (GlobalEnv.DISABLE_ALL_OUTPUTS || !GlobalEnv.WRITE_STUBS) {
+	public static void writeJsonOracleToFile(JsonResult jsonResult) {
+		if (GlobalEnv.DISABLE_ALL_OUTPUTS || !GlobalEnv.WRITE_ORACLES) {
 			return;
 		}
 
@@ -170,12 +168,12 @@ public class Utl {
 			String filePath = jsonResult.getSourceFilePath();
 			String[] filePathSplit = filePath.split("/");
 			String className = filePathSplit[filePathSplit.length-1].replace(".java", "");
-			String baseDir = GlobalEnv.OUTPUT_DIR + "/stubs";
+			String baseDir = GlobalEnv.OUTPUT_DIR + "/oracles";
 			File file = new File(baseDir + "/" + jsonResult.getRepositoryName() + "-" + className + "-" + jsonResult.getFunctionName() + ".json");
-			JsonStub stub = new JsonStub(jsonResult);
-			FileUtils.writeStringToFile(file, stub.toJson(), "utf-8");
+			JsonOracle oracle = new JsonOracle(jsonResult);
+			FileUtils.writeStringToFile(file, oracle.toJson(), "utf-8");
 		} catch (Exception e) {
-			log.error("Could not write stub file for function {{}}. Skipping.", jsonResult.getFunctionId(), e);
+			log.error("Could not write oracle file for function {{}}. Skipping.", jsonResult.getFunctionId(), e);
 		}
 	}
 

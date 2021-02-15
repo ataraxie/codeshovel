@@ -1,6 +1,7 @@
 package com.felixgrund.codeshovel.changes;
 
 import com.felixgrund.codeshovel.parser.Yfunction;
+import com.felixgrund.codeshovel.parser.impl.JavaFunction;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
@@ -36,6 +37,10 @@ public class Yintroduced extends Ychange {
 	public JsonObject toJsonObject() {
 		JsonObject obj = super.toJsonObject();
 		obj.addProperty("diff", getDiffAsString());
+		obj.addProperty("actualSource", newFunction.getSourceFragment());
+		obj.addProperty("path", newFunction.getSourceFilePath());
+		obj.addProperty("functionStartLine", newFunction.getNameLineNumber());
+		obj.addProperty("functionName", newFunction.getName());
 		return obj;
 	}
 

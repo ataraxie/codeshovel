@@ -35,6 +35,11 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
     }
 
     @Override
+    protected String getInitialId(V8Object rawMethod) {
+        return null; // TODO
+    }
+
+    @Override
     protected String getInitialName(V8Object function) {
         // TODO remove magic number and use typescript
         // TODO should asterisk from generator go here or somewhere else?

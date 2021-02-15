@@ -1,53 +1,176 @@
 # CodeShovel - Unearthing Method Histories
 
-Take this shovel to dig in source code history for changes to specific methods and functions. Currently implemented for Java. More languages to follow.
+Take this shovel to dig in source code history for changes to specific methods and functions. The tool is currently implemented for software projects written in Java. CodeShovel is a tool for navigating method histories and is robust to the kinds of changes methods frequently undergo (e.g., being modified, renamed, or and moved between files and directories).
 
-CodeShovel is a tool for navigating dedicated method histories, across all kinds of changes that it saw throughout its life span.
+*This is research!* Primarily undertaken in the [Software Practices Lab](https://spl.cs.ubc.ca) at UBC in Vancouver, Canada we have developed this project to help practitioners to more efficiently check how their methods have changed and give researchers an easier way to track method evolution for academic studies. Please do not hesitate to get in touch if you have any questions!
 
-*This is research!* At the Software Practices Lab at UBC/Vancouver, we are currently working on a research paper that will describe properly how it works and why it makes lots of sense.
+A conference paper describing how CodeShovel works and how it was evaluated as been accepted for publication at the International Conference on Software Engineering 2021. A pre-print of the paper (which will be finalized in late February 2021) can be found [here](ICSE2021.pdf).
 
-## Getting Started
+## Pathways for Use
 
-### Prerequisites
+CodeShovel can be used in three ways:
 
-* Java 8 or higher must be installed (`java -version` must reveal 1.8 or higher). You can find Java on the [Oracle page](https://www.oracle.com/technetwork/java/javase/downloads/index.html).
-* If you want to build CodeShovel yourself: Maven 3.5.x or higher
+* ***Web Service UI***: We have built a browser-based user interface that you can use to interactively navigate the history of a method of interest. We host a public copy of the [web interface](https://se.cs.ubc.ca/codeshovel/index.html) if you just want to use CodeShovel without installing anything, but this repository also has [instructions for self-hosting](#web-service-ui) the web service on your own computer using Docker.
 
-### Running the tool from command line
+* ***Web Service REST:*** To programmatically investigate the history of a method, you can also call the CodeShovel web service using standard rest commands. You can direct these against our hosted version of the web service, or against your own self-hosted copy of the web service. The [REST interface instructions](#web-service-rest) are below.
 
-In order to run from the command line `CodeShovel` for a local repository, you can simply download the most recent
-version from the [Releases page](https://github.com/ataraxie/codeshovel/releases) and run it as follows:
+* ***Command Line:*** Finally, if you would prefer to interact with CodeShovel on the command line directly without using the REST interface, you can call the CodeShovel `jar` directly. [Command line instructions](#command-line) are included below.
+
+<a name="web-service-ui"></a>
+## Web Service UI 
+
+***Public UI:*** The web service UI enables easy interactive exploration of a method history. The quickest way to use this is through our hosted version available at [https://se.cs.ubc.ca/codeshovel/index.html](https://se.cs.ubc.ca/codeshovel/index.html). Through this interface you can explore histories of some sample methods (these are not cached: they are dynamically computed as the underlying repositories are updated), or by providing a link to a public repository of your choosing. **Note:** This is likely to be the least performant of all interface options as it runs on shared infrastructure with minimal resources, but is a viable way to check the results of the tool.
+
+***Self-Hosted UI:*** You can also stand up a copy of the web interface on your own infrastructure. To do this, follow these steps:
+
+1. Clone the repository: 
+	* `git clone git@github.com:ataraxie/codeshovel.git`
+2. Configure the environment:
+	* Copy `.env.webservice.sample` to `.env`.
+	* Update the log and cache paths in `.env`.
+	* Specify a GitHub token; to generate one:
+		* Visit: [https://github.com/settings/tokens](https://github.com/settings/tokens)
+		* Tap 'Generate New Token'.
+		* Grant the 'Repo' permission scope.
+		* Copy the token generated to the `.env` file.
+	* The default hostname does not need to be changed.
+
+3. Start the web service:
+	* `docker-compose build && docker-compose up`
+	* Works with Docker 2.2+.
+4. Access your server:
+	* For the UI: open the web service in your browser (`https://localhost:8080`).
+	* For the REST interface: see REST API instructions below.
+
+<a name="web-service-rest"></a>
+## Web Service REST 
+
+As with the web service UI, you can either use our public web service or self-host your own (see the instructions [#web-service-ui](above)). If you are using the self-hosted web service, change `https://se.cs.ubc.ca/CodeShovel` to point to your own service.
+
+Interacting with the CodeShovel web service is through the following REST endpoints. Examples are provided using `curl` syntax for ease of testing, just adapt the values as needed.
+
+* `GET getHistory/`: Retrieves the history of a method
+    * `gitUrl` (should end in `.git`)
+    * `sha` (optional)
+    * `filePath`
+    * `startLine`
+    * `methodName`
+
 ```
-java -jar codeshovel-XXX.jar OPTIONS
+curl "https://se.cs.ubc.ca/CodeShovel/getHistory?gitUrl=${}&sha=${}&filePath=${}&startLine=${}&methodName=${}"
 ```
+
+e.g.,
+
+`curl "https://se.cs.ubc.ca/CodeShovel/getHistory?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93&filePath=/src/main/java/org/apache/commons/math4/dfp/DfpDec.java&methodName=round&startLine=164"`
+
+Each entry in the history list conforms to the following schema:
+
+```typescript
+interface Change {
+    type: string;
+    commitMessage: string;
+    commitDate: string;
+    commitName: string; // SHA
+    commitAuthor: string;
+    commitDateOld?: string;
+    commitNameOld?: string;
+    commitAuthorOld?: string;
+    daysBetweenCommits?: number;
+    commitsBetweenForRepo?: number;
+    commitsBetweenForFile?: number;
+    diff: string;
+    extendedDetails?: {[key: string]: any}
+}
+```
+
+For convenience, we also provide endpoints for listing files and methods within the repository:
+
+* `GET listFiles/`: Retrieves the list of files in a repo at a SHA
+  * `gitUrl` should end in .git
+  * `sha` (optional)
+
+```
+curl "https://se.cs.ubc.ca/CodeShovel/listFiles?gitUrl=${}&sha=${}"
+```
+
+e.g.,
+
+`curl "https://se.cs.ubc.ca/CodeShovel/listFiles?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93"`
+
+Every file in the repository is included in the returned list of strings. These can then be passed to `listMethods` to find the methods in any given file.
+
+* `GET listMethods/`: Retrieves the list of methods for a file at a SHA
+    * `gitUrl` should end in .git
+    * `sha` (optional)
+    * `filePath`
+
+```
+curl "https://se.cs.ubc.ca/CodeShovel/listMethods?gitUrl=${}&sha=${}&filePath=${}"
+```
+
+e.g., 
+
+`curl "https://se.cs.ubc.ca/CodeShovel/listMethods?gitUrl=https://github.com/apache/commons-math.git&sha=$d71b8c93&filePath=/src/main/java/org/apache/commons/math4/dfp/DfpDec.java"`
+
+Each entry in the returned list describes a method conforming to the following schema:
+
+```typescript
+interface Method {
+    methodName: string; // Name of method
+    longName: string; // Method prototype
+    startLine: number;
+    isStatic: boolean;
+    isAbstract: boolean;
+    visibility: "" | "public" | "private" | "protected";
+}
+```
+
+<a name="command-line"></a>
+## Command Line
+
+In order to run from the command line CodeShovel for a local repository, you can clone the repo, build the tool, and then call it on the command line.
+
+1. Clone the repo: 
+  * `git clone git@github.com:ataraxie/codeshovel.git`
+2. Switch to the appropriate branch: 
+  * `cd codeshovel; git checkout research`
+2. Build the code: 
+  * `mvn -DskipTests=true package`
+  * Works with mvn version 3.3+.
+4. Call the code: 
+  * `java -jar target/codeshovel-1.0.0-SNAPSHOT.jar OPTIONS` 
+  * Works with Java version 8+.
 
 `OPTIONS` are defined as follows:
 
 ```
- -filepath <arg>      (required) path to the file containing the method
- -methodname <arg>    (required) name of the method
- -outfile <arg>       path to the output file. Default: current working directory
- -reponame <arg>      name of the repository. Default: last part from repopath (before /.git)
- -repopath <arg>      (required) path to the repository (on the local file system)
- -startcommit <arg>   hash of the commit to begin with backwards history traversal. Default: HEAD
- -startline <arg>     (required) start line of the method
+ -filepath <arg>      Path to the file containing the method (required) 
+ -methodname <arg>    Method name (required)
+ -outfile <arg>       Output path (optional: defaults to current working directory)
+ -reponame <arg>      Name of the repository (optional: defaults to the path name) 
+ -repopath <arg>      Path to a local copy of the git repository (required)
+ -startcommit <arg>   Hash of the commit to begin with backwards history traversal (optional: default is HEAD) 
+ -startline <arg>     Start line of the method (required: differentiates between overloaded methods)
 
 ```
 
-Minimal examples:
+Minimal example (assumes [checkstyle](https://github.com/checkstyle/checkstyle) is checked out in `~/tmp/checkstyle/` and you are in `codeshovel/`):
 
 ```
-java -jar codeshovel-X.X.X.jar \
-	-repopath ~/checkstyle \
+java -jar target/codeshovel-0.3.1-SNAPSHOT.jar \
+	-repopath ~/tmp/checkstyle \
 	-filepath src/main/java/com/puppycrawl/tools/checkstyle/Checker.java \
 	-methodname fireErrors \
-	-startline 384
+	-startline 401 \ 
+	-outfile results.json
 ```
 
-### The CodeShovel result file
+<!--
+Seems to duplicate content above in the REST API section.
+## Output file format
 
-Each run of CodeShovel will print result summaries to your console and will also produce a result file. Result files
-are in JSON and are structured as follows:
+If you are using the Web Service UI, the result will be rendered for you automatically. But if you are using the REST or Command Line interfaces results will be returned as JSON so you can process them according to you needs. Each run of CodeShovel will print result summaries to your console and will also produce a result file. Result files are in JSON and are structured as follows:
 
 ```
 {
@@ -116,126 +239,16 @@ The `changeHistoryDetails` array contains an object for each commit that changed
   }
 }
 ```
+-->
 
-### Building CodeShovel from the terminal
+## Code Shovel Development
 
-In the CodeShovel project directory, run `mvn install` and `mvn package`. The result will be a `.jar` file in the `target` directory
-that can be run as described previously.
+While the vast majority of users will use the Web Service UI, Web Service REST, or Command Line interfaces, if you want to build CodeShovel yourself (for instance if you are doing development), you can follow the [Development instructions](DEVELOPMENT.md).
 
-## Manual for developers
-
-### Setting up CodeShovel in the IDE
-
-Open the CodeShovel repo as Java project. Different run/debug configurations are possible:
-* `com.felixgrund.codeshovel.execution.MainCli`
-  * Use this if you want to run CodeShovel the same way as running the `.jar` file from the command line
-  * Don't forget to configure the arguments in the configuration
-  * Type of the run/debug configuration should be `Application`
-* `com.felixgrund.codeshovel.MainSingleStub`
-  * Run CodeShovel from a single stub file (see below)
-  * Type of the run/debug configuration should be `Application`
-* `com.felixgrund.codeshovel.MainDynamicStubTest`
-  * Run CodeShovel with many test cases from multiple stub files (see below)
-  * Type of the run/debug configuration should be `JUnit`
- 
-### Running CodeShovel with stub files
-
-For development, it makes most to run CodeShovel from so-called *stub files*. These are located at 
-`src/test/resources/stubs/LANG` where `LANG` refers to the programming language.
-
-A stub file is a JSON file and contains data describing one method for which to run CodeShovel.
-The structure is as follows:
+## Tool comparison
 
 ```
-{
-  "repositoryName": "checkstyle",
-  "filePath": "src/main/java/com/puppycrawl/tools/checkstyle/Checker.java", 
-  "functionName": "fireErrors",
-  "functionStartLine": 384,
-  "startCommitName": "119fd4fb33bef9f5c66fc950396669af842c21a3",
-  "expectedResult": { ... }
-}
+https://github.com/ataraxie/codeshovel/blob/master/analysis/compare_100_methods.ods
 ```
+The above file contains the results of tool comparison (comparing CodeShovel's accuracy with git log, intelliJ, and FinerGit). For a method, 1 means the tool successfully generated the complete history of the method, and 0 means the tool failed. This result was published in our ICSE 2021 paper.  
 
-The keys mostly match the arguments for the command-line runtime semantically. Note that `startCommitName` should have
-the actual commit hash rather than `HEAD`.
-
-There is an extra key `expectedResults` that is used for a unit test run from the stub file (with the `MainDynamicStubTest` class).
-It must contain the *exact* same object as is expected in the `changeHistoryShort` object in a result file. 
-
-Example:
-
-```
-{
-  (...),
-  "expectedResult": {
-    "b8ca6a585b824e91b3b8c72dd5cc53c0eb0ab0f1": "Ymultichange(Yparameterchange,Ybodychange)",
-    "f1efb27670a93690577f1bae17fc9dcbd88a795d": "Yfilerename",
-    "1d614c3a7ecf8a3ede4df8a50da46e71792d0025": "Yparameterchange",
-    "e00c478dd61d9d883e41b500b780ab217582c2e7": "Ybodychange",
-    "0e3fe5643667a53079dbd114e5b1e9aa91fde083": "Yintroduced"
-  }
-}
-```
-
-You can check the existing stub files in the `src/test/resources/stubs/LANG` directories for clarification.
-
-When running CodeShovel from stub files, there are no program arguments required, 
-but a few environment variables are required or optional:
-* `REPO_DIR`: local repository path - path to a local directory that contains the repository.
-  * (e.g. `/Users/myhome/dev/codeshovel-repos` where the repo dir `checkstyle` is inside this directory)
-* `LANG`: programming language of the target method. Currently either `java` or `js`.
-* `ENV_NAME` (optional): environment name - basically a name for the stub/s to be used.
-  * Must refer to the file name of the stub without the `.json` ending
-  * e.g. if you have a stub file `checkstyle-Checker-fireErrors.json`, the env name should be `checkstyle-Checker-fireErrors`
-  * You can address multiple stub files by providing only the beginning of the file name
-    * e.g. `checkstyle-` will match all stub files starting with `checkstyle-`
-* `BEGIN_INDEX` (optional): If you only want to start at a specific index among all the matched stub files (starts with 1, not 0!).
-* `MAX_RUNS` (optional): If you only want to run X stub files of the matched env names.
-* `SKIP_ENVS` (optional): If you want to skip certain stub files among the matched stubs you can specify a comma-separated list of env names.
-* `DISABLE_ALL_OUTPUTS` (optional): Set this to true if you don't want any files to be written. If this is set to true, all the `WRITE_*` flags below will be ignored!
-* `WRITE_SEMANTIC_DIFFS` (optional): Set this to true if you want comparisons to `git-log` be performed and results written to files.
-* `WRITE_RESULTS` (optional): Set this to true if you want result files  to be written (the ones described in section *The CodeShovel result file*).
-* `WRITE_SIMILARITIES` (optional): Set this to true if similarity comparisons for methods should be logged to files. This should only be set for debugging cases.
-
-## Contributing
-
-We are using the master-develop-topic Git workflow in CodeShovel. If you want to contribute, please do as follows:
-
-* Create an issue on Github
-* Create a branch from `develop` with name `ISSUE_ID-what-is-this-branch-doing`
-* Create a pull request onto `develop`
-* Assign the project owner as reviewer
-
-
-### Developing a language-specific version
-
-All implementation logic that is specific to programming languages is implementaed in `parser/impl`. There are only two
-classes that need to be created for one version:
-- a `*Function` class that implements `Yfunction` and extends `AbstractFunction<E>`, where `E` is the class representing
-one method node in the language-specific AST class in use
-- a `*Parser` class that implements `Yparser` and extends `AbstractParser`
-
-Lots of functionality is implemented in the `Abstract*` classes that is intended to work across different programming
-languages. However, this is not guaranteed and anytime a new implementation is written the implementation of the methods
-in `Yfunction` and `Yparser` in the respective `Abstract*` classes needs to be checked in regard to the new language.
-As soon as methods need to perform differently, the versions in the `Abstract*` classes must be overriden. Please mark
-these methods with the `@override` annotation in your implementing classes.
-
-Constructors in the implementation classes must call the super constructor of the abstract class. Refer to the 
-already implemented language-specific classes for examples.
-
-
-### Testing a language-specific version
-
-For each method that is used for testing, a stub should be created in `test/resources/stubs/LANGUAGE`. The stub file names
-should be in the form `REPONAME-MODULENAME-METHODNAME.json` where `MODULENAME` is the name of the source file or class. If you
-create stubs for multiple methods with the same name, please add `-LINENUMBER` (line number where the method name appears) 
-to the file name.
-
-One way of creating these stub files is as follows:
-- Create the JSON file with all fields filled except `expectedResult`. Then, run CodeShovel with the stub as described above
-in section `Running CodeShovel with stub files`
-- Go through the resulting output and check if it is correct
-  - IF it is correct, paste the result as `expectedResult` (as valid JSON) and make sure it passes when run as unit test 
-  - ELSE, improve your implementation and repeat until it is correct

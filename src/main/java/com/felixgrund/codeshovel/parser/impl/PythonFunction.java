@@ -5,10 +5,12 @@ import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
+import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import PythonParseTree.PythonParser;
 import PythonParseTree.PythonParserBaseVisitor;
 import org.antlr.v4.runtime.RuleContext;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +22,7 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     PythonFunction(PythonParseTree.PythonParser.FuncdefContext function, Commit commit, String sourceFilePath, String sourceFileContent) {
         super(function, commit, sourceFilePath, sourceFileContent);
     }
-    
+
     private Yparameter getParameter(PythonParser.Def_parameterContext param) {
         if (param.named_parameter() != null) {
             String argumentName = param.named_parameter().name().getText();
@@ -42,7 +44,7 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
         String argumentType = param.test() == null ? "" : param.test().getText();
         return new Yparameter(argumentName, argumentType);
     }
-    
+
     private Map<String, String> getDefaultArguments(PythonParser.Def_parameterContext param) {
         return param.test() == null ? null : getDefaultArguments(param.test().getText());
     }
@@ -50,11 +52,21 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     private Map<String, String> getDefaultArguments(PythonParser.Named_parameterContext param) {
         return null; // This is not possible
     }
-    
+
     private Map<String, String> getDefaultArguments(String defaultArgument) {
         Map<String, String> metadata = new HashMap<>();
         metadata.put("default", defaultArgument);
         return metadata;
+    }
+
+    @Override
+    protected String getInitialId(PythonParser.FuncdefContext rawMethod) {
+        String ident = getParentName() + "#" + getName();
+        String idParameterString = this.getIdParameterString();
+        if (StringUtils.isNotBlank(idParameterString)) {
+            ident += "___" + idParameterString;
+        }
+        return Utl.sanitizeFunctionId(ident);
     }
 
     @Override
