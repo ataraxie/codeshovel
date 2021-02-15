@@ -7,7 +7,10 @@ import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
+import com.felixgrund.codeshovel.util.Utl;
+import com.felixgrund.codeshovel.visitors.TypeScriptVisitor;
 import com.felixgrund.codeshovel.wrappers.Commit;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,6 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
         } else {
             stype = v8type.executeStringFunction("getText", new V8Array(v8type.getRuntime()));
         }
-         v8type.release();
         return new Yparameter(param.getObject("name").getString("escapedText").trim(), stype);
     }
 
@@ -36,14 +38,18 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
 
     @Override
     protected String getInitialId(V8Object rawMethod) {
-        return null; // TODO
+        // TODO
+        String ident = getParentName() + "#" + getName();
+        String idParameterString = this.getIdParameterString();
+        if (StringUtils.isNotBlank(idParameterString)) {
+            ident += "___" + idParameterString;
+        }
+        return Utl.sanitizeFunctionId(ident);
     }
 
     @Override
     protected String getInitialName(V8Object function) {
-        // TODO remove magic number and use typescript
-        // TODO should asterisk from generator go here or somewhere else?
-        if (function.getInteger("kind") == 162) {
+        if (new TypeScriptVisitor().isKind(function, "Constructor")) {
             return "constructor";
         } else {
             return function.getObject("name").getString("escapedText");
@@ -59,7 +65,6 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
         } else {
             stype = v8type.executeStringFunction("getText", new V8Array(v8type.getRuntime()));
         }
-        v8type.release();
         return stype;
     }
 
@@ -73,10 +78,8 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
             for (int i = 0; i < length; ++i) {
                 V8Object mod = modifiers.getObject(i);
                 ymodifiers.add(getModifier(mod));
-                mod.release();
             }
         }
-        maybeModifiers.release();
         return new Ymodifiers(ymodifiers);
     }
 
@@ -93,9 +96,7 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
         for (int i = 0; i < length; ++i) {
             V8Object param = params.getObject(i);
             yparameters.add(getParameter(param));
-            param.release();
         }
-        params.release();
         return yparameters;
     }
 
@@ -108,7 +109,6 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
         } else {
             sbody = v8body.executeStringFunction("getText", new V8Array(v8body.getRuntime()));
         }
-        v8body.release();
         return sbody;
     }
 
@@ -133,10 +133,8 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
             } else {
                 V8Object v8last = v8current;
                 v8current = v8current.getObject("parent");
-                v8last.release();
             }
         }
-        v8current.release();
         return sparent;
     }
 
@@ -151,7 +149,6 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
             }
             V8Object v8last = v8current;
             v8current = v8current.getObject("parent");
-            v8last.release();
         }
         return path.toString();
     }

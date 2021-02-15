@@ -1,5 +1,7 @@
 package com.felixgrund.codeshovel.parser.impl;
 
+import com.eclipsesource.v8.V8;
+import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
 import com.felixgrund.codeshovel.changes.*;
 import com.felixgrund.codeshovel.entities.Ycommit;
@@ -14,13 +16,12 @@ import com.felixgrund.codeshovel.wrappers.StartEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TypeScriptParser extends AbstractParser implements Yparser {
 
-    public static final String ACCEPTED_FILE_EXTENSION = ".*\\.tsx?$";
+    public static final String ACCEPTED_FILE_EXTENSION = ".*\\.(t|j)sx?$";
     private Logger log = LoggerFactory.getLogger(TypeScriptParser.class);
 
     public TypeScriptParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
@@ -30,13 +31,13 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
     @Override
     protected List<Yfunction> parseMethods() throws ParseException {
         try {
-            TypeScriptMethodVisitor visitor = new TypeScriptMethodVisitor(this.filePath, this.fileContent) {
+            TypeScriptMethodVisitor visitor = new TypeScriptMethodVisitor() {
                 @Override
                 public boolean methodMatches(Yfunction method) {
                     return method.getBody() != null;
                 }
             };
-            visitor.visit();
+            visitor.visit(this.fileContent);
             return visitor.getMatchedNodes();
         } catch (Exception e) {
             throw new ParseException(e.getMessage(), this.filePath, this.fileContent);
@@ -81,8 +82,14 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         public abstract boolean methodMatches(Yfunction method);
 
-        TypeScriptMethodVisitor(String name, String source) throws IOException {
-            super(name, source);
+        private V8Object sourceFile = null;
+
+        @Override
+        public void visit(String source) {
+            sourceFile = getSource(source);
+            visit(sourceFile);
+            sourceFile = null;
+            clear();
         }
 
         @Override
@@ -93,7 +100,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         @Override
         public void visitConstructor(V8Object constructor) {
-            constructor = addStartAndEndLines(constructor);
+            addStartAndEndLines(constructor);
             Yfunction yfunction = transformMethod(constructor);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
@@ -103,7 +110,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         @Override
         public void visitFunctionDeclaration(V8Object function) {
-            function = addStartAndEndLines(function);
+            addStartAndEndLines(function);
             Yfunction yfunction = transformMethod(function);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
@@ -119,7 +126,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         @Override
         public void visitMethodDeclaration(V8Object methodDeclaration) {
-            methodDeclaration = addStartAndEndLines(methodDeclaration);
+            addStartAndEndLines(methodDeclaration);
             Yfunction yfunction = transformMethod(methodDeclaration);
             if (methodMatches(yfunction)) {
                 matchedNodes.add(yfunction);
@@ -129,6 +136,29 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         List<Yfunction> getMatchedNodes() {
             return matchedNodes;
+        }
+
+        private void addStartAndEndLines(V8Object node) {
+            V8 runtime = ts.getRuntime();
+
+            int start = node.executeIntegerFunction("getStart", new V8Array(runtime));
+            V8Array parameters = new V8Array(runtime).push(start);
+            V8Object startLineAndCharacterOfPosition = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
+            parameters.release();
+
+            int end = node.executeIntegerFunction("getEnd", new V8Array(runtime));
+            parameters = new V8Array(runtime).push(end);
+            V8Object endLineAndCharacterOfPosition = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
+            parameters.release();
+
+            int startLine = startLineAndCharacterOfPosition.getInteger("line");
+            int endLine = endLineAndCharacterOfPosition.getInteger("line");
+
+            startLineAndCharacterOfPosition.release();
+            endLineAndCharacterOfPosition.release();
+            // Add one because lines are zero indexed in ts
+            node.add("startLine", startLine + 1);
+            node.add("endLine", endLine + 1);
         }
     }
 
