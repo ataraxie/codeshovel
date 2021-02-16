@@ -7,10 +7,8 @@ import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
-import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.visitors.TypeScriptVisitor;
 import com.felixgrund.codeshovel.wrappers.Commit;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,17 +32,6 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
 
     private String getModifier(V8Object modifier) {
         return modifier.executeStringFunction("getText", new V8Array(modifier.getRuntime()));
-    }
-
-    @Override
-    protected String getInitialId(V8Object rawMethod) {
-        // TODO
-        String ident = getParentName() + "#" + getName();
-        String idParameterString = this.getIdParameterString();
-        if (StringUtils.isNotBlank(idParameterString)) {
-            ident += "___" + idParameterString;
-        }
-        return Utl.sanitizeFunctionId(ident);
     }
 
     @Override

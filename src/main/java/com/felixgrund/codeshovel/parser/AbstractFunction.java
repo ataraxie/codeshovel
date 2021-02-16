@@ -6,7 +6,6 @@ import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.entities.Yreturn;
 import com.felixgrund.codeshovel.util.Utl;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	 */
 
 	private String id;
-	protected abstract String getInitialId(E rawMethod);
 	private String name;
 	protected abstract String getInitialName(E rawMethod);
 	private String type;
@@ -75,6 +73,15 @@ public abstract class AbstractFunction<E> implements Yfunction {
 			parts.add(parameter.toString());
 		}
 		return StringUtils.join(parts, "__");
+	}
+
+	protected String getInitialId(E rawMethod) {
+		String ident = getParentName() + "#" + getName();
+		String idParameterString = this.getIdParameterString();
+		if (StringUtils.isNotBlank(idParameterString)) {
+			ident += "___" + idParameterString;
+		}
+		return Utl.sanitizeFunctionId(ident);
 	}
 
 	protected Yreturn getInitialReturnStmt(E rawMethod) {

@@ -5,6 +5,8 @@ import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,13 +18,15 @@ public class TypeScript {
     private final NodeJS nodeJS;
     private static V8Object ts;
 
+    private static Logger log = LoggerFactory.getLogger(TypeScript.class);
+
     public static TypeScript getInstance() {
         if (instance == null) {
             try {
                 instance = new TypeScript();
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("MAJOR ERROR - Could not init TypeScript");
+                log.error("MAJOR ERROR - Could not init TypeScript");
             }
 
         }
