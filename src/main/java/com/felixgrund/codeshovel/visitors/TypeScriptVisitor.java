@@ -30,6 +30,7 @@ public class TypeScriptVisitor {
 		V8Object scriptKindEnum = ts.getObject("ScriptKind");
 
 		String name = "temp.ts";
+		// TODO is this the script target we want to be using?
 		int scriptTarget = scriptTargetEnum.getInteger("ES2015");
 		int scriptKind = scriptKindEnum.getInteger("TS");
 
