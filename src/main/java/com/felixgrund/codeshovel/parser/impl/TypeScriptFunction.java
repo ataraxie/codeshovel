@@ -7,7 +7,6 @@ import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
-import com.felixgrund.codeshovel.visitors.TypeScriptVisitor;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
@@ -36,7 +35,12 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
 
     @Override
     protected String getInitialName(V8Object function) {
-        if (new TypeScriptVisitor().isKind(function, "Constructor")) {
+        /**
+         * TODO this magic number of 162 is _extremely_ brittle
+         * this line should read `if (new TypeScriptVisitor().isKind(function, "Constructor")) {`
+         * however it causes extreme performance degradation
+         */
+        if (function.getInteger("kind") == 162) {
             return "constructor";
         } else {
             return function.getObject("name").getString("escapedText");
