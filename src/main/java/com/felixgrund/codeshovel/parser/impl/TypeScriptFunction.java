@@ -122,7 +122,6 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
                 sparent = v8current.getObject("name").getString("escapedText");
                 break;
             } else {
-                V8Object v8last = v8current;
                 v8current = v8current.getObject("parent");
             }
         }
@@ -138,7 +137,6 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
                 path.insert(0, "/");
                 path.insert(0, v8current.getObject("name").getString("escapedText"));
             }
-            V8Object v8last = v8current;
             v8current = v8current.getObject("parent");
         }
         return path.toString();
