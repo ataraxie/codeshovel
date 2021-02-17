@@ -174,7 +174,7 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 	 * This will return "Override,Test" since foo has two annotations @Test and @Override
 	 * */
 	@Override
-	protected String getMethodAnnotation(MethodDeclaration method) {
+	protected String getInitialAnnotation(MethodDeclaration method) {
 		List<String> annotationsList = new ArrayList<>();
 		for(AnnotationExpr annotation: method.getAnnotations()) {
 			annotationsList.add(annotation.getNameAsString());
