@@ -6,7 +6,6 @@ import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.entities.Yreturn;
 import com.felixgrund.codeshovel.util.Utl;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	private String functionPath;
 	protected abstract String getInitialFunctionPath(E rawMethod);
 	private String annotation;
-	protected abstract String getMethodAnnotation(E rawMethod);
+	protected abstract String getInitialAnnotation(E rawMethod);
 
 	public AbstractFunction(E rawMethod, Commit commit, String sourceFilePath, String sourceFileContent) {
 		this.commit = commit;
@@ -69,7 +68,7 @@ public abstract class AbstractFunction<E> implements Yfunction {
 		this.endLine = getInitialEndLine(rawMethod);
 		this.functionPath = getInitialFunctionPath(rawMethod);
 		this.returnStmt = getInitialReturnStmt(rawMethod);
-		this.annotation = getMethodAnnotation(rawMethod);
+		this.annotation = getInitialAnnotation(rawMethod);
 	}
 
 	protected String getIdParameterString() {

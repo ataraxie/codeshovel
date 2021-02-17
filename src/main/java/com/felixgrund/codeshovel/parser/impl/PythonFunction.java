@@ -155,8 +155,16 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     }
 
     @Override
-    protected String getMethodAnnotation(PythonParser.FuncdefContext rawMethod) {
-        // TODO: implement to get a method annotations e.g., @Override
-        return null;
+    protected String getInitialAnnotation(PythonParser.FuncdefContext rawMethod) {
+        List<String> decoratorList = new ArrayList<>();
+        RuleContext parent = rawMethod.getParent();
+        if (parent instanceof PythonParser.Class_or_func_def_stmtContext) {
+            List<PythonParser.DecoratorContext> decoratorContexts =
+                    ((PythonParser.Class_or_func_def_stmtContext) parent).decorator();
+            for (PythonParser.DecoratorContext decoratorContext : decoratorContexts) {
+                decoratorList.add(decoratorContext.dotted_name().getText());
+            }
+        }
+        return StringUtils.join(decoratorList, ",");
     }
 }
