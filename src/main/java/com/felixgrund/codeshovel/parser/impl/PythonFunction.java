@@ -9,6 +9,7 @@ import com.felixgrund.codeshovel.wrappers.Commit;
 import PythonParseTree.PythonParser;
 import PythonParseTree.PythonParserBaseVisitor;
 import org.antlr.v4.runtime.RuleContext;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -136,5 +137,19 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     @Override
     protected String getInitialFunctionPath(PythonParseTree.PythonParser.FuncdefContext function) {
         return null;
+    }
+
+    @Override
+    protected String getInitialAnnotation(PythonParser.FuncdefContext rawMethod) {
+        List<String> decoratorList = new ArrayList<>();
+        RuleContext parent = rawMethod.getParent();
+        if (parent instanceof PythonParser.Class_or_func_def_stmtContext) {
+            List<PythonParser.DecoratorContext> decoratorContexts =
+                    ((PythonParser.Class_or_func_def_stmtContext) parent).decorator();
+            for (PythonParser.DecoratorContext decoratorContext : decoratorContexts) {
+                decoratorList.add(decoratorContext.dotted_name().getText());
+            }
+        }
+        return StringUtils.join(decoratorList, ",");
     }
 }
