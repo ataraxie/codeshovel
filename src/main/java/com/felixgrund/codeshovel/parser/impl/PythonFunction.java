@@ -153,4 +153,10 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     protected String getInitialFunctionPath(PythonParseTree.PythonParser.FuncdefContext function) {
         return null;
     }
+
+    @Override
+    protected String getMethodAnnotation(PythonParser.FuncdefContext rawMethod) {
+        // TODO: implement to get a method annotations e.g., @Override
+        return null;
+    }
 }

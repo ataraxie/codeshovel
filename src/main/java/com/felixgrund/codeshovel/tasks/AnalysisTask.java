@@ -336,5 +336,7 @@ public class AnalysisTask {
 		this.functionAnnotation = annotations;
 	}
 
-	public String getFunctionAnnotation() { return functionAnnotation; }
+	public String getFunctionAnnotation() {
+		return functionAnnotation;
+	}
 }
