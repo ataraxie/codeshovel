@@ -147,7 +147,7 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
             List<PythonParser.DecoratorContext> decoratorContexts =
                     ((PythonParser.Class_or_func_def_stmtContext) parent).decorator();
             for (PythonParser.DecoratorContext decoratorContext : decoratorContexts) {
-                decoratorList.add(decoratorContext.dotted_name().getText());
+                decoratorList.add(decoratorContext.getText());
             }
         }
         return StringUtils.join(decoratorList, ",");

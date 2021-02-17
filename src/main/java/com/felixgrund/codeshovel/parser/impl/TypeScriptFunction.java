@@ -8,6 +8,7 @@ import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
 import com.felixgrund.codeshovel.wrappers.Commit;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,5 +141,21 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
             v8current = v8current.getObject("parent");
         }
         return path.toString();
+    }
+
+    @Override
+    protected String getInitialAnnotation(V8Object rawMethod) {
+        List<String> decoratorList = new ArrayList<>();
+        if (rawMethod.contains("decorators") && !rawMethod.getObject("decorators").isUndefined()) {
+            V8Array decoratorObjects = rawMethod.getArray("decorators");
+            int length = decoratorObjects.length();
+            for (int i = 0; i < length; i = i + 1) {
+                V8Object decoratorObject = decoratorObjects.getObject(i);
+                String decoratorObjectText = decoratorObject
+                        .executeStringFunction("getText", new V8Array(decoratorObject.getRuntime()));
+                decoratorList.add(decoratorObjectText);
+            }
+        }
+        return StringUtils.join(decoratorList, ",");
     }
 }
