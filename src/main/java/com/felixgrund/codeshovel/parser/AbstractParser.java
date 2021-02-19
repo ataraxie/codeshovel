@@ -44,6 +44,16 @@ public abstract class AbstractParser implements Yparser {
 
     protected abstract List<Yfunction> parseMethods() throws ParseException;
 
+    protected Yannotationchange getAnnotationChange(Ycommit commit, Yfunction compareFunction) {
+        Yannotationchange ret = null;
+        String annotationA = compareFunction.getAnnotation();
+        String annotationB = commit.getMatchedFunction().getAnnotation();
+        if (!annotationA.equals(annotationB)) {
+            ret = new Yannotationchange(this.startEnv, commit.getMatchedFunction(), compareFunction);
+        }
+        return ret;
+    }
+
     protected Yreturntypechange getReturnTypeChange(Ycommit commit, Yfunction compareFunction) {
         Yreturntypechange ret = null;
         Yreturn returnA = compareFunction.getReturnStmt();

@@ -60,6 +60,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
         Yreturntypechange yreturntypechange = getReturnTypeChange(commit, compareFunction);
         Ymodifierchange ymodifierchange = getModifiersChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
+        Yannotationchange yannotationchange = getAnnotationChange(commit, compareFunction);
         if (yreturntypechange != null) {
             changes.add(yreturntypechange);
         }
@@ -68,6 +69,9 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
         }
         if (ybodychange != null) {
             changes.add(ybodychange);
+        }
+        if (yannotationchange != null) {
+            changes.add(yannotationchange);
         }
         return changes;
     }

@@ -70,6 +70,7 @@ public class PythonParser extends AbstractParser implements Yparser {
         Yreturntypechange yreturntypechange = getReturnTypeChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
         Ymodifierchange ymodifierchange = getModifiersChange(commit, compareFunction);
+        Yannotationchange yannotationchange = getAnnotationChange(commit, compareFunction);
 
         if (yparametermetachange != null) {
             changes.add(yparametermetachange);
@@ -82,6 +83,9 @@ public class PythonParser extends AbstractParser implements Yparser {
         }
         if (ymodifierchange != null) {
             changes.add(ymodifierchange);
+        }
+        if (yannotationchange != null) {
+            changes.add(yannotationchange);
         }
         return changes;
     }
