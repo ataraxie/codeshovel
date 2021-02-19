@@ -39,3 +39,6 @@ git -C "$1" clone https://github.com/pandas-dev/pandas.git
 git -C "$1" clone https://github.com/shobrook/rebound.git
 git -C "$1" clone https://github.com/scikit-learn/scikit-learn.git
 git -C "$1" clone https://github.com/zulip/zulip.git
+
+# TypeScript Repos
+git -C "$1" clone https://github.com/microsoft/vscode.git

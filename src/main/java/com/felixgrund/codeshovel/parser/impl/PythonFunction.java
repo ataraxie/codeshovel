@@ -5,7 +5,6 @@ import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
-import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import PythonParseTree.PythonParser;
 import PythonParseTree.PythonParserBaseVisitor;
@@ -49,24 +48,10 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
         return param.test() == null ? null : getDefaultArguments(param.test().getText());
     }
 
-    private Map<String, String> getDefaultArguments(PythonParser.Named_parameterContext param) {
-        return null; // This is not possible
-    }
-
     private Map<String, String> getDefaultArguments(String defaultArgument) {
         Map<String, String> metadata = new HashMap<>();
         metadata.put("default", defaultArgument);
         return metadata;
-    }
-
-    @Override
-    protected String getInitialId(PythonParser.FuncdefContext rawMethod) {
-        String ident = getParentName() + "#" + getName();
-        String idParameterString = this.getIdParameterString();
-        if (StringUtils.isNotBlank(idParameterString)) {
-            ident += "___" + idParameterString;
-        }
-        return Utl.sanitizeFunctionId(ident);
     }
 
     @Override
@@ -100,15 +85,15 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
             @Override public Void visitDef_parameter(PythonParser.Def_parameterContext ctx) {
                 Yparameter parameter = getParameter(ctx);
                 Map<String, String> metadata = getDefaultArguments(ctx);
-                if (metadata != null) {
-                    parameter.setMetadata(metadata);
-                }
-                parametersList.add(parameter);
-                return null;
+                return visitParameterImpl(parameter, metadata);
             }
             @Override public Void visitNamed_parameter(PythonParser.Named_parameterContext ctx) {
                 Yparameter parameter = getParameter(ctx);
-                Map<String, String> metadata = getDefaultArguments(ctx);
+                // not possible to have arguments here
+                return visitParameterImpl(parameter, null);
+            }
+
+            private Void visitParameterImpl(Yparameter parameter, Map<String, String> metadata) {
                 if (metadata != null) {
                     parameter.setMetadata(metadata);
                 }
@@ -162,7 +147,7 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
             List<PythonParser.DecoratorContext> decoratorContexts =
                     ((PythonParser.Class_or_func_def_stmtContext) parent).decorator();
             for (PythonParser.DecoratorContext decoratorContext : decoratorContexts) {
-                decoratorList.add(decoratorContext.dotted_name().getText());
+                decoratorList.add(decoratorContext.getText());
             }
         }
         return StringUtils.join(decoratorList, ",");

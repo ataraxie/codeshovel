@@ -171,13 +171,13 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 	 * @Override
 	 * @Test
 	 * public void foo() {}
-	 * This will return "Override,Test" since foo has two annotations @Test and @Override
+	 * This will return "@Override,@Test" since foo has two annotations @Test and @Override
 	 * */
 	@Override
 	protected String getInitialAnnotation(MethodDeclaration method) {
 		List<String> annotationsList = new ArrayList<>();
 		for(AnnotationExpr annotation: method.getAnnotations()) {
-			annotationsList.add(annotation.getNameAsString());
+			annotationsList.add(annotation.toString());
 		}
 		return StringUtils.join(annotationsList, ",");
 	}
