@@ -47,6 +47,7 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	protected abstract String getInitialFunctionPath(E rawMethod);
 	private String annotation;
 	protected abstract String getInitialAnnotation(E rawMethod);
+	private String sourceFragment;
 
 	public AbstractFunction(E rawMethod, Commit commit, String sourceFilePath, String sourceFileContent) {
 		this.commit = commit;
@@ -66,8 +67,9 @@ public abstract class AbstractFunction<E> implements Yfunction {
 		this.beginLine = getInitialBeginLine(rawMethod);
 		this.endLine = getInitialEndLine(rawMethod);
 		this.functionPath = getInitialFunctionPath(rawMethod);
-		this.returnStmt = getInitialReturnStmt(rawMethod);
+		this.returnStmt = getInitialReturnStmt(rawMethod); // Must be called after getInitialType
 		this.annotation = getInitialAnnotation(rawMethod);
+		this.sourceFragment = getInitialSourceFragment(rawMethod); // Must be called after begin/endLine
 	}
 
 	protected String getIdParameterString() {
@@ -95,6 +97,15 @@ public abstract class AbstractFunction<E> implements Yfunction {
 		}
 	}
 
+	protected String getInitialSourceFragment(E rawMethod) {
+		// Naive implementation
+		// Will not work if there is more than one function on a line
+		int beginLine = getNameLineNumber();
+		int endLine = getEndLineNumber();
+		String source = getSourceFileContent();
+		return Utl.getTextFragment(source, beginLine, endLine);
+	}
+
 	@Override
 	public String getId() {
 		return this.id;
@@ -102,10 +113,7 @@ public abstract class AbstractFunction<E> implements Yfunction {
 
 	@Override
 	public String getSourceFragment() {
-		int beginLine = getNameLineNumber();
-		int endLine = getEndLineNumber();
-		String source = getSourceFileContent();
-		return Utl.getTextFragment(source, beginLine, endLine);
+		return this.sourceFragment;
 	}
 
 	@Override

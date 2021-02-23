@@ -7,6 +7,7 @@ import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
+import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import org.apache.commons.lang3.StringUtils;
 
@@ -106,7 +107,7 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
 
     @Override
     protected int getInitialBeginLine(V8Object function) {
-        return function.getInteger("startLine");
+        return function.getInteger("nameStartLine");
     }
 
     @Override
@@ -157,5 +158,13 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
             }
         }
         return StringUtils.join(decoratorList, ",");
+    }
+
+    @Override
+    protected String getInitialSourceFragment(V8Object rawMethod) {
+        int startLine = rawMethod.getInteger("startLine");
+        int endLine = getEndLineNumber();
+        String source = getSourceFileContent();
+        return Utl.getTextFragment(source, startLine, endLine);
     }
 }
