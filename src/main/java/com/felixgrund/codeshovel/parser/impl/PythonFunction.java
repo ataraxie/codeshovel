@@ -107,6 +107,7 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
 
     @Override
     protected String getInitialBody(PythonParseTree.PythonParser.FuncdefContext function) {
+        // This does not include any whitespace
         return function.suite().getText();
     }
 
@@ -164,7 +165,8 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
         } else {
             startWithDecorators = getNameLineNumber();
         }
-        String source = getSourceFileContent();
+        String source = getSourceFileContent() + "\n<EOF>";
+        // TODO remove trailing whitespace lines
         return Utl.getTextFragment(source, startWithDecorators, getEndLineNumber());
     }
 }
