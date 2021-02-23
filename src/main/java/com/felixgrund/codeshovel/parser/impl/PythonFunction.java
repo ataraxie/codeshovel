@@ -5,6 +5,7 @@ import com.felixgrund.codeshovel.entities.Ymodifiers;
 import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.parser.AbstractFunction;
 import com.felixgrund.codeshovel.parser.Yfunction;
+import com.felixgrund.codeshovel.util.Utl;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import PythonParseTree.PythonParser;
 import PythonParseTree.PythonParserBaseVisitor;
@@ -151,5 +152,19 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
             }
         }
         return StringUtils.join(decoratorList, ",");
+    }
+
+    @Override
+    protected String getInitialSourceFragment(PythonParseTree.PythonParser.FuncdefContext function) {
+        // Note: This will not work on lambdas
+        int startWithDecorators;
+        RuleContext parent = function.getParent();
+        if (parent instanceof PythonParseTree.PythonParser.Class_or_func_def_stmtContext) {
+            startWithDecorators = ((PythonParseTree.PythonParser.Class_or_func_def_stmtContext) parent).getStart().getLine();
+        } else {
+            startWithDecorators = getNameLineNumber();
+        }
+        String source = getSourceFileContent();
+        return Utl.getTextFragment(source, startWithDecorators, getEndLineNumber());
     }
 }

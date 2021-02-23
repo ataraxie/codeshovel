@@ -142,27 +142,37 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
             return matchedNodes;
         }
 
+        private int getLineFrom(V8 runtime, V8Object node, String function) {
+            int start = node.executeIntegerFunction(function, new V8Array(runtime));
+            V8Array parameters = new V8Array(runtime).push(start);
+            V8Object startLineAndCharacterOfPosition = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
+            int line = startLineAndCharacterOfPosition.getInteger("line");
+
+            parameters.release();
+            startLineAndCharacterOfPosition.release();
+
+            return line;
+        }
+
         private void addStartAndEndLines(V8Object node) {
             V8 runtime = ts.getRuntime();
 
-            int start = node.executeIntegerFunction("getStart", new V8Array(runtime));
-            V8Array parameters = new V8Array(runtime).push(start);
-            V8Object startLineAndCharacterOfPosition = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
-            parameters.release();
+            int startLine = getLineFrom(runtime, node, "getStart");
+            int endLine = getLineFrom(runtime, node, "getEnd");
+            int nameStartLine;
 
-            int end = node.executeIntegerFunction("getEnd", new V8Array(runtime));
-            parameters = new V8Array(runtime).push(end);
-            V8Object endLineAndCharacterOfPosition = sourceFile.executeObjectFunction("getLineAndCharacterOfPosition", parameters);
-            parameters.release();
+            V8Object name = node.getObject("name");
+            if (!name.isUndefined()) {
+                nameStartLine = getLineFrom(runtime, name, "getStart");
+            } else {
+                // If name is undefined then we have a constructor (no decorators possible)
+                nameStartLine = startLine;
+            }
 
-            int startLine = startLineAndCharacterOfPosition.getInteger("line");
-            int endLine = endLineAndCharacterOfPosition.getInteger("line");
-
-            startLineAndCharacterOfPosition.release();
-            endLineAndCharacterOfPosition.release();
             // Add one because lines are zero indexed in ts
             node.add("startLine", startLine + 1);
             node.add("endLine", endLine + 1);
+            node.add("nameStartLine", nameStartLine + 1);
         }
     }
 

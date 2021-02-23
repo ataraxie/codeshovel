@@ -15,6 +15,7 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.type.ReferenceType;
+import com.github.javaparser.printer.PrettyPrinterConfiguration;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -163,6 +164,11 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 			ident += "___" + idParameterString;
 		}
 		return Utl.sanitizeFunctionId(ident);
+	}
+
+	@Override
+	protected String getInitialSourceFragment(MethodDeclaration method) {
+		return method.toString(new PrettyPrinterConfiguration().setPrintComments(false));
 	}
 
 	/**
