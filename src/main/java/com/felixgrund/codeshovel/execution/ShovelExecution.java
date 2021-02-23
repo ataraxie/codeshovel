@@ -101,6 +101,7 @@ public class ShovelExecution {
 		task.setFunctionName(name);
 		task.setFunctionStartLine(lineNumber);
 		task.setFunctionAnnotation(method.getAnnotation());
+		task.setFunctionJavaDoc(method.getJavaDoc());
 
 		RecursiveAnalysisTask recursiveAnalysisTask = new RecursiveAnalysisTask(startEnv, task);
 		recursiveAnalysisTask.run();

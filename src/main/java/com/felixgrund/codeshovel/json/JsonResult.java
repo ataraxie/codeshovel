@@ -23,6 +23,7 @@ public class JsonResult {
 	private String functionId;
 	private String sourceFilePath;
 	private String functionAnnotation;
+	private String functionJavaDoc;
 	private int functionStartLine;
 	private int functionEndLine;
 	private int numCommitsSeen;
@@ -46,6 +47,7 @@ public class JsonResult {
 		this.functionName = startTask.getFunctionName();
 		this.functionStartLine = startTask.getFunctionStartLine();
 		this.functionAnnotation = startTask.getFunctionAnnotation();
+		this.functionJavaDoc = startTask.getFunctionJavaDoc();
 		this.functionEndLine = startTask.getFunctionEndLine();
 		this.functionId = startTask.getStartFunction().getId();
 
