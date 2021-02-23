@@ -156,7 +156,7 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     }
 
     @Override
-    protected String getInitialJavaDoc(PythonParser.FuncdefContext rawMethod) {
+    protected String getInitialDoc(PythonParser.FuncdefContext rawMethod) {
         // TODO: implement function for python
         return null;
     }

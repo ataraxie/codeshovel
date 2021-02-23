@@ -71,6 +71,7 @@ public class PythonParser extends AbstractParser implements Yparser {
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
         Ymodifierchange ymodifierchange = getModifiersChange(commit, compareFunction);
         Yannotationchange yannotationchange = getAnnotationChange(commit, compareFunction);
+        // TODO handle Ydocchange
 
         if (yparametermetachange != null) {
             changes.add(yparametermetachange);

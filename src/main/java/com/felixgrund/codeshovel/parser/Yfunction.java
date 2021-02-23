@@ -107,6 +107,6 @@ public interface Yfunction {
 	/**
 	 * @return java documentation of a method if present
 	 * */
-	String getJavaDoc();
+	String getFunctionDoc();
 
 }

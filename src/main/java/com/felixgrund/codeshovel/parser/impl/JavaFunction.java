@@ -200,7 +200,7 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 	}
 
 	@Override
-	protected String getInitialJavaDoc(MethodDeclaration method) {
-		return method.hasJavaDocComment() ? method.getJavadoc().get().toText() : null ;
+	protected String getInitialDoc(MethodDeclaration method) {
+		return method.hasJavaDocComment() ? method.getJavadoc().get().toText() : "" ;
 	}
 }

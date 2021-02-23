@@ -161,7 +161,7 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
     }
 
     @Override
-    protected String getInitialJavaDoc(V8Object rawMethod) {
+    protected String getInitialDoc(V8Object rawMethod) {
         // TODO: implement function for typescript
         return null;
     }
