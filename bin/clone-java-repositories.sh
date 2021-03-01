@@ -42,3 +42,6 @@ git -C "$1" clone https://github.com/zulip/zulip.git
 
 # TypeScript Repos
 git -C "$1" clone https://github.com/microsoft/vscode.git
+
+# Ruby Repos
+git -C "$1" clone https://github.com/fastlane/fastlane.git

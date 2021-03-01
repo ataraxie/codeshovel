@@ -5,6 +5,7 @@ import com.felixgrund.codeshovel.exceptions.ParseException;
 import com.felixgrund.codeshovel.parser.Yparser;
 import com.felixgrund.codeshovel.parser.impl.JavaParser;
 import com.felixgrund.codeshovel.parser.impl.PythonParser;
+import com.felixgrund.codeshovel.parser.impl.RubyParser;
 import com.felixgrund.codeshovel.parser.impl.TypeScriptParser;
 import com.felixgrund.codeshovel.wrappers.Commit;
 import com.felixgrund.codeshovel.wrappers.StartEnvironment;
@@ -27,6 +28,8 @@ public class ParserFactory {
 				parser = new PythonParser(startEnv, filePath, fileContent, commit);
 			} else if (filePath.matches(TypeScriptParser.ACCEPTED_FILE_EXTENSION)) {
 				parser = new TypeScriptParser(startEnv, filePath, fileContent, commit);
+			} else if (filePath.matches(RubyParser.ACCEPTED_FILE_EXTENSION)) {
+				parser = new RubyParser(startEnv, filePath, fileContent, commit);
 			} else {
 				throw new NoParserFoundException("No parser found for filename " + filePath);
 			}
