@@ -12,6 +12,14 @@ A conference paper describing how CodeShovel works and how it was evaluated as b
 Felix Grund, Shaiful Alam Chowdhury, Nick Bradley, Braxton Hall, and Reid Holmes.
 In Proceedings of the International Conference on Software Engineering (ICSE). 2021. 13 pages
 
+```
+@inproceedings{icse_2021_codeshovel,
+  title = {CodeShovel: {C}onstructing Method-Level Source Code Histories},
+  author = {Felix Grund and Shaiful Alam Chowdhury and Nick Bradley and Braxton Hall and Reid Holmes},
+  booktitle = {Proceedings of the International Conference on Software Engineering (ICSE)},
+  year = {2021}
+}
+```
 
 ## Pathways for Use
 
