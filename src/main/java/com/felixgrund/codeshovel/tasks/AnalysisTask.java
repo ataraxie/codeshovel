@@ -44,6 +44,7 @@ public class AnalysisTask {
 	private String functionAnnotation;
 	private int functionStartLine;
 	private int functionEndLine;
+	private String functionDoc;
 
 	private boolean wasBuilt;
 
@@ -83,6 +84,7 @@ public class AnalysisTask {
 		this.setFunctionStartLine(oldFunction.getNameLineNumber());
 		this.setFunctionEndLine(oldFunction.getEndLineNumber());
 		this.setFunctionAnnotation(oldFunction.getAnnotation());
+		this.setFunctionDoc(oldFunction.getFunctionDoc());
 		this.buildAndValidate();
 	}
 
@@ -338,5 +340,13 @@ public class AnalysisTask {
 
 	public String getFunctionAnnotation() {
 		return functionAnnotation;
+	}
+
+	public String getFunctionDoc() {
+		return functionDoc;
+	}
+
+	public void setFunctionDoc(String functionDoc) {
+		this.functionDoc = functionDoc;
 	}
 }

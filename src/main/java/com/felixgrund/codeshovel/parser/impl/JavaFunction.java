@@ -198,4 +198,9 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 		}
 		return false;
 	}
+
+	@Override
+	protected String getInitialDoc(MethodDeclaration method) {
+		return method.hasJavaDocComment() ? method.getJavadoc().get().toText() : "" ;
+	}
 }

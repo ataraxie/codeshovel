@@ -104,4 +104,9 @@ public interface Yfunction {
 	 */
 	String getAnnotation();
 
+	/**
+	 * @return java documentation of a method if present
+	 * */
+	String getFunctionDoc();
+
 }
