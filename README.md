@@ -14,7 +14,7 @@ In Proceedings of the International Conference on Software Engineering (ICSE). 2
 
 ```
 @inproceedings{icse_2021_codeshovel,
-  title = {CodeShovel: {C}onstructing Method-Level Source Code Histories},
+  title = {{CodeShovel}: {C}onstructing Method-Level Source Code Histories},
   author = {Felix Grund and Shaiful Alam Chowdhury and Nick Bradley and Braxton Hall and Reid Holmes},
   booktitle = {Proceedings of the International Conference on Software Engineering (ICSE)},
   year = {2021}
