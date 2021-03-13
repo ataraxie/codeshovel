@@ -15,7 +15,9 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.type.ReferenceType;
+import com.github.javaparser.printer.PrettyPrinter;
 import com.github.javaparser.printer.PrettyPrinterConfiguration;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -202,5 +204,11 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 	@Override
 	protected String getInitialDoc(MethodDeclaration method) {
 		return method.hasJavaDocComment() ? method.getJavadoc().get().toText() : "" ;
+	}
+
+	@Override
+	protected String getInitialUnformattedBody(MethodDeclaration method) {
+		LexicalPreservingPrinter.setup(method);
+		return LexicalPreservingPrinter.print(method.getBody().get());
 	}
 }
