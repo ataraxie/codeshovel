@@ -113,7 +113,7 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 	protected String getInitialBody(MethodDeclaration method) {
 		String body = null;
 		if (method.getBody().isPresent()) {
-			body = method.getBody().get().toString();
+			body = method.getBody().get().toString(new PrettyPrinterConfiguration().setPrintComments(true));
 		}
 		return body;
 	}
@@ -208,7 +208,11 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 
 	@Override
 	protected String getInitialUnformattedBody(MethodDeclaration method) {
-		LexicalPreservingPrinter.setup(method);
-		return LexicalPreservingPrinter.print(method.getBody().get());
+		if (method.getBody().isPresent()) {
+			LexicalPreservingPrinter.setup(method);
+			return LexicalPreservingPrinter.print(method.getBody().get());
+		} else {
+			return null;
+		}
 	}
 }
