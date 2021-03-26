@@ -27,7 +27,7 @@ import java.util.List;
 public class RubyParser extends AbstractParser implements Yparser {
 
     public static final String ACCEPTED_FILE_EXTENSION = ".*\\.rb$";
-    private Logger log = LoggerFactory.getLogger(JavaParser.class);
+    private Logger log = LoggerFactory.getLogger(RubyParser.class);
 
     public RubyParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
         super(startEnv, filePath, fileContent, commit);
