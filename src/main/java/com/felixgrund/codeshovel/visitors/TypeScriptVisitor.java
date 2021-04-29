@@ -12,7 +12,6 @@ public class TypeScriptVisitor {
 	protected final V8Object ts;
 	private V8Object syntaxKind;
 	private MemoryManager scope;
-	private V8Locker locker;
 
 	private static final Map<String, Integer> syntaxKindCache = new HashMap<String, Integer>();
 
@@ -52,7 +51,6 @@ public class TypeScriptVisitor {
 
 	protected void clear() {
 		scope.release();
-		locker.release();
 	}
 
 	protected void visit(V8Object node) {
