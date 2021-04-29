@@ -91,6 +91,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         @Override
         public void visit(String source) {
+            init();
             sourceFile = getSource(source);
             visit(sourceFile);
             sourceFile = null;
