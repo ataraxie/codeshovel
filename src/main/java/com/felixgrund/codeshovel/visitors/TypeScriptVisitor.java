@@ -17,10 +17,10 @@ public class TypeScriptVisitor {
 
 	public TypeScriptVisitor() {
 		ts = TypeScript.getInstance().getTS();
-		init();
 	}
 
 	public void visit(String source) {
+		init();
 		visit(getSource(source));
 		clear();
 	}
@@ -44,14 +44,13 @@ public class TypeScriptVisitor {
 		return ts.executeObjectFunction("createSourceFile", parameters);
 	}
 
-	private void init() {
+	protected void init() {
 		scope = new MemoryManager(TypeScript.getInstance().getRuntime());
 		syntaxKind = ts.getObject("SyntaxKind");
 	}
 
 	protected void clear() {
 		scope.release();
-		init();
 	}
 
 	protected void visit(V8Object node) {
