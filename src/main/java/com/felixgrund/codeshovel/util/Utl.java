@@ -348,4 +348,27 @@ public class Utl {
 
 		return false;
 	}
+
+	/***
+	 * Check for formatting changes
+	 * <p>
+	 *     If indentation, whitespace or any sort of formatting
+	 *     was performed on a method the function will return true.
+	 *     Otherwise it will return false.
+	 * </p>
+	 * @param function current matched function
+	 * @param compareFunction previous function to compare with
+	 * @return boolean True/False
+	 */
+	public static boolean isFormatChange(Yfunction function, Yfunction compareFunction) {
+		// if lexically preserved method's body (unformatted body) are not equal
+		// but pretty printed method's body (ignoring whitespace, indentation etc.,) are equal
+		// then the change was of Yformatchange type
+		if (function != null && compareFunction != null &&
+				function.getBody().equals(compareFunction.getBody()) &&
+				!function.getUnformattedBody().equals(compareFunction.getUnformattedBody())) {
+			return true;
+		}
+		return false;
+	}
 }

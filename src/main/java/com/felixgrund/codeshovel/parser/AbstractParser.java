@@ -64,6 +64,15 @@ public abstract class AbstractParser implements Yparser {
         return ret;
     }
 
+    protected Yformatchange getFormatChange(Ycommit commit, Yfunction compareFunction) {
+        Yformatchange ret = null;
+        Yfunction function = commit.getMatchedFunction();
+        if (Utl.isFormatChange(function, compareFunction)) {
+            ret = new Yformatchange(this.startEnv, commit.getMatchedFunction(), compareFunction);
+        }
+        return ret;
+    }
+
     protected Yreturntypechange getReturnTypeChange(Ycommit commit, Yfunction compareFunction) {
         Yreturntypechange ret = null;
         Yreturn returnA = compareFunction.getReturnStmt();

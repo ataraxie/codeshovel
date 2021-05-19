@@ -109,4 +109,9 @@ public interface Yfunction {
 	 * */
 	String getFunctionDoc();
 
+	/***
+	 * @return the unformatted method's body preserving whitespace, indentation and other formatting
+	 */
+	String getUnformattedBody();
+
 }

@@ -71,6 +71,7 @@ public class JavaParser extends AbstractParser implements Yparser {
         Ymodifierchange ymodifierchange = getModifiersChange(commit, compareFunction);
         Yexceptionschange yexceptionschange = getExceptionsChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
+        Yformatchange yformatchange = getFormatChange(commit, compareFunction);
         Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction);
         Yannotationchange yannotationchange = getAnnotationChange(commit, compareFunction);
         Ydocchange ydocchange = getDocChange(commit, compareFunction);
@@ -95,6 +96,9 @@ public class JavaParser extends AbstractParser implements Yparser {
         }
         if (ydocchange != null) {
             changes.add(ydocchange);
+        }
+        if (yformatchange != null) {
+            changes.add(yformatchange);
         }
         return changes;
     }
