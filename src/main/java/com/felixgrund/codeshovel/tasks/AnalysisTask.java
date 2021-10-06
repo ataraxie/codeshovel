@@ -41,8 +41,10 @@ public class AnalysisTask {
 	private String fileName;
 	private String functionName;
 	private String startCommitName;
+	private String functionAnnotation;
 	private int functionStartLine;
 	private int functionEndLine;
+	private String functionDoc;
 
 	private boolean wasBuilt;
 
@@ -81,7 +83,8 @@ public class AnalysisTask {
 		this.setFunctionName(oldFunction.getName());
 		this.setFunctionStartLine(oldFunction.getNameLineNumber());
 		this.setFunctionEndLine(oldFunction.getEndLineNumber());
-
+		this.setFunctionAnnotation(oldFunction.getAnnotation());
+		this.setFunctionDoc(oldFunction.getFunctionDoc());
 		this.buildAndValidate();
 	}
 
@@ -329,5 +332,21 @@ public class AnalysisTask {
 
 	public int getNumCommitsTotal() {
 		return numCommitsTotal;
+	}
+
+	public  void setFunctionAnnotation(String annotations) {
+		this.functionAnnotation = annotations;
+	}
+
+	public String getFunctionAnnotation() {
+		return functionAnnotation;
+	}
+
+	public String getFunctionDoc() {
+		return functionDoc;
+	}
+
+	public void setFunctionDoc(String functionDoc) {
+		this.functionDoc = functionDoc;
 	}
 }

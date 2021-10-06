@@ -41,6 +41,8 @@ public class Yintroduced extends Ychange {
 		obj.addProperty("path", newFunction.getSourceFilePath());
 		obj.addProperty("functionStartLine", newFunction.getNameLineNumber());
 		obj.addProperty("functionName", newFunction.getName());
+		obj.addProperty("functionAnnotation", newFunction.getAnnotation());
+		obj.addProperty("functionDoc", newFunction.getFunctionDoc());
 		return obj;
 	}
 

@@ -99,4 +99,19 @@ public interface Yfunction {
 	 */
 	String getParentName();
 
+	/**
+	 * @return If this method has some kind of annotation (e.g. @Test, @Override), return it. Otherwise return null
+	 */
+	String getAnnotation();
+
+	/**
+	 * @return java documentation of a method if present
+	 * */
+	String getFunctionDoc();
+
+	/***
+	 * @return the unformatted method's body preserving whitespace, indentation and other formatting
+	 */
+	String getUnformattedBody();
+
 }

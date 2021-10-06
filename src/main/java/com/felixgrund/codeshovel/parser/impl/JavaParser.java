@@ -20,7 +20,7 @@ import java.util.List;
 
 public class JavaParser extends AbstractParser implements Yparser {
 
-    public static final String ACCEPTED_FILE_EXTENSION = ".java";
+	public static final String ACCEPTED_FILE_EXTENSION = ".*\\.java$";
     private Logger log = LoggerFactory.getLogger(JavaParser.class);
 
     public JavaParser(StartEnvironment startEnv, String filePath, String fileContent, Commit commit) throws ParseException {
@@ -71,7 +71,11 @@ public class JavaParser extends AbstractParser implements Yparser {
         Ymodifierchange ymodifierchange = getModifiersChange(commit, compareFunction);
         Yexceptionschange yexceptionschange = getExceptionsChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
+        Yformatchange yformatchange = getFormatChange(commit, compareFunction);
         Yparametermetachange yparametermetachange = getParametersMetaChange(commit, compareFunction);
+        Yannotationchange yannotationchange = getAnnotationChange(commit, compareFunction);
+        Ydocchange ydocchange = getDocChange(commit, compareFunction);
+
         if (yreturntypechange != null) {
             changes.add(yreturntypechange);
         }
@@ -86,6 +90,15 @@ public class JavaParser extends AbstractParser implements Yparser {
         }
         if (yparametermetachange != null) {
             changes.add(yparametermetachange);
+        }
+        if (yannotationchange != null) {
+            changes.add(yannotationchange);
+        }
+        if (ydocchange != null) {
+            changes.add(ydocchange);
+        }
+        if (yformatchange != null) {
+            changes.add(yformatchange);
         }
         return changes;
     }

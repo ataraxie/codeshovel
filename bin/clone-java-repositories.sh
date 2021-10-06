@@ -6,6 +6,7 @@ if [ -z "$1" ]
     exit 1
 fi
 
+# Java Repos
 git -C "$1" clone https://github.com/checkstyle/checkstyle.git
 git -C "$1" clone https://github.com/apache/commons-lang.git
 git -C "$1" clone https://github.com/apache/flink.git
@@ -26,3 +27,18 @@ git -C "$1" clone https://github.com/apache/lucene-solr.git
 git -C "$1" clone https://github.com/mockito/mockito.git
 git -C "$1" clone https://github.com/pmd/pmd.git
 git -C "$1" clone https://github.com/spring-projects/spring-boot.git
+
+# Python Repos
+git -C "$1" clone https://github.com/asciinema/asciinema.git
+git -C "$1" clone https://github.com/django/django.git
+git -C "$1" clone https://github.com/pallets/flask.git
+git -C "$1" clone https://github.com/jakubroztocil/httpie.git
+git -C "$1" clone https://github.com/keras-team/keras.git
+git -C "$1" clone https://github.com/tensorflow/models.git
+git -C "$1" clone https://github.com/pandas-dev/pandas.git
+git -C "$1" clone https://github.com/shobrook/rebound.git
+git -C "$1" clone https://github.com/scikit-learn/scikit-learn.git
+git -C "$1" clone https://github.com/zulip/zulip.git
+
+# TypeScript Repos
+git -C "$1" clone https://github.com/microsoft/vscode.git

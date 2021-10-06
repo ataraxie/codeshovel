@@ -6,7 +6,6 @@ import com.felixgrund.codeshovel.entities.Yparameter;
 import com.felixgrund.codeshovel.entities.Yreturn;
 import com.felixgrund.codeshovel.util.Utl;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jgit.lib.Repository;
 import com.felixgrund.codeshovel.wrappers.Commit;
 
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	 */
 
 	private String id;
-	protected abstract String getInitialId(E rawMethod);
 	private String name;
 	protected abstract String getInitialName(E rawMethod);
 	private String type;
@@ -47,6 +45,13 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	protected abstract String getInitialParentName(E rawMethod);
 	private String functionPath;
 	protected abstract String getInitialFunctionPath(E rawMethod);
+	private String annotation;
+	protected abstract String getInitialAnnotation(E rawMethod);
+	private String sourceFragment;
+	private String functionDoc;
+	protected abstract String getInitialDoc(E rawMethod);
+	private String unformattedBody;
+	protected abstract String getInitialUnformattedBody(E rawMethod);
 
 	public AbstractFunction(E rawMethod, Commit commit, String sourceFilePath, String sourceFileContent) {
 		this.commit = commit;
@@ -66,7 +71,11 @@ public abstract class AbstractFunction<E> implements Yfunction {
 		this.beginLine = getInitialBeginLine(rawMethod);
 		this.endLine = getInitialEndLine(rawMethod);
 		this.functionPath = getInitialFunctionPath(rawMethod);
-		this.returnStmt = getInitialReturnStmt(rawMethod);
+		this.returnStmt = getInitialReturnStmt(rawMethod); // Must be called after getInitialType
+		this.annotation = getInitialAnnotation(rawMethod);
+		this.functionDoc = getInitialDoc(rawMethod);
+		this.unformattedBody = getInitialUnformattedBody(rawMethod);
+		this.sourceFragment = getInitialSourceFragment(rawMethod); // Must be called after begin/endLine
 	}
 
 	protected String getIdParameterString() {
@@ -77,12 +86,30 @@ public abstract class AbstractFunction<E> implements Yfunction {
 		return StringUtils.join(parts, "__");
 	}
 
+	protected String getInitialId(E rawMethod) {
+		String ident = getParentName() + "#" + getName();
+		String idParameterString = this.getIdParameterString();
+		if (StringUtils.isNotBlank(idParameterString)) {
+			ident += "___" + idParameterString;
+		}
+		return Utl.sanitizeFunctionId(ident);
+	}
+
 	protected Yreturn getInitialReturnStmt(E rawMethod) {
 		if (this.type == null) {
 			return Yreturn.NONE;
 		} else {
 			return new Yreturn(this.type);
 		}
+	}
+
+	protected String getInitialSourceFragment(E rawMethod) {
+		// Naive implementation
+		// Will not work if there is more than one function on a line
+		int beginLine = getNameLineNumber();
+		int endLine = getEndLineNumber();
+		String source = getSourceFileContent();
+		return Utl.getTextFragment(source, beginLine, endLine);
 	}
 
 	@Override
@@ -92,10 +119,7 @@ public abstract class AbstractFunction<E> implements Yfunction {
 
 	@Override
 	public String getSourceFragment() {
-		int beginLine = getNameLineNumber();
-		int endLine = getEndLineNumber();
-		String source = getSourceFileContent();
-		return Utl.getTextFragment(source, beginLine, endLine);
+		return this.sourceFragment;
 	}
 
 	@Override
@@ -176,5 +200,20 @@ public abstract class AbstractFunction<E> implements Yfunction {
 	@Override
 	public int getEndLineNumber() {
 		return this.endLine;
+	}
+
+	@Override
+	public String getAnnotation() {
+		return this.annotation;
+	}
+
+	@Override
+	public String getFunctionDoc() {
+		return this.functionDoc;
+	}
+
+	@Override
+	public String getUnformattedBody() {
+		return this.unformattedBody;
 	}
 }

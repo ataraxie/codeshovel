@@ -11,9 +11,13 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.type.ReferenceType;
+import com.github.javaparser.printer.PrettyPrinter;
+import com.github.javaparser.printer.PrettyPrinterConfiguration;
+import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -109,7 +113,7 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 	protected String getInitialBody(MethodDeclaration method) {
 		String body = null;
 		if (method.getBody().isPresent()) {
-			body = method.getBody().get().toString();
+			body = method.getBody().get().toString(new PrettyPrinterConfiguration().setPrintComments(true));
 		}
 		return body;
 	}
@@ -164,6 +168,28 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 		return Utl.sanitizeFunctionId(ident);
 	}
 
+	@Override
+	protected String getInitialSourceFragment(MethodDeclaration method) {
+		return method.toString(new PrettyPrinterConfiguration().setPrintComments(false));
+	}
+
+	/**
+	 * @return all the annotation of a method
+	 * Source Code Example:
+	 * @Override
+	 * @Test
+	 * public void foo() {}
+	 * This will return "@Override,@Test" since foo has two annotations @Test and @Override
+	 * */
+	@Override
+	protected String getInitialAnnotation(MethodDeclaration method) {
+		List<String> annotationsList = new ArrayList<>();
+		for(AnnotationExpr annotation: method.getAnnotations()) {
+			annotationsList.add(annotation.toString());
+		}
+		return StringUtils.join(annotationsList, ",");
+	}
+
 	private boolean isNestedMethod(MethodDeclaration method) {
 		if (method.getParentNode().isPresent()) {
 			Node parentNode = method.getParentNode().get();
@@ -173,5 +199,20 @@ public class JavaFunction extends AbstractFunction<MethodDeclaration> implements
 			}
 		}
 		return false;
+	}
+
+	@Override
+	protected String getInitialDoc(MethodDeclaration method) {
+		return method.hasJavaDocComment() ? method.getJavadoc().get().toText() : "" ;
+	}
+
+	@Override
+	protected String getInitialUnformattedBody(MethodDeclaration method) {
+		if (method.getBody().isPresent()) {
+			LexicalPreservingPrinter.setup(method);
+			return LexicalPreservingPrinter.print(method.getBody().get());
+		} else {
+			return null;
+		}
 	}
 }
