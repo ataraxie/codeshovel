@@ -4,13 +4,28 @@ Take this shovel to dig in source code history for changes to specific methods a
 
 *This is research!* Primarily undertaken in the [Software Practices Lab](https://spl.cs.ubc.ca) at UBC in Vancouver, Canada we have developed this project to help practitioners to more efficiently check how their methods have changed and give researchers an easier way to track method evolution for academic studies. Please do not hesitate to get in touch if you have any questions!
 
-A conference paper describing how CodeShovel works and how it was evaluated as been accepted for publication at the International Conference on Software Engineering 2021. A pre-print of the paper (which will be finalized in late February 2021) can be found [here](ICSE2021.pdf).
+### Publication
+
+A conference paper describing how CodeShovel works and how it was evaluated as been accepted for publication at the International Conference on Software Engineering 2021. A free version of the paper can be found [here](https://www.cs.ubc.ca/~rtholmes/papers/icse_2021_grund.pdf). If you use CodeShovel in an academic paper, please cite:
+
+> ***CodeShovel: Constructing Method-Level Source Code Histories.***
+Felix Grund, Shaiful Alam Chowdhury, Nick Bradley, Braxton Hall, and Reid Holmes.
+In Proceedings of the International Conference on Software Engineering (ICSE). 2021. 13 pages
+
+```
+@inproceedings{icse_2021_codeshovel,
+  title = {{CodeShovel}: {C}onstructing Method-Level Source Code Histories},
+  author = {Felix Grund and Shaiful Alam Chowdhury and Nick Bradley and Braxton Hall and Reid Holmes},
+  booktitle = {Proceedings of the International Conference on Software Engineering (ICSE)},
+  year = {2021}
+}
+```
 
 ## Pathways for Use
 
 CodeShovel can be used in three ways:
 
-* ***Web Service UI***: We have built a browser-based user interface that you can use to interactively navigate the history of a method of interest. We host a public copy of the [web interface](https://se.cs.ubc.ca/codeshovel/index.html) if you just want to use CodeShovel without installing anything, but this repository also has [instructions for self-hosting](#web-service-ui) the web service on your own computer using Docker.
+* ***Web Service UI***: We have built a browser-based user interface that you can use to interactively navigate the history of a method of interest. We host a public copy of the [web interface](https://se.cs.ubc.ca/CodeShovel/index.html) if you just want to use CodeShovel without installing anything, but this repository also has [instructions for self-hosting](#web-service-ui) the web service on your own computer using Docker.
 
 * ***Web Service REST:*** To programmatically investigate the history of a method, you can also call the CodeShovel web service using standard rest commands. You can direct these against our hosted version of the web service, or against your own self-hosted copy of the web service. The [REST interface instructions](#web-service-rest) are below.
 
@@ -19,7 +34,7 @@ CodeShovel can be used in three ways:
 <a name="web-service-ui"></a>
 ## Web Service UI 
 
-***Public UI:*** The web service UI enables easy interactive exploration of a method history. The quickest way to use this is through our hosted version available at [https://se.cs.ubc.ca/codeshovel/index.html](https://se.cs.ubc.ca/codeshovel/index.html). Through this interface you can explore histories of some sample methods (these are not cached: they are dynamically computed as the underlying repositories are updated), or by providing a link to a public repository of your choosing. **Note:** This is likely to be the least performant of all interface options as it runs on shared infrastructure with minimal resources, but is a viable way to check the results of the tool.
+***Public UI:*** The web service UI enables easy interactive exploration of a method history. The quickest way to use this is through our hosted version available at [https://se.cs.ubc.ca/CodeShovel/index.html](https://se.cs.ubc.ca/CodeShovel/index.html). Through this interface you can explore histories of some sample methods (these are not cached: they are dynamically computed as the underlying repositories are updated), or by providing a link to a public repository of your choosing. **Note:** This is likely to be the least performant of all interface options as it runs on shared infrastructure with minimal resources, but is a viable way to check the results of the tool.
 
 ***Self-Hosted UI:*** You can also stand up a copy of the web interface on your own infrastructure. To do this, follow these steps:
 
@@ -243,12 +258,4 @@ The `changeHistoryDetails` array contains an object for each commit that changed
 
 ## Code Shovel Development
 
-While the vast majority of users will use the Web Service UI, Web Service REST, or Command Line interfaces, if you want to build CodeShovel yourself (for instance if you are doing development), you can follow the [Development instructions](DEVELOPMENT.md).
-
-## Tool comparison
-
-```
-https://github.com/ataraxie/codeshovel/blob/master/analysis/compare_100_methods.ods
-```
-The above file contains the results of tool comparison (comparing CodeShovel's accuracy with git log, intelliJ, and FinerGit). For a method, 1 means the tool successfully generated the complete history of the method, and 0 means the tool failed. This result was published in our ICSE 2021 paper.  
-
+While the vast majority of users will use the Web Service UI, Web Service REST, or Command Line interfaces, if you want to build CodeShovel yourself (for instance if you are doing development), you can follow the [Development instructions](doc/DEVELOPMENT.md).
