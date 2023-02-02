@@ -61,6 +61,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
         Ymodifierchange ymodifierchange = getModifiersChange(commit, compareFunction);
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
         Yannotationchange yannotationchange = getAnnotationChange(commit, compareFunction);
+        // TODO consider parameter meta change
         // TODO: handle Ydocchange
         if (yreturntypechange != null) {
             changes.add(yreturntypechange);

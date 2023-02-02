@@ -21,6 +21,7 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
     }
 
     private Yparameter getParameter(V8Object param) {
+        // TODO should `?` (implying optional) or `...` (implying varargs) be in the metadata?
         String stype;
         V8Object v8type = param.getObject("type");
         if (v8type.isUndefined()) {

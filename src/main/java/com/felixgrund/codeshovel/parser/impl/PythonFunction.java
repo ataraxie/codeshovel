@@ -36,6 +36,7 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
 
     private Yparameter getParameter(PythonParser.Named_parameterContext param) {
         String argumentName = "";
+        // TODO should * and ** be part of the metadata?
         if (param.getParent().getChild(0).getText().contains("*")) {
             // OK this looks a little shaky but is meant to include *args and **kwargs
             argumentName += param.getParent().getChild(0).getText();
