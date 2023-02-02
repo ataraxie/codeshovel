@@ -17,12 +17,15 @@ public class TypeScript {
     private static TypeScript instance;
     private final NodeJS nodeJS;
     private static V8Object ts;
+    private static Thread thread;
 
     private static Logger log = LoggerFactory.getLogger(TypeScript.class);
 
     public static TypeScript getInstance() {
-        if (instance == null) {
+        Thread currentThread = Thread.currentThread();
+        if (instance == null || thread != currentThread) {
             try {
+                thread = currentThread;
                 instance = new TypeScript();
             } catch (IOException e) {
                 e.printStackTrace();
