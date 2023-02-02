@@ -162,6 +162,18 @@ public class TypeScriptFunction extends AbstractFunction<V8Object> implements Yf
     }
 
     @Override
+    protected String getInitialDoc(V8Object rawMethod) {
+        // TODO: implement function for typescript
+        return null;
+    }
+
+    @Override
+    protected String getInitialUnformattedBody(V8Object rawMethod) {
+        // TODO: implement function for typescript
+        return null;
+    }
+
+    @Override
     protected String getInitialSourceFragment(V8Object rawMethod) {
         int startLine = rawMethod.getInteger("startLine");
         int endLine = getEndLineNumber();

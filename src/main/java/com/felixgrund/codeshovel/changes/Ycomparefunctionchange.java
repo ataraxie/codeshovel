@@ -78,6 +78,7 @@ public abstract class Ycomparefunctionchange extends Ychange {
 		obj.addProperty("functionStartLine", newFunction.getNameLineNumber());
 		obj.addProperty("functionName", newFunction.getName());
 		obj.addProperty("functionAnnotation", newFunction.getAnnotation());
+		obj.addProperty("functionDoc", newFunction.getFunctionDoc());
 		obj.addProperty("diff", getDiffAsString());
 		obj.add("extendedDetails", getExtendedDetailsJsonObject());
 		return obj;

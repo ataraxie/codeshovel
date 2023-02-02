@@ -62,6 +62,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
         Ybodychange ybodychange = getBodyChange(commit, compareFunction);
         Yannotationchange yannotationchange = getAnnotationChange(commit, compareFunction);
         // TODO consider parameter meta change
+        // TODO: handle Ydocchange
         if (yreturntypechange != null) {
             changes.add(yreturntypechange);
         }
@@ -91,6 +92,7 @@ public class TypeScriptParser extends AbstractParser implements Yparser {
 
         @Override
         public void visit(String source) {
+            init();
             sourceFile = getSource(source);
             visit(sourceFile);
             sourceFile = null;

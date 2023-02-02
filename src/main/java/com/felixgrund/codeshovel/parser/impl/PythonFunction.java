@@ -157,6 +157,18 @@ public class PythonFunction extends AbstractFunction<PythonParser.FuncdefContext
     }
 
     @Override
+    protected String getInitialDoc(PythonParser.FuncdefContext rawMethod) {
+        // TODO: implement function for python
+        return null;
+    }
+
+    @Override
+    protected String getInitialUnformattedBody(PythonParser.FuncdefContext rawMethod) {
+        // TODO: implement function for python
+        return null;
+    }
+
+    @Override
     protected String getInitialSourceFragment(PythonParseTree.PythonParser.FuncdefContext function) {
         // Note: This will not work on lambdas
         int startWithDecorators;
