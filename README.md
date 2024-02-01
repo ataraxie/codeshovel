@@ -149,7 +149,7 @@ In order to run from the command line CodeShovel for a local repository, you can
 1. Clone the repo: 
   * `git clone git@github.com:ataraxie/codeshovel.git`
 2. Switch to the appropriate branch: 
-  * `cd codeshovel; git checkout research`
+  * `cd codeshovel; git checkout webservice-repair`
 2. Build the code: 
   * `mvn -DskipTests=true package`
   * Works with mvn version 3.3+.
